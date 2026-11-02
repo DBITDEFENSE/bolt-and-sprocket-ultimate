@@ -967,9 +967,9 @@ func _dress_far() -> void:
 	# two ridge rings round the lake (inside the 400 m camera far plane from every zone)
 	var centre: Vector3 = Vector3(0, 0, 80)
 	D.ridge_ring(dress, "RidgeNear", centre, 205.0, 30.0, 6.0, 26.0, 4451,
-		D.shader_mat("desert_ridge.gdshader", {"rock": Color(0.36, 0.29, 0.28), "foot": Color(0.22, 0.2, 0.22), "haze": Color(0.36, 0.38, 0.5), "haze_k": 0.005, "top_y": 26.0}))
+		D.shader_mat("desert_ridge.gdshader", {"rock": Color(0.36, 0.29, 0.28), "foot": Color(0.22, 0.2, 0.22), "haze": Color(0.36, 0.38, 0.5), "haze_k": 0.005, "top_y": 26.0, "storm_k": 0.0, "storm_col": Color(0.74, 0.65, 0.5)}))
 	D.ridge_ring(dress, "RidgeFar", centre, 262.0, 50.0, 18.0, 52.0, 4457,
-		D.shader_mat("desert_ridge.gdshader", {"rock": Color(0.26, 0.23, 0.29), "foot": Color(0.2, 0.19, 0.26), "haze": Color(0.42, 0.44, 0.58), "haze_k": 0.006, "haze_max": 0.6, "top_y": 52.0}))
+		D.shader_mat("desert_ridge.gdshader", {"rock": Color(0.26, 0.23, 0.29), "foot": Color(0.2, 0.19, 0.26), "haze": Color(0.42, 0.44, 0.58), "haze_k": 0.006, "haze_max": 0.6, "top_y": 52.0, "storm_k": 0.0, "storm_col": Color(0.74, 0.65, 0.5)}))
 
 
 # ------------------------------------------------------------------ the power lights (the generator's sweep)

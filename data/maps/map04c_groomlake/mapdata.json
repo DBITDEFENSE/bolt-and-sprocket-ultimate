@@ -15,8 +15,8 @@
     679,
     1036
   ],
-  "baked_at": "2026-10-26T15:18:51",
-  "poi_signature": "e25aa14b62a4592f56054233e42fdc59",
+  "baked_at": "2026-11-02T10:54:33",
+  "poi_signature": "9c316fbae7f4f38e2386c771d60ecbef",
   "floors": [
     {
       "id": "surface",
@@ -350,7 +350,7 @@
       "id": "E_RADAR",
       "name": "Radar Tower",
       "y_min": -1.5,
-      "y_max": 8.0,
+      "y_max": 18.0,
       "polys": [
         [
           [
@@ -392,7 +392,7 @@
       "ys": [
         [
           -1.5,
-          8.0
+          18.0
         ],
         [
           -1.0,
@@ -1040,13 +1040,31 @@
         97.0
       ],
       "floor": 0,
-      "label": "Live Wire Fence",
+      "label": "Trap",
       "price": 1000,
       "node_path": "Gameplay/Lever_FuelDump",
       "key": "Gameplay/Lever_FuelDump",
       "data": {
         "trap_id": "fuel_dump",
-        "kind": "live_wire"
+        "kind": ""
+      }
+    },
+    {
+      "id": "trap:Gameplay/Lever_HangarDoor",
+      "type": "trap",
+      "pos": [
+        49.4,
+        0.0,
+        60.45
+      ],
+      "floor": 0,
+      "label": "Trap",
+      "price": 1000,
+      "node_path": "Gameplay/Lever_HangarDoor",
+      "key": "Gameplay/Lever_HangarDoor",
+      "data": {
+        "trap_id": "door_drop",
+        "kind": ""
       }
     },
     {
