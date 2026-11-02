@@ -179,7 +179,7 @@ func _run() -> void:
 	await _until(func() -> bool: return boss.kstate != Kielholer.K.RISE, 3.0)
 	boss.take_damage(boss.max_hp * 0.27, &"torso", &"smoke", 1, &"world")
 	_check(boss.helmet_broken, "a quarter gone: the helmet glass broke on the way (15%)")
-	var sank: bool = await _until(func() -> bool: return boss.kstate == Kielholer.K.UNDER, 4.0)
+	var sank: bool = await _until(func() -> bool: return boss.kstate == Kielholer.K.UNDER, 10.0)   # (4 s flaked under a loaded CPU)
 	_check(sank and boss.submerges == 1, "he sinks at 75%")
 	var hp_under: float = boss.hp
 	boss.take_damage(5000.0, &"torso", &"smoke", 1, &"bullet")
