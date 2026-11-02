@@ -2784,19 +2784,19 @@ func _ev_wildlife_setup() -> void:
 	var w: Dictionary = cfg["wildlife"]
 	for i: int in int(w.get("rabbits", 4)):
 		var r: Node3D = _make_rabbit()
-		add_child(r)
+		add_child(r, true)
 		var home: Vector3 = _a3_rand_in(w.get("area", [[-50, 0, 2], [50, 0, 56]]))
 		r.global_position = home
 		r.rotation.y = _rng.randf_range(0, TAU)
-		rabbits.append({"node": r, "home": home, "state": "idle", "t": _rng.randf_range(1.0, 4.0), "v": Vector3.ZERO})
+		rabbits.append({"node": r, "rabbit": true, "home": home, "state": "idle", "t": _rng.randf_range(1.0, 4.0), "v": Vector3.ZERO})
 	var spots: Array = w.get("coyote_spots", [])
 	for i2: int in mini(int(w.get("coyotes", 2)), spots.size()):
 		var c: Node3D = _make_coyote()
-		add_child(c)
+		add_child(c, true)
 		var sp: Vector3 = _a3_v3(spots[i2])
 		c.global_position = sp
 		c.rotation.y = _rng.randf_range(0, TAU)
-		coyotes.append({"node": c, "spot": sp, "state": "idle", "t": 0.0, "v": Vector3.ZERO})
+		coyotes.append({"node": c, "rabbit": false, "spot": sp, "state": "idle", "t": 0.0, "v": Vector3.ZERO})
 	_ticks.append(_ev_wildlife_tick)
 	_shot_fns.append(_ev_wildlife_shot)
 	if w.has("yip"):
@@ -2823,7 +2823,7 @@ func _bolt(c: Dictionary, from: Vector3, speed: float) -> void:
 	c["t"] = 0.0
 	c["v"] = flee_dir(node.global_position, from) * speed
 	node.look_at(node.global_position - (c["v"] as Vector3), Vector3.UP)
-	var key: String = "rabbit_bolt" if node.name.begins_with("Jackrabbit") else "coyote_yip"
+	var key: String = "rabbit_bolt" if bool(c.get("rabbit", false)) else "coyote_yip"
 	_a3_snd(key, node.global_position, -4.0)
 	_count("wildlife_bolt")
 
@@ -2832,7 +2832,7 @@ func _ev_wildlife_shot(origin: Vector3) -> void:
 	var w: Dictionary = cfg.get("wildlife", {})
 	for c: Dictionary in rabbits + coyotes:
 		if should_bolt((c["node"] as Node3D).global_position, [], origin, 0.0, float(w.get("shot_bolt_m", 25.0))):
-			_bolt(c, origin, float(w.get("rabbit_mps", 9.0)) if (c["node"] as Node3D).name.begins_with("Jackrabbit") else float(w.get("coyote_mps", 8.0)))
+			_bolt(c, origin, float(w.get("rabbit_mps", 9.0)) if bool(c.get("rabbit", false)) else float(w.get("coyote_mps", 8.0)))
 
 
 func _ev_wildlife_tick(delta: float) -> void:
@@ -2844,7 +2844,7 @@ func _ev_wildlife_tick(delta: float) -> void:
 			pp.append((n as Node3D).global_position)
 	for c: Dictionary in rabbits + coyotes:
 		var node: Node3D = c["node"]
-		var rabbit: bool = node.name.begins_with("Jackrabbit")
+		var rabbit: bool = bool(c.get("rabbit", false))  # not the node name: a second sibling is renamed @Node3D@N
 		c["t"] = float(c["t"]) + delta
 		match str(c["state"]):
 			"idle":
@@ -2881,7 +2881,7 @@ func _ev_wildlife_tick(delta: float) -> void:
 					if rabbit:
 						c["home"] = _a3_rand_in(w.get("area", [[-50, 0, 2], [50, 0, 56]]))
 						node.global_position = c["home"]
-					else:
+					elif c.has("spot"):
 						node.global_position = c["spot"]
 
 
