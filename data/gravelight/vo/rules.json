@@ -73,6 +73,7 @@
     "CUT_EXFIL": 4,
     "TIDE": 3,
     "BALLAST": 3,
+    "M2_LF_HINT": 3,
     "M4D_TERM": 3,
     "M4D_GLARE": 3,
     "M4D_HEATERS": 3,
