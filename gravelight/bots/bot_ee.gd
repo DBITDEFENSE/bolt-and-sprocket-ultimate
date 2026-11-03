@@ -240,13 +240,157 @@ func _pause_state() -> Dictionary:
 	var shop: bool = false
 	var sb: Dictionary = _cfg().get("shop_break", {})
 	if str(task.get("paused", "")) == "shopping":
-		shop = _now() - float(task.get("paused_t", _now())) < float(sb.get("seconds", 20.0))
+		shop = _now() - float(task.get("paused_t", _now())) < float(sb.get("seconds", 20.0)) and not _shop_idle_over()
 		if not shop:
 			_shop_next = _now() + float(sb.get("every_s", 90.0))
-	else:
-		shop = BotEECatalog.shop_break_due(Economy.get_scrip(player.player_id), str(_plan.get("do", "")), _now(), _shop_next, sb)
+	elif BotEECatalog.shop_break_due(Economy.get_scrip(player.player_id), str(_plan.get("do", "")), _now(), _shop_next, sb) and not bool(task.get("rally", false)):
+		# U10 T-172: only when there is something to buy (a break with nothing on the list cost the egg 20 s)
+		shop = shop_wanted()
+		if not shop:
+			_shop_next = _now() + 10.0
+		else:
+			_shop_last_errand = _now()
 	return {"type": str(task["type"]) if str(_plan.get("do", "")) != "hold" else "hold_zone", "pressure": brain.perception.pressure,
-		"teammate_down": down, "round_left": left, "player_away": away, "shop": shop, "pause_pressure": float(t.get("pause_pressure", -1.0))}
+		"teammate_down": down, "round_left": left, "player_away": away, "shop": shop, "pause_pressure": float(t.get("pause_pressure", -1.0)),
+		"apart": _apart(left)}
+
+
+# ---------------------------------------------------------------- U10 T-172: shopping breaks that buy, the squad together
+
+## Between two steps (ee.json shop_break.between_steps) the hub holds a free rich bot back from its next pick until then.
+var free_shop_until: float = -INF
+var _shop_probe: bool = false
+var _shop_last_errand: float = -INF
+
+
+## Is this bot on a shopping break (its egg task paused for "shopping", or held back between steps)? BotEconomy then
+## shops around the bot itself (shop_break.range_m), as in a round break, perk_first first, and may buy the doors on
+## the way to the main egg's open steps (route_doors).
+func shopping() -> bool:
+	if _shop_probe:
+		return true
+	if active() and str(task.get("paused", "")) == "shopping":
+		return true
+	return _now() < free_shop_until
+
+
+## Would a shopping break buy anything now (the economy's buy / crate list with the break's ranges)?
+func shop_wanted() -> bool:
+	if brain.economy == null:
+		return false
+	_shop_probe = true
+	brain.economy.invalidate()
+	var b: Dictionary = brain.economy.best(_now())
+	_shop_probe = false
+	brain.economy.invalidate()
+	for k: String in ["buy", "crate"]:
+		if not (b.get(k, {}) as Dictionary).is_empty():
+			return true
+	return false
+
+
+## The break is over early: nothing bought for idle_end_s and nothing left on the list.
+func _shop_idle_over() -> bool:
+	if brain.action in ["buy_task", "crate_task", "resupply_task"] or not brain.task.is_empty():
+		_shop_last_errand = _now()
+		return false
+	var sb: Dictionary = _cfg().get("shop_break", {})
+	if _now() - _shop_last_errand < float(sb.get("idle_end_s", 4.0)) or _now() < _shop_idle_check_t:
+		return false
+	_shop_idle_check_t = _now() + 1.0
+	return not shop_wanted()
+
+var _shop_idle_check_t: float = -INF
+
+
+## The hub asks for a free bot between two steps: true = it shops first (its next pick waits).
+func between_steps_shop(now: float) -> bool:
+	var sb: Dictionary = _cfg().get("shop_break", {})
+	if not bool(sb.get("between_steps", false)) or brain.is_player_bot:
+		return false
+	if now < free_shop_until:
+		if _shop_idle_over():
+			free_shop_until = -INF
+			_shop_next = now + float(sb.get("every_s", 90.0))
+			return false
+		return true
+	if not BotEECatalog.shop_break_due(Economy.get_scrip(player.player_id), "", now, _shop_next, sb):
+		return false
+	if not shop_wanted():
+		_shop_next = now + 10.0
+		return false
+	free_shop_until = now + float(sb.get("seconds", 20.0))
+	_shop_last_errand = now
+	_log("shopping before the next step (%d Scrip)" % Economy.get_scrip(player.player_id))
+	return true
+
+
+## Pure (ee.json together): is a bot "apart" from its squad mid-round? `nearest_m` / `nearest_dy`: to its nearest
+## standing teammate (INF none); `hot`: the round is at together.from_round or later and under way (not its end, not
+## a break); `holding`: it holds a running hold (never apart: the others rally to it); `exempt`: its task type.
+static func apart_rule(tg: Dictionary, hot: bool, holding: bool, exempt: bool, nearest_m: float, nearest_dy: float) -> bool:
+	if tg.is_empty() or not hot or holding or exempt:
+		return false
+	return nearest_m > float(tg.get("max_m", 24.0)) or nearest_dy > float(tg.get("storey_dy", 3.0))
+
+
+## Is the round "hot" for the together rule (from together.from_round, under way, not its end)? `round_left`: the
+## zombies left once nothing is left to spawn (-1 while it still spawns).
+static func hot_round(tg: Dictionary, round_left: int) -> bool:
+	if tg.is_empty() or RoundManager.current_round < int(tg.get("from_round", 9)) or RoundManager.state != RoundManager.State.ROUND:
+		return false
+	if RoundManager.to_spawn <= 0 and round_left >= 0 and round_left <= int((BotEECatalog.cfg().get("pause", {}) as Dictionary).get("round_end_left", 2)):
+		return false
+	return true
+
+
+func _apart(round_left: int) -> bool:
+	var tg: Dictionary = _cfg().get("together", {})
+	if brain.is_player_bot or str(task.get("source", "")) != "full" or bool(task.get("rally", false)):
+		return false
+	if not hot_round(tg, round_left) or brain.in_break():
+		return false
+	var holding: bool = str(_plan.get("do", "")) == "hold"
+	var exempt: bool = (tg.get("exempt_types", []) as Array).has(str(task["type"]))
+	var near: Array = BotEEHub.nearest_teammate(brain.squad, player, player.global_position)
+	if apart_rule(tg, true, holding, exempt, float(near[0]), float(near[1])):
+		return true
+	if str(task.get("paused", "")) == "apart":
+		# back with the squad: the errand resumes only once its spot is near a teammate too (no hovering at max_m)
+		var a: Vector3 = anchor()
+		if a != Vector3.INF:
+			var na: Array = BotEEHub.nearest_teammate(brain.squad, player, a)
+			return apart_rule(tg, true, holding, exempt, float(na[0]), float(na[1]))
+	return false
+
+
+## The closed doors on the way to the main egg's open steps (a shopping break opens the way before the next step
+## needs it, as a human does). Cached for 3 s.
+var _route_doors_t: float = -INF
+var _route_doors: Array = []
+
+func route_doors() -> Array:
+	if _now() - _route_doors_t < 3.0:
+		return _route_doors
+	_route_doors_t = _now()
+	_route_doors = []
+	if hub == null:
+		return _route_doors
+	var qids: Array[StringName] = QuestManager.quest_ids()
+	if qids.is_empty() or QuestManager.is_complete(qids[0]):
+		return _route_doors
+	for st: Variant in QuestManager.steps_of(qids[0]):
+		var sd: Dictionary = st as Dictionary
+		var sid: StringName = StringName(str(sd["id"]))
+		if not QuestManager.is_active(qids[0], sid):
+			continue
+		var a: Vector3 = hub.step_anchor(qids[0], sid, BotEECatalog.task_def(sd))
+		if a == Vector3.INF:
+			continue
+		var d: BuyDoor = _door_on_way(a)
+		if d != null and not _route_doors.has(d):
+			_route_doors.append(d)
+	return _route_doors
 
 
 ## The action "ee_task" was picked: carry the plan out this frame.
@@ -312,7 +456,7 @@ func describe() -> Dictionary:
 		line += " (%d/%d)" % [(got as Array).size() if got is Array else 0, int(p.get("count", 1))]
 	var paused: String = str(task.get("paused", ""))
 	if paused != "":
-		line += " - paused: %s" % {"threat": "too hot", "teammate_down": "someone's down", "round_end": "finishing the round", "player_away": "waiting for you", "shopping": "stocking up"}.get(paused, paused)
+		line += " - paused: %s" % {"threat": "too hot", "teammate_down": "someone's down", "round_end": "finishing the round", "player_away": "waiting for you", "shopping": "stocking up", "apart": "regrouping"}.get(paused, paused)
 	return {"quest_id": task["qid"], "step_id": task["sid"], "type": task["type"], "label": line, "state": "paused" if paused != "" else (d if d != "" else "running"),
 		"paused": paused, "source": task["source"], "ordered": task["ordered"], "pid": player.player_id}
 
@@ -469,11 +613,23 @@ func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, o
 			var arows: Array = []
 			if t.has("anchors") and hub_ok:
 				var near_m: float = float(t.get("start_needs_player_m", 0.0))
+				if near_m > 0.0 and hub.start_wait_over(qid, sid):
+					near_m = 0.0   # U10 T-172 (ee.json start_wait_s): the player didn't come: start it ourselves
+				_start_blocked = false
 				for a: Node in hub.resolve(t["anchors"]):
 					var a3: Node3D = a as Node3D
 					var st: String = _anchor_state(a3, t, near_m)
 					arows.append({"node": a3, "state": st, "d": _flat(a3.global_position, player.global_position)})
+				if _start_blocked:
+					hub.note_start_wait(qid, sid)
+				# U10 T-172: a rally (or a marked anchor) keeps to its one anchor while that one isn't done
+				var fo: Variant = w.get("focus")
+				if fo != null:
+					var only: Array = arows.filter(func(r: Variant) -> bool: return (r as Dictionary)["node"] == fo and str((r as Dictionary)["state"]) != "done")
+					if not only.is_empty():
+						arows = only
 			w["anchors"] = arows
+			w["joiner"] = active() and bool(task.get("rally", false))
 		"carry":
 			var item: String = str(t.get("item", ""))
 			w["has_item"] = item == "" or QuestManager.has_item(StringName(item))
@@ -702,6 +858,14 @@ static func plan_hold(t: Dictionary, w: Dictionary) -> Dictionary:
 				pending = true
 	if not charging.is_empty():
 		return {"do": "hold", "node": charging["node"], "radius_mult": float(t.get("radius_mult", 0.45))}
+	if bool(w.get("joiner", false)):
+		# U10 T-172 (hold_rally): a joiner never starts a hold of its own: it goes to the one a teammate is about to
+		# start (or holds) and waits beside it
+		var rows: Array = w.get("anchors", [])
+		for r2: Variant in rows:
+			if str((r2 as Dictionary).get("state", "")) != "done":
+				return {"do": "near", "node": (r2 as Dictionary)["node"]}
+		return {"do": "done"}
 	if not startable.is_empty():
 		return {"do": "use", "node": startable["node"]}
 	if pending:
@@ -818,6 +982,10 @@ func _execute(delta: float) -> void:
 			_replan = true
 		"door":
 			_do_door(delta)
+		"near":
+			var ns: Vector3 = brain.stand_point(n)
+			if _walk(ns if ns != Vector3.INF else n.global_position, 3.0, delta):
+				_idle(delta)
 		"scout_go":
 			var sp: Vector3 = _plan.get("pos", player.global_position)
 			var vk: String = str(_plan.get("key", ""))
@@ -877,6 +1045,8 @@ func _do_use(n: Node3D, delta: float) -> void:
 		_replan = true
 		return
 	task["cur"] = n
+	if _gather_wait(n, sp, delta):
+		return
 	var r: String = _run_errand({"kind": "use", "node": n, "stand": sp}, delta)
 	if r == "done":
 		task["picked"] = int(task["picked"]) + 1
@@ -890,6 +1060,50 @@ func _do_use(n: Node3D, delta: float) -> void:
 		task["cur"] = null
 		_unclaim()
 		_replan = true
+
+
+## U10 T-172 (ee.json hold_rally): a Full Partner bot about to start a hold (a diesel, a pylon) from gather_from_round
+## waits at it until gather_need teammates (fewer if fewer stand) are within gather_m, gather_max_s at most; the hub
+## sends the others to it (gathering_at). True = waiting this frame.
+func _gather_wait(n: Node3D, sp: Vector3, delta: float) -> bool:
+	var hr: Dictionary = _cfg().get("hold_rally", {})
+	if hr.is_empty() or str(task.get("type", "")) != "hold_zone" or str(task.get("source", "")) != "full" or brain.is_player_bot:
+		return false
+	if RoundManager.current_round < int(hr.get("gather_from_round", 6)):
+		return false
+	if _flat(sp, player.global_position) > 2.5 or absf(sp.y - player.global_position.y) > 1.8:
+		return false   # walk there first (the errand walks)
+	var now: float = _now()
+	if float(task.get("gather_t", -1.0)) < 0.0:
+		task["gather_t"] = now
+	if now - float(task["gather_t"]) > float(hr.get("gather_max_s", 30.0)):
+		return false
+	var need: int = mini(int(hr.get("gather_need", 2)), gather_count(brain.squad, player, n.global_position, INF))
+	if gather_count(brain.squad, player, n.global_position, float(hr.get("gather_m", 12.0))) >= need:
+		return false
+	task["gathering"] = now
+	_errand = {}   # the use errand starts afresh (its timeout) once they are here
+	_idle(delta)
+	return true
+
+
+## The squad bots standing (not down, not out, not this one) within `r` m of `p` (INF: all of them).
+static func gather_count(squad: BotSquad, me: Player, p: Vector3, r: float) -> int:
+	var n: int = 0
+	for b: BotBrain in squad.brains:
+		var q: Player = b.player
+		if q == me or b.is_player_bot or not is_instance_valid(q) or q.downed or q.spectating or not q.is_alive() or q.is_companion:
+			continue   # (the bot-mode agent is the player: it never joins a rally)
+		if r == INF or Vector2(q.global_position.x - p.x, q.global_position.z - p.z).length() <= r:
+			n += 1
+	return n
+
+
+## The node this bot is about to start a hold at and is waiting for the others (null none).
+func gathering_at() -> Node3D:
+	if not active() or _now() - float(task.get("gathering", -INF)) > 1.0:
+		return null
+	return _plan.get("node") as Node3D if is_instance_valid(_plan.get("node")) else null
 
 
 ## The next ordered input: walk up, a short hold (like a player at the dial), then exactly the expected value.
@@ -1106,6 +1320,18 @@ func _do_door(delta: float) -> void:
 ## ignoring doors; doors aren't baked into the navmesh), if this bot can open it (usable, affordable, not failed just
 ## now). null when the way is open or the door isn't ours to open.
 func _blocking_door(goal: Vector3) -> BuyDoor:
+	var best: BuyDoor = _door_on_way(goal)
+	if best != null and best.can_interact(player):
+		_door_want = {"door": best, "until": _now() + 180.0}
+	if best == null or not best.can_interact(player) or Economy.get_scrip(player.player_id) < best.cost:
+		return null
+	if float(_failed_nodes.get(best.get_instance_id(), -INF)) > _now():
+		return null
+	return best
+
+
+## The first closed door (the nearest to this bot) the navmesh path to `goal` crosses, over every layer; null none.
+func _door_on_way(goal: Vector3) -> BuyDoor:
 	var nav: RID = player.get_world_3d().navigation_map
 	var dest: Vector3 = Vector3.INF
 	for dy: float in [0.0, -1.5, -3.0]:
@@ -1129,12 +1355,6 @@ func _blocking_door(goal: Vector3) -> BuyDoor:
 		if dd < best_d:
 			best_d = dd
 			best = d
-	if best != null and best.can_interact(player):
-		_door_want = {"door": best, "until": _now() + 180.0}
-	if best == null or not best.can_interact(player) or Economy.get_scrip(player.player_id) < best.cost:
-		return null
-	if float(_failed_nodes.get(best.get_instance_id(), -INF)) > _now():
-		return null
 	return best
 
 
@@ -1208,14 +1428,20 @@ func _anchor_state(a: Node3D, t: Dictionary, near_m: float) -> String:
 		if py.state == Pylon.State.ATTUNED:
 			return "done"
 		# U08 (T-131): the bot-mode agent is the player: it brings itself (a squad bot waits for the human)
-		if py.can_interact(player) and Economy.get_scrip(player.player_id) >= int(Pylon.cfg().get("cost", 1500)) 				and (near_m <= 0.0 or brain.is_player_bot or _human_near(a.global_position, near_m)):
-			return "start_ok"
+		if py.can_interact(player) and Economy.get_scrip(player.player_id) >= int(Pylon.cfg().get("cost", 1500)):
+			if near_m <= 0.0 or brain.is_player_bot or _human_near(a.global_position, near_m):
+				return "start_ok"
+			_start_blocked = true   # only the player's absence holds it back (BotEEHub.note_start_wait)
 		return "idle"
 	if a.has_method("is_holding") and bool(a.call("is_holding")):
 		return "charging"
-	if str(t.get("start", "")) == "interact" and a is Interactable and (a as Interactable).can_interact(player) 			and (near_m <= 0.0 or brain.is_player_bot or _human_near(a.global_position, near_m)):
-		return "start_ok"
+	if str(t.get("start", "")) == "interact" and a is Interactable and (a as Interactable).can_interact(player):
+		if near_m <= 0.0 or brain.is_player_bot or _human_near(a.global_position, near_m):
+			return "start_ok"
+		_start_blocked = true
 	return "idle"
+
+var _start_blocked: bool = false
 
 
 func _human_near(p: Vector3, r: float) -> bool:

@@ -110,7 +110,7 @@
     {
       "id": "s1_vault",
       "type": "flag",
-      "bot_task": {"type": "hold_zone", "anchors": {"group": "pylons"}, "start": "interact", "start_needs_player_m": 22.0, "radius_mult": 0.45, "what": "the Resonance Pylons", "ping": "PYLON"},
+      "bot_task": {"type": "hold_zone", "anchors": {"group": "pylons"}, "start": "interact", "start_needs_player_m": 22.0, "radius_mult": 0.45, "priority": 15.0, "what": "the Resonance Pylons", "ping": "PYLON"},
       "params": {
         "flag": "core_vault_open"
       },

@@ -253,6 +253,8 @@ static func pause_reason(s: Dictionary, c: Dictionary) -> String:
 		return "threat"
 	if bool(s.get("teammate_down", false)) and not (pc.get("no_down_pause_types", []) as Array).has(ty):
 		return "teammate_down"
+	if bool(s.get("apart", false)):
+		return "apart"   # U10 T-172 (ee.json together): mid-round in a hot round, too far from the squad
 	var left: int = int(s.get("round_left", -1))
 	if left > 0 and left <= int(pc.get("round_end_left", 2)) and not (pc.get("no_threat_pause_types", []) as Array).has(ty):
 		return "round_end"

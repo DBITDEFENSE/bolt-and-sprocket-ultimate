@@ -116,7 +116,11 @@ func _diag() -> void:
 func _squad_state() -> String:
 	var out: PackedStringArray = []
 	for b: BotBrain in _map.squad.brains:
-		out.append("p%d %s" % [b.player.player_id, "down" if b.player.downed else ("out" if b.player.spectating else "up")])
+		var guns: PackedStringArray = []
+		for w: WeaponInstance in b.player.weapons.slots:
+			guns.append(String(w.base_id()) + ("+%d" % w.tier if w.upgraded else ""))
+		out.append("p%d %s [%s | %s | %d Scrip]" % [b.player.player_id, "down" if b.player.downed else ("out" if b.player.spectating else "up"),
+			",".join(guns), ",".join(PerkManager.owned(b.player.player_id).map(func(x: Variant) -> String: return str(x))), Economy.get_scrip(b.player.player_id)])
 	return "%s, zombies %d" % [" ".join(out), _dir.active_zombies().size() if _dir != null else -1]
 
 
