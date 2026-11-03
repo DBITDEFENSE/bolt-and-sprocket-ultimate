@@ -2442,6 +2442,7 @@ func _kinds_setup_power_spectacle() -> void:
 	if GameState.power_on:
 		drain_now = float(c.get("drain_m", 0.4))
 		_apply_drain()
+		_uboat_white(true)   # T-173: a joiner or a campaign arrival with the power already on sees the boat white too
 	_power_fns.append(_power_spectacle)
 	_ticks.append(_tick_drain)
 	debug_kinds["power"] = _power_spectacle
@@ -2512,7 +2513,7 @@ func _perk_sting(m: Node3D) -> void:
 			p.stop())
 
 
-func _uboat_white() -> void:
+func _uboat_white(instant: bool = false) -> void:
 	var c: Dictionary = cfg["power_spectacle"]
 	var box: Variant = c.get("uboat_box", [])
 	var to: float = float(c.get("uboat_red_to", 0.15))
@@ -2520,7 +2521,17 @@ func _uboat_white() -> void:
 		var l: OmniLight3D = n as OmniLight3D
 		if l.light_color.r < 0.8 or l.light_color.g > 0.4 or not _inside(l.global_position, box):
 			continue
+		if l.has_meta("uboat_dimmed"):
+			continue
 		var e0: float = _light_e(l)
+		# T-173: the dimmed energy is the lantern's powered energy (meta "energy", what ZombieDirector restores and
+		# flickers from while the power is on): a special round snapshots every light and put the battle lanterns
+		# back at full red when it ended, washing the boat red for the rest of the match
+		l.set_meta("energy", e0 * to)
+		l.set_meta("uboat_dimmed", true)
+		if instant:
+			_set_light_e(l, e0 * to)
+			continue
 		var tw: Tween = l.create_tween()
 		tw.tween_method(func(e: float) -> void: _set_light_e(l, e), e0, e0 * to, 1.6)
 	_count("uboat_white")

@@ -1080,15 +1080,23 @@ static func _stain_n(n: FastNoiseLite, stops: Array, scale: float) -> StandardMa
 const SEA_SHADER: String = """
 shader_type spatial;
 render_mode blend_mix, depth_draw_opaque, cull_disabled, specular_schlick_ggx;
-uniform vec3 deep : source_color = vec3(0.012, 0.035, 0.045);
-uniform vec3 shallow : source_color = vec3(0.05, 0.12, 0.13);
+uniform vec3 deep : source_color = vec3(0.02, 0.05, 0.06);
+uniform vec3 shallow : source_color = vec3(0.06, 0.13, 0.14);
 uniform vec3 foam : source_color = vec3(0.55, 0.62, 0.64);
 uniform float amp = 0.18;
 uniform float chop = 0.9;
 uniform float speed = 1.0;
 uniform float alpha = 0.9;
 uniform float level_offset = 0.0;   // T-154: a visual-only shift of the surface (the pumps draining the docks)
+// T-173: the surface itself. A pen under a concrete roof has no sky to reflect, so in both renderers the water was
+// a flat dark slab (and the spring sheets, 4-vertex planes, had no waves at all). Per-pixel ripples in world space
+// give every plane a moving surface, and `sheen` stands in for the reflection of the hall's haze and lamps at
+// grazing angles (a small emission: lit or not, the water reads as water, never as a black floor).
+uniform vec3 sheen : source_color = vec3(0.20, 0.26, 0.30);
+uniform float sheen_energy = 0.55;
+uniform float ripple = 1.0;
 varying float crest;
+varying vec3 wpos;
 
 float wave(vec2 p, vec2 dir, float k, float w, float t) {
 	return sin(dot(p, dir) * k + t * w);
@@ -1102,21 +1110,40 @@ void vertex() {
 		+ wave(wp.xz, vec2(0.98, -0.20), 2.30, 3.9, t) * 0.2;
 	VERTEX.y += h * amp + level_offset;
 	crest = clamp(h * 0.5 + 0.5, 0.0, 1.0);
+	wpos = wp;
 	float dx = cos(wp.x * 0.55 + t * 1.7) * 0.55 * amp;
 	float dz = cos(wp.z * 1.10 + t * 2.6) * 1.10 * amp * chop;
 	NORMAL = normalize(vec3(-dx, 1.0, -dz));
 }
 
+// the slope of the small ripples (a sum of four travelling sines) at world point p
+vec2 ripple_slope(vec2 p, float t) {
+	vec2 g = vec2(0.0);
+	vec2 d1 = vec2(0.80, 0.60); g += d1 * cos(dot(p, d1) * 3.1 + t * 2.3) * 0.12;
+	vec2 d2 = vec2(-0.50, 0.87); g += d2 * cos(dot(p, d2) * 5.3 + t * 3.1) * 0.10;
+	vec2 d3 = vec2(0.97, -0.26); g += d3 * cos(dot(p, d3) * 8.9 + t * 4.7) * 0.08;
+	vec2 d4 = vec2(-0.20, -0.98); g += d4 * cos(dot(p, d4) * 13.7 + t * 5.9) * 0.06;
+	return g;
+}
+
 void fragment() {
-	float fres = pow(1.0 - clamp(dot(normalize(NORMAL), normalize(VIEW)), 0.0, 1.0), 3.0);
+	float t = TIME * speed;
+	vec2 g = ripple_slope(wpos.xz, t) * ripple * (0.6 + 0.4 * chop);
+	vec3 n = normalize(normalize(NORMAL) + (VIEW_MATRIX * vec4(-g.x, 0.0, -g.y, 0.0)).xyz);
+	NORMAL = n;
+	float ndv = clamp(dot(n, normalize(VIEW)), 0.0, 1.0);
+	float fres = pow(1.0 - ndv, 4.0);
 	vec3 col = mix(deep, shallow, fres * 0.8 + crest * 0.2);
 	float streak = smoothstep(0.78, 0.96, crest);
 	col = mix(col, foam, streak * 0.35);
 	ALBEDO = col;
-	ROUGHNESS = 0.08 + streak * 0.5;
+	ROUGHNESS = 0.06 + streak * 0.5;
 	METALLIC = 0.0;
-	SPECULAR = 0.6;
-	ALPHA = alpha;
+	SPECULAR = 0.7;
+	// the fake reflection: strongest at grazing angles, broken up by the ripples so it moves
+	float glint = 0.55 + 0.45 * sin(dot(wpos.xz, vec2(1.7, 2.3)) + g.x * 9.0 - g.y * 7.0 + t * 0.7);
+	EMISSION = sheen * sheen_energy * (0.12 + 0.88 * fres) * glint;
+	ALPHA = mix(alpha, 1.0, fres * 0.6);
 }
 """
 static var _sea_shader: Shader
@@ -1133,6 +1160,16 @@ static func _build_map2(key: String) -> Material:
 			var sm: ShaderMaterial = ShaderMaterial.new()
 			sm.shader = _sea_shader
 			return sm
+		"m2_lumi":   # T-173: Totenhafen's painted edge lines (kerbs, catwalks, jambs, nosings): a pale luminous paint with
+			# a faint glow. lumi_paint (0.55 emission on a near-white albedo) bloomed into neon outlines in the dark pen hall.
+			var ml: StandardMaterial3D = _glow(Color(0.5, 0.9, 0.62), 0.12)
+			ml.albedo_color = Color(0.46, 0.5, 0.42)
+			ml.roughness = 0.85
+			return ml
+		"m2_quarry":   # T-173: red-brown quarry tiles for the cannery and the signal room (tile_floor's two-tone terrazzo
+			# split into a hard black-and-white checker under the pendants)
+			return _masonry(247, [[0.0, Color(0.20, 0.11, 0.08)], [0.5, Color(0.25, 0.14, 0.10)], [1.0, Color(0.30, 0.17, 0.12)]],
+				Color(0.10, 0.09, 0.08), Vector3(0.5, 0.5, 0.5), 0.55, 0.05, 1.2)
 		"bunker_concrete":   # cold shuttered concrete, board marks, damp streaks: the 18 m bunker
 			var bn: FastNoiseLite = _noise(simplex, 0.025, 5, 611)
 			var m: StandardMaterial3D = _surface(_tex(bn, _ramp([[0.0, Color(0.22, 0.23, 0.24)], [0.4, Color(0.31, 0.32, 0.33)],

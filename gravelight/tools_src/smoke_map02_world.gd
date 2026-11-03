@@ -166,6 +166,15 @@ func _run() -> void:
 	_check(lit_early < lit_late and lit_late == dl.size(), "power: the hall's lamps come on in a run (%d then %d of %d)" % [lit_early, lit_late, dl.size()])
 	_check(_n("perk_sting") >= 5, "power: the perks wake with stings (%d)" % _n("perk_sting"))
 	_check(_n("uboat_white") == 1 and _red_energy() < red0 * 0.5, "power: U-1047's battle lanterns give way (%.2f -> %.2f)" % [red0, _red_energy()])
+	# T-173: a special round snapshots every light and restores it when it ends; the lanterns must stay dimmed
+	var zd: ZombieDirector = (_map as MapRoot).director if _map is MapRoot else null
+	if zd != null:
+		var red_dim: float = _red_energy()
+		zd._set_special_fx(true)
+		await _secs(0.3)
+		zd._set_special_fx(false)
+		await _frames(2)
+		_check(_red_energy() < red0 * 0.5, "power: the lanterns stay dimmed after a special round (%.2f -> %.2f)" % [red_dim, _red_energy()])
 	_check(_n("conveyor_jolt") == 1 and _amb.conveyor_running, "power: the conveyor jolts and runs")
 	_check(_amb.drain_now > 0.2, "power: the docks drain (%.2f m)" % _amb.drain_now)
 

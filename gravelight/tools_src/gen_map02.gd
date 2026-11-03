@@ -1083,18 +1083,20 @@ func _hurricane(p: Vector3) -> void:
 	lamp(p + Vector3(0, 0.3, 0), Color(1.0, 0.62, 0.3), 1.2, 8.0, 0.15, 0.4, false, 6.0)
 
 
-## A straight luminous-paint strip from a to b (on a floor, or a wall stripe if `wall`).
+## A straight luminous-paint strip from a to b (on a floor, or a wall stripe if `wall`). T-173: the strips are
+## painted on (m2_lumi: a pale paint with a faint glow, not the bright lumi_paint tube that read as a debug outline),
+## and a run along X that climbs (the pump stair) is rolled to follow it instead of floating level at mid-height.
 func _lumi_line(a: Vector3, b: Vector3, w: float, wall: bool = false) -> void:
 	var d: Vector3 = b - a
 	var mid: Vector3 = (a + b) * 0.5
-	var pitch: float = rad_to_deg(atan2(-d.y, absf(d.z))) * (1.0 if d.z > 0.0 else -1.0)
-	var yaw: float = 90.0 if absf(d.x) > absf(d.z) else 0.0
-	var size: Vector3 = Vector3(w if not wall else 0.012, 0.012 if not wall else w, d.length())
-	if yaw != 0.0:
-		size = Vector3(d.length(), size.y, w)
-		_noshadow(Props.obox(dress, mid, size, "lumi_paint"))
+	if absf(d.x) > absf(d.z):
+		var roll: float = rad_to_deg(atan2(d.y, absf(d.x))) * (1.0 if d.x > 0.0 else -1.0)
+		var sx: Vector3 = Vector3(d.length(), 0.012 if not wall else w, w if not wall else 0.012)
+		_noshadow(Props.obox(dress, mid, sx, "m2_lumi", Vector3(0, 0, roll)))
 		return
-	_noshadow(Props.obox(dress, mid, size, "lumi_paint", Vector3(pitch, 0, 0)))
+	var pitch: float = rad_to_deg(atan2(-d.y, absf(d.z))) * (1.0 if d.z > 0.0 else -1.0)
+	var size: Vector3 = Vector3(w if not wall else 0.012, 0.012 if not wall else w, d.length())
+	_noshadow(Props.obox(dress, mid, size, "m2_lumi", Vector3(pitch, 0, 0)))
 
 
 # ================================================================== generic dressing (windows, doors, treads, rails, weather)
@@ -1198,9 +1200,9 @@ func _dress_treads() -> void:
 			if tread == "concrete" or tread == "steel_grate":
 				var nz: float = la + (lb - la) * 0.06
 				if along_z:
-					_noshadow(B(Vector3(a0 + 0.1, top - 0.005, nz - 0.03), Vector3(a1 - 0.1, top + 0.004, nz + 0.03), "lumi_paint", false))
+					_noshadow(B(Vector3(a0 + 0.1, top - 0.005, nz - 0.03), Vector3(a1 - 0.1, top + 0.004, nz + 0.03), "m2_lumi", false))
 				else:
-					_noshadow(B(Vector3(nz - 0.03, top - 0.005, a0 + 0.1), Vector3(nz + 0.03, top + 0.004, a1 - 0.1), "lumi_paint", false))
+					_noshadow(B(Vector3(nz - 0.03, top - 0.005, a0 + 0.1), Vector3(nz + 0.03, top + 0.004, a1 - 0.1), "m2_lumi", false))
 
 
 ## Posts and rails over every hidden railing collider (name Rail_*), by reading the geometry back.
@@ -1414,9 +1416,13 @@ func _dress_quay() -> void:
 	# wet patches, trodden snow, drifts in the corners
 	for r: Array in [[1.0, 9.5, 2.0, 9.0], [19.0, 31.5, 9.0, 29.0], [0.5, 9.5, 18.0, 29.5]]:
 		_noshadow(B(Vector3(float(r[0]), 0.0, float(r[2])), Vector3(float(r[1]), 0.012, float(r[3])), "m2_floor_wet", false))   # T-145: wet patches (the trodden-snow set read as camouflage)
-	for d: Array in [[Vector3(1.2, 0, 28.5), Vector3(3.0, 0.5, 2.4)], [Vector3(30.5, 0, 28.6), Vector3(2.6, 0.5, 2.2)],
-			[Vector3(14, 0, 9.4), Vector3(8.0, 0.35, 1.0)], [Vector3(4.0, 0, 0.9), Vector3(5.0, 0.45, 1.4)]]:
-		Props.snow_drift(dress, d[0], d[1])
+	# T-173: the drifts are low grey slush heaped into the corners and along the parapet (the two corner drifts were
+	# single 3 m white domes standing free of the walls: in the dark they read as white discs floating over the quay)
+	for d: Array in [[Vector3(0.9, -0.06, 29.3), Vector3(2.4, 0.44, 1.3)], [Vector3(0.55, -0.06, 28.1), Vector3(1.0, 0.36, 2.0)],
+			[Vector3(2.4, -0.06, 29.55), Vector3(1.6, 0.3, 0.8)], [Vector3(31.1, -0.06, 29.3), Vector3(2.2, 0.4, 1.3)],
+			[Vector3(31.45, -0.06, 28.2), Vector3(1.0, 0.34, 1.8)], [Vector3(14, -0.04, 9.6), Vector3(8.0, 0.3, 0.8)],
+			[Vector3(4.0, -0.04, 0.75), Vector3(5.0, 0.36, 1.0)]]:
+		_noshadow(Props.ball(dress, d[0], d[1], "snow_trodden"))
 	_noshadow(B(Vector3(2.4, 1.1, -0.2), Vector3(29.6, 1.17, 0.2), "snow", false))
 	# bollards, mooring lines, a capstan, the cutter's hawser
 	for bx: float in [4.5, 14.5, 20.0, 28.0]:
@@ -1497,7 +1503,7 @@ func _dress_quay() -> void:
 
 
 func _dress_cannery() -> void:
-	_noshadow(B(Vector3(-29.85, 0.0, 0.15), Vector3(-0.15, 0.012, 29.85), "tile_floor", false))
+	_noshadow(B(Vector3(-29.85, 0.0, 0.15), Vector3(-0.15, 0.012, 29.85), "m2_quarry", false))   # T-173: quarry tiles (the two-tone terrazzo read as a black-and-white checker)
 	# roof trusses and three powered pendants over each line
 	for tz: float in [4.0, 10.0, 16.0, 22.0, 28.0]:
 		B(Vector3(-29.8, 5.4, tz - 0.12), Vector3(-0.2, 5.95, tz + 0.12), "beam")
@@ -1835,9 +1841,9 @@ func _dress_uboat() -> void:
 	# lights inside: red battle lanterns (always), white bulkheads (powered)
 	for lz: float in [42.0, 48.0, 54.0, 60.0, 66.0, 74.0, 82.0]:
 		Props.bulkhead_lamp(dress, Vector3(9.44, 0.3, lz), 90.0, "lamp_red_lit")
-		lamp(Vector3(9.0, 0.2, lz), RED, 1.15, 8.0, 0.06, 0.35, false, 2.0)
+		lamp(Vector3(9.0, 0.2, lz), RED, 0.8, 7.0, 0.06, 0.35, false, 2.0)   # T-173: 1.15 / 8 m washed the hull solid red
 		Props.bulkhead_lamp(dress, Vector3(4.56, 0.3, lz - 1.5), -90.0, "lamp_red_lit")   # port side too (T-063)
-		lamp(Vector3(5.0, 0.2, lz - 1.5), RED, 0.8, 7.0, 0.06, 0.25, false, 2.0)
+		lamp(Vector3(5.0, 0.2, lz - 1.5), RED, 0.55, 6.0, 0.06, 0.25, false, 2.0)
 		bulkhead("E_UBOAT", Vector3(4.56, 0.3, lz + 3.0), -90.0, "bulb_cold")
 		power("E_UBOAT", Vector3(5.3, -0.3, lz + 3.0), 6.5, 0.4, MERCURY)
 	emergency(Vector3(5.9, DECK + 2.2, 58.33), 180.0, 0.7, 6.0)
@@ -1903,7 +1909,7 @@ func _dress_lowerpens() -> void:
 
 func _dress_tower() -> void:
 	var y: float = TY
-	_noshadow(B(Vector3(42.15, y, 33.15), Vector3(51.85, y + 0.012, 37.85), "tile_floor", false))
+	_noshadow(B(Vector3(42.15, y, 33.15), Vector3(51.85, y + 0.012, 37.85), "m2_quarry", false))   # T-173
 	# the wireless rack and the teletype, a chart table, the signal lamp's winch, the view
 	var rk: Node3D = Props.group(dress, "Rack", Vector3(51.25, y, 37.4), 0.0)
 	Props.block(rk, Vector3(-0.65, 0, -0.4), Vector3(0.65, 2.2, 0.4), "machine_grey")
@@ -2252,13 +2258,13 @@ func _dress_readability() -> void:
 	# luminous strips: both edges of every pier, the apron's water edge, the catwalk edges, and the pump stair
 	for pr: Array in [[-20.0, -14.0], [-6.0, 0.0], [14.0, 20.0]]:
 		for sx: float in [float(pr[0]) + 0.3, float(pr[1]) - 0.3]:
-			_lumi_line(Vector3(sx, 0.035, 38.3), Vector3(sx, 0.035, 83.7), 0.07)
-	_lumi_line(Vector3(32.3, 0.035, 38.3), Vector3(32.3, 0.035, 83.7), 0.07)
-	_lumi_line(Vector3(-19.7, 0.035, 38.3), Vector3(51.7, 0.035, 38.3), 0.06)
-	_lumi_line(Vector3(-18.3, CATY + 0.035, 35.3), Vector3(-18.3, CATY + 0.035, 83.7), 0.06)
-	_lumi_line(Vector3(50.3, CATY + 0.035, 35.3), Vector3(50.3, CATY + 0.035, 83.7), 0.06)
-	_lumi_line(Vector3(-17.7, CATY + 0.035, 35.3), Vector3(49.7, CATY + 0.035, 35.3), 0.06)
-	_lumi_line(Vector3(32.3, LY + 0.035, 50.5), Vector3(32.3, LY + 0.035, 83.7), 0.07)
+			_lumi_line(Vector3(sx, 0.016, 38.3), Vector3(sx, 0.016, 83.7), 0.07)
+	_lumi_line(Vector3(32.3, 0.016, 38.3), Vector3(32.3, 0.016, 83.7), 0.07)
+	_lumi_line(Vector3(-19.7, 0.016, 38.3), Vector3(51.7, 0.016, 38.3), 0.06)
+	_lumi_line(Vector3(-18.3, CATY + 0.016, 35.3), Vector3(-18.3, CATY + 0.016, 83.7), 0.06)
+	_lumi_line(Vector3(50.3, CATY + 0.016, 35.3), Vector3(50.3, CATY + 0.016, 83.7), 0.06)
+	_lumi_line(Vector3(-17.7, CATY + 0.016, 35.3), Vector3(49.7, CATY + 0.016, 35.3), 0.06)
+	_lumi_line(Vector3(32.3, LY + 0.016, 50.5), Vector3(32.3, LY + 0.016, 83.7), 0.07)
 	_lumi_line(Vector3(29.2, CATY + 0.04, 34.7), Vector3(40.8, TY + 0.04, 34.7), 0.06)
 	# depths doorways: luminous jamb strips (door, width, yaw, depth)
 	for d: Array in [[Vector3(-10, 0, 31.5), 2.0, 0.0, 3.0], [Vector3(44, 0, 31.5), 2.0, 0.0, 3.0], [Vector3(49, 0, 42), 3.0, 0.0, T],
@@ -2269,7 +2275,7 @@ func _dress_readability() -> void:
 		for f: float in [-1.0, 1.0]:
 			for side: float in [-1.0, 1.0]:
 				var x: float = side * (hw + 0.07)
-				_noshadow(Props.block(g, Vector3(x - 0.025, 0.15, f * face), Vector3(x + 0.025, DOOR_H - 0.1, f * (face + 0.015)), "lumi_paint", false))
+				_noshadow(Props.block(g, Vector3(x - 0.025, 0.15, f * face), Vector3(x + 0.025, DOOR_H - 0.1, f * (face + 0.015)), "m2_lumi", false))
 
 
 # ================================================================== visibility (T-145)

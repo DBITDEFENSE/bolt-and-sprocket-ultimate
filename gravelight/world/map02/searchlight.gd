@@ -21,7 +21,7 @@ var _cfg: Dictionary = {}
 var _pivot: Node3D
 var _light: SpotLight3D
 var _cone: MeshInstance3D
-var _cone_mat: StandardMaterial3D
+var _cone_mat: ShaderMaterial
 var _stand: Vector3
 var _tick: float = 0.0
 var _net_t: float = 0.0
@@ -81,25 +81,31 @@ func build_greybox() -> void:
 	_light.set_meta("zone", "G_SIGNAL")
 	_light.position = Vector3(0, 0, -0.5)
 	_pivot.add_child(_light)
+	# T-173: the visible shaft. It was a CylinderMesh with the wide end at the lamp (rotated the wrong way: an
+	# 8 m grey disc round the tower, through the walls) in a flat unshaded add material whose silhouette showed. Now
+	# the narrow end sits at the lens, the cone widens down the range and the shared light_beam shader fades it
+	# along its length, at its edges and near the camera (the same shaft as the searchlight towers' beams).
 	_cone = MeshInstance3D.new()
 	var cone: CylinderMesh = CylinderMesh.new()
 	var rng: float = float(_cfg.get("range_m", 48.0)) * 0.55
-	cone.top_radius = 0.38
-	cone.bottom_radius = tan(deg_to_rad(float(_cfg.get("cone_deg", 9.0)))) * rng
+	cone.bottom_radius = 0.38
+	cone.top_radius = tan(deg_to_rad(float(_cfg.get("cone_deg", 9.0)))) * rng
 	cone.height = rng
 	cone.radial_segments = 16
+	cone.rings = 1
 	cone.cap_top = false
 	cone.cap_bottom = false
 	_cone.mesh = cone
-	_cone_mat = StandardMaterial3D.new()
-	_cone_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	_cone_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	_cone_mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
-	_cone_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	_cone_mat.albedo_color = Color(1.0, 0.95, 0.8, 0.07)
+	_cone_mat = ShaderMaterial.new()
+	_cone_mat.shader = load("res://gravelight/world/landscape/shaders/light_beam.gdshader") as Shader
+	_cone_mat.set_shader_parameter("color", Vector3(1.0, 0.95, 0.8))
+	_cone_mat.set_shader_parameter("intensity", 0.3)
+	_cone_mat.set_shader_parameter("length_falloff", 1.4)
+	_cone_mat.set_shader_parameter("near_fade", 3.0)
 	_cone.material_override = _cone_mat
+	_cone.set_instance_shader_parameter("beam_len", rng)
 	_cone.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	_cone.rotation.x = -PI * 0.5
+	_cone.rotation.x = -PI * 0.5   # local +Y (the wide end) down the beam's -Z
 	_cone.position = Vector3(0, 0, -0.5 - rng * 0.5)
 	_pivot.add_child(_cone)
 	var l: Label3D = add_label(self, "SCHEINWERFER", Vector3(0, 0.7, 0.31), 16, Color(0.9, 0.85, 0.7))
