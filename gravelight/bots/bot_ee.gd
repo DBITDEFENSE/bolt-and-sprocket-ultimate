@@ -252,8 +252,8 @@ func _pause_state() -> Dictionary:
 	if str(task.get("paused", "")) == "shopping":
 		var el: float = _now() - float(task.get("paused_t", _now()))
 		shop = (el < float(sb.get("seconds", 20.0)) or (_shop_errand() and el < float(sb.get("max_s", 50.0)))) and not _shop_idle_over()
-	elif BotEECatalog.shop_break_due(Economy.get_scrip(player.player_id), str(_plan.get("do", "")), _now(), _shop_next, sb) and not bool(task.get("rally", false)) \
-			and not brain.is_player_bot and brain.perception.pressure < float(sb.get("max_pressure", 0.5)):
+	elif _pre_hold_shop_due(sb) or (BotEECatalog.shop_break_due(Economy.get_scrip(player.player_id), str(_plan.get("do", "")), _now(), _shop_next, sb) and not bool(task.get("rally", false)) \
+			and not brain.is_player_bot and brain.perception.pressure < float(sb.get("max_pressure", 0.5))):
 		# (the agent spends by its own plan, AgentPlan.buy_first; a bot under pressure can't shop: buy_task wants calm)
 		# U10 T-172: only when there is something to buy (a break with nothing on the list cost the egg 20 s)
 		shop = shop_wanted()
@@ -322,6 +322,23 @@ func _shop_idle_over() -> bool:
 	return not shop_wanted()
 
 var _shop_idle_check_t: float = -INF
+
+
+## U10 T-172 (shop_break.pre_hold): before a hold starts (the starter on its way, a joiner beside it), once per hold
+## step, a bot with Scrip to spend stocks up first, whatever the cooldown: the Totenhafen squads met the x2 diesel
+## holds with 5,000-9,000 Scrip each and untaught guns (a person buys before pulling the lever).
+func _pre_hold_shop_due(sb: Dictionary) -> bool:
+	if not bool(sb.get("pre_hold", false)) or brain.is_player_bot or str(task.get("type", "")) != "hold_zone" or bool(task.get("pre_shop", false)):
+		return false
+	if not str(_plan.get("do", "")) in ["use", "near"] or Economy.get_scrip(player.player_id) < int(sb.get("scrip", 3000)):
+		return false
+	if brain.perception.pressure >= float(sb.get("max_pressure", 0.5)):
+		return false
+	task["pre_shop"] = true
+	if not shop_wanted():
+		return false
+	_log("stocking up before the hold")
+	return true
 
 
 ## A shopping break ended: the next one waits every_s, longer after breaks that bought nothing (x2, x3, x4: the

@@ -578,6 +578,8 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 		if egg_up:
 			c_rng = maxf(c_rng, float(eg.get("range_m", 90.0)))
 			c_anc = me
+		elif shop_brk:
+			c_rng = maxf(c_rng, range_m())   # the break's own range (the Crucible's 30 m never reached it from the egg's spots)
 		var cr2: Crucible = brain.crucible_for_me(c_rng, c_anc)
 		if cr2 != null and (egg_up or _near_enough(cr2.global_position)):
 			out.append({"node": cr2, "kind": "crucible", "slot": -1, "value": float(eg.get("value", 1.0)) if egg_up else _pv("crucible", _flat(cr2.global_position, me)), "cost": up_cost,
