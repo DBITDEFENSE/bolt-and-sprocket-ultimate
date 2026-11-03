@@ -110,7 +110,7 @@
     {
       "id": "s1_vault",
       "type": "flag",
-      "bot_task": {"type": "hold_zone", "anchors": {"group": "pylons"}, "start": "interact", "start_needs_player_m": 22.0, "radius_mult": 0.45, "what": "the Resonance Pylons", "ping": "PYLON"},
+      "bot_task": {"type": "hold_zone", "anchors": {"group": "pylons"}, "start": "interact", "start_needs_player_m": 22.0, "radius_mult": 0.45, "priority": 15.0, "what": "the Resonance Pylons", "ping": "PYLON"},
       "params": {
         "flag": "core_vault_open"
       },
@@ -277,7 +277,7 @@
     {
       "id": "s6_bells",
       "type": "sequence",
-      "bot_task": {"type": "shoot_target", "sequence": {"group": "quest_bells", "where": {"kind": "small", "visible": true}, "value_prop": "note"}, "needs": ["melody", "bells"], "what": "the Four Bells", "ping": "BELL"},
+      "bot_task": {"type": "shoot_target", "sequence": {"group": "quest_bells", "where": {"kind": "small", "visible": true}, "value_prop": "note"}, "needs": ["melody", "bells"], "pause_pressure": 0.8, "what": "the Four Bells", "ping": "BELL"},
       "params": {
         "target": "four_bells",
         "inputs_from": "melody"

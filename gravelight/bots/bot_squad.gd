@@ -615,9 +615,12 @@ func _update_hunt(now: float) -> void:
 	if now - _stall_since < float(hc.get("after_s", 12.0)):
 		return
 	var best: Zombie = null
+	# U10 T-172: a round stalled this long is the squad's to finish, the "unreachable" one too: the game's recycle
+	# never took a Foreman wedged by the Minehead (it kept chasing in place) and round 13 stayed open 130 game minutes
+	var force: bool = now - _stall_since >= float(hc.get("force_after_s", 120.0))
 	for z: Variant in act:
 		var zz: Zombie = z as Zombie
-		if zz != null and is_instance_valid(zz) and BotPerception.targetable(zz) and not is_unreachable(zz) and (best == null or BotPerception.is_boss(zz)):
+		if zz != null and is_instance_valid(zz) and BotPerception.targetable(zz) and (force or not is_unreachable(zz)) and (best == null or BotPerception.is_boss(zz)):
 			best = zz
 	if best == null:
 		return
@@ -628,6 +631,13 @@ func _update_hunt(now: float) -> void:
 ## Where the squad hunts the round's last zombie (Vector3.INF: no hunt).
 func hunt_point() -> Vector3:
 	return hunt_at
+
+
+## U10 T-172: how long the round has stalled with the squad hunting its last zombies (0 none).
+func hunt_stalled_s() -> float:
+	if hunt_at == Vector3.INF or _stall_since < 0.0:
+		return 0.0
+	return time() - _stall_since
 
 
 ## U10 (T-163): stragglers nobody can get to (instance id -> squad time until which they are left alone). A zombie

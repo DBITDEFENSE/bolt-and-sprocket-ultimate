@@ -242,6 +242,8 @@ static func value_of(e: Dictionary, kind: String, dist: float) -> float:
 
 ## Where shopping ranges are measured from and how far: the leader (or the hold spot), economy.json ranges.
 func anchor() -> Vector3:
+	if ee_shopping():
+		return player.global_position   # U10 T-172: an egg bot's shopping break shops where the bot is
 	var leader: Player = brain.squad.leader_for(brain)
 	if brain.order_id() == &"hold" and brain.squad.hold_point != Vector3.INF:
 		return brain.squad.hold_point
@@ -249,9 +251,38 @@ func anchor() -> Vector3:
 
 
 func range_m() -> float:
+	var r: float = float(eco.get("max_range_from_leader_m", 26.0))
 	if brain.squad.bot_led():
-		return float(eco.get("bot_led_range_m", 60.0))
-	return float(eco.get("max_range_from_leader_m", 26.0))
+		r = float(eco.get("bot_led_range_m", 60.0))
+	if ee_shopping():
+		r = maxf(r, float((BotEECatalog.cfg().get("shop_break", {}) as Dictionary).get("range_m", 60.0)))
+	return r
+
+
+## U10 T-172: on an egg shopping break (BotEE.shopping: the task paused to shop, or between two steps)?
+func ee_shopping() -> bool:
+	return brain.ee != null and brain.ee.shopping()
+
+
+## U10 T-172 pure: the perk plan with `first` moved to the front (a shopping break drinks the armour, revive and
+## speed tonics before the rest), keeping the plan's own order otherwise.
+static func plan_with_first(plan: Array, first: Array) -> Array:
+	if first.is_empty():
+		return plan
+	var out: Array = []
+	for f: Variant in first:
+		if plan.has(f) or plan.has(str(f)):
+			out.append(str(f))
+	for p: Variant in plan:
+		if not out.has(str(p)):
+			out.append(p)
+	return out
+
+
+## U10 T-172 pure (ee.json egg_gun): may the egg's designated bot feed its gun to the Crucible now? It is the
+## designated one, the gun can learn, it holds the price + reserve; no min round, no min tier.
+static func egg_gun_ok(is_designated: bool, can_upgrade: bool, scrip: int, cost: int, reserve: int) -> bool:
+	return is_designated and can_upgrade and scrip >= cost + reserve
 
 
 ## The best repair, buy and crate candidates (cached for a second): {"repair": {}, "buy": {}, "crate": {}, "all": []}.
@@ -344,6 +375,10 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 		reserve = int((eco.get("reserve", {}) as Dictionary).get("min_scrip", 300))   # T-071: no perk to rebuy before the power (the gun comes first)
 	if brain.ee != null:
 		reserve += brain.ee.door_reserve()   # T-153: saving for the door an egg task is waiting on
+	# U10 T-172 (ee.json egg_gun): the egg needs a Crucible gun and this bot is the one to teach it: once it has its
+	# first two tonics, everything but ammo leaves the teaching's price in hand
+	var egg_gun: bool = brain.ee != null and brain.ee.hub != null and brain.ee.hub.egg_gun_pid() == pid
+	var egg_save: int = Crucible.price_for(&"upgrade", GLData.table("economy"), 0) if egg_gun else 0
 	# ---- an ammo box (or wall ammo) when the main gun runs low: ammo is never held back by the reserve
 	var box_c: Dictionary = _ammo_candidate(anc, rng, scrip)
 	if not box_c.is_empty():
@@ -388,9 +423,12 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 		var plan: Array = brain.personality_economy("perk_order", [])
 		if plan.is_empty():
 			plan = eco.get("perk_plan", [])
+		if ee_shopping():
+			plan = plan_with_first(plan, (BotEECatalog.cfg().get("shop_break", {}) as Dictionary).get("perk_first", []))
 		var cap_left: int = PerkManager.cap_for(pid) - PerkManager.capped_count(pid)
 		var coop: bool = not GameState.is_solo() or brain.is_player_bot   # T-071: the human's own Second Wind is a solo self-revive
-		var perk: StringName = perk_wanted(eco, plan, PerkManager.owned(pid), avail, main_cls, coop, cap_left, scrip, 0 if perks_only else reserve)
+		var perk_keep: int = reserve + (egg_save if PerkManager.owned(pid).size() >= 2 else 0)
+		var perk: StringName = perk_wanted(eco, plan, PerkManager.owned(pid), avail, main_cls, coop, cap_left, scrip, 0 if perks_only else perk_keep)
 		if perk != &"":
 			var pm2: PerkMachine = machines[String(perk)]
 			out.append({"node": pm2, "kind": "perk", "value": _pv("perk", _flat(pm2.global_position, me)) + (0.3 if perks_only else 0.0),
@@ -402,7 +440,7 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 				if PerkManager.has_perk(pid, StringName(k)) and PerkManager.can_upgrade(pid, StringName(k)) == &"ok":
 					ups[k] = PerkManager.tier_price(StringName(k), PerkManager.tier_of(pid, StringName(k)) + 1)
 			var nothing_new: bool = cap_left <= 0 or perk_wanted(eco, plan, PerkManager.owned(pid), avail, main_cls, coop, cap_left, 1 << 30, 0) == &""
-			var up: StringName = upgrade_wanted(eco, PerkManager.tiers(pid), ups, main_cls, rnd, scrip, 0 if perks_only else reserve, nothing_new)
+			var up: StringName = upgrade_wanted(eco, PerkManager.tiers(pid), ups, main_cls, rnd, scrip, 0 if perks_only else reserve + egg_save, nothing_new)
 			if up != &"":
 				var pm3: PerkMachine = machines[String(up)]
 				var nt: int = PerkManager.tier_of(pid, up) + 1
@@ -437,6 +475,7 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 		var rw: WeaponInstance = player.weapons.slots[rs_slot]
 		save_up = reteach_save(eco, tier_of(String(rw.base_id()), false, eco), rw.upgraded, rw.tier, WeaponInstance.max_tier(), rnd,
 			_powered_crucible(), Crucible.price_for(&"upgrade", econ, rw.tier))
+	save_up = maxi(save_up, egg_save)
 	var gun: StringName = gun_wanted(eco, held, walls, classes, (brain.personality.get("aim", {}) as Dictionary).get("class_pref", {}), rnd, scrip, reserve + save_up, free_slot)
 	if gun != &"" and nodes.has(String(gun)):
 		var wb2: WallBuy = nodes[String(gun)]
@@ -466,15 +505,17 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 	var ordered_door: Node = brain.order_node() if order == &"open_door" else null
 	# (U10 T-163, Q-19: a self-led squad also buys in a break: the arrival grace of an act skip was spent idle and
 	# the first round's horde met it in the spawn bay; the delay exists to leave a human the first pick)
+	# U10 T-172: an egg bot's shopping break opens the way to the main egg's open steps (BotEE.route_doors)
+	var egg_doors: Array = brain.ee.route_doors() if ee_shopping() else []
 	if bool(dcfg.get("enabled", true)) and (squad.round_time() >= float(dcfg.get("round_delay_s", 20.0)) * (0.0 if ordered_door != null else 1.0) \
-			or (self_led and brain.in_break())) \
+			or (self_led and brain.in_break()) or not egg_doors.is_empty()) \
 			and brain.doors_bought_round < int(dcfg.get("max_per_round_per_bot", 1)):
 		var human: Player = squad.human()
 		var route_doors: Dictionary = _route_doors() if self_led else {}
 		for dn: BuyDoor in brain.loco_doors():
 			if not is_instance_valid(dn) or dn.is_open or not dn.can_interact(player):
 				continue
-			var ordered: bool = ordered_door == dn
+			var ordered: bool = ordered_door == dn or egg_doors.has(dn)
 			var hd: float = _flat(dn.global_position, human.global_position) if human != null and not human.spectating else INF
 			if not door_allowed(eco, ordered, self_led, squad.human_doors_opened, hd):
 				continue
@@ -524,11 +565,25 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 	var up_tier: int = player.weapons.slots[up_slot].tier if up_slot >= 0 else 0
 	var up_cost: int = Crucible.price_for(&"upgrade", econ, up_tier)
 	var want_up: bool = up_ok and BotConfig.crucible_wanted(crc, true, scrip, up_cost, rnd)   # the Crucible's own reserve_scrip is the reserve here
-	if want_up and not human_down and (in_break or not bool(crc.get("only_in_break", true))):
-		var cr2: Crucible = brain.crucible_for_me(float(crc.get("max_from_leader_m", 30.0)) * range_mult * (2.0 if squad.bot_led() else 1.0), anc)
-		if cr2 != null and _near_enough(cr2.global_position):
-			out.append({"node": cr2, "kind": "crucible", "slot": -1, "value": _pv("crucible", _flat(cr2.global_position, me)), "cost": up_cost,
-				"label": "feed the %s to the Crucible (%d Scrip)" % [player.weapons.slots[up_slot].display_name(), up_cost]})
+	# U10 T-172 (ee.json egg_gun): the egg's Crucible gun: any long gun, any round, from around the bot itself
+	var egg_up: bool = false
+	if egg_gun and up_slot >= 0 and not player.weapons.slots[up_slot].upgraded:
+		var ecls: StringName = player.weapons.slots[up_slot].weapon_class()
+		egg_up = ecls != &"pistol" and ecls != &"wonder" and egg_gun_ok(true, true, scrip, up_cost, int(crc.get("reserve_scrip", 500)))
+	var shop_brk: bool = ee_shopping()
+	if (want_up or egg_up) and not human_down and (in_break or shop_brk or egg_up or not bool(crc.get("only_in_break", true))):
+		var eg: Dictionary = BotEECatalog.cfg().get("egg_gun", {})
+		var c_rng: float = float(crc.get("max_from_leader_m", 30.0)) * range_mult * (2.0 if squad.bot_led() else 1.0)
+		var c_anc: Vector3 = anc
+		if egg_up:
+			c_rng = maxf(c_rng, float(eg.get("range_m", 90.0)))
+			c_anc = me
+		elif shop_brk:
+			c_rng = maxf(c_rng, range_m())   # the break's own range (the Crucible's 30 m never reached it from the egg's spots)
+		var cr2: Crucible = brain.crucible_for_me(c_rng, c_anc)
+		if cr2 != null and (egg_up or _near_enough(cr2.global_position)):
+			out.append({"node": cr2, "kind": "crucible", "slot": -1, "value": float(eg.get("value", 1.0)) if egg_up else _pv("crucible", _flat(cr2.global_position, me)), "cost": up_cost,
+				"label": "feed the %s to the Crucible (%d Scrip)%s" % [player.weapons.slots[up_slot].display_name(), up_cost, " for the egg" if egg_up else ""]})
 	if brain.is_player_bot:
 		return AgentPlan.filter(out, brain)   # T-071 pass 2: the agent spends by its map plan (player_bot.json plans)
 	return out
@@ -627,8 +682,8 @@ func _route_doors() -> Dictionary:
 ## nobody walks off alone into a spawn room while the round is on (the bots3 downs in the cellar).
 func _near_enough(p: Vector3) -> bool:
 	var squad: BotSquad = brain.squad
-	if not squad.bot_led():
-		return true
+	if not squad.bot_led() or ee_shopping():
+		return true   # (U10 T-172: an egg bot's shopping break is already off on its own, by its egg spot)
 	var home: Vector3 = squad.home.center() if squad.home != null else anchor()
 	var near: bool = _flat(p, home) <= float(eco.get("self_led_mid_round_m", 16.0)) and absf(p.y - home.y) < 2.5
 	if brain.in_break():

@@ -512,6 +512,9 @@ func context(now: float) -> Dictionary:
 	c["armed"] = 1.0 if armed_ else 0.0
 	c["reloading"] = 1.0 if aim.reloading else 0.0
 	c["pressure"] = per.pressure
+	# U10 T-172: the buy action's own pressure: an egg bot's shopping break buys with a few zombies about, as a person
+	# does (very_calm wanted pressure under 0.2, which Totenhafen's steady spawns never gave: 20,000 Scrip unspent)
+	c["buy_pressure"] = per.pressure * (float((BotEECatalog.cfg().get("shop_break", {}) as Dictionary).get("pressure_mult", 0.3)) if ee != null and ee.shopping() else 1.0)
 	c["near"] = clampf(per.nearest_d / 20.0, 0.0, 1.0)
 	c["n5"] = clampf(float(per.n5) / 6.0, 0.0, 1.0)
 	c["n10"] = clampf(float(per.n10) / 12.0, 0.0, 1.0)
@@ -683,6 +686,8 @@ func roaming() -> bool:
 		return true   # on a map-mark order (T-069)
 	if ee != null and ee.value() > 0.0 and str(ee.task.get("type", "")) != "escort":
 		return true   # on an egg task of its own (T-067)
+	if ee != null and ee.shopping():
+		return true   # U10 T-172: an egg bot's shopping break (the pull back to the leader won every think: nothing was bought)
 	return planner != null and not planner.directive.is_empty() and str(planner.directive.get("kind", "")) != "follow"
 
 

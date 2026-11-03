@@ -214,7 +214,10 @@
   "hunt": {
     "_doc": "T-058: when a round has nothing left to spawn and only max_left zombies alive for after_s seconds (a boss loose elsewhere, a stuck straggler), the squad hears the last one (blackboard, no line of sight) and the bots with nothing else to do walk to it.",
     "max_left": 2,
-    "after_s": 12.0
+    "after_s": 12.0,
+    "ee_pause_after_s": 45.0,
+    "force_after_s": 120.0,
+    "_u10_t172": "U10 T-172: ee_pause_after_s into the stall a Full Partner bot's egg errand (not a hold) pauses so it joins the hunt; from force_after_s the hunt takes a straggler the agent marked unreachable too (the game's recycle never took a Foreman wedged by the Minehead: round 13 open for 130 game minutes)."
   },
   "retreat": {
     "samples": 12,

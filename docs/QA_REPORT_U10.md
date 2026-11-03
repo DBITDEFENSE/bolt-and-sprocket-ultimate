@@ -134,3 +134,58 @@ Totenhafen's boss and wonder).
   clip and token, the breach rail, the meteor shelter, Pohl's tag), ee_bots, late_kit, requiem, squads.
 - `smoke_bot_loco` failed its CPU-time budget twice while ~40 other headless runs loaded the machine; it passed on
   the final run.
+
+## 5. UPDATE 10 section 10: the bots finish the eggs of Maps 2 and 3 (T-172)
+
+The owner's request: "make sure the bot can do the easter egg for maps two and 3". Decision: `docs/DECISIONS.md`
+T-172. Same harnesses as sections 1 and the T-153 hand-back, so the numbers compare: Totenhafen =
+`smoke_letzte_fahrt` (three bots on Full Partner, the human in god mode never shooting, its header's forcing, 55 game
+minutes); Kaltenbrunn = `tools/ai_soak.sh --scenario=botmode --map=map01 --bots=3 --ee=full --until-egg
+--max-minutes=150` (honest, no god mode). One run per process; the machine was shared with 8-12 other headless Godot
+runs. The code moved during the work, so each row names what it ran on.
+
+**Targets: Totenhafen 3 of 5, Kaltenbrunn 3 of 5. Neither is met; the owner's time box (one hour) ended the
+batches.** Totenhafen: 2 eggs completed in 7 runs over the whole work, 1 of 1 on the final code (28.0 game min);
+master before this work: 1 of 3 in the last T-153 batch, 0 of 3 after its rebase, 0 of 1 here. Kaltenbrunn: 0 of 5
+runs (0 of 1 on the final code), but two runs now reach s7 (master's best: s5) and none wiped before round 22.
+
+### 5.1 Totenhafen, "Letzte Fahrt" (smoke_letzte_fahrt)
+
+| Run | Code | Result | Steps | Game min | What stopped it |
+|---|---|---|---|---|---|
+| base | master (d86c8205) | FAIL | 7/16 | 55 (cap) | the cipher at 15.1 min, then the diesel holds: two bots on two holds 40-60 m apart, the holder downed alone, round 13 frozen |
+| t1 | first T-172 code (shop breaks, hold rally + gather, together, start wait, egg gun) | **PASS** | 16/16 | **40.9** | (power 4.2, cipher 10.3, diesels 19.1 with the squad together, boss 26.1, key 36.6, sail 40.3); the key took 10 min: the "apart" pause waited on a teammate at the key slot |
+| t2 | + apart holds 8 s | FAIL | 8/16 | 55 | the cipher took 22 min (60 "apart" pauses on the walk to the signal tower), the holds came at round 23 and the squad wiped at the lathe hold |
+| t3 | + apart only when alone and threatened, the hold waits for every bot | FAIL | 9/16 | 55 | wiped at the lathe hold (round 19) holding 20,000-22,000 Scrip each: the breaks named their purchase (Marathon Malt, the Crucible) and never made it (the buy action's very_calm curve) |
+| t4 | + breaks buy (buy_pressure x0.3, no pull to the leader), back-off, scout before side quests | FAIL | 7/16 | 55 | wiped at the first diesel hold (round 13): the joiners were cancelled while the starter walked, so the third bot came late and alone |
+| t5 | + a bot on its way to start a hold leads the rally | FAIL | 9/16 | 55 | two diesels done together; wiped at round 12 just after the second (x2 spawns, 28 up) with 5,000-9,000 Scrip each and untaught guns |
+| final 1 | final code (e86ba577: + the pre-hold shopping break, the break's Crucible range) | **PASS** | 16/16 | **28.0** | (power 3.9, cipher 10.6, the three diesels together 12.6 / 14.2 / 15.8 at rounds 13-16, boss 22.8, key 23.4, curtain 24.7, sail 27.4): the fastest egg by bots so far (T-153's best 26.7-30.9) |
+
+**What changed for the holds:** in t1, t3, t4 and t5 the squad held each diesel together (in master's base run and
+in every T-153 failure the holds were split). **What still stops it:** the x2-spawn diesel holds at rounds 12-19
+with untaught guns; the pre-hold break (the final code) is the lever for that, and only one run of it was measured.
+
+### 5.2 Kaltenbrunn, "Requiem for Kaltenbrunn" (honest soaks)
+
+| Seed | Code | End | Rounds | Game min | Steps done | What stopped it |
+|---|---|---|---|---|---|---|
+| 31 | first T-172 code | time cap | 48 | 150 | s0-s5 (vault r14, s5 r20) | s6: the bells were seen only at round 34; then the Four Bells bot never fired a shot (shopping-break loop: 496 breaks; threat pauses) |
+| 32 | + breaks back off, scout before side quests | time cap | 35 | 150 | s0-s5 by round 15 (vault r5) | s6: the scout found the bells at once, the bot then worked them for 90 game min without one shot (holding the Totenglocke; no stall timer) |
+| 33 | + bells with a regular gun, a 35 s no-shot stall timer, escorts | time cap | 13 | 150 | **s0-s7: s5 r8, s6 r11 (the first Four Bells by bots), s7 r13** | round 13 never ended (a Foreman wedged at the Minehead for 130 game min; the agent's hunt gave it up as unreachable and every bot was back on egg work); s8a: "couldn't use Crucible" 165 times |
+| 34 | + the stalled round is the squad's hunt | wipe | 22 | 51.2 | s0-s5 | s6: the seeded bell's vantage was unreachable and its door was never found (the search looked 3.5 m under a bell 6-10 m up: 344 start/stop); the agent held 38,000 Scrip with an MP40 after Second Wind's machine retired |
+| final 31 | final code (e86ba577: + high bells' doors, the 45 s back-off, the agent's plan past a perk it can never buy) | wipe | 41 | 106.6 | s0, s1, s3, s4, s5, s6, s7 (s6 and s7 together with the agent) | s2a: one calling radio never heard, so s2b and with it s8a stayed locked from round ~20 (the scout walks for "seen" needs only; a "heard" need has no scout yet); wiped at round 41 |
+
+**Better than master:** s1 starts with the power (the start wait, the rally: the vault open by round 5-14, master's
+batch: s1 often never), s4 is done in every run (the egg-gun bot feeds the Crucible first), the scout finds the bells,
+s6 and s7 were done by bots in an honest run for the first time, and no squad wiped before round 22. **What still
+stops it:** s8a (the shard into the Crucible failed 165 times in seed 33; the final code logs the Crucible's phase on
+each failure, not yet seen), rounds held open by a wedged Foreman, and the late-round s6 under constant threat.
+
+### 5.3 Tests and smokes (after the rebase onto master f745c405)
+
+- Import clean; check_scripts: 755 scripts, 0 failed; the full unit suite 1852/1852 (new: `test_bot_u10_t172.gd`, 6
+  tests).
+- Smoke RESULT lines, all PASS with 0 script errors: bots, bots_u10, ee_bots, requiem, squads (brains 1.824 ms/frame),
+  kielholer.
+- Logs (local, git-ignored): `.smoke_logs/b10/` (lf_* Totenhafen, kb_* / kbf_* Kaltenbrunn, s6_d* / s8_d1 the
+  step diagnostics, final/ the hand-back checks).

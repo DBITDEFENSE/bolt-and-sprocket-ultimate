@@ -247,6 +247,12 @@ func start_on(b: BotBrain, qid: StringName, sid: StringName, t: Dictionary, orde
 func on_task_finished(_b: BotBrain, _t: Dictionary, ok: bool, _code: String) -> void:
 	if not ok:
 		tasks_failed += 1
+		# U10 T-172: Full Partner leaves a step this bot just failed to reach alone for a while (the Four Bells
+		# started and stopped "unreachable" 340 times in one soak, every pick)
+		if str(_t.get("source", "")) == "full" and _code in ["unreachable", "missed", "not_found"] and squad != null:
+			_backoff["%d/%s/%s" % [_b.player.player_id, _t["qid"], _t["sid"]]] = squad.time() + float(BotEECatalog.cfg().get("retry_after_s", 45.0))
+
+var _backoff: Dictionary = {}
 
 
 ## Is a teammate's egg task already going for this object (its plan's target or its claim)?
@@ -334,6 +340,7 @@ func _process(delta: float) -> void:
 		_pick_t = float(c.get("pick_every_s", 1.0))
 		if mode() == "full":
 			_full_partner()
+		_escorts()
 
 
 ## The quest data's bot_knowledge entries that are polled: on_collect, on_step, on_flag, on_power (U08), on_seen.
@@ -508,8 +515,12 @@ func _full_partner() -> void:
 			if ty != "collect" and not (ty == "carry" and (b.ee.task["def"] as Dictionary).has("pickups")):
 				taken["%s/%s" % [b.ee.task["qid"], b.ee.task["sid"]]] = true
 	_main_first(taken)
+	if _hold_rally():
+		return   # U10 T-172: everyone free goes to the hold
+	_scout_first(busy >= cap)
 	if busy >= cap:
 		return
+	var now: float = squad.time()
 	for b2: BotBrain in squad.brains:
 		if busy >= cap:
 			return
@@ -519,14 +530,254 @@ func _full_partner() -> void:
 			continue   # Jakub stays at the side of the one he covers: egg work only when asked
 		if b2.mark != null and b2.mark.active():
 			continue   # on the player's map-mark order (T-069)
+		if _escort_of.has(b2.player.player_id):
+			continue   # U10 T-172: escorting a teammate on a far errand
+		if b2.ee.between_steps_shop(now):
+			continue   # U10 T-172: a rich bot stocks up before its next step
 		var best: Dictionary = pick_for(b2, taken, false)
-		if best.is_empty():
-			best = scout_job()   # U10 (T-163): nothing to do but a "seen" need: go and look
+		var sj: Dictionary = scout_job()
+		if not sj.is_empty() and (best.is_empty() or str((best["t"] as Dictionary).get("type", "")) == "collect" or best["qid"] != sj["qid"]):
+			best = sj   # U10 (T-163; T-172: before a collect step or a side quest too): a "seen" need: go and look
 		if not best.is_empty():
 			start_on(b2, best["qid"], best["sid"], best["t"], false, "full", null, best["as"])
 			busy += 1
 			if str(best["as"]) == "escort" or (str((best["t"] as Dictionary).get("type", "")) != "collect" and not (best["t"] as Dictionary).has("pickups")):
 				taken["%s/%s" % [best["qid"], best["sid"]]] = true
+
+
+## U10 T-172: the scout before a collect step. When a "seen" need waits (the Four Bells) and nobody scouts: with every
+## egg slot taken (`full`), a Full Partner bot on a collect step drops it for the scout (two bots on the radios kept
+## the scout from ever starting, and the squad never saw all four little bells).
+func _scout_first(full: bool) -> void:
+	if not full:
+		return
+	var sj: Dictionary = scout_job()
+	if sj.is_empty():
+		return
+	var pick: BotBrain = null
+	for b: BotBrain in squad.brains:
+		if b.ee == null or not b.ee.active() or str(b.ee.task.get("source", "")) != "full" or b.player.is_companion:
+			continue
+		var side: bool = b.ee.task["qid"] != sj["qid"]
+		if str(b.ee.task.get("type", "")) != "collect" and not side:
+			continue
+		if pick == null or side or str(b.ee._plan.get("do", "")) == "wait":
+			pick = b
+	if pick != null:
+		pick.ee.cancel("the scout first")
+		start_on(pick, sj["qid"], sj["sid"], sj["t"], false, "full", null, "task")
+
+
+## U10 T-172 (ee.json hold_rally): a bot holds a running main-egg hold, or waits at one it is about to start (from
+## gather_from_round): every other squad bot that is free or on a Full Partner errand it can leave (not a hold of its
+## own, a carry, an input or a door) joins that step on the same anchor, all at once (no egg-bot cap). One diesel
+## hold runs at a time: the bots walked off to the next diesel and the holder died alone. True = a rally is on.
+var _rally_seen_t: float = -INF
+
+func _hold_rally() -> bool:
+	var hr: Dictionary = BotEECatalog.cfg().get("hold_rally", {})
+	if hr.is_empty() or RoundManager.current_round < int(hr.get("from_round", 1)):
+		return false
+	var qids: Array[StringName] = QuestManager.quest_ids()
+	if qids.is_empty():
+		return false
+	var lead: BotBrain = null
+	var at: Node3D = null
+	for b: BotBrain in squad.brains:
+		if b.ee == null or not b.ee.active() or b.ee.task["qid"] != qids[0] or str(b.ee.task.get("type", "")) != "hold_zone" or bool(b.ee.task.get("rally", false)):
+			continue
+		if b.player.downed or b.player.spectating:
+			continue
+		var n: Node3D = b.ee.gathering_at()
+		if n == null and str(b.ee._plan.get("do", "")) == "use" and str(b.ee.task.get("source", "")) == "full" and not b.is_player_bot \
+				and RoundManager.current_round >= int(hr.get("gather_from_round", 6)) and is_instance_valid(b.ee._plan.get("node")):
+			n = b.ee._plan.get("node") as Node3D   # on its way to start one: the others come along (no cancel churn)
+		var holding: bool = n == null and b.ee.holding_now()
+		if holding:
+			n = b.ee._plan.get("node") as Node3D if is_instance_valid(b.ee._plan.get("node")) else null   # (null: a holdout's zone)
+		if n != null or holding:
+			lead = b
+			at = n
+			break
+	var now: float = squad.time()
+	if lead == null:
+		# the hold is over (or never started): the joiners go back to the squad a few seconds later
+		if now - _rally_seen_t > 6.0:
+			for b3: BotBrain in squad.brains:
+				if b3.ee != null and b3.ee.active() and bool(b3.ee.task.get("rally", false)):
+					b3.ee.cancel("the hold is over")
+		return false
+	_rally_seen_t = now
+	for b2: BotBrain in squad.brains:
+		if b2 == lead or b2.ee == null or b2.is_player_bot or b2.player.is_companion or b2.player.downed or b2.player.spectating or _reviving(b2):
+			continue
+		if b2.mark != null and b2.mark.active():
+			continue
+		if b2.ee.active():
+			var tk: Dictionary = b2.ee.task
+			if tk["qid"] == lead.ee.task["qid"] and tk["sid"] == lead.ee.task["sid"]:
+				continue   # already on it
+			if str(tk.get("source", "")) != "full" or bool(tk.get("ordered", false)):
+				continue   # the player's own order
+			var d: String = str(b2.ee._plan.get("do", ""))
+			if str(tk.get("type", "")) == "carry" or d in ["hold", "input", "door", "handoff", "turn"]:
+				continue
+			b2.ee.cancel("to the hold")
+		start_on(b2, lead.ee.task["qid"], lead.ee.task["sid"], lead.ee.task["def"], false, "full", at, "task")
+		b2.ee.task["rally"] = true
+	return true
+
+
+## U10 T-172 (ee.json together.escort): in a hot round a Full Partner bot whose errand takes it away from everyone
+## (the Four Bells' far vantages: it paused "apart" 140 times in a soak and never fired a shot) gets a free bot as
+## its escort (the brain's escort_pid, Jakub's follow-and-cover), so it is never alone; the escort goes back to the
+## squad when the errand ends, the bot is down or the round cools. Only escorts this hub set are ever cleared.
+var _escort_of: Dictionary = {}   # escort pid -> escorted pid
+
+func _escorts() -> void:
+	var tg: Dictionary = BotEECatalog.cfg().get("together", {})
+	var on: bool = bool(tg.get("escort", false)) and mode() == "full" and RoundManager.current_round >= int(tg.get("from_round", 9)) \
+		and RoundManager.state == RoundManager.State.ROUND
+	# end the escorts that are no longer needed
+	for epid: Variant in _escort_of.keys():
+		var eb: BotBrain = _brain_of(int(epid))
+		var tb: BotBrain = _brain_of(int(_escort_of[epid]))
+		var keep: bool = on and eb != null and tb != null and tb.ee != null and tb.ee.active() and not tb.player.downed and not tb.player.spectating \
+			and not eb.player.downed and not (eb.ee != null and eb.ee.active())
+		if not keep:
+			if eb != null and int(eb.options.get("escort_pid", 0)) == int(_escort_of[epid]):
+				eb.options["escort_pid"] = 0
+			_escort_of.erase(epid)
+	if not on:
+		return
+	var max_m: float = float(tg.get("max_m", 24.0))
+	for b: BotBrain in squad.brains:
+		if b.ee == null or not b.ee.active() or str(b.ee.task.get("source", "")) != "full" or bool(b.ee.task.get("rally", false)) or b.is_player_bot:
+			continue
+		if b.player.downed or b.player.spectating or _escort_of.values().has(b.player.player_id):
+			continue
+		var a: Vector3 = b.ee.anchor()
+		if a == Vector3.INF:
+			continue
+		var na: Array = nearest_teammate(squad, b.player, a)
+		if float(na[0]) <= max_m:
+			continue   # its spot is by the squad anyway
+		var pick: BotBrain = null
+		var pick_d: float = INF
+		for c: BotBrain in squad.brains:
+			if c == b or c.is_player_bot or c.player.is_companion or c.player.downed or c.player.spectating or _reviving(c):
+				continue
+			if (c.ee != null and c.ee.active()) or (c.mark != null and c.mark.active()) or _escort_of.has(c.player.player_id) or int(c.options.get("escort_pid", 0)) != 0:
+				continue
+			var d: float = _dist(c, b.player.global_position)
+			if d < pick_d:
+				pick_d = d
+				pick = c
+		if pick != null:
+			pick.options["escort_pid"] = b.player.player_id
+			_escort_of[pick.player.player_id] = b.player.player_id
+			print("[ee] %s: escorting %s (%s)" % [Net.display_name(pick.player.player_id), Net.display_name(b.player.player_id), str((b.ee.task["def"] as Dictionary).get("what", "the egg"))])
+
+
+func _brain_of(pid: int) -> BotBrain:
+	for b: BotBrain in squad.brains:
+		if b.player.player_id == pid:
+			return b
+	return null
+
+
+## U10 T-172: the nearest standing teammate (bot, companion or human; not `me`) to `p`: [flat metres, |dy|] (INF, INF none).
+static func nearest_teammate(sq: BotSquad, me: Player, p: Vector3) -> Array:
+	var best: float = INF
+	var best_dy: float = INF
+	for q: Player in sq.all_players():
+		if q == me or not is_instance_valid(q) or q.downed or q.spectating or not q.is_alive():
+			continue
+		var d: float = Vector2(q.global_position.x - p.x, q.global_position.z - p.z).length()
+		if d < best:
+			best = d
+			best_dy = absf(q.global_position.y - p.y)
+	return [best, best_dy]
+
+
+## U10 T-172 (ee.json start_wait_s): a hold whose start waits for the player near it (the pylons) is started by the
+## bots after start_wait_s in Full Partner, in a round break or before together.from_round.
+var _start_wait_t: Dictionary = {}
+
+func note_start_wait(qid: StringName, sid: StringName) -> void:
+	var key: String = "%s/%s" % [qid, sid]
+	if not _start_wait_t.has(key) and squad != null:
+		_start_wait_t[key] = squad.time()
+
+
+func start_wait_over(qid: StringName, sid: StringName) -> bool:
+	var key: String = "%s/%s" % [qid, sid]
+	if mode() != "full" or not _start_wait_t.has(key) or squad == null:
+		return false
+	var c: Dictionary = BotEECatalog.cfg()
+	if squad.time() - float(_start_wait_t[key]) < float(c.get("start_wait_s", 30.0)):
+		return false
+	var tg: Dictionary = c.get("together", {})
+	return RoundManager.state != RoundManager.State.ROUND or RoundManager.current_round < int(tg.get("from_round", 9))
+
+
+## U10 T-172 (ee.json egg_gun): the squad bot that should feed a gun to the Crucible for the egg now (0 none): a
+## main-egg step that needs an upgraded gun is still to come, no squad bot carries a taught gun, and this is the
+## richest bot with a long gun the Crucible can teach. Cached 2 s.
+var _egg_gun_t: float = -INF
+var _egg_gun_pid: int = 0
+
+func egg_gun_pid() -> int:
+	if squad == null:
+		return 0
+	var now: float = squad.time()
+	if now - _egg_gun_t < 2.0:
+		return _egg_gun_pid
+	_egg_gun_t = now
+	_egg_gun_pid = 0
+	var eg: Dictionary = BotEECatalog.cfg().get("egg_gun", {})
+	if not bool(eg.get("enabled", false)) or mode() == "off":
+		return 0
+	var qids: Array[StringName] = QuestManager.quest_ids()
+	if qids.is_empty() or QuestManager.is_complete(qids[0]):
+		return 0
+	var needed: bool = false
+	for st: Variant in QuestManager.steps_of(qids[0]):
+		var sd: Dictionary = st as Dictionary
+		if bool(BotEECatalog.task_def(sd).get("need_upgraded", false)) and not QuestManager.is_step_done(qids[0], StringName(str(sd["id"]))):
+			needed = true
+	if not needed:
+		return 0
+	var best_s: int = -1
+	var keep: int = _egg_gun_was
+	var keep_ok: bool = false
+	for b: BotBrain in squad.brains:
+		if b.is_player_bot or b.player.is_companion or not is_instance_valid(b.player):
+			continue
+		for w: WeaponInstance in b.player.weapons.slots:
+			if w.upgraded and w.weapon_class() != &"wonder":
+				_egg_gun_was = 0
+				return 0   # one of us has one
+		if b.player.downed or b.player.spectating:
+			continue
+		var slot: int = b._upgradeable_slot()
+		if slot < 0:
+			continue
+		var cls: StringName = b.player.weapons.slots[slot].weapon_class()
+		if cls == &"pistol" or cls == &"wonder":
+			continue
+		if b.player.player_id == keep:
+			keep_ok = true
+		var sc: int = Economy.get_scrip(b.player.player_id)
+		if sc > best_s:
+			best_s = sc
+			_egg_gun_pid = b.player.player_id
+	if keep_ok:
+		_egg_gun_pid = keep   # the one already saving stays the one
+	_egg_gun_was = _egg_gun_pid
+	return _egg_gun_pid
+
+var _egg_gun_was: int = 0
 
 
 ## U10 (T-163): a Full Partner bot on a side quest drops it for an open main-egg step it can do now (it took the
@@ -612,6 +863,9 @@ func kill_zone_for(enemy_id: StringName) -> StringName:
 ## bots already work.
 func pick_for(b: BotBrain, taken: Dictionary, ordered: bool) -> Dictionary:
 	var sc: Dictionary = BotEECatalog.cfg().get("scores", {})
+	var tg: Dictionary = BotEECatalog.cfg().get("together", {})
+	var hot: bool = not b.is_player_bot and BotEE.hot_round(tg, _round_left()) and not b.in_break() \
+		and (b.perception.pressure >= float(tg.get("pressure", 0.25)) or b.perception.count_near(b.player.global_position, float(tg.get("threat_m", 12.0))) >= int(tg.get("threat_n", 2)))
 	var qids: Array[StringName] = QuestManager.quest_ids()
 	var best: Dictionary = {}
 	for qi: int in qids.size():
@@ -624,14 +878,21 @@ func pick_for(b: BotBrain, taken: Dictionary, ordered: bool) -> Dictionary:
 			var sid: StringName = StringName(str(sd["id"]))
 			if not QuestManager.is_active(qid, sid) or taken.has("%s/%s" % [qid, sid]):
 				continue
+			if not ordered and float(_backoff.get("%d/%s/%s" % [b.player.player_id, qid, sid], -INF)) > squad.time():
+				continue   # U10 T-172: just failed it: later
 			var t: Dictionary = BotEECatalog.task_def(sd)
 			if t.is_empty():
 				continue
+			var a: Vector3 = step_anchor(qid, sid, t)
+			if not ordered and hot and a != Vector3.INF:
+				var na: Array = nearest_teammate(squad, b.player, a)
+				if BotEE.apart_rule(tg, true, false, (tg.get("exempt_types", []) as Array).has(str(t.get("type", ""))), float(na[0]), float(na[1])):
+					continue   # U10 T-172 (ee.json together): not off alone mid-round in a hot round
 			var r: Dictionary = try_brain(b, qid, sid, t, ordered, null)
 			if not bool(r["ok"]):
 				continue
-			var a: Vector3 = step_anchor(qid, sid, t)
-			var s: float = base + float(sc.get(str(t.get("type", "")), 0.0)) - float(sc.get("per_m", 0.25)) * minf(_dist(b, a), 120.0)
+			# (U10 T-172: a bot_task `priority` adds to the score: the pylons once the power is on)
+			var s: float = base + float(sc.get(str(t.get("type", "")), 0.0)) + float(t.get("priority", 0.0)) - float(sc.get("per_m", 0.25)) * minf(_dist(b, a), 120.0)
 			if str(r.get("as", "")) == "escort":
 				s -= 10.0
 			if best.is_empty() or s > float(best["s"]):
@@ -665,6 +926,13 @@ func report() -> PackedStringArray:
 	for f: String in failure_log.slice(maxi(0, failure_log.size() - 8)):
 		out.append("  EGG FAIL " + f)
 	return out
+
+
+## The zombies left once the round spawns no more (-1 while it still spawns), for BotEE.hot_round.
+func _round_left() -> int:
+	if RoundManager.state != RoundManager.State.ROUND or RoundManager.to_spawn > 0 or squad == null or squad.director() == null:
+		return -1
+	return squad.director().active_zombies().size()
 
 
 func _reviving(b: BotBrain) -> bool:

@@ -128,6 +128,9 @@ var give: String = ""
 ## (QuestManager.debug_skipto) and its world effect applied (a flag step's flag, the power, the Core Vault, a
 ## build step's bench), so a later step can be soaked on its own. Pair with --open-doors=all and --give.
 var egg_from: String = ""
+## --egg-know=<key,key> (tuning only, U10 T-172): the squad's egg knowledge starts with these bot_knowledge keys
+## (the Four Bells' "bells"), to soak a step past its finding.
+var egg_know: String = ""
 ## --posdump=<abs path stem> (tuning only): every 0.2 game s one JSON line per run (<stem>_r<run>.jsonl) with the
 ## agent (position, facing, phase, train) and every active zombie (position, state, known to the agent), plus the
 ## walkable navmesh polygons (<stem>_nav.json) once: tools for plotting what happened round a hit.
@@ -220,6 +223,8 @@ func _ready() -> void:
 			give = a.substr(7)
 		elif a.begins_with("--egg-from="):
 			egg_from = a.substr(11)
+		elif a.begins_with("--egg-know="):
+			egg_know = a.substr(11)
 		elif a.begins_with("--posdump="):
 			posdump = a.substr(10)
 		elif a.begins_with("--loop="):
@@ -570,6 +575,10 @@ func _apply_tuning() -> void:
 				print("[soak] --give: no weapon or perk '%s'" % g)
 	if egg_from != "":
 		_skip_egg_to(StringName(egg_from))
+	if egg_know != "" and _map.squad != null and _map.squad.ee != null:
+		for k: String in egg_know.split(",", false):
+			(_map.squad.ee as BotEEHub).knowledge.learn(k, 0, 0.0, "soak")   # U10 T-172 tuning only: as if found already
+		print("[soak] --egg-know: %s" % egg_know)
 
 
 ## --egg-from: complete the main egg up to `sid` with the world effects of the skipped steps.
