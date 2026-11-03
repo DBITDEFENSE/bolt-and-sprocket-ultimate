@@ -355,12 +355,8 @@ func _apart(round_left: int) -> bool:
 	var near: Array = BotEEHub.nearest_teammate(brain.squad, player, player.global_position)
 	if apart_rule(tg, true, holding, exempt, float(near[0]), float(near[1])):
 		return true
-	if str(task.get("paused", "")) == "apart":
-		# back with the squad: the errand resumes only once its spot is near a teammate too (no hovering at max_m)
-		var a: Vector3 = anchor()
-		if a != Vector3.INF:
-			var na: Array = BotEEHub.nearest_teammate(brain.squad, player, a)
-			return apart_rule(tg, true, holding, exempt, float(na[0]), float(na[1]))
+	if str(task.get("paused", "")) == "apart" and _now() - float(task.get("paused_t", _now())) < float(tg.get("min_pause_s", 8.0)):
+		return true   # back with the squad for a while at least (not hovering at max_m)
 	return false
 
 
