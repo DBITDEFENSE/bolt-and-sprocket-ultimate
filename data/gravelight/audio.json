@@ -744,6 +744,28 @@
       "max_voices": 1,
       "attenuation": "loud"
     },
+    "crucible_hiss": {
+      "files": [
+        "res://gravelight/audio/sfx/world/crucible_hiss_01.wav",
+        "res://gravelight/audio/sfx/world/crucible_hiss_02.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": -6.0,
+      "max_voices": 2,
+      "pitch": [0.92, 1.08],
+      "attenuation": "world"
+    },
+    "crucible_hum": {
+      "files": [
+        "res://gravelight/audio/sfx/world/crucible_hum_01.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": -8.0,
+      "max_voices": 2,
+      "pitch": [1.0, 1.0],
+      "attenuation": "world",
+      "loop": true
+    },
     "deny": {
       "files": [
         "res://gravelight/audio/sfx/world/deny_01.wav",

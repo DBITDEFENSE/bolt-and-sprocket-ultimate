@@ -107,7 +107,10 @@ func setup_tables() -> void:
 	]
 	player_spawns = [[Vector3(-2, 0, 6), 0.0], [Vector3(2, 0, 6), 0.0], [Vector3(-2, 0, 9), 0.0], [Vector3(2, 0, 9), 0.0]]
 	power_switch = {}   # the relay runs: every machine has power from the start (MapRoot.power_on_at_start)
-	crucible = {"pos": Vector3(-8.0, 0, 46.0), "yaw": 90.0, "needs_power": false}
+	# T-175: yaw -90 (it was 90: the machine faced its own lit alcove and showed the concourse its back); the alcove
+	# behind it is now its bay, CrucibleRoom's, off the navmesh
+	crucible = {"pos": Vector3(-8.0, 0, 46.0), "yaw": -90.0, "needs_power": false,
+		"bay": [Vector3(-11.8, 0, 44.2), Vector3(-8.8, 0, 47.8)]}
 	armorers_bench = []
 	burst_points = [Vector3(0, 0, 40), Vector3(0, 0, 12), Vector3(28, 0, 40), Vector3(28, 0, 4)]
 	traps = []
