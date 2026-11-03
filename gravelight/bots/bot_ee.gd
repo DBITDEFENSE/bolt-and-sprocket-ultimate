@@ -585,17 +585,33 @@ func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, o
 			var pts: Array = []
 			var n_all: int = 0
 			var n_open: int = 0
-			for zn: Node in brain.get_tree().get_nodes_in_group(&"zone_volumes"):
-				var zv: ZoneVolume = zn as ZoneVolume
-				n_all += 1
-				if zv == null or not GameState.is_zone_open(zv.zone_id):
-					continue
-				n_open += 1
-				var zp: Vector3 = brain.snap(zv.global_position)
-				if zp == Vector3.INF or not brain.reachable(zp):
-					continue
-				var zk: String = "%s@%d,%d" % [zv.zone_id, int(zp.x), int(zp.z)]
-				pts.append({"pos": zp, "key": zk, "d": _flat(zp, player.global_position) + absf(zp.y - player.global_position.y) * 3.0, "visited": visited.has(zk)})
+			# U10 T-172: a big room is walked through at its quarters too (a little bell on a far rafter was out of
+			# sight from the middle); the reachable spots are cached 6 s (path queries)
+			var raw: Array = task.get("scout_raw", []) if active() and now - float(task.get("scout_raw_t", -INF)) < 6.0 else []
+			if raw.is_empty():
+				for zn: Node in brain.get_tree().get_nodes_in_group(&"zone_volumes"):
+					var zv: ZoneVolume = zn as ZoneVolume
+					n_all += 1
+					if zv == null or not GameState.is_zone_open(zv.zone_id):
+						continue
+					n_open += 1
+					var offs: Array[Vector3] = [Vector3.ZERO]
+					if zv.size.x > 18.0 or zv.size.z > 18.0:
+						for sx: float in [-0.25, 0.25]:
+							for sz: float in [-0.25, 0.25]:
+								offs.append(Vector3(zv.size.x * sx, 0.0, zv.size.z * sz))
+					for o: Vector3 in offs:
+						var zp: Vector3 = brain.snap(zv.global_position + o)
+						if zp == Vector3.INF or (o != Vector3.ZERO and not zv.contains(zp + Vector3.UP * 0.1)) or not brain.reachable(zp):
+							continue
+						raw.append({"pos": zp, "key": "%s@%d,%d" % [zv.zone_id, int(zp.x), int(zp.z)]})
+				if active():
+					task["scout_raw"] = raw
+					task["scout_raw_t"] = now
+			for rw: Variant in raw:
+				var zp2: Vector3 = (rw as Dictionary)["pos"]
+				var zk: String = str((rw as Dictionary)["key"])
+				pts.append({"pos": zp2, "key": zk, "d": _flat(zp2, player.global_position) + absf(zp2.y - player.global_position.y) * 3.0, "visited": visited.has(zk)})
 			w["points"] = pts
 			if OS.has_environment("EGG_DEBUG") and pts.is_empty():
 				_log("scout: no zone to walk (%d zones, %d open, none reachable)" % [n_all, n_open])
