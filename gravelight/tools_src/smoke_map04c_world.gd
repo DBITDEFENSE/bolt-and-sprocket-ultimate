@@ -156,6 +156,14 @@ func _people() -> void:
 		await _until(func() -> bool: return not dd.active, 8.0)
 		_check(not dd.active and dd.cooldown_left > 55.0, "it winches up; 60 s to the next drop (%s, %s, %.1f)" % [str(dd.active), dd._phase, dd.cooldown_left])
 
+	# --- room story (T-171, THE_BAR row 6): the act's six fixed story props stand in the scene
+	var want_props: PackedStringArray = ["INT_M4_MANIFEST", "INT_M4_PROGRAM", "INT_M4C_RANGELOG", "INT_M4C_FUELCARD", "INT_M4C_SPECIMENTAG", "INT_M4C_WATCHLOG"]
+	var found_props: int = 0
+	for sp: Node in get_tree().get_nodes_in_group(&"story_props"):
+		if want_props.has(String(sp.get("intel_id"))):
+			found_props += 1
+	_check(found_props == want_props.size(), "the six Groom Lake story props are in the act (%d)" % found_props)
+
 	# --- the radar tower's perch
 	var foot: TowerLadder = _g("TowerLadder_Foot") as TowerLadder
 	_check(foot != null and _g("TowerLadder_Top") != null, "the tower's ladder, foot and top")
@@ -167,8 +175,13 @@ func _people() -> void:
 		await _frames(10)
 		_check(_p.global_position.y > 15.5, "standing on the deck (it holds)")
 		var rid: RID = _map.get_world_3d().navigation_map
-		var path: PackedVector3Array = NavigationServer3D.map_get_path(rid, Vector3(45, 0, 108), Vector3(46.5, 16.0, 121.5), true, 1 << 4)
+		# T-171: the zombies' mask is the zone's walk bit plus its climb bit (T-153 moved every ladder onto the climb
+		# layer; this query kept the walk bit alone, so the path stayed on the ground and the check failed on master)
+		var zmask: int = (1 << 4) | ClimbLink.climb_bit(5)
+		var path: PackedVector3Array = NavigationServer3D.map_get_path(rid, Vector3(45, 0, 108), Vector3(46.5, 16.0, 121.5), true, zmask)
+		var walk_only: PackedVector3Array = NavigationServer3D.map_get_path(rid, Vector3(45, 0, 108), Vector3(46.5, 16.0, 121.5), true, 1 << 4)
 		_check(not path.is_empty() and path[path.size() - 1].y > 15.0, "the zombies' climb link reaches the deck (navmesh up there)")
+		_check(walk_only.is_empty() or walk_only[walk_only.size() - 1].y < 15.0, "without the climb layer the deck is out of reach (the bots never climb)")
 		var top: TowerLadder = _g("TowerLadder_Top") as TowerLadder
 		top.climb(_p)
 		await _secs(4.2)

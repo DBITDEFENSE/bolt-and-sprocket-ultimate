@@ -12,7 +12,8 @@ const MAP2_IDS: PackedStringArray = ["INT_M2_01", "INT_M2_02", "INT_M2_03", "INT
 ## Map 4 Act IV (LORE.md section 13, the Mondlicht list, UPDATE 07 T-113): the same rules, map "4d". INT_MARKE_TERMS (T-137).
 const MAP4D_IDS: PackedStringArray = ["INT_M4_RELAY", "INT_M4_CREWTAGS", "INT_M4_SMILE", "INT_M4_PILCH", "INT_MARKE_TERMS", "INT_M4D_DELIVERY_LOG", "INT_M4D_HAAS_TAG", "INT_M4D_RELAY_CARD", "INT_M4D_FLIGHT_CARD"]
 ## Map 4 Act III (UPDATE 07, docs/MAP4_FERNFLUG.md 13.1): the British crate's manifest and Hale's program log, in the hangar.
-const MAP4C_IDS: PackedStringArray = ["INT_M4_MANIFEST", "INT_M4_PROGRAM"]
+const MAP4C_IDS: PackedStringArray = ["INT_M4_MANIFEST", "INT_M4_PROGRAM",
+	"INT_M4C_RANGELOG", "INT_M4C_FUELCARD", "INT_M4C_SPECIMENTAG", "INT_M4C_WATCHLOG"]   # (T-171: THE_BAR row 6)
 const MAP4B_IDS: PackedStringArray = ["INT_M4B_BORDBUCH", "INT_M4B_CREWPHOTO", "INT_M4B_AIMERCARD", "INT_M4B_AUTOPILOT"]   # T-156
 const MAP4A_IDS: PackedStringArray = ["INT_M4A_WORKSPASS", "INT_M4A_RIVETLOG", "INT_M4A_WINDOWLETTER", "INT_M4A_LOADSHEET"]   # (T-155)
 ## Map 1 (LORE.md section 13.5, T-137): Jakub's refusal on the Maintenance Stairs' second landing.
@@ -129,7 +130,7 @@ func test_spawn_all_places_the_map_0_items() -> void:
 	assert_eq(StoryProp.spawn_all(m4d, "4d"), 9, "nine Mondlicht items (four, the T-137 Terms of the Mark, the four U10 props of T-158)")
 	var m4c: Node3D = Node3D.new()
 	add_child_autofree(m4c)
-	assert_eq(StoryProp.spawn_all(m4c, "4c"), 2, "two Groom Lake items (the manifest, the program log)")
+	assert_eq(StoryProp.spawn_all(m4c, "4c"), 6, "six Groom Lake items (the manifest, the program log; T-171's shift sheet, fuelling card, specimen tag, watch log)")
 	var m4b: Node3D = Node3D.new()
 	add_child_autofree(m4b)
 	assert_eq(StoryProp.spawn_all(m4b, "4b"), 4, "four Kranich items (T-156: the Bordbuch, the crew photo, the aimer's card, the autopilot page)")
