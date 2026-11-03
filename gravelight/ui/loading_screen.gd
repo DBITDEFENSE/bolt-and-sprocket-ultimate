@@ -117,7 +117,8 @@ var curtain_status: String = ""
 static func preload_scene(path: String) -> bool:
 	if path == "" or preloaded == path or not ResourceLoader.exists(path):
 		return preloaded == path
-	if ResourceLoader.load_threaded_request(path, "PackedScene", true) != OK:
+	# Sub-threads off: with them on the engine raced on the big maps ("Parameter t is null" in test_transitions).
+	if ResourceLoader.load_threaded_request(path, "PackedScene", false) != OK:
 		return false
 	preloaded = path
 	return true
@@ -263,7 +264,7 @@ func _begin() -> void:
 		_status.text = "LOADING"
 		_requested = true
 		return
-	var err: int = ResourceLoader.load_threaded_request(scene_path, "PackedScene", true)
+	var err: int = ResourceLoader.load_threaded_request(scene_path, "PackedScene", false)
 	if err != OK:
 		push_warning("LoadingScreen: threaded load refused (%d), loading %s directly" % [err, scene_path])
 		_done = true
