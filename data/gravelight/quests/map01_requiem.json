@@ -586,6 +586,10 @@
       "grant_all_perks": true
     },
     {
+      "perks_max": true,
+      "banner": "REQUIEM\nEvery tonic poured to its last tier"
+    },
+    {
       "egg_reward": "map01_perk_slot_5"
     },
     {

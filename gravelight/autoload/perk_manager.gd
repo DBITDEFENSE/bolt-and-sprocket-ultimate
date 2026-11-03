@@ -751,6 +751,33 @@ func upgrade_for(player_id: int, perk_id: StringName) -> StringName:
 	return &"ok"
 
 
+## The highest tier this tonic has data for, capped by perks.json upgrades.max_tier (1 when it has no tiers).
+func top_tier(perk_id: StringName) -> int:
+	var t: int = 1
+	for n: int in range(2, max_tier() + 1):
+		if tier_data(perk_id, n).is_empty():
+			break
+		t = n
+	return t
+
+
+## Egg rewards (UPDATE 10 follow-up, T-174): every tonic the player holds goes up `steps` tiers, or to its top tier
+## with steps < 0. Classic Rules keeps every tier off, so nothing changes there. Returns how many tonics moved.
+func raise_all_tiers(player: int, steps: int = -1) -> int:
+	if not Net.is_authority() or bool(GLSettings.values.get("classic_rules", false)):
+		return 0
+	var moved: int = 0
+	for pk: Variant in owned(player):
+		var id: StringName = StringName(str(pk))
+		var top: int = top_tier(id)
+		var cur: int = tier_of(player, id)
+		var to: int = top if steps < 0 else mini(top, cur + steps)
+		if to > cur:
+			set_tier(player, id, to)
+			moved += 1
+	return moved
+
+
 ## Gives a carried tonic its tier (no cost, no checks but ownership). First upgrade of the match: the squad member
 ## and the Operator say something (VO_SCRIPT section 20).
 func set_tier(player: int, perk_id: StringName, tier: int) -> void:

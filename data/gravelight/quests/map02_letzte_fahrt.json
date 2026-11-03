@@ -76,8 +76,8 @@
      "bot_task": {"player_only": "cutscene", "what": "the dive"}}
   ],
   "on_complete": [
-    {"scrip_all": 2500},
-    {"tier_gift": 1},
+    {"scrip_all": 7500},
+    {"tier_all": 1, "banner": "LETZTE FAHRT\nEvery tonic you carry, one tier up"},
     {"xp": 25000},
     {"archive": "INT_M2_LOG_1"},
     {"archive": "INT_M2_LOG_2"},

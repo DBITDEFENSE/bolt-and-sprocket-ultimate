@@ -825,7 +825,7 @@ func _step(qid: StringName, sid: StringName) -> Dictionary:
 
 ## Actions: {"flag": name} {"vo": id} {"vo_list": [ids]} {"vo_category": [speaker, category]} {"vo_player": category}
 ## {"save_point": true} {"unlock_map": id} {"xp": n} {"archive": id} {"item": id} {"take_item": id}
-## {"banner": text} {"grant_all_perks": true} {"egg_reward": key} {"profile_list": [key, value]}
+## {"banner": text} {"grant_all_perks": true} {"perks_max": true} {"tier_all": n} (T-174) {"egg_reward": key} {"profile_list": [key, value]}
 ## {"summon_boss": [enemy_id, x, y, z]} {"shake": strength}
 ## Story beats (T-086, EASTER_EGGS.md 1.2): {"vo_squad": category} one random standing survivor says it, never
 ## over the radio / the Operator (with "exclude_last": true someone other than the last squad speaker);
@@ -927,6 +927,12 @@ func _do_action(qid: StringName, a: Dictionary, by: int) -> void:
 					best = StringName(str(pk))
 			if best != &"":
 				PerkManager.set_tier(pid5, best, best_t + int(a["tier_gift"]))
+	if a.has("perks_max"):   # T-174: every held tonic of every player to its top tier (Requiem's reward)
+		for pid6: int in GameState.player_ids:
+			PerkManager.raise_all_tiers(pid6, -1)
+	if a.has("tier_all"):   # T-174: every held tonic of every player up `n` tiers (capped per tonic)
+		for pid7: int in GameState.player_ids:
+			PerkManager.raise_all_tiers(pid7, int(a["tier_all"]))
 	if a.has("perk_tier_grant"):   # UPDATE 07 (T-114): [perk, tier] free for the match: owners now, buyers when they drink
 		var pg: Array = a["perk_tier_grant"]
 		GameState.set_flag(StringName("perk_tier_free_" + str(pg[0])), int(pg[1]))
