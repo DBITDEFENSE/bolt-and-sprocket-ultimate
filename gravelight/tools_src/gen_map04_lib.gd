@@ -102,6 +102,18 @@ func _initialize() -> void:
 	if not armorers_bench.is_empty():
 		var bp: Vector3 = armorers_bench[0]
 		box(geo, "NavBlock_ArmorersBench", bp + Vector3(-0.75, 0, 0), bp + Vector3(0.75, 0.9, 0.72), "metal")
+	# T-175: the Crucible's footprint (its runtime body, 2.0 x 1.6, which the bake never saw: bots planned through the
+	# machine) and its bay (`crucible.bay`, a floor rectangle behind it that CrucibleRoom dresses) go round the navmesh.
+	# 1.6 m high, under agent_height: Recast does not fill a closed box, so a taller one leaves a walkable island under
+	# its lid (gen_map00's NAV_SOLID_H note, T-051)
+	if not crucible.is_empty():
+		var cp: Vector3 = crucible["pos"]
+		var ch: Vector3 = Vector3(0.8, 0, 1.0) if absf(absf(float(crucible.get("yaw", 0.0))) - 90.0) < 1.0 else Vector3(1.0, 0, 0.8)
+		box(geo, "NavBlock_Crucible", cp - ch, cp + ch + Vector3(0, 1.6, 0), "metal")
+		if crucible.has("bay"):
+			var b0: Vector3 = (crucible["bay"] as Array)[0]
+			var b1: Vector3 = (crucible["bay"] as Array)[1]
+			box(geo, "NavBlock_CrucibleBay", b0, Vector3(b1.x, b0.y + 1.6, b1.z), "metal")
 
 
 ## Override: fill the tables.

@@ -122,7 +122,9 @@ func setup_tables() -> void:
 	player_spawns = [[Vector3(-2, 0, 8), 0.0], [Vector3(2, 0, 8), 0.0], [Vector3(-2, 0, 11), 0.0], [Vector3(2, 0, 11), 0.0]]
 	power_switch = {"name": "AuxBus", "label": "the auxiliary bus", "pos": Vector3(8.7, 0, 42.0), "yaw": -90.0,
 		"zone_order": ["B_MITTELRUMPF", "A_BOMBENSCHACHT", "C_FLUEGEL_L", "C_FLUEGEL_R", "D_TRIEBWERK", "E_KANZEL", "F_COCKPIT"]}
-	crucible = {"pos": Vector3(-6.0, 0, 34.0), "yaw": 90.0, "needs_power": true}
+	# T-175: yaw -90 (it was 90: the machine faced the port hull 3 m away and showed the body its back, its violet key
+	# lamp lighting the back plate); now it faces the centre body and the walkway to the wing door runs behind it
+	crucible = {"pos": Vector3(-6.0, 0, 34.0), "yaw": -90.0, "needs_power": true}
 	armorers_bench = []
 	burst_points = [Vector3(0, 0, 40), Vector3(0, 0, 12), Vector3(0, 0, 50)]
 	traps = []

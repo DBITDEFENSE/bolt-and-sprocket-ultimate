@@ -1,0 +1,215 @@
+{
+  "_doc": "T-175: the Crucible's room on every map, built at load by gravelight/world/crucible_room.gd (MapRoot attaches it). Every position is in the Crucible's own frame: origin = the floor under its centre, local -Z = its front (where you stand to feed it), +Y up, metres. A map is keyed by its id up to the first underscore. pieces: box, cyl, pipe (points, r, glass, valve), tank (r, h, face), bench (w, d, h; yaw turns it about `at`; its work side is local -Z), ledger (stacks of the Ledger's books on a surface at h), cable (a, b, sag), grate (lo, hi: the flat dais), ring (Marke dashes on the floor round `at`), frame (a portal round the machine), hood, rack (wall tools), drum, crate, lamp (a fixture; its light is a `lights` entry), notice (paper + Label3D text, local -Z out of the wall), chain. Rules (tests/unit/test_crucible_rooms.gd): a piece's primitives stay off the baked navmesh unless flat on the floor (<= 0.06 m) or over head height (>= 2.05 m), nothing but a flat piece enters the approach in front of the machine, one shadowed light per room (the key). mat keys are Mats keys; 'marke' is the room's own violet glow, which breathes at idle, ramps with the forge and flares when the weapon comes out. Bilingual notices are in-world (1944 or the test range), never a real brand.",
+  "maps": {
+    "map00": {
+      "zone": "CELLAR",
+      "note": "the Helvetia cellar, the brick alcove on the north wall between the stair mouth and the lever (T-032): feed pipes down from the vault into the machine's shoulders, a Ledger rack and form by the installers' bench, the crate the drawings came in, a key lamp, the Marke arc round the feed grate",
+      "marke_energy": 2.2,
+      "pieces": [
+        {"kind": "pipe", "mat": "copper", "r": 0.055, "glass": true, "valve": 1, "points": [[0.85, 2.96, 0.2], [0.85, 2.52, 0.2], [0.55, 2.32, 0.2]]},
+        {"kind": "pipe", "mat": "iron", "r": 0.055, "valve": 1, "points": [[-0.85, 2.96, 0.2], [-0.85, 2.52, 0.2], [-0.55, 2.32, 0.2]]},
+        {"kind": "pipe", "mat": "iron", "r": 0.07, "points": [[-1.6, 2.9, 0.2], [1.6, 2.9, 0.2], [2.3, 2.9, -0.4]]},
+        {"kind": "cable", "mat": "rubber", "a": [1.6, 2.94, 0.0], "b": [0.3, 2.9, -1.9], "sag": 0.12, "r": 0.016},
+        {"kind": "lamp", "at": [0.0, 2.99, -2.05], "drop": 0.12, "shade": true},
+        {"kind": "ring", "at": [0.0, 0.0, -1.4], "r": 1.08, "segments": 14, "from": 100, "to": 260, "w": 0.05},
+        {"kind": "rack", "at": [-2.9, 1.55, 0.79], "w": 1.0, "h": 0.5, "mat": "beam"},
+        {"kind": "notice", "at": [-2.9, 2.18, 0.785], "w": 0.36, "h": 0.42, "title": "LEDGER · FORM R-E 7", "body": "UMSCHULUNG / RE-EDUCATION\nItem fed: ________\nTeaching: I · II · III\nNot taken in 15 s: returned to stock.", "stripe": "red_paint"},
+        {"kind": "notice", "at": [-1.7, 0.78, 0.185], "w": 0.34, "h": 0.26, "paper": "paper", "title": "KÜHLANLAGE", "body": "Lieferung 1944 · Zeichnungen anbei\nNicht öffnen. Gez. Fasbender", "title_px": 34, "body_px": 20},
+        {"kind": "ledger", "at": [-5.8, 0.0, 0.45], "yaw": 8, "h": 0.9, "stacks": 2, "loose": false}
+      ],
+      "lights": [
+        {"kind": "spot", "role": "key", "at": [0.0, 2.72, -2.05], "aim": [0.0, 1.05, 0.0], "color": "#ffe0bd", "energy": 3.2, "range": 6.5, "angle": 34, "shadow": true},
+        {"kind": "omni", "role": "marke", "at": [0.0, 0.35, -1.5], "energy": 0.8, "range": 3.2},
+        {"kind": "omni", "role": "work", "at": [-4.6, 2.3, 0.2], "color": "#ffb36b", "energy": 0.7, "range": 3.5}
+      ],
+      "sound": {"key": "crucible_hum", "db": -4.0, "at": [0.0, 1.2, 0.0], "unit_size": 2.0, "max_distance": 16.0},
+      "fx": [
+        {"kind": "steam", "at": [0.85, 2.52, 0.05], "dir": [0.3, -0.4, -1.0], "on": ["started", "taken", "expired"]},
+        {"kind": "steam", "at": [-0.85, 2.52, 0.05], "dir": [-0.3, -0.4, -1.0], "on": ["started", "taken"], "sound": ""},
+        {"kind": "sparks", "at": [0.0, 1.2, -0.9], "dir": [0.0, 0.5, -1.0], "on": ["ready"]}
+      ]
+    },
+    "map01": {
+      "zone": "I_CORE",
+      "note": "the Core Vault's east wall: Nachtglas tanks either side of the riveted plate feeding the machine overhead, chains off the lintel, a key lamp on a jib from the lintel, notices on the plate, the Marke arc round the grate",
+      "marke_energy": 2.6,
+      "pieces": [
+        {"kind": "tank", "at": [1.55, 0.0, 2.42], "r": 0.21, "h": 1.5, "mat": "machine_grey", "band": "brass", "face": [0.0, 0.0, -1.0]},
+        {"kind": "tank", "at": [-1.55, 0.0, 2.42], "r": 0.21, "h": 1.5, "mat": "machine_grey", "band": "brass", "face": [0.0, 0.0, -1.0]},
+        {"kind": "pipe", "mat": "copper", "r": 0.055, "glass": true, "valve": 1, "valve_out": [0.0, 0.0, -1.0], "points": [[1.55, 2.12, 2.42], [1.55, 2.95, 2.42], [0.6, 2.95, 1.0], [0.48, 2.38, 0.35]]},
+        {"kind": "pipe", "mat": "copper", "r": 0.055, "glass": true, "valve": 1, "valve_out": [0.0, 0.0, -1.0], "points": [[-1.55, 2.12, 2.42], [-1.55, 2.95, 2.42], [-0.6, 2.95, 1.0], [-0.48, 2.38, 0.35]]},
+        {"kind": "box", "at": [0.0, 5.08, 0.3], "size": [0.12, 0.1, 3.6], "mat": "iron"},
+        {"kind": "box", "at": [0.0, 4.75, 1.85], "size": [0.08, 0.6, 0.08], "mat": "iron", "rot": [-40.0, 0.0, 0.0]},
+        {"kind": "lamp", "at": [0.0, 5.03, -1.4], "drop": 0.25, "shade": true},
+        {"kind": "chain", "at": [1.15, 4.6, 2.05], "len": 1.3, "mat": "iron"},
+        {"kind": "chain", "at": [-1.15, 4.6, 2.05], "len": 1.0, "mat": "iron"},
+        {"kind": "ring", "at": [0.0, 0.0, -2.4], "r": 1.55, "segments": 16, "from": 105, "to": 255, "w": 0.06},
+        {"kind": "notice", "at": [1.97, 1.55, 2.385], "w": 0.26, "h": 0.4, "title": "LEDGER · R-E 7", "body": "Item fed: ____\nTeaching: I · II · III\nRetained items remember their purpose.", "title_px": 30, "body_px": 20},
+        {"kind": "notice", "at": [-1.97, 1.55, 2.385], "w": 0.26, "h": 0.4, "paper": "paper", "title": "KERNGEWÖLBE", "body": "Nur der Schichtführer füttert das Gerät.\nNichts herausnehmen, das man nicht hineingelegt hat.", "title_px": 30, "body_px": 20, "stripe": "red_paint"},
+        {"kind": "lamp", "at": [2.0, 2.5, 2.38], "shade": false}
+      ],
+      "lights": [
+        {"kind": "spot", "role": "key", "at": [0.0, 4.7, -1.4], "aim": [0.0, 1.1, 0.0], "color": "#ffdcb4", "energy": 4.2, "range": 8.0, "angle": 30, "shadow": true},
+        {"kind": "omni", "role": "marke", "at": [0.0, 0.4, -1.9], "energy": 0.9, "range": 3.6},
+        {"kind": "omni", "role": "work", "at": [2.0, 2.3, 2.0], "color": "#ffb36b", "energy": 0.8, "range": 3.5}
+      ],
+      "sound": {"key": "crucible_hum", "db": -3.0, "at": [0.0, 1.2, 0.0], "unit_size": 2.5, "max_distance": 20.0},
+      "fx": [
+        {"kind": "steam", "at": [1.55, 2.95, 2.25], "dir": [-0.2, 0.3, -1.0], "on": ["started", "taken", "expired"]},
+        {"kind": "steam", "at": [-1.55, 2.95, 2.25], "dir": [0.2, 0.3, -1.0], "on": ["started", "taken"], "sound": ""},
+        {"kind": "sparks", "at": [0.0, 1.2, -0.9], "dir": [0.0, 0.5, -1.0], "on": ["ready"]}
+      ]
+    },
+    "map02": {
+      "zone": "E_UBOAT",
+      "vis_group": "E",
+      "note": "U-1047's bow compartment, the Crucible strapped against the forward bulkhead: air flasks and a fold-down bench on the starboard hull, pressure lines along both sides into the machine, the captain's order, a key lamp under the deckhead",
+      "marke_energy": 2.4,
+      "pieces": [
+        {"kind": "pipe", "mat": "copper", "r": 0.045, "glass": true, "valve": 1, "valve_out": [-1.0, 0.0, 0.0], "points": [[2.35, 2.2, -6.5], [2.35, 2.2, 0.3], [0.6, 2.36, 0.3]]},
+        {"kind": "pipe", "mat": "iron", "r": 0.04, "points": [[2.42, 2.38, -7.0], [2.42, 2.38, 1.3]]},
+        {"kind": "pipe", "mat": "iron", "r": 0.045, "valve": 1, "valve_out": [1.0, 0.0, 0.0], "points": [[-2.4, 2.2, -6.5], [-2.4, 2.2, 0.3], [-0.6, 2.36, 0.3]]},
+        {"kind": "cable", "mat": "rubber", "a": [-0.9, 2.55, -6.0], "b": [-0.3, 2.52, 0.4], "sag": 0.1, "r": 0.02, "segs": 10},
+        {"kind": "cable", "mat": "rubber", "a": [0.9, 2.55, -6.0], "b": [0.3, 2.52, 0.4], "sag": 0.08, "r": 0.016, "segs": 10},
+        {"kind": "tank", "at": [2.28, 0.0, -1.55], "r": 0.2, "h": 1.3, "mat": "olive_steel", "band": "iron", "face": [-1.0, 0.0, 0.0]},
+        {"kind": "bench", "at": [2.38, 0.0, -3.5], "yaw": 90, "w": 1.2, "d": 0.4, "h": 0.85, "mat": "furniture", "back": false, "under": false},
+        {"kind": "notice", "at": [2.57, 1.55, -3.5], "yaw": 90, "w": 0.3, "h": 0.4, "title": "BORDBEFEHL", "body": "Das Gerät im Bugraum ist Fracht.\nNicht anfassen, nicht melden, nicht fragen.\n– Der Kommandant", "title_px": 34, "body_px": 20},
+        {"kind": "notice", "at": [-2.57, 1.5, -2.2], "yaw": -90, "w": 0.28, "h": 0.38, "paper": "paper", "title": "LEDGER · R-E 7", "body": "Item fed: ____\nTeaching: I · II · III\nNot taken in 15 s: returned to stock.", "title_px": 30, "body_px": 20, "stripe": "red_paint"},
+        {"kind": "lamp", "at": [0.0, 2.58, -2.0], "drop": 0.08, "shade": true},
+        {"kind": "grate", "lo": [-0.9, 0.0, -2.5], "hi": [0.9, 0.0, -0.95], "t": 0.025, "mat": "m2_grate"}
+      ],
+      "lights": [
+        {"kind": "spot", "role": "key", "at": [0.0, 2.38, -2.0], "aim": [0.0, 1.0, 0.0], "color": "#ffdcb4", "energy": 2.6, "range": 5.0, "angle": 38, "shadow": true},
+        {"kind": "omni", "role": "marke", "at": [0.0, 0.3, -1.6], "energy": 0.7, "range": 3.0},
+        {"kind": "omni", "role": "work", "at": [1.9, 1.7, -3.5], "color": "#ffb36b", "energy": 0.6, "range": 3.0}
+      ],
+      "sound": {"key": "crucible_hum", "db": -5.0, "at": [0.0, 1.2, 0.0], "unit_size": 1.8, "max_distance": 14.0},
+      "fx": [
+        {"kind": "steam", "at": [2.2, 2.2, -0.3], "dir": [-1.0, -0.2, -0.3], "on": ["started", "taken", "expired"]},
+        {"kind": "steam", "at": [-2.25, 2.2, -0.3], "dir": [1.0, -0.2, -0.3], "on": ["started", "taken"], "sound": ""},
+        {"kind": "sparks", "at": [0.0, 1.2, -0.9], "dir": [0.0, 0.5, -1.0], "on": ["ready"]}
+      ]
+    },
+    "map04a": {
+      "zone": "G_PRUEFSTAND",
+      "note": "Werk Thalbach's Messbunker (a bare concrete box before): air tanks in the back corner piped across the wall into the machine, a fitter's bench and rack on the east wall, the test-stand order and the Ledger form, a ledger stack on the desk, a key lamp, the dais and the Marke arc",
+      "marke_energy": 2.4,
+      "pieces": [
+        {"kind": "tank", "at": [3.52, 0.0, 1.08], "r": 0.24, "h": 1.75, "mat": "olive_steel", "band": "iron", "face": [-1.0, 0.0, 0.0]},
+        {"kind": "tank", "at": [2.95, 0.0, 1.12], "r": 0.19, "h": 1.5, "mat": "machine_grey", "band": "iron", "face": [0.0, 0.0, -1.0]},
+        {"kind": "pipe", "mat": "copper", "r": 0.055, "glass": true, "valve": 2, "valve_out": [0.0, 0.0, -1.0], "points": [[3.52, 2.3, 1.08], [3.52, 3.35, 1.08], [0.55, 3.35, 1.08], [0.5, 2.4, 0.35]]},
+        {"kind": "pipe", "mat": "iron", "r": 0.05, "valve": 1, "valve_out": [0.0, 0.0, -1.0], "points": [[2.95, 1.9, 1.12], [2.95, 3.05, 1.12], [-0.55, 3.05, 1.12], [-0.5, 2.4, 0.35]]},
+        {"kind": "pipe", "mat": "iron", "r": 0.06, "points": [[-6.8, 3.6, 1.2], [3.7, 3.6, 1.2], [3.7, 3.6, -9.5]]},
+        {"kind": "bench", "at": [3.62, 0.0, -3.1], "yaw": 90, "w": 1.6, "d": 0.42, "h": 0.9, "mat": "furniture", "back": false},
+        {"kind": "rack", "at": [3.84, 1.6, -3.1], "yaw": 90, "w": 1.4, "h": 0.55, "mat": "beam"},
+        {"kind": "lamp", "at": [3.84, 2.35, -3.1], "yaw": 90, "shade": true},
+        {"kind": "notice", "at": [3.84, 1.55, -1.2], "yaw": 90, "w": 0.36, "h": 0.48, "title": "PRÜFSTAND 4 · MESSBUNKER", "body": "Sondergerät R-E: Zutritt nur mit Freigabe.\nBetriebsdruck vor jedem Lauf ablesen.\nKeine Namen eintragen.", "title_px": 30, "body_px": 20, "stripe": "red_paint"},
+        {"kind": "notice", "at": [2.1, 1.6, 1.34], "w": 0.34, "h": 0.44, "paper": "paper", "title": "LEDGER · FORM R-E 7", "body": "UMSCHULUNG / RE-EDUCATION\nItem fed: ________\nTeaching: I · II · III\nRetained items remember their purpose.", "title_px": 30, "body_px": 20},
+        {"kind": "ledger", "at": [1.2, 0.0, -0.5], "yaw": 6, "h": 0.82, "stacks": 1, "loose": false},
+        {"kind": "lamp", "at": [0.0, 3.99, -2.3], "drop": 0.3, "shade": true},
+        {"kind": "grate", "lo": [-1.15, 0.0, -2.7], "hi": [1.15, 0.0, -0.9], "t": 0.03, "mat": "steel_grate"},
+        {"kind": "ring", "at": [0.0, 0.0, -1.8], "r": 1.55, "segments": 16, "from": 105, "to": 255, "w": 0.06}
+      ],
+      "lights": [
+        {"kind": "spot", "role": "key", "at": [0.0, 3.55, -2.3], "aim": [0.0, 1.0, 0.0], "color": "#ffe0bd", "energy": 3.6, "range": 7.0, "angle": 32, "shadow": true},
+        {"kind": "omni", "role": "marke", "at": [0.0, 0.35, -1.8], "energy": 0.9, "range": 3.5},
+        {"kind": "omni", "role": "work", "at": [3.3, 2.1, -3.1], "color": "#ffb36b", "energy": 0.9, "range": 3.6}
+      ],
+      "sound": {"key": "crucible_hum", "db": -4.0, "at": [0.0, 1.2, 0.0], "unit_size": 2.0, "max_distance": 16.0},
+      "fx": [
+        {"kind": "steam", "at": [1.3, 3.35, 0.95], "dir": [-0.4, -0.2, -1.0], "on": ["started", "taken", "expired"]},
+        {"kind": "steam", "at": [-0.55, 2.8, 1.0], "dir": [0.2, -0.3, -1.0], "on": ["started", "taken"], "sound": ""},
+        {"kind": "sparks", "at": [0.0, 1.2, -0.9], "dir": [0.0, 0.5, -1.0], "on": ["ready"]}
+      ]
+    },
+    "map04b": {
+      "zone": "B_MITTELRUMPF",
+      "note": "der Kranich's centre body, the Crucible as cargo (turned to face the body, T-175): tie-down straps to the deck rings, oxygen bottles and a parts crate on the port hull behind it, feed lines down from the frames, the cargo list, a key lamp off a frame",
+      "marke_energy": 2.4,
+      "pieces": [
+        {"kind": "box", "at": [1.18, 0.81, -0.45], "size": [0.012, 1.64, 0.06], "mat": "canvas", "rot": [0.0, 0.0, 12.5], "shadow": 0},
+        {"kind": "box", "at": [-1.18, 0.81, -0.45], "size": [0.012, 1.64, 0.06], "mat": "canvas", "rot": [0.0, 0.0, -12.5], "shadow": 0},
+        {"kind": "box", "at": [0.98, 0.82, 0.98], "size": [0.06, 1.9, 0.01], "mat": "canvas", "rot": [-26.0, 0.0, 0.0], "shadow": 0},
+        {"kind": "box", "at": [-0.98, 0.82, 0.98], "size": [0.06, 1.9, 0.01], "mat": "canvas", "rot": [-26.0, 0.0, 0.0], "shadow": 0},
+        {"kind": "pipe", "mat": "copper", "r": 0.05, "glass": true, "valve": 1, "valve_out": [0.0, 0.0, -1.0], "points": [[0.55, 3.55, 1.7], [0.55, 2.95, 1.7], [0.48, 2.4, 0.35]]},
+        {"kind": "pipe", "mat": "rubber", "r": 0.045, "points": [[-0.55, 3.55, 1.7], [-0.55, 2.95, 1.7], [-0.48, 2.4, 0.35]]},
+        {"kind": "tank", "at": [-1.75, 0.0, 2.62], "r": 0.14, "h": 1.15, "mat": "enamel_green", "band": "iron", "face": [0.0, 0.0, -1.0], "sight": false},
+        {"kind": "tank", "at": [-2.1, 0.0, 2.62], "r": 0.14, "h": 1.15, "mat": "enamel_green", "band": "iron", "face": [0.0, 0.0, -1.0], "sight": false},
+        {"kind": "box", "at": [-1.92, 1.0, 2.76], "size": [0.75, 0.05, 0.03], "mat": "leather", "shadow": 0},
+        {"kind": "crate", "at": [-0.4, 0.0, 2.62], "size": [0.7, 0.42, 0.38], "mat": "furniture"},
+        {"kind": "ledger", "at": [-0.4, 0.0, 2.62], "h": 0.42, "stacks": 1, "loose": false},
+        {"kind": "notice", "at": [-1.0, 1.6, 2.84], "w": 0.34, "h": 0.46, "title": "LADELISTE · KRANICH", "body": "Pos. 1  Sondergerät R-E, 2,4 t, festgezurrt\nPos. 2  Sauerstoff, 6 Fl.\nPos. 3  Verpflegung\nPos. 4  —", "title_px": 30, "body_px": 20, "stripe": "red_paint"},
+        {"kind": "notice", "at": [-0.2, 1.75, 2.84], "w": 0.26, "h": 0.34, "paper": "paper", "title": "LEDGER · R-E 7", "body": "Item fed: ____\nTeaching: I · II · III", "title_px": 30, "body_px": 20},
+        {"kind": "lamp", "at": [0.0, 3.6, -2.0], "drop": 0.25, "shade": true},
+        {"kind": "grate", "lo": [-1.15, 0.0, -2.6], "hi": [1.15, 0.0, -0.95], "t": 0.025, "mat": "steel_grate"}
+      ],
+      "lights": [
+        {"kind": "spot", "role": "key", "at": [0.0, 3.2, -2.0], "aim": [0.0, 1.0, 0.0], "color": "#ffe0bd", "energy": 3.0, "range": 6.0, "angle": 34, "shadow": true},
+        {"kind": "omni", "role": "marke", "at": [0.0, 0.3, -1.6], "energy": 0.7, "range": 3.0},
+        {"kind": "omni", "role": "work", "at": [-1.0, 2.2, 2.4], "color": "#ffb36b", "energy": 0.6, "range": 3.0}
+      ],
+      "sound": {"key": "crucible_hum", "db": -5.0, "at": [0.0, 1.2, 0.0], "unit_size": 2.0, "max_distance": 14.0},
+      "fx": [
+        {"kind": "steam", "at": [0.55, 2.95, 1.55], "dir": [0.3, 0.2, -1.0], "on": ["started", "taken", "expired"]},
+        {"kind": "sparks", "at": [0.0, 1.2, -0.9], "dir": [0.0, 0.5, -1.0], "on": ["ready"]}
+      ]
+    },
+    "map04c": {
+      "zone": "G_SILO",
+      "note": "the test silo's control room, the Crucible turned to face the room (T-175) with its bay behind it: two recovered pressure tanks feeding it, a test-range bench and rack, the property notice and the Ledger form, a key lamp, the dais and the Marke arc",
+      "marke_energy": 2.4,
+      "pieces": [
+        {"kind": "tank", "at": [1.75, 0.0, 2.65], "r": 0.5, "h": 1.9, "mat": "grey_paint", "band": "iron", "face": [0.0, 0.0, -1.0]},
+        {"kind": "tank", "at": [-1.95, 0.0, 2.95], "r": 0.4, "h": 1.6, "mat": "olive_steel", "band": "iron", "face": [0.0, 0.0, -1.0]},
+        {"kind": "pipe", "mat": "copper", "r": 0.06, "glass": true, "valve": 1, "valve_out": [0.0, 0.0, -1.0], "points": [[1.75, 2.38, 2.65], [1.75, 3.1, 2.65], [0.55, 3.1, 1.2], [0.5, 2.4, 0.35]]},
+        {"kind": "pipe", "mat": "iron", "r": 0.05, "valve": 1, "valve_out": [0.0, 0.0, -1.0], "points": [[-1.95, 2.04, 2.95], [-1.95, 2.95, 2.95], [-0.55, 2.95, 1.2], [-0.5, 2.4, 0.35]]},
+        {"kind": "pipe", "mat": "iron", "r": 0.06, "points": [[-2.7, 3.7, 3.7], [2.7, 3.7, 3.7]]},
+        {"kind": "bench", "at": [-0.15, 0.0, 3.45], "w": 1.5, "d": 0.6, "h": 0.9, "mat": "olive_drab"},
+        {"kind": "rack", "at": [-0.15, 2.05, 3.84], "w": 1.3, "h": 0.4, "mat": "beam"},
+        {"kind": "crate", "at": [2.25, 0.0, 1.35], "size": [0.6, 0.55, 0.6], "mat": "furniture"},
+        {"kind": "ledger", "at": [2.25, 0.0, 1.35], "h": 0.55, "stacks": 1, "loose": false},
+        {"kind": "notice", "at": [1.0, 1.9, 3.84], "w": 0.38, "h": 0.5, "paper": "paper", "title": "RECOVERED EQUIPMENT", "body": "Handle as found. Nameplate reads MOD. R-E.\nAny weapon placed inside comes out better.\nNobody has signed for that.", "title_px": 30, "body_px": 20, "stripe": "red_paint"},
+        {"kind": "notice", "at": [-2.5, 1.8, 3.84], "w": 0.3, "h": 0.4, "title": "LEDGER · R-E 7", "body": "Item fed: ____\nTeaching: I · II · III\nNot taken in 15 s: returned to stock.", "title_px": 30, "body_px": 20},
+        {"kind": "lamp", "at": [0.0, 3.99, -2.4], "drop": 0.3, "shade": true},
+        {"kind": "grate", "lo": [-1.2, 0.0, -2.8], "hi": [1.2, 0.0, -0.95], "t": 0.03, "mat": "steel_grate"},
+        {"kind": "ring", "at": [0.0, 0.0, -1.85], "r": 1.6, "segments": 16, "from": 105, "to": 255, "w": 0.06}
+      ],
+      "lights": [
+        {"kind": "spot", "role": "key", "at": [0.0, 3.55, -2.4], "aim": [0.0, 1.0, 0.0], "color": "#fff0dc", "energy": 3.6, "range": 7.0, "angle": 32, "shadow": true},
+        {"kind": "omni", "role": "marke", "at": [0.0, 0.35, -1.8], "energy": 0.9, "range": 3.5},
+        {"kind": "omni", "role": "work", "at": [-0.15, 2.3, 3.0], "color": "#ffc27a", "energy": 0.9, "range": 3.8}
+      ],
+      "sound": {"key": "crucible_hum", "db": -4.0, "at": [0.0, 1.2, 0.0], "unit_size": 2.0, "max_distance": 18.0},
+      "fx": [
+        {"kind": "steam", "at": [1.75, 3.1, 2.45], "dir": [-0.3, 0.2, -1.0], "on": ["started", "taken", "expired"]},
+        {"kind": "steam", "at": [-1.95, 2.95, 2.75], "dir": [0.3, 0.2, -1.0], "on": ["started", "taken"], "sound": ""},
+        {"kind": "sparks", "at": [0.0, 1.2, -0.9], "dir": [0.0, 0.5, -1.0], "on": ["ready"]}
+      ]
+    },
+    "map04d": {
+      "zone": "B_CONCOURSE",
+      "vis_group": "B_CONCOURSE",
+      "note": "Mondlicht's concourse: Crucible 001 turned to face the concourse (T-175) inside its lit alcove, now framed by a chrome portal, chrome tanks feeding it, the service log, a cold key light, the dais",
+      "marke_energy": 2.8,
+      "pieces": [
+        {"kind": "frame", "w": 3.3, "h": 3.4, "col": 0.2, "z": 1.05, "mat": "chrome_worn"},
+        {"kind": "tank", "at": [1.25, 0.0, 3.2], "r": 0.34, "h": 1.9, "mat": "chrome", "band": "black_paint", "face": [0.0, 0.0, -1.0]},
+        {"kind": "tank", "at": [-1.25, 0.0, 3.2], "r": 0.34, "h": 1.9, "mat": "chrome", "band": "black_paint", "face": [0.0, 0.0, -1.0]},
+        {"kind": "pipe", "mat": "chrome", "r": 0.05, "glass": true, "valve": 1, "valve_out": [0.0, 0.0, -1.0], "points": [[1.25, 2.3, 3.2], [1.25, 2.95, 3.2], [0.5, 2.95, 1.3], [0.46, 2.4, 0.35]]},
+        {"kind": "pipe", "mat": "chrome", "r": 0.05, "glass": true, "points": [[-1.25, 2.3, 3.2], [-1.25, 2.95, 3.2], [-0.5, 2.95, 1.3], [-0.46, 2.4, 0.35]]},
+        {"kind": "notice", "at": [-1.65, 1.5, 0.94], "w": 0.18, "h": 0.36, "paper": "enamel_white", "title": "UNIT 001", "body": "Cycles: withheld\nEvery item returned.\nEvery item retained.", "title_px": 26, "body_px": 16, "ink": [0.12, 0.08, 0.2]},
+        {"kind": "grate", "lo": [-1.2, 0.0, -2.6], "hi": [1.2, 0.0, -0.95], "t": 0.02, "mat": "steel_grate", "frame": "chrome"}
+      ],
+      "lights": [
+        {"kind": "spot", "role": "key", "at": [0.0, 4.4, -2.6], "aim": [0.0, 1.0, 0.0], "color": "#e4ecff", "energy": 3.4, "range": 8.0, "angle": 28, "shadow": true},
+        {"kind": "omni", "role": "marke", "at": [0.0, 0.4, -1.6], "energy": 0.8, "range": 3.2},
+        {"kind": "omni", "role": "work", "at": [0.0, 3.2, 2.2], "color": "#c9b8ff", "energy": 0.8, "range": 3.6}
+      ],
+      "sound": {"key": "crucible_hum", "db": -4.0, "at": [0.0, 1.2, 0.0], "unit_size": 2.0, "max_distance": 16.0},
+      "fx": [
+        {"kind": "steam", "at": [1.25, 2.95, 3.0], "dir": [-0.3, 0.2, -1.0], "on": ["started", "taken", "expired"]},
+        {"kind": "sparks", "at": [0.0, 1.2, -0.9], "dir": [0.0, 0.5, -1.0], "on": ["ready"]}
+      ]
+    }
+  }
+}

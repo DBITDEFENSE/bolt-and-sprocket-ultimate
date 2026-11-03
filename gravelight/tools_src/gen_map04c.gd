@@ -126,7 +126,10 @@ func setup_tables() -> void:
 	player_spawns = [[Vector3(-2, 0, -26), 0.0], [Vector3(2, 0, -26), 0.0], [Vector3(-2, 0, -29), 0.0], [Vector3(2, 0, -29), 0.0]]
 	power_switch = {"name": "Generator", "label": "the generator", "pos": Vector3(-64.0, 0, 99.3), "yaw": 180.0,
 		"zone_order": ["D_MOTORPOOL", "B_LAKEBED", "A_WRECK", "C_HANGAR", "E_RADAR", "F_LAB", "G_SILO"]}
-	crucible = {"pos": Vector3(-66.0, LAB_Y, 160.0), "yaw": 90.0, "needs_power": true}
+	# T-175: yaw -90 (it was 90: the machine faced the west wall 3 m away and showed the control room its back); the bay
+	# between its back and the wall is CrucibleRoom's (tanks, the feed manifold), off the navmesh
+	crucible = {"pos": Vector3(-66.0, LAB_Y, 160.0), "yaw": -90.0, "needs_power": true,
+		"bay": [Vector3(-69.85, LAB_Y, 157.3), Vector3(-66.8, LAB_Y, 162.7)]}
 	armorers_bench = []
 	burst_points = [Vector3(-45, 0, 80), Vector3(0, 0, 30), Vector3(45, 0, 80)]
 	traps = [

@@ -974,6 +974,28 @@
         {"name": "mid_sail", "pos": [8.6, 1.0, 63.5], "yaw": 180.0, "pitch": 2.0, "note": "cast off: mid-sail from the deck toward the pen mouth, the scenery cards going past, the hall hidden behind the sea cell, the searchlight on the boat", "do": ["use:UboatSail", "wait:36"], "settle_s": 0.5}
       ]
     },
+    "u10_crucible": {
+      "_doc": "T-175: the Crucible's room on every map, two cameras each: the room from its door (or the room's middle) and the machine close; the power on, no bots, no round. Shot through tools/wsl_godot.sh only: before = master, after = branch u10-10-crucible-rooms (morning/screenshots/u10_crucible/<label>/).",
+      "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {"name": "map00_door", "map": "res://gravelight/maps/map00_crossroads/map00.tscn", "pos": [32.5, -3.2, 27.9], "look_at": "Crucible", "look_up": 1.1, "note": "the Helvetia cellar from the vault's south-east, past the perk rows to the north-wall alcove", "do": ["power"], "settle_s": 3.0},
+        {"name": "map00_close", "map": "res://gravelight/maps/map00_crossroads/map00.tscn", "pos": [28.6, -3.2, 22.6], "look_at": "Crucible", "look_up": 1.1, "note": "the machine close, from the feed grate", "do": ["power"], "settle_s": 3.0},
+        {"name": "map01_door", "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn", "pos": [36.2, -18.0, 127.5], "look_at": "Crucible", "look_up": 1.1, "note": "the Core Vault across the floor veins to the riveted plate on the east wall", "do": ["power"], "settle_s": 3.0},
+        {"name": "map01_close", "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn", "pos": [43.4, -18.0, 123.0], "look_at": "Crucible", "look_up": 1.1, "note": "the machine close", "do": ["power"], "settle_s": 3.0},
+        {"name": "map02_door", "map": "res://gravelight/maps/map02_totenhafen/map02.tscn", "pos": [6.7, -2.0, 49.0], "look_at": "Crucible", "look_up": 1.1, "note": "U-1047's forward compartment from aft down the passage to the forward bulkhead", "do": ["power"], "settle_s": 3.0},
+        {"name": "map02_close", "map": "res://gravelight/maps/map02_totenhafen/map02.tscn", "pos": [6.6, -2.0, 42.6], "look_at": "Crucible", "look_up": 1.1, "note": "the machine close", "do": ["power"], "settle_s": 3.0},
+        {"name": "map04a_door", "map": "res://gravelight/maps/map04_fernflug/map04a.tscn", "pos": [-49.4, 0.0, 143.6], "look_at": "Crucible", "look_up": 1.1, "note": "the Messbunker from just inside its steel door (east wall)", "do": ["power"], "settle_s": 3.0},
+        {"name": "map04a_close", "map": "res://gravelight/maps/map04_fernflug/map04a.tscn", "pos": [-55.8, 0.0, 145.1], "look_at": "Crucible", "look_up": 1.1, "note": "the machine close", "do": ["power"], "settle_s": 3.0},
+        {"name": "map04b_door", "map": "res://gravelight/maps/map04_fernflug/map04b.tscn", "pos": [3.0, 0.0, 28.0], "look_at": "Crucible", "look_up": 1.1, "note": "the Kranich's centre body from the bomb-bay end toward the galley (port)", "do": ["power"], "settle_s": 3.0},
+        {"name": "map04b_close", "map": "res://gravelight/maps/map04_fernflug/map04b.tscn", "pos": [-3.3, 0.0, 33.1], "look_at": "Crucible", "look_up": 1.1, "note": "the machine close (the centre-body side)", "do": ["power"], "settle_s": 3.0},
+        {"name": "map04c_door", "map": "res://gravelight/maps/map04_fernflug/map04c.tscn", "pos": [-55.0, -6.0, 165.0], "look_at": "Crucible", "look_up": 1.1, "note": "the silo control room from its middle toward the west wall", "do": ["power"], "settle_s": 3.0},
+        {"name": "map04c_close", "map": "res://gravelight/maps/map04_fernflug/map04c.tscn", "pos": [-63.3, -6.0, 159.1], "look_at": "Crucible", "look_up": 1.1, "note": "the machine close (the room side)", "do": ["power"], "settle_s": 3.0},
+        {"name": "map04d_door", "map": "res://gravelight/maps/map04_fernflug/map04d.tscn", "pos": [2.0, 0.0, 40.0], "look_at": "Crucible", "look_up": 1.1, "note": "the concourse from its middle toward the west alcove", "do": ["power"], "settle_s": 3.0},
+        {"name": "map04d_close", "map": "res://gravelight/maps/map04_fernflug/map04d.tscn", "pos": [-5.3, 0.0, 45.1], "look_at": "Crucible", "look_up": 1.1, "note": "the machine close (the concourse side)", "do": ["power"], "settle_s": 3.0}
+      ]
+    },
     "u09_ref": {
       "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
       "bots": 0,

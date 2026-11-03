@@ -1993,6 +1993,25 @@ def gen_bells_traps_power():
         x += 0.5 * kick(r, 0.8, 90, 35, 0.4, dur)
         emit("crucible_roar", f"sfx/world/crucible_roar_{i:02d}", reverb(x, r, 1.4, 0.3), -1.0, bus="SFX", volume_db=-2.0, max_voices=1,
              attenuation="loud")
+    # T-175: the Crucible room's bed: the machine's own hum (a low furnace drone on A1 with a slow beat between two
+    # detuned partials, a faint glassy shimmer for the Nachtglas, a soft fire breath), looped; and the steam valves'
+    # hiss when a weapon goes in or comes out
+    r = rng_for("crucible_hum")
+    dur = 6.0
+    t = tax(N(dur))
+    drone = sum(np.sin(2 * np.pi * periodic(f, dur) * t) * a for f, a in [(55.0, 1.0), (55.0 * 1.005, 0.6), (110.0, 0.35), (165.0, 0.12)])
+    drone *= 1.0 + 0.12 * np.sin(2 * np.pi * periodic(0.5, dur) * t)
+    glass = sum(np.sin(2 * np.pi * periodic(f, dur) * t) * a for f, a in [(880.0, 0.03), (1318.5, 0.02)]) * (0.5 + 0.5 * np.sin(2 * np.pi * periodic(1 / 3, dur) * t))
+    breath = 0.18 * loopify(nrm(lp(brown(r, dur + 0.3), 300)), 0.3) * (0.7 + 0.3 * np.sin(2 * np.pi * periodic(0.25, dur) * t))
+    emit("crucible_hum", "sfx/world/crucible_hum_01", drone + glass + breath, -6.0, loop=True, bus="SFX", volume_db=-8.0, max_voices=2,
+         pitch=[1.0, 1.0], attenuation="world")
+    for i in variants(2):
+        r = rng_for(f"crucible_hiss{i}")
+        dur = 1.6 + 0.3 * i
+        x = nrm(bp(white(r, dur), 1800, 9000)) * adsr(N(dur), 0.02, 0.2, 0.6, 0.9) * (0.8 + 0.2 * smooth_rand(r, dur, 12, 0, 1))
+        x += 0.25 * nrm(lp(brown(r, dur), 400)) * adsr(N(dur), 0.05, 0.3, 0.4, 0.8)
+        emit("crucible_hiss", f"sfx/world/crucible_hiss_{i:02d}", reverb(x, r, 0.8, 0.2), -3.0, bus="SFX", volume_db=-6.0, max_voices=2,
+             pitch=[0.92, 1.08], attenuation="world")
     # small pickups
     r = rng_for("paper")
     x = zeros(0.6)
