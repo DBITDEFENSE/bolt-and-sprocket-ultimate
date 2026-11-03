@@ -227,7 +227,13 @@ func _pause_state() -> Dictionary:
 			if p != player and is_instance_valid(p) and not p.spectating and Net.session.coop.is_downed(p.player_id):
 				down = true
 	var left: int = -1
-	if RoundManager.state == RoundManager.State.ROUND and RoundManager.to_spawn <= 0 and brain.squad.director() != null and _round_end_skip != RoundManager.current_round:
+	# U10 T-172: a round stalled on its last zombies for hunt_pause_after_s: a Full Partner errand (not a hold) waits
+	# while this bot joins the hunt (the egg errands kept every bot away while the agent alone failed to reach it)
+	var hunt_pause: bool = str(task.get("source", "")) == "full" and str(task["type"]) != "hold_zone" and not brain.is_player_bot \
+		and brain.squad.hunt_stalled_s() >= float((BotAIData.combat("hunt") as Dictionary).get("ee_pause_after_s", 45.0))
+	if hunt_pause:
+		left = 1
+	elif RoundManager.state == RoundManager.State.ROUND and RoundManager.to_spawn <= 0 and brain.squad.director() != null and _round_end_skip != RoundManager.current_round:
 		left = brain.squad.director().active_zombies().size()
 		# a round that drags on (the last zombie stuck somewhere): back to the task after round_end_max_s
 		if str(task.get("paused", "")) == "round_end" and _now() - float(task.get("paused_t", _now())) > float((_cfg().get("pause", {}) as Dictionary).get("round_end_max_s", 20.0)):
