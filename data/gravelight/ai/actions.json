@@ -13,6 +13,7 @@
     "armed": "1 when it carries a firearm (Jakub unarmed: 0)",
     "reloading": "1 while reloading",
     "pressure": "threat pressure (perception), sum of nearby threat / pressure_norm",
+    "buy_pressure": "U10 T-172: the pressure the buy action weighs: the threat pressure, x ee.json shop_break.pressure_mult on an egg bot's shopping break",
     "near": "nearest known zombie / 20 m (1 = none within 20 m)",
     "n5": "known zombies within 5 m / 6",
     "n10": "known zombies within 10 m / 12",
@@ -99,7 +100,7 @@
     ]},
     "buy": {"weight": 0.8, "considerations": [
       {"input": "buy_task", "curve": "value"},
-      {"input": "pressure", "curve": "very_calm"}
+      {"input": "buy_pressure", "curve": "very_calm"}
     ]},
     "resupply": {"weight": 0.95, "considerations": [
       {"input": "resupply_task", "curve": "value"},
