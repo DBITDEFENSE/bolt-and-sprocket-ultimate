@@ -27,6 +27,8 @@ func _ctx(over: Dictionary = {}) -> Dictionary:
 		"hold_spot": 0.0, "repair_task": 0.0, "buy_task": 0.0, "crate_task": 0.0, "resupply_task": 0.0, "resupply_ammo": 1.0, "powerup_task": 0.0, "trap_task": 0.0,
 		"chatter_ok": 0.0, "objective": 0.0, "order": 0.0, "escort": 0.0, "escort_far": 0.0, "stand_fast": 0.0, "ee_task": 0.0, "mark_order": 0.0, "trainer": 0.0}
 	c.merge(over, true)
+	if not over.has("buy_pressure"):
+		c["buy_pressure"] = c["pressure"]   # U10 T-172: the buy action's pressure is the pressure outside a shopping break
 	return c
 
 
