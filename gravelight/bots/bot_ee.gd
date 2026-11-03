@@ -1443,9 +1443,11 @@ func _blocking_door(goal: Vector3) -> BuyDoor:
 func _door_on_way(goal: Vector3) -> BuyDoor:
 	var nav: RID = player.get_world_3d().navigation_map
 	var dest: Vector3 = Vector3.INF
-	for dy: float in [0.0, -1.5, -3.0]:
+	# (U10 T-172: down to the floor under a bell hung 6-10 m up: its door was never found and the Four Bells task
+	# started and stopped "unreachable" 340 times)
+	for dy: float in [0.0, -1.5, -3.0, -5.0, -7.0, -9.0, -11.0]:
 		var sn: Vector3 = brain.snap(goal + Vector3(0.0, dy, 0.0))
-		if _flat(sn, goal) < 2.0 and absf(sn.y - goal.y) < 3.5:
+		if _flat(sn, goal) < 2.5 and absf(sn.y - goal.y) < 3.5 - dy:
 			dest = sn
 			break
 	if dest == Vector3.INF:

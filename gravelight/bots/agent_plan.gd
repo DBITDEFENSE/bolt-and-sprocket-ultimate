@@ -40,7 +40,9 @@ static func step_done(step: Dictionary, st: Dictionary) -> bool:
 	if step.has("power"):
 		return bool(st.get("power", false))
 	if step.has("perk"):
-		return (st.get("perks", []) as Array).has(str(step["perk"]))
+		# (U10 T-172: or one it can never buy now: the solo Second Wind's machine retired after its uses, or the
+		# perk cap is full; the plan sat on that step for five rounds with 36,000 Scrip and an MP40)
+		return (st.get("perks", []) as Array).has(str(step["perk"])) or (st.get("perks_never", []) as Array).has(str(step["perk"]))
 	if step.has("gun"):
 		for g: Variant in st.get("guns", []):
 			var gd: Dictionary = g as Dictionary
@@ -255,12 +257,17 @@ static func state_of(brain: BotBrain) -> Dictionary:
 	var perks: Array = []
 	for p: Variant in PerkManager.owned(brain.player.player_id):
 		perks.append(str(p))
+	var never: Array = []
+	for pm: Node in brain.get_tree().get_nodes_in_group(&"perk_machines"):
+		var pid2: StringName = StringName(str(pm.get("perk_id")))
+		if PerkManager.can_buy(brain.player.player_id, pid2) in [&"gone", &"cap"]:
+			never.append(String(pid2))
 	var guns: Array = []
 	var eco: Dictionary = BotAIData.table("economy")
 	for w: WeaponInstance in brain.player.weapons.slots:
 		guns.append({"id": String(w.base_id()), "upgraded": w.upgraded, "tier": BotEconomy.tier_of(String(w.base_id()), w.upgraded, eco, w.tier),
 			"ctier": w.tier if w.upgraded else 0})
-	return {"doors": doors, "power": GameState.power_on, "perks": perks, "guns": guns, "round": RoundManager.current_round}
+	return {"doors": doors, "power": GameState.power_on, "perks": perks, "perks_never": never, "guns": guns, "round": RoundManager.current_round}
 
 
 ## The current step for this brain's map ({} = none / the plan is through).

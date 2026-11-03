@@ -247,6 +247,12 @@ func start_on(b: BotBrain, qid: StringName, sid: StringName, t: Dictionary, orde
 func on_task_finished(_b: BotBrain, _t: Dictionary, ok: bool, _code: String) -> void:
 	if not ok:
 		tasks_failed += 1
+		# U10 T-172: Full Partner leaves a step this bot just failed to reach alone for a while (the Four Bells
+		# started and stopped "unreachable" 340 times in one soak, every pick)
+		if str(_t.get("source", "")) == "full" and _code in ["unreachable", "missed", "not_found"] and squad != null:
+			_backoff["%d/%s/%s" % [_b.player.player_id, _t["qid"], _t["sid"]]] = squad.time() + float(BotEECatalog.cfg().get("retry_after_s", 45.0))
+
+var _backoff: Dictionary = {}
 
 
 ## Is a teammate's egg task already going for this object (its plan's target or its claim)?
@@ -872,6 +878,8 @@ func pick_for(b: BotBrain, taken: Dictionary, ordered: bool) -> Dictionary:
 			var sid: StringName = StringName(str(sd["id"]))
 			if not QuestManager.is_active(qid, sid) or taken.has("%s/%s" % [qid, sid]):
 				continue
+			if not ordered and float(_backoff.get("%d/%s/%s" % [b.player.player_id, qid, sid], -INF)) > squad.time():
+				continue   # U10 T-172: just failed it: later
 			var t: Dictionary = BotEECatalog.task_def(sd)
 			if t.is_empty():
 				continue
