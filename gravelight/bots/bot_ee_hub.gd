@@ -793,7 +793,8 @@ func kill_zone_for(enemy_id: StringName) -> StringName:
 func pick_for(b: BotBrain, taken: Dictionary, ordered: bool) -> Dictionary:
 	var sc: Dictionary = BotEECatalog.cfg().get("scores", {})
 	var tg: Dictionary = BotEECatalog.cfg().get("together", {})
-	var hot: bool = not b.is_player_bot and BotEE.hot_round(tg, _round_left()) and not b.in_break()
+	var hot: bool = not b.is_player_bot and BotEE.hot_round(tg, _round_left()) and not b.in_break() \
+		and (b.perception.pressure >= float(tg.get("pressure", 0.25)) or b.perception.count_near(b.player.global_position, float(tg.get("threat_m", 12.0))) >= int(tg.get("threat_n", 2)))
 	var qids: Array[StringName] = QuestManager.quest_ids()
 	var best: Dictionary = {}
 	for qi: int in qids.size():

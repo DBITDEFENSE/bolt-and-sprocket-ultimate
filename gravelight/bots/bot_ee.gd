@@ -367,7 +367,11 @@ func _apart(round_left: int) -> bool:
 	var holding: bool = str(_plan.get("do", "")) == "hold"
 	var exempt: bool = (tg.get("exempt_types", []) as Array).has(str(task["type"]))
 	var near: Array = BotEEHub.nearest_teammate(brain.squad, player, player.global_position)
-	if apart_rule(tg, true, holding, exempt, float(near[0]), float(near[1])):
+	# alone AND under threat (a dash across a quiet map is how a person does a far errand; the bots went down alone
+	# with zombies on them, 24-60 m from the others)
+	var threatened: bool = brain.perception.pressure >= float(tg.get("pressure", 0.25)) \
+		or brain.perception.count_near(player.global_position, float(tg.get("threat_m", 12.0))) >= int(tg.get("threat_n", 2))
+	if threatened and apart_rule(tg, true, holding, exempt, float(near[0]), float(near[1])):
 		return true
 	if str(task.get("paused", "")) == "apart" and _now() - float(task.get("paused_t", _now())) < float(tg.get("min_pause_s", 8.0)):
 		return true   # back with the squad for a while at least (not hovering at max_m)
