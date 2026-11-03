@@ -583,6 +583,9 @@ func _hold_rally() -> bool:
 		if b.player.downed or b.player.spectating:
 			continue
 		var n: Node3D = b.ee.gathering_at()
+		if n == null and str(b.ee._plan.get("do", "")) == "use" and str(b.ee.task.get("source", "")) == "full" and not b.is_player_bot \
+				and RoundManager.current_round >= int(hr.get("gather_from_round", 6)) and is_instance_valid(b.ee._plan.get("node")):
+			n = b.ee._plan.get("node") as Node3D   # on its way to start one: the others come along (no cancel churn)
 		var holding: bool = n == null and b.ee.holding_now()
 		if holding:
 			n = b.ee._plan.get("node") as Node3D if is_instance_valid(b.ee._plan.get("node")) else null   # (null: a holdout's zone)
