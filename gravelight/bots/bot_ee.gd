@@ -1126,7 +1126,10 @@ func _do_use(n: Node3D, delta: float) -> void:
 		_unclaim()
 		_replan = true
 	elif r == "failed":
-		_log("couldn't use %s" % n.name)
+		var why: String = ""
+		if n is Crucible:
+			why = " (phase %d, fed by p%d, usable %s)" % [int((n as Crucible).phase), int(n.get("_fed_by")), str((n as Crucible).can_interact(player))]
+		_log("couldn't use %s%s" % [n.name, why])
 		_mark_failed(n, 15.0)
 		task["cur"] = null
 		_unclaim()
