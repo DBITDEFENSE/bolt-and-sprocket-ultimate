@@ -240,7 +240,8 @@ func _pause_state() -> Dictionary:
 	var shop: bool = false
 	var sb: Dictionary = _cfg().get("shop_break", {})
 	if str(task.get("paused", "")) == "shopping":
-		shop = _now() - float(task.get("paused_t", _now())) < float(sb.get("seconds", 20.0)) and not _shop_idle_over()
+		var el: float = _now() - float(task.get("paused_t", _now()))
+		shop = (el < float(sb.get("seconds", 20.0)) or (_shop_errand() and el < float(sb.get("max_s", 50.0)))) and not _shop_idle_over()
 		if not shop:
 			_shop_next = _now() + float(sb.get("every_s", 90.0))
 	elif BotEECatalog.shop_break_due(Economy.get_scrip(player.player_id), str(_plan.get("do", "")), _now(), _shop_next, sb) and not bool(task.get("rally", false)):
@@ -259,6 +260,7 @@ func _pause_state() -> Dictionary:
 
 ## Between two steps (ee.json shop_break.between_steps) the hub holds a free rich bot back from its next pick until then.
 var free_shop_until: float = -INF
+var _free_shop_t0: float = -INF
 var _shop_probe: bool = false
 var _shop_last_errand: float = -INF
 
@@ -285,8 +287,17 @@ func shop_wanted() -> bool:
 	brain.economy.invalidate()
 	for k: String in ["buy", "crate"]:
 		if not (b.get(k, {}) as Dictionary).is_empty():
+			_shop_label = str((b[k] as Dictionary).get("label", k))
 			return true
 	return false
+
+var _shop_label: String = ""
+
+
+## A purchase errand is under way (the walk to a machine 50 m off outlasts a 20 s break: the break runs on, up to
+## shop_break.max_s, or the next egg pick aborted the walk and nothing was ever bought).
+func _shop_errand() -> bool:
+	return brain.action in ["buy_task", "crate_task", "resupply_task"] and not brain.task.is_empty()
 
 
 ## The break is over early: nothing bought for idle_end_s and nothing left on the list.
@@ -308,6 +319,8 @@ func between_steps_shop(now: float) -> bool:
 	var sb: Dictionary = _cfg().get("shop_break", {})
 	if not bool(sb.get("between_steps", false)) or brain.is_player_bot:
 		return false
+	if now >= free_shop_until and _shop_errand() and now < _free_shop_t0 + float(sb.get("max_s", 50.0)):
+		free_shop_until = now + 1.0   # still walking to it: the break runs on
 	if now < free_shop_until:
 		if _shop_idle_over():
 			free_shop_until = -INF
@@ -320,8 +333,9 @@ func between_steps_shop(now: float) -> bool:
 		_shop_next = now + 10.0
 		return false
 	free_shop_until = now + float(sb.get("seconds", 20.0))
+	_free_shop_t0 = now
 	_shop_last_errand = now
-	_log("shopping before the next step (%d Scrip)" % Economy.get_scrip(player.player_id))
+	_log("shopping before the next step (%d Scrip: %s)" % [Economy.get_scrip(player.player_id), _shop_label])
 	return true
 
 
