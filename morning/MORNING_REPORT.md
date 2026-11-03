@@ -7,6 +7,21 @@ and a living world. PAUL guards Kaltenbrunn's round 15 and THE SLENDER walks Tot
 a living world too.** Everything is merged on `master` and pushed. The scorecard target was **not** met (below) and
 the two bot targets were **not** met; both are reported straight.
 
+## Follow-up, 2026-11-03 (after your play-test)
+- **Totenhafen graphics:** the glowing green edge lines, the black flood water, the floating white "discs" (snow domes),
+  the backwards searchlight cone, U-1047's red wash and the harsh cannery checker are fixed (T-173).
+- **LETZTE FAHRT is easy to find now:** the Operator points at the crane hook and coffins in rounds 2 and 4, an amber
+  lamp pulses on the empty hook, the egg's objects go on the minimap, and a banner names each next step.
+- **Better egg rewards (T-174):** Kaltenbrunn's egg gives every perk and pours each to its top tier (tier IV,
+  permanent). Totenhafen's pays 7,500 Scrip and raises every perk you hold one tier.
+- **Pack-a-Punch rooms (T-175):** the Crucible's room on all seven maps is dressed as a shrine to the machine
+  (pipes, tanks, a bench, notices, a key light, the violet glow, a hum, steam and sparks on use); the act Crucibles
+  now face their rooms.
+- **Bots on the eggs (T-172):** bots now spend their Scrip in shopping breaks before the fights and hold together.
+  Totenhafen: 2 of 7 bot runs finished LETZTE FAHRT (the latest in 28 game minutes); Kaltenbrunn: 0 of 5, the best
+  reached step 7 of 10 (before: step 5). Neither reached the 3-of-5 target. What still stops Kaltenbrunn: a radio the
+  bots never hear, the shard placement at the Crucible, a stuck Foreman (docs/QA_REPORT_U10.md section 5).
+
 ## The scorecard (docs/THE_BAR.md)
 The bar moved: Kaltenbrunn's new living world lifted it from 68 to 77 (of 84), so the target became 77, not the 71
 the sections were planned to. Re-scored at FINISH by a separate scorer from the data, tests, smokes and captures:
