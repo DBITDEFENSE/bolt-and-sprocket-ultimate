@@ -556,12 +556,14 @@ func _light(l: Dictionary) -> void:
 	li.light_specular = float(l.get("specular", 0.5))
 	li.light_volumetric_fog_energy = float(l.get("fog", 0.5))
 	li.set_meta("zone", str(data.get("zone", "")))
-	li.position = _v3(l.get("at"), Vector3(0, 2.5, -1.5))
+	var pos: Vector3 = _v3(l.get("at"), Vector3(0, 2.5, -1.5))
+	var bs: Basis = Basis.IDENTITY
+	if l.has("aim"):   # in the room's own frame (look_at would read it as global)
+		var dir: Vector3 = _v3(l["aim"]) - pos
+		if dir.length() > 0.01:
+			bs = Basis.looking_at(dir, Vector3.UP if absf(dir.normalized().y) < 0.98 else Vector3.FORWARD)
+	li.transform = Transform3D(bs, pos)
 	add_child(li)
-	if l.has("aim"):
-		var aim: Vector3 = _v3(l["aim"])
-		if aim.distance_to(li.position) > 0.01:
-			li.look_at_from_position(li.position, aim, Vector3.UP if absf((aim - li.position).normalized().y) < 0.98 else Vector3.FORWARD)
 	lights.append([li, li.light_energy, role])
 
 

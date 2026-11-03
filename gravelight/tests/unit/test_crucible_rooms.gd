@@ -152,6 +152,12 @@ func test_room_builds_lights_draws_and_reacts() -> void:
 			shadowed += 1
 	assert_eq(room.lights.size(), 3)
 	assert_eq(shadowed, 1, "the key light is the room's only shadowed light")
+	for e2: Array in room.lights:
+		if str(e2[2]) == "key":
+			var kl: Light3D = e2[0]
+			assert_lt(kl.position.z, -1.0, "the key light hangs in front of the machine, in the room's frame")
+			var to_machine: Vector3 = (Vector3(0, 1.0, 0) - kl.position).normalized()
+			assert_gt((-kl.transform.basis.z).dot(to_machine), 0.95, "the key light aims at the machine")
 	# idle -> forging: the glow ramps; ready: the sparks fire and the glow flares; the timers are the Crucible's own
 	room._process(0.1)
 	var idle_e: float = room.marke_mat.emission_energy_multiplier

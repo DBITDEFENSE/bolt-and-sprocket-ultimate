@@ -233,11 +233,11 @@ func test_map_key_derivations_and_the_archive() -> void:
 	for row: Dictionary in GLData.load_json("res://data/gravelight/intel.json").get("intel", []):
 		if str(row.get("map", "")) == "4c" and str(row.get("placement", "")) == "fixed":
 			fixed += 1
-	assert_eq(fixed, 2, "the manifest and the program log are fixed Archive documents")
+	assert_eq(fixed, 6, "the manifest, the program log and the four T-171 range documents are fixed Archive documents")
 	var props: int = 0
 	for e: Dictionary in GLData.load_json("res://data/gravelight/story_props.json").get("props", []):
 		if str(e.get("map", "")) == "4c":
 			props += 1
-	assert_eq(props, 2, "both are placed in the hangar")
+	assert_eq(props, 6, "every one is placed (the manifest and the log in the hangar, T-171: the motor pool, the silo, the lab, the radar shack)")
 	assert_true((GLData.load_json("res://data/maps/bake_config.json")["maps"] as Dictionary).has("map04c_groomlake"), "the minimap bake knows the range")
 	assert_true(((GLData.load_json("res://data/gravelight/objectives.json")["maps"] as Dictionary)).has("map04c_groomlake"), "the objectives block exists")
