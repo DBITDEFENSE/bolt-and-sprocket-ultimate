@@ -64,3 +64,10 @@ func test_egg_gun_ok() -> void:
 	assert_false(BotEconomy.egg_gun_ok(false, true, 9000, 5000, 500), "only the designated bot")
 	assert_false(BotEconomy.egg_gun_ok(true, true, 5300, 5000, 500), "not under the reserve")
 	assert_false(BotEconomy.egg_gun_ok(true, false, 9000, 5000, 500), "a gun that can learn")
+
+
+func test_agent_plan_passes_a_perk_it_can_never_buy() -> void:
+	var st: Dictionary = {"perks": [], "perks_never": ["second_wind"]}
+	assert_true(AgentPlan.step_done({"perk": "second_wind"}, st), "a retired Second Wind no longer holds the plan")
+	assert_false(AgentPlan.step_done({"perk": "ironhide_stout"}, st), "a perk it can buy still waits for it")
+	assert_true(AgentPlan.step_done({"perk": "ironhide_stout"}, {"perks": ["ironhide_stout"]}), "owned: done (as before)")
