@@ -825,7 +825,7 @@ func _step(qid: StringName, sid: StringName) -> Dictionary:
 
 ## Actions: {"flag": name} {"vo": id} {"vo_list": [ids]} {"vo_category": [speaker, category]} {"vo_player": category}
 ## {"save_point": true} {"unlock_map": id} {"xp": n} {"archive": id} {"item": id} {"take_item": id}
-## {"banner": text} {"grant_all_perks": true} {"egg_reward": key} {"profile_list": [key, value]}
+## {"banner": text} (with "banner_s": seconds on screen, default 3; T-173) {"grant_all_perks": true} {"egg_reward": key} {"profile_list": [key, value]}
 ## {"summon_boss": [enemy_id, x, y, z]} {"shake": strength}
 ## Story beats (T-086, EASTER_EGGS.md 1.2): {"vo_squad": category} one random standing survivor says it, never
 ## over the radio / the Operator (with "exclude_last": true someone other than the last squad speaker);
@@ -960,7 +960,7 @@ func _do_action(qid: StringName, a: Dictionary, by: int) -> void:
 	if a.has("banner"):
 		var hud: Node = get_tree().get_first_node_in_group(&"hud")
 		if hud != null:
-			hud.call("show_banner", str(a["banner"]), 3.0)
+			hud.call("show_banner", str(a["banner"]), float(a.get("banner_s", 3.0)))
 	if a.has("grant_all_perks"):
 		for pid: int in GameState.player_ids:
 			PerkManager.grant_all(pid)
@@ -1086,7 +1086,7 @@ func predict_submit(target: StringName, value: String) -> Dictionary:
 static func client_subset(a: Dictionary) -> Dictionary:
 	var out: Dictionary = {}
 	for k: String in ["vo_category", "vo_player", "unlock_map", "xp", "archive", "egg_reward", "profile_list", "banner", "shake",
-			"vo_squad", "vo_actor", "exclude_last", "hold", "delay", "vo_retire"]:
+			"vo_squad", "vo_actor", "exclude_last", "hold", "delay", "vo_retire", "banner_s"]:
 		if a.has(k):
 			out[k] = a[k]
 	return out
@@ -1120,7 +1120,7 @@ func run_client_actions(a: Dictionary) -> void:
 	if a.has("banner"):
 		var hud: Node = get_tree().get_first_node_in_group(&"hud")
 		if hud != null:
-			hud.call("show_banner", str(a["banner"]), 3.0)
+			hud.call("show_banner", str(a["banner"]), float(a.get("banner_s", 3.0)))
 	if a.has("shake"):
 		for n: Node in get_tree().get_nodes_in_group(&"players"):
 			n.set("_shake", float(a["shake"]))

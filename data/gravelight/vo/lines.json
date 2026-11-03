@@ -12842,6 +12842,36 @@
     "category": "LF_START",
     "text": "The pumps are running and someone has been reading the boat's paperwork. That boat is {scheduled}. I'd prefer you didn't."
   },
+  "OPR_LF_HINT_HOOK_01": {
+    "speaker": "OPR",
+    "category": "M2_LF_HINT",
+    "text": "Housekeeping. The crane on the east apron is still waiting for its ballast. One lead box off the pallets, onto the hook, and the pumps may {run}.",
+    "condition": "Map 2, round 2+, the crane hook still empty (LetzteFahrtGuide)"
+  },
+  "OPR_LF_HINT_HOOK_02": {
+    "speaker": "OPR",
+    "category": "M2_LF_HINT",
+    "text": "The pumps are still dry, I see. The cargo will not carry {itself}. A coffin. The crane hook. It isn't difficult.",
+    "condition": "Map 2, round 4+, the crane hook still empty (LetzteFahrtGuide)"
+  },
+  "OPR_LF_HINT_RADIO_01": {
+    "speaker": "OPR",
+    "category": "M2_LF_HINT",
+    "text": "Three radios in this harbour are keying the same traffic. The cannery, the workshop, the boat. Please don't {listen} to them.",
+    "condition": "Map 2, after the power, no radio heard yet (LetzteFahrtGuide)"
+  },
+  "OPR_LF_HINT_STAIRS_01": {
+    "speaker": "OPR",
+    "category": "M2_LF_HINT",
+    "text": "A reminder. Ballast goes on the crane. Not over the side at the sea stairs. Never over the {side}.",
+    "condition": "Map 2, after the power, Letzte Fahrt's three dumps not done (LetzteFahrtGuide)"
+  },
+  "OPR_LF_HINT_LOG_01": {
+    "speaker": "OPR",
+    "category": "M2_LF_HINT",
+    "text": "Should anyone find loose pages from a captain's log, they are company property. The cabin, the radio room, the crane office, the pump deck. Hand them {in}.",
+    "condition": "Map 2, round 5+, no log page found yet (LetzteFahrtGuide)"
+  },
   "OPR_LF_CIPHER_01": {
     "speaker": "OPR",
     "category": "LF_CIPHER",

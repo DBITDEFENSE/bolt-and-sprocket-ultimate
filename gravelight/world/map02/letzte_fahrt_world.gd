@@ -61,6 +61,7 @@ func setup(owner_t: Totenhafen) -> void:
 	GLBus.flag_changed.connect(_on_flag)
 	if QuestManager.random_value(QUEST, "log_spots") is Dictionary:
 		place_pages(QuestManager.random_value(QUEST, "log_spots"))
+	LetzteFahrtGuide.attach(t)   # T-173: the Operator's pointers, the hook's lamp, the first-sight map notes
 
 
 func _on_quest_loaded(qid: StringName) -> void:

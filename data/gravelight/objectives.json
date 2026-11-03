@@ -432,6 +432,46 @@
           ]
         },
         {
+          "done": {
+            "any": [
+              {
+                "step": [
+                  "map02_letzte_fahrt",
+                  "s2a_radios"
+                ]
+              },
+              {
+                "quest_done": "map02_letzte_fahrt"
+              }
+            ]
+          },
+          "text": "Three radios are keying the same traffic: listen to all three",
+          "nodes": [
+            "Radio_radio_cannery",
+            "Radio_radio_workshop",
+            "Radio_radio_uboat"
+          ]
+        },
+        {
+          "done": {
+            "any": [
+              {
+                "step": [
+                  "map02_letzte_fahrt",
+                  "s2_cipher"
+                ]
+              },
+              {
+                "quest_done": "map02_letzte_fahrt"
+              }
+            ]
+          },
+          "text": "Set the rotor machine in the signal tower from the radios' groups",
+          "nodes": [
+            "CipherMachine"
+          ]
+        },
+        {
           "text": "Survive."
         }
       ],

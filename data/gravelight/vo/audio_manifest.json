@@ -17163,6 +17163,66 @@
    "source": "tts",
    "chain": "tannoy"
   },
+  "OPR_LF_HINT_HOOK_01": {
+   "line": "OPR_LF_HINT_HOOK_01",
+   "speaker": "OPR",
+   "hash": "a30d1c17b3b61a77",
+   "path": "res://gravelight/audio/vo/opr/OPR_LF_HINT_HOOK_01.ogg",
+   "format": "ogg",
+   "duration": 8.603,
+   "voice": "Mark",
+   "engine": "onecore",
+   "source": "tts",
+   "chain": "tannoy"
+  },
+  "OPR_LF_HINT_HOOK_02": {
+   "line": "OPR_LF_HINT_HOOK_02",
+   "speaker": "OPR",
+   "hash": "b6a2d6df8e23c692",
+   "path": "res://gravelight/audio/vo/opr/OPR_LF_HINT_HOOK_02.ogg",
+   "format": "ogg",
+   "duration": 8.013,
+   "voice": "Mark",
+   "engine": "onecore",
+   "source": "tts",
+   "chain": "tannoy"
+  },
+  "OPR_LF_HINT_LOG_01": {
+   "line": "OPR_LF_HINT_LOG_01",
+   "speaker": "OPR",
+   "hash": "6d305e0c65b28694",
+   "path": "res://gravelight/audio/vo/opr/OPR_LF_HINT_LOG_01.ogg",
+   "format": "ogg",
+   "duration": 9.831,
+   "voice": "Mark",
+   "engine": "onecore",
+   "source": "tts",
+   "chain": "tannoy"
+  },
+  "OPR_LF_HINT_RADIO_01": {
+   "line": "OPR_LF_HINT_RADIO_01",
+   "speaker": "OPR",
+   "hash": "277d157773a2c735",
+   "path": "res://gravelight/audio/vo/opr/OPR_LF_HINT_RADIO_01.ogg",
+   "format": "ogg",
+   "duration": 7.839,
+   "voice": "Mark",
+   "engine": "onecore",
+   "source": "tts",
+   "chain": "tannoy"
+  },
+  "OPR_LF_HINT_STAIRS_01": {
+   "line": "OPR_LF_HINT_STAIRS_01",
+   "speaker": "OPR",
+   "hash": "86aaf035a972a3e3",
+   "path": "res://gravelight/audio/vo/opr/OPR_LF_HINT_STAIRS_01.ogg",
+   "format": "ogg",
+   "duration": 6.863,
+   "voice": "Mark",
+   "engine": "onecore",
+   "source": "tts",
+   "chain": "tannoy"
+  },
   "OPR_LF_KEY_01": {
    "line": "OPR_LF_KEY_01",
    "speaker": "OPR",
