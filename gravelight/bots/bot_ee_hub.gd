@@ -334,6 +334,7 @@ func _process(delta: float) -> void:
 		_pick_t = float(c.get("pick_every_s", 1.0))
 		if mode() == "full":
 			_full_partner()
+		_escorts()
 
 
 ## The quest data's bot_knowledge entries that are polled: on_collect, on_step, on_flag, on_power (U08), on_seen.
@@ -523,6 +524,8 @@ func _full_partner() -> void:
 			continue   # Jakub stays at the side of the one he covers: egg work only when asked
 		if b2.mark != null and b2.mark.active():
 			continue   # on the player's map-mark order (T-069)
+		if _escort_of.has(b2.player.player_id):
+			continue   # U10 T-172: escorting a teammate on a far errand
 		if b2.ee.between_steps_shop(now):
 			continue   # U10 T-172: a rich bot stocks up before its next step
 		var best: Dictionary = pick_for(b2, taken, false)
@@ -614,6 +617,64 @@ func _hold_rally() -> bool:
 		start_on(b2, lead.ee.task["qid"], lead.ee.task["sid"], lead.ee.task["def"], false, "full", at, "task")
 		b2.ee.task["rally"] = true
 	return true
+
+
+## U10 T-172 (ee.json together.escort): in a hot round a Full Partner bot whose errand takes it away from everyone
+## (the Four Bells' far vantages: it paused "apart" 140 times in a soak and never fired a shot) gets a free bot as
+## its escort (the brain's escort_pid, Jakub's follow-and-cover), so it is never alone; the escort goes back to the
+## squad when the errand ends, the bot is down or the round cools. Only escorts this hub set are ever cleared.
+var _escort_of: Dictionary = {}   # escort pid -> escorted pid
+
+func _escorts() -> void:
+	var tg: Dictionary = BotEECatalog.cfg().get("together", {})
+	var on: bool = bool(tg.get("escort", false)) and mode() == "full" and RoundManager.current_round >= int(tg.get("from_round", 9)) \
+		and RoundManager.state == RoundManager.State.ROUND
+	# end the escorts that are no longer needed
+	for epid: Variant in _escort_of.keys():
+		var eb: BotBrain = _brain_of(int(epid))
+		var tb: BotBrain = _brain_of(int(_escort_of[epid]))
+		var keep: bool = on and eb != null and tb != null and tb.ee != null and tb.ee.active() and not tb.player.downed and not tb.player.spectating \
+			and not eb.player.downed and not (eb.ee != null and eb.ee.active())
+		if not keep:
+			if eb != null and int(eb.options.get("escort_pid", 0)) == int(_escort_of[epid]):
+				eb.options["escort_pid"] = 0
+			_escort_of.erase(epid)
+	if not on:
+		return
+	var max_m: float = float(tg.get("max_m", 24.0))
+	for b: BotBrain in squad.brains:
+		if b.ee == null or not b.ee.active() or str(b.ee.task.get("source", "")) != "full" or bool(b.ee.task.get("rally", false)) or b.is_player_bot:
+			continue
+		if b.player.downed or b.player.spectating or _escort_of.values().has(b.player.player_id):
+			continue
+		var a: Vector3 = b.ee.anchor()
+		if a == Vector3.INF:
+			continue
+		var na: Array = nearest_teammate(squad, b.player, a)
+		if float(na[0]) <= max_m:
+			continue   # its spot is by the squad anyway
+		var pick: BotBrain = null
+		var pick_d: float = INF
+		for c: BotBrain in squad.brains:
+			if c == b or c.is_player_bot or c.player.is_companion or c.player.downed or c.player.spectating or _reviving(c):
+				continue
+			if (c.ee != null and c.ee.active()) or (c.mark != null and c.mark.active()) or _escort_of.has(c.player.player_id) or int(c.options.get("escort_pid", 0)) != 0:
+				continue
+			var d: float = _dist(c, b.player.global_position)
+			if d < pick_d:
+				pick_d = d
+				pick = c
+		if pick != null:
+			pick.options["escort_pid"] = b.player.player_id
+			_escort_of[pick.player.player_id] = b.player.player_id
+			print("[ee] %s: escorting %s (%s)" % [Net.display_name(pick.player.player_id), Net.display_name(b.player.player_id), str((b.ee.task["def"] as Dictionary).get("what", "the egg"))])
+
+
+func _brain_of(pid: int) -> BotBrain:
+	for b: BotBrain in squad.brains:
+		if b.player.player_id == pid:
+			return b
+	return null
 
 
 ## U10 T-172: the nearest standing teammate (bot, companion or human; not `me`) to `p`: [flat metres, |dy|] (INF, INF none).
