@@ -453,6 +453,16 @@ func forced_slot() -> int:
 	if _forced.is_empty() or not active():
 		return -1
 	var ws: Array = _forced.get("weapon", [])
+	if bool(_forced.get("gun", false)):
+		# U10 T-172: a quest bell answers a bullet: the best regular gun (a wonder's toll or shard never rang one)
+		var gi: int = -1
+		for j: int in player.weapons.slots.size():
+			var wj: WeaponInstance = player.weapons.slots[j]
+			if wj.weapon_class() == &"wonder" or (wj.mag <= 0 and wj.reserve <= 0):
+				continue
+			if gi < 0 or (player.weapons.slots[gi].weapon_class() == &"pistol" and wj.weapon_class() != &"pistol") or (wj.upgraded and not player.weapons.slots[gi].upgraded):
+				gi = j
+		return gi
 	for i: int in player.weapons.slots.size():
 		var w: WeaponInstance = player.weapons.slots[i]
 		if not ws.is_empty() and (ws.has(String(w.id)) or ws.has(String(w.base_id()))):
@@ -632,10 +642,13 @@ func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, o
 						continue
 					n_open += 1
 					var offs: Array[Vector3] = [Vector3.ZERO]
-					if zv.size.x > 18.0 or zv.size.z > 18.0:
-						for sx: float in [-0.25, 0.25]:
-							for sz: float in [-0.25, 0.25]:
-								offs.append(Vector3(zv.size.x * sx, 0.0, zv.size.z * sz))
+					var nx: int = clampi(int(ceil(zv.size.x / 14.0)), 1, 3)
+					var nz: int = clampi(int(ceil(zv.size.z / 14.0)), 1, 3)
+					for ix: int in nx:
+						for iz: int in nz:
+							var o2: Vector3 = Vector3(zv.size.x * ((float(ix) + 0.5) / float(nx) - 0.5), 0.0, zv.size.z * ((float(iz) + 0.5) / float(nz) - 0.5))
+							if o2.length() > 1.0:
+								offs.append(o2)
 					for o: Vector3 in offs:
 						var zp: Vector3 = brain.snap(zv.global_position + o)
 						if zp == Vector3.INF or (o != Vector3.ZERO and not zv.contains(zp + Vector3.UP * 0.1)) or not brain.reachable(zp):
@@ -1213,6 +1226,8 @@ func _do_input(n: Node3D, delta: float) -> void:
 func _do_shoot(n: Node3D, delta: float) -> void:
 	if bool(_plan.get("need_upgraded", false)):
 		_forced = {"upgraded": true}
+	else:
+		_forced = {"gun": true}
 	var id: int = n.get_instance_id()
 	var bad: Dictionary = task.get("vbad", {})   # U10 (T-163): per target, the vantages whose shots never connected
 	if not _vantage.has(id):
@@ -1222,9 +1237,24 @@ func _do_shoot(n: Node3D, delta: float) -> void:
 		if not _try_door(n.global_position):
 			_finish(false, "unreachable" if not bad.has(id) else "missed")
 		return
+	# U10 T-172: time spent on this target without a shot (the walk there never arrived, or the aim never fired:
+	# the honest soaks' bot worked the Four Bells for 90 game minutes and never fired once): another angle
+	var stk: String = "stall_%d" % id
+	task[stk] = float(task.get(stk, 0.0)) + delta
+	if float(task[stk]) > float(_cfg().get("shoot_stall_s", 35.0)):
+		task[stk] = 0.0
+		var lst0: Array = bad.get(id, [])
+		lst0.append(vp)
+		bad[id] = lst0
+		task["vbad"] = bad
+		_vantage.erase(id)
+		_log("no shot at %s from %s: another angle" % [n.name, str(vp.snapped(Vector3.ONE * 0.1))])
+		if lst0.size() >= int(_cfg().get("vantages_max", 3)) * 2:
+			_finish(false, "missed")
+		return
 	if not _walk(vp, 0.8, delta):
 		return
-	if bool(_plan.get("need_upgraded", false)) and forced_slot() >= 0 and player.weapons.current_index != forced_slot():
+	if forced_slot() >= 0 and player.weapons.current_index != forced_slot():
 		brain.aim.select(forced_slot())
 		return
 	_shoot_target = n
@@ -1234,6 +1264,7 @@ func _do_shoot(n: Node3D, delta: float) -> void:
 	# was in sight from a spot whose every round hit the tank's frame)
 	var sk: String = "shots_%d" % id
 	if brain.aim.shoot_at(n.global_position, 1.0):
+		task[stk] = 0.0
 		task[sk] = int(task.get(sk, 0)) + 1
 		brain.aim.fire_cd = maxf(brain.aim.fire_cd, 0.6)
 		_replan = true
