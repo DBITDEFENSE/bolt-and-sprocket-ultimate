@@ -692,3 +692,13 @@ and for s6 a `carry` of the key (group `boat_keys`) to the key slot: the bots fi
 and the key, when he drops it or it floats up after the failsafe, is the task (an escort ended with the fight and left
 the key lying). Player-only: only the cutscene (`s10_ending`). Smoke: `smoke_letzte_fahrt` (Full Partner, one
 run per process, the forcing is listed in its header).
+
+**Findable (UPDATE 10 s10, DECISIONS T-173; the owner never found it in play):** the quest loads in every match and s0a
+(a coffin on the crane hook) is live from round 1; what was missing was a pointer past the power. `LetzteFahrtGuide`
+(`gravelight/world/map02/letzte_fahrt_guide.gd`, attached by `LetzteFahrtWorld`): the Operator's round-start pointers
+(`OPR_LF_HINT_*`, once each, only while their step is active and untouched: the crane hook at rounds 2 and 4, the radios
+and the sea stairs after the power, the log pages from round 5), an amber lamp pulsing on the empty hook with the crane
+creaking until the first coffin hangs there, and a SightNote (first-sight minimap notes on the hook, the coffins, the
+sea stairs, the radios and the rotor machine). The quest's banners now name the next step (`banner_s` keeps them 5.5 s),
+and the pause OBJECTIVES' current line goes on to the radios and the rotor machine after the power. Smoke:
+`smoke_lf_start`; test: `test_letzte_fahrt_guide`.

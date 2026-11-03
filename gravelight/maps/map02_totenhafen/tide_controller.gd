@@ -325,12 +325,22 @@ func _build_sheets() -> void:
 		sm.roughness = 0.08
 		sm.metallic = 0.3
 		mat = sm
+	# T-173: the sheets get their own copy of the dock water (calmer: a shallow sheet over a floor, never the dock's
+	# drain offset or storm swell) and a subdivided plane, so the waves move them; a 4-vertex plane read as a black slab.
+	if mat is ShaderMaterial:
+		var sheet_mat: ShaderMaterial = (mat as ShaderMaterial).duplicate() as ShaderMaterial
+		sheet_mat.set_shader_parameter("amp", 0.06)
+		sheet_mat.set_shader_parameter("level_offset", 0.0)
+		sheet_mat.set_shader_parameter("ripple", 1.3)
+		mat = sheet_mat
 	var i: int = 0
 	for b: AABB in _spring_boxes:
 		var mi: MeshInstance3D = MeshInstance3D.new()
 		mi.name = "SpringSheet%d" % i
 		var pm: PlaneMesh = PlaneMesh.new()
 		pm.size = Vector2(b.size.x, b.size.z)
+		pm.subdivide_width = clampi(int(b.size.x), 1, 64)
+		pm.subdivide_depth = clampi(int(b.size.z), 1, 64)
 		mi.mesh = pm
 		mi.material_override = mat
 		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
