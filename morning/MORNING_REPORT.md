@@ -8,25 +8,27 @@ a living world too.** Everything is merged on `master` and pushed. The scorecard
 the two bot targets were **not** met; both are reported straight.
 
 ## The scorecard (docs/THE_BAR.md)
-The bar moved: Kaltenbrunn's new living world lifted it from 68 to 76 (of 84), so the target became 76, not the 71
+The bar moved: Kaltenbrunn's new living world lifted it from 68 to 77 (of 84), so the target became 77, not the 71
 the sections were planned to. Re-scored at FINISH by a separate scorer from the data, tests, smokes and captures:
 
 | Column | Before | After | Target | Verdict |
 |---|---|---|---|---|
 | Crossroads Inn (the bar) | 71 | 71 | — | — |
-| Kaltenbrunn (the bar) | 68 | 76 | — | — |
-| Totenhafen | 45 | TBD (67 before the send-backs) | 76 | TBD |
-| Fernflug I | 43 | TBD (59) | 76 | TBD |
-| Fernflug II | 37 | TBD (59) | 76 | TBD |
-| Fernflug III | 43 | TBD (60) | 76 | TBD |
-| Fernflug IV | 39 | TBD (59) | 76 | TBD |
+| Kaltenbrunn (the bar) | 68 | 77 | — | — |
+| Totenhafen | 45 | 69 | 77 | not met (8 short) |
+| Fernflug I | 43 | 59 | 77 | not met |
+| Fernflug II | 37 | 59 | 77 | not met |
+| Fernflug III | 43 | 60 | 77 | not met |
+| Fernflug IV | 39 | 61 | 77 | not met |
 
 Every new column passes the other two tests (three "only here" features a player can act on: 7–10 each; no seed row
 at 0). Against the owner's 18 seed rows alone Totenhafen (48) beats both references' baseline (44). The acts gain
-16–22 points each but stay 11–12 under the old target and about 17 under the new one: a greybox act does not become
-a Map 1 in one night. The rows the scorer sent back and what was done about them are in THE_BAR.md §3.3 and §6.
+16–22 points each but stay 10–12 under the old target and 16–18 under the new one: a greybox act does not become
+a Map 1 in one night. The scores above are from before the last fixes, which were not re-scored: Totenhafen got two
+people with favours, the teller's reactions, Hinnerk's stair scene, Jakub's lines and an arrival beat; Groom Lake got
+four story props; every act boss now has a smoke. The rows sent back are in THE_BAR.md §3.3.
 
-**Blind review:** TBD (docs/THE_BAR.md §6).
+**Blind review: not done.** The reviewer ran out of credits mid-scoring and was not restarted, to save usage. The clips and capture sets it needs are ready on this PC (morning/clips/u10_blind/, morning/screenshots/u10_before and u10_after).
 
 ## 5 things to try first on Totenhafen (Play.bat → the "Update 10" buttons)
 1. **Spring Tide (round 9):** the aprons go under, the piers stay dry, the drowned climb out at the pier edges, a
@@ -95,16 +97,21 @@ run (NEEDS_DEVIN). Loading: the card is on screen within 75 ms on every hop; the
 frame under the card (MapRoot's own `_ready`; the fix is to split it across frames, not done).
 
 ## Tests
-TBD: the final counts (unit suite, smokes) after the send-backs merged. Nothing was checked in a rendered window on
-this PC; every capture and clip came from an invisible software renderer (WSL + Xvfb).
+Unit suite 1831/1831 after the Totenhafen fixes; scripts 747, 0 failed on the final master. The full smoke run was
+stopped at 28 of 84 to save usage, with 28 passing and none failing; every merge before it ran its own smokes green.
+Nothing was checked in a rendered window on this PC; every capture and clip came from an invisible software renderer
+(WSL + Xvfb). The seven 2-minute tour clips with sound are in morning/clips/u10_blind/ (local only, not in git).
 
 ## Placeholders (docs/PLACEHOLDERS_U10.md)
-TBD: the list (5 replaced, 16 open). All VO on the new content is placeholder TTS (OneCore/Kokoro); the Operator, PA,
+5 replaced, 16 open. All VO on the new content is placeholder TTS (OneCore/Kokoro); the Operator, PA,
 Wittkamp, Dee, Hale and the Woman in Violet want cast voices. DER KIELHOLER has no bespoke animation clips (the generic
 puppet; online clients see the generic puppet too), and the Undertow's first-person model is primitives.
 
 ## Still not working or not done
-- The scorecard target (76) on Totenhafen and the acts; the two bot targets (above).
+- The scorecard target (77) on Totenhafen and the acts; the two bot targets (above); the blind review.
+- Four Fernflug fixes are unfinished in a worker's folder, not on master: the tellers' reactions on Acts I, III and
+  IV, the Moon's field units fighting, Jakub's act lines, Act II's crates.
+- The web and Windows builds were not rebuilt from this master (`sh tools/build_web.sh`, `sh tools/build_windows.sh`).
 - The browser link is not deployed (your Vercel login; NEEDS_DEVIN).
 - Real FPS unmeasured; Crossroads Inn over the browser draw-call budget.
 - The Inn's 3.5 s cold-start freeze under the loading card.
