@@ -184,10 +184,14 @@ func tick_think(now: float) -> void:
 	if why == "" and was != "" and now - float(task.get("paused_t", now)) < float((_cfg().get("pause", {}) as Dictionary).get("min_pause_s", 3.0)):
 		why = was   # a pause lasts a moment at least (no flicker between fighting and the task)
 	if why != was:
+		if was == "shopping":
+			_shop_ended(now)   # U10 T-172: however it ended (a fight cut in), the cooldown starts now
 		task["paused"] = why
+		if why == "shopping":
+			_shop_scrip0 = Economy.get_scrip(player.player_id)
 		if why != "":
 			task["paused_t"] = now
-			_log("paused (%s)" % why)
+			_log("paused (%s)%s" % [why, (" to " + _shop_label) if why == "shopping" else ""])
 			if why == "player_away":
 				_say("EE_WAIT_PLAYER", false)
 			else:
@@ -242,9 +246,9 @@ func _pause_state() -> Dictionary:
 	if str(task.get("paused", "")) == "shopping":
 		var el: float = _now() - float(task.get("paused_t", _now()))
 		shop = (el < float(sb.get("seconds", 20.0)) or (_shop_errand() and el < float(sb.get("max_s", 50.0)))) and not _shop_idle_over()
-		if not shop:
-			_shop_next = _now() + float(sb.get("every_s", 90.0))
-	elif BotEECatalog.shop_break_due(Economy.get_scrip(player.player_id), str(_plan.get("do", "")), _now(), _shop_next, sb) and not bool(task.get("rally", false)):
+	elif BotEECatalog.shop_break_due(Economy.get_scrip(player.player_id), str(_plan.get("do", "")), _now(), _shop_next, sb) and not bool(task.get("rally", false)) \
+			and not brain.is_player_bot and brain.perception.pressure < float(sb.get("max_pressure", 0.5)):
+		# (the agent spends by its own plan, AgentPlan.buy_first; a bot under pressure can't shop: buy_task wants calm)
 		# U10 T-172: only when there is something to buy (a break with nothing on the list cost the egg 20 s)
 		shop = shop_wanted()
 		if not shop:
@@ -314,26 +318,44 @@ func _shop_idle_over() -> bool:
 var _shop_idle_check_t: float = -INF
 
 
+## A shopping break ended: the next one waits every_s, longer after breaks that bought nothing (x2, x3, x4: the
+## soak's bots took 130 breaks in one match for a purchase they never made).
+var _shop_scrip0: int = 0
+var _shop_dry: int = 0
+
+func _shop_ended(now: float) -> void:
+	var sb: Dictionary = _cfg().get("shop_break", {})
+	if Economy.get_scrip(player.player_id) >= _shop_scrip0:
+		_shop_dry = mini(_shop_dry + 1, 3)
+	else:
+		_shop_dry = 0
+	_shop_next = now + float(sb.get("every_s", 90.0)) * float(1 + _shop_dry)
+
+
 ## The hub asks for a free bot between two steps: true = it shops first (its next pick waits).
 func between_steps_shop(now: float) -> bool:
 	var sb: Dictionary = _cfg().get("shop_break", {})
 	if not bool(sb.get("between_steps", false)) or brain.is_player_bot:
 		return false
-	if now >= free_shop_until and _shop_errand() and now < _free_shop_t0 + float(sb.get("max_s", 50.0)):
+	if free_shop_until > -INF and now >= free_shop_until and _shop_errand() and now < _free_shop_t0 + float(sb.get("max_s", 50.0)):
 		free_shop_until = now + 1.0   # still walking to it: the break runs on
 	if now < free_shop_until:
 		if _shop_idle_over():
 			free_shop_until = -INF
-			_shop_next = now + float(sb.get("every_s", 90.0))
+			_shop_ended(now)
 			return false
 		return true
-	if not BotEECatalog.shop_break_due(Economy.get_scrip(player.player_id), "", now, _shop_next, sb):
+	if free_shop_until > -INF:
+		free_shop_until = -INF
+		_shop_ended(now)   # ran out its time
+	if not BotEECatalog.shop_break_due(Economy.get_scrip(player.player_id), "", now, _shop_next, sb) or brain.perception.pressure >= float(sb.get("max_pressure", 0.5)):
 		return false
 	if not shop_wanted():
 		_shop_next = now + 10.0
 		return false
 	free_shop_until = now + float(sb.get("seconds", 20.0))
 	_free_shop_t0 = now
+	_shop_scrip0 = Economy.get_scrip(player.player_id)
 	_shop_last_errand = now
 	_log("shopping before the next step (%d Scrip: %s)" % [Economy.get_scrip(player.player_id), _shop_label])
 	return true

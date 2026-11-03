@@ -527,8 +527,8 @@ func _full_partner() -> void:
 			continue   # U10 T-172: a rich bot stocks up before its next step
 		var best: Dictionary = pick_for(b2, taken, false)
 		var sj: Dictionary = scout_job()
-		if not sj.is_empty() and (best.is_empty() or str((best["t"] as Dictionary).get("type", "")) == "collect"):
-			best = sj   # U10 (T-163; T-172: before a collect step too): a "seen" need: go and look
+		if not sj.is_empty() and (best.is_empty() or str((best["t"] as Dictionary).get("type", "")) == "collect" or best["qid"] != sj["qid"]):
+			best = sj   # U10 (T-163; T-172: before a collect step or a side quest too): a "seen" need: go and look
 		if not best.is_empty():
 			start_on(b2, best["qid"], best["sid"], best["t"], false, "full", null, best["as"])
 			busy += 1
@@ -549,9 +549,10 @@ func _scout_first(full: bool) -> void:
 	for b: BotBrain in squad.brains:
 		if b.ee == null or not b.ee.active() or str(b.ee.task.get("source", "")) != "full" or b.player.is_companion:
 			continue
-		if str(b.ee.task.get("type", "")) != "collect":
+		var side: bool = b.ee.task["qid"] != sj["qid"]
+		if str(b.ee.task.get("type", "")) != "collect" and not side:
 			continue
-		if pick == null or str(b.ee._plan.get("do", "")) == "wait":
+		if pick == null or side or str(b.ee._plan.get("do", "")) == "wait":
 			pick = b
 	if pick != null:
 		pick.ee.cancel("the scout first")
