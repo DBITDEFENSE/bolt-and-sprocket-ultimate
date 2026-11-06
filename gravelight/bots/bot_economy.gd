@@ -634,7 +634,7 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 			if ctr != null and squad.can_claim(ctr, pid):
 				var cst: Vector3 = brain.stand_point(ctr)
 				if cst != Vector3.INF:
-					out.append({"node": ctr, "kind": "bank", "amount": mv, "cost": 0, "stand": cst,
+					out.append({"node": ctr, "kind": "bank", "amount": mv, "want": want, "keep": reserve + save_up, "cost": 0, "stand": cst,
 						"value": float(bk.get("withdraw_value", 0.85)) if mv < 0 else _pv("bank", _flat(ctr.global_position, me)),
 						"label": ("take %d Scrip out of the bank" % -mv) if mv < 0 else ("bank %d Scrip" % mv)})
 	if brain.is_player_bot:

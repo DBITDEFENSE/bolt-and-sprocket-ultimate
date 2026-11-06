@@ -14,6 +14,7 @@ extends Node
 @export var need_crucible: bool = false
 @export var need_deposit: bool = true   # (Map 0: after the Crucible every bot saves its pocket for the next teaching)
 const PHASE1_S: float = 300.0
+const PHASE1_MAX_S: float = 600.0   # (phase 1 runs on until the companion has used the bench, the Crucible or the bank)
 const PHASE2_S: float = 60.0
 
 var _map: MapRoot
@@ -93,7 +94,7 @@ func _physics_process(delta: float) -> void:
 		1:
 			_hold_break()
 			_poll()
-			if _t - _t_stage > PHASE1_S:
+			if _t - _t_stage > PHASE1_S and (_comp_second() or _t - _t_stage > PHASE1_MAX_S):
 				_phase2()
 				_stage = 2
 				_t_stage = _t
@@ -216,6 +217,11 @@ func _poll() -> void:
 							_note("%s has %s/%s on its %s" % [_who[pid], slot, str(o), w.display_name()])
 
 
+func _comp_second() -> bool:
+	var cb: Dictionary = _bought.get(_comp_pid, {})
+	return int(cb.get("bench", 0)) + int(cb.get("crucible", 0)) + int(cb.get("deposit", 0)) > 0
+
+
 ## Phase 2: a bot with little in its pocket and a lot in the bank wants something: it takes money out.
 func _phase2() -> void:
 	_report("after phase 1")
@@ -238,6 +244,8 @@ func _phase2() -> void:
 	_bank_last[_p2_pid] = 20000
 	var b: BotBrain = _brain_of(_p2_pid)
 	if b != null:
+		if not b.task.is_empty():
+			b.drop_task()   # (an errand planned on the old pocket)
 		b.on_round_started()
 		b.economy.invalidate()
 	_note("phase 2: %s has %d in the pocket, 20000 in the bank, tonics %s" % [_who[_p2_pid], Economy.get_scrip(_p2_pid), str(PerkManager.owned(_p2_pid))])

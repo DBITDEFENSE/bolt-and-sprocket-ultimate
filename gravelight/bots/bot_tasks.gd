@@ -129,12 +129,16 @@ func _shop(e: Dictionary, node: Interactable, delta: float) -> String:
 			if not bool(br.get("ok", false)):
 				return "failed"
 		elif kind == "bank" and node is BankCounter:
-			# T-177: the bot's own account (BankAccount.bot_deposit / bot_withdraw), once a round
-			var amt: int = int(e.get("amount", 0))
-			var moved: int = BankAccount.bot_deposit(player.player_id, amt) if amt > 0 else BankAccount.bot_withdraw(player.player_id, -amt)
-			brain.economy.bank_visits_round += 1
+			# T-177: the bot's own account (BankAccount.bot_deposit / bot_withdraw), once a round; the plan is re-checked
+			# at the till (its pocket may have changed on the walk: a deposit planned for 5,450 must not bank the 200 left)
+			var pid: int = player.player_id
+			var amt: int = BankAccount.bot_plan(Economy.get_scrip(pid), BankAccount.bot_balance(pid), int(e.get("want", 0)), int(e.get("keep", 0)), 1)
+			if amt == 0 or signi(amt) != signi(int(e.get("amount", 0))):
+				return "failed"
+			var moved: int = BankAccount.bot_deposit(pid, amt) if amt > 0 else BankAccount.bot_withdraw(pid, -amt)
 			if moved <= 0:
 				return "failed"
+			brain.economy.bank_visits_round += 1
 		elif node.can_interact(player):
 			node.interact(player)
 		if kind == "repair":

@@ -589,8 +589,11 @@ func context(now: float) -> Dictionary:
 	var esc: Player = escort_target()
 	c["escort"] = 1.0 if esc != null else 0.0
 	c["escort_far"] = clampf(_flat(esc.global_position, player.global_position) / 15.0, 0.0, 1.0) if esc != null else 0.0
-	if esc != null and not task.is_empty() and str(task.get("action", "")) in ["buy", "crate", "resupply"] and in_break():
-		c["escort_far"] = 0.0   # T-177: a companion shopping in a break finishes the errand (the escort pulled it back at 6 m, every time)
+	if esc != null and in_break() and per.pressure < 0.3:
+		# T-177: in a calm break the escort's pull doesn't grow with distance: a companion's shopping errand isn't pulled
+		# back at 6 m, and the bench / bank (worth less than a tonic) can win over standing beside the player at all
+		# (escort x1.5 + hysteresis beat them forever); with nothing to buy, escort still wins and it walks back
+		c["escort_far"] = 0.0
 	if not task.is_empty():
 		# the errand under way keeps its value (the economy no longer lists what it already paid for)
 		var key: String = str({"buy": "buy_task", "repair": "repair_task", "crate": "crate_task", "trap": "trap_task", "resupply": "resupply_task",
