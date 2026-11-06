@@ -1,5 +1,13 @@
 {
   "_doc": "Map 1 world machinery tuning (MAPS.md: power-on event, pylon holdouts, lift). exfil: the campaign beacon at the yard gate (T-033), see map00.json for the fields.",
+  "requiem": {
+    "_doc": "T-181 the Four Bells made easier (QuestBell): each small bell's shot box is bell_hit_box_m wide (a near miss rings it; the 0.64 m box let bursts and the specimen tank's frame eat the rounds), an explosion within bell_splash_m rings it, and from bells_glow_after (the music box opened) the four live bells glow faintly and chime their note every bells_chime_s, so they can be found by eye and ear; a bell already rung in this run never resets the sequence (map01_requiem s6 repeat_ok). The Chapel bell's defaults (bell_lit_solo 90, bell_lit_coop 75, bell_relight_cooldown 60, foreman_summon_delay 20) are unchanged.",
+    "bell_hit_box_m": 1.1,
+    "bell_splash_m": 3.0,
+    "bells_glow_after": "s5_reliquary",
+    "bells_chime_s": 20.0,
+    "bells_chime_db": -6.0
+  },
   "power": {
     "vo_delay": 1.5,
     "light_sweep_start": 2.0,

@@ -85,7 +85,25 @@ func _build_maps() -> void:
 			if str(m[2]) == "":
 				c.disabled = true
 			grid.add_child(c)
-	content.add_child(MenuKit.button("Back to survivors", _unpick, 20, ""))
+	var bottom: HBoxContainer = HBoxContainer.new()
+	bottom.name = "BottomRow"
+	bottom.add_theme_constant_override("separation", 14)
+	content.add_child(bottom)
+	bottom.add_child(MenuKit.button("Back to survivors", _unpick, 20, ""))
+	_build_egg_mode(bottom)
+
+
+## T-181 Easter Egg Mode (EggMode): a practice match for the egg, few or no zombies, no profile progress.
+func _build_egg_mode(row: HBoxContainer) -> void:
+	var cur: int = maxi(0, EggMode.MODES.find(EggMode.mode_of(GLSettings.values)))
+	var b: Button = MenuKit.button("Easter Egg Mode: %s" % EggMode.MODE_LABELS[cur], func() -> void:
+		GLSettings.set_value(EggMode.SETTING, EggMode.MODES[(cur + 1) % EggMode.MODES.size()])
+		rebuild(), 20)
+	b.name = "EggModeButton"
+	b.custom_minimum_size = Vector2(320, 40)
+	row.add_child(b)
+	if cur > 0:
+		row.add_child(MenuKit.label("Practice: the egg's own enemies still come; no XP, challenges or egg rewards", 16, MenuKit.DIM))
 
 
 ## The Muster (T-079): this survivor's sidearm and Field Habits, and the way to change them before the match.

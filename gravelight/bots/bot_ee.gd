@@ -257,6 +257,8 @@ func _pause_state() -> Dictionary:
 		and hunt_pause_on(brain.squad.hunt_stalled_s(), BotAIData.combat("hunt") as Dictionary)
 	if hunt_pause:
 		left = 1
+	elif EggMode.on():
+		pass   # T-181 Easter Egg Mode: every round "ends" with a crawler or two up; the work never pauses for it
 	elif RoundManager.state == RoundManager.State.ROUND and RoundManager.to_spawn <= 0 and brain.squad.director() != null and _round_end_skip != RoundManager.current_round:
 		left = brain.squad.director().active_zombies().size()
 		# a round that drags on (the last zombie stuck somewhere): back to the task after round_end_max_s
@@ -693,6 +695,8 @@ func snapshot(qid: StringName, sid: StringName, t: Dictionary, focus: Variant, o
 			w["mode"] = hub.mode() if hub_ok else ""   # U10 (T-163): Full Partner may do the task's full_partner stages
 		"scout":
 			w["known"] = hub_ok and hub.knowledge.knows(str(t.get("need", "")))
+			if hub_ok and bool(t.get("find_step", false)):
+				w["known"] = not hub.collect_scout_due(qid, sid, t.get("of", {}))   # T-181: something of the step found
 			var visited: Dictionary = task.get("visited", {}) if active() else {}
 			var pts: Array = []
 			var n_all: int = 0
@@ -1306,25 +1310,41 @@ func _do_shoot(n: Node3D, delta: float) -> void:
 		_forced = {"gun": true}
 	var id: int = n.get_instance_id()
 	var bad: Dictionary = task.get("vbad", {})   # U10 (T-163): per target, the vantages whose shots never connected
+	var stk: String = "stall_%d" % id
+	var wk: String = "walk_%d" % id
 	if not _vantage.has(id):
 		_vantage[id] = brain.vantage_for(n.global_position, bad.get(id, []))
+		task[wk] = 0.0
+		task[stk] = 0.0
+		task["wbudget_%d" % id] = shoot_walk_budget(_flat(player.global_position, _vantage[id]) if _vantage[id] != Vector3.INF else 0.0, _cfg())
 	var vp: Vector3 = _vantage[id]
 	if vp == Vector3.INF:
 		if not _try_door(n.global_position, true):
 			_finish(false, "unreachable" if not bad.has(id) else "missed")
 		return
-	# U10 T-172: time spent on this target without a shot (the walk there never arrived, or the aim never fired:
-	# the honest soaks' bot worked the Four Bells for 90 game minutes and never fired once): another angle
-	var stk: String = "stall_%d" % id
-	task[stk] = float(task.get(stk, 0.0)) + delta
-	if float(task[stk]) > float(_cfg().get("shoot_stall_s", 35.0)):
+	# U10 T-172: time spent on this target without a shot: another angle. T-181: the walk to the vantage has its own
+	# budget (shoot_walk_budget: the Four Bells hang 60-100 m apart, surface to depths, and the 35 s stall clock ran
+	# out on the walk itself: "no shot at Bell_coldstore_pipe" was a bot still on the stairs); the stall clock counts
+	# only at the vantage, where the aim should fire within shoot_stall_s.
+	var at_v: bool = player.global_position.distance_to(vp) <= 1.2
+	if not at_v:
+		task[wk] = float(task.get(wk, 0.0)) + delta
+	else:
+		task[stk] = float(task.get(stk, 0.0)) + delta
+	if float(task[stk]) > float(_cfg().get("shoot_stall_s", 35.0)) or float(task.get(wk, 0.0)) > float(task.get("wbudget_%d" % id, 60.0)):
+		var why: String = "no shot at %s from %s" % [n.name, str(vp.snapped(Vector3.ONE * 0.1))]
+		if not at_v:
+			why = "never reached the spot for %s at %s (%.0f m left)" % [n.name, str(vp.snapped(Vector3.ONE * 0.1)), player.global_position.distance_to(vp)]
+		else:
+			why += " (facing off %.0f deg, cd %.1f)" % [rad_to_deg(brain.facing().angle_to((n.global_position - brain.aim.eye()).normalized())), brain.aim.fire_cd]
 		task[stk] = 0.0
+		task[wk] = 0.0
 		var lst0: Array = bad.get(id, [])
 		lst0.append(vp)
 		bad[id] = lst0
 		task["vbad"] = bad
 		_vantage.erase(id)
-		_log("no shot at %s from %s: another angle" % [n.name, str(vp.snapped(Vector3.ONE * 0.1))])
+		_log(why + ": another angle")
 		if lst0.size() >= int(_cfg().get("vantages_max", 3)) * 2:
 			_finish(false, "missed")
 		return
@@ -1339,7 +1359,9 @@ func _do_shoot(n: Node3D, delta: float) -> void:
 	# vantage: shots_per_vantage without the target answering -> another angle (a bell inside the specimen tank
 	# was in sight from a spot whose every round hit the tank's frame)
 	var sk: String = "shots_%d" % id
-	if brain.aim.shoot_at(n.global_position, 1.0):
+	# T-181: the aim's tolerance from the target's size at this range (the bells' 1.1 m shot box; 1 deg at most was
+	# a needle at 3 m under the bell, and the pitch spring never settled inside it)
+	if brain.aim.shoot_at(n.global_position, aim_tol_deg(brain.aim.eye().distance_to(n.global_position), _cfg())):
 		task[stk] = 0.0
 		task[sk] = int(task.get(sk, 0)) + 1
 		brain.aim.fire_cd = maxf(brain.aim.fire_cd, 0.6)
@@ -1354,6 +1376,19 @@ func _do_shoot(n: Node3D, delta: float) -> void:
 			_log("no hit on %s from %s: another angle" % [n.name, str(vp.snapped(Vector3.ONE * 0.1))])
 		if int(task[sk]) >= per_v * int(_cfg().get("vantages_max", 3)):
 			_finish(false, "missed")
+
+
+## T-181: the facing tolerance (degrees) for a shot at a target `dist_m` away: the angle half a target_m-wide target
+## covers, between 1 and aim_tol_max_deg.
+static func aim_tol_deg(dist_m: float, c: Dictionary) -> float:
+	var half: float = float(c.get("shoot_target_m", 0.8)) * 0.5
+	return clampf(rad_to_deg(atan2(half, maxf(0.5, dist_m))), 1.0, float(c.get("aim_tol_max_deg", 4.0)))
+
+
+## T-181: seconds a shoot_target bot may walk to a vantage `dist_m` away (flat) before it tries another angle:
+## shoot_walk_s + shoot_walk_per_m a metre (ee.json).
+static func shoot_walk_budget(dist_m: float, c: Dictionary) -> float:
+	return float(c.get("shoot_walk_s", 30.0)) + float(c.get("shoot_walk_per_m", 0.6)) * maxf(0.0, dist_m)
 
 
 func _do_hold(delta: float) -> void:

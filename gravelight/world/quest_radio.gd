@@ -1,7 +1,8 @@
 class_name QuestRadio
 extends Interactable
 ## One of the 7 candidate radios for step 2a. Three are seeded live (one per zone group). Once the Core Vault
-## is open (step 2a active) a live radio crackles within 12 m; using it plays its code fragment (replayable).
+## is open (step 2a active) a live radio crackles within HEAR_M (T-181: 18 m, was 12: louder, easier to find by ear);
+## using it plays its code fragment (replayable).
 
 const QUEST: StringName = &"map01_requiem"
 
@@ -13,7 +14,8 @@ var _tick: float = 0.0
 var _lamp: MeshInstance3D
 
 const LAMP_OFF: Color = Color(0.16, 0.12, 0.08)
-var _static: AudioStreamPlayer3D   # looping crackle (child): on while calling and a player is within 12 m
+const HEAR_M: float = 18.0   # the crackle carries this far (the bots hear it as far: map01_requiem s2a hear_m)
+var _static: AudioStreamPlayer3D   # looping crackle (child): on while calling and a player is within HEAR_M
 
 
 func _ready() -> void:
@@ -61,7 +63,7 @@ func _process(delta: float) -> void:
 	if _tick <= 0.0:
 		_tick = randf_range(2.5, 4.0)
 		var p: Player = Net.session.local_player if Net.session != null else get_tree().get_first_node_in_group(&"players") as Player
-		var near: bool = p != null and p.global_position.distance_to(global_position) < 12.0
+		var near: bool = p != null and p.global_position.distance_to(global_position) < HEAR_M
 		if _static != null and near != _static.playing:
 			if near:
 				_static.play()

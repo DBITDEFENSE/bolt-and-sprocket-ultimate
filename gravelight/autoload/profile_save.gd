@@ -18,6 +18,10 @@ var last_summary: Dictionary = {}
 var _prog: Dictionary = {}
 var _dossiers: Dictionary = {}
 var _intel: Dictionary = {}     # id -> row
+## T-181: this match is an Easter Egg Mode practice match (EggMode): nothing it does reaches the profile (no XP,
+## challenges, stats, best round, map unlocks, endings, egg records or egg rewards). Set at match start, cleared
+## once the match is committed.
+var practice: bool = false
 
 
 func _ready() -> void:
@@ -147,6 +151,8 @@ func load_profile() -> void:
 
 ## An ending the player has seen (UPDATE 07 Map 4 Act IV, T-113: "kuendigung" / "renewed"); the list lives in the profile.
 func note_ending(ending_id: String) -> void:
+	if practice:
+		return
 	var seen: Array = profile.get("endings_seen", []) if profile.get("endings_seen", []) is Array else []
 	if not seen.has(ending_id):
 		seen.append(ending_id)
@@ -203,6 +209,8 @@ func is_map_unlocked(map_id: StringName) -> bool:
 
 
 func unlock_map(map_id: StringName) -> void:
+	if practice:
+		return
 	if not is_map_unlocked(map_id):
 		if not profile.has("maps_unlocked"):
 			profile["maps_unlocked"] = []
@@ -329,7 +337,7 @@ func _unlock_name(item_id: String) -> String:
 
 ## XP from quests, challenges etc. During a match it shows on the game-over screen; otherwise it applies now.
 func add_xp(amount: int) -> void:
-	if amount <= 0:
+	if amount <= 0 or practice:
 		return
 	if not cur_match.is_empty() and bool(cur_match.get("active", false)):
 		cur_match["xp"] = int(cur_match["xp"]) + amount
@@ -612,8 +620,9 @@ func _on_match_started(map_id: StringName) -> void:
 	_ensure_shape()
 	last_summary = {}
 	var no_prog: Array = _prog.get("no_progress_maps", [])
+	practice = EggMode.on()
 	cur_match = {
-		"active": not no_prog.has(String(map_id)),
+		"active": not no_prog.has(String(map_id)) and not practice,
 		"map": String(map_id), "character": String(GameState.character_id),
 		"xp": 0, "kills": 0, "headshots": 0, "revives": 0, "weapon_kills": {},
 		"perks": false, "doors": false, "special": false, "special_damage": false,
@@ -655,6 +664,8 @@ func _on_enemy_killed(_enemy_id: StringName, limb: StringName, weapon_id: String
 
 
 func _on_round_started(round_number: int, is_special: bool) -> void:
+	if practice:
+		return
 	# Map 1 unlocks on reaching round 10 at the inn (or the radio quest); Map 2 on round 30 at Kaltenbrunn.
 	for target: Variant in (_prog.get("map_unlock_rounds", {}) as Dictionary).keys():
 		var rule: Dictionary = _prog["map_unlock_rounds"][target]
@@ -728,6 +739,8 @@ func _on_perk_bought(player: int, _perk: StringName) -> void:
 
 
 func _on_quest_completed(quest_id: StringName) -> void:
+	if practice:
+		return   # T-181: a practice egg is no egg on the profile (the map cards, the rewards, the unlock)
 	if not profile.has("eggs_done") or not (profile["eggs_done"] is Dictionary):   # T-144: every egg, for the map cards
 		profile["eggs_done"] = {}
 	if not bool((profile["eggs_done"] as Dictionary).get(String(quest_id), false)):
@@ -758,9 +771,12 @@ func finish_match() -> void:
 	var r: int = int(gstats.get(&"round", 0))
 	if not profile.has("best_round"):
 		profile["best_round"] = {}
-	if map_key != "" and r > int(profile["best_round"].get(map_key, 0)):
+	if map_key != "" and r > int(profile["best_round"].get(map_key, 0)) and not practice:
 		profile["best_round"][map_key] = r
 	if cur_match.is_empty() or not bool(cur_match.get("active", false)):
+		if practice:
+			last_summary = {"practice": true}
+		practice = false
 		cur_match = {}
 		save_profile()
 		return

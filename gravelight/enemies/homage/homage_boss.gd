@@ -82,7 +82,7 @@ static func scaled_hp(base: float, players: int, step: float = 0.75) -> float:
 
 
 static func homage_on() -> bool:
-	return bool(GLSettings.values.get("homage_bosses", true))
+	return bool(GLSettings.values.get("homage_bosses", true)) and not EggMode.on()   # T-181: no homage rounds in Easter Egg Mode
 
 
 static func names_real() -> bool:

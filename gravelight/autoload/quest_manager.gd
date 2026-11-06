@@ -356,6 +356,8 @@ func submit(target: StringName, value: String) -> Dictionary:
 			var st: Dictionary = _state[qid][sid]
 			var idx: int = int(st["progress"]) if st["progress"] != null else 0
 			var expected: Array = sequence_inputs(qid, sid)
+			if repeat_ignored(step["params"], expected, idx, value):
+				return {"result": "repeat", "index": idx}
 			if str(expected[idx]) == value:
 				idx += 1
 				st["progress"] = idx
@@ -376,6 +378,18 @@ func submit(target: StringName, value: String) -> Dictionary:
 			GLBus.quest_step_failed.emit(qid, sid, &"wrong_input")
 			return {"result": "wrong", "index": 0}
 	return {"result": "inactive", "index": 0}
+
+
+## T-181: a sequence step with params "repeat_ok" ignores an input it already took in this run (the Four Bells: a
+## second round of a burst into the bell just rung, or a stray hit on one rung before, used to reset all four; only
+## an unrung bell out of order resets now). Pure (test_egg_mode.gd).
+static func repeat_ignored(params: Dictionary, expected: Array, idx: int, value: String) -> bool:
+	if not bool(params.get("repeat_ok", false)) or idx <= 0:
+		return false
+	for i: int in mini(idx, expected.size()):
+		if str(expected[i]) == value:
+			return true
+	return false
 
 
 ## The expected inputs of a sequence step: literal "inputs", or "inputs_from" a random value.
@@ -1080,6 +1094,8 @@ func predict_submit(target: StringName, value: String) -> Dictionary:
 			var st: Dictionary = _state[qid][sid]
 			var idx: int = int(st["progress"]) if st["progress"] != null else 0
 			var expected: Array = sequence_inputs(qid, sid)
+			if repeat_ignored(step["params"], expected, idx, value):
+				return {"result": "repeat", "index": idx}
 			if idx < expected.size() and str(expected[idx]) == value:
 				st["progress"] = idx + 1
 				return {"result": "done" if idx + 1 >= expected.size() else "ok", "index": idx + 1}

@@ -1,5 +1,16 @@
 {
   "_doc": "Round scaling. Formulas implemented in autoload/round_manager.gd; tests in tests/unit/test_round_scaling.gd.",
+  "egg_mode": {
+    "_doc": "T-181 Easter Egg Mode (EggMode, GLSettings egg_mode off / sparse / none; test_egg_mode.gd). sparse: count.base crawlers a round, +1 every count.per_rounds, at most count.max (never more than the normal count); the round ends when they die or after round_max_s. none: no queue, a round lasts round_s. Either: crawlers only, health of round min(round, health_round_cap); while a hold runs at most hold_active[mode] crawlers up; while a kill-count step is open (feed_step_types) at most feed_active, spawned every feed_interval_s. No Bellringer rounds, scheduled Foreman, Screamer, Glasshide or homage boss rounds. Normal mode never reads this block.",
+    "count": {"base": 2, "per_rounds": 10, "max": 4},
+    "round_max_s": 60.0,
+    "round_s": 25.0,
+    "hold_active": {"sparse": 3, "none": 0},
+    "feed_active": 6,
+    "feed_interval_s": 2.5,
+    "feed_step_types": ["kill_count"],
+    "health_round_cap": 5
+  },
   "health": {
     "base": 150,
     "linear_per_round": 100,

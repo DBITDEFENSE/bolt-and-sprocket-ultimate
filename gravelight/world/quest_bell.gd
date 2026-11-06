@@ -6,6 +6,9 @@ extends Node3D
 ##    (once per round). It can be relit after a 60 s cooldown.
 ##  kind "small": one of the Four Bells (step 6). Only the seeded candidate for its note exists in a match.
 ## Shots arrive through WeaponHolder.shootable_of(): an Area3D on the hitbox layer, with on_shot() here.
+## T-181 (the owner: the bots "get stuck at the bell part"; make the egg easier): a small bell's shot box is
+## map01.json requiem.bell_hit_box_m wide, an explosion near a bell rings it (splash), and once the music box is
+## open (bells_glow_after) the four live bells glow faintly and chime their note now and then until the step is done.
 
 const NOTE_PITCH: Dictionary = {&"n1": 1.0, &"n2": 1.189, &"n3": 1.335, &"n4": 1.498}
 ## Each note has its own tuned bell recording (the pitches above are only the fallback for missing ones).
@@ -27,6 +30,8 @@ var _lit_left: float = 0.0
 var _cooldown: float = 0.0
 var _summon_left: float = -1.0
 var _summoned_round: int = -1
+var _marked: bool = false        # T-181: the faint "find me" glow (small bells, from bells_glow_after until s6 is done)
+var _chime_t: float = 0.0
 
 
 func _ready() -> void:
@@ -45,9 +50,13 @@ func _ready() -> void:
 	_light.omni_range = 3.0 + size * 2.0
 	_light.light_energy = 0.0
 	add_child(_light)
-	_area = make_shot_area(self, Vector3(size * 1.6, size * 1.3, size * 1.6), Vector3.ZERO)
+	var box: Vector3 = Vector3(size * 1.6, size * 1.3, size * 1.6)
+	if kind == &"small":
+		box = box.max(Vector3.ONE * float(_cfg().get("bell_hit_box_m", 0.0)))
+	_area = make_shot_area(self, box, Vector3.ZERO)
 	QuestManager.quest_loaded.connect(_on_quest_loaded)
 	QuestManager.sequence_reset.connect(_on_sequence_reset)
+	GLBus.quest_step_completed.connect(_on_step_completed)
 	_on_quest_loaded(QUEST)
 
 
@@ -75,10 +84,14 @@ func _on_quest_loaded(qid: StringName) -> void:
 	_active = picks is Dictionary and StringName(str((picks as Dictionary).get(String(note), ""))) == bell_id
 	visible = _active
 	_area.collision_layer = (1 << 3) if _active else 0
+	_refresh_marker()
 
 
 func _process(delta: float) -> void:
-	if kind != &"chapel" or not Net.is_authority():
+	if kind == &"small":
+		_tick_marker(delta)
+		return
+	if not Net.is_authority():
 		return
 	_cooldown = maxf(0.0, _cooldown - delta)
 	if lit:
@@ -160,6 +173,64 @@ func _glow(on: bool) -> void:
 func _on_sequence_reset(qid: StringName, sid: StringName) -> void:
 	if qid == QUEST and sid == &"s6_bells" and kind == &"small":
 		_glow(false)
+		_set_marker(_marked)
+
+
+## T-181: should the live small bells show their faint marker? From the bells_glow_after step (the music box) until
+## s6 is done (pure on the two step states).
+static func marker_due(after_done: bool, bells_done: bool) -> bool:
+	return after_done and not bells_done
+
+
+func _on_step_completed(qid: StringName, _sid: StringName) -> void:
+	if qid == QUEST and kind == &"small":
+		_refresh_marker()
+
+
+func _refresh_marker() -> void:
+	var after: String = str(_cfg().get("bells_glow_after", ""))
+	var due: bool = _active and after != "" and marker_due(QuestManager.is_step_done(QUEST, StringName(after)), QuestManager.is_step_done(QUEST, &"s6_bells"))
+	if due != _marked:
+		_marked = due
+		_chime_t = randf() * 4.0
+		_set_marker(due)
+
+
+## The faint violet glow of a bell still to find (a rung bell glows full: _glow).
+func _set_marker(on: bool) -> void:
+	if _glow_mat == null or _glow_mat.emission_energy_multiplier >= 3.0 and _glow_mat.emission_enabled:
+		return
+	_glow_mat.emission_enabled = on
+	_glow_mat.emission = Color(0.65, 0.3, 1.0)
+	_glow_mat.emission_energy_multiplier = 0.9
+	_light.light_color = _glow_mat.emission
+	_light.light_energy = 0.5 if on else 0.0
+
+
+func _tick_marker(delta: float) -> void:
+	if not _marked:
+		return
+	_chime_t -= delta
+	if _chime_t <= 0.0:
+		_chime_t = float(_cfg().get("bells_chime_s", 20.0))
+		_play_note(note, global_position, float(_cfg().get("bells_chime_db", -6.0)))
+
+
+## T-181: an explosion rings every live bell within bell_splash_m of it (and in its radius), with a clear line.
+static func splash(tree: SceneTree, space: PhysicsDirectSpaceState3D, pos: Vector3, radius: float, weapon_id: StringName, by_player: int) -> void:
+	var cfg: Dictionary = (GLData.table("map01") as Dictionary).get("requiem", {})
+	var reach: float = minf(radius, float(cfg.get("bell_splash_m", 0.0)))
+	if reach <= 0.0:
+		return
+	for n: Node in tree.get_nodes_in_group(&"quest_bells"):
+		var b: QuestBell = n as QuestBell
+		if b == null or not b._active or b.global_position.distance_to(pos) > reach:
+			continue
+		var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(pos, b.global_position, Explosion.MASK_LOS)
+		var hit: Dictionary = space.intersect_ray(q)
+		if not hit.is_empty() and (hit["position"] as Vector3).distance_to(b.global_position) > 0.6:
+			continue
+		WeaponHolder.notify_shot(b, weapon_id, String(weapon_id).ends_with("_up"), by_player)
 
 
 ## Plays a melody (array of note ids) as pitched ticks: the music box and the bells share the notes.

@@ -8,6 +8,7 @@
 #                        fernflug (UPDATE 07, T-116: Map 4 as one campaign run, Act I to an ending): [--bots-alone]
 #                        [--skip-to-act=2|3|4] [--egg=off|ask|full] [--max-minutes=240]; per-act rows in the batch .md
 #                        --until-egg (U08: end a run when the map's main egg completes; prints EGG lines and EGG RATE)
+#                        --egg-mode=off|sparse|none (T-181 Easter Egg Mode: few crawlers / no zombies, practice)
 # The Godot tool itself is res://tools_src/ai_soak.tscn (docs/BOT_AI.md explains the scenarios and the metrics).
 cd "$(dirname "$0")/.."
 . tools/env.sh   # GODOT / GODOT_W / BLENDER / PYTHON per OS (tools/local_paths.env overrides)

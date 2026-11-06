@@ -33,6 +33,12 @@ var act_start: int = 1
 ## T-142: actor slots held by living relief-squad soldiers (ZombieDirector.set_soldiers_alive): the active cap for
 ## zombies is max_active() - actor_reserve. The round's queue is never cut, only spread out while they stand.
 var actor_reserve: int = 0
+## T-181 Easter Egg Mode (EggMode): seconds into the current round, and the feed's spawn clock.
+var egg_round_t: float = 0.0
+var _egg_feed_t: float = 0.0
+var _egg_topup: bool = false     # to_spawn's 1 is an egg-mode top-up (a hold / the feed), not the round's queue
+var _egg_feed_on: bool = false   # EggMode.feed_wanted(), refreshed every 0.5 s
+var _egg_feed_check: float = 0.0
 
 
 static func zombie_health(round_number: int, cfg: Dictionary) -> int:
@@ -192,6 +198,17 @@ func _process(delta: float) -> void:
 			GLBus.special_round_warning.emit(StringName(str(_cfg["special_round"].get("kind", "bellringer"))))
 		if break_left <= 0.0:
 			advance_round()
+	elif state == State.ROUND and EggMode.on():
+		egg_round_t += delta
+		_egg_feed_t -= delta
+		_egg_feed_check -= delta
+		if _egg_feed_check <= 0.0:
+			_egg_feed_check = 0.5
+			_egg_feed_on = EggMode.feed_wanted()
+		if EggMode.round_over(EggMode.current(), egg_round_t, 0 if _egg_topup else to_spawn, alive, not _holds.is_empty(), EggMode.cfg()):
+			to_spawn = 0
+			_egg_topup = false
+			_end_round()
 
 
 func advance_round() -> void:
@@ -199,11 +216,21 @@ func advance_round() -> void:
 	_warned = false
 	is_special_round = current_round == next_special
 	var sr: Dictionary = _cfg["special_round"]
-	if is_special_round:
+	egg_round_t = 0.0
+	_egg_feed_t = 0.0
+	_egg_topup = false
+	_egg_feed_check = 0.0
+	if is_special_round and EggMode.on():
+		is_special_round = false   # T-181: no Bellringer rounds in Easter Egg Mode (the schedule moves on)
+		next_special = next_after(current_round, int(sr["interval_min"]), int(sr["interval_max"]), rng)
+		round_total = EggMode.round_count(EggMode.current(), current_round, zombie_count(current_round, players, _cfg), EggMode.cfg())
+	elif is_special_round:
 		round_total = bell_count(current_round, players, _cfg)
 		next_special = next_after(current_round, int(sr["interval_min"]), int(sr["interval_max"]), rng)
 	else:
 		round_total = zombie_count(current_round, players, _cfg)
+		if EggMode.on():
+			round_total = EggMode.round_count(EggMode.current(), current_round, round_total, EggMode.cfg())
 	# The Foreman never comes on a Bellringer round: push him back a round.
 	if next_boss == current_round and is_special_round:
 		next_boss += 1
@@ -221,7 +248,7 @@ func advance_round() -> void:
 
 ## True on the round the Foreman is scheduled for (the director consumes it).
 func boss_due() -> bool:
-	return current_round == next_boss and not is_special_round
+	return current_round == next_boss and not is_special_round and not EggMode.on()   # T-181: the Chapel bell still calls him
 
 
 func consume_boss() -> void:
@@ -278,9 +305,33 @@ func max_active() -> int:
 
 
 func can_spawn() -> bool:
+	if EggMode.on():
+		return _egg_can_spawn()
 	if state == State.ROUND and to_spawn <= 0 and not _holds.is_empty():
 		to_spawn = 1   # holdouts keep the zombies coming
 	return state == State.ROUND and to_spawn > 0 and alive < max_active() - actor_reserve
+
+
+## T-181 Easter Egg Mode: the round's few crawlers, then a few while a hold runs, or the feed while a kill-count
+## step is open (EggMode.extra_cap), the feed one every feed_interval_s.
+func _egg_can_spawn() -> bool:
+	if state != State.ROUND:
+		return false
+	var c: Dictionary = EggMode.cfg()
+	var cap: int = mini(max_active() - actor_reserve, maxi(int((c.get("count", {}) as Dictionary).get("max", 4)), 1))
+	if to_spawn <= 0:
+		var feed: bool = _egg_feed_on
+		var extra: int = EggMode.extra_cap(EggMode.current(), not _holds.is_empty(), feed, c)
+		if extra <= 0 or alive >= mini(extra, max_active() - actor_reserve):
+			return false
+		if feed:
+			if _egg_feed_t > 0.0:
+				return false
+			_egg_feed_t = float(c.get("feed_interval_s", 2.5))
+		to_spawn = 1
+		_egg_topup = true
+		return true
+	return alive < cap
 
 
 ## While any hold is set the round keeps spawning and can't end (e.g. a pylon charging).
@@ -303,17 +354,28 @@ func is_held() -> bool:
 ## An extra zombie that doesn't come out of the round queue (power-on burst). It still has to die.
 func take_extra_spawn() -> Dictionary:
 	alive += 1
-	return {"tier": pick_tier(speed_weights(maxi(1, current_round), _cfg), rng.randf(), 0, 3), "health": current_health()}
+	return _egg_spec({"tier": pick_tier(speed_weights(maxi(1, current_round), _cfg), rng.randf(), 0, 3), "health": current_health()})
 
 
 ## Takes one zombie off the queue and returns its spawn spec.
 func take_spawn() -> Dictionary:
 	to_spawn -= 1
+	_egg_topup = false
 	alive += 1
 	var tiers: Dictionary = _cfg["speed_tiers"]
 	var tier: StringName = pick_tier(speed_weights(maxi(1, current_round), _cfg), rng.randf(), _sprint_streak, int(tiers.get("max_sprint_streak", 3)))
 	_sprint_streak = _sprint_streak + 1 if tier == &"sprint" else 0
-	return {"tier": tier, "health": current_health()}
+	return _egg_spec({"tier": tier, "health": current_health()})
+
+
+## T-181: in Easter Egg Mode every ordinary zombie is a crawler with the health of round min(round, cap).
+func _egg_spec(spec: Dictionary) -> Dictionary:
+	if not EggMode.on():
+		return spec
+	spec["crawler"] = true
+	spec["tier"] = &"shamble"
+	spec["health"] = mini(int(spec["health"]), zombie_health(EggMode.health_round(current_round, EggMode.cfg()), _cfg))
+	return spec
 
 
 ## A spawned zombie got recycled (stuck/unreachable): put it back in the queue.
