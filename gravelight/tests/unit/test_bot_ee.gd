@@ -539,3 +539,12 @@ func test_ee_help_default_is_full_partner_and_old_files_migrate() -> void:
 	assert_eq(str((fresh.get("values") as Dictionary).get("bot_ee_help", "")), "ask", "a choice made after the migration stays")
 	fresh.free()
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+
+
+func test_a_repeated_log_line_waits_log_repeat_s() -> void:
+	# perf (Map 1): the "can't reach" retry ran every physics tick and printed every time (60 lines a second)
+	assert_true(BotEE.log_due("can't reach Hauptschalter", "", -INF, 10.0), "a new line logs")
+	assert_false(BotEE.log_due("can't reach Hauptschalter", "can't reach Hauptschalter", 10.0, 10.0 + 1.0 / 60.0), "the same line a tick later doesn't")
+	assert_false(BotEE.log_due("can't reach Hauptschalter", "can't reach Hauptschalter", 10.0, 10.0 + BotEE.LOG_REPEAT_S - 0.1))
+	assert_true(BotEE.log_due("can't reach Hauptschalter", "can't reach Hauptschalter", 10.0, 10.0 + BotEE.LOG_REPEAT_S), "again after LOG_REPEAT_S")
+	assert_true(BotEE.log_due("opened gen door for the power switch", "can't reach Hauptschalter", 10.0, 10.1), "another line logs at once")

@@ -538,6 +538,12 @@ func _tick_rises(delta: float) -> void:
 	_rise_pending(false)
 
 
+## A pending rise's soldier, null when its node was freed in the meantime (the rise still happens where it fell).
+static func body_of(e: Dictionary) -> Soldier:
+	var sv: Variant = e.get("soldier")
+	return sv as Soldier if is_instance_valid(sv) else null
+
+
 ## Rises every body whose time is up while a round runs (a body that dies in the break waits for the next round).
 func _rise_pending(round_start: bool) -> void:
 	if RoundManager.state != RoundManager.State.ROUND and not round_start:
@@ -549,7 +555,9 @@ func _rise_pending(round_start: bool) -> void:
 		if float(e["t"]) > 0.0:
 			keep.append(e)
 			continue
-		var s: Soldier = e.get("soldier") as Soldier
+		# perf: the body may be gone already (freed before its rise): casting a freed object stopped this loop with a
+		# script error on every physics tick for the rest of the match (and no later body ever rose)
+		var s: Soldier = body_of(e)
 		var z: Zombie = map.director.rise_at(e["pos"] as Vector3, str(e["tag"]))
 		if z == null:
 			keep.append(e)   # the pool is full: try again in a moment
