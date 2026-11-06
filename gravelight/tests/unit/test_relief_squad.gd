@@ -215,3 +215,13 @@ func test_pick_faction_weights() -> void:
 		var f: Dictionary = ReliefSquad.pick_faction(fs, r)
 		count[f["id"]] = int(count.get(f["id"], 0)) + 1
 	assert_almost_eq(float(count.get("ak", 0)) / 1000.0, 0.6, 0.06, "Home Army weight 0.6")
+
+
+func test_a_freed_body_still_rises_without_a_script_error() -> void:
+	# perf (Map 1 soak): a pending rise whose soldier node was freed first cast a freed object in _rise_pending: a
+	# script error on every physics tick for the rest of the match, and no later body rose
+	var s: Soldier = Soldier.new()
+	assert_eq(ReliefSquad.body_of({"soldier": s}), s, "a living node is the body")
+	s.free()
+	assert_null(ReliefSquad.body_of({"soldier": s}), "a freed node is no body (the rise still happens where it fell)")
+	assert_null(ReliefSquad.body_of({}), "no soldier recorded")

@@ -139,7 +139,23 @@ func _release() -> void:
 	_forced = {}
 
 
+## perf (Map 1): the same line again within LOG_REPEAT_S is not logged again. A Full Partner bot sent to Kaltenbrunn's
+## power switch behind a door it can't pay for yet retries every physics tick ("can't reach Hauptschalter": 60 prints a
+## second for minutes, ~0.4 ms each with the log file); the retries themselves are unchanged.
+const LOG_REPEAT_S: float = 5.0
+var _last_log: String = ""
+var _last_log_t: float = -INF
+
+
+static func log_due(s: String, last: String, last_t: float, now: float) -> bool:
+	return s != last or now - last_t >= LOG_REPEAT_S
+
+
 func _log(s: String) -> void:
+	if not log_due(s, _last_log, _last_log_t, _now()):
+		return
+	_last_log = s
+	_last_log_t = _now()
 	history.append("%.0fs %s" % [_now(), s])
 	if history.size() > 16:
 		history.remove_at(0)
