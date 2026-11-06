@@ -7,7 +7,7 @@ extends Node
 ##     Kar98k goes to him, the profile flag is saved, Wren's scene); he fights beside the human (kills, shots);
 ##     he is downed (his own 60 s clock) and the human revives him; rounds 6-10 with him, the Cousins Round on
 ##     round 10 (Homage Bosses On) with Jakub still on his feet, his line about the song, then rounds 11 and 12.
-##     The round size never counts him; he never drinks a perk of his own accord.
+##     The round size never counts him; he shops with his own Scrip between rounds (T-177).
 ##   NOT YET (as Dutch, Door 5 shut): the breakout comes anyway, he waits in the shut cellar and calls out;
 ##     Door 5 opens, NOT YET: he follows with the coal shovel; a wall-buy with him beside it sells him the
 ##     Gewehr 43; an ammo box refills him from the human's Scrip at half price; the power on, "Talk to Jakub" sends
@@ -261,7 +261,7 @@ func _case_give() -> void:
 	_check(jc.events.has("wren_scene"), "Wren is in the match: their quiet scene")
 	_check(jp.is_in_group(&"players") and not GameState.player_ids.has(jp.player_id) and not GameState.bot_ids.has(jp.player_id),
 		"a zombie target now, still no player slot")
-	_check(PerkManager.owned(jp.player_id).is_empty() and not bool(jc.brain.options.get("perks", true)), "no perks of his own accord")
+	_check(bool(jc.brain.options.get("perks", false)) and bool(jc.brain.options.get("shopping", false)) and not bool(jc.brain.options.get("kit", true)) 		and not bool(jc.brain.options.get("bonus_perk", true)), "T-177: he shops with his own Scrip (no spawn kit, no bonus perk)")
 	# he fights beside the human
 	var shots0: int = jc.brain.shots
 	var fought: bool = await _until(func() -> bool: return _jkills >= 2 and jc.brain != null and jc.brain.shots > shots0, 200.0,
@@ -270,7 +270,10 @@ func _case_give() -> void:
 			if jp.downed and Net.session.coop.bleed_left(jp.player_id) < 50.0:
 				_revive_jakub())
 	_check(fought, "he fights: %d kills, %d shots" % [_jkills, jc.brain.shots if jc.brain != null else 0])
-	# downed and revived
+	# downed and revived (a down from the fight above started his clock already: up first, then the down we time)
+	if jp.downed:
+		_revive_jakub()
+		await _secs(0.5)
 	if not jp.downed:
 		jp.take_hit(jp.hp + 1.0, null)
 	await _secs(0.3)
