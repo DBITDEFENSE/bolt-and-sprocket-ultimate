@@ -187,6 +187,16 @@ static func door_allowed(e: Dictionary, ordered: bool, bot_led: bool, human_open
 	return human_dist <= float(d.get("near_human_m", 9.0))
 
 
+## U10 review fix: a door on the way to the main egg's open steps (BotEE.route_doors, a Full Partner shopping
+## break): bought without the near-the-human rule (the egg is far from the player), but never before the human opened
+## a door of their own (human_opened_needed: the first pick is theirs) unless no human is in the match.
+static func egg_door_allowed(e: Dictionary, bot_led: bool, human_opened: int) -> bool:
+	var d: Dictionary = e.get("doors", {})
+	if bot_led:
+		return bool(d.get("bot_led", true))
+	return not bool(d.get("human_opened_needed", true)) or human_opened > 0
+
+
 ## The never-touch rule: easter-egg objects ("quest"), traps ("trap"), the power switch ("power") and buildable
 ## parts ("part") only when ordered onto that object, or (traps) when the human already used that one, or for the
 ## local-AI planner bot (the user-sanctioned exception) when its setting is on. `self_led` (T-058): no human is in
@@ -507,32 +517,40 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 	# the first round's horde met it in the spawn bay; the delay exists to leave a human the first pick)
 	# U10 T-172: an egg bot's shopping break opens the way to the main egg's open steps (BotEE.route_doors)
 	var egg_doors: Array = brain.ee.route_doors() if ee_shopping() else []
-	if bool(dcfg.get("enabled", true)) and (squad.round_time() >= float(dcfg.get("round_delay_s", 20.0)) * (0.0 if ordered_door != null else 1.0) \
-			or (self_led and brain.in_break()) or not egg_doors.is_empty()) \
+	# (the round's delay still holds for every other door while an egg door is on the list)
+	var doors_now: bool = squad.round_time() >= float(dcfg.get("round_delay_s", 20.0)) * (0.0 if ordered_door != null else 1.0) \
+			or (self_led and brain.in_break())
+	if bool(dcfg.get("enabled", true)) and (doors_now or not egg_doors.is_empty()) \
 			and brain.doors_bought_round < int(dcfg.get("max_per_round_per_bot", 1)):
 		var human: Player = squad.human()
 		var route_doors: Dictionary = _route_doors() if self_led else {}
 		for dn: BuyDoor in brain.loco_doors():
 			if not is_instance_valid(dn) or dn.is_open or not dn.can_interact(player):
 				continue
-			var ordered: bool = ordered_door == dn or egg_doors.has(dn)
+			var ordered: bool = ordered_door == dn
+			var egg: bool = not ordered and egg_doors.has(dn)
+			if not ordered and not egg and not doors_now:
+				continue
 			var hd: float = _flat(dn.global_position, human.global_position) if human != null and not human.spectating else INF
-			if not door_allowed(eco, ordered, self_led, squad.human_doors_opened, hd):
+			if egg:
+				if not egg_door_allowed(eco, self_led, squad.human_doors_opened):
+					continue
+			elif not door_allowed(eco, ordered, self_led, squad.human_doors_opened, hd):
 				continue
 			var is_pd: bool = dn == power_door
-			var keep: int = 0 if ordered else maxi(reserve, int(dcfg.get("reserve_scrip", 300)))
+			var keep: int = 0 if ordered else maxi(reserve, int(dcfg.get("reserve_scrip", 300)))   # (an egg door keeps the reserve too)
 			if is_pd:
 				keep = int(pw.get("door_reserve_scrip", 300))   # the way to the power is the revive-critical spend
-			if self_led and not ordered and bool(pw.get("self_led_useful_doors_only", true)) \
+			if self_led and not ordered and not egg and bool(pw.get("self_led_useful_doors_only", true)) \
 					and not self_led_door_ok(is_pd, route_doors.has(String(dn.door_id)), scrip, dn.cost, saving_for, keep):
 				continue   # a squad leading itself opens only doors it has a use for, the power's first
-			if not ordered and not is_pd and (_flat(dn.global_position, anc) > float(dcfg.get("max_from_leader_m", 30.0)) * range_mult * (2.0 if self_led else 1.0)):
+			if not ordered and not egg and not is_pd and (_flat(dn.global_position, anc) > float(dcfg.get("max_from_leader_m", 30.0)) * range_mult * (2.0 if self_led else 1.0)):
 				continue
 			if scrip < dn.cost + keep:
 				continue
 			if not squad.can_claim(dn, pid) or not brain.reachable(BotBrain._door_side(dn, me)):
 				continue
-			var dv: float = 0.95 if ordered else _pv("power_door" if is_pd else "door", _flat(dn.global_position, me))
+			var dv: float = 0.95 if ordered else 0.9 if egg else _pv("power_door" if is_pd else "door", _flat(dn.global_position, me))
 			out.append({"node": dn, "kind": "door", "value": dv, "cost": dn.cost,
 				"label": "open the %s (%d Scrip)%s" % [BotBrain.door_label(dn), dn.cost, " on the way to the power" if is_pd else ""]})
 	# ---- the Requisition Crate (never someone else's open crate)

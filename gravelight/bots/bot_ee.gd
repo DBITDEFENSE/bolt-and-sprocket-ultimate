@@ -220,6 +220,14 @@ func tick_think(now: float) -> void:
 	_refresh_plan()
 
 
+## U10 T-172 + review fix: does a round stalled `stalled` s on its last zombies pause a Full Partner errand for the
+## hunt? From ee_pause_after_s, for ee_pause_max_s at most (a hunt that never gets there, the hunters pacing a fence,
+## no longer holds the errand all round; the round_end_max_s rule then lets it resume).
+static func hunt_pause_on(stalled: float, hcfg: Dictionary) -> bool:
+	var after: float = float(hcfg.get("ee_pause_after_s", 45.0))
+	return stalled >= after and stalled < after + float(hcfg.get("ee_pause_max_s", 120.0))
+
+
 func _pause_state() -> Dictionary:
 	var down: bool = false
 	if Net.session != null:
@@ -230,7 +238,7 @@ func _pause_state() -> Dictionary:
 	# U10 T-172: a round stalled on its last zombies for hunt_pause_after_s: a Full Partner errand (not a hold) waits
 	# while this bot joins the hunt (the egg errands kept every bot away while the agent alone failed to reach it)
 	var hunt_pause: bool = str(task.get("source", "")) == "full" and str(task["type"]) != "hold_zone" and not brain.is_player_bot \
-		and brain.squad.hunt_stalled_s() >= float((BotAIData.combat("hunt") as Dictionary).get("ee_pause_after_s", 45.0))
+		and hunt_pause_on(brain.squad.hunt_stalled_s(), BotAIData.combat("hunt") as Dictionary)
 	if hunt_pause:
 		left = 1
 	elif RoundManager.state == RoundManager.State.ROUND and RoundManager.to_spawn <= 0 and brain.squad.director() != null and _round_end_skip != RoundManager.current_round:
@@ -252,8 +260,11 @@ func _pause_state() -> Dictionary:
 	if str(task.get("paused", "")) == "shopping":
 		var el: float = _now() - float(task.get("paused_t", _now()))
 		shop = (el < float(sb.get("seconds", 20.0)) or (_shop_errand() and el < float(sb.get("max_s", 50.0)))) and not _shop_idle_over()
-	elif _pre_hold_shop_due(sb) or (BotEECatalog.shop_break_due(Economy.get_scrip(player.player_id), str(_plan.get("do", "")), _now(), _shop_next, sb) and not bool(task.get("rally", false)) \
-			and not brain.is_player_bot and brain.perception.pressure < float(sb.get("max_pressure", 0.5))):
+	elif _pre_hold_shop_due(sb):
+		shop = true   # (it probed the list itself)
+		_shop_last_errand = _now()
+	elif BotEECatalog.shop_break_due(Economy.get_scrip(player.player_id), str(_plan.get("do", "")), _now(), _shop_next, sb) and not bool(task.get("rally", false)) \
+			and not brain.is_player_bot and brain.perception.pressure < float(sb.get("max_pressure", 0.5)):
 		# (the agent spends by its own plan, AgentPlan.buy_first; a bot under pressure can't shop: buy_task wants calm)
 		# U10 T-172: only when there is something to buy (a break with nothing on the list cost the egg 20 s)
 		shop = shop_wanted()
@@ -286,22 +297,37 @@ func shopping() -> bool:
 	return _now() < free_shop_until
 
 
-## Would a shopping break buy anything now (the economy's buy / crate list with the break's ranges)?
+## Would a shopping break buy anything now (the economy's buy / crate list with the break's ranges)? The answer is
+## kept SHOP_PROBE_S while the bot's Scrip is the same: a due break that lost to a higher pause (a teammate down,
+## the round's end) asked on every think and rebuilt the whole list twice each time.
+const SHOP_PROBE_S: float = 2.0
+
 func shop_wanted() -> bool:
 	if brain.economy == null:
 		return false
+	var now: float = _now()
+	var sc: int = Economy.get_scrip(player.player_id)
+	if now - _shop_want_t < SHOP_PROBE_S and sc == _shop_want_scrip:
+		return _shop_want
+	_shop_want_t = now
+	_shop_want_scrip = sc
+	_shop_want = false
 	_shop_probe = true
 	brain.economy.invalidate()
-	var b: Dictionary = brain.economy.best(_now())
+	var b: Dictionary = brain.economy.best(now)
 	_shop_probe = false
 	brain.economy.invalidate()
 	for k: String in ["buy", "crate"]:
 		if not (b.get(k, {}) as Dictionary).is_empty():
 			_shop_label = str((b[k] as Dictionary).get("label", k))
-			return true
-	return false
+			_shop_want = true
+			break
+	return _shop_want
 
 var _shop_label: String = ""
+var _shop_want: bool = false
+var _shop_want_t: float = -INF
+var _shop_want_scrip: int = -1
 
 
 ## A purchase errand is under way (the walk to a machine 50 m off outlasts a 20 s break: the break runs on, up to
@@ -443,10 +469,11 @@ func route_doors() -> Array:
 		var sid: StringName = StringName(str(sd["id"]))
 		if not QuestManager.is_active(qids[0], sid):
 			continue
-		var a: Vector3 = hub.step_anchor(qids[0], sid, BotEECatalog.task_def(sd))
+		var td: Dictionary = BotEECatalog.task_def(sd)
+		var a: Vector3 = hub.step_anchor(qids[0], sid, td)
 		if a == Vector3.INF:
 			continue
-		var d: BuyDoor = _door_on_way(a)
+		var d: BuyDoor = _door_on_way(a, str(td.get("type", "")) == "shoot_target")
 		if d != null and not _route_doors.has(d):
 			_route_doors.append(d)
 	return _route_doors
@@ -1165,11 +1192,13 @@ func _gather_wait(n: Node3D, sp: Vector3, delta: float) -> bool:
 	if _flat(sp, player.global_position) > 2.5 or absf(sp.y - player.global_position.y) > 1.8:
 		return false   # walk there first (the errand walks)
 	var now: float = _now()
-	if float(task.get("gather_t", -1.0)) < 0.0:
+	# (the wait is per anchor: on a step with several, pylon 2 waits for the squad as pylon 1 did)
+	if float(task.get("gather_t", -1.0)) < 0.0 or int(task.get("gather_n", 0)) != n.get_instance_id():
 		task["gather_t"] = now
-	if now - float(task["gather_t"]) > float(hr.get("gather_max_s", 30.0)):
+		task["gather_n"] = n.get_instance_id()
+	if now - float(task["gather_t"]) > float(hr.get("gather_max_s", 45.0)):
 		return false
-	var need: int = mini(int(hr.get("gather_need", 2)), gather_count(brain.squad, player, n.global_position, INF))
+	var need: int = mini(int(hr.get("gather_need", 3)), gather_count(brain.squad, player, n.global_position, INF))
 	if gather_count(brain.squad, player, n.global_position, float(hr.get("gather_m", 12.0))) >= need:
 		return false
 	task["gathering"] = now
@@ -1260,7 +1289,7 @@ func _do_shoot(n: Node3D, delta: float) -> void:
 		_vantage[id] = brain.vantage_for(n.global_position, bad.get(id, []))
 	var vp: Vector3 = _vantage[id]
 	if vp == Vector3.INF:
-		if not _try_door(n.global_position):
+		if not _try_door(n.global_position, true):
 			_finish(false, "unreachable" if not bad.has(id) else "missed")
 		return
 	# U10 T-172: time spent on this target without a shot (the walk there never arrived, or the aim never fired:
@@ -1378,11 +1407,11 @@ func _walk(p: Vector3, tol: float, delta: float) -> bool:
 
 # ---------------------------------------------------------------- doors in the way
 
-func _try_door(goal: Vector3) -> bool:
+func _try_door(goal: Vector3, deep: bool = false) -> bool:
 	var mode: String = hub.mode() if hub != null else "ask"
 	if not bool((_cfg().get("open_blocking_doors", {}) as Dictionary).get(mode, false)):
 		return false
-	var d: BuyDoor = _blocking_door(goal)
+	var d: BuyDoor = _blocking_door(goal, deep)
 	if d == null:
 		return false
 	_plan = {"do": "door", "node": d, "resume": _plan.duplicate()}
@@ -1428,8 +1457,8 @@ func _do_door(delta: float) -> void:
 ## The closed door between the bot and `goal`: the first closed door the navmesh path to it crosses (the path
 ## ignoring doors; doors aren't baked into the navmesh), if this bot can open it (usable, affordable, not failed just
 ## now). null when the way is open or the door isn't ours to open.
-func _blocking_door(goal: Vector3) -> BuyDoor:
-	var best: BuyDoor = _door_on_way(goal)
+func _blocking_door(goal: Vector3, deep: bool = false) -> BuyDoor:
+	var best: BuyDoor = _door_on_way(goal, deep)
 	if best != null and best.can_interact(player):
 		_door_want = {"door": best, "until": _now() + 180.0}
 	if best == null or not best.can_interact(player) or Economy.get_scrip(player.player_id) < best.cost:
@@ -1440,14 +1469,19 @@ func _blocking_door(goal: Vector3) -> BuyDoor:
 
 
 ## The first closed door (the nearest to this bot) the navmesh path to `goal` crosses, over every layer; null none.
-func _door_on_way(goal: Vector3) -> BuyDoor:
+func _door_on_way(goal: Vector3, deep: bool = false) -> BuyDoor:
 	var nav: RID = player.get_world_3d().navigation_map
 	var dest: Vector3 = Vector3.INF
 	# (U10 T-172: down to the floor under a bell hung 6-10 m up: its door was never found and the Four Bells task
 	# started and stopped "unreachable" 340 times)
-	for dy: float in [0.0, -1.5, -3.0, -5.0, -7.0, -9.0, -11.0]:
+	# (only for a shot target, `deep`: a walk goal keeps the tight rule, or a goal upstairs whose own floor didn't snap
+	# took the floor under it and bought a door on the way there)
+	for dy: float in ([0.0, -1.5, -3.0, -5.0, -7.0, -9.0, -11.0] if deep else [0.0, -1.5, -3.0]):
 		var sn: Vector3 = brain.snap(goal + Vector3(0.0, dy, 0.0))
-		if _flat(sn, goal) < 2.5 and absf(sn.y - goal.y) < 3.5 - dy:
+		var ok: bool = _flat(sn, goal) < 2.0 and absf(sn.y - goal.y) < 3.5
+		if not ok and deep:
+			ok = _flat(sn, goal) < 2.5 and absf(sn.y - goal.y) < 3.5 - dy
+		if ok:
 			dest = sn
 			break
 	if dest == Vector3.INF:

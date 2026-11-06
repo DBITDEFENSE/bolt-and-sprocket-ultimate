@@ -618,14 +618,28 @@ func _update_hunt(now: float) -> void:
 	# U10 T-172: a round stalled this long is the squad's to finish, the "unreachable" one too: the game's recycle
 	# never took a Foreman wedged by the Minehead (it kept chasing in place) and round 13 stayed open 130 game minutes
 	var force: bool = now - _stall_since >= float(hc.get("force_after_s", 120.0))
+	# (a reachable one first, then a boss: forced, a wedged Foreman must not win over a straggler we can get to)
+	var best_rank: int = -1
 	for z: Variant in act:
 		var zz: Zombie = z as Zombie
-		if zz != null and is_instance_valid(zz) and BotPerception.targetable(zz) and (force or not is_unreachable(zz)) and (best == null or BotPerception.is_boss(zz)):
+		if zz == null or not is_instance_valid(zz) or not BotPerception.targetable(zz):
+			continue
+		var reach: bool = not is_unreachable(zz)
+		if not (force or reach):
+			continue
+		var rank: int = hunt_rank(reach, BotPerception.is_boss(zz))
+		if rank > best_rank:
+			best_rank = rank
 			best = zz
 	if best == null:
 		return
 	hunt_at = best.global_position
 	blackboard.sight(best, best.global_position, now, 0, best.tier, BotPerception.is_boss(best))
+
+
+## The hunt's pick among the last zombies: one we can get to before one we can't, then a boss (highest wins).
+static func hunt_rank(reachable: bool, boss: bool) -> int:
+	return (2 if reachable else 0) + (1 if boss else 0)
 
 
 ## Where the squad hunts the round's last zombie (Vector3.INF: no hunt).

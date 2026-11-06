@@ -217,6 +217,8 @@
     "after_s": 12.0,
     "ee_pause_after_s": 45.0,
     "force_after_s": 120.0,
+    "ee_pause_max_s": 120.0,
+    "_ee_pause_max_s": "U10 review fix: the hunt pause lasts ee_pause_max_s at most (from ee_pause_after_s into the stall); a hunt that never gets there no longer keeps the errands paused all round (the round_end_max_s rule then lets them resume).",
     "_u10_t172": "U10 T-172: ee_pause_after_s into the stall a Full Partner bot's egg errand (not a hold) pauses so it joins the hunt; from force_after_s the hunt takes a straggler the agent marked unreachable too (the game's recycle never took a Foreman wedged by the Minehead: round 13 open for 130 game minutes)."
   },
   "retreat": {
