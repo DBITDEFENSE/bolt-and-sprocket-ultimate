@@ -10,6 +10,74 @@ static func cfg() -> Dictionary:
 	return GLData.table("bank")
 
 
+# ---------------------------------------------------------------- the bots' and companions' savings (T-177)
+## A squad bot or a companion saves at the same counter, in an account of its own for this match only (never the
+## human's profile: a bot's Scrip must not grow the owner's savings). Interest as the profile's (BankLedger, round
+## start); a campaign hop pays it out into the Scrip it carries (Campaign.serialize_player); Economy.reset clears it.
+static var _bots: Dictionary = {}   # pid -> balance
+
+
+static func bot_balance(pid: int) -> int:
+	return int(_bots.get(pid, 0))
+
+
+static func reset_bots() -> void:
+	_bots.clear()
+
+
+## Pays `amount` (or as much as `pid` holds) into the bot's account; the amount moved (host / offline only).
+static func bot_deposit(pid: int, amount: int) -> int:
+	if closed_reason() != "" or not Net.is_authority():
+		return 0
+	var room: int = int(cfg().get("max_balance", 1000000)) - bot_balance(pid)
+	var n: int = mini(mini(amount, Economy.get_scrip(pid)), room)
+	if n <= 0:
+		return 0
+	Economy.bank_move(pid, -n)
+	_bots[pid] = bot_balance(pid) + n
+	return n
+
+
+## Takes `amount` (or the whole balance if less) out to the bot's Scrip; the amount moved.
+static func bot_withdraw(pid: int, amount: int) -> int:
+	if closed_reason() != "" or not Net.is_authority():
+		return 0
+	var n: int = mini(amount, bot_balance(pid))
+	if n <= 0:
+		return 0
+	Economy.bank_move(pid, n)
+	_bots[pid] = bot_balance(pid) - n
+	return n
+
+
+## A round's interest on every bot account (BankLedger); the total added.
+static func accrue_bots() -> int:
+	if closed_reason() != "":
+		return 0
+	var c: Dictionary = cfg()
+	var total: int = 0
+	for pid: Variant in _bots.keys():
+		var i: int = interest_for(bot_balance(int(pid)), rate_for(int(pid)), int(c.get("min_interest", 1)), int(c.get("max_balance", 1000000)))
+		if i > 0:
+			_bots[pid] = bot_balance(int(pid)) + i
+			total += i
+	return total
+
+
+## Pure (T-177): what a bot does at the counter: > 0 deposits that much, < 0 withdraws that much, 0 nothing.
+## `want` is the price of the next thing it wants (0 none), `keep` its reserve. It keeps keep + want in its pocket
+## and banks the rest (at least `min_move`); it takes money out only when that makes `want` affordable.
+static func bot_plan(pocket: int, saved: int, want: int, keep: int, min_move: int) -> int:
+	var target: int = keep + maxi(0, want)
+	if pocket < target:
+		if want > 0 and saved > 0 and pocket + saved >= target:
+			return -(target - pocket)
+		return 0
+	if pocket - target >= min_move:
+		return pocket - target
+	return 0
+
+
 static func _rec() -> Dictionary:
 	var pr: Dictionary = ProfileSave.profile
 	if not pr.has("bank") or not (pr["bank"] is Dictionary):

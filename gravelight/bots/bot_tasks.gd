@@ -4,7 +4,7 @@ extends RefCounted
 ## planner's objectives, moved here from the T-031 brain. A task is a Dictionary {node, kind, label, ...}; run()
 ## walks to it (the locomotion layer), uses it the way a person's hold does (interact, lock_frequency, plug, a real
 ## traced shot) and returns "running", "done" or "failed". The brain owns the claim and tells the planner.
-##   shopping kinds: repair, gun, ammo, perk, ammo_box, door, crucible, crate, use_power
+##   shopping kinds: repair, gun, ammo, perk, ammo_box, door, crucible, crate, use_power, bench, bank (T-177)
 ##   objective kinds (the planner only): use, radio, switchboard, shoot, shoot_seq, shoot_moving, hold, crate,
 ##   fetch (a buildable part, ordered)
 
@@ -119,6 +119,26 @@ func _shop(e: Dictionary, node: Interactable, delta: float) -> String:
 		elif kind == "ammo_box" and int(brain.options.get("ammo_payer_pid", 0)) > 0:
 			# a companion: refilled from the party's Scrip at its price multiplier (Jakub: half price)
 			(node as AmmoBox).use_holder(player.weapons, player.player_id, int(brain.options["ammo_payer_pid"]), float(brain.options.get("ammo_price_mult", 0.5)))
+		elif kind == "bench" and node is ArmorersBench:
+			# T-177: the part for its main gun, from its own Scrip (the bench's UI is a human's; bots buy directly)
+			var ws: int = int(e.get("wslot", -1))
+			if ws >= 0 and ws < player.weapons.slots.size() and ws != player.weapons.current_index:
+				brain.aim.select(ws)
+				return "running"
+			var br: Dictionary = ArmorersBench.buy(player, str(e.get("slot", "")), str(e.get("option", "")))
+			if not bool(br.get("ok", false)):
+				return "failed"
+		elif kind == "bank" and node is BankCounter:
+			# T-177: the bot's own account (BankAccount.bot_deposit / bot_withdraw), once a round; the plan is re-checked
+			# at the till (its pocket may have changed on the walk: a deposit planned for 5,450 must not bank the 200 left)
+			var pid: int = player.player_id
+			var amt: int = BankAccount.bot_plan(Economy.get_scrip(pid), BankAccount.bot_balance(pid), int(e.get("want", 0)), int(e.get("keep", 0)), 1)
+			if amt == 0 or signi(amt) != signi(int(e.get("amount", 0))):
+				return "failed"
+			var moved: int = BankAccount.bot_deposit(pid, amt) if amt > 0 else BankAccount.bot_withdraw(pid, -amt)
+			if moved <= 0:
+				return "failed"
+			brain.economy.bank_visits_round += 1
 		elif node.can_interact(player):
 			node.interact(player)
 		if kind == "repair":

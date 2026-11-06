@@ -19,6 +19,7 @@ var _power_t: float = -10.0
 var _power: Dictionary = {}
 ## Doors the human opened this match (BotSquad keeps the count; read here).
 var crate_pulls_this_round: int = 0
+var bank_visits_round: int = 0   # T-177
 
 
 func setup(b: BotBrain) -> void:
@@ -185,6 +186,16 @@ static func door_allowed(e: Dictionary, ordered: bool, bot_led: bool, human_open
 	if bool(d.get("human_opened_needed", true)) and human_opened <= 0:
 		return false
 	return human_dist <= float(d.get("near_human_m", 9.0))
+
+
+## U10 review fix: a door on the way to the main egg's open steps (BotEE.route_doors, a Full Partner shopping
+## break): bought without the near-the-human rule (the egg is far from the player), but never before the human opened
+## a door of their own (human_opened_needed: the first pick is theirs) unless no human is in the match.
+static func egg_door_allowed(e: Dictionary, bot_led: bool, human_opened: int) -> bool:
+	var d: Dictionary = e.get("doors", {})
+	if bot_led:
+		return bool(d.get("bot_led", true))
+	return not bool(d.get("human_opened_needed", true)) or human_opened > 0
 
 
 ## The never-touch rule: easter-egg objects ("quest"), traps ("trap"), the power switch ("power") and buildable
@@ -361,6 +372,8 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 	if not best_board.is_empty():
 		out.append(best_board)
 	var shopping: bool = bool(brain.options.get("shopping", true))
+	if player.is_companion and not brain.in_break():
+		shopping = false   # T-177: a companion shops between rounds only (mid-round it covers the one it follows)
 	if save:
 		return out
 	var econ: Dictionary = GLData.table("economy")
@@ -507,32 +520,40 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 	# the first round's horde met it in the spawn bay; the delay exists to leave a human the first pick)
 	# U10 T-172: an egg bot's shopping break opens the way to the main egg's open steps (BotEE.route_doors)
 	var egg_doors: Array = brain.ee.route_doors() if ee_shopping() else []
-	if bool(dcfg.get("enabled", true)) and (squad.round_time() >= float(dcfg.get("round_delay_s", 20.0)) * (0.0 if ordered_door != null else 1.0) \
-			or (self_led and brain.in_break()) or not egg_doors.is_empty()) \
+	# (the round's delay still holds for every other door while an egg door is on the list)
+	var doors_now: bool = squad.round_time() >= float(dcfg.get("round_delay_s", 20.0)) * (0.0 if ordered_door != null else 1.0) \
+			or (self_led and brain.in_break())
+	if bool(dcfg.get("enabled", true)) and (doors_now or not egg_doors.is_empty()) \
 			and brain.doors_bought_round < int(dcfg.get("max_per_round_per_bot", 1)):
 		var human: Player = squad.human()
 		var route_doors: Dictionary = _route_doors() if self_led else {}
 		for dn: BuyDoor in brain.loco_doors():
 			if not is_instance_valid(dn) or dn.is_open or not dn.can_interact(player):
 				continue
-			var ordered: bool = ordered_door == dn or egg_doors.has(dn)
+			var ordered: bool = ordered_door == dn
+			var egg: bool = not ordered and egg_doors.has(dn)
+			if not ordered and not egg and not doors_now:
+				continue
 			var hd: float = _flat(dn.global_position, human.global_position) if human != null and not human.spectating else INF
-			if not door_allowed(eco, ordered, self_led, squad.human_doors_opened, hd):
+			if egg:
+				if not egg_door_allowed(eco, self_led, squad.human_doors_opened):
+					continue
+			elif not door_allowed(eco, ordered, self_led, squad.human_doors_opened, hd):
 				continue
 			var is_pd: bool = dn == power_door
-			var keep: int = 0 if ordered else maxi(reserve, int(dcfg.get("reserve_scrip", 300)))
+			var keep: int = 0 if ordered else maxi(reserve, int(dcfg.get("reserve_scrip", 300)))   # (an egg door keeps the reserve too)
 			if is_pd:
 				keep = int(pw.get("door_reserve_scrip", 300))   # the way to the power is the revive-critical spend
-			if self_led and not ordered and bool(pw.get("self_led_useful_doors_only", true)) \
+			if self_led and not ordered and not egg and bool(pw.get("self_led_useful_doors_only", true)) \
 					and not self_led_door_ok(is_pd, route_doors.has(String(dn.door_id)), scrip, dn.cost, saving_for, keep):
 				continue   # a squad leading itself opens only doors it has a use for, the power's first
-			if not ordered and not is_pd and (_flat(dn.global_position, anc) > float(dcfg.get("max_from_leader_m", 30.0)) * range_mult * (2.0 if self_led else 1.0)):
+			if not ordered and not egg and not is_pd and (_flat(dn.global_position, anc) > float(dcfg.get("max_from_leader_m", 30.0)) * range_mult * (2.0 if self_led else 1.0)):
 				continue
 			if scrip < dn.cost + keep:
 				continue
 			if not squad.can_claim(dn, pid) or not brain.reachable(BotBrain._door_side(dn, me)):
 				continue
-			var dv: float = 0.95 if ordered else _pv("power_door" if is_pd else "door", _flat(dn.global_position, me))
+			var dv: float = 0.95 if ordered else 0.9 if egg else _pv("power_door" if is_pd else "door", _flat(dn.global_position, me))
 			out.append({"node": dn, "kind": "door", "value": dv, "cost": dn.cost,
 				"label": "open the %s (%d Scrip)%s" % [BotBrain.door_label(dn), dn.cost, " on the way to the power" if is_pd else ""]})
 	# ---- the Requisition Crate (never someone else's open crate)
@@ -584,9 +605,90 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 		if cr2 != null and (egg_up or _near_enough(cr2.global_position)):
 			out.append({"node": cr2, "kind": "crucible", "slot": -1, "value": float(eg.get("value", 1.0)) if egg_up else _pv("crucible", _flat(cr2.global_position, me)), "cost": up_cost,
 				"label": "feed the %s to the Crucible (%d Scrip)%s" % [player.weapons.slots[up_slot].display_name(), up_cost, " for the egg" if egg_up else ""]})
+	# ---- T-177: the Armorer's Bench on its own (squad bots and companions; before, only on a mark order): a part
+	# for the main gun, in a break, after the reserve and whatever the Crucible / the egg holds back
+	var bcfg: Dictionary = eco.get("bench", {})
+	var bench_pick: Dictionary = {}
+	if bool(bcfg.get("enabled", true)) and main != null and WeaponKit.accepts(main) and rnd >= int(bcfg.get("min_round", 3)):
+		var bench: ArmorersBench = ArmorersBench.nearest(brain.get_tree(), anc)
+		if bench != null and bench.is_visible_in_tree() and _flat(bench.global_position, anc) <= rng * 1.3 and _near_enough(bench.global_position):
+			var keep_b: int = reserve + save_up + int(bcfg.get("keep_scrip", 1500))
+			bench_pick = BotMarkOrders.pick_bench_option(bench_rows_open(ArmorersBench.options_for_gun(player, main)), BotAIData.table("marks").get("bench_prefs", []), scrip - keep_b)
+			if not bench_pick.is_empty() and int(bench_pick["price"]) <= scrip - keep_b and (in_break or shop_brk or not bool(bcfg.get("only_in_break", true))) \
+					and squad.can_claim(bench, pid):
+				var bst: Vector3 = brain.stand_point(bench)
+				if bst != Vector3.INF:
+					out.append({"node": bench, "kind": "bench", "slot": str(bench_pick["slot"]), "option": str(bench_pick["option"]),
+						"wslot": player.weapons.slots.find(main), "value": _pv("bench", _flat(bench.global_position, me)), "cost": int(bench_pick["price"]), "stand": bst,
+						"label": "fit the %s with %s at the Armorer's Bench (%d Scrip)" % [main.display_name(), str(bench_pick["name"]), int(bench_pick["price"])]})
+	# ---- T-177: the bank (squad bots and companions, in an account of their own for this match; never the agent,
+	# whose bank is the owner's profile): bank what it won't spend soon, take it out when that makes the next thing
+	# affordable (BankAccount.bot_plan), once a round, in a break
+	var bk: Dictionary = eco.get("bank", {})
+	if bool(bk.get("enabled", true)) and not brain.is_player_bot and (in_break or shop_brk) and bank_visits_round < int(bk.get("visits_per_round", 1)) \
+			and BankAccount.closed_reason() == "":
+		var want: int = next_want_cost(up_ok and _powered_crucible(), up_cost, bench_pick)
+		var mv: int = BankAccount.bot_plan(scrip, BankAccount.bot_balance(pid), want, reserve + save_up, int(bk.get("min_move", 1000)))
+		if mv != 0:
+			var ctr: BankCounter = _bank_counter(anc, rng * float(bk.get("range_mult", 1.5)))
+			if ctr != null and squad.can_claim(ctr, pid):
+				var cst: Vector3 = brain.stand_point(ctr)
+				if cst != Vector3.INF:
+					out.append({"node": ctr, "kind": "bank", "amount": mv, "want": want, "keep": reserve + save_up, "cost": 0, "stand": cst,
+						"value": float(bk.get("withdraw_value", 0.85)) if mv < 0 else _pv("bank", _flat(ctr.global_position, me)),
+						"label": ("take %d Scrip out of the bank" % -mv) if mv < 0 else ("bank %d Scrip" % mv)})
 	if brain.is_player_bot:
 		return AgentPlan.filter(out, brain)   # T-071 pass 2: the agent spends by its map plan (player_bot.json plans)
 	return out
+
+
+## T-177 pure: the bench rows for slots with nothing fitted yet. One part per slot: a bot never swaps a fitted part
+## for another (the first smoke run swapped radium and aperture sights back and forth, 600 and 750 Scrip a time).
+static func bench_rows_open(rows: Array) -> Array:
+	var filled: Dictionary = {}
+	for r: Variant in rows:
+		if bool((r as Dictionary).get("installed", false)):
+			filled[str((r as Dictionary)["slot"])] = true
+	return rows.filter(func(r: Variant) -> bool: return not filled.has(str((r as Dictionary)["slot"])))
+
+
+## T-177: the price of the next thing this bot wants (0 none), for the bank: its next tonic (the plan's first it
+## can buy now: owned, cap and power checked), else a Crucible teaching it is up for, else the bench's pick.
+func next_want_cost(crucible_up: bool, up_cost: int, bench_pick: Dictionary) -> int:
+	var pid: int = player.player_id
+	if bool(brain.options.get("perks", true)):
+		var plan: Array = brain.personality_economy("perk_order", [])
+		if plan.is_empty():
+			plan = eco.get("perk_plan", [])
+		var have: Dictionary = {}
+		for n: Node in brain.get_tree().get_nodes_in_group(&"perk_machines"):
+			var pm: PerkMachine = n as PerkMachine
+			if pm != null and pm.is_powered() and pm.is_visible_in_tree():
+				have[String(pm.perk_id)] = true
+		for pv: Variant in plan:
+			var pk: String = str(pv)
+			if have.has(pk) and PerkManager.can_buy(pid, StringName(pk)) == &"ok":
+				return PerkManager.price(StringName(pk))
+	if crucible_up:
+		return up_cost
+	if not bench_pick.is_empty():
+		return int(bench_pick.get("price", 0))
+	return 0
+
+
+## T-177: the nearest bank counter within `r` m of `anc` (null none).
+func _bank_counter(anc: Vector3, r: float) -> BankCounter:
+	var best: BankCounter = null
+	var bd: float = INF
+	for n: Node in brain.get_tree().get_nodes_in_group(&"bank_branch"):
+		var br: BankBranch = n as BankBranch
+		if br == null or br.counter == null or not is_instance_valid(br.counter) or not br.is_visible_in_tree():
+			continue
+		var d: float = _flat(br.counter.global_position, anc)
+		if d <= r and d < bd and _near_enough(br.counter.global_position):
+			bd = d
+			best = br.counter
+	return best
 
 
 ## The way to the power (T-058, cached for 3 s): {"switch": the PowerSwitch, "stand": where to stand} when it can

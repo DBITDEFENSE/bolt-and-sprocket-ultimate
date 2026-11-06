@@ -19,6 +19,7 @@ func _on_round(r: int, _special: bool) -> void:
 	_paid_round = r
 	var saver: int = map.player.player_id if map != null and map.player != null else -1
 	last_interest = BankAccount.accrue(saver)   # (T-141: Ledger Lager II adds 2% for the saver who holds it)
+	BankAccount.accrue_bots()   # T-177: the squad's and the companions' own savings
 	if last_interest > 0 and map != null and map.player != null:
 		# a typed slip by the Scrip (amount 0: it is not in your pocket, it is in the bank)
 		GLBus.bonus_awarded.emit(map.player.player_id, &"bank_interest", 0, "SAVINGS +%d  ·  %d IN THE BANK" % [last_interest, BankAccount.balance()])

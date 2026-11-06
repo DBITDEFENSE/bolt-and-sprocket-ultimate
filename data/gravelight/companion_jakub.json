@@ -27,10 +27,10 @@
  "tonics": true,
  "tonic_range_m": 70.0,
  "brain": {
-  "perks": false,
+  "perks": true,
   "bonus_perk": false,
   "kit": false,
-  "shopping": false,
+  "shopping": true,
   "accuracy_mult": 1.4,
   "personality": "jakub",
   "ammo_price_mult": 0.5,

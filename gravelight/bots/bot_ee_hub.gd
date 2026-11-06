@@ -251,8 +251,16 @@ func on_task_finished(_b: BotBrain, _t: Dictionary, ok: bool, _code: String) -> 
 		# started and stopped "unreachable" 340 times in one soak, every pick)
 		if str(_t.get("source", "")) == "full" and _code in ["unreachable", "missed", "not_found"] and squad != null:
 			_backoff["%d/%s/%s" % [_b.player.player_id, _t["qid"], _t["sid"]]] = squad.time() + float(BotEECatalog.cfg().get("retry_after_s", 45.0))
+			if str(_t.get("type", "")) == "scout" and _code == "not_found":
+				_scout_off_until = squad.time() + float(BotEECatalog.cfg().get("retry_after_s", 45.0))   # the map was walked: a rest for every scout
 
 var _backoff: Dictionary = {}
+var _scout_off_until: float = -INF
+
+
+## Did this bot just fail this step (Full Partner's retry_after_s back-off)?
+func backed_off(b: BotBrain, qid: StringName, sid: StringName) -> bool:
+	return squad != null and float(_backoff.get("%d/%s/%s" % [b.player.player_id, qid, sid], -INF)) > squad.time()
 
 
 ## Is a teammate's egg task already going for this object (its plan's target or its claim)?
@@ -536,6 +544,8 @@ func _full_partner() -> void:
 			continue   # U10 T-172: a rich bot stocks up before its next step
 		var best: Dictionary = pick_for(b2, taken, false)
 		var sj: Dictionary = scout_job()
+		if not sj.is_empty() and backed_off(b2, sj["qid"], sj["sid"]):
+			sj = {}   # this bot just walked the map for it and found nothing
 		if not sj.is_empty() and (best.is_empty() or str((best["t"] as Dictionary).get("type", "")) == "collect" or best["qid"] != sj["qid"]):
 			best = sj   # U10 (T-163; T-172: before a collect step or a side quest too): a "seen" need: go and look
 		if not best.is_empty():
@@ -557,6 +567,8 @@ func _scout_first(full: bool) -> void:
 	var pick: BotBrain = null
 	for b: BotBrain in squad.brains:
 		if b.ee == null or not b.ee.active() or str(b.ee.task.get("source", "")) != "full" or b.player.is_companion:
+			continue
+		if backed_off(b, sj["qid"], sj["sid"]):
 			continue
 		var side: bool = b.ee.task["qid"] != sj["qid"]
 		if str(b.ee.task.get("type", "")) != "collect" and not side:
@@ -583,11 +595,13 @@ func _hold_rally() -> bool:
 		return false
 	var lead: BotBrain = null
 	var at: Node3D = null
-	for b: BotBrain in squad.brains:
-		if b.ee == null or not b.ee.active() or b.ee.task["qid"] != qids[0] or str(b.ee.task.get("type", "")) != "hold_zone" or bool(b.ee.task.get("rally", false)):
+	for b: BotBrain in _rally_lead_order():
+		if b.ee == null or not b.ee.active() or b.ee.task["qid"] != qids[0] or str(b.ee.task.get("type", "")) != "hold_zone":
 			continue
 		if b.player.downed or b.player.spectating:
 			continue
+		if bool(b.ee.task.get("rally", false)) and not b.ee.holding_now():
+			continue   # a joiner leads only while it holds the running anchor itself (the lead went down: it stays)
 		var n: Node3D = b.ee.gathering_at()
 		if n == null and str(b.ee._plan.get("do", "")) == "use" and str(b.ee.task.get("source", "")) == "full" and not b.is_player_bot \
 				and RoundManager.current_round >= int(hr.get("gather_from_round", 6)) and is_instance_valid(b.ee._plan.get("node")):
@@ -616,7 +630,11 @@ func _hold_rally() -> bool:
 		if b2.ee.active():
 			var tk: Dictionary = b2.ee.task
 			if tk["qid"] == lead.ee.task["qid"] and tk["sid"] == lead.ee.task["sid"]:
-				continue   # already on it
+				# already on it: a joiner follows the lead to its next anchor (pylon 1 done, the lead walks to 2)
+				if bool(tk.get("rally", false)) and at != null and tk.get("focus") != at and str(b2.ee._plan.get("do", "")) != "hold":
+					tk["focus"] = at
+					b2.ee._replan = true
+				continue
 			if str(tk.get("source", "")) != "full" or bool(tk.get("ordered", false)):
 				continue   # the player's own order
 			var d: String = str(b2.ee._plan.get("do", ""))
@@ -626,6 +644,20 @@ func _hold_rally() -> bool:
 		start_on(b2, lead.ee.task["qid"], lead.ee.task["sid"], lead.ee.task["def"], false, "full", at, "task")
 		b2.ee.task["rally"] = true
 	return true
+
+
+## The rally's lead candidates: the bots on their own hold first, then the joiners (one holding the anchor leads
+## once the lead is down or out, so the others aren't sent home from a charging hold).
+func _rally_lead_order() -> Array[BotBrain]:
+	var own: Array[BotBrain] = []
+	var joined: Array[BotBrain] = []
+	for b: BotBrain in squad.brains:
+		if b.ee != null and b.ee.active() and bool(b.ee.task.get("rally", false)):
+			joined.append(b)
+		else:
+			own.append(b)
+	own.append_array(joined)
+	return own
 
 
 ## U10 T-172 (ee.json together.escort): in a hot round a Full Partner bot whose errand takes it away from everyone
@@ -748,16 +780,19 @@ func egg_gun_pid() -> int:
 			needed = true
 	if not needed:
 		return 0
+	for b0: BotBrain in squad.brains:
+		if b0.is_player_bot or b0.player.is_companion or not is_instance_valid(b0.player):
+			continue
+		for w: WeaponInstance in b0.player.weapons.slots:
+			if w.upgraded and w.weapon_class() != &"wonder":
+				_egg_gun_was = 0
+				return 0   # one of us has one (checked before any pick, so the cache never keeps a stale bot)
 	var best_s: int = -1
 	var keep: int = _egg_gun_was
 	var keep_ok: bool = false
 	for b: BotBrain in squad.brains:
 		if b.is_player_bot or b.player.is_companion or not is_instance_valid(b.player):
 			continue
-		for w: WeaponInstance in b.player.weapons.slots:
-			if w.upgraded and w.weapon_class() != &"wonder":
-				_egg_gun_was = 0
-				return 0   # one of us has one
 		if b.player.downed or b.player.spectating:
 			continue
 		var slot: int = b._upgradeable_slot()
@@ -802,6 +837,8 @@ func _main_first(taken: Dictionary) -> void:
 ## where the four little bells hang", learned by seeing them): one free Full Partner bot scouts the open zones.
 ## {} when there is none, or someone already scouts.
 func scout_job() -> Dictionary:
+	if squad != null and squad.time() < _scout_off_until:
+		return {}   # U10: a scout just walked every open zone and found nothing: not again at once
 	for b: BotBrain in squad.brains:
 		if b.ee != null and b.ee.active() and str(b.ee.task.get("type", "")) == "scout":
 			return {}
@@ -878,7 +915,7 @@ func pick_for(b: BotBrain, taken: Dictionary, ordered: bool) -> Dictionary:
 			var sid: StringName = StringName(str(sd["id"]))
 			if not QuestManager.is_active(qid, sid) or taken.has("%s/%s" % [qid, sid]):
 				continue
-			if not ordered and float(_backoff.get("%d/%s/%s" % [b.player.player_id, qid, sid], -INF)) > squad.time():
+			if not ordered and backed_off(b, qid, sid):
 				continue   # U10 T-172: just failed it: later
 			var t: Dictionary = BotEECatalog.task_def(sd)
 			if t.is_empty():

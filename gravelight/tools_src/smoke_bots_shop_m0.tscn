@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://gravelight/tools_src/smoke_bots_shop.gd" id="1"]
+
+[node name="SmokeBotsShopM0" type="Node"]
+script = ExtResource("1")
+map_path = "res://gravelight/maps/map00_crossroads/map00.tscn"
+need_crucible = true
+need_deposit = false

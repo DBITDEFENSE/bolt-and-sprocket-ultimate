@@ -207,7 +207,7 @@ static func serialize_player(p: Player) -> Dictionary:
 		"character": String(GameState.character_of(pid)),
 		"bot": p.is_bot,
 		"inv": inv,
-		"scrip": Economy.get_scrip(pid),
+		"scrip": Economy.get_scrip(pid) + BankAccount.bot_balance(pid),   # (T-177: a bot's savings travel in its pocket)
 		"perks": perks,
 		"bonus_slots": int(PerkManager._bonus_slots.get(pid, 0)),
 		"bonus_perk": String(PerkManager.bonus_perk(pid)),

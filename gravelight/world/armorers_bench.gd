@@ -220,9 +220,13 @@ static func buy(player: Player, slot: String, option: String) -> Dictionary:
 ## one row per option: {slot, slot_name, option, name, desc, price, installed, reason ("" = can buy now;
 ## WeaponKit codes, "no_scrip" when short), short (Scrip missing), weapon (its id)}. [] when no gun takes any.
 static func options_for(player: Player) -> Array:
+	return options_for_gun(player, WeaponKit.gun_of(player))
+
+
+## options_for for one particular gun of `player`'s (T-177: a bot fits its main gun, not the pistol in its hands).
+static func options_for_gun(player: Player, w: WeaponInstance) -> Array:
 	var out: Array = []
-	var w: WeaponInstance = WeaponKit.gun_of(player)
-	if w == null:
+	if w == null or not WeaponKit.accepts(w):
 		return out
 	var up: bool = w.upgraded
 	var pid: int = player.player_id if player != null else 0

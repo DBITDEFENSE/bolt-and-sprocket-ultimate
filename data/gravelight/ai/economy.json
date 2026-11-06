@@ -163,7 +163,9 @@
     "crate": 0.8,
     "crucible": 1.0,
     "power": 0.92,
-    "power_door": 0.9
+    "power_door": 0.9,
+    "bench": 0.6,
+    "bank": 0.3
   },
   "max_range_from_leader_m": 26.0,
   "self_led_mid_round_m": 16.0,
@@ -171,5 +173,8 @@
   "self_led_trip_mps": 4.0,
   "self_led_trip_margin_s": 5.0,
   "_self_led_mid_round_doc": "T-058: a squad with no human leading it shops beyond this distance from its home loop (or its leader) only between waves.",
-  "bot_led_range_m": 60.0
+  "bot_led_range_m": 60.0,
+  "bench": {"enabled": true, "min_round": 3, "keep_scrip": 1500, "only_in_break": true},
+  "bank": {"enabled": true, "visits_per_round": 1, "min_move": 1000, "range_mult": 1.5, "withdraw_value": 0.85},
+  "_bench_bank_doc": "T-177: squad bots and companions fit their main gun at the Armorer's Bench on their own (marks.json bench_prefs order, in a break, from round min_round, keeping the reserve + whatever the Crucible / the egg holds back + keep_scrip), and save at the bank in an account of their own for this match (BankAccount bot_*: the human's profile savings are never touched; the same interest; a campaign hop pays it into their pocket): once a round in a break they bank all but reserve + the price of the next thing they want (at least min_move), and take out what makes that next thing affordable (withdraw_value: before the purchase it enables). The bot-mode agent never banks (its bank is the owner's profile)."
 }
