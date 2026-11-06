@@ -7,6 +7,11 @@ and a living world. PAUL guards Kaltenbrunn's round 15 and THE SLENDER walks Tot
 a living world too.** Everything is merged on `master` and pushed. The scorecard target was **not** met (below) and
 the two bot targets were **not** met; both are reported straight.
 
+## 2026-11-06 follow-up (merged)
+- **Review fixes (T-176):** all 10 bugs from the review of the bot-egg merge fixed (holds, the hunt, egg doors, scouting, shop cost).
+- **Bots and companions shop (T-177):** squad bots and Jakub / Trudi / Gustl / Hinnerk / Jette use the bank (their own savings for the match, never yours), the Armorer's Bench, tonics and the Crucible with their own Scrip. Companions shop between rounds only. Relief soldiers don't (no Scrip; they pass through).
+- **Map 1 performance:** no script slowdown since UPDATE 10. Two per-tick log floods fixed (a bot retrying the power switch, a relief-squad error); frame time 4.65 to 4.2 ms in a bot soak. The GPU side (new landscape, Crucible room light) needs your `--frame-log` run.
+
 ## Follow-up, 2026-11-03 (after your play-test)
 - **Totenhafen graphics:** the glowing green edge lines, the black flood water, the floating white "discs" (snow domes),
   the backwards searchlight cone, U-1047's red wash and the harsh cannery checker are fixed (T-173).
