@@ -27,8 +27,10 @@ func test_data_and_brain_options() -> void:
 	assert_eq(int(c["breakout"]["round"]), 5, "the breakout is round 5")
 	assert_eq(JakubCompanion.pid(), JAK)
 	var o: Dictionary = JakubCompanion.brain_options(HUMAN, false)
-	for k: String in ["perks", "bonus_perk", "kit", "shopping"]:
+	for k: String in ["bonus_perk", "kit"]:
 		assert_false(bool(o[k]), "no %s" % k)
+	for k2: String in ["perks", "shopping"]:
+		assert_true(bool(o[k2]), "T-177: %s with his own Scrip" % k2)
 	assert_almost_eq(float(o["accuracy_mult"]), 1.4, 0.001, "about 70% of a player's accuracy")
 	assert_eq(str(o["personality"]), "jakub")
 	assert_eq(int(o["escort_pid"]), HUMAN, "he escorts the player who freed him")
@@ -44,12 +46,16 @@ func test_data_and_brain_options() -> void:
 		assert_true(keys.has(k2), "BotBrain knows the option %s" % k2)
 
 
-func test_no_perks_of_his_own_accord() -> void:
+## T-177 (was T-127's "never of his own accord"): the owner wants the companions shopping with their own Scrip.
+func test_shops_with_his_own_scrip() -> void:
 	var p: Dictionary = BotAIData.personality("jakub")
-	assert_true(bool(p["economy"]["refuses_perks"]), "his own shopping never picks a perk")
-	assert_eq(float(p["actions"]["buy"]), 0.0, "and never shops")
-	assert_false(bool(JakubCompanion.brain_options(HUMAN, true)["perks"]), "no spawn-kit perks, no bonus perk, no perk buys")
-	assert_true(PerkManager.owned(JAK).is_empty(), "he owns none until he is sent for one")
+	assert_false(bool(p["economy"]["refuses_perks"]), "his own shopping may pick a tonic")
+	assert_gt(float(p["actions"]["buy"]), 0.0, "and he shops")
+	assert_eq(float(p["actions"]["crate"]), 0.0, "never the Requisition Crate")
+	var o: Dictionary = JakubCompanion.brain_options(HUMAN, true)
+	assert_true(bool(o["perks"]) and bool(o["shopping"]), "perk buys and shopping on")
+	assert_false(bool(o["kit"]) or bool(o["bonus_perk"]), "still no spawn kit, no bonus perk")
+	assert_true(PerkManager.owned(JAK).is_empty(), "he owns none until he buys one")
 
 
 ## T-127: "Talk to Jakub" -> GET YOURSELF A TONIC: when a machine is his to drink from on the talker's Scrip.

@@ -1150,6 +1150,11 @@ func _do_use(n: Node3D, delta: float) -> void:
 	if sp == Vector3.INF:
 		if _try_door(n.global_position):
 			return
+		if float(_failed_nodes.get(n.get_instance_id(), -INF)) > _now():
+			# the planner handed back the one it just failed to reach (it had no other: Requiem's power switch behind
+			# a door the bot can't pay for yet): stop instead of a path query and a log line every physics tick
+			_finish(false, "unreachable")
+			return
 		_log("can't reach %s" % n.name)
 		_mark_failed(n, 20.0)
 		_replan = true

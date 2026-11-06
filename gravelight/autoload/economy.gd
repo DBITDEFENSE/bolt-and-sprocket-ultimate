@@ -19,6 +19,7 @@ func _ready() -> void:
 
 func reset(player_ids: Array[int]) -> void:
 	var start: int = int(GLData.table("economy")["starting_scrip"])
+	BankAccount.reset_bots()   # T-177: the bots' savings are this match's
 	_scrip.clear()
 	_repair_earned.clear()
 	multiplier = 1

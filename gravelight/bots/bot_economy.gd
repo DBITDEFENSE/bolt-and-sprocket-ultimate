@@ -19,6 +19,7 @@ var _power_t: float = -10.0
 var _power: Dictionary = {}
 ## Doors the human opened this match (BotSquad keeps the count; read here).
 var crate_pulls_this_round: int = 0
+var bank_visits_round: int = 0   # T-177
 
 
 func setup(b: BotBrain) -> void:
@@ -371,6 +372,8 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 	if not best_board.is_empty():
 		out.append(best_board)
 	var shopping: bool = bool(brain.options.get("shopping", true))
+	if player.is_companion and not brain.in_break():
+		shopping = false   # T-177: a companion shops between rounds only (mid-round it covers the one it follows)
 	if save:
 		return out
 	var econ: Dictionary = GLData.table("economy")
@@ -602,9 +605,90 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 		if cr2 != null and (egg_up or _near_enough(cr2.global_position)):
 			out.append({"node": cr2, "kind": "crucible", "slot": -1, "value": float(eg.get("value", 1.0)) if egg_up else _pv("crucible", _flat(cr2.global_position, me)), "cost": up_cost,
 				"label": "feed the %s to the Crucible (%d Scrip)%s" % [player.weapons.slots[up_slot].display_name(), up_cost, " for the egg" if egg_up else ""]})
+	# ---- T-177: the Armorer's Bench on its own (squad bots and companions; before, only on a mark order): a part
+	# for the main gun, in a break, after the reserve and whatever the Crucible / the egg holds back
+	var bcfg: Dictionary = eco.get("bench", {})
+	var bench_pick: Dictionary = {}
+	if bool(bcfg.get("enabled", true)) and main != null and WeaponKit.accepts(main) and rnd >= int(bcfg.get("min_round", 3)):
+		var bench: ArmorersBench = ArmorersBench.nearest(brain.get_tree(), anc)
+		if bench != null and bench.is_visible_in_tree() and _flat(bench.global_position, anc) <= rng * 1.3 and _near_enough(bench.global_position):
+			var keep_b: int = reserve + save_up + int(bcfg.get("keep_scrip", 1500))
+			bench_pick = BotMarkOrders.pick_bench_option(bench_rows_open(ArmorersBench.options_for_gun(player, main)), BotAIData.table("marks").get("bench_prefs", []), scrip - keep_b)
+			if not bench_pick.is_empty() and int(bench_pick["price"]) <= scrip - keep_b and (in_break or shop_brk or not bool(bcfg.get("only_in_break", true))) \
+					and squad.can_claim(bench, pid):
+				var bst: Vector3 = brain.stand_point(bench)
+				if bst != Vector3.INF:
+					out.append({"node": bench, "kind": "bench", "slot": str(bench_pick["slot"]), "option": str(bench_pick["option"]),
+						"wslot": player.weapons.slots.find(main), "value": _pv("bench", _flat(bench.global_position, me)), "cost": int(bench_pick["price"]), "stand": bst,
+						"label": "fit the %s with %s at the Armorer's Bench (%d Scrip)" % [main.display_name(), str(bench_pick["name"]), int(bench_pick["price"])]})
+	# ---- T-177: the bank (squad bots and companions, in an account of their own for this match; never the agent,
+	# whose bank is the owner's profile): bank what it won't spend soon, take it out when that makes the next thing
+	# affordable (BankAccount.bot_plan), once a round, in a break
+	var bk: Dictionary = eco.get("bank", {})
+	if bool(bk.get("enabled", true)) and not brain.is_player_bot and (in_break or shop_brk) and bank_visits_round < int(bk.get("visits_per_round", 1)) \
+			and BankAccount.closed_reason() == "":
+		var want: int = next_want_cost(up_ok and _powered_crucible(), up_cost, bench_pick)
+		var mv: int = BankAccount.bot_plan(scrip, BankAccount.bot_balance(pid), want, reserve + save_up, int(bk.get("min_move", 1000)))
+		if mv != 0:
+			var ctr: BankCounter = _bank_counter(anc, rng * float(bk.get("range_mult", 1.5)))
+			if ctr != null and squad.can_claim(ctr, pid):
+				var cst: Vector3 = brain.stand_point(ctr)
+				if cst != Vector3.INF:
+					out.append({"node": ctr, "kind": "bank", "amount": mv, "cost": 0, "stand": cst,
+						"value": float(bk.get("withdraw_value", 0.85)) if mv < 0 else _pv("bank", _flat(ctr.global_position, me)),
+						"label": ("take %d Scrip out of the bank" % -mv) if mv < 0 else ("bank %d Scrip" % mv)})
 	if brain.is_player_bot:
 		return AgentPlan.filter(out, brain)   # T-071 pass 2: the agent spends by its map plan (player_bot.json plans)
 	return out
+
+
+## T-177 pure: the bench rows for slots with nothing fitted yet. One part per slot: a bot never swaps a fitted part
+## for another (the first smoke run swapped radium and aperture sights back and forth, 600 and 750 Scrip a time).
+static func bench_rows_open(rows: Array) -> Array:
+	var filled: Dictionary = {}
+	for r: Variant in rows:
+		if bool((r as Dictionary).get("installed", false)):
+			filled[str((r as Dictionary)["slot"])] = true
+	return rows.filter(func(r: Variant) -> bool: return not filled.has(str((r as Dictionary)["slot"])))
+
+
+## T-177: the price of the next thing this bot wants (0 none), for the bank: its next tonic (the plan's first it
+## can buy now: owned, cap and power checked), else a Crucible teaching it is up for, else the bench's pick.
+func next_want_cost(crucible_up: bool, up_cost: int, bench_pick: Dictionary) -> int:
+	var pid: int = player.player_id
+	if bool(brain.options.get("perks", true)):
+		var plan: Array = brain.personality_economy("perk_order", [])
+		if plan.is_empty():
+			plan = eco.get("perk_plan", [])
+		var have: Dictionary = {}
+		for n: Node in brain.get_tree().get_nodes_in_group(&"perk_machines"):
+			var pm: PerkMachine = n as PerkMachine
+			if pm != null and pm.is_powered() and pm.is_visible_in_tree():
+				have[String(pm.perk_id)] = true
+		for pv: Variant in plan:
+			var pk: String = str(pv)
+			if have.has(pk) and PerkManager.can_buy(pid, StringName(pk)) == &"ok":
+				return PerkManager.price(StringName(pk))
+	if crucible_up:
+		return up_cost
+	if not bench_pick.is_empty():
+		return int(bench_pick.get("price", 0))
+	return 0
+
+
+## T-177: the nearest bank counter within `r` m of `anc` (null none).
+func _bank_counter(anc: Vector3, r: float) -> BankCounter:
+	var best: BankCounter = null
+	var bd: float = INF
+	for n: Node in brain.get_tree().get_nodes_in_group(&"bank_branch"):
+		var br: BankBranch = n as BankBranch
+		if br == null or br.counter == null or not is_instance_valid(br.counter) or not br.is_visible_in_tree():
+			continue
+		var d: float = _flat(br.counter.global_position, anc)
+		if d <= r and d < bd and _near_enough(br.counter.global_position):
+			bd = d
+			best = br.counter
+	return best
 
 
 ## The way to the power (T-058, cached for 3 s): {"switch": the PowerSwitch, "stand": where to stand} when it can

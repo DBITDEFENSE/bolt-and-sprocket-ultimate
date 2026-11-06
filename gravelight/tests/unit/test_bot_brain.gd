@@ -144,7 +144,7 @@ func test_personalities_exist_and_name_real_actions() -> void:
 			assert_true((acts["actions"] as Dictionary).has(str(a)), "%s: action %s" % [ch, a])
 	assert_gt(float(BotAIData.personality("deacon")["actions"]["revive"]), 1.0, "Deacon revives first")
 	assert_lt(float(BotAIData.personality("dutch")["actions"]["retreat"]), 1.0, "Dutch is slow to retreat")
-	assert_eq(float(BotAIData.personality("jakub")["actions"]["buy"]), 0.0, "Jakub refuses to shop (perks)")
+	assert_gt(float(BotAIData.personality("jakub")["actions"]["buy"]), 0.0, "T-177: Jakub shops with his own Scrip")
 	assert_gt(float(BotAIData.personality("wren")["aim"]["class_pref"]["rifle"]), 1.0, "Wren prefers rifles")
 
 

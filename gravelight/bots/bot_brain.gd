@@ -321,6 +321,7 @@ func _on_trap_activated(trap_id: StringName, by_player: int) -> void:
 func on_round_started() -> void:
 	doors_bought_round = 0
 	economy.crate_pulls_this_round = 0
+	economy.bank_visits_round = 0
 	economy.invalidate()
 	aim.on_round_started()
 	_hold = {}
@@ -588,6 +589,8 @@ func context(now: float) -> Dictionary:
 	var esc: Player = escort_target()
 	c["escort"] = 1.0 if esc != null else 0.0
 	c["escort_far"] = clampf(_flat(esc.global_position, player.global_position) / 15.0, 0.0, 1.0) if esc != null else 0.0
+	if esc != null and not task.is_empty() and str(task.get("action", "")) in ["buy", "crate", "resupply"] and in_break():
+		c["escort_far"] = 0.0   # T-177: a companion shopping in a break finishes the errand (the escort pulled it back at 6 m, every time)
 	if not task.is_empty():
 		# the errand under way keeps its value (the economy no longer lists what it already paid for)
 		var key: String = str({"buy": "buy_task", "repair": "repair_task", "crate": "crate_task", "trap": "trap_task", "resupply": "resupply_task",
@@ -757,7 +760,7 @@ func start_task(kind: String) -> void:
 		if not squad.blackboard.claim(str(c["key"]), pid, str(c.get("kind", "")), now, now + 30.0):
 			_task_unavailable(kind)
 			return
-	elif ["gun", "ammo", "perk", "door", "crucible", "ammo_box", "crate", "trap", "power"].has(str(c.get("kind", ""))):
+	elif ["gun", "ammo", "perk", "door", "crucible", "ammo_box", "crate", "trap", "power", "bench", "bank"].has(str(c.get("kind", ""))):
 		if not squad.can_claim(node, pid):
 			_task_unavailable(kind)
 			return

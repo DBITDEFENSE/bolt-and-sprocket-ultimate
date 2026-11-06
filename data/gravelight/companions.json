@@ -7,7 +7,7 @@
   "call_every_s": 18.0,
   "call_within_m": 26.0,
   "call_unless_within_m": 6.0,
-  "brain": {"perks": false, "bonus_perk": false, "kit": false, "shopping": false, "accuracy_mult": 1.5, "ammo_price_mult": 0.5, "revive_priority": 2},
+  "brain": {"perks": true, "bonus_perk": false, "kit": false, "shopping": true, "accuracy_mult": 1.5, "ammo_price_mult": 0.5, "revive_priority": 2},
   "companions": {
     "trudi": {
       "name": "Trudi Hanke",
