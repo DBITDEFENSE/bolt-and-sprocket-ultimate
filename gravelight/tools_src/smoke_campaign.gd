@@ -244,7 +244,7 @@ func _record_expectations(map: MapRoot) -> void:
 		for w: WeaponInstance in p.weapons.slots:
 			ws.append([String(w.id), w.mag, w.reserve])
 			ups.append(w.upgraded)
-		_expect[int(pid)] = {"weapons": ws, "upgraded": ups, "scrip": Economy.get_scrip(int(pid)), "perks": PerkManager.owned(int(pid)).duplicate(),
+		_expect[int(pid)] = {"weapons": ws, "upgraded": ups, "scrip": Economy.get_scrip(int(pid)) + BankAccount.bot_balance(int(pid)), "perks": PerkManager.owned(int(pid)).duplicate(),
 			"grenades": p.weapons.grenades, "character": String(p.character_id)}
 		print("[campaign] P%d (%s) leaves with %s, %d Scrip, perks %s" % [int(pid), p.character_id, str(ws), Economy.get_scrip(int(pid)), str(PerkManager.owned(int(pid)))])
 
@@ -269,7 +269,9 @@ func _verify_restored(map: MapRoot) -> void:
 		else:
 			_check(ws == e["weapons"], "P%d weapons + ammo restored: %s" % [int(pid), str(ws)])
 		_check(ups == e["upgraded"], "P%d upgraded state restored" % int(pid))
-		_check(Economy.get_scrip(int(pid)) == int(e["scrip"]), "P%d Scrip restored (%d)" % [int(pid), Economy.get_scrip(int(pid))])
+		# (T-177: a bot may bank part of it during the arrival grace: pocket + its own savings)
+		var held: int = Economy.get_scrip(int(pid)) + BankAccount.bot_balance(int(pid))
+		_check(held == int(e["scrip"]), "P%d Scrip restored (%d, %d of it banked)" % [int(pid), held, BankAccount.bot_balance(int(pid))])
 		_check(PerkManager.owned(int(pid)) == e["perks"], "P%d perks restored (%s)" % [int(pid), str(PerkManager.owned(int(pid)))])
 		_check(p.weapons.grenades == int(e["grenades"]), "P%d grenades restored" % int(pid))
 		_check(String(p.character_id) == str(e["character"]), "P%d is still %s" % [int(pid), str(e["character"])])

@@ -7,6 +7,16 @@ and a living world. PAUL guards Kaltenbrunn's round 15 and THE SLENDER walks Tot
 a living world too.** Everything is merged on `master` and pushed. The scorecard target was **not** met (below) and
 the two bot targets were **not** met; both are reported straight.
 
+## 2026-11-07 (merged, pushed)
+- **Cellar (Map 0):** a new vault off the cellar with Skyhook Sekt and Magpie Mead, the two tonics no early map sold.
+- **Totenhafen:** 41 invisible walls gone, the sub's bulkheads, hull and deck finished, black slabs removed (shots: morning/screenshots/t180_map02).
+- **Bells / Easter egg:** the Requiem is easier (bigger bells, a rung bell stays rung, longer Chapel light, radios heard further); bots alone finish it 3 of 5. **Easter Egg Mode** (Settings > Gameplay, or map select): Few Crawlers / No Zombies, practice only.
+- **Iron sights:** 11 guns' sights lined up at ADS; a test keeps every gun within 2 px.
+- **HUD:** the squad list shows names, down state and tiny tonic caps; your caps are 40 px (were 54); every tonic icon redrawn; hold Ctrl for the scoreboard.
+- **Cutscenes:** all 12 rebuilt as camera shots with letterbox, grades, title cards, the squad acting, hold to skip (clips: morning/clips/t184_after). Please watch one on your GPU: depth of field and brightness were only checked in software rendering.
+- **The airplane launch:** pushes added up every frame (the Kranich's lash threw you 56 m up); fixed on every map, plus a net that puts anyone far out of bounds back on safe ground.
+- **Bots from round 30:** every tonic and a Crucible-taught gun (companions not included; one flag to turn on).
+
 ## 2026-11-06 follow-up (merged)
 - **Review fixes (T-176):** all 10 bugs from the review of the bot-egg merge fixed (holds, the hunt, egg doors, scouting, shop cost).
 - **Bots and companions shop (T-177):** squad bots and Jakub / Trudi / Gustl / Hinnerk / Jette use the bank (their own savings for the match, never yours), the Armorer's Bench, tonics and the Crucible with their own Scrip. Companions shop between rounds only. Relief soldiers don't (no Scrip; they pass through).
