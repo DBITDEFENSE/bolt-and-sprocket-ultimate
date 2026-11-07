@@ -19,6 +19,7 @@ var _fails: PackedStringArray = []
 var _t: float = 0.0
 var _done: bool = false
 var _expect: Dictionary = {}     # pid -> {"weapons": [[id, mag, reserve]], "scrip": int, "perks": [ids]}
+var _spent: Dictionary = {}      # pid -> Scrip spent since the last _record_expectations (a bot opening a door for the egg)
 var _rounds: Array[int] = []
 var _ended: bool = false
 
@@ -235,7 +236,14 @@ func _end_screen() -> Node:
 	return null
 
 
+func _on_purchase(pid: int, _item: StringName, cost: int) -> void:
+	_spent[pid] = int(_spent.get(pid, 0)) + cost
+
+
 func _record_expectations(map: MapRoot) -> void:
+	_spent.clear()
+	if not GLBus.purchase_made.is_connected(_on_purchase):
+		GLBus.purchase_made.connect(_on_purchase)
 	var weapons: Dictionary = GLData.table("weapons")
 	for pid: Variant in map.players.keys():
 		var p: Player = map.players[pid] as Player
@@ -270,8 +278,10 @@ func _verify_restored(map: MapRoot) -> void:
 			_check(ws == e["weapons"], "P%d weapons + ammo restored: %s" % [int(pid), str(ws)])
 		_check(ups == e["upgraded"], "P%d upgraded state restored" % int(pid))
 		# (T-177: a bot may bank part of it during the arrival grace: pocket + its own savings)
+		# (T-203: and a bot may spend some: it opened a door for the egg in the grace; what it bought is counted back)
 		var held: int = Economy.get_scrip(int(pid)) + BankAccount.bot_balance(int(pid))
-		_check(held == int(e["scrip"]), "P%d Scrip restored (%d, %d of it banked)" % [int(pid), held, BankAccount.bot_balance(int(pid))])
+		var spent: int = int(_spent.get(int(pid), 0))
+		_check(held + spent == int(e["scrip"]), "P%d Scrip restored (%d, %d of it banked, %d spent since)" % [int(pid), held, BankAccount.bot_balance(int(pid)), spent])
 		_check(PerkManager.owned(int(pid)) == e["perks"], "P%d perks restored (%s)" % [int(pid), str(PerkManager.owned(int(pid)))])
 		_check(p.weapons.grenades == int(e["grenades"]), "P%d grenades restored" % int(pid))
 		_check(String(p.character_id) == str(e["character"]), "P%d is still %s" % [int(pid), str(e["character"])])

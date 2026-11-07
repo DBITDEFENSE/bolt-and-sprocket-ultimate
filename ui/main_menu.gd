@@ -30,7 +30,17 @@ var _backdrop: FinePrint
 var _settings: SettingsMenu = null
 
 
+## T-203: the Windows build (export feature "cz_direct") opens on the CLAUDE ZOMBIES menu once at boot; Quit >
+## Terms & Conditions still comes back to this hub.
+static var _booted: bool = false
+
+
 func _ready() -> void:
+	if OS.has_feature("cz_direct") and not _booted:
+		_booted = true
+		if launch_gravelight():
+			return
+	_booted = true
 	Game.set_mode(Game.Mode.MENU)
 	var gl: Node = get_node_or_null(^"/root/GLSettings")
 	if gl != null:

@@ -151,7 +151,7 @@ func test_main_menu_columns() -> void:
 	await wait_frames(3)
 	var want: Dictionary = {"main": ["PLAY", "MUSTER", "ARCHIVE", "EXTRAS", "SETTINGS", "QUIT"],
 		"play": ["SOLO", "ONLINE", "CAMPAIGN", "BACK"],
-		"extras": ["DOSSIERS", "SERVICE RECORD", "CHALLENGES", "CREDITS", "TEST RANGE", "BACK"]}
+		"extras": ["CUTSCENES", "DOSSIERS", "SERVICE RECORD", "CHALLENGES", "CREDITS", "TEST RANGE", "BACK"]}
 	for col: String in want.keys():
 		mm.call("show_column", col, false)
 		await wait_frames(1)

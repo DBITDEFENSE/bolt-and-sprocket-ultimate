@@ -225,13 +225,14 @@ func test_the_vessel_follows_the_gore_setting() -> void:
 
 func test_the_plan_for_a_match_start() -> void:
 	var h: Dictionary = LazarusCinema.hooks()
-	assert_eq(LazarusCinema.plan("map00_crossroads", {"campaign": true, "fresh_start": true}, h), ["fourth_day", "gravelight_one"] as Array[String], "a new campaign")
+	assert_eq(LazarusCinema.plan("map00_crossroads", {"campaign": true, "fresh_start": true}, h), ["lazarus_saturday", "fourth_day", "gravelight_one"] as Array[String], "the first campaign opens with the prologue (T-203)")
+	assert_eq(LazarusCinema.plan("map00_crossroads", {"campaign": true, "fresh_start": true, "seen": ["lazarus_saturday"]}, h), ["fourth_day", "gravelight_one"] as Array[String], "a new campaign after that")
 	assert_eq(LazarusCinema.plan("map01_kaltenbrunn", {"campaign": true, "arriving_from": "map00_crossroads"}, h), ["staub"] as Array[String], "Kaltenbrunn's arrival")
 	assert_eq(LazarusCinema.plan("map01_kaltenbrunn", {"campaign": true, "arriving_from": "map00_crossroads", "seen": ["staub"]}, h), ["staub"] as Array[String], "the campaign arrival plays it every time")
 	assert_eq(LazarusCinema.plan("map00_crossroads", {"campaign": true, "fresh_start": false}, h).size(), 0, "a dev start elsewhere in the chain")
 	assert_eq(LazarusCinema.plan("map02_totenhafen", {"campaign": true, "arriving_from": "map01_kaltenbrunn"}, h).size(), 0, "no other arrival")
-	assert_eq(LazarusCinema.plan("map00_crossroads", {"campaign": false, "seen": []}, h), ["gravelight_one"] as Array[String], "standalone, the first time")
-	assert_eq(LazarusCinema.plan("map00_crossroads", {"campaign": false, "seen": ["gravelight_one"]}, h).size(), 0, "standalone, once")
+	assert_eq(LazarusCinema.plan("map00_crossroads", {"campaign": false, "seen": []}, h).size(), 0, "solo and online: no cutscene (T-203, the owner)")
+	assert_eq(LazarusCinema.plan("map01_kaltenbrunn", {"campaign": false, "seen": []}, h).size(), 0, "solo Kaltenbrunn: none either")
 	var always: Dictionary = h.duplicate(true)
 	always["map00_crossroads"]["standalone_rule"] = "always"
 	assert_eq(LazarusCinema.plan("map00_crossroads", {"campaign": false, "seen": ["gravelight_one"]}, always).size(), 1, "the rule is data")

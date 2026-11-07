@@ -31,9 +31,7 @@ var _last_focus: Dictionary = {}     # column -> link name
 
 func _ready() -> void:
 	GLSettings.activate()
-	if not Net.is_online() and not Net.reopen_lobby and CinemaTheatre.wants_prologue():
-		CinemaTheatre.play_ids(get_tree(), ["lazarus_saturday"], "menu")   # T-194: the prologue, first launch only
-		return
+	# T-203 (the owner): the menu opens straight away; the prologue plays at the first campaign start, never here
 	Game.set_mode(Game.Mode.GRAVELIGHT)
 	get_tree().paused = false
 	GameState.phase = GameState.Phase.MENU
@@ -167,6 +165,16 @@ func _unlock_name(item_id: String) -> String:
 
 # ================================================================== columns
 
+## T-203: Extras > Cutscenes: the Archive's cutscene gallery (every LAZARUS cutscene and campaign hop, to rewatch).
+func _open_cutscenes() -> void:
+	if _screen != null and is_instance_valid(_screen) and not _screen.get("_closing"):
+		return
+	var a: MenuArchive = MenuArchive.new()
+	a.gallery = true
+	_screen = a
+	_show_screen(a)
+
+
 ## [label, Callable] rows of a column.
 func column_rows(which: String) -> Array:
 	match which:
@@ -174,7 +182,7 @@ func column_rows(which: String) -> Array:
 			return [["Solo", open_screen.bind(MenuCharacter)], ["Online", open_screen.bind(MenuLobby)],
 				["Campaign", _open_campaign], ["Back", show_column.bind("main", true)]]
 		"extras":
-			return [["Dossiers", open_screen.bind(MenuDossiers)], ["Service Record", open_screen.bind(MenuStats)],
+			return [["Cutscenes", _open_cutscenes], ["Dossiers", open_screen.bind(MenuDossiers)], ["Service Record", open_screen.bind(MenuStats)],
 				["Challenges", open_screen.bind(MenuChallenges)], ["Credits", open_screen.bind(MenuCredits)],
 				["Test Range", func() -> void: get_tree().change_scene_to_file(TEST_RANGE)], ["Back", show_column.bind("main", true)]]
 		"quit":

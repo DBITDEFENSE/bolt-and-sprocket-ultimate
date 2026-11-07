@@ -19,8 +19,8 @@
   },
   "set_variants": {"village_spring": "spring"},
   "hooks": {
-    "map00_crossroads": {"campaign_start": ["fourth_day", "gravelight_one"], "standalone": ["gravelight_one"], "standalone_rule": "once"},
-    "map01_kaltenbrunn": {"arrival_from": {"map00_crossroads": ["staub"]}, "standalone": ["staub"], "standalone_rule": "once"}
+    "map00_crossroads": {"campaign_first": ["lazarus_saturday"], "campaign_start": ["fourth_day", "gravelight_one"], "standalone": ["gravelight_one"], "standalone_rule": "never"},
+    "map01_kaltenbrunn": {"arrival_from": {"map00_crossroads": ["staub"]}, "standalone": ["staub"], "standalone_rule": "never"}
   },
   "gallery": [
     {"id": "lazarus_saturday", "title": "Prologue: Lazarus Saturday", "year": "1930", "kind": "lazarus"},

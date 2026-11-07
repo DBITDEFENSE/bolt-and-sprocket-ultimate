@@ -1,6 +1,6 @@
 extends GutTest
 ## T-203: while a LAZARUS cutscene plays over a match, only its own lines play (GLVO.cinema_hold / cinema_pass), and
-## Play.bat's quick map buttons skip the intro (LazarusCinema.skip_next; force_ids wins).
+## DevLauncher.bat's quick map buttons skip the intro (LazarusCinema.skip_next; force_ids wins).
 
 
 func after_each() -> void:

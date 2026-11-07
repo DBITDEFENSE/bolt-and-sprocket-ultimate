@@ -1,14 +1,8 @@
 @echo off
-REM Launches the dev launcher: a button for every playable thing (CLAUDE ZOMBIES maps, boss tests,
-REM Bolt ^& Sprocket planets, the Update 08 / 09 tests: relief squads, Ledger Lager, the online lobby, a local
-REM two-window test lobby, the local web build, the rebuilt Totenhafen and Fernflug acts, the new main menu, the
-REM Update 10 set-pieces: spring tide, Letzte Fahrt with bots, the sailing finale, PAUL, the Slender, the air raid,
-REM the wing walk, the dust storm, the terminator),
-REM a skip-to-round field, god mode, and the bot squad. The full game menu (TERMS ^& CONDITIONS hub) is one
-REM button away. Pass --menu to go straight to the hub instead.
+REM Play.bat: starts CLAUDE ZOMBIES at its main menu (Play / Muster / Archive / Extras / Settings).
+REM No cutscene plays here: the story cutscenes play in Campaign, and Extras ^> Cutscenes replays every one.
+REM The dev launcher (a button for every map, set-piece and test) is DevLauncher.bat.
+REM The game writes its log to logs\game_last.log (and the usual user log folder).
 cd /d "%~dp0"
-if /I "%~1"=="--menu" (
-	start "" "tools\dl_godot\Godot_v4.7.2-stable_win64.exe" --path .
-) else (
-	start "" "tools\dl_godot\Godot_v4.7.2-stable_win64.exe" --path . res://ui/dev_launcher.tscn
-)
+if not exist logs mkdir logs
+start "" "tools\dl_godot\Godot_v4.7.2-stable_win64.exe" --path . --log-file logs\game_last.log res://gravelight/ui/main_menu.tscn

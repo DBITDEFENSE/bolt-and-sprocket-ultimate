@@ -73,7 +73,13 @@ static func plan(map_id: String, ctx: Dictionary, cfg: Dictionary) -> Array[Stri
 		if from != "":
 			ids = (h.get("arrival_from", {}) as Dictionary).get(from, [])
 		elif bool(ctx.get("fresh_start", false)):
-			ids = h.get("campaign_start", [])
+			# T-203: the prologue opens the first campaign a profile starts (not the menu); then the campaign's own
+			ids = []
+			var seen0: Array = ctx.get("seen", [])
+			for f: Variant in h.get("campaign_first", []):
+				if not seen0.has(str(f)):
+					ids.append(f)
+			ids.append_array(h.get("campaign_start", []))
 	else:
 		var rule: String = str(h.get("standalone_rule", "once"))
 		var seen: Array = ctx.get("seen", [])
