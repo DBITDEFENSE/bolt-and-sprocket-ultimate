@@ -242,7 +242,7 @@ Original first-pass table (intent; kept for reference):
 |---|---|
 | OPR_PWR_BLACKOUT_01 | Blackout! Lights out, everyone, {everyone}... |
 | OPR_PWR_BLACKOUT_02 | Blackout! And just like that, the house is {empty}. |
-| OPR_PWR_BLACKOUT_03 | Blackout! A moment of silence for our {departed}. ...That's enough. |
+| OPR_PWR_BLACKOUT_03 | Blackout! A moment of silence for our {departed}. ...That's enough. They'll be {back}. |
 | OPR_PWR_BLACKOUT_04 | Blackout! Every account {closed}! |
 
 **Fortify** (`fortify`)

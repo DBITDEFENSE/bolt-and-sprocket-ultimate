@@ -247,7 +247,7 @@
   "OPR_PWR_BLACKOUT_03": {
     "speaker": "OPR",
     "category": "PWR_BLACKOUT",
-    "text": "Blackout! A moment of silence for our {departed}. ...That's enough."
+    "text": "Blackout! A moment of silence for our {departed}. ...That's enough. They'll be {back}."
   },
   "OPR_PWR_BLACKOUT_04": {
     "speaker": "OPR",
