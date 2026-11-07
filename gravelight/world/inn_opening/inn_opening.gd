@@ -303,6 +303,8 @@ func _physics_process(delta: float) -> void:
 ## Before round 1 (T-076): the settled-view clock, the patrons' chatter, and on the host the hold on the round's intro
 ## timer until the cue.
 func _process(delta: float) -> void:
+	if phase == Phase.IDLE and GameState.has_flag(&"cutscene"):
+		return   # T-194: GRAVELIGHT ONE (or FOURTH DAY) plays first; the settled view, the card and the cue start after it
 	if _card_t >= 0.0:
 		_tick_card(delta)
 	if phase != Phase.IDLE or RoundManager.current_round != 0:

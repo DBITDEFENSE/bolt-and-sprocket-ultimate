@@ -5287,6 +5287,138 @@
         1.1
       ],
       "attenuation": "world"
+    },
+    "amb_thaw": {
+      "files": [
+        "res://gravelight/audio/sfx/cinema/amb_thaw.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 2,
+      "loop": true
+    },
+    "truck_1930": {
+      "files": [
+        "res://gravelight/audio/sfx/cinema/truck_1930.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "bus": "SFX",
+      "attenuation": "loud"
+    },
+    "bell_crack": {
+      "files": [
+        "res://gravelight/audio/sfx/cinema/bell_crack.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "bus": "SFX",
+      "attenuation": "loud"
+    },
+    "timber_fall": {
+      "files": [
+        "res://gravelight/audio/sfx/cinema/timber_fall.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "bus": "SFX",
+      "attenuation": "loud"
+    },
+    "rain_field": {
+      "files": [
+        "res://gravelight/audio/sfx/cinema/rain_field.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 2,
+      "loop": true
+    },
+    "shell_soft": {
+      "files": [
+        "res://gravelight/audio/sfx/cinema/shell_soft_01.wav",
+        "res://gravelight/audio/sfx/cinema/shell_soft_02.wav",
+        "res://gravelight/audio/sfx/cinema/shell_soft_03.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        0.94,
+        1.06
+      ],
+      "max_voices": 3,
+      "bus": "SFX",
+      "attenuation": "loud"
+    },
+    "mill_bed": {
+      "files": [
+        "res://gravelight/audio/sfx/cinema/mill_bed.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 2,
+      "loop": true
+    },
+    "rocket_salvo": {
+      "files": [
+        "res://gravelight/audio/sfx/cinema/rocket_salvo.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "bus": "SFX",
+      "attenuation": "loud"
+    },
+    "c47_engines": {
+      "files": [
+        "res://gravelight/audio/sfx/cinema/c47_engines.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 2,
+      "loop": true
+    },
+    "prop_windmill": {
+      "files": [
+        "res://gravelight/audio/sfx/cinema/prop_windmill.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 2,
+      "loop": true
     }
   }
 }

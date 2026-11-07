@@ -25,7 +25,11 @@ const MAPS: Dictionary = {
 	"m2_letzte_fahrt_dive": ["map02_totenhafen", 20], "requiem": ["map01_kaltenbrunn", 25],
 	"london": ["map04b_kranich", 16], "cancel": ["map04d_mondlicht", 30], "renewal": ["map04d_mondlicht", 30],
 	"inn_opening": ["map00_crossroads", 0],   # a fresh match on Map 0: the opening's title card, until the cue
+	# T-194: the LAZARUS reels in a match, started the game's way (LazarusCinema at the match start, forced on)
+	"lazarus_campaign_start": ["map00_crossroads", 0],   # a new campaign: FOURTH DAY, GRAVELIGHT ONE, then the opening
+	"lazarus_map01_arrival": ["map01_kaltenbrunn", 0],   # STAUB on Kaltenbrunn's first match start
 }
+## T-194: every id of cutscenes_lazarus.json also plays on its own (CinemaReel, as the Archive and the prologue do).
 
 var cut: String = "exfil_m0_m1"
 var bots: int = 2
@@ -62,8 +66,8 @@ func _ready() -> void:
 			every = maxf(0.1, float(a.substr(8)))
 		elif a.begins_with("--until="):
 			until = float(a.substr(8))
-	if not MAPS.has(cut):
-		_fail("unknown cutscene '%s' (one of %s)" % [cut, ", ".join(PackedStringArray(MAPS.keys()))])
+	if not MAPS.has(cut) and not CinemaLibrary.has_cut(cut):
+		_fail("unknown cutscene '%s' (one of %s)" % [cut, ", ".join(PackedStringArray(MAPS.keys() + CinemaLibrary.ids()))])
 		return
 	var tree: SceneTree = get_tree()
 	if tree.current_scene == self:   # stay under the root so the map swap does not free the tool
@@ -75,6 +79,13 @@ func _ready() -> void:
 	GLSettings.values["homage_bosses"] = false
 	GLSettings.values["bot_local_ai"] = false
 	GLSettings.values["vfx_quality"] = "high"
+	for a2: String in OS.get_cmdline_user_args():
+		if a2.begins_with("--gore="):
+			GLSettings.values["gore"] = a2.substr(7)
+	if CinemaLibrary.has_cut(cut):
+		Campaign.cutscene_speed = 1.0
+		_reel_alone.call_deferred()
+		return
 	GameState.character_id = &"dutch"
 	GameState.bot_count = bots
 	GameState.bot_skill = "veteran"
@@ -82,12 +93,32 @@ func _ready() -> void:
 	GameState.god_mode = true
 	var row: Array = MAPS[cut]
 	var map_id: StringName = StringName(str(row[0]))
-	if cut == "inn_opening":
+	if cut.begins_with("lazarus_"):
+		LazarusCinema.force = true
+		if cut == "lazarus_campaign_start":
+			Campaign.begin()
+		else:
+			Campaign.reset()
+			LazarusCinema.force_ids = ["staub"]
+	elif cut == "inn_opening":
 		Campaign.reset()
 	else:
 		Campaign.begin_at(map_id, int(row[1]), Campaign.arrival_kit(map_id))
 	Campaign.cutscene_speed = 1.0
 	_go.call_deferred(Campaign.scene_for(map_id))
+
+
+## T-194: a LAZARUS cutscene on its own (the prologue's and the Archive's way: CinemaReel over nothing).
+func _reel_alone() -> void:
+	var reel: CinemaReel = CinemaReel.play(self, [cut], {"speed": 1.0, "roster": ["dutch", "peg", "deacon", "wren"]})
+	_runner = reel
+	for a: String in OS.get_cmdline_user_args():
+		if a.begins_with("--from="):   # T-194: start at this second of the cutscene (a look at one shot)
+			await get_tree().process_frame
+			reel.fast_forward(float(a.substr(7)))
+	_started = true
+	_start_frame = Engine.get_process_frames()
+	print("[clip] START frame=%d cut=%s map=(stage)" % [_start_frame, cut])
 
 
 func _go(scene: String) -> void:
@@ -112,6 +143,21 @@ func _go(scene: String) -> void:
 		_started = true
 		_start_frame = Engine.get_process_frames()
 		print("[clip] START frame=%d cut=%s map=%s" % [_start_frame, cut, _map().map_id])
+		return
+	if cut.begins_with("lazarus_"):   # T-194: the match start played it (LazarusCinema.on_rounds_started)
+		var lc: LazarusCinema = LazarusCinema.of(_map())
+		var w: float = 0.0
+		while (lc == null or lc.reel == null) and w < 10.0:
+			await get_tree().process_frame
+			w += get_process_delta_time()
+			lc = LazarusCinema.of(_map())
+		if lc == null or lc.reel == null:
+			_fail("the match start played no LAZARUS cutscene")
+			return
+		_runner = lc.reel
+		_started = true
+		_start_frame = Engine.get_process_frames()
+		print("[clip] START frame=%d cut=%s map=%s (%s)" % [_start_frame, cut, _map().map_id, ", ".join(PackedStringArray(lc.playing))])
 		return
 	await get_tree().create_timer(4.0).timeout   # settle: shaders, the squad, the first round's intro
 	var map: MapRoot = _map()
@@ -206,6 +252,8 @@ func _ended() -> bool:
 		return true
 	if _runner is InnOpening:   # the card has come and gone (or the cue played)
 		return bool(_runner.get("_card_titled")) and float(_runner.get("_card_t")) < 0.0 or bool(_runner.get("cued"))
+	if _runner is CinemaReel:   # T-194
+		return (_runner as CinemaReel).done
 	for key: String in ["_done", "finished"]:
 		if key in _runner and bool(_runner.get(key)):
 			return true
@@ -217,6 +265,10 @@ func _process(delta: float) -> void:
 	if not _started or _result != "":
 		return
 	_t += delta
+	if is_instance_valid(_runner) and _runner is CinemaReel:   # T-194: a stage that did not load
+		for m0: String in (_runner as CinemaReel).missing:
+			if not _missing.has(m0):
+				_missing.append(m0)
 	for d: Node in get_tree().get_nodes_in_group(&"cinema"):
 		for m: String in d.get("missing"):
 			if not _missing.has(m):

@@ -323,3 +323,23 @@ runner (the cast's `place` / `face` / `walk`, plus the `sit` and `kneel` poses t
     node); an online smoke for one (the host ends it, the client follows); the prologue flag set after a skip.
 11. **Film it.** `tools/wsl_cutscene_clip.sh` (WSL + Xvfb, software GL, never a window on the owner's PC) with a still
     per second into `morning/clips/t194_*`; the respect reviewer (T-202) reads the stills against §1's rules.
+
+## 9. AS BUILT (T-194; DECISIONS T-194)
+
+- **Data** `data/gravelight/cutscenes_lazarus.json`: the five definitions, `sets` (14 stage ids on 13 scenes), `cast`
+  (every person's look), `hooks`, the Archive `gallery`, `risen_kind`. Lengths: LAZARUS SATURDAY 240 s, FOURTH DAY
+  106 s, STAUB 73 s, GRAVELIGHT ONE 84 s, the Moscow card 23 s (each within +15 % of §1-§5: shots were lengthened
+  where the lines at reading speed would talk over each other; `test_cinema_lazarus` checks both).
+- **Runtime** `gravelight/ui/cinema/`: `CinemaReel` (the stage in a SubViewport with its own World3D, so a set never
+  touches the map it plays over; the stage is swapped while the picture is black), `LazarusCinema` (the match-start
+  hooks and the host-driven net path), `CinemaTheatre` (the prologue on first launch, the Archive's replays),
+  `CinemaLibrary` (the data). The director gained `lines`, `card` and `black` shot events.
+- **Stages** `gravelight/world/cinema_sets/` (procedural, our own geometry on the game's CC0 materials and props):
+  village (A-C; variant `spring` for shot 32), crypt (D-E), ward (F: built as the mortuary room off the fever ward,
+  respect review R-03), cordon (G), train (H), front (I-J; the OP 250 m from the line, not 600, so the long lens reads
+  the soft bursts), rear (K-L), mill (M), hill (N-O), heart (P: built small, not map01), c47 (Q-R), glide (S: a small
+  night stage, not Map 0 itself), vault (T). People: `CinemaPerson` (relief-squad bodies in costume, posed by
+  PatronBody's solver plus kneel / pray / palm / hold); the risen: `CinemaRisen.make(risen_kind, seed)`, the one seam
+  for T-192's skins.
+- **Kept from the review (T-202)**: the lintel's wording (R-02), 18.IV (R-03), the cards' "a long day's cart" and "the
+  East Prussian line" (R-09, R-16); nothing on screen names the NKVD (R-04).

@@ -119,6 +119,7 @@ func _ready() -> void:
 	FirstHints.attach(self)   # T-162: first-time hints (once per profile) and the citations' watcher
 	EggModeTag.attach(self)   # T-181: the Easter Egg Mode practice tag (EggMode)
 	BoundsGuard.attach(self)   # T-185: anyone far outside the playable space is brought back down
+	LazarusCinema.attach(self)   # T-194: the LAZARUS cutscenes at a match start (every peer; the host decides)
 	for q: String in quest_files:
 		QuestManager.load_quest(q)
 	Campaign.restore_quests(self)   # UPDATE 07 (T-114): the egg's progress from the act before
@@ -158,9 +159,11 @@ func _ready() -> void:
 ## The first round's intro timer starts (host / solo).
 func start_rounds() -> void:
 	RoundManager.start_game(scaled_player_count())
+	var lz: Dictionary = LazarusCinema.context(self)   # (read before the arrival is consumed)
 	Campaign.on_rounds_started(self)   # arriving by exfil: the round count continues after an arrival grace (T-033)
 	if not auto_rounds:
 		RoundManager.stop()
+	LazarusCinema.on_rounds_started(self, lz)   # T-194: FOURTH DAY / GRAVELIGHT ONE / STAUB; the intro waits for them
 	if intro_text != "":
 		hud.show_banner(intro_text, 3.5)
 
