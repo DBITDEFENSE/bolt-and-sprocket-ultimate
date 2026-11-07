@@ -123,8 +123,9 @@ func _ready() -> void:
 	_bottom.anchor_right = 1.0
 	_bottom.anchor_bottom = 1.0
 	_bottom.offset_top = 0.0
-	_black = _rect(root, Color(0, 0, 0, 0))
-	_black.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_black = _rect(root, Color.BLACK)   # always opaque; its modulate fades (a colour alpha tween did not draw on the Compatibility renderer)
+	_black.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)   # (after add_child: set_anchors_preset alone kept it 0 x 0)
+	_black.modulate.a = 0.0
 	_build_title(root)
 	_caption = Label.new()
 	_caption.add_theme_font_override("font", MenuKit.body_font())
@@ -303,23 +304,23 @@ func bars_shown() -> float:
 
 func fade(alpha: float, seconds: float) -> void:
 	var tw: Tween = create_tween()
-	tw.tween_property(_black, "color:a", clampf(alpha, 0.0, 1.0), maxf(0.01, seconds * _k())).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_property(_black, "modulate:a", clampf(alpha, 0.0, 1.0), maxf(0.01, seconds * _k())).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 
 func set_black(alpha: float) -> void:
-	_black.color.a = clampf(alpha, 0.0, 1.0)
+	_black.modulate.a = clampf(alpha, 0.0, 1.0)
 
 
 func black() -> float:
-	return _black.color.a
+	return _black.modulate.a
 
 
 ## A dip through black between two shots: down in half, up in half.
 func dip(seconds: float) -> void:
 	var half: float = maxf(0.01, seconds * 0.5 * _k())
 	var tw: Tween = create_tween()
-	tw.tween_property(_black, "color:a", 1.0, half).set_trans(Tween.TRANS_SINE)
-	tw.tween_property(_black, "color:a", 0.0, half).set_trans(Tween.TRANS_SINE)
+	tw.tween_property(_black, "modulate:a", 1.0, half).set_trans(Tween.TRANS_SINE)
+	tw.tween_property(_black, "modulate:a", 0.0, half).set_trans(Tween.TRANS_SINE)
 
 
 # ---------------------------------------------------------------- the grade

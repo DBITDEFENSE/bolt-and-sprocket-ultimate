@@ -221,6 +221,9 @@ func _process(delta: float) -> void:
 		for m: String in d.get("missing"):
 			if not _missing.has(m):
 				_missing.append(m)
+		if OS.get_cmdline_user_args().has("--trace") and int(_t * 2.0) != int((_t - delta) * 2.0):
+			var ov: CinemaOverlay = d.get("overlay") as CinemaOverlay
+			print("[clip] t=%.1f shot=%d black=%.2f bars=%.0f" % [_t, int(d.get("shot_i")), ov.black() if ov != null else -1.0, ov.bars_shown() if ov != null else -1.0])
 	if stills != "" and _t >= _next_still:
 		_next_still += every
 		var img: Image = get_viewport().get_texture().get_image()

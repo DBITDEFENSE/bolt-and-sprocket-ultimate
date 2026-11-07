@@ -168,6 +168,19 @@ func test_grade_presets_resolve() -> void:
 	assert_eq(CinemaOverlay.grade_values("neutral")["tint"], Vector3.ONE, "neutral changes nothing")
 
 
+func test_the_black_covers_the_frame_and_fades() -> void:
+	var o: CinemaOverlay = CinemaOverlay.new()
+	add_child_autofree(o)
+	await wait_frames(2)
+	var black: ColorRect = o.get("_black") as ColorRect
+	var view: Vector2 = o.get_viewport().get_visible_rect().size
+	assert_almost_eq(black.size.x, view.x, 1.0, "the full width (a rect anchored after add_child once stayed 0 x 0)")
+	assert_almost_eq(black.size.y, view.y, 1.0, "and the full height")
+	o.fade(1.0, 0.1)
+	await wait_seconds(0.3)
+	assert_almost_eq(o.black(), 1.0, 0.01, "faded to black")
+
+
 func test_hold_to_skip_needs_a_full_hold_and_fires_once() -> void:
 	var o: CinemaOverlay = CinemaOverlay.new()
 	o.skip_hold = 1.0
