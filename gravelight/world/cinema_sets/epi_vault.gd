@@ -36,7 +36,7 @@ func _build() -> void:
 ## The hand: palm on the case's lid, the fingers over its edge, the thumb along its side; a signet ring; the
 ## shirt cuff and the dark suit cuff over the wrist, the forearm running off to the right of the frame.
 func _hand(at: Vector3) -> void:
-	var h: Node3D = group(self, "Hand", at, -25.0)
+	var h: Node3D = group(self, "HandRig", at, 70.0)
 	var skin: StandardMaterial3D = noisy(Color(0.62, 0.48, 0.4), Color(0.78, 0.63, 0.53), 18.0, 0.04, 0.6)
 	var spots: StandardMaterial3D = flat(Color(0.45, 0.32, 0.24), 0.7)
 	box(h, Vector3(0, 0.0, 0), Vector3(0.085, 0.028, 0.1), skin)                      # the back of the hand
@@ -61,7 +61,7 @@ func _hand(at: Vector3) -> void:
 	h.add_child(rm)
 	box(h, Vector3(0.031, 0.011, -0.07), Vector3(0.012, 0.006, 0.01), rm.material_override)
 	cyl(h, Vector3(0, 0.005, 0.085), 0.042, 0.04, "#e6e2d6", Vector3(90, 0, 0))     # the shirt cuff
-	cyl(h, Vector3(0, 0.005, 0.2), 0.05, 0.22, "#1d1e24", Vector3(90, 0, 0))          # the suit's sleeve
+	cyl(h, Vector3(0, -0.12, 0.45), 0.05, 0.75, "#1d1e24", Vector3(110, 0, 0))        # the suit's sleeve, down off the frame
 	marker("Hand", at)
 
 

@@ -25,9 +25,9 @@ var _log_path: String = ""
 
 
 func _ready() -> void:
-	if get_parent() != get_tree().root or name != "CinemaOnlineSmoke":
+	if get_parent() != get_tree().root or name != "CinemaOnlineDriver":
 		var d: Node = (load("res://gravelight/tools_src/smoke_cinema_online.gd") as GDScript).new() as Node
-		d.name = "CinemaOnlineSmoke"
+		d.name = "CinemaOnlineDriver"
 		get_tree().root.add_child.call_deferred(d)
 		queue_free.call_deferred()
 		set_physics_process(false)

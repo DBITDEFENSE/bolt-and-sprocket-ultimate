@@ -640,7 +640,7 @@ func birches(parent: Node3D, spots: Array, leaves: bool = false) -> void:
 ## The grey lead case (the train in 1930, the vault in 1953): 40 x 25 x 25 cm, dull, two hasps, a rope handle.
 ## `worn`: the paint gone to the metal at the corners by twenty-three years of hands.
 func lead_case(g: Node3D, worn: bool) -> void:
-	var lead: StandardMaterial3D = noisy(Color(0.3, 0.31, 0.32), Color(0.42, 0.43, 0.44), 2.0, 0.3, 0.6)
+	var lead: StandardMaterial3D = noisy(Color(0.14, 0.145, 0.15), Color(0.23, 0.235, 0.24), 2.0, 0.3, 0.55)
 	box(g, Vector3.ZERO, Vector3(0.4, 0.25, 0.25), lead)
 	box(g, Vector3(0, 0.07, 0), Vector3(0.41, 0.012, 0.26), flat(Color(0.2, 0.2, 0.21), 0.5))
 	for hx: float in [-0.12, 0.12]:

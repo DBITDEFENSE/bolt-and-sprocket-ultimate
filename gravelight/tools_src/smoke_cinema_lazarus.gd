@@ -21,9 +21,9 @@ var _done: bool = false
 
 
 func _ready() -> void:
-	if get_parent() != get_tree().root or name != "SmokeCinemaLazarus":   # survive the scene changes
+	if get_parent() != get_tree().root or name != "SmokeCinemaDriver":   # survive the scene changes
 		var d: Node = (load("res://gravelight/tools_src/smoke_cinema_lazarus.gd") as GDScript).new() as Node
-		d.name = "SmokeCinemaLazarus"
+		d.name = "SmokeCinemaDriver"
 		get_tree().root.add_child.call_deferred(d)
 		queue_free.call_deferred()
 		set_process(false)
