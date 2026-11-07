@@ -34033,7 +34033,8 @@
   "OPR_ROUND_START_14": "awaits the ElevenLabs bake (T-193 / T-201)",
   "OPR_ROUND_START_15": "awaits the ElevenLabs bake (T-193 / T-201)",
   "OPR_ROUND_START_16": "awaits the ElevenLabs bake (T-193 / T-201)",
-  "OPR_ROUND_END_08": "awaits the ElevenLabs bake (T-193 / T-201)"
+  "OPR_ROUND_END_08": "awaits the ElevenLabs bake (T-193 / T-201)",
+  "JAK_CHATTER_05": "awaits the ElevenLabs bake (T-193 / T-201)"
  },
  "neural_tool_version": "1"
 }
