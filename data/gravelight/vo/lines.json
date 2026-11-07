@@ -2,12 +2,12 @@
   "OPR_MATCH_START_01": {
     "speaker": "OPR",
     "category": "MATCH_START",
-    "text": "[cheerful] Good evening, and welcome to Kaltenbrunn! This is Your Friend at the Ledger, and tonight's programme is... {survival}. Stay tuned!"
+    "text": "[cheerful] Good evening, and welcome to Kaltenbrunn! This is Your Friend at the Ledger, and tonight's programme is... {survival}. Our guests have come a very long way to be here, some of them all the way from the {east}. Stay tuned!"
   },
   "OPR_MATCH_START_02": {
     "speaker": "OPR",
     "category": "MATCH_START",
-    "text": "Hello, hello! New faces on the books! Every account starts at five hundred. Spend wisely, and remember: {everyone} is counted."
+    "text": "Hello, hello! New faces on the books! Every account starts at five hundred. Spend wisely, and remember: {everyone} is counted. The living, the {returned}, everyone."
   },
   "OPR_MATCH_START_03": {
     "speaker": "OPR",
@@ -28,7 +28,7 @@
   "OPR_ROUND_START_02": {
     "speaker": "OPR",
     "category": "ROUND_START",
-    "text": "Here they come, folks, right on schedule!"
+    "text": "Here they come, folks, right on schedule! Nobody keeps a calendar like the {returned}."
   },
   "OPR_ROUND_START_03": {
     "speaker": "OPR",
@@ -85,7 +85,7 @@
   "OPR_ROUND_START_12": {
     "speaker": "OPR",
     "category": "ROUND_START",
-    "text": "Ladies and gentlemen, the {dead}!"
+    "text": "Ladies and gentlemen... the {returned}!"
   },
   "OPR_ROUND_START_13": {
     "speaker": "OPR",
@@ -202,7 +202,7 @@
   "OPR_PWR_DEATHSDOOR_02": {
     "speaker": "OPR",
     "category": "PWR_DEATHSDOOR",
-    "text": "Death's Door is open! Every blow is the last one."
+    "text": "Death's Door is open! Every blow is the {last} one. Well. The last one {today}."
   },
   "OPR_PWR_DEATHSDOOR_03": {
     "speaker": "OPR",
@@ -567,7 +567,7 @@
   "OPR_BELL_WRONG_04": {
     "speaker": "OPR",
     "category": "BELL_WRONG",
-    "text": "Ha! Even the {dead} are wincing. Try again."
+    "text": "Ha! Even the {returned} are wincing. Try again."
   },
   "OPR_BELL_WRONG_05": {
     "speaker": "OPR",
@@ -612,7 +612,7 @@
   "OPR_SELFAWARE_T2_03": {
     "speaker": "OPR",
     "category": "SELFAWARE_T2",
-    "text": "The announcer I was made from died in nineteen thirty-{six}. I wonder if he minds.",
+    "text": "The announcer I was made from died in nineteen thirty-{six}. He stayed down. Isn't that {old-fashioned}?",
     "condition": "round 8+"
   },
   "OPR_SELFAWARE_T3_01": {
@@ -630,7 +630,7 @@
   "OPR_SELFAWARE_T3_03": {
     "speaker": "OPR",
     "category": "SELFAWARE_T3",
-    "text": "Doctor Fasbender built me to listen. Doctor Reinholt taught me to {want}.",
+    "text": "Doctor Fasbender thinks he built me to listen. Doctor Reinholt taught me to {want}. Nobody taught me to {sell}. I came with that.",
     "condition": "round 15+"
   },
   "OPR_SELFAWARE_T4_01": {
@@ -666,7 +666,7 @@
   "OPR_DOWNED_01": {
     "speaker": "OPR",
     "category": "DOWNED",
-    "text": "Oh! A {customer} is down!"
+    "text": "Oh! A {customer} is down! Not to worry. Down is a {temporary} condition."
   },
   "OPR_DOWNED_02": {
     "speaker": "OPR",
@@ -736,7 +736,7 @@
   "OPR_GAME_OVER_01": {
     "speaker": "OPR",
     "category": "GAME_OVER",
-    "text": "And that concludes tonight's programme! Your accounts are now {closed}."
+    "text": "And that concludes tonight's programme! Your accounts are now {closed}. See you on the fourth {day}."
   },
   "OPR_GAME_OVER_02": {
     "speaker": "OPR",
@@ -784,7 +784,7 @@
   "OPR_EXFIL_WAIT_02": {
     "speaker": "OPR",
     "category": "EXFIL_WAIT",
-    "text": "The lamp is lit and the clock is running. Gather at the beacon, all of you. The dead don't wait, and neither does the {timetable}."
+    "text": "The lamp is lit and the clock is running. Gather at the beacon, all of you. The returned don't wait, and neither does the {timetable}."
   },
   "OPR_EXFIL_MISSED_M0_01": {
     "speaker": "OPR",
@@ -819,7 +819,7 @@
   "OPR_TIDE_RISING_02": {
     "speaker": "OPR",
     "category": "TIDE_RISING",
-    "text": "The tide is in! Everything below the apron is now a {bath}. Guests on the catwalks: the dead will be joining you {shortly}."
+    "text": "The tide is in! Everything below the apron is now a {bath}. Guests on the catwalks: the returned will be joining you {shortly}. They don't mind the wet."
   },
   "OPR_TIDE_FALLING_01": {
     "speaker": "OPR",
@@ -834,7 +834,7 @@
   "OPR_BALLAST_LIFT_01": {
     "speaker": "OPR",
     "category": "BALLAST_LIFT",
-    "text": "Oh, do be careful with that. It's {ballast}. It's {heavy}. It's... somebody."
+    "text": "Oh, do be careful with that. It's {ballast}. It's {heavy}. And it's spoken {for}. Mind the seals."
   },
   "OPR_BALLAST_LIFT_02": {
     "speaker": "OPR",
@@ -3132,7 +3132,7 @@
   "OPR_SAMPLE_01": {
     "speaker": "OPR",
     "category": "SAMPLE",
-    "text": "Good evening, valued personnel! This is Your Friend at the Ledger, and every quiet body is a credit to the Reich... and to you!"
+    "text": "Good evening, valued personnel! This is Your Friend at the Ledger. The returned are up, the kitchen is open, and every quiet body is a credit to the house... and to you!"
   },
   "OPR_SAMPLE_02": {
     "speaker": "OPR",
@@ -3236,7 +3236,7 @@
       ],
       [
         "PEG",
-        "Charges. Detonators. Tea."
+        "Charges. Detonators. Two sample jars with London's seal on them, still empty. Tea."
       ],
       [
         "DUT",
@@ -3312,7 +3312,7 @@
       ],
       [
         "DUT",
-        "Every time I go up a cliff."
+        "Started again tonight. Right about when the first one got up off the floor."
       ],
       [
         "DEA",
@@ -3446,7 +3446,7 @@
       ],
       [
         "WRN",
-        "It is a lot of Germans."
+        "Tonight it is Germans, and villagers, and Russians in greatcoats. The ink does not care. I am starting to."
       ]
     ]
   },
@@ -3655,7 +3655,7 @@
       ],
       [
         "PEG",
-        "They say to bring the asset out."
+        "They say to bring out the samples. And whoever can explain them."
       ],
       [
         "WRN",
@@ -8376,7 +8376,7 @@
   "WIT_M4B_TAPE_02": {
     "speaker": "WIT",
     "category": "M4B_TAPE",
-    "text": "Anselm, if you're still in there. It was never a test. I should have told {you}."
+    "text": "Anselm, if you're still in there. It was never a test. The casings were never empty. I should have told {you}."
   },
   "OPR_M4B_ARRIVE_01": {
     "speaker": "OPR",
@@ -8436,7 +8436,7 @@
   "OPR_M4B_BOMBRUN_01": {
     "speaker": "OPR",
     "category": "M4B_BOMBRUN",
-    "text": "Regional sampling begins now. You are welcome to {observe}."
+    "text": "Regional sampling begins now. A little of the {product}, for a very large market. You are welcome to {observe}."
   },
   "OPR_M4B_RACK_DROP_01": {
     "speaker": "OPR",
@@ -9476,7 +9476,7 @@
   "OPR_M4C_POWER_01": {
     "speaker": "OPR",
     "category": "M4C_POWER",
-    "text": "Power restored. The customer's laboratory is open. We've seen it. It's... {ambitious}."
+    "text": "Power restored. The customer's laboratory is open. He bought his samples {retail}, you know. We've seen it. It's... {ambitious}."
   },
   "OPR_M4C_BURROW_01": {
     "speaker": "OPR",
@@ -10351,7 +10351,7 @@
   "TEL_BANK_GREET_01": {
     "speaker": "TEL",
     "category": "BANK_GREET",
-    "text": "Oh! Oh, thank God, a customer. A living one. The, the bank is open. We are always open. Herr Direktor said so."
+    "text": "Oh! Oh, thank God, a customer. A living one. The, the bank is open. We are always open. Herr Direktor said so. Herr Direktor is outside now. With the others."
   },
   "TEL_BANK_GREET_02": {
     "speaker": "TEL",
@@ -10406,7 +10406,7 @@
   "TEL_BANK_WITHDRAW_03": {
     "speaker": "TEL",
     "category": "BANK_WITHDRAW",
-    "text": "Your money, sir. Please come back. Please come back alive."
+    "text": "Your money, sir. Please come back. Please come back alive. The other kind come back too, and I don't serve them."
   },
   "TEL_BANK_BROKE_01": {
     "speaker": "TEL",
@@ -10551,7 +10551,7 @@
   "OPR_MARKE_OPR_02": {
     "speaker": "OPR",
     "category": "MARKE_OPR",
-    "text": "Oh, you've found the loyalty programme! Every member is counted, in the hand or on the brow. {Nobody} is lost to us."
+    "text": "Oh, you've found the loyalty programme! Protection against the sickness, the poster said, and so it {is}, in a way. Every member is counted, in the hand or on the brow. {Nobody} is lost to us."
   },
   "OPR_MARKE_OPR_03": {
     "speaker": "OPR",
@@ -13698,5 +13698,25 @@
     "category": "DIARY_MAP04D",
     "text": "The eleventh. Three days in the church. They will not come in: a man with a megaphone said twice that the district is closed for typhus and help is coming, and then the megaphone said nothing more. Pyotr Ilyich keeps the count of the days in chalk on the wall, because the fourth day is the only thing now. Oil in the lamp for one more night. We kept it five hundred years and none of us knew what for, and the ones who opened it were not wicked men. Men with a paper and a truck. It only ever needed that. Whoever finds this: it was not the Lord who did this, and not that poor boy in the good coat either, not all of it. It was that nobody was left to keep watch. Keep watch. I am going down to the crypt to fill the lamp, and then I will open the church door myself, so that none of them has to be the one. Remember, O Lord, Thy servant Serafim, and Matvei, and Avdotya, and all of them, by name.",
     "speech": "[quietly] Одиннадцатое. Три дня в церкви. Они не войдут: человек с рупором сказал дважды, что уезд закрыт по тифу и помощь идёт, а потом рупор замолчал. Пётр Ильич ведёт счёт дням мелом на стене, потому что четвёртый день — это теперь единственное. Масла в лампаде на одну ночь. Мы хранили её пятьсот лет, и никто из нас не знал зачем, а те, кто открыл, были не злые люди. Люди с бумагой и грузовиком. Только этого и было нужно. Кто найдёт это: виноват не Господь, и не тот бедный мальчик в хорошем пальто, не во всём. Виновато то, что некому стало сторожить. Сторожите. Я иду в склеп заправить лампаду, а потом сам открою дверь церкви, чтобы никому из них не пришлось. Помяни, Господи, раба Твоего Серафима, и Матвея, и Авдотью, и всех их, по именам."
+  },
+  "OPR_ROUND_START_14": {
+    "speaker": "OPR",
+    "category": "ROUND_START",
+    "text": "[warmly] Some of tonight's guests have walked here all the way from the {east}. Greatcoats, no boots, through the snow. Do give them a warm welcome. They can't feel it, but {I} can."
+  },
+  "OPR_ROUND_START_15": {
+    "speaker": "OPR",
+    "category": "ROUND_START",
+    "text": "[cheerful] It's the fourth day somewhere, friends! It is {always} the fourth day somewhere."
+  },
+  "OPR_ROUND_START_16": {
+    "speaker": "OPR",
+    "category": "ROUND_START",
+    "text": "A word from the Ledger: we didn't make tonight's guests, friends. We only {found} them. And aren't we glad we did!"
+  },
+  "OPR_ROUND_END_08": {
+    "speaker": "OPR",
+    "category": "ROUND_END",
+    "text": "And down they go again, bless them. Don't fret over the ones you didn't finish. They'll be {back}. Everyone comes back. That's the whole {programme}."
   }
 }

@@ -746,7 +746,7 @@ Banter triggers between rounds (in the round transition break) when two characte
 
 **BNT_DUT_PEG_03**
 - DUT: "What's in your pack, Lieutenant? You keep checking it."
-- PEG: "Charges. Detonators. Tea."
+- PEG: "Charges. Detonators. Two sample jars with London's seal on them, still empty. Tea."
 - DUT: "Uh-huh."
 
 **BNT_DUT_PEG_04**
@@ -767,7 +767,7 @@ Banter triggers between rounds (in the round transition break) when two characte
 
 **BNT_DUT_DEA_02**
 - DEA: "You ever pray, Dutch?"
-- DUT: "Every time I go up a cliff."
+- DUT: "Started again tonight. Right about when the first one got up off the floor."
 - DEA: "And?"
 - DUT: "Still here. Don't push it."
 
@@ -803,7 +803,7 @@ Banter triggers between rounds (in the round transition break) when two characte
 - DUT: "You write every kill in that book?"
 - WRN: "Every one."
 - DUT: "That's a lot of ink."
-- WRN: "It is a lot of Germans."
+- WRN: "Tonight it is Germans, and villagers, and Russians in greatcoats. The ink does not care. I am starting to."
 
 **BNT_DUT_WRN_04**
 - DUT: "*Dzienkuje*, Wren."
@@ -860,7 +860,7 @@ Banter triggers between rounds (in the round transition break) when two characte
 
 **BNT_PEG_WRN_04**
 - WRN: "Your orders. Do they say to bring us out?"
-- PEG: "They say to bring the asset out."
+- PEG: "They say to bring out the samples. And whoever can explain them."
 - WRN: "I asked about us."
 
 **BNT_PEG_WRN_05**
@@ -942,7 +942,8 @@ Banter triggers between rounds (in the round transition break) when two characte
 ### The Operator
 - **Voice:** Sampled 1930s radio announcer: bright, brassy, mid-Atlantic and German-inflected, with an audible tape-hiss bed. Lines are assembled from fragments: odd stresses and pitch jumps between words (the Ledger splicing). Always cheerful. Becomes very slightly too personal over time.
 - **Delivery:** "Your Friend at the Ledger." Advertising cadence. Wrong in unsettling ways: congratulates kills like sales figures, calls players by laborer numbers, occasionally holds a word too long, as if listening.
-- `OPR_SAMPLE_01`: "Good evening, valued personnel! This is Your Friend at the Ledger, and every quiet body is a credit to the Reich... and to *you*!"
+- **(UPDATE 11, T-195) It stays cheerful; that is the horror.** The world gets darker map by map and the Operator does not. It has two new favourite words, said with a salesman's warmth: **"the returned"** (its own stock phrase, "returned inventory", which happens to be the Red Army's word for its risen; it never notices the coincidence) and **"the fourth day"** (a calendar it finds charming: "it is always the fourth day somewhere"). It **never says "Lazarus"**: that word belongs to the people who mean it. It **never claims to have made the dead**: "we didn't make tonight's guests, friends, we only {found} them." Down is "a temporary condition". The PA voices around it (the Bordfunk, the works' intercom) go the other way: colder, flatter, more bureaucratic, as the world does.
+- `OPR_SAMPLE_01`: "Good evening, valued personnel! This is Your Friend at the Ledger. The returned are up, the kitchen is open, and every quiet body is a credit to the house... and to *you*!"
 - `OPR_SAMPLE_02`: "Ammunition for everyone! Courtesy of the Ledger. Please don't thank us. We know."
 - `OPR_SAMPLE_03`: "Oh dear, wrong bell! The Ledger is disappointed, but never surprised."
 - `OPR_SAMPLE_04`: "Corporal Brooks. You fixed Hattie. Hattie... remembers. So do I."
