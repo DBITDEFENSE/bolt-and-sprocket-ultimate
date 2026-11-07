@@ -2977,3 +2977,212 @@ The squad on the first soldier who gets up (`SQD_RISE`, a story beat, once a mat
 | `DUT_SQD_RISE_02` | DUT | "They got back up. Course they got back up." |
 | `PEG_SQD_RISE_01` | PEG | "They're turning. Put them down before they stand." |
 | `PEG_SQD_RISE_02` | PEG | "We'll mourn them later. Now we shoot them." |
+
+## 26. LAZARUS (UPDATE 11, T-191): the cutscenes and the new speakers
+
+The lines of the four UPDATE 11 cutscenes (`docs/CUTSCENES_LAZARUS.md`) and the new speakers' non-diary lines
+(Father Serafim's diary read-alouds `SER_DIARY_*` are §27, another worker's). Speaker codes per `docs/U11_CONTRACTS.md`
+C3: `SER` Father Serafim Lebedev, `VOL` Arkady Volkov, `BRG` the 1930 brigade's megaphone, `SVR` Soviet radio
+traffic, `RTN` the Returned (risen Red Army soldiers' last words, close only); `SEL`, `REI`, `PA` and the squad as
+before. **Foreign-language rows** carry the spoken form first as `<speech>...</speech>` (Russian in Cyrillic, Church
+Slavonic, German), then the English subtitle: extract_vo.py puts the spoken form in the line's `speech` field and the
+subtitle in `text`; the game only ever shows `text` (test_vo_speech). Audio tags in `[brackets]` sit at the front of
+the subtitle, as everywhere else; the bake applies them to the spoken form (gen_vo cues, ElevenLabs v4 delivery
+tags). Russian register: Serafim a 1930 village priest (old words: подклет for the crypt, "сынок" to the young man,
+the Church Slavonic of his service); Volkov a young OGPU plenipotentiary in 1930 (the decrees' vocabulary: гражданин,
+предписание, опись, по акту) and a tired NKVD colonel in 1944; the radio in 1944 front procedure ("Берёза", "Дон",
+приём, коробочки). The real slogans the brigade reads (BRG_LZS_03, _04) are the League of Militant Godless's own; they
+are read flat, off a paper, never gloating. All tier 4 (CINE channel) in the cutscenes; SVR and RTN are tier 2 ambient
+story voices in play (the horror pass T-192 sets their rules: RTN only within a few metres, one at a time, never over
+a story line).
+
+### 26.1 "LAZARUS SATURDAY" (`*_LZS_*`): Chetverodnevo, 12 April 1930
+
+Father Serafim Lebedev (`SER`). Mid-50s, gentle, unhurried, firm without ever being loud. He is the most decent man
+in the saga and the actor must never make him meek or saintly-soft: he is a man refusing calmly. SER_LZS_05 and _08
+are Church Slavonic (the inscription and the troparion of Lazarus Saturday, sung under the breath).
+
+| ID | Speaker | Line |
+|---|---|---|
+| `SER_LZS_01` | SER | "<speech>Ключи я вам не отдам. Не мои они. Я их только держу.</speech> I won't give you the keys. They aren't mine. I only hold them." |
+| `SER_LZS_02` | SER | "<speech>Встаньте, встаньте, родные. Не перед ними на колени. Домой идите. Детей уведите.</speech> Get up, get up, my dears. Not for them, your knees. Go home. Take the children." |
+| `SER_LZS_03` | SER | "<speech>Молодой человек. Берите серебро. Берите колокол. Только в подклет не ходите.</speech> Young man. Take the silver. Take the bell. Only don't go down into the crypt." |
+| `SER_LZS_04` | SER | "<speech>Там нет ничего, что вам нужно. А есть то, что вам не нужно.</speech> There is nothing down there that you need. And there is something there that you don't." |
+| `SER_LZS_05` | SER | "<speech>Еже затворися въ четвертый день, никтоже да не отверзетъ.</speech> What was closed on the fourth day, let no one open." |
+| `SER_LZS_06` | SER | "<speech>Аркадий. Сынок. Прошу тебя. Не ради Бога — ради тебя самого.</speech> Arkady. Son. I am asking you. Not for God's sake. For your own." |
+| `SER_LZS_07` | SER | "[whispers] <speech>Господи, помилуй.</speech> Lord, have mercy." |
+| `SER_LZS_08` | SER | "[sung under the breath] <speech>Общее воскресение прежде Твоея страсти уверяя, из мертвых воздвигл еси Лазаря, Христе Боже.</speech> Confirming the general resurrection before Thy Passion, Thou didst raise Lazarus from the dead, O Christ God." |
+| `SER_LZS_09` | SER | "<speech>Вот и всё. Теперь ждите. Четыре дня.</speech> There. Now wait. Four days." |
+
+Arkady Volkov (`VOL`), 1930: twenty-six, correct, a touch too loud when he is being official, quiet and quick when
+he is being clever, and frightened under both. He never sneers. VOL_LZS_08 is the one time he raises his voice, and
+it is the frightened one.
+
+| ID | Speaker | Line |
+|---|---|---|
+| `VOL_LZS_01` | VOL | "<speech>Гражданин Лебедев? Уполномоченный ОГПУ Волков. Вот предписание. Ключи.</speech> Citizen Lebedev? Volkov, OGPU plenipotentiary. Here is the warrant. The keys." |
+| `VOL_LZS_02` | VOL | "<speech>Без грубости. Эти люди не враги, они — темнота. Колокол снимаем, колокольню валим, серебро — по акту. Всё.</speech> No roughness. These people aren't enemies, they're ignorance. The bell comes down, the tower comes down, the silver goes on the inventory. That's all." |
+| `VOL_LZS_03` | VOL | "<speech>Подклет? В описи никакого подклета нет. Значит, там и держат серебро.</speech> A crypt? There's no crypt on the inventory. So that's where they keep the silver." |
+| `VOL_LZS_04` | VOL | "<speech>Церковнославянский. „Что затворено в четвёртый день...“ Ну-ну.</speech> Church Slavonic. 'What was closed on the fourth day...' Well, well." |
+| `VOL_LZS_05` | VOL | "<speech>Смотрите все. Вот ваша святыня. Сейчас я покажу вам, что внутри ничего нет.</speech> Everyone, look. Here is your holy relic. I'll show you now that there is nothing inside it." |
+| `VOL_LZS_06` | VOL | "[breathing heavily] <speech>Печать... воск. Старый воск. Сейчас.</speech> The seal... wax. Old wax. There." |
+| `VOL_LZS_07` | VOL | "[whispers] <speech>Мокрая.</speech> It's wet." |
+| `VOL_LZS_08` | VOL | "<speech>Краска. Это краска! Попы и не на такое способны. Описать и в ящик.</speech> Paint. It's paint! Priests have done worse than this. Inventory it and box it." |
+| `VOL_LZS_09` | VOL | "[exhausted] <speech>Трое. Те, кто брал сосуд в руки. Доктор, что это? Тиф?</speech> Three. The ones who handled the vessel. Doctor, what is this? Typhus?" |
+| `VOL_LZS_10` | VOL | "<speech>Пишите: тиф. Карантин по всему району. Село... села нет. Понятно? Села нет.</speech> Write: typhus. District quarantine. The village... there is no village. Understood? There is no village." |
+| `VOL_LZS_11` | VOL | "[whispers] <speech>Меня не укусили. Меня не укусили. Меня не...</speech> I wasn't bitten. I wasn't bitten. I wasn't..." |
+
+The brigade's megaphone (`BRG`): a tin speaking trumpet, a young voice reading a paper. Period slogans (_03 and _04
+are the League's real ones), the district's decree, the warnings. Flat; never gloating, never a sneer.
+
+| ID | Speaker | Line |
+|---|---|---|
+| `BRG_LZS_01` | BRG | "<speech>Граждане! Постановлением районного исполнительного комитета церковь села Четвероднево закрывается.</speech> Citizens! By resolution of the district executive committee, the church of the village of Chetverodnevo is closed." |
+| `BRG_LZS_02` | BRG | "<speech>Колокола сдаются на нужды индустриализации. Расходитесь по домам.</speech> The bells are surrendered to the needs of industrialization. Go back to your homes." |
+| `BRG_LZS_03` | BRG | "<speech>Борьба против религии — борьба за социализм!</speech> The struggle against religion is the struggle for socialism!" |
+| `BRG_LZS_04` | BRG | "<speech>Религия — опиум для народа.</speech> Religion is opium for the people." |
+| `BRG_LZS_05` | BRG | "<speech>Церковные ценности подлежат изъятию. Сопротивление будет рассматриваться как контрреволюционное выступление.</speech> Church valuables are subject to requisition. Resistance will be treated as a counter-revolutionary act." |
+| `BRG_LZS_06` | BRG | "<speech>Товарищи крестьяне! Встаньте с колен. Не мешайте работе бригады.</speech> Comrade peasants! Get up off your knees. Do not obstruct the brigade's work." |
+| `BRG_LZS_07` | BRG | "[shouting] <speech>Отойти от колокольни! Отойти! Будет взрыв!</speech> Away from the bell tower! Away! There will be a blast!" |
+| `BRG_LZS_08` | BRG | "<speech>Священник Лебедев! Сдайте ключи добровольно.</speech> Priest Lebedev! Hand over the keys voluntarily." |
+
+### 26.2 "FOURTH DAY" (`*_FTD_*`): East Prussia, October 1944
+
+Volkov at forty (grey, a colonel of state security, a man who has carried the case for fourteen years) and the
+Front's radio net (`SVR`: "Дон" is Front HQ, "Берёза" the division's observation post). The first risen at the
+grave speaks `RTN_CLOSE_01` (§26.4).
+
+| ID | Speaker | Line |
+|---|---|---|
+| `SVR_FTD_01` | SVR | "[radio] <speech>„Берёза“, я „Дон“. Распоряжение Москвы получено? Приём.</speech> 'Birch', this is 'Don'. Has Moscow's instruction been received? Over." |
+| `VOL_FTD_01` | VOL | "<speech>Получено. Батареи заряжены особыми. Начинаем по сигналу.</speech> Received. The batteries are loaded with the special rounds. We begin on the signal." |
+| `SVR_FTD_02` | SVR | "[radio] <speech>Огонь по готовности. Особых — три залпа, не больше. Приём.</speech> Fire when ready. The specials: three salvoes, no more. Over." |
+| `VOL_FTD_02` | VOL | "<speech>Нет. Они и не должны рваться. Им нужно только раскрыться.</speech> No. They aren't supposed to burst. They only need to open." |
+| `VOL_FTD_03` | VOL | "<speech>Кровь. Добровольцев. Большего вам знать не положено, товарищ полковник.</speech> Blood. Volunteers'. More than that you are not cleared to know, Comrade Colonel." |
+| `SVR_FTD_03` | SVR | "[radio] <speech>„Дон“, я „Берёза“. Противник не отвечает. Линия пуста. Приём.</speech> 'Don', this is 'Birch'. The enemy is not answering. The line is empty. Over." |
+| `SVR_FTD_04` | SVR | "[radio] <speech>Всем станциям. Наши убитые... встают. Это не паника. Я их вижу. Приём.</speech> All stations. Our dead... are getting up. This is not panic. I can see them. Over." |
+| `SVR_FTD_05` | SVR | "[radio] <speech>Я „Дон“. Прекратить передачу. В эфире об этом — ни слова. Писать: эпидемия у противника. Конец связи.</speech> This is 'Don'. Cease transmission. Not one word of this on the air. Write: an epidemic among the enemy. Out." |
+| `VOL_FTD_04` | VOL | "[exhausted] <speech>Четвёртый день. Всегда четвёртый.</speech> The fourth day. Always the fourth." |
+| `VOL_FTD_05` | VOL | "<speech>Они не знают, чьи они. Они просто идут. На запад.</speech> They don't know whose they are. They just walk. West." |
+
+### 26.3 "STAUB" (`*_STB_*`): Kaltenbrunn, 20 December 1944
+
+Reinholt (`REI`, German, measured, tired; her hands do the acting) and the plant's loudspeaker and weather intercom
+(`PA`, German). REI_STB_06 echoes her cylinder (`LSL_REC_CYL3_01`: "count to a hundred and then come find me").
+
+| ID | Speaker | Line |
+|---|---|---|
+| `REI_STB_01` | REI | "<speech>Feinheit zwölf Mikron. Noch einmal durch die Mühle. Der Staub muss schweben, nicht fallen.</speech> Fineness twelve microns. Through the mill once more. The dust must float, not fall." |
+| `REI_STB_02` | REI | "<speech>In der Nähe des Herzens wartet es keine vier Tage mehr. Minuten. Schreiben Sie: Minuten.</speech> Near the Heart it no longer waits four days. Minutes. Write it down: minutes." |
+| `REI_STB_03` | REI | "<speech>Die Kanister nach Osten. Zurück zum Absender. So hat es der Generalstab formuliert, nicht ich.</speech> The canisters go east. Return to sender. That was the General Staff's phrase, not mine." |
+| `REI_STB_04` | REI | "<speech>Wetterwarte, bestätigen Sie den Wind.</speech> Weather station, confirm the wind." |
+| `REI_STB_05` | REI | "[whispers] <speech>Nein. Nein, nicht heute. Nicht heute Nacht.</speech> No. No, not today. Not tonight." |
+| `REI_STB_06` | REI | "<speech>Liesl. Mama ist hier. Zähl bis hundert.</speech> Liesl. Mama is here. Count to a hundred." |
+| `PA_STB_01` | PA | "[PA] <speech>Achtung. Staubmühle zwei, Abfüllung beginnt. Masken auf. Masken auf.</speech> Attention. Dust mill two, canning begins. Masks on. Masks on." |
+| `PA_STB_02` | PA | "[radio] <speech>Wetterwarte an Leitstand. Wind aus West, drei Meter pro Sekunde, beständig. Freigabe.</speech> Weather station to control. Wind from the west, three metres a second, steady. Clear to proceed." |
+| `PA_STB_03` | PA | "[PA] <speech>Abschuss in sechzig Sekunden. Nordrampe räumen.</speech> Launch in sixty seconds. Clear the north ramp." |
+| `PA_STB_04` | PA | "[radio] [shouting] <speech>Leitstand, hier Wetterwarte. Der Wind dreht. Ost. Wind aus Ost, zunehmend. Leitstand, abbrechen! Abbrechen!</speech> Control, weather station. The wind is turning. East. Wind from the east, rising. Control, abort! Abort!" |
+| `PA_STB_05` | PA | "[PA] <speech>Achtung. Staubalarm. Alle Türen schließen. Dies ist keine Übung.</speech> Attention. Dust alarm. Close all doors. This is not a drill." |
+| `PA_STB_06` | PA | "[radio] <speech>...Leitstand, bitte antworten. Leitstand. Die Lichter in Wilcza Góra sind... Leitstand?</speech> ...Control, please answer. Control. The lights in Wilcza Góra are... Control?" |
+
+### 26.4 The Returned (`RTN_CLOSE_01..16`): the risen Red Army soldiers' last words
+
+Heard only up close (a few metres), one voice at a time, under the groans, never over a story line (T-192's rules).
+Russian, short, subtitled. A name, a mother, a unit, "cold", a prayer half-remembered, a letter, a friend. These were
+soldiers and they are victims of their own command: human, never monstrous. Spoken flat and slow, the way a man
+repeats something he no longer understands; no growl, no effect but the cold.
+
+| ID | Speaker | Line |
+|---|---|---|
+| `RTN_CLOSE_01` | RTN | "<speech>Мама.</speech> Mama." |
+| `RTN_CLOSE_02` | RTN | "<speech>Холодно. Холодно...</speech> Cold. Cold..." |
+| `RTN_CLOSE_03` | RTN | "<speech>Отче наш... иже еси... иже...</speech> Our Father... who art... who..." |
+| `RTN_CLOSE_04` | RTN | "<speech>Сто восемнадцатый стрелковый. Сто восемнадцатый...</speech> One-eighteenth Rifle. One-eighteenth..." |
+| `RTN_CLOSE_05` | RTN | "<speech>Семёнов. Семёнов Иван. Тысяча девятьсот двадцать...</speech> Semyonov. Semyonov, Ivan. Nineteen twenty-..." |
+| `RTN_CLOSE_06` | RTN | "<speech>Не оставляй меня. Не оставляй.</speech> Don't leave me. Don't leave." |
+| `RTN_CLOSE_07` | RTN | "<speech>Где мои сапоги? Где сапоги...</speech> Where are my boots? Where are the boots..." |
+| `RTN_CLOSE_08` | RTN | "<speech>Домой. Домой... в Тулу.</speech> Home. Home... to Tula." |
+| `RTN_CLOSE_09` | RTN | "<speech>Санитар! Санитар... санитар...</speech> Medic! Medic... medic..." |
+| `RTN_CLOSE_10` | RTN | "<speech>Прости. Прости меня, Нюра.</speech> Forgive me. Forgive me, Nyura." |
+| `RTN_CLOSE_11` | RTN | "<speech>Господи, помилуй. Господи... помилуй.</speech> Lord, have mercy. Lord... have mercy." |
+| `RTN_CLOSE_12` | RTN | "<speech>Письмо. В кармане письмо... отправьте...</speech> The letter. The letter's in my pocket... send it..." |
+| `RTN_CLOSE_13` | RTN | "<speech>Темно. Почему так темно?</speech> Dark. Why is it so dark?" |
+| `RTN_CLOSE_14` | RTN | "<speech>Мы же победили. Мы же... победили?</speech> But we won. We... won, didn't we?" |
+| `RTN_CLOSE_15` | RTN | "<speech>Воды. Глоток... воды.</speech> Water. A sip... of water." |
+| `RTN_CLOSE_16` | RTN | "<speech>Не стреляй. Это я. Это же я...</speech> Don't shoot. It's me. It's me..." |
+
+### 26.5 Soviet radio traffic, Map 0 (`SVR_M0_01..12`)
+
+The front on the eastern horizon, December 1944, drifting through a receiver at the inn (the horror pass places it;
+never part of the radio egg, whose steps are frozen): the Red Army fighting the Germans and its own Returned. Front
+procedure, static, tired voices. Subtitled when close.
+
+| ID | Speaker | Line |
+|---|---|---|
+| `SVR_M0_01` | SVR | "[radio] <speech>Я „Берёза-три“. Коробочки встали у леса. Впереди — не немцы. Приём.</speech> 'Birch-three'. The tanks have stopped at the woods. What's ahead of us isn't Germans. Over." |
+| `SVR_M0_02` | SVR | "[radio] <speech>Всем станциям: вернувшихся ближе пятидесяти не подпускать. Бить в рану. В рану, не в голову. Приём.</speech> All stations: the Returned are not to come within fifty metres. Hit the wound. The wound, not the head. Over." |
+| `SVR_M0_03` | SVR | "[radio] <speech>Как слышно? Повторяю: наши убитые из второго батальона идут через наши позиции. На запад. По своим не стрелять... отставить. Стрелять.</speech> How do you read? I repeat: our dead from Second Battalion are walking through our positions. West. Don't fire on our own... cancel that. Fire." |
+| `SVR_M0_04` | SVR | "[radio] <speech>Политрук, не надо речей. Они уже не слушают.</speech> Commissar, no speeches. They don't listen any more." |
+| `SVR_M0_05` | SVR | "[radio] <speech>Осветительные — каждые пять минут. Пока видно, они не подойдут незаметно. Приём.</speech> Flares every five minutes. While we can see, they can't come up on us unseen. Over." |
+| `SVR_M0_06` | SVR | "[radio] <speech>„Дон“, я „Берёза“. Деревня впереди горит. Сами подожгли. Своих... жгли своих. Приём.</speech> 'Don', 'Birch'. The village ahead is burning. We lit it. Our own... we were burning our own. Over." |
+| `SVR_M0_07` | SVR | "[radio] <speech>Хоронить запрещаю. Слышите? Никого не хоронить. Складывать и жечь.</speech> No burials. Do you hear? Bury no one. Stack them and burn them." |
+| `SVR_M0_08` | SVR | "[radio] <speech>Семёнов, это ты? Семёнов, ответь...</speech> Semyonov, is that you? Semyonov, answer... [static]" |
+| `SVR_M0_09` | SVR | "[radio] <speech>Нам сказали — эпидемия у противника. У противника! А кто идёт по полю, товарищ майор?</speech> They told us: an epidemic among the enemy. The enemy! So who is that walking across the field, Comrade Major?" |
+| `SVR_M0_10` | SVR | "[radio] [whispers] <speech>Тише. Тише в эфире. Они идут на голос.</speech> Quiet. Quiet on the net. They come to a voice." |
+| `SVR_M0_11` | SVR | "[radio] <speech>Четыре дня. Запомните: четыре дня. Кого вчера убило — послезавтра встанет.</speech> Four days. Remember it: four days. Whoever was killed yesterday gets up the day after tomorrow." |
+| `SVR_M0_12` | SVR | "[radio] <speech>Приём... приём... „Берёза“, ответь. „Берёза“. ...Кто-нибудь.</speech> Over... over... 'Birch', answer. 'Birch'. ...Anyone." |
+
+### 26.6 Soviet radio traffic, Kaltenbrunn (`SVR_M1_01..12`)
+
+The same front heard from Kaltenbrunn's radio room and the surface, a week later: the Germans trucking the Soviet
+dead west, the violet light, the word "Staub" from a prisoner, Volkov's name, the order of silence.
+
+| ID | Speaker | Line |
+|---|---|---|
+| `SVR_M1_01` | SVR | "[radio] <speech>Я „Сосна“. Немцы вывозят трупы. Наших. Грузовиками, на запад. Зачем им наши трупы? Приём.</speech> 'Pine'. The Germans are trucking away bodies. Ours. By the lorry-load, west. What do they want with our dead? Over." |
+| `SVR_M1_02` | SVR | "[radio] <speech>Повторяю для штаба: немцы собирают вернувшихся. Не уничтожают — собирают. Приём.</speech> Repeat for HQ: the Germans are collecting the Returned. Not destroying them. Collecting them. Over." |
+| `SVR_M1_03` | SVR | "[radio] <speech>Фиолетовый свет на западе. Третью ночь. Что это, „Дон“? Приём.</speech> Violet light in the west. Third night running. What is it, 'Don'? Over." |
+| `SVR_M1_04` | SVR | "[radio] <speech>Четвёртую лабораторию в эфире не упоминать. Никогда. Это приказ.</speech> Laboratory Four is never to be mentioned on the air. Never. That is an order." |
+| `SVR_M1_05` | SVR | "[radio] <speech>Они уже не идут на запад. Они стоят. Все повернулись... к горам.</speech> They've stopped walking west. They're standing. All of them turned... toward the mountains." |
+| `SVR_M1_06` | SVR | "[radio] <speech>Пленный говорит: „Штауб“. Пыль. Говорит, они сделают пыль. Не понимаю. Приём.</speech> The prisoner says: 'Staub'. Dust. He says they will make dust. I don't understand. Over." |
+| `SVR_M1_07` | SVR | "[radio] <speech>Радист, крути дальше. Там, на тысяча двести, кто-то говорит по-немецки и смеётся. Не нравится мне этот смех.</speech> Operator, keep tuning. Up at twelve hundred someone's talking German and laughing. I don't like that laugh." |
+| `SVR_M1_08` | SVR | "[radio] <speech>Снег идёт. Фиолетовый. Доложить? ...Как я это доложу?</speech> It's snowing. Violet. Report it? ...How do I report that?" |
+| `SVR_M1_09` | SVR | "[radio] <speech>Волков здесь. Сам Волков, из Москвы. Говорят, он с тридцатого года про это знает. С тридцатого!</speech> Volkov is here. Volkov himself, from Moscow. They say he's known about this since 'thirty. Since 'thirty!" |
+| `SVR_M1_10` | SVR | "[radio] <speech>Отступать? Куда отступать, если своих мёртвых больше, чем живых?</speech> Retreat? Retreat where, when our dead outnumber our living?" |
+| `SVR_M1_11` | SVR | "[radio] <speech>Приказ: в сводке — „эпидемия у противника“. Выполняйте. Выполняйте!</speech> Order: in the report, 'an epidemic among the enemy'. Carry it out. Carry it out!" |
+| `SVR_M1_12` | SVR | "[radio] <speech>Ты в Бога веришь, Миша? ...Я тоже раньше не верил.</speech> Do you believe in God, Misha? ...I didn't either, before." |
+
+### 26.7 "GRAVELIGHT ONE" (`*_GL1_*`): the C-47, 23 December 1944
+
+Flt Lt Harry Selwyn on the intercom (`SEL`: clipped, dry, in control until the last two, which are faint, from the
+nose, after the crash) and the squad in the cabin: one line each at the window (`*_GL1_01`, said by the character at
+the window) and one each for the violet light (`*_GL1_02`, one other character present). Few and frightened.
+
+| ID | Speaker | Line |
+|---|---|---|
+| `SEL_GL1_01` | SEL | "[intercom] Pilot to passengers. We've crossed the Silesian border, twenty-three ten. Forty minutes to the drop. Stay strapped in, there's weather." |
+| `SEL_GL1_02` | SEL | "[intercom] Navigator says that's the front below us. Those are their flares, not ours. Have a look if you like. Then don't." |
+| `SEL_GL1_03` | SEL | "[intercom] Someone with glasses tell me what those columns are. On the snow. Walking west. Nobody down there is shooting at them." |
+| `SEL_GL1_04` | SEL | "[intercom] Light ahead, bearing oh-four-oh. Violet. That's no flare." |
+| `SEL_GL1_05` | SEL | "[intercom] Both engines— ...Both engines gone. Instruments dead. Hold on to something, chaps. I'm going to put her down." |
+| `SEL_GL1_06` | SEL | "[intercom] [shouting] There's a building. Lit windows. I'll take the field beside it. Brace. Brace. Brace!" |
+| `SEL_GL1_07` | SEL | "[faint] [exhausted] ...Is anyone... I can't move my legs. Get out. Get out before she burns." |
+| `SEL_GL1_08` | SEL | "[faint] Co-pilot's gone. Leave me. Go on. ...God bless." |
+| `DUT_GL1_01` | DUT | "[shouting over engines] That ain't a parade down there. Those are people. Hundreds of them. Where the hell are they going?" |
+| `DUT_GL1_02` | DUT | "Hang on. Hang on, hang on—" |
+| `PEG_GL1_01` | PEG | "[shouting over engines] Soviet greatcoats. Walking west, no formation, no weapons. Pilot, those men are walking through their own artillery." |
+| `PEG_GL1_02` | PEG | "Nobody breathe. Heads down, hands on the frame." |
+| `DEA_GL1_01` | DEA | "[whispers] Yea, though I walk through the valley... Lord, they are walking. Look at them walk." |
+| `DEA_GL1_02` | DEA | "Hold my hand, if you want to. I don't mind." |
+| `WRN_GL1_01` | WRN | "[shouting over engines] Russians. Hundreds. Walking into German guns and the guns are not firing. ...Nothing about this is right." |
+| `WRN_GL1_02` | WRN | "Count with me. Jeden, dwa, trzy... it helps. Cztery..." |
+
+### 26.8 The Moscow 1953 epilogue
+
+Not voiced: three cards and one image (`CUTSCENES_LAZARUS.md` §5). No `NAR` line is defined; if a later cut wants a
+voice, it takes `NAR_EPI53_01` here and the lead registers it.
+
+### 26.9 Count
+
+SER 9, VOL 16 (11 + 5), BRG 8, SVR 29 (5 + 12 + 12), RTN 16, REI 6, PA 6, SEL 8, DUT 2, PEG 2, DEA 2, WRN 2: **106
+lines**, 90 of them Russian, Church Slavonic or German with a `speech` form.

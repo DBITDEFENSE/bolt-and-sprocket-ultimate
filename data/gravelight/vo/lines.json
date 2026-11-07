@@ -13036,5 +13036,625 @@
     "speaker": "JAK",
     "category": "M2_SAIL",
     "text": "A boat. I am on a boat. ...Marta would not believe it. Hania would. Hold on to something, the sea is not a coal wagon."
+  },
+  "SER_LZS_01": {
+    "speaker": "SER",
+    "category": "LZS",
+    "text": "I won't give you the keys. They aren't mine. I only hold them.",
+    "speech": "Ключи я вам не отдам. Не мои они. Я их только держу."
+  },
+  "SER_LZS_02": {
+    "speaker": "SER",
+    "category": "LZS",
+    "text": "Get up, get up, my dears. Not for them, your knees. Go home. Take the children.",
+    "speech": "Встаньте, встаньте, родные. Не перед ними на колени. Домой идите. Детей уведите."
+  },
+  "SER_LZS_03": {
+    "speaker": "SER",
+    "category": "LZS",
+    "text": "Young man. Take the silver. Take the bell. Only don't go down into the crypt.",
+    "speech": "Молодой человек. Берите серебро. Берите колокол. Только в подклет не ходите."
+  },
+  "SER_LZS_04": {
+    "speaker": "SER",
+    "category": "LZS",
+    "text": "There is nothing down there that you need. And there is something there that you don't.",
+    "speech": "Там нет ничего, что вам нужно. А есть то, что вам не нужно."
+  },
+  "SER_LZS_05": {
+    "speaker": "SER",
+    "category": "LZS",
+    "text": "What was closed on the fourth day, let no one open.",
+    "speech": "Еже затворися въ четвертый день, никтоже да не отверзетъ."
+  },
+  "SER_LZS_06": {
+    "speaker": "SER",
+    "category": "LZS",
+    "text": "Arkady. Son. I am asking you. Not for God's sake. For your own.",
+    "speech": "Аркадий. Сынок. Прошу тебя. Не ради Бога — ради тебя самого."
+  },
+  "SER_LZS_07": {
+    "speaker": "SER",
+    "category": "LZS",
+    "text": "[whispers] Lord, have mercy.",
+    "speech": "Господи, помилуй."
+  },
+  "SER_LZS_08": {
+    "speaker": "SER",
+    "category": "LZS",
+    "text": "[sung under the breath] Confirming the general resurrection before Thy Passion, Thou didst raise Lazarus from the dead, O Christ God.",
+    "speech": "Общее воскресение прежде Твоея страсти уверяя, из мертвых воздвигл еси Лазаря, Христе Боже."
+  },
+  "SER_LZS_09": {
+    "speaker": "SER",
+    "category": "LZS",
+    "text": "There. Now wait. Four days.",
+    "speech": "Вот и всё. Теперь ждите. Четыре дня."
+  },
+  "VOL_LZS_01": {
+    "speaker": "VOL",
+    "category": "LZS",
+    "text": "Citizen Lebedev? Volkov, OGPU plenipotentiary. Here is the warrant. The keys.",
+    "speech": "Гражданин Лебедев? Уполномоченный ОГПУ Волков. Вот предписание. Ключи."
+  },
+  "VOL_LZS_02": {
+    "speaker": "VOL",
+    "category": "LZS",
+    "text": "No roughness. These people aren't enemies, they're ignorance. The bell comes down, the tower comes down, the silver goes on the inventory. That's all.",
+    "speech": "Без грубости. Эти люди не враги, они — темнота. Колокол снимаем, колокольню валим, серебро — по акту. Всё."
+  },
+  "VOL_LZS_03": {
+    "speaker": "VOL",
+    "category": "LZS",
+    "text": "A crypt? There's no crypt on the inventory. So that's where they keep the silver.",
+    "speech": "Подклет? В описи никакого подклета нет. Значит, там и держат серебро."
+  },
+  "VOL_LZS_04": {
+    "speaker": "VOL",
+    "category": "LZS",
+    "text": "Church Slavonic. 'What was closed on the fourth day...' Well, well.",
+    "speech": "Церковнославянский. „Что затворено в четвёртый день...“ Ну-ну."
+  },
+  "VOL_LZS_05": {
+    "speaker": "VOL",
+    "category": "LZS",
+    "text": "Everyone, look. Here is your holy relic. I'll show you now that there is nothing inside it.",
+    "speech": "Смотрите все. Вот ваша святыня. Сейчас я покажу вам, что внутри ничего нет."
+  },
+  "VOL_LZS_06": {
+    "speaker": "VOL",
+    "category": "LZS",
+    "text": "[breathing heavily] The seal... wax. Old wax. There.",
+    "speech": "Печать... воск. Старый воск. Сейчас."
+  },
+  "VOL_LZS_07": {
+    "speaker": "VOL",
+    "category": "LZS",
+    "text": "[whispers] It's wet.",
+    "speech": "Мокрая."
+  },
+  "VOL_LZS_08": {
+    "speaker": "VOL",
+    "category": "LZS",
+    "text": "Paint. It's paint! Priests have done worse than this. Inventory it and box it.",
+    "speech": "Краска. Это краска! Попы и не на такое способны. Описать и в ящик."
+  },
+  "VOL_LZS_09": {
+    "speaker": "VOL",
+    "category": "LZS",
+    "text": "[exhausted] Three. The ones who handled the vessel. Doctor, what is this? Typhus?",
+    "speech": "Трое. Те, кто брал сосуд в руки. Доктор, что это? Тиф?"
+  },
+  "VOL_LZS_10": {
+    "speaker": "VOL",
+    "category": "LZS",
+    "text": "Write: typhus. District quarantine. The village... there is no village. Understood? There is no village.",
+    "speech": "Пишите: тиф. Карантин по всему району. Село... села нет. Понятно? Села нет."
+  },
+  "VOL_LZS_11": {
+    "speaker": "VOL",
+    "category": "LZS",
+    "text": "[whispers] I wasn't bitten. I wasn't bitten. I wasn't...",
+    "speech": "Меня не укусили. Меня не укусили. Меня не..."
+  },
+  "BRG_LZS_01": {
+    "speaker": "BRG",
+    "category": "LZS",
+    "text": "Citizens! By resolution of the district executive committee, the church of the village of Chetverodnevo is closed.",
+    "speech": "Граждане! Постановлением районного исполнительного комитета церковь села Четвероднево закрывается."
+  },
+  "BRG_LZS_02": {
+    "speaker": "BRG",
+    "category": "LZS",
+    "text": "The bells are surrendered to the needs of industrialization. Go back to your homes.",
+    "speech": "Колокола сдаются на нужды индустриализации. Расходитесь по домам."
+  },
+  "BRG_LZS_03": {
+    "speaker": "BRG",
+    "category": "LZS",
+    "text": "The struggle against religion is the struggle for socialism!",
+    "speech": "Борьба против религии — борьба за социализм!"
+  },
+  "BRG_LZS_04": {
+    "speaker": "BRG",
+    "category": "LZS",
+    "text": "Religion is opium for the people.",
+    "speech": "Религия — опиум для народа."
+  },
+  "BRG_LZS_05": {
+    "speaker": "BRG",
+    "category": "LZS",
+    "text": "Church valuables are subject to requisition. Resistance will be treated as a counter-revolutionary act.",
+    "speech": "Церковные ценности подлежат изъятию. Сопротивление будет рассматриваться как контрреволюционное выступление."
+  },
+  "BRG_LZS_06": {
+    "speaker": "BRG",
+    "category": "LZS",
+    "text": "Comrade peasants! Get up off your knees. Do not obstruct the brigade's work.",
+    "speech": "Товарищи крестьяне! Встаньте с колен. Не мешайте работе бригады."
+  },
+  "BRG_LZS_07": {
+    "speaker": "BRG",
+    "category": "LZS",
+    "text": "[shouting] Away from the bell tower! Away! There will be a blast!",
+    "speech": "Отойти от колокольни! Отойти! Будет взрыв!"
+  },
+  "BRG_LZS_08": {
+    "speaker": "BRG",
+    "category": "LZS",
+    "text": "Priest Lebedev! Hand over the keys voluntarily.",
+    "speech": "Священник Лебедев! Сдайте ключи добровольно."
+  },
+  "SVR_FTD_01": {
+    "speaker": "SVR",
+    "category": "FTD",
+    "text": "[radio] 'Birch', this is 'Don'. Has Moscow's instruction been received? Over.",
+    "speech": "„Берёза“, я „Дон“. Распоряжение Москвы получено? Приём."
+  },
+  "VOL_FTD_01": {
+    "speaker": "VOL",
+    "category": "FTD",
+    "text": "Received. The batteries are loaded with the special rounds. We begin on the signal.",
+    "speech": "Получено. Батареи заряжены особыми. Начинаем по сигналу."
+  },
+  "SVR_FTD_02": {
+    "speaker": "SVR",
+    "category": "FTD",
+    "text": "[radio] Fire when ready. The specials: three salvoes, no more. Over.",
+    "speech": "Огонь по готовности. Особых — три залпа, не больше. Приём."
+  },
+  "VOL_FTD_02": {
+    "speaker": "VOL",
+    "category": "FTD",
+    "text": "No. They aren't supposed to burst. They only need to open.",
+    "speech": "Нет. Они и не должны рваться. Им нужно только раскрыться."
+  },
+  "VOL_FTD_03": {
+    "speaker": "VOL",
+    "category": "FTD",
+    "text": "Blood. Volunteers'. More than that you are not cleared to know, Comrade Colonel.",
+    "speech": "Кровь. Добровольцев. Большего вам знать не положено, товарищ полковник."
+  },
+  "SVR_FTD_03": {
+    "speaker": "SVR",
+    "category": "FTD",
+    "text": "[radio] 'Don', this is 'Birch'. The enemy is not answering. The line is empty. Over.",
+    "speech": "„Дон“, я „Берёза“. Противник не отвечает. Линия пуста. Приём."
+  },
+  "SVR_FTD_04": {
+    "speaker": "SVR",
+    "category": "FTD",
+    "text": "[radio] All stations. Our dead... are getting up. This is not panic. I can see them. Over.",
+    "speech": "Всем станциям. Наши убитые... встают. Это не паника. Я их вижу. Приём."
+  },
+  "SVR_FTD_05": {
+    "speaker": "SVR",
+    "category": "FTD",
+    "text": "[radio] This is 'Don'. Cease transmission. Not one word of this on the air. Write: an epidemic among the enemy. Out.",
+    "speech": "Я „Дон“. Прекратить передачу. В эфире об этом — ни слова. Писать: эпидемия у противника. Конец связи."
+  },
+  "VOL_FTD_04": {
+    "speaker": "VOL",
+    "category": "FTD",
+    "text": "[exhausted] The fourth day. Always the fourth.",
+    "speech": "Четвёртый день. Всегда четвёртый."
+  },
+  "VOL_FTD_05": {
+    "speaker": "VOL",
+    "category": "FTD",
+    "text": "They don't know whose they are. They just walk. West.",
+    "speech": "Они не знают, чьи они. Они просто идут. На запад."
+  },
+  "REI_STB_01": {
+    "speaker": "REI",
+    "category": "STB",
+    "text": "Fineness twelve microns. Through the mill once more. The dust must float, not fall.",
+    "speech": "Feinheit zwölf Mikron. Noch einmal durch die Mühle. Der Staub muss schweben, nicht fallen."
+  },
+  "REI_STB_02": {
+    "speaker": "REI",
+    "category": "STB",
+    "text": "Near the Heart it no longer waits four days. Minutes. Write it down: minutes.",
+    "speech": "In der Nähe des Herzens wartet es keine vier Tage mehr. Minuten. Schreiben Sie: Minuten."
+  },
+  "REI_STB_03": {
+    "speaker": "REI",
+    "category": "STB",
+    "text": "The canisters go east. Return to sender. That was the General Staff's phrase, not mine.",
+    "speech": "Die Kanister nach Osten. Zurück zum Absender. So hat es der Generalstab formuliert, nicht ich."
+  },
+  "REI_STB_04": {
+    "speaker": "REI",
+    "category": "STB",
+    "text": "Weather station, confirm the wind.",
+    "speech": "Wetterwarte, bestätigen Sie den Wind."
+  },
+  "REI_STB_05": {
+    "speaker": "REI",
+    "category": "STB",
+    "text": "[whispers] No. No, not today. Not tonight.",
+    "speech": "Nein. Nein, nicht heute. Nicht heute Nacht."
+  },
+  "REI_STB_06": {
+    "speaker": "REI",
+    "category": "STB",
+    "text": "Liesl. Mama is here. Count to a hundred.",
+    "speech": "Liesl. Mama ist hier. Zähl bis hundert."
+  },
+  "PA_STB_01": {
+    "speaker": "PA",
+    "category": "STB",
+    "text": "[PA] Attention. Dust mill two, canning begins. Masks on. Masks on.",
+    "speech": "Achtung. Staubmühle zwei, Abfüllung beginnt. Masken auf. Masken auf."
+  },
+  "PA_STB_02": {
+    "speaker": "PA",
+    "category": "STB",
+    "text": "[radio] Weather station to control. Wind from the west, three metres a second, steady. Clear to proceed.",
+    "speech": "Wetterwarte an Leitstand. Wind aus West, drei Meter pro Sekunde, beständig. Freigabe."
+  },
+  "PA_STB_03": {
+    "speaker": "PA",
+    "category": "STB",
+    "text": "[PA] Launch in sixty seconds. Clear the north ramp.",
+    "speech": "Abschuss in sechzig Sekunden. Nordrampe räumen."
+  },
+  "PA_STB_04": {
+    "speaker": "PA",
+    "category": "STB",
+    "text": "[radio] [shouting] Control, weather station. The wind is turning. East. Wind from the east, rising. Control, abort! Abort!",
+    "speech": "Leitstand, hier Wetterwarte. Der Wind dreht. Ost. Wind aus Ost, zunehmend. Leitstand, abbrechen! Abbrechen!"
+  },
+  "PA_STB_05": {
+    "speaker": "PA",
+    "category": "STB",
+    "text": "[PA] Attention. Dust alarm. Close all doors. This is not a drill.",
+    "speech": "Achtung. Staubalarm. Alle Türen schließen. Dies ist keine Übung."
+  },
+  "PA_STB_06": {
+    "speaker": "PA",
+    "category": "STB",
+    "text": "[radio] ...Control, please answer. Control. The lights in Wilcza Góra are... Control?",
+    "speech": "...Leitstand, bitte antworten. Leitstand. Die Lichter in Wilcza Góra sind... Leitstand?"
+  },
+  "RTN_CLOSE_01": {
+    "speaker": "RTN",
+    "category": "CLOSE",
+    "text": "Mama.",
+    "speech": "Мама."
+  },
+  "RTN_CLOSE_02": {
+    "speaker": "RTN",
+    "category": "CLOSE",
+    "text": "Cold. Cold...",
+    "speech": "Холодно. Холодно..."
+  },
+  "RTN_CLOSE_03": {
+    "speaker": "RTN",
+    "category": "CLOSE",
+    "text": "Our Father... who art... who...",
+    "speech": "Отче наш... иже еси... иже..."
+  },
+  "RTN_CLOSE_04": {
+    "speaker": "RTN",
+    "category": "CLOSE",
+    "text": "One-eighteenth Rifle. One-eighteenth...",
+    "speech": "Сто восемнадцатый стрелковый. Сто восемнадцатый..."
+  },
+  "RTN_CLOSE_05": {
+    "speaker": "RTN",
+    "category": "CLOSE",
+    "text": "Semyonov. Semyonov, Ivan. Nineteen twenty-...",
+    "speech": "Семёнов. Семёнов Иван. Тысяча девятьсот двадцать..."
+  },
+  "RTN_CLOSE_06": {
+    "speaker": "RTN",
+    "category": "CLOSE",
+    "text": "Don't leave me. Don't leave.",
+    "speech": "Не оставляй меня. Не оставляй."
+  },
+  "RTN_CLOSE_07": {
+    "speaker": "RTN",
+    "category": "CLOSE",
+    "text": "Where are my boots? Where are the boots...",
+    "speech": "Где мои сапоги? Где сапоги..."
+  },
+  "RTN_CLOSE_08": {
+    "speaker": "RTN",
+    "category": "CLOSE",
+    "text": "Home. Home... to Tula.",
+    "speech": "Домой. Домой... в Тулу."
+  },
+  "RTN_CLOSE_09": {
+    "speaker": "RTN",
+    "category": "CLOSE",
+    "text": "Medic! Medic... medic...",
+    "speech": "Санитар! Санитар... санитар..."
+  },
+  "RTN_CLOSE_10": {
+    "speaker": "RTN",
+    "category": "CLOSE",
+    "text": "Forgive me. Forgive me, Nyura.",
+    "speech": "Прости. Прости меня, Нюра."
+  },
+  "RTN_CLOSE_11": {
+    "speaker": "RTN",
+    "category": "CLOSE",
+    "text": "Lord, have mercy. Lord... have mercy.",
+    "speech": "Господи, помилуй. Господи... помилуй."
+  },
+  "RTN_CLOSE_12": {
+    "speaker": "RTN",
+    "category": "CLOSE",
+    "text": "The letter. The letter's in my pocket... send it...",
+    "speech": "Письмо. В кармане письмо... отправьте..."
+  },
+  "RTN_CLOSE_13": {
+    "speaker": "RTN",
+    "category": "CLOSE",
+    "text": "Dark. Why is it so dark?",
+    "speech": "Темно. Почему так темно?"
+  },
+  "RTN_CLOSE_14": {
+    "speaker": "RTN",
+    "category": "CLOSE",
+    "text": "But we won. We... won, didn't we?",
+    "speech": "Мы же победили. Мы же... победили?"
+  },
+  "RTN_CLOSE_15": {
+    "speaker": "RTN",
+    "category": "CLOSE",
+    "text": "Water. A sip... of water.",
+    "speech": "Воды. Глоток... воды."
+  },
+  "RTN_CLOSE_16": {
+    "speaker": "RTN",
+    "category": "CLOSE",
+    "text": "Don't shoot. It's me. It's me...",
+    "speech": "Не стреляй. Это я. Это же я..."
+  },
+  "SVR_M0_01": {
+    "speaker": "SVR",
+    "category": "M0",
+    "text": "[radio] 'Birch-three'. The tanks have stopped at the woods. What's ahead of us isn't Germans. Over.",
+    "speech": "Я „Берёза-три“. Коробочки встали у леса. Впереди — не немцы. Приём."
+  },
+  "SVR_M0_02": {
+    "speaker": "SVR",
+    "category": "M0",
+    "text": "[radio] All stations: the Returned are not to come within fifty metres. Hit the wound. The wound, not the head. Over.",
+    "speech": "Всем станциям: вернувшихся ближе пятидесяти не подпускать. Бить в рану. В рану, не в голову. Приём."
+  },
+  "SVR_M0_03": {
+    "speaker": "SVR",
+    "category": "M0",
+    "text": "[radio] How do you read? I repeat: our dead from Second Battalion are walking through our positions. West. Don't fire on our own... cancel that. Fire.",
+    "speech": "Как слышно? Повторяю: наши убитые из второго батальона идут через наши позиции. На запад. По своим не стрелять... отставить. Стрелять."
+  },
+  "SVR_M0_04": {
+    "speaker": "SVR",
+    "category": "M0",
+    "text": "[radio] Commissar, no speeches. They don't listen any more.",
+    "speech": "Политрук, не надо речей. Они уже не слушают."
+  },
+  "SVR_M0_05": {
+    "speaker": "SVR",
+    "category": "M0",
+    "text": "[radio] Flares every five minutes. While we can see, they can't come up on us unseen. Over.",
+    "speech": "Осветительные — каждые пять минут. Пока видно, они не подойдут незаметно. Приём."
+  },
+  "SVR_M0_06": {
+    "speaker": "SVR",
+    "category": "M0",
+    "text": "[radio] 'Don', 'Birch'. The village ahead is burning. We lit it. Our own... we were burning our own. Over.",
+    "speech": "„Дон“, я „Берёза“. Деревня впереди горит. Сами подожгли. Своих... жгли своих. Приём."
+  },
+  "SVR_M0_07": {
+    "speaker": "SVR",
+    "category": "M0",
+    "text": "[radio] No burials. Do you hear? Bury no one. Stack them and burn them.",
+    "speech": "Хоронить запрещаю. Слышите? Никого не хоронить. Складывать и жечь."
+  },
+  "SVR_M0_08": {
+    "speaker": "SVR",
+    "category": "M0",
+    "text": "[radio] Semyonov, is that you? Semyonov, answer... [static]",
+    "speech": "Семёнов, это ты? Семёнов, ответь..."
+  },
+  "SVR_M0_09": {
+    "speaker": "SVR",
+    "category": "M0",
+    "text": "[radio] They told us: an epidemic among the enemy. The enemy! So who is that walking across the field, Comrade Major?",
+    "speech": "Нам сказали — эпидемия у противника. У противника! А кто идёт по полю, товарищ майор?"
+  },
+  "SVR_M0_10": {
+    "speaker": "SVR",
+    "category": "M0",
+    "text": "[radio] [whispers] Quiet. Quiet on the net. They come to a voice.",
+    "speech": "Тише. Тише в эфире. Они идут на голос."
+  },
+  "SVR_M0_11": {
+    "speaker": "SVR",
+    "category": "M0",
+    "text": "[radio] Four days. Remember it: four days. Whoever was killed yesterday gets up the day after tomorrow.",
+    "speech": "Четыре дня. Запомните: четыре дня. Кого вчера убило — послезавтра встанет."
+  },
+  "SVR_M0_12": {
+    "speaker": "SVR",
+    "category": "M0",
+    "text": "[radio] Over... over... 'Birch', answer. 'Birch'. ...Anyone.",
+    "speech": "Приём... приём... „Берёза“, ответь. „Берёза“. ...Кто-нибудь."
+  },
+  "SVR_M1_01": {
+    "speaker": "SVR",
+    "category": "M1",
+    "text": "[radio] 'Pine'. The Germans are trucking away bodies. Ours. By the lorry-load, west. What do they want with our dead? Over.",
+    "speech": "Я „Сосна“. Немцы вывозят трупы. Наших. Грузовиками, на запад. Зачем им наши трупы? Приём."
+  },
+  "SVR_M1_02": {
+    "speaker": "SVR",
+    "category": "M1",
+    "text": "[radio] Repeat for HQ: the Germans are collecting the Returned. Not destroying them. Collecting them. Over.",
+    "speech": "Повторяю для штаба: немцы собирают вернувшихся. Не уничтожают — собирают. Приём."
+  },
+  "SVR_M1_03": {
+    "speaker": "SVR",
+    "category": "M1",
+    "text": "[radio] Violet light in the west. Third night running. What is it, 'Don'? Over.",
+    "speech": "Фиолетовый свет на западе. Третью ночь. Что это, „Дон“? Приём."
+  },
+  "SVR_M1_04": {
+    "speaker": "SVR",
+    "category": "M1",
+    "text": "[radio] Laboratory Four is never to be mentioned on the air. Never. That is an order.",
+    "speech": "Четвёртую лабораторию в эфире не упоминать. Никогда. Это приказ."
+  },
+  "SVR_M1_05": {
+    "speaker": "SVR",
+    "category": "M1",
+    "text": "[radio] They've stopped walking west. They're standing. All of them turned... toward the mountains.",
+    "speech": "Они уже не идут на запад. Они стоят. Все повернулись... к горам."
+  },
+  "SVR_M1_06": {
+    "speaker": "SVR",
+    "category": "M1",
+    "text": "[radio] The prisoner says: 'Staub'. Dust. He says they will make dust. I don't understand. Over.",
+    "speech": "Пленный говорит: „Штауб“. Пыль. Говорит, они сделают пыль. Не понимаю. Приём."
+  },
+  "SVR_M1_07": {
+    "speaker": "SVR",
+    "category": "M1",
+    "text": "[radio] Operator, keep tuning. Up at twelve hundred someone's talking German and laughing. I don't like that laugh.",
+    "speech": "Радист, крути дальше. Там, на тысяча двести, кто-то говорит по-немецки и смеётся. Не нравится мне этот смех."
+  },
+  "SVR_M1_08": {
+    "speaker": "SVR",
+    "category": "M1",
+    "text": "[radio] It's snowing. Violet. Report it? ...How do I report that?",
+    "speech": "Снег идёт. Фиолетовый. Доложить? ...Как я это доложу?"
+  },
+  "SVR_M1_09": {
+    "speaker": "SVR",
+    "category": "M1",
+    "text": "[radio] Volkov is here. Volkov himself, from Moscow. They say he's known about this since 'thirty. Since 'thirty!",
+    "speech": "Волков здесь. Сам Волков, из Москвы. Говорят, он с тридцатого года про это знает. С тридцатого!"
+  },
+  "SVR_M1_10": {
+    "speaker": "SVR",
+    "category": "M1",
+    "text": "[radio] Retreat? Retreat where, when our dead outnumber our living?",
+    "speech": "Отступать? Куда отступать, если своих мёртвых больше, чем живых?"
+  },
+  "SVR_M1_11": {
+    "speaker": "SVR",
+    "category": "M1",
+    "text": "[radio] Order: in the report, 'an epidemic among the enemy'. Carry it out. Carry it out!",
+    "speech": "Приказ: в сводке — „эпидемия у противника“. Выполняйте. Выполняйте!"
+  },
+  "SVR_M1_12": {
+    "speaker": "SVR",
+    "category": "M1",
+    "text": "[radio] Do you believe in God, Misha? ...I didn't either, before.",
+    "speech": "Ты в Бога веришь, Миша? ...Я тоже раньше не верил."
+  },
+  "SEL_GL1_01": {
+    "speaker": "SEL",
+    "category": "GL1",
+    "text": "[intercom] Pilot to passengers. We've crossed the Silesian border, twenty-three ten. Forty minutes to the drop. Stay strapped in, there's weather."
+  },
+  "SEL_GL1_02": {
+    "speaker": "SEL",
+    "category": "GL1",
+    "text": "[intercom] Navigator says that's the front below us. Those are their flares, not ours. Have a look if you like. Then don't."
+  },
+  "SEL_GL1_03": {
+    "speaker": "SEL",
+    "category": "GL1",
+    "text": "[intercom] Someone with glasses tell me what those columns are. On the snow. Walking west. Nobody down there is shooting at them."
+  },
+  "SEL_GL1_04": {
+    "speaker": "SEL",
+    "category": "GL1",
+    "text": "[intercom] Light ahead, bearing oh-four-oh. Violet. That's no flare."
+  },
+  "SEL_GL1_05": {
+    "speaker": "SEL",
+    "category": "GL1",
+    "text": "[intercom] Both engines— ...Both engines gone. Instruments dead. Hold on to something, chaps. I'm going to put her down."
+  },
+  "SEL_GL1_06": {
+    "speaker": "SEL",
+    "category": "GL1",
+    "text": "[intercom] [shouting] There's a building. Lit windows. I'll take the field beside it. Brace. Brace. Brace!"
+  },
+  "SEL_GL1_07": {
+    "speaker": "SEL",
+    "category": "GL1",
+    "text": "[faint] [exhausted] ...Is anyone... I can't move my legs. Get out. Get out before she burns."
+  },
+  "SEL_GL1_08": {
+    "speaker": "SEL",
+    "category": "GL1",
+    "text": "[faint] Co-pilot's gone. Leave me. Go on. ...God bless."
+  },
+  "DUT_GL1_01": {
+    "speaker": "DUT",
+    "category": "GL1",
+    "text": "[shouting over engines] That ain't a parade down there. Those are people. Hundreds of them. Where the hell are they going?"
+  },
+  "DUT_GL1_02": {
+    "speaker": "DUT",
+    "category": "GL1",
+    "text": "Hang on. Hang on, hang on—"
+  },
+  "PEG_GL1_01": {
+    "speaker": "PEG",
+    "category": "GL1",
+    "text": "[shouting over engines] Soviet greatcoats. Walking west, no formation, no weapons. Pilot, those men are walking through their own artillery."
+  },
+  "PEG_GL1_02": {
+    "speaker": "PEG",
+    "category": "GL1",
+    "text": "Nobody breathe. Heads down, hands on the frame."
+  },
+  "DEA_GL1_01": {
+    "speaker": "DEA",
+    "category": "GL1",
+    "text": "[whispers] Yea, though I walk through the valley... Lord, they are walking. Look at them walk."
+  },
+  "DEA_GL1_02": {
+    "speaker": "DEA",
+    "category": "GL1",
+    "text": "Hold my hand, if you want to. I don't mind."
+  },
+  "WRN_GL1_01": {
+    "speaker": "WRN",
+    "category": "GL1",
+    "text": "[shouting over engines] Russians. Hundreds. Walking into German guns and the guns are not firing. ...Nothing about this is right."
+  },
+  "WRN_GL1_02": {
+    "speaker": "WRN",
+    "category": "GL1",
+    "text": "Count with me. Jeden, dwa, trzy... it helps. Cztery..."
   }
 }
