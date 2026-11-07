@@ -1214,18 +1214,18 @@ The ids carry `SQ3` so the voice bake can run them alone (`python gravelight/too
 - `DUT_SQ3_CHATTER_02`: "Back home the worst thing in the dark was a drunk on the Bloomfield Bridge. [a pause] I miss him."
 
 ### 15.2 Peg (`PEG`)
-- `PEG_SQ3_SPRINTER_BEHIND_01`: "Sprinter, behind you!"
-- `PEG_SQ3_SPRINTER_BEHIND_02`: "Check your six, it's a quick one!"
+- `PEG_SQ3_SPRINTER_BEHIND_01`: "Sprinter. Behind you. Now."
+- `PEG_SQ3_SPRINTER_BEHIND_02`: "Check your six. It's a quick one."
 - `PEG_SQ3_BOSS_INCOMING_01`: "Boss incoming. Spread out, don't bunch up."
 - `PEG_SQ3_CRATE_MOVED_01`: "The crate's moved. Of course it has."
-- `PEG_SQ3_WINDOW_OPEN_01`: "Window's open! Someone board it!"
+- `PEG_SQ3_WINDOW_OPEN_01`: "Window's open. Someone board it, please."
 - `PEG_SQ3_COVER_01`: "Covering you. Go."
-- `PEG_SQ3_PING_RESUPPLY_01`: "Resupply, over here!"
+- `PEG_SQ3_PING_RESUPPLY_01`: "Resupply, over here."
 - `PEG_SQ3_PING_DEATHSDOOR_01`: "Death's Door. Do try not to waste it."
 - `PEG_SQ3_PING_DOUBLESCRIP_01`: "Double Scrip. Spend it wisely."
 - `PEG_SQ3_PING_BLACKOUT_01`: "A Blackout's dropped, here."
-- `PEG_SQ3_PING_FORTIFY_01`: "Fortify! The windows will thank us."
-- `PEG_SQ3_PING_CLEARANCE_01`: "Clearance! The crate's a bargain."
+- `PEG_SQ3_PING_FORTIFY_01`: "Fortify, here. The windows will thank us."
+- `PEG_SQ3_PING_CLEARANCE_01`: "Clearance. The crate's cheap; be quick."
 - `PEG_SQ3_CMD_TRAIN_01`: "Train them. Round and round. Yes."
 - `PEG_SQ3_CMD_BUY_PERKS_01`: "A drink. [a pause] Several. I know."
 - `PEG_SQ3_CMD_SAVE_SCRIP_01`: "Saving. Understood."
@@ -2175,7 +2175,7 @@ the tags are the dead's names, said with respect; Jakub never drinks (he only po
 
 **Peg (`PEG`)**
 - `PEG_ECO_PWR_TONIC_01`: "A complimentary tonic. [a pause] I shan't ask what's in it. I rather suspect I'll be told."
-- `PEG_ECO_PING_TONIC_01`: "A tonic bottle, over here!"
+- `PEG_ECO_PING_TONIC_01`: "A tonic bottle, over here."
 - `PEG_ECO_SALVAGE_01`: "Tags. [quiet] Someone ought to know where he ended up. Someone ought to be told properly, by name."
 
 **Deacon (`DEA`)**

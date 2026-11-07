@@ -4372,12 +4372,12 @@
   "PEG_SQ3_SPRINTER_BEHIND_01": {
     "speaker": "PEG",
     "category": "SPRINTER_BEHIND",
-    "text": "Sprinter, behind you!"
+    "text": "Sprinter. Behind you. Now."
   },
   "PEG_SQ3_SPRINTER_BEHIND_02": {
     "speaker": "PEG",
     "category": "SPRINTER_BEHIND",
-    "text": "Check your six, it's a quick one!"
+    "text": "Check your six. It's a quick one."
   },
   "PEG_SQ3_BOSS_INCOMING_01": {
     "speaker": "PEG",
@@ -4392,7 +4392,7 @@
   "PEG_SQ3_WINDOW_OPEN_01": {
     "speaker": "PEG",
     "category": "WINDOW_OPEN",
-    "text": "Window's open! Someone board it!"
+    "text": "Window's open. Someone board it, please."
   },
   "PEG_SQ3_COVER_01": {
     "speaker": "PEG",
@@ -4402,7 +4402,7 @@
   "PEG_SQ3_PING_RESUPPLY_01": {
     "speaker": "PEG",
     "category": "PING_RESUPPLY",
-    "text": "Resupply, over here!"
+    "text": "Resupply, over here."
   },
   "PEG_SQ3_PING_DEATHSDOOR_01": {
     "speaker": "PEG",
@@ -4422,12 +4422,12 @@
   "PEG_SQ3_PING_FORTIFY_01": {
     "speaker": "PEG",
     "category": "PING_FORTIFY",
-    "text": "Fortify! The windows will thank us."
+    "text": "Fortify, here. The windows will thank us."
   },
   "PEG_SQ3_PING_CLEARANCE_01": {
     "speaker": "PEG",
     "category": "PING_CLEARANCE",
-    "text": "Clearance! The crate's a bargain."
+    "text": "Clearance. The crate's cheap; be quick."
   },
   "PEG_SQ3_CMD_TRAIN_01": {
     "speaker": "PEG",
@@ -7721,7 +7721,7 @@
   "PEG_ECO_PING_TONIC_01": {
     "speaker": "PEG",
     "category": "ECO_PING_TONIC",
-    "text": "A tonic bottle, over here!"
+    "text": "A tonic bottle, over here."
   },
   "DEA_ECO_PING_TONIC_01": {
     "speaker": "DEA",
