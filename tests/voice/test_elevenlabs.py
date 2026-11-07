@@ -218,8 +218,8 @@ def test_every_line_has_a_voice_or_a_reason():
 def test_no_clone_without_consent(sandbox, monkeypatch):
     monkeypatch.setattr(V, "INBOX_DIR", str(sandbox.inbox))
     cast = V.load_cast()
-    assert cast["characters"]["gl"]["PAU"]["eleven"]["source"] == "design"
-    assert cast["characters"]["gl"]["SLN"]["eleven"]["source"] == "design"
+    assert cast["characters"]["gl"]["PAU"]["eleven"]["source"] in ("design", "library")  # never a clone (T-201: library)
+    assert cast["characters"]["gl"]["SLN"]["eleven"]["source"] in ("design", "library")
     cast["characters"]["gl"]["PAU"]["eleven"].update({"voice_id": "clone123", "source": "clone"})
     ln = next(x for x in V.collect_gl() if x.char == "PAU")
     el, why = E.voice_for(cast, ln)
