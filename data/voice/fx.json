@@ -10,7 +10,9 @@
   "cousins_room": {"kind": "room", "room_s": 1.1, "room_mix": 0.16, "predelay_ms": 22, "damp_hz": 3200},
   "cousins_trio": {"kind": "trio", "room_s": 1.2, "room_mix": 0.2, "double_ms": [17, 31], "detune_cents": [-9, 7]},
   "robot_light": {"kind": "robot", "ring_hz": 55, "ring_mix": 0.16, "comb_ms": 4.5, "comb_mix": 0.22, "band": [90, 9000], "pitch_semitones": 0},
-  "robot_pa": {"kind": "robot_pa", "band": [260, 4800], "ring_hz": 40, "ring_mix": 0.08, "room_s": 0.9, "room_mix": 0.25}
+  "robot_pa": {"kind": "robot_pa", "band": [260, 4800], "ring_hz": 40, "ring_mix": 0.08, "room_s": 0.9, "room_mix": 0.25},
+  "works_pa": {"kind": "pa", "band": [280, 4200], "room_s": 0.9, "room_mix": 0.25},
+  "megaphone": {"kind": "pa", "band": [500, 3200], "room_s": 1.6, "room_mix": 0.3}
  },
  "characters": {
   "gl": {
@@ -22,7 +24,12 @@
    "RCH": "cousins_room",
    "ALX": "cousins_room",
    "CSN": "cousins_trio",
-   "DUT": "clean", "PEG": "clean", "DEA": "clean", "WRN": "clean", "JAK": "clean"
+   "DUT": "clean", "PEG": "clean", "DEA": "clean", "WRN": "clean", "JAK": "clean",
+   "_u11": "UPDATE 11 (T-193): the PA / radio speakers the TTS bake gave a channel, so their ElevenLabs takes keep it",
+   "PA": "works_pa", "WIT": "works_pa", "HAL": "works_pa", "BWT": "fasbender_radio", "DEE": "fasbender_radio",
+   "RRK": "fasbender_radio", "BLT": "fasbender_radio", "SPR": "fasbender_radio", "VEN": "fasbender_radio", "KLH": "fasbender_radio",
+   "UBR": "fasbender_radio", "SVR": "fasbender_radio", "BRG": "megaphone",
+   "PAU": {"chain": "clean", "by_category": {"PA": "works_pa"}}
   },
   "bs": {
    "bolt": "clean",
@@ -38,6 +45,11 @@
    "statue": "robot_light",
    "pa": "robot_pa",
    "darkmatter": "robot_pa"
+  },
+  "fp": {
+   "_doc": "The Fine Print (U11 T-193): a speaker shared with Gravelight / B&S uses that game's entry",
+   "vendelin": "robot_light", "dm_pa": "robot_pa", "nextera": "robot_pa", "exit_survey": "robot_light", "courtesy": "robot_light",
+   "churn_warden": "robot_light", "upsell_drone": "robot_light", "associate": "robot_light", "repossessor": "robot_light"
   }
  }
 }

@@ -274,6 +274,8 @@ def say_id(file_id: str) -> str:
             out.append(" ".join(_DIGIT_WORDS[int(c)] for c in p))
         elif re.fullmatch(r"p\d+", p) and i == len(parts) - 1:
             out.append("part " + " ".join(_DIGIT_WORDS[int(c)] for c in p[1:]))
+        elif p.isalpha() and p not in SPELLED_CODES and len(ID_WORD_ALIASES.get(p.lower(), "xx")) == 1:
+            out.append(p.lower())                # a code that is also a letter's name (DEE = "Dee" = d)
         elif (p.isupper() and len(p) <= 4 and (i == 0 or not p.isalpha() or p in SPELLED_CODES
                                                 or not re.search(r"[AEIOUY]", p))) or                 (p.isalpha() and len(p) <= 2 and not re.search(r"[AEIOUYaeiouy]", p)):
             out.append("-".join(p.upper()))
@@ -642,7 +644,7 @@ def collect_all() -> list[Line]:
 
 # ───────────────────────────────────────────────────────────── The Fine Print (script only, U11 T-193)
 # The Fine Print exists as a script (docs/fineprint/script_ch1..5.md, 2778 ids) and is not built yet. Its lines are
-# read from the script for the ElevenLabs plan / bake (tools/voice/elevenlabs.py); they are not in collect_all(),
+# read from the script for the ElevenLabs plan / bake (tools/voice/eleven.py); they are not in collect_all(),
 # so the recording scripts, the importer and the review page are unchanged. Its speaker ids are B&S VOManager ids,
 # so a take goes where B&S plays recorded lines (res://audio/vo/<id>.ogg, the B&S manifest).
 FP_DIR = os.path.join(ROOT, "docs", "fineprint")
@@ -802,7 +804,7 @@ def save_manifest(game: str, m: dict) -> None:
         m["_doc"] = ("Bolt & Sprocket voice manifest (T-101, tools/voice/import.py): every voiced line id. source tts = "
                      "the game's runtime text-to-speech (core/vo_manager.gd, no file); human = a recorded take at path "
                      "(res://audio/vo/<id>.ogg) with the actor, the take id and the file hash; ai_* = ElevenLabs "
-                     "(tools/voice/elevenlabs.py, always marked).")
+                     "(tools/voice/eleven.py, always marked).")
         m["files"] = dict(sorted(m.get("files", {}).items()))
         save_json(BS_MANIFEST, m, sort=False)
 

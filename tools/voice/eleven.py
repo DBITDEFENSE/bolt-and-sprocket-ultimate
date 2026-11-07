@@ -855,7 +855,7 @@ def bake(only: list[int] | None = None, limit_chars: int | None = None, ids: lis
     cast = V.load_cast()
     fx = V.load_json(V.FX_PATH)
     jobs = [j for j in build_jobs(cast, games=games) if (not only or j.group in only)
-            and (not ids or any(j.ln.file_id == i or j.ln.file_id.startswith(i) for i in ids))]
+            and (not ids or any(j.ln.file_id.startswith(i) or j.ln.char.upper() == i.upper() for i in ids))]
     cache = cache or TakeCache()
     sh = Shipper()
     for j in jobs:
@@ -1296,6 +1296,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--seconds", type=float, default=None)
     ap.add_argument("--loop", action="store_true")
     ap.add_argument("--force", action="store_true")
+    ap.add_argument("--require-key", action="store_true", help="bake: exit 2 when there is no key (gen_vo.py uses it)")
     a = ap.parse_args(argv)
     only = [parse_group(x) for x in a.only.split(",") if x.strip()] if a.only else None
     games = tuple(x.strip() for x in a.game.split(",") if x.strip()) or ("gl", "fp", "bs")
@@ -1305,8 +1306,8 @@ def main(argv: list[str] | None = None) -> int:
         elif a.mode == "bake":
             if not have_key() and not a.dry_run:
                 print(SETUP_HINT)
-                print("nothing baked: the game keeps its Kokoro / OneCore / runtime TTS voices")
-                return 0
+                print("nothing baked by ElevenLabs: the lines keep their Kokoro / OneCore / runtime TTS voices")
+                return 2 if a.require_key else 0
             r = bake(only, a.limit_chars, [x for x in a.ids.split(",") if x] or None, a.dry_run, games)
             return 3 if r.get("stopped") and not r["stopped"].startswith("limit") else 0
         elif a.mode == "voices":

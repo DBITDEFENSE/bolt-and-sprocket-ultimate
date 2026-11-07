@@ -798,8 +798,12 @@ def run(actors: list[str] | None = None, inbox: str | None = None, work: str | N
             y, fxname, lv = render(t, ln, fx, td, layers)
             w = os.path.join(td, "final.wav")
             write_wav(w, y)
-            if ln.game == "gl" and cur and cur.get("source", "tts") != "human":
+            if ln.game == "gl" and cur and cur.get("source", "tts") == "tts":
                 tts_row = backup_tts(cur, ln)
+            elif cur.get("source", "").startswith("ai_"):
+                # a recorded take wins over an AI take (U11 T-193): keep the TTS row the AI take kept; if the take
+                # goes again, the TTS comes back and the ElevenLabs bake re-ships its cached take (no new cost)
+                tts_row = cur.get("tts")
             else:
                 tts_row = cur.get("tts")
             encode_ogg(w, disk)

@@ -16,6 +16,17 @@ import voicelib as V  # noqa: E402
 FIX = os.path.join(ROOT, "tests", "voice", "fixtures")
 
 
+@pytest.fixture(autouse=True)
+def no_live_elevenlabs(tmp_path, monkeypatch):
+    """U11 T-193: no test ever sees the owner's ElevenLabs key or the real take cache / log unless it asks for them
+    (test_eleven_key does, to scan for it): the key is taken out of the environment, the .env.local files are off,
+    the cache and the credits log go to the test's tmp folder."""
+    monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
+    monkeypatch.setenv("GL_ELEVEN_KEYFILES", "0")
+    monkeypatch.setenv("GL_VOICE_CACHE", str(tmp_path / "eleven_cache"))
+    monkeypatch.setenv("GL_ELEVEN_LOG", str(tmp_path / "logs" / "elevenlabs.log"))
+
+
 @pytest.fixture
 def sandbox(tmp_path, monkeypatch):
     """A copy of the manifests + cast in tmp; game audio lands in tmp/out; inbox tmp/inbox; work tmp/work.
