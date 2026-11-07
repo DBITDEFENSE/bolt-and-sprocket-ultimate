@@ -295,6 +295,26 @@ HELVETIA AUTOMATEN AG · BASEL. Formula: R. Fenske. Replacement unit 3 of 8, hel
 
 Nobody came to read it. The drum has been turning since the day it was bolted down, one digit for every sum somebody earned in the cellar above, and it is the only thing in the vault that is exactly on time. Fenske made the lager at Kaltenbrunn; this is the unit the Provider sent south to be ready for a payday that never reached the crossroads.
 
+### perk.skyhook_sekt
+**Plate:** Nachlieferung · Consignment W.T. · Cabinet 1 of 2 · ELEVATION · J. Maurer
+**Archive:** Maker's Plate: Skyhook Sekt (the late-delivery bay)
+
+The pale sky-blue glider-nosed cabinet on the far wall of the bay behind the cellar's east arch, its little propeller ticking round whenever somebody jumps near it, its crate still in the corner with ZWEIGWERK THALBACH on the side.
+
+HELVETIA AUTOMATEN AG · BASEL. Hygienic beverage dispenser, glider pattern. Formula: H. Maurer, Windkanal Thalbach. Consignment Werk Thalbach, "Nachlieferung", 1 of 2. "Leicht · Lieber · Landen."
+
+It came down the salt road a month after the eight replacement units, on a delivery note the landlord never ordered from, and there was no room for it in the vault, so the installers knocked an arch through to the old ice store under the field and stood it there. Jette Maurer made the Sekt so a tired crew would land well; nobody at the Kreuzweg has ever flown, but the hayloft's bale drop is a long way down.
+
+### perk.magpie_mead
+**Plate:** Not on any docket · olive drab · RANGE SUPPLY · D. MARCHETTI · "nothing goes to waste"
+**Archive:** Maker's Plate: Magpie Mead (the late-delivery bay)
+
+The olive-drab cabinet with the one-armed-bandit lever beside Skyhook in the late-delivery bay, a magpie cut from a ration tin on its front, its open crate in the corner with the straw still in it and RANGE SUPPLY · GROOM LAKE stencilled on the lid in English.
+
+RANGE SUPPLY · GROOM LAKE. Formula: Sgt. D. Marchetti. Not a Helvetia pattern. The delivery note pinned between the two cabinets lists it in the landlord's hand under the Thalbach cabinet, with two words after it: "nicht bestellt".
+
+Nobody on the salt road had heard of the range on the lid, and nobody can say who carried the crate in. Like the ninth cabinet, it is simply there. The back panel is bare metal with one line scratched in: "No fine print. You take what the dead drop. That's the deal."
+
 ### crucible
 **Plate:** MOD. R-E · PAT. PEND. BLZ-40417 · crate 2/3, off the docket
 **Archive:** The Crucible in the Alcove (crate 2/3)

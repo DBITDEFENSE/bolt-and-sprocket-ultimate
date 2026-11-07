@@ -9,7 +9,9 @@
     "marathon_malt",
     "blastproof_bock",
     "overclock_cordial",
-    "packmule_porter"
+    "packmule_porter",
+    "magpie_mead",
+    "skyhook_sekt"
   ],
   "weapon_perk": {
     "trigger_tonic": [
@@ -45,7 +47,9 @@
       "marathon_malt",
       "overclock_cordial",
       "blastproof_bock",
-      "packmule_porter"
+      "packmule_porter",
+      "magpie_mead",
+      "skyhook_sekt"
     ]
   },
   "reserve": {
