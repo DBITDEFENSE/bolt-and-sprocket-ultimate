@@ -19,6 +19,7 @@ var _spawned: int = 0
 var _not_crawler: int = 0
 var _max_up: int = 0
 var _specials: int = 0
+var _ended: int = 0
 var _tag: String = ""
 
 
@@ -32,6 +33,7 @@ func _ready() -> void:
 	GameState.bot_count = 0
 	GLBus.enemy_spawned.connect(_on_spawned)
 	GLBus.round_started.connect(func(_r: int, special: bool) -> void: if special: _specials += 1)
+	GLBus.round_ended.connect(func(_r: int) -> void: _ended += 1)
 	_run.call_deferred()
 
 
@@ -112,12 +114,16 @@ func _run() -> void:
 		_max_up = 0
 		_specials = 0
 		await _load(str(m[1]))
+		_ended = 0
 		_check(EggMode.current() == str(m[2]), "the match is in Easter Egg Mode (%s)" % str(m[2]))
 		_check(ProfileSave.practice and not bool(ProfileSave.cur_match.get("active", true)), "practice: the profile tracks nothing")
 		_check(BankAccount.closed_reason() == "practice", "the bank is shut")
 		var rounds: int = int(m[3])
+		var scrip0: int = Economy.get_scrip(1)
 		await _play_rounds(rounds, 140.0 * rounds)
-		_check(RoundManager.current_round >= rounds, "the rounds advance (round %d)" % RoundManager.current_round)
+		var pay: int = int(c.get("round_scrip", 0))
+		_check(Economy.get_scrip(1) - scrip0 >= pay * (rounds - 1), "each round pays the stipend (%d -> %d Scrip)" % [scrip0, Economy.get_scrip(1)])
+		_check(RoundManager.current_round >= rounds and _ended >= rounds, "the rounds advance and end (round %d, %d ended)" % [RoundManager.current_round, _ended])
 		_check(_not_crawler == 0, "every ordinary zombie is a crawler (%d of %d not)" % [_not_crawler, _spawned])
 		_check(_specials == 0, "no Bellringer round")
 		if str(m[2]) == "none":

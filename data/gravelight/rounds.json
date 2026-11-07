@@ -9,7 +9,9 @@
     "feed_active": 6,
     "feed_interval_s": 2.5,
     "feed_step_types": ["kill_count"],
-    "health_round_cap": 5
+    "health_round_cap": 5,
+    "round_scrip": 1250,
+    "_round_scrip": "Every Scrip account (players, bots, companions) gets this at each round start in Easter Egg Mode (Economy.grant_raw: no multipliers, no earnings stats): a couple of crawlers a round pay next to nothing and the egg's doors, pylons and the Crucible still cost."
   },
   "health": {
     "base": 150,
