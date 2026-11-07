@@ -2121,6 +2121,8 @@ func _cutter_slip(instant: bool) -> void:
 	var rem: Node3D = _named(str(c.get("remnant", "CutterRemnantPieces")))
 	if rem != null:
 		rem.visible = true
+	_body_layer(str(c.get("hull_body", "")), 0)   # T-180: the hull's fitted collider goes with the hull,
+	_body_layer(str(c.get("remnant_body", "")), 1)   # the remnant's (cradle, wheelhouse, nets) takes its place
 	var flag: StringName = StringName(str(c.get("flag", "cutter_slipped")))
 	if Net.is_authority() and not GameState.has_flag(flag):
 		GameState.set_flag(flag, true)
@@ -2153,6 +2155,15 @@ func _cutter_slip(instant: bool) -> void:
 		for k: int in 3:
 			_burst_pool(_mist_pool, _make_mist, splash + Vector3(_rng.randf_range(-3, 3), 0, _rng.randf_range(-1, 1)), 4)
 		_shake_in([[0, -1, -2], [32, 6, 30]], 0.12, 0.0))
+
+
+## A named collision body's layer (T-180: the cutter's two fitted colliders); "" or a missing node does nothing.
+func _body_layer(n: String, layer: int) -> void:
+	if n == "":
+		return
+	var b: CollisionObject3D = _named(n) as CollisionObject3D
+	if b != null:
+		b.collision_layer = layer
 
 
 # ================================================================== wet footprints behind everyone on the wet concrete

@@ -173,7 +173,7 @@ const ARMORERS_BENCH: Array = [Vector3(16.3, 0, 17.0 + T * 0.5 + 0.01), 180.0]
 ## the boxes); anything in no box is "ALL" and always drawn. "DH" is the hall round U-1047's hatch and tower: the
 ## part of the hall the boat's interior sees up through the open hatch.
 const VIS_BOXES: Array = [
-	["E", Vector3(4.0, -6.0, 37.3), Vector3(10.0, 0.62, 86.7)],
+	["E", Vector3(4.0, -6.0, 38.05), Vector3(10.0, 0.62, 86.7)],   # T-180: from 38.05, so the apron's edge railing (z 38) is D
 	["G", Vector3(41.0, 6.5, 32.9), Vector3(52.4, 11.7, 38.4)],
 	["F", Vector3(31.9, -6.5, 42.0), Vector3(52.1, -0.35, 84.7)],
 	["DH", Vector3(-4.0, 0.62, 50.0), Vector3(18.0, 13.5, 76.0)],
@@ -191,7 +191,7 @@ const VIS_ZONE: Dictionary = {"A": "A_QUAY", "B": "B_CANNERY", "C": "C_WORKSHOP"
 const VIEW_CELLS: Array = [
 	["E_interior", Vector3(4.3, -2.7, 38.2), Vector3(9.7, 0.6, 85.9), ["E", "DH"], false],
 	["E_hatch", Vector3(0.0, 0.6, 50.0), Vector3(14.0, 9.0, 74.0), ["A", "B", "C", "D", "DH", "E", "F", "G"], false],
-	["F", Vector3(31.9, -6.5, 42.0), Vector3(52.1, -0.4, 84.7), ["F", "D", "DH"], false],
+	["F", Vector3(31.9, -6.5, 42.0), Vector3(52.1, -0.4, 84.7), ["F", "D", "DH", "G"], false],   # T-180: G seen up the pump stair
 	["G", Vector3(42.1, 6.6, 33.1), Vector3(51.9, 11.0, 37.9), ["G", "D", "DH"], false],
 	["passages", Vector3(-11.2, -0.5, 29.8), Vector3(45.2, 4.0, 33.2), ["A", "B", "C", "D", "DH", "F", "G"], false],
 	["D", Vector3(-20.2, -6.5, 33.0), Vector3(52.2, 13.0, 100.0), ["D", "DH", "A", "B", "C", "F", "G"], false],
@@ -804,6 +804,7 @@ func build_uboat() -> void:
 	box(geo, "CT_Body", Vector3(4.4, DECK, 52), Vector3(7.4, DECK + 2.6, 58), "hull")
 	# the companionway down from the open hatch aft of the tower (a ramp; the deck is cut at x 5..7, z 61..66)
 	ramp_z("HatchRamp", 5.0, 7.0, 61.0, 66.0, DECK, SY, "steel_grate", "iron")
+	geo.get_node("HatchRamp").set_meta("vis", "DH")   # T-180: seen from the hall through the hatch as well as from inside
 	rail("Rail_HatchW", Vector3(5, SY, 61), Vector3(5, SY, 66), 4.0)
 	rail("Rail_HatchE", Vector3(7, SY, 61), Vector3(7, SY, 66), 4.0)
 	# bulkheads with their oval doors, the diesels aft
@@ -812,7 +813,7 @@ func build_uboat() -> void:
 	wall_x("Bulkhead3", 68.0, 4.4, 9.6, SY, 0.6, [door(7, SY, 1.8)], "hull_in")
 	box(geo, "Diesel1", Vector3(4.4, SY, 70), Vector3(5.6, SY + 1.6, 82), "metal")
 	box(geo, "Diesel2", Vector3(8.4, SY, 70), Vector3(9.6, SY + 1.6, 82), "metal")
-	box(geo, "NavBlock_Crucible", Vector3(6.0, SY, 38.6), Vector3(8.0, SY + 2.4, 40.9), "metal")
+	box(geo, "NavBlock_Crucible", Vector3(6.0, SY, 38.6), Vector3(8.0, SY + 1.6, 40.9), "metal")   # T-180: 2.4 left an island on its lid
 	for bz: float in [51.0, 53.4]:
 		box(geo, "Bunk%d" % int(bz), Vector3(4.4, SY, bz), Vector3(5.3, SY + 1.5, bz + 2.0), "furniture")
 
@@ -1219,6 +1220,8 @@ func _dress_rails() -> void:
 		var key: String = "rust" if n.name.begins_with("Rail_Pens") or n.name.begins_with("Rail_Hatch") else "iron"
 		if n.name.begins_with("Rail_Stair") and size.y > 2.0:
 			continue   # sloped stair rails are drawn with the treads' handrails below
+		if n.name == "Rail_TR" or n.name.begins_with("Rail_GW") or n.name.begins_with("Rail_Hatch"):
+			continue   # T-180: sloped / guard rails in _dress_t180 (a level 1.05 m railing was buried in the slope)
 		if size.x > size.z:
 			Props.railing(dress, base + Vector3(-size.x * 0.5 + 0.05, 0, 0), base + Vector3(size.x * 0.5 - 0.05, 0, 0), h, key)
 		else:
@@ -1234,15 +1237,21 @@ func _dress_rails() -> void:
 		var high: float = float(s[4])
 		var y_low: float = float(s[5])
 		var y_high: float = float(s[6])
+		# T-180: U-1047's companionway rails rise out of the hatch: drawn with the hall round it (DH), not the hidden hold
+		var vis: String = "DH" if along_z and a0 >= 4.0 and a1 <= 10.0 and minf(y_low, y_high) < 0.62 and maxf(y_low, y_high) > 0.62 else ""
 		for side: float in [a0 + 0.06, a1 - 0.06]:
 			var pa: Vector3 = Vector3(side, y_low + 1.0, low) if along_z else Vector3(low, y_low + 1.0, side)
 			var pb: Vector3 = Vector3(side, y_high + 1.0, high) if along_z else Vector3(high, y_high + 1.0, side)
-			Props.strut(dress, pa, pb, 0.06, "iron", true)
+			var hr: MeshInstance3D = Props.strut(dress, pa, pb, 0.06, "iron", true)
+			if vis != "" and hr != null:
+				hr.set_meta("vis", vis)
 			var posts: int = int(pa.distance_to(pb) / 1.4)
 			for k: int in posts + 1:
 				var t: float = float(k) / float(maxi(1, posts))
 				var p: Vector3 = pa.lerp(pb, t)
-				B(p + Vector3(-0.02, -1.0, -0.02), p + Vector3(0.02, 0, 0.02), "iron")
+				var post: MeshInstance3D = B(p + Vector3(-0.02, -1.0, -0.02), p + Vector3(0.02, 0, 0.02), "iron")
+				if vis != "":
+					post.set_meta("vis", vis)
 
 
 func _dress_weather() -> void:
@@ -1344,6 +1353,8 @@ func build_dressing() -> void:
 	_dress_readability()
 	_dress_weather()
 	_dress_light()
+	_tagged(_dress_t180, "")   # T-180: what the fitted colliders and the bulkheads look like
+	_fit_colliders()           # T-180: after every piece of dressing exists, before the batches merge it
 
 
 ## Runs a dressing function and marks every top-level node it added under Dressing with meta "vis" = `g` (the
@@ -1357,7 +1368,8 @@ func _tagged(fn: Callable, g: String) -> void:
 	if g == "":
 		return
 	for i: int in range(before, dress.get_child_count()):
-		dress.get_child(i).set_meta("vis", g)
+		if not dress.get_child(i).has_meta("vis"):   # T-180: a piece may name its own group
+			dress.get_child(i).set_meta("vis", g)
 	for i2: int in range(lights_before, _static_lights.size()):
 		_static_lights[i2]["vis"] = g
 	for i3: int in range(power_before, _power.size()):
@@ -1455,7 +1467,8 @@ func _dress_quay() -> void:
 	Props.shelves(dress, Vector3(17.85, 0, 11.5), -90.0, 2.4, 2.2, 0.3, 3, 3)
 	Props.picture(dress, Vector3(10.17, 1.8, 12.0), -90.0, 0.9, 0.6)
 	Props.coat_rack(dress, Vector3(17.5, 0, 16.6))
-	B(Vector3(9.6, 0.0, 12.4), Vector3(9.84, 2.2, 14.6), "black_paint")
+	# T-180: the old flat-black chalk slab behind this wall-buy is gone (2.2 m of untextured black that read as a
+	# texture that never loaded; the wall-buy carries its own painted board since T-094)
 	# nets, crates, drums and a hand cart along the cannery side
 	Props.net_pile(dress, Vector3(3.5, 0, 6.0), Vector3(3.2, 0.9, 2.6), 11)
 	Props.net_pile(dress, Vector3(6.5, 0, 22.5), Vector3(2.4, 0.7, 2.0), 12)
@@ -1468,8 +1481,9 @@ func _dress_quay() -> void:
 	Props.cart(dress, Vector3(23.5, 0, 24.5), 20.0)
 	Props.sandbags(dress, Vector3(19.5, 0, 29.2), Vector3(24.5, 0, 29.2), 2)
 	# the beached cutter is DetailMap02.cutter (_dress_u09_quay); the snow along it and the M1 Carbine's chalk board
-	_noshadow(B(Vector3(20.6, 0, 1.9), Vector3(21.2, 0.12, 8.2), "snow", false))
-	B(Vector3(20.8, 0.0, 3.8), Vector3(20.86, 2.2, 6.2), "black_paint")
+	_noshadow(B(Vector3(20.6, 0, 1.9), Vector3(21.2, 0.08, 8.2), "snow_trodden", false))   # T-180: grey slush, not a white plank
+	# T-180: the old flat-black chalk slab behind this wall-buy is gone (2.2 m of untextured black that read as a
+	# texture that never loaded; the wall-buy carries its own painted board since T-094)
 	# the bunker face from the quay: the name, pen-passage lamps, a flood over each passage, pilasters
 	B(Vector3(-5.0, 6.6, 29.6), Vector3(5.0, 7.5, 29.98), "concrete")
 	_label("KRIEGSMARINE · U-BUNKER TOTENHAFEN", Vector3(0, 7.05, 29.59), 180.0, 44, Color(0.9, 0.86, 0.74, 0.9))
@@ -1550,7 +1564,8 @@ func _dress_cannery() -> void:
 	_label("KRANKENSTUBE", Vector3(-19.83, 2.7, 5.0), 90.0, 26)
 	Props.picture(dress, Vector3(-29.83, 2.0, 8.0), -90.0, 0.4, 0.5)
 	# wall-buys' chalk and the perk stands
-	B(Vector3(-0.3, 0.0, 20.8), Vector3(-0.17, 2.2, 27.2), "black_paint")
+	# T-180: the old flat-black chalk slab behind this wall-buy is gone (2.2 m of untextured black that read as a
+	# texture that never loaded; the wall-buy carries its own painted board since T-094)
 	# emergency lamps and a hurricane lantern on the line
 	emergency(Vector3(-15.0, 3.2, 0.17), 0.0, 0.8, 9.0)
 	emergency(Vector3(-29.83, 3.2, 18.0), -90.0, 0.8, 9.0)
@@ -1595,7 +1610,8 @@ func _dress_workshop() -> void:
 	B(Vector3(51.9, 2.5, 15.9), Vector3(62.0, 2.6, 24.0), "iron")
 	Props.coffin(dress, Vector3(60.5, 0, 23.0), 0.0, "BLST-11")
 	_noshadow(Props.ball(dress, Vector3(60.5, 1.1, 23.0), Vector3(2.6, 0.7, 1.4), "tarp"))
-	B(Vector3(61.6, 0.0, 18.8), Vector3(61.84, 2.2, 21.2), "black_paint")
+	# T-180: the old flat-black chalk slab behind this wall-buy is gone (2.2 m of untextured black that read as a
+	# texture that never loaded; the wall-buy carries its own painted board since T-094)
 	_label("SPRENGKÖPFE · ZUTRITT VERBOTEN", Vector3(51.97, 2.8, 20.0), -90.0, 22, Color(0.85, 0.3, 0.2, 0.9))
 	# the trolley track along the south wall
 	for k: int in 44:
@@ -1759,7 +1775,7 @@ func _dress_penhall() -> void:
 ## the 8.8 cm gun, the jumping wires, the spray bulwark over the deck-edge colliders, the gangway's boards.
 func _dress_uboat_hull() -> void:
 	var g: Node3D = Props.group(dress, "U1047", Vector3(7.0, DECK, 38.0), 0.0)
-	DetailMap02.type_vii(g, 58.6, -2.6)
+	DetailMap02.type_vii(g, 58.6, -2.6, "m2_hull", "m2_hull_red", "iron", 48.2)   # T-180: the hull holds the interior (z 38..86.1)
 	DetailMap02.vii_tower(g, Vector3(-1.1, 0.0, 17.0), 1.5, 3.0, 3.4, "U 1047")
 	# the jumping wire bow to the periscope standards to the stern, weed at the high-water line
 	Props.cable(g, Vector3(0, 0.0, 0.4), Vector3(-1.3, 5.8, 15.0), 0.4, 0.02, 6, "iron")
@@ -1767,13 +1783,22 @@ func _dress_uboat_hull() -> void:
 	for wz: float in [4.0, 14.0, 24.0, 34.0, 44.0]:
 		for sx: float in [-3.3, 3.3]:
 			_noshadow(Props.ball(g, Vector3(sx, HIGH_TIDE - DECK - 0.15, wz), Vector3(0.35, 0.25, 1.8), "weed"))
-	# the spray bulwark over the deck-edge colliders (HullSide*, BowCap, SternCap: 1.2 m above the deck), capped
-	for bw: Array in [[Vector3(4.0, 0.6, 37.4), Vector3(4.4, DECK + 1.2, 86.6)], [Vector3(9.6, 0.6, 37.4), Vector3(10.0, DECK + 1.2, 57.0)],
-			[Vector3(9.6, 0.6, 59.0), Vector3(10.0, DECK + 1.2, 86.6)], [Vector3(4.0, 0.6, 37.4), Vector3(10.0, DECK + 1.2, 38.0)],
-			[Vector3(4.0, 0.6, 86.0), Vector3(10.0, DECK + 1.2, 86.6)]]:
-		B(bw[0], bw[1], "m2_hull")
-		var top: Vector3 = Vector3((bw[0] as Vector3).x, DECK + 1.2, (bw[0] as Vector3).z)
-		B(top + Vector3(-0.04, 0, -0.04), Vector3((bw[1] as Vector3).x + 0.04, DECK + 1.28, (bw[1] as Vector3).z + 0.04), "iron")
+	# the guard rail over the deck-edge colliders (HullSide*, BowCap, SternCap: 1.2 m above the deck). T-180: was a
+	# 1.6 m flat plate bulwark all round the deck, which read as a container's wall, not a boat: now a low toe rail on
+	# the casing edge, stanchions and three wires up to the colliders' top (the barrier you bump into is the one you see)
+	for gl: Array in [[Vector3(4.2, 0, 38.0), Vector3(4.2, 0, 86.0)], [Vector3(9.8, 0, 38.0), Vector3(9.8, 0, 57.0)],
+			[Vector3(9.8, 0, 59.0), Vector3(9.8, 0, 86.0)], [Vector3(4.2, 0, 38.0), Vector3(9.8, 0, 38.0)],
+			[Vector3(4.2, 0, 86.0), Vector3(9.8, 0, 86.0)]]:
+		_guard_rail(gl[0], gl[1], DECK, DECK + 1.2, "m2_hull")
+	# the bow lies against the pen's head (BowCap, z 37.4..38, reaches 0.6 m past the bow's plating): timber fenders
+	# and a rope bow-pudding hung over the stem fill that gap down to the apron
+	for fk: int in 9:
+		var fx: float = 4.3 + fk * 0.675
+		B(Vector3(fx - 0.14, 0.0, 37.42), Vector3(fx + 0.14, DECK + 1.15, 37.98), "beam")
+		B(Vector3(fx - 0.17, DECK + 1.0, 37.38), Vector3(fx + 0.17, DECK + 1.2, 38.0), "iron")
+	for wy: float in [0.1, 0.95, 1.75]:   # walings across the fenders
+		B(Vector3(4.0, wy, 37.4), Vector3(10.0, wy + 0.2, 37.46), "beam")
+	Props.cable(dress, Vector3(4.2, DECK + 1.1, 37.6), Vector3(9.8, DECK + 1.1, 37.6), 0.55, 0.13, 10, "rope")
 	B(Vector3(9.6, 0.6, 57.0), Vector3(10.0, DECK, 59.0), "m2_hull")
 	# the gangway: plank treads and a sign; the deck's hatch coaming
 	B(Vector3(10.0, DECK + 0.0, 57.0), Vector3(10.4, DECK + 0.1, 59.0), "iron")
@@ -1790,7 +1815,7 @@ func _dress_uboat() -> void:
 	# the pressure hull from inside: plating on both sides, the bow and stern bulkheads, the deckhead
 	B(Vector3(4.0, SY - 0.5, 37.9), Vector3(4.4, 0.6, 86.1), "u_interior")
 	B(Vector3(9.6, SY - 0.5, 37.9), Vector3(10.0, 0.6, 86.1), "u_interior")
-	B(Vector3(4.0, SY - 0.5, 37.9), Vector3(10.0, 0.6, 38.4), "u_interior")
+	B(Vector3(4.0, SY - 0.5, 37.9), Vector3(10.0, 0.6, 38.4), "u_interior").set_meta("vis", "DH")   # T-180: its top shows past the bow fenders
 	B(Vector3(4.0, SY - 0.5, 85.6), Vector3(10.0, 0.6, 86.1), "u_interior")
 	B(Vector3(4.0, 0.6, 38.4), Vector3(10.0, 0.62, 85.6), "u_interior")
 	for s3: float in [4.4, 9.6]:
@@ -1802,7 +1827,11 @@ func _dress_uboat() -> void:
 		var rz: float = 39.0 + k2 * 1.25
 		B(Vector3(4.4, SY, rz - 0.05), Vector3(4.55, 0.6, rz + 0.05), "iron")
 		B(Vector3(9.45, SY, rz - 0.05), Vector3(9.6, 0.6, rz + 0.05), "iron")
-		B(Vector3(4.4, 0.45, rz - 0.05), Vector3(9.6, 0.6, rz + 0.05), "iron")
+		if rz > 60.9 and rz < 66.1:   # T-180: the deckhead frames stop at the hatch (one crossed the companionway)
+			B(Vector3(4.4, 0.45, rz - 0.05), Vector3(5.0, 0.6, rz + 0.05), "iron")
+			B(Vector3(7.0, 0.45, rz - 0.05), Vector3(9.6, 0.6, rz + 0.05), "iron")
+		else:
+			B(Vector3(4.4, 0.45, rz - 0.05), Vector3(9.6, 0.6, rz + 0.05), "iron")
 	for py: float in [-0.2, 0.1, 0.35]:
 		Props.pipe(dress, Vector3(4.6, py, 38.5), Vector3(4.6, py, 85.5), 0.04, "grey_paint" if py > 0.0 else "copper")
 		Props.pipe(dress, Vector3(9.4, py, 38.5), Vector3(9.4, py, 85.5), 0.04, "grey_paint" if py > 0.0 else "red_paint")
@@ -2181,11 +2210,19 @@ func _dress_u09_uboat() -> void:
 		DetailMap02.round_hatch(dress, Vector3(7.0, SY, bz), 0.0, 1.8, DOOR_H, 1.0 if bz != 56.0 else -1.0)
 	# overhead pipe runs under the deckhead with flanges and valves; gauges on the bulkheads
 	for px: float in [5.3, 8.7]:
-		Props.pipe(dress, Vector3(px, 0.42, 38.6), Vector3(px, 0.42, 85.4), 0.05, "grey_paint")
+		if px < 7.0:   # T-180: the port run breaks at the hatch (it ran through the companionway's steps)
+			Props.pipe(dress, Vector3(px, 0.42, 38.6), Vector3(px, 0.42, 60.8), 0.05, "grey_paint")
+			Props.pipe(dress, Vector3(px, 0.42, 66.2), Vector3(px, 0.42, 85.4), 0.05, "grey_paint")
+			Props.pipe(dress, Vector3(px, 0.42, 60.8), Vector3(4.6, 0.42, 60.8), 0.05, "grey_paint")
+			Props.pipe(dress, Vector3(4.6, 0.42, 60.8), Vector3(4.6, 0.42, 66.2), 0.05, "grey_paint")
+			Props.pipe(dress, Vector3(4.6, 0.42, 66.2), Vector3(px, 0.42, 66.2), 0.05, "grey_paint")
+		else:
+			Props.pipe(dress, Vector3(px, 0.42, 38.6), Vector3(px, 0.42, 85.4), 0.05, "grey_paint")
 		for fz: int in range(40, 86, 4):
-			CYL(Vector3(px, 0.42, float(fz)), 0.08, 0.05, "iron", Vector3(90, 0, 0))
+			if px > 7.0 or fz < 60 or fz > 67:
+				CYL(Vector3(px, 0.42, float(fz)), 0.08, 0.05, "iron", Vector3(90, 0, 0))
 		for vz: float in [46.0, 62.0, 78.0]:
-			Props.valve_wheel(dress, Vector3(px, 0.3, vz), 0.0, 0.12, "red_paint")
+			Props.valve_wheel(dress, Vector3(px if px > 7.0 or vz != 62.0 else 4.75, 0.3, vz), 0.0, 0.12, "red_paint")
 	for gz: float in [49.8, 55.8, 67.8]:
 		Props.gauge(dress, Vector3(5.3, -0.7, gz), 180.0, 0.1)
 		Props.gauge(dress, Vector3(8.7, -0.7, gz + 0.36), 0.0, 0.1)
@@ -2856,10 +2893,15 @@ func _dress_u10_quay() -> void:
 	rem.set_meta("keep", true)
 	dress.add_child(rem)
 	var pc: Node3D = Props.group(rem, "CutterRemnantPieces", Vector3.ZERO, 0.0)
+	# T-180: the cradle's cribs and shores stand from the start (the hull floated over the quay on nothing, its box
+	# collider reaching past it into the air); only the wheelhouse, the transom frame and the nets wait for the slip
+	var cradle: Node3D = Props.group(dress, "CutterCradle", rem.position, 0.0)
 	for cx: float in [-3.0, -0.5, 2.0, 4.0]:
-		Props.block(pc, Vector3(cx - 0.35, 0, -0.5), Vector3(cx + 0.35, 0.55, 0.5), "beam")
-		Props.strut(pc, Vector3(cx, 0, -2.7), Vector3(cx, 1.5, -1.4), 0.14, "beam")
-		Props.strut(pc, Vector3(cx, 0, 2.7), Vector3(cx, 1.4, 1.5), 0.14, "beam")
+		Props.block(cradle, Vector3(cx - 0.35, 0, -0.5), Vector3(cx + 0.35, 0.55, 0.5), "beam")
+		Props.strut(cradle, Vector3(cx, 0, -2.7), Vector3(cx, 1.5, -1.4), 0.14, "beam")
+		Props.strut(cradle, Vector3(cx, 0, 2.7), Vector3(cx, 1.4, 1.5), 0.14, "beam")
+		Props.block(cradle, Vector3(cx - 0.12, 0, -2.95), Vector3(cx + 0.12, 0.12, -2.45), "beam")   # the shores' foot blocks
+		Props.block(cradle, Vector3(cx - 0.12, 0, 2.45), Vector3(cx + 0.12, 0.12, 2.95), "beam")
 	for fz: float in [-1.4, 1.4]:
 		Props.block(pc, Vector3(-4.62, 0, fz - 0.1), Vector3(-4.42, 2.45, fz + 0.1), "beam")
 	Props.block(pc, Vector3(-4.62, 0.4, -1.35), Vector3(-4.46, 2.35, 1.35), "planks")
@@ -3017,3 +3059,376 @@ func _dress_u10_lowerpens() -> void:
 				_label("S %d" % n, c + (face[0] as Vector3), float(face[1]), 30, Color(0.95, 0.93, 0.85, 0.9))
 			Props.pipe(dress, c + Vector3(0.3, 0.22, 0.43), c + Vector3(0.3, 2.65, 0.43), 0.035, "grey_paint")
 			n += 1
+
+
+# ================================================================== T-180: colliders that match their art
+
+## Prop colliders (greybox boxes the dressing replaced, HIDE) whose art is smaller than the box: the box stays in the
+## navmesh bake (group bake_only: MapRoot switches its layer off at runtime, so no baked path moves) and a convex hull
+## of the dressing inside it (the box grown by `pad`) blocks players, zombies and shots instead. [name pattern, pad]
+const FIT: Array = [["Brine*", 0.3], ["Pallet_Cans*", 0.3], ["Cradle*", 0.3], ["Lathe", 0.3], ["Pump1", 0.35], ["Pump2", 0.35],
+	["CT_Body", 0.3], ["Stove1", 0.3], ["GutLine*", 0.3], ["Conveyor", 0.3]]
+## NavBlocks under things that carry a collider of their own (the perk machines, the Crucible, the crate spots, the
+## bank's counter, the ammo boxes, the Armorer's Bench): navmesh only, so an empty crate spot or the half metre round
+## a machine is not an invisible box.
+const BAKE_ONLY: Array = ["NavBlock_SecondWind", "NavBlock_Marathon", "NavBlock_Ironhide", "NavBlock_Trigger", "NavBlock_Overclock",
+	"NavBlock_Hawkeye", "NavBlock_Ledger", "NavBlock_Bank", "NavBlock_Crate*", "NavBlock_Ammo_*", "NavBlock_ArmorersBench", "NavBlock_Crucible"]
+## The tall railing colliders beside stairs and ramps (5.2 m beside the catwalk stairs, 4 m along the tower ramp and
+## U-1047's companionway): an invisible wall under the flight and above the handrail. Each becomes bake_only and is
+## replaced by what you see: a grating panel under the flight (from the floor to the steps' underside) and a band
+## along the handrail. [rail, axis the flight runs along, the rail's line (x or z), [under-flight polygons (u, y)],
+## [band polygons (u, y)]]; u is the coordinate along the axis.
+const RAIL_FITS: Array = [
+	["Rail_StairNW", "z", -16.0, [[[36.0, 0.0], [38.0, 0.0], [38.0, 3.8], [36.0, 3.8]], [[38.0, 0.0], [44.8, 0.0], [38.0, 3.4]]],
+		[[[46.0, -0.1], [38.0, 3.9], [38.0, 5.15], [46.0, 1.15]], [[36.0, 3.9], [38.0, 3.9], [38.0, 5.15], [36.0, 5.15]]]],
+	["Rail_StairE", "z", 48.0, [[[68.0, 0.0], [70.0, 0.0], [70.0, 3.8], [68.0, 3.8]], [[61.2, 0.0], [68.0, 0.0], [68.0, 3.4]]],
+		[[[60.0, -0.1], [68.0, 3.9], [68.0, 5.15], [60.0, 1.15]], [[68.0, 3.9], [70.0, 3.9], [70.0, 5.15], [68.0, 5.15]]]],
+	["Rail_TR", "x", 35.0, [[[31.4, 4.0], [41.0, 4.0], [41.0, 6.4]]],
+		[[[29.0, 3.9], [41.0, 6.9], [41.0, 8.0], [29.0, 5.15]]]],
+	["Rail_HatchW", "z", 5.0, [[[61.0, -2.0], [65.0, -2.0], [61.0, 0.4]]],
+		[[[61.0, 0.9], [66.0, -2.1], [66.0, -0.85], [61.0, 2.0]], [[61.0, 0.95], [66.0, 0.95], [66.0, 2.0], [61.0, 2.0]]]],
+	["Rail_HatchE", "z", 7.0, [[[61.0, -2.0], [65.0, -2.0], [61.0, 0.4]]],
+		[[[61.0, 0.9], [66.0, -2.1], [66.0, -0.85], [61.0, 2.0]], [[61.0, 0.95], [66.0, 0.95], [66.0, 2.0], [61.0, 2.0]]]],
+]
+
+
+func _fit_colliders() -> void:
+	var fits: int = 0
+	for n: Node in geo.get_children():
+		var body: StaticBody3D = n as StaticBody3D
+		if body == null:
+			continue
+		var nm: String = String(n.name)
+		for bo: String in BAKE_ONLY:
+			if nm.match(bo):
+				body.add_to_group(&"bake_only", true)
+		for f: Array in FIT:
+			if not nm.match(str(f[0])):
+				continue
+			var bb: AABB = _body_aabb(body).grow(float(f[1]))
+			var pts: Array = _art_points(dress, bb, true)
+			if pts.is_empty():
+				push_warning("T-180: no art inside %s, its box stays" % nm)
+				continue
+			body.add_to_group(&"bake_only", true)
+			_fit_body(nm + "_Fit", pts, 1)
+			fits += 1
+	# the cutter: its hull and the cradle until it slips at round 15, then the cradle and the remnant
+	# (map02_ambience.json cutter_slip swaps the two bodies' layers)
+	var cut: StaticBody3D = geo.get_node_or_null("Cutter") as StaticBody3D
+	var hull: Node3D = dress.get_node_or_null("CutterHull") as Node3D
+	var rem: Node3D = dress.get_node_or_null("CutterRemnant") as Node3D
+	var cradle: Node3D = dress.get_node_or_null("CutterCradle") as Node3D
+	if cut != null and hull != null and rem != null and cradle != null:
+		var cb: AABB = _body_aabb(cut).grow(0.4)
+		var cr: Array = _art_points(cradle, cb, false)
+		var hp: Array = _art_points(hull, cb, false)
+		hp.append_array(cr)
+		var rp: Array = _art_points(rem, cb, false)
+		rp.append_array(cr)
+		cut.add_to_group(&"bake_only", true)
+		_fit_body("Cutter_Fit", hp, 1)
+		_fit_body("Cutter_RemnantFit", rp, 0)
+		fits += 2
+	# the tall rails beside the flights
+	for rf: Array in RAIL_FITS:
+		var rb: Node = geo.get_node_or_null(str(rf[0]))
+		if rb == null:
+			continue
+		rb.add_to_group(&"bake_only", true)
+		var shapes: Array = []
+		for poly: Array in rf[3]:
+			shapes.append(_prism_points(poly, str(rf[1]), float(rf[2]), 0.1))
+		for poly2: Array in rf[4]:
+			shapes.append(_prism_points(poly2, str(rf[1]), float(rf[2]), 0.1))
+		_fit_body(str(rf[0]) + "_Fit", shapes, 1)
+		fits += 1
+	print("T-180: %d fitted colliders" % fits)
+
+
+## The world AABB of a generator box body (axis-aligned BoxShape3D children).
+func _body_aabb(body: StaticBody3D) -> AABB:
+	var out: AABB = AABB()
+	var first: bool = true
+	for c: Node in body.get_children():
+		var cs: CollisionShape3D = c as CollisionShape3D
+		if cs == null or not (cs.shape is BoxShape3D):
+			continue
+		var sz: Vector3 = (cs.shape as BoxShape3D).size
+		var a: AABB = AABB(body.position + cs.position - sz * 0.5, sz)
+		out = a if first else out.merge(a)
+		first = false
+	return out
+
+
+## The parts of the meshes under `holder` inside `bb`, as point sets (root space): every connected piece of a mesh
+## (a box, a cylinder, one strake; the generator's per-material bakes hold many) is one set, clipped to `bb`, so the
+## fitted collider is a hull per piece and the gaps between pieces stay open. `own_only`: only meshes mostly inside
+## `bb` and taller than 5 cm (a prop's parts, not the floor, a wall or a decal crossing it). Pieces under 4 points or
+## flatter than 2 cm (labels, glass, stencils) are left out.
+func _art_points(holder: Node, bb: AABB, own_only: bool) -> Array:
+	var out: Array = []
+	for n: Node in holder.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		if mi.mesh == null or not mi.visible:
+			continue
+		var xf: Transform3D = _xform_to_root(mi)
+		var ab: AABB = xf * mi.mesh.get_aabb()
+		if not ab.intersects(bb):
+			continue
+		if own_only:
+			if ab.size.y < 0.05:
+				continue
+			var ab2: AABB = AABB(ab.position, ab.size.max(Vector3(0.01, 0.01, 0.01)))
+			if ab2.intersection(bb).get_volume() < 0.5 * ab2.get_volume():
+				continue
+		var faces: PackedVector3Array = mi.mesh.get_faces()
+		for i: int in faces.size():
+			faces[i] = xf * faces[i]
+		for part: PackedVector3Array in _pieces(faces):
+			var pts: PackedVector3Array = PackedVector3Array()
+			var lo: Vector3 = Vector3.INF
+			var hi: Vector3 = -Vector3.INF
+			for w: Vector3 in part:
+				if bb.has_point(w):
+					pts.append(w)
+					lo = lo.min(w)
+					hi = hi.max(w)
+			if pts.size() >= 4 and (hi - lo)[(hi - lo).min_axis_index()] >= 0.02:
+				out.append(pts)
+	return out
+
+
+## The connected pieces of a triangle soup (triangles sharing a vertex, on a 1 mm grid), each as its unique points.
+static func _pieces(faces: PackedVector3Array) -> Array:
+	var parent: Array[int] = []
+	var ids: Dictionary = {}
+	var pts: PackedVector3Array = PackedVector3Array()
+	var tri_ids: PackedInt32Array = PackedInt32Array()
+	for v: Vector3 in faces:
+		var key: Vector3i = Vector3i(roundi(v.x * 1000.0), roundi(v.y * 1000.0), roundi(v.z * 1000.0))
+		var id: int = ids.get(key, -1)
+		if id < 0:
+			id = pts.size()
+			ids[key] = id
+			pts.append(v)
+			parent.append(id)
+		tri_ids.append(id)
+	for t: int in tri_ids.size() / 3:
+		var a: int = _root(parent, tri_ids[t * 3])
+		for k: int in [1, 2]:
+			var b: int = _root(parent, tri_ids[t * 3 + k])
+			if a != b:
+				parent[b] = a
+	var groups: Dictionary = {}
+	for i: int in pts.size():
+		var r: int = _root(parent, i)
+		if not groups.has(r):
+			groups[r] = PackedVector3Array()
+		var g: PackedVector3Array = groups[r]
+		g.append(pts[i])
+		groups[r] = g
+	return groups.values()
+
+
+static func _root(parent: Array[int], x: int) -> int:
+	while parent[x] != x:
+		parent[x] = parent[parent[x]]
+		x = parent[x]
+	return x
+
+
+## A static body on the world layer (or off: `layer` 0) holding one convex hull per point set.
+func _fit_body(n: String, sets: Array, layer: int) -> void:
+	var body: StaticBody3D = StaticBody3D.new()
+	body.name = n
+	body.collision_layer = layer
+	body.collision_mask = 0
+	body.set_meta("t180_fit", true)
+	for pts: Variant in sets:
+		var v: PackedVector3Array = pts
+		while v.size() % 3 != 0:
+			v.append(v[0])
+		var arr: Array = []
+		arr.resize(Mesh.ARRAY_MAX)
+		arr[Mesh.ARRAY_VERTEX] = v
+		var am: ArrayMesh = ArrayMesh.new()
+		am.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
+		var cs: CollisionShape3D = CollisionShape3D.new()
+		cs.shape = am.create_convex_shape(true, false)
+		body.add_child(cs)
+	geo.add_child(body)
+
+
+## A convex polygon given as (u, y) pairs on the plane x = c (axis "z") or z = c (axis "x"), extruded `t` thick: its
+## corner points (the first face, then the second, in the polygon's order).
+func _prism_points(poly: Array, axis: String, c: float, t: float) -> PackedVector3Array:
+	var out: PackedVector3Array = PackedVector3Array()
+	for s: float in [-t * 0.5, t * 0.5]:
+		for q: Array in poly:
+			out.append(Vector3(c + s, float(q[1]), float(q[0])) if axis == "z" else Vector3(float(q[0]), float(q[1]), c + s))
+	return out
+
+
+## A thin panel (a convex polygon (u, y) on the plane x = c / z = c, `t` thick) as a closed mesh under Dressing, its
+## origin at the polygon's centre so the visibility boxes find it.
+func _panel(n: String, poly: Array, axis: String, c: float, t: float, key: String) -> MeshInstance3D:
+	var pts: PackedVector3Array = _prism_points(poly, axis, c, t)
+	var k: int = poly.size()
+	var cen: Vector3 = Vector3.ZERO
+	for p: Vector3 in pts:
+		cen += p
+	cen /= float(pts.size())
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var faces: Array = []
+	for i: int in range(1, k - 1):   # the two caps, fanned
+		faces.append([pts[0], pts[i], pts[i + 1]])
+		faces.append([pts[k], pts[k + i + 1], pts[k + i]])
+	for i2: int in k:   # the rim
+		var j: int = (i2 + 1) % k
+		faces.append([pts[i2], pts[k + i2], pts[k + j]])
+		faces.append([pts[i2], pts[k + j], pts[j]])
+	for f: Array in faces:
+		var a: Vector3 = (f[0] as Vector3) - cen
+		var b: Vector3 = (f[1] as Vector3) - cen
+		var d: Vector3 = (f[2] as Vector3) - cen
+		var nrm: Vector3 = (b - a).cross(d - a).normalized()
+		if nrm.dot((a + b + d) / 3.0) < 0.0:   # outward from the centre (the prism is convex)
+			var tmp: Vector3 = b
+			b = d
+			d = tmp
+			nrm = -nrm
+		# Godot's front faces wind clockwise seen from outside
+		for p2: Vector3 in [a, d, b]:
+			st.set_normal(nrm)
+			st.add_vertex(p2)
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.name = n
+	mi.mesh = st.commit()
+	mi.material_override = Mats.get_mat(key)
+	mi.position = cen
+	dress.add_child(mi)
+	return mi
+
+
+## A guard rail along a -> b (their y ignored): a toe strip on the floor (`toe` key, "" for none), stanchions and
+## three wires from `y0` up to `y1`.
+func _guard_rail(a: Vector3, b: Vector3, y0: float, y1: float, toe: String = "") -> void:
+	var a0: Vector3 = Vector3(a.x, y0, a.z)
+	var b0: Vector3 = Vector3(b.x, y0, b.z)
+	var d: Vector3 = b0 - a0
+	var along_x: bool = absf(d.x) > absf(d.z)
+	if toe != "":
+		var w: Vector3 = Vector3(0, 0, 0.07) if along_x else Vector3(0.07, 0, 0)
+		B(a0.min(b0) - w, a0.max(b0) + w + Vector3(0, 0.12, 0), toe)
+	var posts: int = maxi(1, int(ceil(d.length() / 1.4)))
+	for k: int in posts + 1:
+		var p: Vector3 = a0 + d * (float(k) / float(posts))
+		B(p + Vector3(-0.03, 0.0, -0.03), Vector3(p.x + 0.03, y1, p.z + 0.03), "iron")
+	for h: float in [0.36, 0.68, 1.0]:
+		var y: float = lerpf(y0, y1, h)
+		Props.strut(dress, Vector3(a0.x, y, a0.z), Vector3(b0.x, y, b0.z), 0.025 if h < 1.0 else 0.04, "iron", true)
+
+
+## The art of the T-180 fits and guard rails: grating panels under the flights, the hatch's guard rail, the
+## gangway's canvas screens, the catwalk stairs' landings, U-1047's bulkheads.
+func _dress_t180() -> void:
+	for rf: Array in RAIL_FITS:
+		var nm: String = str(rf[0])
+		var k: int = 0
+		for poly: Array in rf[3]:
+			_panel("%s_Infill%d" % [nm, k], poly, str(rf[1]), float(rf[2]), 0.04, "m2_grate")
+			# a steel angle round the panel's edge
+			var c: float = float(rf[2])
+			for i: int in poly.size():
+				var q0: Array = poly[i]
+				var q1: Array = poly[(i + 1) % poly.size()]
+				var p0: Vector3 = Vector3(c, float(q0[1]), float(q0[0])) if str(rf[1]) == "z" else Vector3(float(q0[0]), float(q0[1]), c)
+				var p1: Vector3 = Vector3(c, float(q1[1]), float(q1[0])) if str(rf[1]) == "z" else Vector3(float(q1[0]), float(q1[1]), c)
+				Props.strut(dress, p0, p1, 0.06, "rust" if nm.begins_with("Rail_Hatch") else "iron")
+			k += 1
+	# the catwalk stairs' top landings had no railing on their open side (the 5.2 m box stood there unseen)
+	Props.railing(dress, Vector3(-16.0, CATY, 36.05), Vector3(-16.0, CATY, 37.95), 1.05, "iron", 1.0)
+	Props.railing(dress, Vector3(48.0, CATY, 68.05), Vector3(48.0, CATY, 69.95), 1.05, "iron", 1.0)
+	# U-1047's hatch: a guard rail up to the colliders' top on the deck (the coaming alone was 25 cm)
+	for hx: float in [5.0, 7.0]:
+		_guard_rail(Vector3(hx, 0, 61.0), Vector3(hx, 0, 66.0), DECK + 0.25, 2.0)
+	# the gangway (Rail_GW1/2, 2.2 m over a 0..1 m ramp): canvas screens laced to stanchions, a sloped handrail
+	for gz: float in [57.0, 59.0]:
+		_panel("GangwayScreen", [[14.0, 0.05], [10.0, 1.05], [10.0, 2.2], [14.0, 2.2]], "x", gz, 0.03, "canvas")
+		var inward: float = 0.06 if gz < 58.0 else -0.06
+		for gx: float in [14.0, 12.67, 11.33, 10.0]:
+			var ty: float = lerpf(0.0, DECK, (14.0 - gx) / 4.0)
+			B(Vector3(gx - 0.03, ty, gz - 0.05), Vector3(gx + 0.03, 2.25, gz + 0.05), "iron")
+		Props.strut(dress, Vector3(14.0, 2.22, gz), Vector3(10.0, 2.22, gz), 0.04, "rope", true)
+		Props.strut(dress, Vector3(14.0, 1.0, gz + inward), Vector3(10.0, 2.0, gz + inward), 0.045, "iron", true)
+	_bulkheads()
+
+
+## U-1047's three watertight bulkheads (Bulkhead1..3, z 50 / 56 / 68): the colliders were never drawn, only the
+## oval door rims and strips at the hull, so you looked straight through the wall beside the door you had to use.
+## Plating on both faces round an oval cut-out the size of the rim, stiffeners, rivets and a builder's plate.
+func _bulkheads() -> void:
+	var cx: float = 7.0
+	var cy: float = SY + DOOR_H * 0.5
+	var rx: float = 0.9 + 0.12
+	var ry: float = DOOR_H * 0.5 + 0.1
+	var n: int = 32
+	for bz: float in [50.0, 56.0, 68.0]:
+		for f: float in [-0.15, 0.15]:
+			var nz: float = signf(f)
+			var st: SurfaceTool = SurfaceTool.new()
+			st.begin(Mesh.PRIMITIVE_TRIANGLES)
+			var ring: Array = []
+			var outer: Array = []
+			for k: int in n + 1:
+				var a: float = TAU * float(k) / float(n)
+				var dir: Vector2 = Vector2(cos(a) * rx, sin(a) * ry)
+				var p: Vector2 = Vector2(cx, cy) + dir
+				p.y = maxf(p.y, SY)
+				ring.append(p)
+				# the plating's edge (x 4.4 .. 9.6, y SY .. 0.6) out along the same direction, snapped to its corners
+				# near them so the fan covers the whole plate
+				var tx: float = (2.6 / absf(dir.x)) if absf(dir.x) > 0.0001 else 1e9
+				var ty: float = ((0.6 - cy) / dir.y) if dir.y > 0.0001 else (((SY - cy) / dir.y) if dir.y < -0.0001 else 1e9)
+				var q: Vector2 = Vector2(cx, cy) + dir * minf(tx, ty)
+				outer.append(Vector2(clampf(q.x, 4.4, 9.6), clampf(q.y, SY, 0.6)))
+			var corners: Array = [Vector2(9.6, 0.6), Vector2(4.4, 0.6), Vector2(4.4, SY), Vector2(9.6, SY)]
+			var quads: Array = []
+			for k2: int in n:
+				quads.append([ring[k2], outer[k2], outer[k2 + 1], ring[k2 + 1]])
+				# a corner of the plate between two rays: one more triangle to it
+				for cn: Vector2 in corners:
+					var o0: Vector2 = outer[k2]
+					var o1: Vector2 = outer[k2 + 1]
+					if (is_equal_approx(o0.x, cn.x) and is_equal_approx(o1.y, cn.y)) or (is_equal_approx(o0.y, cn.y) and is_equal_approx(o1.x, cn.x)):
+						quads.append([o0, cn, o1, o1])
+			for qd: Array in quads:
+				for t: Array in [[qd[0], qd[1], qd[2]], [qd[0], qd[2], qd[3]]]:
+					var v0: Vector2 = t[0]
+					var v1: Vector2 = t[1]
+					var v2: Vector2 = t[2]
+					var cr: float = (v1 - v0).cross(v2 - v0)
+					if absf(cr) < 0.00001:
+						continue
+					# clockwise seen from the face's side (+z face seen from +z: negative cross in x-right, y-up)
+					var order: Array = [v0, v1, v2] if (cr < 0.0) == (nz > 0.0) else [v0, v2, v1]
+					for v: Vector2 in order:
+						st.set_normal(Vector3(0, 0, nz))
+						st.add_vertex(Vector3(v.x - cx, v.y - cy, f))
+			var mi: MeshInstance3D = MeshInstance3D.new()
+			mi.name = "Bulkhead%dPlate" % int(bz)
+			mi.mesh = st.commit()
+			mi.material_override = Mats.get_mat("u_interior")
+			mi.position = Vector3(cx, cy, bz)
+			dress.add_child(mi)
+			# stiffeners clear of the cut-out, a seam strap under the deckhead and its rivets
+			var z_in: float = bz + f + 0.04 * nz
+			B(Vector3(4.89, SY, minf(bz + f, z_in)), Vector3(5.01, 0.6, maxf(bz + f, z_in)), "grey_paint")
+			B(Vector3(8.99, SY, minf(bz + f, z_in)), Vector3(9.11, 0.6, maxf(bz + f, z_in)), "grey_paint")
+			B(Vector3(4.4, 0.42, minf(bz + f, z_in)), Vector3(9.6, 0.52, maxf(bz + f, z_in)), "grey_paint")
+			for rv: int in 18:
+				Props.ball(dress, Vector3(4.62 + rv * 0.28, 0.33, bz + f + 0.02 * nz), Vector3(0.035, 0.035, 0.02), "iron")
+		var plate: Vector3 = Vector3(5.6, -0.2, bz - 0.16)
+		B(plate - Vector3(0.18, 0.1, 0.01), plate + Vector3(0.18, 0.1, 0.0), "brass")

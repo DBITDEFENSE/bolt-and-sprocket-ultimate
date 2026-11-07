@@ -98,12 +98,18 @@ static func surface(parent: Node3D, n: String, mesh: ArrayMesh, key: String, sha
 ## side (x >= 0), in boat space (deck at y 0). `m` points: 4 on the shoulder (deck edge -> widest point at the saddle
 ## tanks), the rest on the bilge (widest -> keel). Midships the beam over the saddle tanks is 6.8 m (a VIIC's 6.2 m
 ## widened to clear U-1047's 6 m gameplay deck) and the keel 6.4 m below the deck (draught ~4.7 m below the water).
-static func vii_half(u: float, m: int = 12) -> PackedVector3Array:
+static func vii_half(u: float, m: int = 12, enclose: float = 0.0) -> PackedVector3Array:
 	var hd: float = 3.0 if u < 0.83 else lerpf(3.0, 0.5, (u - 0.83) / 0.17)          # deck half width
 	var mid: float = smoothstep(0.0, 0.16, u) * (1.0 - smoothstep(0.62, 1.0, u))
 	var hb: float = lerpf(1.3 if u < 0.5 else 0.35, 3.4, mid)                        # half beam at the tanks
 	var yb: float = lerpf(-1.6, -2.6, mid)                                            # height of the widest point
 	var yk: float = lerpf(-3.2 if u < 0.5 else -2.0, -6.4, smoothstep(0.0, 0.12, u) * (1.0 - smoothstep(0.75, 1.0, u)))
+	# T-180: where the boat's gameplay interior (a 6 m x 3.5 m box under the deck) runs, the hull must hold it: the
+	# narrowing bow and stern let the box's plating poke out, and the hall saw into the hidden compartments there
+	if enclose > 0.0:
+		hb = lerpf(hb, maxf(hb, 3.15), enclose)
+		yb = lerpf(yb, minf(yb, -3.65), enclose)
+		yk = lerpf(yk, minf(yk, -4.6), enclose)
 	var out: PackedVector3Array = []
 	var k_sh: int = 4
 	for i: int in k_sh:
@@ -122,7 +128,7 @@ static func vii_half(u: float, m: int = 12) -> PackedVector3Array:
 ## runs aft, y 0 is the deck top). length: deck bow to stern tip (m). Waterline split (boot-top) at local y `boot`.
 ## Keys: hull plating, red lead below the boot-top, deck slats, fittings.
 static func type_vii(g: Node3D, length: float, boot: float, k_hull: String = "m2_hull", k_red: String = "m2_hull_red",
-		k_fit: String = "iron") -> void:
+		k_fit: String = "iron", hold_to: float = -1.0) -> void:
 	var secs: int = 34
 	var m: int = 12
 	var split: int = 7   # the boot-top: points 0..split are topsides, split..m-1 the red bottom
@@ -134,7 +140,7 @@ static func type_vii(g: Node3D, length: float, boot: float, k_hull: String = "m2
 		var u: float = float(s) / float(secs)
 		u = u * u * (3.0 - 2.0 * u) * 0.35 + u * 0.65   # more sections at the bow and stern, where it curves
 		var z: float = u * length
-		var half: PackedVector3Array = vii_half(u, m)
+		var half: PackedVector3Array = vii_half(u, m, _hold(z, hold_to))
 		var r: PackedVector3Array = []
 		var l: PackedVector3Array = []
 		for i: int in split + 1:
@@ -179,7 +185,7 @@ static func type_vii(g: Node3D, length: float, boot: float, k_hull: String = "m2
 	for s2: int in secs + 1:
 		var u2: float = float(s2) / float(secs)
 		u2 = u2 * u2 * (3.0 - 2.0 * u2) * 0.35 + u2 * 0.65
-		var h2: PackedVector3Array = vii_half(u2, m)
+		var h2: PackedVector3Array = vii_half(u2, m, _hold(u2 * length, hold_to))
 		bt.append(PackedVector3Array([Vector3(h2[split].x + 0.03, h2[split].y + 0.12, u2 * length), Vector3(h2[split].x + 0.03, h2[split].y - 0.02, u2 * length)]))
 	surface(g, "BootTop_R", strip(bt, func(p: Vector3) -> Vector3: return Vector3(0, p.y, p.z), true), "black_paint", false)
 	var bt_l: Array = []
@@ -221,6 +227,13 @@ static func type_vii(g: Node3D, length: float, boot: float, k_hull: String = "m2
 		for sx4: float in [-2.75, 2.75]:
 			Props.block(g, Vector3(sx4 - 0.08, 0.0, zc - 0.25), Vector3(sx4 + 0.08, 0.1, zc + 0.25), k_fit)
 			Props.block(g, Vector3(sx4 - 0.05, 0.1, zc - 0.32), Vector3(sx4 + 0.05, 0.16, zc + 0.32), k_fit)
+
+
+## How much the hull must hold the interior box at local z (1 up to `hold_to`, easing out over the next 5 m).
+static func _hold(z: float, hold_to: float) -> float:
+	if hold_to <= 0.0:
+		return 0.0
+	return 1.0 - smoothstep(hold_to, hold_to + 5.0, z)
 
 
 ## The conning tower over U-1047's CT collider: a streamlined bridge fairing (rounded front, flared lip), the
