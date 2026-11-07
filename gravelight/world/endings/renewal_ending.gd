@@ -88,6 +88,7 @@ func _beat_earth() -> void:
 	var sp: Vector3 = sky.global_position if sky != null else y + Vector3(0, 60, 40)
 	var flat: Vector3 = Vector3(sp.x - y.x, 0, sp.z - y.z).normalized() if Vector2(sp.x - y.x, sp.z - y.z).length() > 0.5 else Vector3.FORWARD
 	_in_insert = true
+	_dir.overlay.hide_hud(get_tree().current_scene)   # the Earth without a crosshair over it
 	GameState.input_blocked = true
 	_dir.overlay.skip_enabled = true
 	_dir.play_shot({"from": [y.x - flat.x * 2.0, y.y - 0.6, y.z - flat.z * 2.0], "to": [y.x - flat.x * 2.6, y.y - 0.9, y.z - flat.z * 2.6],
@@ -104,6 +105,7 @@ func _end_insert() -> void:
 	GameState.input_blocked = _was_blocked
 	_dir.overlay.skip_enabled = false
 	_dir.back_to_player()
+	_dir.overlay.restore_hud()
 	_dir.overlay.grade({"exposure": 1.0, "contrast": 1.05, "saturation": 0.9, "tint": [1.0, 0.93, 1.06], "vignette": 0.3}, 1.5)
 
 

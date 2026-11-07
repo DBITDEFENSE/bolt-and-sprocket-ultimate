@@ -817,5 +817,15 @@
    "id": "KUB_INN_WINDOW_01",
    "who": "kubiak"
   }
+ },
+ "title_card": {
+  "_doc": "T-184: the opening's title card over the settled view before round 1 (inn_opening.gd _tick_card): the letterbox at bars_at, the card typed in at at (hold s), everything away at until or at the cue, whichever is first. The player keeps control; nothing else waits on it.",
+  "title": "THE CROSSROADS INN",
+  "subtitle": "Silesia  ·  the road to Kaltenbrunn",
+  "time": "the night of 23 December 1944",
+  "bars_at": 0.4,
+  "at": 1.2,
+  "hold": 5.6,
+  "until": 8.2
  }
 }

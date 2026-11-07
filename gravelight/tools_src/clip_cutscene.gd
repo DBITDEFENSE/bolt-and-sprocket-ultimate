@@ -24,6 +24,7 @@ const MAPS: Dictionary = {
 	"exfil_m4b_m4c": ["map04b_kranich", 20], "exfil_m4c_m4d": ["map04c_groomlake", 29],
 	"m2_letzte_fahrt_dive": ["map02_totenhafen", 20], "requiem": ["map01_kaltenbrunn", 25],
 	"london": ["map04b_kranich", 16], "cancel": ["map04d_mondlicht", 30], "renewal": ["map04d_mondlicht", 30],
+	"inn_opening": ["map00_crossroads", 0],   # a fresh match on Map 0: the opening's title card, until the cue
 }
 
 var cut: String = "exfil_m0_m1"
@@ -81,7 +82,10 @@ func _ready() -> void:
 	GameState.god_mode = true
 	var row: Array = MAPS[cut]
 	var map_id: StringName = StringName(str(row[0]))
-	Campaign.begin_at(map_id, int(row[1]), Campaign.arrival_kit(map_id))
+	if cut == "inn_opening":
+		Campaign.reset()
+	else:
+		Campaign.begin_at(map_id, int(row[1]), Campaign.arrival_kit(map_id))
 	Campaign.cutscene_speed = 1.0
 	_go.call_deferred(Campaign.scene_for(map_id))
 
@@ -94,6 +98,20 @@ func _go(scene: String) -> void:
 		t += 0.25
 	if _map() == null:
 		_fail("the map never loaded (%s)" % scene)
+		return
+	if cut == "inn_opening":   # the opening runs from the first frame: no settle, nothing stopped
+		_runner = _map().find_child("InnOpening", true, false)
+		if _runner == null:
+			for n: Node in _map().find_children("*", "Node3D", true, false):
+				if n is InnOpening:
+					_runner = n
+					break
+		if _runner == null:
+			_fail("no InnOpening on Map 0")
+			return
+		_started = true
+		_start_frame = Engine.get_process_frames()
+		print("[clip] START frame=%d cut=%s map=%s" % [_start_frame, cut, _map().map_id])
 		return
 	await get_tree().create_timer(4.0).timeout   # settle: shaders, the squad, the first round's intro
 	var map: MapRoot = _map()
@@ -186,6 +204,8 @@ func _start(map: MapRoot) -> void:
 func _ended() -> bool:
 	if _runner == null or not is_instance_valid(_runner) or not _runner.is_inside_tree():
 		return true
+	if _runner is InnOpening:   # the card has come and gone (or the cue played)
+		return bool(_runner.get("_card_titled")) and float(_runner.get("_card_t")) < 0.0 or bool(_runner.get("cued"))
 	for key: String in ["_done", "finished"]:
 		if key in _runner and bool(_runner.get(key)):
 			return true
