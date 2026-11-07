@@ -996,6 +996,41 @@
         {"name": "map04d_close", "map": "res://gravelight/maps/map04_fernflug/map04d.tscn", "pos": [-5.3, 0.0, 45.1], "look_at": "Crucible", "look_up": 1.1, "note": "the machine close (the concourse side)", "do": ["power"], "settle_s": 3.0}
       ]
     },
+    "t180_map02": {
+      "_doc": "T-180: Totenhafen's broken-looking spots (the owner: textures not loading on the submarine, invisible walls, doors): U-1047 inside and out, and every collider the art audit (tools_src/audit_map_art.tscn) flagged. The power on, no bots, no round. Shot through tools/wsl_godot.sh only (morning/screenshots/t180_map02/<label>/).",
+      "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {"name": "sub_bow", "pos": [6.7, -2.0, 49.0], "yaw": 0.0, "pitch": -4.0, "note": "U-1047 bow compartment (Crucible) from the first bulkhead", "do": ["power"], "settle_s": 2.5},
+        {"name": "sub_bow_side", "pos": [8.6, -2.0, 44.0], "yaw": 60.0, "pitch": 10.0, "note": "the bow compartment's port side and the deckhead", "do": ["power"], "settle_s": 2.5},
+        {"name": "sub_mess", "pos": [7.0, -2.0, 50.8], "yaw": 180.0, "pitch": -2.0, "note": "the bunk compartment between bulkheads 1 and 2, looking aft", "do": ["power"], "settle_s": 2.5},
+        {"name": "sub_control", "pos": [7.0, -2.0, 57.0], "yaw": 180.0, "pitch": -2.0, "note": "the control room looking aft to bulkhead 3", "do": ["power"], "settle_s": 2.5},
+        {"name": "sub_hatch", "pos": [6.0, -2.0, 60.3], "yaw": 180.0, "pitch": 25.0, "note": "under the open hatch looking up the companionway", "do": ["power"], "settle_s": 2.5},
+        {"name": "sub_engine", "pos": [7.0, -2.0, 69.0], "yaw": 180.0, "pitch": -4.0, "note": "the engine room between the diesels, looking aft", "do": ["power"], "settle_s": 2.5},
+        {"name": "sub_engine_fwd", "pos": [7.0, -2.0, 83.0], "yaw": 0.0, "pitch": -2.0, "note": "the engine room looking forward to bulkhead 3", "do": ["power"], "settle_s": 2.5},
+        {"name": "sub_deck_tower", "pos": [8.6, 1.0, 60.0], "yaw": 10.0, "pitch": 0.0, "note": "the deck aft of the conning tower, looking forward", "do": ["power"], "settle_s": 2.5},
+        {"name": "sub_deck_bow", "pos": [7.0, 1.0, 44.0], "yaw": 180.0, "pitch": 2.0, "note": "the deck forward of the tower, looking aft at the tower", "do": ["power"], "settle_s": 2.5},
+        {"name": "sub_from_pier2", "pos": [16.5, 0.0, 66.0], "yaw": 70.0, "pitch": -6.0, "note": "U-1047 from pier 2 beside the gangway", "do": ["power"], "settle_s": 2.5},
+        {"name": "sub_from_apron", "pos": [1.0, 0.0, 36.0], "yaw": -140.0, "pitch": -12.0, "note": "U-1047's bow from the north apron", "do": ["power"], "settle_s": 2.5},
+        {"name": "sub_from_pier1", "pos": [-1.0, 0.0, 52.0], "yaw": -70.0, "pitch": -10.0, "note": "U-1047's port side from pier 1", "do": ["power"], "settle_s": 2.5},
+        {"name": "quay_cutter", "pos": [18.5, 0.0, 5.0], "yaw": -90.0, "pitch": -6.0, "note": "the beached cutter's west end from the quay", "do": ["power"], "settle_s": 2.5},
+        {"name": "quay_cutter_s", "pos": [25.0, 0.0, 10.5], "yaw": 0.0, "pitch": -6.0, "note": "the cutter's south side", "do": ["power"], "settle_s": 2.5},
+        {"name": "cannery_brine", "pos": [-25.0, 0.0, 19.5], "yaw": 180.0, "pitch": -10.0, "note": "the cannery's brine tanks", "do": ["power"], "settle_s": 2.5},
+        {"name": "cannery_cans", "pos": [-10.0, 0.0, 22.5], "yaw": 180.0, "pitch": -12.0, "note": "the can pallets by the pen passage", "do": ["power"], "settle_s": 2.5},
+        {"name": "cannery_marathon", "pos": [-6.5, 0.0, 26.0], "yaw": -150.0, "pitch": -8.0, "note": "Marathon Malt and the pen passage", "do": ["power"], "settle_s": 2.5},
+        {"name": "workshop_cradles", "pos": [40.0, 0.0, 11.2], "yaw": 20.0, "pitch": -12.0, "note": "the torpedo cradles", "do": ["power"], "settle_s": 2.5},
+        {"name": "workshop_lathe", "pos": [58.0, 0.0, 9.5], "yaw": 10.0, "pitch": -10.0, "note": "the lathe", "do": ["power"], "settle_s": 2.5},
+        {"name": "pens_pumps", "pos": [42.0, -3.0, 71.0], "yaw": 180.0, "pitch": -8.0, "note": "the lower pens' pumps", "do": ["power"], "settle_s": 2.5},
+        {"name": "pens_crate", "pos": [42.0, -3.0, 76.0], "yaw": 180.0, "pitch": -12.0, "note": "the lower pens' crate spot", "do": ["power"], "settle_s": 2.5},
+        {"name": "pier0_crate", "pos": [-17.0, 0.0, 77.5], "yaw": 150.0, "pitch": -12.0, "note": "pier 0's crate spot", "do": ["power"], "settle_s": 2.5},
+        {"name": "stair_nw", "pos": [-17.0, 0.0, 47.0], "yaw": 0.0, "pitch": 8.0, "note": "the north-west catwalk stair", "do": ["power"], "settle_s": 2.5},
+        {"name": "stair_e", "pos": [49.0, 0.0, 58.0], "yaw": 180.0, "pitch": 8.0, "note": "the east catwalk stair", "do": ["power"], "settle_s": 2.5},
+        {"name": "tower_ramp", "pos": [35.0, 4.0, 36.0], "yaw": -90.0, "pitch": 4.0, "note": "the ramp up to the signal tower", "do": ["power"], "settle_s": 2.5},
+        {"name": "tower_from_stair", "pos": [49.0, -3.0, 51.0], "yaw": 0.0, "pitch": 30.0, "note": "the signal tower from the pump stair", "do": ["power"], "settle_s": 2.5},
+        {"name": "bank", "pos": [45.0, 0.0, 60.5], "yaw": 0.0, "pitch": -6.0, "note": "the Marinekasse's pay window", "do": ["power"], "settle_s": 2.5}
+      ]
+    },
     "u09_ref": {
       "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
       "bots": 0,

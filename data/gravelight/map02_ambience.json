@@ -53,7 +53,7 @@
   "lines": ["RADIO_UBOAT_01", "RADIO_UBOAT_02", "RADIO_UBOAT_03", "RADIO_UBOAT_04", "RADIO_UBOAT_05", "RADIO_UBOAT_06"]
  },
  "cutter_slip": {
-  "round": 15, "delay": 18.0, "hull": "CutterHull", "remnant": "CutterRemnantPieces", "seconds": 7.0,
+  "round": 15, "delay": 18.0, "hull": "CutterHull", "remnant": "CutterRemnantPieces", "hull_body": "Cutter_Fit", "remnant_body": "Cutter_RemnantFit", "seconds": 7.0,
   "via": [0.0, 0.9, -3.5], "slide": [0.0, -1.6, -20.0], "tilt": [-14.0, 0.0, 9.0],
   "groan_sound": "amb_m2_cutter_groan", "groan_db": 2.0, "splash_sound": "amb_m2_wave", "splash_at": [26.0, -1.5, -14.0],
   "flag": "cutter_slipped", "spawn": "Surf_Cutter"
