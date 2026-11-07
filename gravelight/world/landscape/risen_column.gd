@@ -100,6 +100,7 @@ static func body(kit: String, build_id: String, female: bool, clip: String, seed
 		shadows: bool = false, visible_m: float = 0.0) -> Node3D:
 	var root: Node3D = Node3D.new()
 	root.name = "Returned_%s" % kit
+	root.set_meta("kit", kit)
 	var skel: Skeleton3D = ZombieRig.build_skeleton()
 	skel.name = "Skel"
 	root.add_child(skel)

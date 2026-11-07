@@ -20,6 +20,10 @@ const SQUAD: PackedStringArray = ["dutch", "peg", "deacon", "wren"]
 const CRATE_SCRIPT: String = "res://gravelight/world/fallen_crate.gd"
 
 var session: NetMatch = null
+## The director that lays the bodies and the node the crates go under: the session's map's unless set (tests hand
+## in stand-ins; the director only needs rise_dormant(at, variant, yaw) -> Zombie).
+var director: Node = null
+var world: Node3D = null
 ## Bodies lying still: {pid, pos, yaw, left, zombie, person, name}.
 var pending: Array[Dictionary] = []
 ## Bodies that got up and are still on their feet: {pid, zombie, name}.
@@ -63,18 +67,26 @@ static func survivor_name(character: String) -> String:
 	return str(Net.DISPLAY.get(character, character.capitalize()))
 
 
+## Whether a bleed-out raises a body (pure): the rule on, a squad member (never a companion), the match still on.
+static func should_rise(rule_on: bool, companion: bool, everyone_down: bool, playing: bool) -> bool:
+	return rule_on and not companion and not everyone_down and playing
+
+
 ## NetMatch._bleed_out: `pid` just bled out. Authority only; companions never.
 func on_bled_out(pid: int) -> void:
-	if session == null or not Net.is_authority() or not enabled():
-		return
-	if session.coop.is_companion(pid) or session.coop.everyone_down() or GameState.phase != GameState.Phase.PLAYING:
+	if session == null or not Net.is_authority():
 		return
 	var p: Player = session.player_of(pid)
-	if p == null or p.is_companion:
+	var companion: bool = session.coop.is_companion(pid) or (p != null and p.is_companion)
+	if p == null or not should_rise(enabled(), companion, session.coop.everyone_down(), GameState.phase == GameState.Phase.PLAYING):
 		return
+	begin(pid, String(Net.character_of(pid)), p.global_position, p.rotation.y)
+
+
+## Lays `pid`'s body (survivor `person`) at `pos` and starts its fourth-day clock.
+func begin(pid: int, person: String, pos: Vector3, yaw: float) -> void:
 	stats["bled"] = int(stats["bled"]) + 1
-	var person: String = String(Net.character_of(pid))
-	var e: Dictionary = {"pid": pid, "pos": p.global_position, "yaw": p.rotation.y, "left": float(cfg().get("rise_delay_s", 4.0)),
+	var e: Dictionary = {"pid": pid, "pos": pos, "yaw": yaw, "left": float(cfg().get("rise_delay_s", 4.0)),
 		"zombie": null, "person": person, "name": survivor_name(person)}
 	pending.append(e)
 	_lay_body(e)
@@ -83,10 +95,10 @@ func on_bled_out(pid: int) -> void:
 ## The body on the floor: a dormant pooled zombie in the survivor's risen body. False while the pool is full (the
 ## next tick tries again; the clock does not start until the body is there).
 func _lay_body(e: Dictionary) -> bool:
-	var dir: ZombieDirector = session.map.director if session.map != null else null
+	var dir: Node = _director()
 	if dir == null:
 		return false
-	var z: Zombie = dir.rise_dormant(e["pos"] as Vector3, str(cfg().get("fallback_kit", "soldier")), float(e["yaw"]))
+	var z: Zombie = dir.call(&"rise_dormant", e["pos"] as Vector3, str(cfg().get("fallback_kit", "soldier")), float(e["yaw"])) as Zombie
 	if z == null:
 		return false
 	var person: String = str(e["person"])
@@ -100,8 +112,25 @@ func _lay_body(e: Dictionary) -> bool:
 	return true
 
 
+func _director() -> Node:
+	if director != null:
+		return director
+	return session.map.director if session != null and session.map != null else null
+
+
+func _world() -> Node3D:
+	if world != null:
+		return world
+	return session.map if session != null else null
+
+
 func _physics_process(delta: float) -> void:
-	if session == null or not Net.is_authority():
+	tick(delta)
+
+
+## One step of the clocks and the watch on the risen (the physics tick; tests call it directly).
+func tick(delta: float) -> void:
+	if not Net.is_authority() or (session == null and director == null):
 		return
 	var ticking: bool = RoundManager.state == RoundManager.State.ROUND and not GameState.in_event()
 	for e: Dictionary in pending.duplicate():
@@ -136,20 +165,21 @@ func _physics_process(delta: float) -> void:
 
 ## The death crate where the body fell, mirrored to every client.
 func drop_crate(at: Vector3, owner: String) -> FallenCrate:
-	if session == null or session.map == null:
+	var w: Node3D = _world()
+	if w == null:
 		return null
 	var c: FallenCrate = FallenCrate.new()
 	c.owner_name = owner
 	c.uses_left = int(cfg().get("crate_uses", 4))
 	c.seconds_left = float(cfg().get("crate_seconds", 90.0))
-	session.map.add_child(c)
-	var nav: RID = session.map.get_world_3d().navigation_map
+	w.add_child(c)
+	var nav: RID = w.get_world_3d().navigation_map
 	var p: Vector3 = NavigationServer3D.map_get_closest_point(nav, at)
-	c.global_position = p if p.is_finite() and p.distance_to(at) < 3.0 else at
+	c.global_position = p if p.is_finite() and p != Vector3.ZERO and p.distance_to(at) < 3.0 else at
 	stats["crates"] = int(stats["crates"]) + 1
 	events.append("crate:" + owner)
 	last_crate = c
-	if Net.replicating():
+	if Net.replicating() and session != null:
 		session.spawn_dynamic(c, CRATE_SCRIPT, {"owner_name": owner, "uses_left": c.uses_left, "seconds_left": c.seconds_left})
 	return c
 
