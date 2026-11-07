@@ -321,26 +321,32 @@ func _egg_can_spawn() -> bool:
 	if state != State.ROUND:
 		return false
 	var c: Dictionary = EggMode.cfg()
-	var cap: int = mini(max_active() - actor_reserve, maxi(int((c.get("count", {}) as Dictionary).get("max", 4)), 1))
-	if to_spawn <= 0:
-		var feed: bool = _egg_feed_on
-		var extra: int = EggMode.extra_cap(EggMode.current(), not _holds.is_empty(), feed, c)
-		if extra <= 0 or alive >= mini(extra, max_active() - actor_reserve):
+	var room: int = max_active() - actor_reserve
+	var count_max: int = maxi(int((c.get("count", {}) as Dictionary).get("max", 4)), 1)
+	if _egg_feed_on:
+		# the feed (a kill-count step open): its own clock and cap; crawlers left elsewhere on the map count only past
+		# count.max (four old ones by the far stairs starved it, and the bots held the heart with nothing to kill)
+		if _egg_feed_t > 0.0 or alive >= mini(int(c.get("feed_active", 6)) + count_max, room):
 			return false
-		if feed:
-			if _egg_feed_t > 0.0:
-				return false
-			_egg_feed_t = float(c.get("feed_interval_s", 2.5))
-			if not _egg_feed_pts.is_empty():
-				# a crawler rises at one of the step's own points (by the heart), not at the map's spawns
-				var dir: ZombieDirector = get_tree().get_first_node_in_group(&"director") as ZombieDirector
-				if dir != null:
-					dir.spawn_burst([_egg_feed_pts[rng.randi() % _egg_feed_pts.size()]], 1)
-				return false
+		_egg_feed_t = float(c.get("feed_interval_s", 2.5))
+		if not _egg_feed_pts.is_empty():
+			# a crawler rises at one of the step's own points (by the heart), not at the map's spawns
+			var dir: ZombieDirector = get_tree().get_first_node_in_group(&"director") as ZombieDirector
+			if dir != null:
+				dir.spawn_burst([_egg_feed_pts[rng.randi() % _egg_feed_pts.size()]], 1)
+			return false
+		if to_spawn <= 0:
+			to_spawn = 1
+			_egg_topup = true
+		return true
+	if to_spawn <= 0:
+		var extra: int = EggMode.extra_cap(EggMode.current(), not _holds.is_empty(), false, c)
+		if extra <= 0 or alive >= mini(extra, room):
+			return false
 		to_spawn = 1
 		_egg_topup = true
 		return true
-	return alive < cap
+	return alive < mini(room, count_max)
 
 
 ## While any hold is set the round keeps spawning and can't end (e.g. a pylon charging).

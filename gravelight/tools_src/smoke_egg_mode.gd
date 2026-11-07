@@ -186,7 +186,7 @@ func _kaltenbrunn() -> void:
 		if RoundManager.state == RoundManager.State.ROUND:
 			t2 += 0.5
 		most = maxi(most, _ordinary_up(dir))
-	_check(most >= 4 and most <= int(EggMode.cfg()["feed_active"]), "a kill-count step is fed crawlers (%d up)" % most)
+	_check(most >= 4 and most <= int(EggMode.cfg()["feed_active"]) + int((EggMode.cfg()["count"] as Dictionary)["max"]), "a kill-count step is fed crawlers by the heart (%d up)" % most)
 	dir.kill_all(true)
 
 
