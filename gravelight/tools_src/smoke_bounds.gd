@@ -30,6 +30,8 @@ var _p: Player = null
 var _watch: bool = false
 var _max_h: Dictionary = {}     # pid -> top horizontal speed while _watch
 var _max_rise: Dictionary = {}  # pid -> top height over the start while _watch
+var _max_w: Dictionary = {}     # pid -> top horizontal speed over a 0.1 s window (a one-frame snap of a few cm isn't a launch)
+var _hist: Dictionary = {}      # pid -> the last few positions
 var _y0: Dictionary = {}
 var _last: Dictionary = {}   # pid -> last frame's position
 
@@ -67,6 +69,16 @@ func _physics_process(_d: float) -> void:
 		_last[pid] = p.global_position
 		if step.length() < 2.0:
 			_max_h[pid] = maxf(float(_max_h.get(pid, 0.0)), Vector2(step.x, step.z).length() / maxf(0.001, _d))
+		var hs: Array = _hist.get(pid, [])
+		if step.length() >= 2.0:
+			hs.clear()   # a teleport: start the window again
+		hs.append(p.global_position)
+		if hs.size() > 7:
+			hs.pop_front()
+		_hist[pid] = hs
+		if hs.size() == 7:
+			var w: Vector3 = (hs[6] as Vector3) - (hs[0] as Vector3)
+			_max_w[pid] = maxf(float(_max_w.get(pid, 0.0)), Vector2(w.x, w.z).length() / maxf(0.001, _d * 6.0))
 		if _y0.has(pid):
 			_max_rise[pid] = maxf(float(_max_rise.get(pid, -99.0)), p.global_position.y - float(_y0[pid]))
 
@@ -131,6 +143,8 @@ func _load(key: String, path: String) -> void:
 func _watch_start() -> void:
 	_max_h.clear()
 	_max_rise.clear()
+	_max_w.clear()
+	_hist.clear()
 	_y0.clear()
 	_last.clear()
 	for n: Node in get_tree().get_nodes_in_group(&"players"):
@@ -330,8 +344,15 @@ func _bot_match(key: String, seconds: float) -> void:
 	RoundManager.stop()
 	var fc: Node = get_tree().get_first_node_in_group(&"flight_controller")
 	var top: float = 0.0
-	for k: Variant in _max_h:
-		top = maxf(top, float(_max_h[k]))
+	var top_pid: int = 0
+	var frame_top: float = 0.0
+	for k: Variant in _max_w:
+		if float(_max_w[k]) > top:
+			top = float(_max_w[k])
+			top_pid = int(k)
+	for k2: Variant in _max_h:
+		frame_top = maxf(frame_top, float(_max_h[k2]))
+	print("[bounds-smoke] %s: top speed over 0.1 s %.1f m/s (P%d), top single frame %.1f m/s" % [key, top, top_pid, frame_top])
 	_check(g.rescues == before, "%s: a %.0f s bot match (round %d%s) has no rescue (%d)" % [key, seconds, RoundManager.current_round,
 		(", %d tilts" % int(fc.get("banks_done"))) if fc != null else "", g.rescues - before])
 	_check(top < 12.0, "%s: nobody moved faster than a sprint and a push in it (top %.1f m/s)" % [key, top])

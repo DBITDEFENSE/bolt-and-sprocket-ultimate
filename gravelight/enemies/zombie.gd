@@ -1924,7 +1924,10 @@ func _die(limb: StringName, weapon_id: StringName, by_player: int, kind: StringN
 		var econ: Dictionary = GLData.table("economy")
 		var value: int = Economy.kill_value(limb, kind == &"melee", econ)
 		if _cfg.has("scrip"):
-			value = Economy.kill_value(limb, kind == &"melee", {"kill": _cfg["scrip"]})
+			var sc: Variant = _cfg["scrip"]
+			# (a row may give the kill pay per hit zone {head, neck, body, melee} or as one number: the U10 Totenhafen
+			# enemies' "scrip": 60 errored here on every kill and paid nothing)
+			value = Economy.kill_value(limb, kind == &"melee", {"kill": sc}) if sc is Dictionary else int(sc)
 		if limb == &"head" and kind != &"melee" and GameState.player_has_trait(by_player, &"wren"):
 			value += int(GLData.table("player")["traits"]["wren_headshot_scrip_bonus"])
 		Economy.award(by_player, value)
