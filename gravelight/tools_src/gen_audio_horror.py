@@ -12,9 +12,9 @@ noise-IR reverb, the church-bell partials). License: Owned (our own work). Keys 
                           ison, three to four voices on wordless vowels, distorted the same way, far away. OGG.
   horror_bell_far_1..3    a big church bell (hum ~65-80 Hz) heard kilometres off across the snow. OGG.
   horror_whisper_1..6     breathy, wordless, speech-shaped whispers (a fallback for the Returned's close lines when
-                          lines.json has no RTN_CLOSE take): shaped noise through moving formants. WAV.
-  player_breath_hurt_1..4 the squad's ragged breathing when hurt: a shaky in-breath, a catch, a long out-breath. WAV.
-  horror_flies_loop       flies over the dead: a few wing-buzz voices drifting in pitch. Loop WAV.
+                          lines.json has no RTN_CLOSE take): shaped noise through moving formants. OGG.
+  player_breath_hurt_1..4 the squad's ragged breathing when hurt: a shaky in-breath, a catch, a long out-breath. OGG.
+  horror_flies_loop       flies over the dead: a few wing-buzz voices drifting in pitch. Loop OGG.
 
 Run from the repo root:   python gravelight/tools_src/gen_audio_horror.py
 then reimport:             godot --headless --editor --quit-after 300 --path .
