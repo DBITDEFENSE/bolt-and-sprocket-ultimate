@@ -95,4 +95,4 @@ func test_map0_patrons_are_cast_and_baked() -> void:
 		var spk: String = str((GLVO.lines[line_id] as Dictionary).get("speaker", ""))
 		if spk in ["ROT", "KUB", "POH", "TRU", "SOB"]:
 			assert_true(files.has(line_id), line_id + " is baked")
-			assert_eq(str((files.get(line_id, {}) as Dictionary).get("engine", "")), "kokoro", line_id + " is neural")
+			assert_true(str((files.get(line_id, {}) as Dictionary).get("engine", "")) in ["kokoro", "elevenlabs"], line_id + " is neural")
