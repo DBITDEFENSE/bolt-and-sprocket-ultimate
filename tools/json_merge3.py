@@ -72,12 +72,15 @@ def main() -> int:
     else:
         base, ours, theirs = _stage(a.out, 1), _stage(a.out, 2), _stage(a.out, 3)
     if a.indent <= 0:
+        a.indent = 1
         try:
-            second = open(a.ours or a.out, encoding="utf-8").read().split("
-", 2)[1]
-            a.indent = max(1, len(second) - len(second.lstrip(" ")))
-        except (OSError, IndexError):
-            a.indent = 1
+            raw = open(a.ours, encoding="utf-8").read() if a.ours else subprocess.run(
+                ["git", "show", ":2:%s" % a.out], capture_output=True, check=True).stdout.decode("utf-8")
+            rows = raw.splitlines()
+            if len(rows) > 1:
+                a.indent = max(1, len(rows[1]) - len(rows[1].lstrip(" ")))
+        except (OSError, subprocess.CalledProcessError):
+            pass
     merged, conflicts = merge(base, ours, theirs, a.prefer, tuple(x for x in a.deep.split(",") if x))
     with open(a.out, "w", encoding="utf-8", newline="\n") as f:
         json.dump(merged, f, ensure_ascii=False, indent=a.indent)
