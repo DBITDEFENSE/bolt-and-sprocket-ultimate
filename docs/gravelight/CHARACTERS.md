@@ -294,87 +294,87 @@ He isn't writing to Ruthie about the weather anymore. His last letter, unsent, i
 ### Quotes
 
 **Buying weapons**
-- `DEA_BUY_PISTOL_01`: "Little forty-five. Small, but she'll pull her weight."
-- `DEA_BUY_RIFLE_01`: "Bolt rifle. One shot, one prayer."
-- `DEA_BUY_RIFLE_02`: "Garand. Eight rounds and a song when she's empty."
-- `DEA_BUY_SMG_01`: "Chatterbox. All right, sister, let's sing."
-- `DEA_BUY_SHOTGUN_01`: "Pump gun. My uncle's old friend. Hello, old friend."
-- `DEA_BUY_LMG_01`: "Heavy mule. She'll haul the load."
-- `DEA_BUY_LAUNCHER_01`: "Lord, forgive me for what I'm about to do with this."
-- `DEA_BUY_WONDER_01`: "Whoever built this was a genius, and I'm sorry for 'em."
-- `DEA_BUY_MELEE_01`: "Shovel. A good tool. Dig a trench or dig a grave."
+- `DEA_BUY_PISTOL_01`: "Forty-five. Little thing. ...She'll do what's asked of her. We all do."
+- `DEA_BUY_RIFLE_01`: "Bolt rifle. One round, one breath. Lord, make them count."
+- `DEA_BUY_RIFLE_02`: "Garand. Eight rounds, then she sings out empty. [quietly] Don't let me hear that song tonight."
+- `DEA_BUY_SMG_01`: "Chatterbox. All right, sister. Keep 'em off us."
+- `DEA_BUY_SHOTGUN_01`: "Pump gun. My uncle kept one behind the garage door. [a breath] Never thought I'd need it like this."
+- `DEA_BUY_LMG_01`: "Heavy mule. She hauls, I carry her. We'll both be tired."
+- `DEA_BUY_LAUNCHER_01`: "Lord, forgive me. I know what this does to a body."
+- `DEA_BUY_WONDER_01`: "Somebody poured real genius into this. [a breath] For what it's for. God help him."
+- `DEA_BUY_MELEE_01`: "Shovel. Dig a trench or dig a grave. [quietly] Tonight it's graves."
 
 **Mystery Crate**
-- `DEA_CRATE_GOOD_01`: "The Lord provides. Sometimes in a busted crate."
-- `DEA_CRATE_GOOD_02`: "Now that's a blessing with a trigger."
-- `DEA_CRATE_BAD_01`: "Well. Blessed are the poor, I suppose."
-- `DEA_CRATE_BAD_02`: "Crate's got a sense of humor. I don't like it."
-- `DEA_CRATE_DRUMMER_01`: "The little drummer boy. Somebody's baby girl wound you up, didn't she?"
-- `DEA_CRATE_DRUMMER_02`: "Go on, little fella. March home."
+- `DEA_CRATE_GOOD_01`: "The Lord provides. [a breath] Didn't expect Him to use this crate."
+- `DEA_CRATE_GOOD_02`: "Thank you. Thank you, that'll keep us breathing a while."
+- `DEA_CRATE_BAD_01`: "Blessed are the poor. ...I'd have settled for a rifle."
+- `DEA_CRATE_BAD_02`: "Crate took my money and gave me a toy. Fine. Fine. Nobody died of it yet."
+- `DEA_CRATE_DRUMMER_01`: "Little drummer boy. Somebody's girl wound you up once, didn't she. [quietly] Go on."
+- `DEA_CRATE_DRUMMER_02`: "Go on, little fella. March on home. Wish I could."
 
 **Perks**
-- `DEA_PERK_IRONHIDE_01`: "Thick as molasses. Settles in your bones."
-- `DEA_PERK_SECONDWIND_01`: "Sister Agnieszka. Whoever you were, thank you."
-- `DEA_PERK_TRIGGER_01`: "Fizzy. Hands moving faster than my thoughts."
-- `DEA_PERK_TWINBARREL_01`: "Bitter, like a sermon on a hot Sunday."
-- `DEA_PERK_MARATHON_01`: "Feel like I could outrun the Devil. Let's not test that."
-- `DEA_PERK_HAWKEYE_01`: "Brandy. Daddy'd have a fit. Eyes feel sharp, though."
-- `DEA_PERK_PACKMULE_01`: "Make me a mule, I'll carry the load."
-- `DEA_PERK_BLASTPROOF_01`: "Can't blow myself up? Well, praise be."
+- `DEA_PERK_IRONHIDE_01`: "Thick as molasses. Settles in the bones. [a breath] Lord knows they need settling."
+- `DEA_PERK_SECONDWIND_01`: "Sister Agnieszka. Whoever you were, you're keeping us standing. Thank you."
+- `DEA_PERK_TRIGGER_01`: "Fizzy. Hands running ahead of my head. [a breath] Don't let 'em run too far."
+- `DEA_PERK_TWINBARREL_01`: "Bitter. Like a sermon on a hot Sunday. Daddy'd say that's how you know it's working."
+- `DEA_PERK_MARATHON_01`: "Feel like I could run and not be weary. [quietly] Isaiah said that. He never saw this place."
+- `DEA_PERK_HAWKEYE_01`: "Brandy. Daddy never let a drop in the house. ...Eyes are sharp. I'll confess it later."
+- `DEA_PERK_PACKMULE_01`: "One more on my back. Make me a mule, Lord, I'll carry it."
+- `DEA_PERK_BLASTPROOF_01`: "Can't blow myself up. [a breath] Well. One less way to die in here."
 
 **Power-ups**
-- `DEA_PWR_RESUPPLY_01`: "Loaves and fishes. Bullets and grenades."
-- `DEA_PWR_DEATHSDOOR_01`: "Every shot's the last one for 'em. Mercy, quick."
-- `DEA_PWR_DOUBLESCRIP_01`: "Double wages. Don't spend it all at once."
-- `DEA_PWR_BLACKOUT_01`: "Rest now. All of you. Go on home."
-- `DEA_PWR_FORTIFY_01`: "Boards back in place. Didn't even need my hammer."
-- `DEA_PWR_CLEARANCE_01`: "The crate's taking pennies. Go, go, go."
+- `DEA_PWR_RESUPPLY_01`: "Loaves and fishes. Bullets and grenades. Take what you need, there's enough."
+- `DEA_PWR_DEATHSDOOR_01`: "One shot and they lie down. Mercy. Quick mercy, that's all I'm asking."
+- `DEA_PWR_DOUBLESCRIP_01`: "Double wages. [quietly] Blood money, doubled. Spend it on living."
+- `DEA_PWR_BLACKOUT_01`: "Rest now. All of you. Lie down and rest."
+- `DEA_PWR_FORTIFY_01`: "Boards back on every window. Didn't lift a hammer. [a breath] Don't ask me how. I'm not asking."
+- `DEA_PWR_CLEARANCE_01`: "Crate's taking pennies. Go, go. Before it changes its mind."
 
 **Special enemies**
-- `DEA_BELL_01`: "Hear that bell? Ain't nobody being called to worship."
-- `DEA_BELL_02`: "Fog's coming. Stand together. Backs to each other."
-- `DEA_FOREMAN_01`: "Somebody bolted a drill onto that man. God help whoever did it."
-- `DEA_FOREMAN_02`: "That drill core's glowing. That's his heart. Hit it."
-- `DEA_SCREAMER_01`: "That poor woman. Make it quick."
-- `DEA_GLASSHIDE_01`: "That one's wearing glass like armor. Go for the head."
+- `DEA_BELL_01`: "Hear that bell? Ain't a call to worship. Not that one."
+- `DEA_BELL_02`: "Fog's coming in. Stand together. Backs to each other and hold."
+- `DEA_FOREMAN_01`: "Somebody bolted a drill onto that man. [quietly] Lord. He was a man."
+- `DEA_FOREMAN_02`: "Drill core's glowing. That's his heart. Hit the heart."
+- `DEA_SCREAMER_01`: "That poor woman. Make it quick. Don't let her scream like that."
+- `DEA_GLASSHIDE_01`: "He's wearing glass like armor. Go for the head. Head's all that's open."
 
 **Combat state**
-- `DEA_AMMO_LOW_01`: "Getting light. Real light."
-- `DEA_AMMO_NONE_01`: "Empty. Lord, give me a bullet or give me a running start."
-- `DEA_DOWN_01`: "I'm down. Somebody... come on now."
+- `DEA_AMMO_LOW_01`: "Getting light. Real light. [a breath] Lord."
+- `DEA_AMMO_NONE_01`: "Empty. Lord, a bullet or a running start. I'll take either."
+- `DEA_DOWN_01`: "I'm down. Somebody... [breathing heavily] somebody come on now. Come on."
 - `DEA_DOWN_02`: "Ruthie, honey... not yet. Not yet."
-- `DEA_REVIVE_01`: "Got you. Up we go. Easy now."
-- `DEA_REVIVE_02`: "Not today. You hear me? Not today."
-- `DEA_REVIVED_01`: "Thank you. Lazarus owes you one."
-- `DEA_STREAK_01`: "Keep the rhythm. Keep the rhythm."
-- `DEA_STREAK_02`: "One more verse. And another."
+- `DEA_REVIVE_01`: "Got you. Up. Easy now, easy. I've got you."
+- `DEA_REVIVE_02`: "Not today. You hear me? Not today, not here."
+- `DEA_REVIVED_01`: "Thank you. [a breath] Didn't want to find out what gets up when I don't."
+- `DEA_STREAK_01`: "Keep the rhythm. Keep the rhythm. Don't think, just keep it."
+- `DEA_STREAK_02`: "One more verse. [exhausted] And another. Lord, how many verses."
 - `DEA_HEADSHOT_01`: "Go on home."
-- `DEA_HEADSHOT_02`: "Sleep easy, brother."
-- `DEA_CRAWLER_01`: "This one's crawling. Lord, have mercy on him."
+- `DEA_HEADSHOT_02`: "Sleep now, brother."
+- `DEA_CRAWLER_01`: "This one's crawling. Lord have mercy on him. ...I will."
 
 **World**
-- `DEA_DOOR_01`: "Door's open. Watch your step."
-- `DEA_POWER_01`: "Hear that? Turbines singing. Whole place just woke up."
-- `DEA_POWER_02`: "Easy, girl. Easy. Good girl. Hum for me."
-- `DEA_CRUCIBLE_01`: "That furnace is talking to my gun. And my gun's listening."
-- `DEA_CRUCIBLE_02`: "Beautiful work, used for ugly reasons. Same as everything here."
+- `DEA_DOOR_01`: "Door's open. Watch your step, and watch the dark."
+- `DEA_POWER_01`: "Hear that? Turbines. Whole place just drew breath. [quietly] Didn't ask whether I wanted it to."
+- `DEA_POWER_02`: "Easy, girl. Easy. I know. I know. Hum for me."
+- `DEA_CRUCIBLE_01`: "That furnace is talking to my gun. And my gun's listening. I don't like what it's learning."
+- `DEA_CRUCIBLE_02`: "Beautiful work. Used for this. Same as everything here."
 - `DEA_TRAP_01`: "Lever's down. Stand clear of her."
-- `DEA_BUILD_01`: "Bell, frame, crank. All right, little lady, let's put you together."
-- `DEA_EE_01`: "That music box... somebody's lullaby."
-- `DEA_EE_02`: "Ring 'em in order, like the old hymn."
+- `DEA_BUILD_01`: "Bell, frame, crank. All right, little lady. Let's put you together and see what you call down."
+- `DEA_EE_01`: "That music box. ...Somebody's lullaby. Somebody sang that to a child, once."
+- `DEA_EE_02`: "Ring 'em in order. Like the old hymn, line by line."
 - `DEA_EE_03`: "The heart's breaking. Hold on. Hold on!"
-- `DEA_EXHAUST_01`: "Fifty rounds. Even Job got a break."
-- `DEA_EXHAUST_02`: "I'm tired, Lord. But I'm still here."
+- `DEA_EXHAUST_01`: "Fifty rounds. [exhausted] Even Job got to sit down."
+- `DEA_EXHAUST_02`: "I'm tired, Lord. [a breath] I'm still here. I don't know which of those is the prayer."
 
 **Machine whisperer**
-- `DEA_MACH_01`: "Come on, mule. Don't you quit on me."
-- `DEA_MACH_02`: "Shh. Easy now. Nobody's gonna hurt you anymore."
-- `DEA_MACH_03`: "Pretty thing. Who taught you to eat people?"
+- `DEA_MACH_01`: "Come on, mule. Don't you quit on me. Not tonight."
+- `DEA_MACH_02`: "Shh. Easy now. Nobody's gonna make you do that anymore."
+- `DEA_MACH_03`: "Pretty thing. Who taught you to eat people? [quietly] Who taught them?"
 
 **Blues lines (half-sung)**
-- `DEA_BLUES_01`: "♪ Buried in the salt, Lord, buried way down deep... buried in the salt, can't nobody here sleep. ♪"
+- `DEA_BLUES_01`: "♪ Buried in the salt, Lord, buried way down deep... buried in the salt, and can't nobody here sleep. ♪"
 - `DEA_BLUES_02`: "♪ That bell keeps ringing, ringing for the dead... that bell keeps ringing, wish it'd ring for me instead. ♪"
-- `DEA_BLUES_03`: "♪ Got a ledger keeps a-counting every man I lay down... yes, a ledger keeps a-counting, gonna burn that ledger down. ♪"
+- `DEA_BLUES_03`: "♪ Four days in the ground, Lord, four days in the cold... four days in the ground, then they get up and they don't get old. ♪"
 
 ---
 
@@ -414,90 +414,90 @@ She already knows, from a smuggled note by Sister Agnieszka, that Tomasz was mov
 ### Quotes
 
 **Buying weapons**
-- `WRN_BUY_PISTOL_01`: "A pistol. For when I want to be close. I never want to be close."
-- `WRN_BUY_RIFLE_01`: "Mauser. Their rifle. Their bullets. Their heads. Fair."
-- `WRN_BUY_RIFLE_02`: "Gewehr. Semi-automatic. I can be efficient."
-- `WRN_BUY_SMG_01`: "A machine pistol. Inelegant. Useful."
-- `WRN_BUY_SHOTGUN_01`: "Shotgun. For people who cannot aim. Today, that is me."
-- `WRN_BUY_LMG_01`: "Heavy. Loud. Everything I am not."
-- `WRN_BUY_LAUNCHER_01`: "This is Peg's kind of gun. I will borrow her taste."
-- `WRN_BUY_WONDER_01`: "Fasbender's toy. Built in the same place as my brother's grave."
-- `WRN_BUY_MELEE_01`: "A shovel. Good. I will dig them a proper place."
+- `WRN_BUY_PISTOL_01`: "A pistol. For when they are close. [a breath] They are always close now."
+- `WRN_BUY_RIFLE_01`: "Mauser. Their rifle, their bullets. [quietly] Tonight it does not matter whose heads."
+- `WRN_BUY_RIFLE_02`: "Gewehr. Semi-automatic. Good. I am tired of working the bolt."
+- `WRN_BUY_SMG_01`: "Machine pistol. Ugly. It does not have to be pretty. It has to be close."
+- `WRN_BUY_SHOTGUN_01`: "Shotgun. For people who cannot aim. [exhausted] My hands are shaking. So. Today, me."
+- `WRN_BUY_LMG_01`: "Heavy. Loud. Everything I am not. Everything I need to be tonight."
+- `WRN_BUY_LAUNCHER_01`: "Peg's kind of gun. I will borrow her taste. And her nerve."
+- `WRN_BUY_WONDER_01`: "Fasbender's toy. Built in the same mine as my brother's grave. [a breath] I will use it anyway."
+- `WRN_BUY_MELEE_01`: "A shovel. Good. Someone should dig them a proper place. [quietly] Not tonight. Tonight it is for the other thing."
 
 **Mystery Crate**
-- `WRN_CRATE_GOOD_01`: "Good. Finally, something here is on our side."
-- `WRN_CRATE_GOOD_02`: "This will do. This will do very well."
-- `WRN_CRATE_BAD_01`: "A crate that robs the poor. How German."
-- `WRN_CRATE_BAD_02`: "I could kill more with a sharpened spoon."
-- `WRN_CRATE_DRUMMER_01`: "The drummer. Reinholt's girl's toy. It is following us."
-- `WRN_CRATE_DRUMMER_02`: "Run, little soldier. One day I will catch you."
+- `WRN_CRATE_GOOD_01`: "Good. Finally something in this place is on our side."
+- `WRN_CRATE_GOOD_02`: "This will do. [quietly] This will do."
+- `WRN_CRATE_BAD_01`: "A box that robs the poor. [a breath] I have met that box before. It wore a uniform."
+- `WRN_CRATE_BAD_02`: "I could do more with a sharpened spoon. I have."
+- `WRN_CRATE_DRUMMER_01`: "The drummer. The child's toy. It follows us. Everything here follows us."
+- `WRN_CRATE_DRUMMER_02`: "Run, little soldier. [quietly] Run while you can."
 
 **Perks**
-- `WRN_PERK_IRONHIDE_01`: "Bavarian beer. Thick as their heads."
-- `WRN_PERK_SECONDWIND_01`: "Siostra Agnieszka. She was real. She nursed the laborers. Thank you, sister." `[Polish: "Sister Agnieszka."]`
-- `WRN_PERK_SECONDWIND_02`: "She made this to keep them alive. They used it to keep them working."
-- `WRN_PERK_TRIGGER_01`: "Fizz. My hands are fast now. Faster than theirs."
-- `WRN_PERK_TWINBARREL_01`: "Bitter. Appropriate."
-- `WRN_PERK_MARATHON_01`: "I could run to Kraków. I would, if this were done."
+- `WRN_PERK_IRONHIDE_01`: "Bavarian beer. Thick. [a breath] Good. I need to be thick tonight."
+- `WRN_PERK_SECONDWIND_01`: "Siostra Agnieszka. She was real. She nursed the laborers until they would not let her. [quietly] Thank you, sister." `[Polish: "Sister Agnieszka."]`
+- `WRN_PERK_SECONDWIND_02`: "She made this to keep them alive. They used it to keep them working. [a breath] I drink it to keep us alive. That is the only difference I have."
+- `WRN_PERK_TRIGGER_01`: "Fizz. Fast hands. Faster than theirs. That is all I ask for."
+- `WRN_PERK_TWINBARREL_01`: "Bitter. [a breath] Yes."
+- `WRN_PERK_MARATHON_01`: "I could run to Kraków. [quietly] There is nothing to run to in Kraków."
 - `WRN_PERK_HAWKEYE_01`: "I hate that this works. I hate it."
-- `WRN_PERK_HAWKEYE_02`: "Sniper brandy, made by the men who hunted us. My hands are steadier. Damn them."
+- `WRN_PERK_HAWKEYE_02`: "Sniper brandy, from the men who hunted us. My hands are steadier. [a breath] Damn them. Damn them for being right about my hands."
 - **(§11 amendment) Hawkeye Brandy and Halina "Sowa" Kurek.** Hawkeye's focus was derived from Reinholt's trials on Wren's mentor (`docs/JINGLES.md` §6). Wren recognizes the **owl transfer under the hawk** on every Hawkeye cabinet. Sowa signed her messages with a drawn owl, and taught Wren to do the same. These lines join the `PERK_HAWKEYE` shuffle bag for Wren on every map. `.01` always plays on her **first** Hawkeye drink in a profile (`once_per_profile`). After that, the bag is `WRN_PERK_HAWKEYE_01/02` plus `.02–.05` below.
   - `gl.all.wren.perk_hawkeye.01`: "There is an owl under the hawk. Sowa's owl. They painted over her, and she is still looking out."
-  - `gl.all.wren.perk_hawkeye.02`: "Breathe out, then the trigger. Halina taught me that in a hayloft. They put it in a bottle."
+  - `gl.all.wren.perk_hawkeye.02`: "Breathe out, then the trigger. Halina taught me that in a hayloft. [a breath] They put it in a bottle. They put her in a bottle."
   - `gl.all.wren.perk_hawkeye.03`: "*Dziękuję, Sowa.* It works. You always did." `[Polish: "Thank you, Owl."]`
-  - `gl.all.wren.perk_hawkeye.04`: "My hands are steady because hers were. I hate this. I hate it. Thank you."
-  - `gl.all.wren.perk_hawkeye.05` (round 20+): "Every German I drop with this, Halina, I am giving back to you. One at a time."
+  - `gl.all.wren.perk_hawkeye.04`: "My hands are steady because hers were. I hate this. I hate it. ...Thank you."
+  - `gl.all.wren.perk_hawkeye.05` (round 20+): "Every one I drop with this, Halina, I am giving back to you. One at a time. Whoever they were."
   - `gl.all.wren.perk_hawkeye_owl.01` (Helvetia Works side egg "Sowa's Owl", `docs/gravelight/EASTER_EGGS.md` §8.2; Wren only): "There. No hawk. Just her. *[long breath]* Somebody in this factory knew her name. Somebody was sorry."
-- `WRN_PERK_PACKMULE_01`: "One more weapon. One more chance."
-- `WRN_PERK_BLASTPROOF_01`: "Peg will be jealous. Or she already drank three."
+- `WRN_PERK_PACKMULE_01`: "One more weapon. One more chance. [quietly] I keep running out of chances."
+- `WRN_PERK_BLASTPROOF_01`: "Peg will be jealous. Or she already drank three. [a breath] Good for her."
 
 **Power-ups**
-- `WRN_PWR_RESUPPLY_01`: "Ammunition. Count it later."
-- `WRN_PWR_DEATHSDOOR_01`: "Everything dies in one shot. Like a good shot should."
-- `WRN_PWR_DOUBLESCRIP_01`: "Double. My notebook will need more pages."
-- `WRN_PWR_BLACKOUT_01`: "All of them. At once. If only it were so easy outside."
-- `WRN_PWR_FORTIFY_01`: "Windows closed. Do not waste it."
+- `WRN_PWR_RESUPPLY_01`: "Ammunition. Count it later. Shoot now."
+- `WRN_PWR_DEATHSDOOR_01`: "Everything falls in one shot. Like it should. [quietly] Like it never does."
+- `WRN_PWR_DOUBLESCRIP_01`: "Double. [a breath] My notebook will need more pages. I did not bring more pages."
+- `WRN_PWR_BLACKOUT_01`: "All of them. At once. [quietly] If it were only so easy out there. In the east."
+- `WRN_PWR_FORTIFY_01`: "Windows closed. Do not waste it. Breathe."
 - `WRN_PWR_CLEARANCE_01`: "The crate is cheap. Move."
 
 **Special enemies**
-- `WRN_BELL_01`: "The bell. My brother wrote that the walls hum. This is louder."
-- `WRN_BELL_02`: "Fog. Lanterns. Those were miners. Shoot them anyway."
-- `WRN_FOREMAN_01`: "The overseer. Obersteiger. My brother worked under him. Let me."
-- `WRN_FOREMAN_02`: "The drill core. Aim there. I want him to know who killed him."
-- `WRN_SCREAMER_01`: "The nurse. Kill her. Kill her now."
-- `WRN_GLASSHIDE_01`: "Glass body. Head only. That is all I aim for anyway."
+- `WRN_BELL_01`: "The bell. My brother wrote that the walls hum. [a breath] This is louder than a wall."
+- `WRN_BELL_02`: "Fog. Lanterns. Those were miners. [quietly] Shoot them anyway. Shoot them anyway."
+- `WRN_FOREMAN_01`: "The overseer. Obersteiger. My brother worked under him. Let me. [a breath] Let me."
+- `WRN_FOREMAN_02`: "The drill core. Aim there. I want him to know whose sister did it."
+- `WRN_SCREAMER_01`: "The nurse. Kill her. [shouting] Kill her now, before she calls them!"
+- `WRN_GLASSHIDE_01`: "Glass body. Head only. [quietly] It is all I aim for anyway."
 
 **Combat state**
-- `WRN_AMMO_LOW_01`: "Few rounds left."
+- `WRN_AMMO_LOW_01`: "Few rounds left. [a breath] Few."
 - `WRN_AMMO_NONE_01`: "Empty. Do diabła." `[Polish: "To the devil."]`
-- `WRN_DOWN_01`: "I'm down. Quickly. Quickly!"
+- `WRN_DOWN_01`: "I'm down. Quickly. [breathing heavily] Quickly, or I get up wrong."
 - `WRN_DOWN_02`: "Tomek... I'm sorry. I came too late."
-- `WRN_REVIVE_01`: "Get up. I am not losing anyone else here."
-- `WRN_REVIVE_02`: "Up. Shoot. Complain later."
-- `WRN_REVIVED_01`: "Thank you. I will write you in the notebook. The good page."
-- `WRN_STREAK_01`: "Sześćdziesiąt... I am losing count. Good." `[Polish: "Sixty."]`
-- `WRN_STREAK_02`: "Keep them coming. The notebook is hungry."
+- `WRN_REVIVE_01`: "Get up. I am not losing anyone else here. Get up."
+- `WRN_REVIVE_02`: "Up. Shoot. Cry later. I will too."
+- `WRN_REVIVED_01`: "Thank you. [a breath] You go in the notebook. The good page. It is a short page."
+- `WRN_STREAK_01`: "Sześćdziesiąt... I am losing count. [quietly] Good." `[Polish: "Sixty."]`
+- `WRN_STREAK_02`: "Keep them coming. [exhausted] The notebook is never full. That is the trouble with it."
 - `WRN_HEADSHOT_01`: "Jeden." `[Polish: "One."]`
 - `WRN_HEADSHOT_02`: "Clean. Into the book."
 - `WRN_HEADSHOT_03`: "That is how it is done, Dutch."
-- `WRN_CRAWLER_01`: "Crawling. Like they made my brother crawl."
+- `WRN_CRAWLER_01`: "Crawling. [quietly] Like they made my brother crawl. ...Finish it."
 
 **World**
-- `WRN_DOOR_01`: "Open. I know what's behind this one. I wish I didn't."
-- `WRN_POWER_01`: "Power. The laborers built that switch. Now we use it."
-- `WRN_CRUCIBLE_01`: "Their furnace. Their glass. Our gun now."
-- `WRN_CRUCIBLE_02`: "It changed the rifle. I don't want to know how."
-- `WRN_TRAP_01`: "The lever. Stand back, or join them."
-- `WRN_EE_01`: "Reinholt's daughter's music box. She had a child. I had a brother."
-- `WRN_EE_02`: "Four bells. Shoot them in order. Like counting."
+- `WRN_DOOR_01`: "Open. I know what is behind this one. [a breath] I wish I did not."
+- `WRN_POWER_01`: "Power. The laborers built that switch. [quietly] Now we use it. I am sorry. We use it."
+- `WRN_CRUCIBLE_01`: "Their furnace. Their glass. Our gun now. [a breath] It is still their furnace."
+- `WRN_CRUCIBLE_02`: "It changed the rifle. I do not want to know how. I will not write it down."
+- `WRN_TRAP_01`: "The lever. Stand back, or lie down with them."
+- `WRN_EE_01`: "The music box. Reinholt's daughter's. She had a child. I had a brother. [quietly] One of us is still looking."
+- `WRN_EE_02`: "Four bells. Shoot them in order. Like counting. I can count."
 - `WRN_EE_03`: "Break the heart. Break all of it."
-- `WRN_EXHAUST_01`: "Round fifty. I have run out of pages."
-- `WRN_EXHAUST_02`: "My eyes hurt. My hands do not care."
+- `WRN_EXHAUST_01`: "Round fifty. [exhausted] I have run out of pages. I am writing on my hand."
+- `WRN_EXHAUST_02`: "My eyes hurt. [a breath] My hands do not care. Good hands."
 
 **Correcting Dutch**
-- `WRN_POL_01`: "*Głodny*, Dutch. You just told me you are a hungry woman."
-- `WRN_POL_02`: "*Dziękuję*. Not *jen-koo-yeh*. Your grandmother must have wept."
-- `WRN_POL_03`: "That is not a swear. You just said 'bright plague.' Fine. It works."
+- `WRN_POL_01`: "*Głodny*, Dutch. You just told me you are a hungry woman. [a breath] ...Tonight, fine. We are all hungry women."
+- `WRN_POL_02`: "*Dziękuję*. Not *jen-koo-yeh*. Your grandmother is weeping somewhere."
+- `WRN_POL_03`: "That is not a swear. You just said 'bright plague.' ...Fine. Tonight it is a swear."
 
 ---
 
@@ -516,14 +516,14 @@ Fine Print Fernet and Overclock Cordial reach every Gravelight map after The Fin
 | `gl.all.peg.perk_overclock.01` | "Oh, I *like* that. Every empty magazine a small detonation." |
 | `gl.all.peg.perk_overclock.02` | "Electrical. Cheerful. I don't trust it at all. Another, please." |
 | `gl.all.peg.perk_blastproof.01` (rare, 15%, after Peg's dossier level 5) | "The bock that started it all. London's kept a bottle in a safe since 'forty-three. ...Never mind how I know." |
-| `gl.all.deacon.perk_fernet.01` | "Bitter herbs. Like Passover. Lord, I can see what this place is hiding." |
+| `gl.all.deacon.perk_fernet.01` | "Bitter herbs. Like Passover. [a breath] Lord, I can see what this place is hiding, and I'd give it back." |
 | `gl.all.deacon.perk_fernet.02` | "Whoever made this one wanted folks to see straight. First honest drink in the building." |
-| `gl.all.deacon.perk_overclock.01` | "Feels like somebody wired a friend into my hands. Howdy, friend." |
+| `gl.all.deacon.perk_overclock.01` | "Feels like somebody wired a stranger into my hands. [quietly] Howdy, stranger. Don't stay." |
 | `gl.all.deacon.perk_overclock.02` | "She sparks when she's empty. Don't we all, girl. Don't we all." |
-| `gl.all.wren.perk_fernet.01` | "Bitter. Good. Now I see where they hide things." |
-| `gl.all.wren.perk_fernet.02` | "It shows me the clock on every gift. Nothing here is free. I knew that." |
-| `gl.all.wren.perk_overclock.01` | "My rifle hums when it is empty. Fine. Let it sing." |
-| `gl.all.wren.perk_overclock.02` | "Static in the blood. My brother would have laughed at this." |
+| `gl.all.wren.perk_fernet.01` | "Bitter. Good. Now I see where they hide things. [a breath] They hide everything." |
+| `gl.all.wren.perk_fernet.02` | "It shows me the clock on every gift. Nothing here is free. I knew that. I have always known that." |
+| `gl.all.wren.perk_overclock.01` | "My rifle hums when it is empty. [quietly] Everything here hums. Fine. Let it." |
+| `gl.all.wren.perk_overclock.02` | "Static in the blood. [a breath] My brother would have laughed at this. Then he would have been frightened. Then he would have laughed again." |
 
 **Map 4 "Fernflug" (UPDATE 07, T-105): Skyhook Sekt and Magpie Mead** (`docs/MAP4_FERNFLUG.md` §12.8; the same `PERK_SKYHOOK` / `PERK_MAGPIE` token route).
 
@@ -533,18 +533,18 @@ Fine Print Fernet and Overclock Cordial reach every Gravelight map after The Fin
 | `gl.all.dutch.perk_skyhook.02` | "Tastes like a wedding. A wedding where somebody jumped off something." |
 | `gl.all.peg.perk_skyhook.01` | "Sekt. Of course it's Sekt. One doesn't open champagne for a landing." |
 | `gl.all.peg.perk_skyhook.02` | "...I feel I ought to have a parachute. I feel I am a parachute." |
-| `gl.all.deacon.perk_skyhook.01` | "Light as a feather. Light as a bird. Lord, don't let me get used to it." |
-| `gl.all.deacon.perk_skyhook.02` | "Somebody made this so you'd land soft. That's a kind thing to make. I'd like to meet 'em." |
-| `gl.all.wren.perk_skyhook.01` | "Bubbles. ...I don't like my feet off the ground. I'll make an exception." |
-| `gl.all.wren.perk_skyhook.02` | "Jette. The label says Jette. ...She said no. Good." |
+| `gl.all.deacon.perk_skyhook.01` | "Light as a feather. [a breath] Lord, don't let me get used to it. Don't let me get used to any of this." |
+| `gl.all.deacon.perk_skyhook.02` | "Somebody made this so you'd land soft. That's a kind thing to make. [quietly] I'd like to shake her hand." |
+| `gl.all.wren.perk_skyhook.01` | "Bubbles. ...I do not like my feet off the ground. [a breath] I will make an exception. One." |
+| `gl.all.wren.perk_skyhook.02` | "Jette. The label says Jette. ...She said no. [quietly] Good. Somebody said no." |
 | `gl.all.dutch.perk_magpie.01` | "Honey. And... metal? Like licking a pawn shop. ...I like it." |
 | `gl.all.dutch.perk_magpie.02` | "Pick it up, it's yours now. Lady after my own heart." |
 | `gl.all.peg.perk_magpie.01` | "Mead. A sergeant brewed mead on a bomb range. I'm going to write her a commendation and she's going to frame it in the cage." |
 | `gl.all.peg.perk_magpie.02` | "Everything the dead drop is ours. It always was. Now we're simply picking it up." |
-| `gl.all.deacon.perk_magpie.01` | "Mesquite honey. She made it with what was lying around. That's the best way anything's ever been made." |
-| `gl.all.deacon.perk_magpie.02` | "Nothing on this range goes to waste. Amen, sergeant." |
-| `gl.all.wren.perk_magpie.01` | "A thief's bird. ...The only one that comes back. I read the label. I read everything." |
-| `gl.all.wren.perk_magpie.02` | "Sixty-two kills and now they pay me twice. Good." |
+| `gl.all.deacon.perk_magpie.01` | "Mesquite honey. She made it with what was lying around. [a breath] That's the best way anything was ever made. That, and prayer." |
+| `gl.all.deacon.perk_magpie.02` | "Nothing on this range goes to waste. Amen, sergeant. [quietly] Amen." |
+| `gl.all.wren.perk_magpie.01` | "A thief's bird. ...The only one that comes back. [a breath] I read the label. I read everything. It is how I am still alive." |
+| `gl.all.wren.perk_magpie.02` | "Sixty-two, and now they pay me twice. [quietly] Nobody ever paid me once." |
 
 The Crucible plaque line `gl.map01.deacon.plaque.01` is in `docs/gravelight/LORE.md` §4.2. It's tier 1, once per match, the first time Deacon reads the plaque.
 
@@ -663,32 +663,32 @@ The categories VO_SCRIPT §8 expected but nobody had written: spawn, round start
 | `PEG_DENY_NO_POWER_01` | "No power. Of course not. Nothing in this country works without a committee." |
 | `PEG_DENY_CAP_01` | "I think that's quite enough of the local spirits, thank you." |
 | `PEG_DENY_NO_SCRIP_01` | "Insufficient funds. How terribly common." |
-| `DEA_SPAWN_01` | "Lord, look at this place. All right. Hands to work, hearts to You." |
-| `DEA_SPAWN_02` | "Kaltenbrunn. Something down here's humming, and it ain't a hymn." |
-| `DEA_ROUND_START_01` | "Here they come, children. Stay close now." |
-| `DEA_ROUND_START_02` | "Round's on. Steady hands, steady hearts." |
-| `DEA_ROUND_END_01` | "That's a round. Amen, and I mean it." |
-| `DEA_ROUND_END_02` | "Quiet spell. Check your guns, check your friends." |
-| `DEA_BUY_AMMO_01` | "There you go, girl. Fed and ready." |
-| `DEA_TEAM_DOWN_01` | "Hold on, now! Don't you go nowhere, I'm coming!" |
-| `DEA_TEAM_DOWN_02` | "Somebody's hurt. Lord, give me quick feet." |
-| `DEA_INTEL_01` | "Somebody wrote this in a hurry. Folks only write in a hurry when it matters." |
+| `DEA_SPAWN_01` | "Lord, look at this place. ...All right. Hands to the work. Heart to You. [a breath] Best I can do tonight." |
+| `DEA_SPAWN_02` | "Kaltenbrunn. Something down here is humming, and it ain't a hymn. [quietly] It ain't a hymn." |
+| `DEA_ROUND_START_01` | "Here they come. Stay close now. Stay close." |
+| `DEA_ROUND_START_02` | "Round's on. [a breath] Steady hands. Steady hearts. Lord, I'm asking." |
+| `DEA_ROUND_END_01` | "That's a round. [exhausted] Amen. And I mean it." |
+| `DEA_ROUND_END_02` | "Quiet spell. Check your guns. Check your friends. Check 'em twice." |
+| `DEA_BUY_AMMO_01` | "There you go, girl. Fed. [quietly] Somebody here ought to be." |
+| `DEA_TEAM_DOWN_01` | "Hold on, now! Don't you go nowhere. [shouting] I'm coming!" |
+| `DEA_TEAM_DOWN_02` | "Somebody's hurt. Lord, give me quick feet. Give me quick feet." |
+| `DEA_INTEL_01` | "Somebody wrote this in a hurry. [a breath] Folks only write in a hurry when it matters. Or when they're scared." |
 | `DEA_DENY_NO_POWER_01` | "She's cold. No juice in her. We gotta wake the turbine first." |
-| `DEA_DENY_CAP_01` | "No, ma'am. Any more and I'll be preaching to the zombies." |
-| `DEA_DENY_NO_SCRIP_01` | "Not enough. Machine don't take promises." |
-| `WRN_SPAWN_01` | "Kaltenbrunn. Six kilometers from home. Good. Then I know the way out." |
-| `WRN_SPAWN_02` | "Rifle, book, pencil. I am ready." |
+| `DEA_DENY_CAP_01` | "No, ma'am. One more and I'll be seeing two of everything out there. That's too many." |
+| `DEA_DENY_NO_SCRIP_01` | "Not enough. Machine don't take promises. [quietly] Nothing here takes promises." |
+| `WRN_SPAWN_01` | "Kaltenbrunn. Six kilometres from home. [a breath] Good. Then I know the way out. If there is one." |
+| `WRN_SPAWN_02` | "Rifle, book, pencil. [quietly] I am ready. I have been ready for two years." |
 | `WRN_ROUND_START_01` | "They come. Count them." |
-| `WRN_ROUND_START_02` | "Again. Good. I have pages left." |
-| `WRN_ROUND_END_01` | "Finished. Reload. Do not relax." |
-| `WRN_ROUND_END_02` | "Quiet. It will not last. It never does." |
+| `WRN_ROUND_START_02` | "Again. [exhausted] Good. I have pages left. I have pages left." |
+| `WRN_ROUND_END_01` | "Finished. Reload. Do not relax. They do not." |
+| `WRN_ROUND_END_02` | "Quiet. It will not last. [a breath] It never does. Nothing does." |
 | `WRN_BUY_AMMO_01` | "Ammunition. The only thing here worth the price." |
-| `WRN_TEAM_DOWN_01` | "You are down. Stay down, shoot low. I come." |
-| `WRN_TEAM_DOWN_02` | "One of us is on the floor. Cover me." |
-| `WRN_INTEL_01` | "Papers. Their papers. I keep everything they write." |
-| `WRN_DENY_NO_POWER_01` | "No current. The machine sleeps." |
-| `WRN_DENY_CAP_01` | "Enough. A sniper does not drink four bottles." |
-| `WRN_DENY_NO_SCRIP_01` | "Too little Scrip. Later." |
+| `WRN_TEAM_DOWN_01` | "You are down. Stay down, shoot low. I come. [shouting] I come!" |
+| `WRN_TEAM_DOWN_02` | "One of us is on the floor. Cover me. Nobody stays on the floor here." |
+| `WRN_INTEL_01` | "Papers. Their papers. [a breath] I keep everything they write. Someone has to read it, after." |
+| `WRN_DENY_NO_POWER_01` | "No current. The machine sleeps. Let it." |
+| `WRN_DENY_CAP_01` | "Enough. A sniper does not drink four bottles. [quietly] A sniper wants to." |
+| `WRN_DENY_NO_SCRIP_01` | "Too little Scrip. Later. If there is a later." |
 
 ---
 
@@ -763,7 +763,7 @@ Banter triggers between rounds (in the round transition break) when two characte
 - DUT: "You really name every engine you fix?"
 - DEA: "Every one. That turbine down there's called Hattie."
 - DUT: "Why Hattie?"
-- DEA: "Because she's loud and she don't quit. Like you, Sarge."
+- DEA: "Because she's loud and she don't quit. [a breath] Like you, Sarge. Don't quit."
 
 **BNT_DUT_DEA_02**
 - DEA: "You ever pray, Dutch?"
@@ -803,7 +803,7 @@ Banter triggers between rounds (in the round transition break) when two characte
 - DUT: "You write every kill in that book?"
 - WRN: "Every one."
 - DUT: "That's a lot of ink."
-- WRN: "Tonight it is Germans, and villagers, and Russians in greatcoats. The ink does not care. I am starting to."
+- WRN: "It was Germans. Now it is Germans, and villagers, and Russians in greatcoats. [a breath] The ink does not care. I am starting to."
 
 **BNT_DUT_WRN_04**
 - DUT: "*Dzienkuje*, Wren."
@@ -856,7 +856,7 @@ Banter triggers between rounds (in the round transition break) when two characte
 
 **BNT_PEG_WRN_03**
 - PEG: "When this is done, there's a flight to London. You could come."
-- WRN: "When this is done, I will still be Polish. London will not fix that."
+- WRN: "When this is done, I will still be Polish, and the Russians will be in Warsaw. London will not fix either."
 
 **BNT_PEG_WRN_04**
 - WRN: "Your orders. Do they say to bring us out?"
@@ -873,13 +873,13 @@ Banter triggers between rounds (in the round transition break) when two characte
 - DEA: "Your brother. What was he like?"
 - WRN: "A terrible shot. A good laugh."
 - DEA: "Sounds like my kind of folk."
-- WRN: "He would have liked you. He liked everyone. It was his only flaw."
+- WRN: "He would have liked you. He liked everyone. [a breath] It was his only flaw."
 
 **BNT_DEA_WRN_02**
 - WRN: "You talk to the machines."
 - DEA: "They listen better than people."
 - WRN: "Do they talk back?"
-- DEA: "Here? Lord help me, yes."
+- DEA: "Here? [quietly] Lord help me, yes."
 
 **BNT_DEA_WRN_03**
 - DEA: "♪ Little bird up in the rafters, singing for the dead... ♪"
@@ -890,7 +890,7 @@ Banter triggers between rounds (in the round transition break) when two characte
 **BNT_DEA_WRN_04**
 - DEA: "You ever sing, Wren?"
 - WRN: "In church. Before."
-- DEA: "Then you'll sing again. After."
+- DEA: "Then you'll sing again. After. [quietly] I'll hold you to it."
 
 **BNT_DEA_WRN_05**
 - WRN: "Your machine. Hattie. She is loud."
