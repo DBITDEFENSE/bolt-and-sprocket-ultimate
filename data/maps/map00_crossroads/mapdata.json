@@ -15,8 +15,8 @@
     944,
     1056
   ],
-  "baked_at": "2026-11-02T14:37:54",
-  "poi_signature": "7f907a2bde49d46e15ec16fc58a7d779",
+  "baked_at": "2026-11-06T18:58:47",
+  "poi_signature": "6a6616c498b2c84a5343febb521be835",
   "floors": [
     {
       "id": "cellar",
@@ -107,12 +107,34 @@
             24.0,
             31.0
           ]
+        ],
+        [
+          [
+            36.0,
+            22.6
+          ],
+          [
+            42.2,
+            22.6
+          ],
+          [
+            42.2,
+            29.6
+          ],
+          [
+            36.0,
+            29.6
+          ]
         ]
       ],
       "ys": [
         [
           -3.7,
           3.3
+        ],
+        [
+          -3.7,
+          -0.5
         ],
         [
           -3.7,
@@ -1379,6 +1401,23 @@
       }
     },
     {
+      "id": "perk:Gameplay/Perk_magpie_mead",
+      "type": "perk",
+      "pos": [
+        40.3,
+        -3.2,
+        27.6
+      ],
+      "floor": 0,
+      "label": "Magpie Mead",
+      "price": 3000,
+      "node_path": "Gameplay/Perk_magpie_mead",
+      "key": "Gameplay/Perk_magpie_mead",
+      "data": {
+        "perk_id": "magpie_mead"
+      }
+    },
+    {
       "id": "perk:Gameplay/Perk_marathon_malt",
       "type": "perk",
       "pos": [
@@ -1444,6 +1483,23 @@
       "key": "Gameplay/Perk_second_wind",
       "data": {
         "perk_id": "second_wind"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_skyhook_sekt",
+      "type": "perk",
+      "pos": [
+        40.3,
+        -3.2,
+        24.4
+      ],
+      "floor": 0,
+      "label": "Skyhook Sekt",
+      "price": 2500,
+      "node_path": "Gameplay/Perk_skyhook_sekt",
+      "key": "Gameplay/Perk_skyhook_sekt",
+      "data": {
+        "perk_id": "skyhook_sekt"
       }
     },
     {

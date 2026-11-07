@@ -89,6 +89,13 @@ var _frames: int = 0
 
 
 func _initialize() -> void:
+	# T-179: a --script run compiles this file's dependencies before the autoloads are registered, so Landscape (which
+	# names GLSettings since T-139) failed to compile and the dressing pass lost the edge tree line at
+	# Landscape.uniform_tree_xform. Recompiled here, once the autoload names exist.
+	for dep: String in ["res://gravelight/world/landscape/landscape.gd"]:
+		var dep_s: GDScript = load(dep) as GDScript
+		if dep_s != null and not dep_s.can_instantiate():
+			print("gen_map00: recompiling %s, err=%d" % [dep, dep_s.reload()])
 	map_root = Node3D.new()
 	map_root.name = "Map00Crossroads"
 	get_root().add_child(map_root)
@@ -323,7 +330,8 @@ func build_geometry() -> void:
 	# ground slab, with a hole over the cellar annex (x 24..36, z 10..31; T&C M2, DECISIONS T-027)
 	# and holes over the Old Cellar under the taproom, its stair lean-to and its two light wells (T-051, OC_HOLES)
 	_slab_with_holes("Ground", -45.0, 24.0, -40.0, 75.0, OC_HOLES)
-	box(geo, "GroundE", Vector3(36, -0.5, -40), Vector3(70, 0.0, 75), "snow")
+	# (T-179: with a hole over the cellar's late-delivery bay, which has its own roof)
+	_slab_with_holes("GroundE", 36.0, 70.0, -40.0, 75.0, [Rect2(BAY_X0, BAY_Z0 - T * 0.5, BAY_X1 + T * 0.5 - BAY_X0, BAY_Z1 - BAY_Z0 + T)])
 	_slab_with_holes("GroundN", 24.0, 36.0, -40.0, 10.0, OC_HOLES)
 	box(geo, "GroundS", Vector3(24, -0.5, 31), Vector3(36, 0.0, 75), "snow")
 	# T-080: the snow east of the cellar's stair hall (x 28..36, z 10..19) was a hole in the slab (nobody walked there);
@@ -978,7 +986,22 @@ const CELLAR_PERKS: Array = [
 	["packmule_porter", Vector3(28.6, CELLAR_Y, 29.4), 0.0], ["blastproof_bock", Vector3(31.4, CELLAR_Y, 29.4), 0.0],
 	# the ninth (M3): between the south pair, on the vault's axis, under its own bulb
 	["overclock_cordial", Vector3(30.15, CELLAR_Y, 29.4), 0.0],
+	# T-179: the late-delivery bay through the east wall (BAY_*): the two Fernflug tonics on its far wall, facing the
+	# arch, 1.75 m off the wall like the east row (the back panel walk), 2.35 m apart with the bay's sign between them
+	["skyhook_sekt", Vector3(40.3, CELLAR_Y, 24.4), 90.0], ["magpie_mead", Vector3(40.3, CELLAR_Y, 27.6), 90.0],
 ]
+## T-179 (the owner: "two perks that aren't in any of the maps ... expand the cellar area a little bit, add those
+## perks"): the NACHLIEFERUNG bay, a 6.2 x 7 m vault east of the Helvetia cellar under the field (x 36..42.2,
+## z 22.6..29.6; its roof is the snow, like the cellar's), reached through an arch in the cellar's east wall
+## between Marathon Malt and Hawkeye Brandy (BAY_ARCH: its z span, clear of both machines' footprints and of the
+## vault rib that lands on the wall at z 27). Zone CELLAR (no door of its own, no window, no spawn: zombies come
+## in through the arch, like the Crucible's alcove).
+const BAY_X0: float = 36.0
+const BAY_X1: float = 42.2
+const BAY_Z0: float = 22.6
+const BAY_Z1: float = 29.6
+const BAY_ARCH: Vector2 = Vector2(25.12, 26.78)
+const BAY_BULB: Vector3 = Vector3(38.9, CELLAR_Y + 2.55, 25.95)
 ## Same as PerkMachine._shape_footprint (that script needs the autoloads, which a --script run doesn't have).
 ## Keep the two in step.
 const MACHINE_FOOTPRINTS: Dictionary = {
@@ -987,6 +1010,8 @@ const MACHINE_FOOTPRINTS: Dictionary = {
 	"wagon": Vector3(1.7, 1.7, 0.85), "safe": Vector3(1.1, 1.9, 0.95),
 	"coil": Vector3(0.8, 2.3, 0.6),   # Overclock Cordial: cabinet-sized (perks.json)
 	"register": Vector3(1.0, 2.2, 0.75),   # Ledger Lager (T-141): the brass cash register
+	"glider": Vector3(0.8, 2.4, 0.7),   # Skyhook Sekt (T-105; on Map 0 since T-179)
+	"bandit": Vector3(0.9, 2.3, 0.65),  # Magpie Mead (T-105; on Map 0 since T-179)
 }
 ## crate spots: [name, position, yaw, can_start]
 const CRATES: Array = [["Hearth", Vector3(22.9, 0, 14.0), 90.0, true], ["GuestBed", Vector3(22.0, UP_Y, 0.8), 180.0, false],
@@ -1075,7 +1100,7 @@ func build_cellar() -> void:
 	box(geo, "CellarRoof", Vector3(24.0 - T * 0.5, CELLAR_TOP, 19.0), Vector3(36.0 + T * 0.5, -0.04, 31.0 + T * 0.5), "brick_cellar")
 	box(geo, "CellarRoofSnow", Vector3(24.0 - T * 0.5, -0.04, 19.0), Vector3(36.0 + T * 0.5, 0.0, 31.0 + T * 0.5), "snow")
 	wall_z("CelW", 24.0, 19.0, 31.0, cy, CELLAR_TOP, [[19.45, 21.05, cy, cy + DOOR_H]], "cellar_stone")   # the breach to the Old Cellar (T-051)
-	wall_z("CelE", 36.0, 19.0, 31.0, cy, CELLAR_TOP, [], "cellar_stone")
+	wall_z("CelE", 36.0, 19.0, 31.0, cy, CELLAR_TOP, [[BAY_ARCH.x, BAY_ARCH.y, cy, cy + DOOR_H]], "cellar_stone")   # the arch to the bay (T-179)
 	wall_x("CelS", 31.0, 24.0 - T * 0.5, 36.0 + T * 0.5, cy, CELLAR_TOP, [], "cellar_stone")
 	wall_x("CelN", 19.0, 28.0, 36.0 + T * 0.5, cy, CELLAR_TOP, [], "cellar_stone")
 	box(geo, "CelNLintel", Vector3(24.0, cy + 2.6, 19.0 - T * 0.5), Vector3(28.0, CELLAR_TOP, 19.0 + T * 0.5), "cellar_stone")
@@ -1088,7 +1113,26 @@ func build_cellar() -> void:
 	box(geo, "CellarCrateCol", Vector3(30.9, cy, 19.15), Vector3(31.5, cy + 1.1, 19.76), "metal", true, false)
 	box(geo, "CellarBarrelCol", Vector3(33.3, cy, 19.15), Vector3(35.95, cy + 1.0, 20.8), "metal", true, false)   # (T-051: to x 33.3, no dead-end pocket behind the lever)
 	box(geo, "LandingKegCol", Vector3(27.0, 0.0, 10.15), Vector3(28.0, 0.8, 11.1), "metal", true, false)
+	build_cellar_bay()
 	build_old_cellar()
+
+
+## T-179: the late-delivery bay's shell (see BAY_*): flagstones, coursed stone walls up to the vault's soffit height,
+## a brick soffit under the field's snow, and the two solid things in it, the opened delivery crates in the two
+## corners beside the arch (baked, under NAV_SOLID_H, no_mantle), so the floor between the arch and the machines
+## stays one open 3.8 m apron and the machines' back walks stay clear.
+func build_cellar_bay() -> void:
+	var cy: float = CELLAR_Y
+	var t2: float = T * 0.5
+	box(geo, "BayFloor", Vector3(BAY_X0, cy - 0.5, BAY_Z0 - t2), Vector3(BAY_X1 + t2, cy, BAY_Z1 + t2), "cellar_floor").set_meta("surface", "stone")
+	box(geo, "BayRoof", Vector3(BAY_X0 + t2, CELLAR_TOP, BAY_Z0 - t2), Vector3(BAY_X1 + t2, -0.04, BAY_Z1 + t2), "brick_cellar")
+	box(geo, "BayRoofSnow", Vector3(BAY_X0 + t2, -0.04, BAY_Z0 - t2), Vector3(BAY_X1 + t2, 0.0, BAY_Z1 + t2), "snow").set_meta("surface", "snow")
+	wall_x("BayN", BAY_Z0, BAY_X0 + t2, BAY_X1 + t2, cy, CELLAR_TOP, [], "cellar_stone")
+	wall_x("BayS", BAY_Z1, BAY_X0 + t2, BAY_X1 + t2, cy, CELLAR_TOP, [], "cellar_stone")
+	wall_z("BayE", BAY_X1, BAY_Z0 + t2, BAY_Z1 - t2, cy, CELLAR_TOP, [], "cellar_stone")
+	var in0: float = BAY_X0 + t2
+	box(geo, "BayCrateCol", Vector3(in0, cy, BAY_Z0 + t2), Vector3(in0 + 1.05, cy + 1.45, BAY_Z0 + t2 + 1.0), "furniture", true, false).set_meta("no_mantle", true)
+	box(geo, "BayCrateCol", Vector3(in0, cy, BAY_Z1 - t2 - 0.9), Vector3(in0 + 0.95, cy + 0.95, BAY_Z1 - t2), "furniture", true, false).set_meta("no_mantle", true)
 
 
 ## THE OLD CELLAR (Update 02 section 6.1, DECISIONS T-051): the inn's own cellar under the taproom, older than the
@@ -1592,6 +1636,7 @@ func _dress_cellar() -> void:
 	Props.cable(g, Vector3(33.5, cl, 27.5), Vector3(30.35, cl, 28.7), 0.05, 0.015, 7)   # to the ninth machine's bulb
 	for bp: Vector3 in CELLAR_BULBS:
 		Props.pendant(g, bp, top - 0.02, _cellar_lit, "tin")
+	_dress_cellar_bay(g)
 	Props.bake(_cellar_lit)
 	for lit: Node in _cellar_lit.get_children():
 		lit.set_meta("keep", true)
@@ -1606,7 +1651,7 @@ func _dress_cellar() -> void:
 	Props.shelves(g, Vector3(24.15, cy, 24.5), -90.0, 1.4, 1.9, 0.28, 3, 11)
 	Props.shelves(g, Vector3(24.15, cy, 27.15), -90.0, 1.5, 1.6, 0.28, 3, 12)
 	Props.shelves(g, Vector3(35.85, cy, 23.15), 90.0, 1.4, 1.9, 0.28, 3, 13)
-	Props.shelves(g, Vector3(35.85, cy, 26.1), 90.0, 1.5, 1.7, 0.28, 3, 14)
+	# (T-179: the shelf that stood at z 26.1 on the east wall made way for the arch to the late-delivery bay)
 	# ---- south wall, west half: a wine rack (bottles lying with their necks out)
 	var wr: Node3D = Props.group(g, "WineRack", Vector3(25.85, cy, 30.85), 0.0)
 	Props.block(wr, Vector3(-1.45, 0, -0.34), Vector3(-1.4, 1.5, 0.0), "planks")
@@ -1658,6 +1703,78 @@ func _dress_cellar() -> void:
 		Props.block(g, Vector3(24.15, hy - 0.02, hz - 0.02), Vector3(24.24, hy + 0.02, hz + 0.02), "iron")
 	Props.stencil(g, Vector3(27.85, 2.2, 12.2), 90.0, "KELLER", 44, Color(0.2, 0.18, 0.15, 0.85), 0.004)
 	_dress_old_cellar()
+
+
+## T-179: the late-delivery bay (NACHLIEFERUNG). The fiction: two cabinets came down the salt road after the eight
+## replacement units, on a docket nobody had ordered (Skyhook from Werk Thalbach's wind tunnel; Magpie in an
+## olive crate stencilled in English from a range on the far side of the world), so the landlord had the installers
+## knock an arch through to the old ice vault under the field. Dressing only (the crates' colliders are in
+## build_cellar_bay): the arch's jambs and painted lintel, one stone rib down the bay's spine, the bay's bulb on a
+## cable from the vault's run, an oil lantern by the arch that is always lit (the machines read before the lever),
+## the delivery note between the machines, the two opened crates, straw, a puddle, cobwebs.
+func _dress_cellar_bay(parent: Node3D) -> void:
+	var cy: float = CELLAR_Y
+	var top: float = CELLAR_TOP
+	var g: Node3D = Props.group(parent, "CellarBay", Vector3.ZERO)
+	var in0: float = BAY_X0 + T * 0.5
+	var in1: float = BAY_X1 - T * 0.5
+	var zn: float = BAY_Z0 + T * 0.5
+	var zs: float = BAY_Z1 - T * 0.5
+	var am: float = (BAY_ARCH.x + BAY_ARCH.y) * 0.5
+	var cream: Color = Color(0.92, 0.9, 0.82, 0.8)
+	# ---- the arch: dressed stone jambs proud of both faces, a timber lintel, the bay's name painted on it both ways
+	for jz: Array in [[BAY_ARCH.x - 0.2, BAY_ARCH.x], [BAY_ARCH.y, BAY_ARCH.y + 0.2]]:
+		Props.block(g, Vector3(BAY_X0 - T * 0.5 - 0.05, cy, float(jz[0])), Vector3(BAY_X0 + T * 0.5 + 0.05, cy + DOOR_H, float(jz[1])), "cellar_stone")
+	Props.block(g, Vector3(BAY_X0 - T * 0.5 - 0.07, cy + DOOR_H, BAY_ARCH.x - 0.3), Vector3(BAY_X0 + T * 0.5 + 0.07, cy + DOOR_H + 0.24, BAY_ARCH.y + 0.3), "beam")
+	Props.stencil(g, Vector3(BAY_X0 - T * 0.5 - 0.075, cy + DOOR_H + 0.12, am), 90.0, "NACHLIEFERUNG", 34, cream, 0.0036)
+	Props.stencil(g, Vector3(BAY_X0 + T * 0.5 + 0.075, cy + DOOR_H + 0.12, am), -90.0, "AUSGANG · KELLER", 30, Color(cream, 0.6), 0.0032)
+	# a hanging enamel plate over the east aisle, in line with the arch (the east wall itself is behind the machines):
+	# seen from the stair foot and from the middle of the vault
+	var hp: Vector3 = Vector3(32.9, cy + 2.4, am)
+	Props.block(g, hp + Vector3(-0.02, -0.15, -0.5), hp + Vector3(0.02, 0.15, 0.5), "enamel_plate")
+	for cz: float in [-0.4, 0.4]:
+		Props.strut(g, hp + Vector3(0, 0.15, cz), Vector3(hp.x, top - 0.02, hp.z + cz), 0.008, "iron")
+	Props.stencil(g, hp + Vector3(-0.022, 0.0, 0.0), 90.0, "NACHLIEFERUNG →\nSKYHOOK SEKT · MAGPIE MEAD", 24, Color(0.12, 0.14, 0.18, 0.95), 0.0034)
+	Props.stencil(g, hp + Vector3(0.022, 0.0, 0.0), -90.0, "KELLER · TREPPE", 24, Color(0.12, 0.14, 0.18, 0.95), 0.0034)
+	# ---- the vault: one rib down the bay's spine, corbelled on the north and south walls
+	var spring: float = cy + 2.05
+	_arch(g, Vector3(37.9, spring, zn), Vector3(37.9, spring, zs), (top - 0.1) - spring)
+	# ---- the bay's bulb on a cable through the lintel from the vault's run; a pipe along the north wall
+	var cl: float = top - 0.08
+	Props.cable(g, Vector3(33.25, cl, am), Vector3(BAY_X0 - T * 0.5, cl, am), 0.04, 0.015, 5)
+	Props.cable(g, Vector3(in0, cl, am), Vector3(BAY_BULB.x, cl, am), 0.05, 0.015, 6)
+	Props.pendant(g, BAY_BULB, top - 0.02, _cellar_lit, "tin")
+	Props.pipe(g, Vector3(in0 + 0.05, cy + 2.7, zn + 0.07), Vector3(in1 - 0.05, cy + 2.7, zn + 0.07), 0.03, "iron")
+	Props.lantern(g, Vector3(36.75, cy + 2.15, 24.55), top - 0.02)   # lit by CellarBayLamp (build_cellar_gameplay)
+	# ---- the far wall between the machines: the maker's name and the delivery note pinned to a board
+	Props.stencil(g, Vector3(in1 - 0.005, cy + 2.15, am), 90.0, "HELVETIA AUTOMATEN AG\nNACHLIEFERUNG · 2 STÜCK", 30, cream, 0.0042)
+	Props.block(g, Vector3(in1 - 0.03, cy + 0.95, am - 0.36), Vector3(in1, cy + 1.55, am + 0.36), "board_wood")
+	Props.block(g, Vector3(in1 - 0.036, cy + 1.0, am - 0.27), Vector3(in1 - 0.03, cy + 1.48, am + 0.27), "paper_old", false)
+	Props.stencil(g, Vector3(in1 - 0.037, cy + 1.25, am), 90.0, "LIEFERSCHEIN 7b\n1 × SKYHOOK SEKT\n1 × MAGPIE MEAD\nnicht bestellt", 20, Color(0.16, 0.13, 0.1, 0.92), 0.0022)
+	Props.cyl(g, Vector3(in1 - 0.04, cy + 1.45, am), 0.012, 0.02, "brass", Vector3(0, 0, 90))   # the drawing pin
+	# ---- NW corner: Skyhook's crate (over the north BayCrateCol), lid off, the Thalbach consignment stencils
+	Props.crate(g, Vector3(in0 + 0.52, cy, zn + 0.5), 0.95, -90.0, "HELVETIA")
+	Props.crate(g, Vector3(in0 + 0.5, cy + 0.95, zn + 0.47), 0.5, -80.0)
+	Props.stencil(g, Vector3(in0 + 0.52, cy + 0.5, zn + 0.985), 180.0, "ZWEIGWERK THALBACH\nW.T. · AUFRECHT", 24, Color(0.85, 0.82, 0.7, 0.7), 0.0026)
+	# ---- SW corner: Magpie's crate (over the south BayCrateCol), olive, open, straw in it; its lid against the wall
+	Props.block(g, Vector3(in0 + 0.05, cy, zs - 0.85), Vector3(in0 + 0.9, cy + 0.9, zs - 0.05), "olive_drab")
+	Props.block(g, Vector3(in0 + 0.11, cy + 0.86, zs - 0.79), Vector3(in0 + 0.84, cy + 0.92, zs - 0.11), "hay", false)
+	Props.stencil(g, Vector3(in0 + 0.905, cy + 0.5, zs - 0.45), -90.0, "THIS SIDE UP", 24, Color(0.9, 0.9, 0.84, 0.65), 0.0026)
+	Props.obox(g, Vector3(in0 + 1.4, cy + 0.5, zs - 0.03), Vector3(0.85, 1.0, 0.05), "olive_drab")
+	Props.stencil(g, Vector3(in0 + 1.4, cy + 0.62, zs - 0.06), 0.0, "RANGE SUPPLY\nGROOM LAKE", 22, Color(0.9, 0.9, 0.84, 0.55), 0.0026)
+	Props.obox(g, Vector3(in0 + 2.0, cy + 0.46, zs - 0.08), Vector3(0.028, 0.92, 0.028), "iron", Vector3(9, 0, 6))   # the crowbar that opened them
+	var srng: RandomNumberGenerator = RandomNumberGenerator.new()
+	srng.seed = 179
+	for i: int in 9:
+		var sp: Vector3 = Vector3(in0 + srng.randf_range(0.9, 2.4), cy + 0.01, srng.randf_range(zs - 1.6, zs - 0.3))
+		Props._noshadow(Props.ball(g, sp, Vector3(0.35, 0.03, 0.22) * srng.randf_range(0.7, 1.3), "hay"))
+	# ---- the floor and the corners
+	Props.puddle(g, Vector3(38.6, cy, 27.4), 1.0, 0.6, 25.0)
+	Props.block(g, Vector3(38.6, cy + 0.002, 25.7), Vector3(39.1, cy + 0.012, 26.2), "iron")   # a drain under the bulb
+	for i2: int in 3:
+		Props.block(g, Vector3(38.66 + i2 * 0.15, cy + 0.012, 25.75), Vector3(38.72 + i2 * 0.15, cy + 0.016, 26.15), "char")
+	Props.cobweb(g, Vector3(in1, top - 0.02, zn), -90.0, 0.8)
+	Props.cobweb(g, Vector3(in1, top - 0.02, zs), 180.0, 0.9)
 
 
 ## A wine rack against a wall (local z 0 = the wall, the room at local -Z): uprights, slatted boards and bottles
@@ -4059,7 +4176,8 @@ func build_cellar_gameplay() -> void:
 	d3.position = Vector3(24.0, 0, 11.5)
 	d3.rotation.y = deg_to_rad(90)
 	gameplay.add_child(d3)
-	for z: Array in [[Vector3(26, cy, 14.5), Vector3(4, 6.5, 9)], [Vector3(30, cy, 25), Vector3(12, 2.7, 12)]]:   # top stays under the ceiling, so the yard above is not "cellar"
+	for z: Array in [[Vector3(26, cy, 14.5), Vector3(4, 6.5, 9)], [Vector3(30, cy, 25), Vector3(12, 2.7, 12)],   # top stays under the ceiling, so the yard above is not "cellar"
+			[Vector3((BAY_X0 + BAY_X1) * 0.5, cy, (BAY_Z0 + BAY_Z1) * 0.5), Vector3(BAY_X1 - BAY_X0, 2.7, BAY_Z1 - BAY_Z0)]]:   # T-179: the late-delivery bay
 		var zv: Node3D = _scripted(Node3D.new(), "res://gravelight/world/zone_volume.gd", "Zone_CELLAR", {"zone_id": &"CELLAR", "size": z[1]})
 		zv.position = z[0]
 		gameplay.add_child(zv)
@@ -4082,14 +4200,16 @@ func build_cellar_gameplay() -> void:
 	# lights: one oil lamp at the foot of the stairs always lit; the bulbs over the machines wait for the lever
 	_lamp("CellarHallLamp", Vector3(26.0, 2.5, 10.8), Color(1.0, 0.72, 0.45), 1.0, 7.0, false, true)
 	_lamp("CellarStairLamp", Vector3(26.0, cy + 2.3, 19.6), Color(1.0, 0.7, 0.4), 1.0, 6.5, false, true)
+	# T-179: the late-delivery bay's oil lantern by the arch, always lit, so its two machines read before the lever
+	_lamp("CellarBayLamp", Vector3(36.75, cy + 1.95, 24.55), Color(1.0, 0.7, 0.42), 0.7, 4.5, false, true)
 	var first_bulb: OmniLight3D = null
-	for lp: Vector3 in CELLAR_BULBS:
+	for lp: Vector3 in CELLAR_BULBS + [BAY_BULB]:
 		var l: OmniLight3D = OmniLight3D.new()
 		l.name = "CellarBulb"
 		l.position = lp - Vector3(0, 0.05, 0)
 		l.light_color = Color(1.0, 0.85, 0.6)
 		l.light_energy = 1.5
-		l.omni_range = 7.5
+		l.omni_range = 7.5 if lp != BAY_BULB else 5.5   # (the bay's: no reach back through the wall onto the east row)
 		l.omni_attenuation = 1.4
 		l.visible = false
 		l.set_meta("zone", &"CELLAR")
