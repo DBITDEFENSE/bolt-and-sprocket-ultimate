@@ -60,8 +60,9 @@ TTS_MODEL = "eleven_v4"
 STS_MODEL = "eleven_multilingual_sts_v2"
 SFX_MODEL = "eleven_text_to_sound_v3"
 DESIGN_MODEL = "eleven_ttv_v3"
-FORMAT_PCM = "pcm_44100"          # raw 16-bit mono 44.1 kHz (Pro+ plans); refused -> FORMAT_MP3, decoded by ffmpeg
-FORMAT_MP3 = "mp3_44100_128"
+FORMAT_PCM = "pcm_44100"          # raw 16-bit mono 44.1 kHz (Pro+ plans); refused -> the mp3s below, ffmpeg-decoded
+FORMAT_MP3 = "mp3_44100_128"      # every plan
+FORMATS = [FORMAT_PCM, "mp3_44100_192", FORMAT_MP3]   # best first; mp3_44100_192 is Creator+
 PCM_RATE = 44100
 SOURCE = "ai_eleven"
 DEFAULT_SETTINGS = {"stability": 0.5, "similarity_boost": 0.75}
@@ -72,8 +73,8 @@ SETUP_HINT = ("ElevenLabs is off: no %s. Setup, once: run `npx @elevenlabs/cli o
 GROUPS = {1: "cutscenes", 2: "squad", 3: "operator", 4: "npcs", 5: "bosses", 6: "barks", 7: "fineprint", 8: "bs"}
 GROUP_TITLES = {1: "the new cutscenes", 2: "the squad", 3: "the Operator", 4: "the map NPCs", 5: "the bosses",
                 6: "barks", 7: "The Fine Print", 8: "Bolt & Sprocket"}
-# Plans by monthly credits (elevenlabs.io/pricing; check the page before buying)
-PLANS = [("Free", 10_000), ("Starter", 30_000), ("Creator", 100_000), ("Pro", 500_000), ("Scale", 2_000_000),
+# Plans by monthly credits (Creator as the account read it on 2026-11-07; the rest elevenlabs.io/pricing: check it)
+PLANS = [("Free", 10_000), ("Starter", 30_000), ("Creator", 131_000), ("Pro", 500_000), ("Scale", 2_000_000),
          ("Business", 11_000_000)]
 BATCH = 20                        # lines per credits-log batch (and per manifest save)
 RETRIES = 4
@@ -608,6 +609,20 @@ def synth(client, job: Job, fmt: str, sleep=_sleep) -> tuple[bytes, str, int]:
     raise ApiStop("rate", status, code, msg)
 
 
+def synth_any(client, job: Job, fmt: str = FORMAT_PCM, sleep=_sleep, out=print) -> tuple[bytes, str, int]:
+    """synth() from `fmt` down the FORMATS list: a format the plan refuses moves to the next (pcm_44100 needs Pro,
+    mp3_44100_192 Creator); the format that worked is returned so the run keeps using it."""
+    start = FORMATS.index(fmt) if fmt in FORMATS else 0
+    for k, f in enumerate(FORMATS[start:], start):
+        try:
+            return synth(client, job, f, sleep)
+        except ApiStop as e:
+            if e.reason != "format" or k == len(FORMATS) - 1:
+                raise
+            out("  %s refused on this plan (%s): trying %s" % (f, e.message[:80], FORMATS[k + 1]))
+    raise ApiStop("format", None, "", "no output format accepted")
+
+
 def decode(data: bytes, fmt: str) -> np.ndarray:
     """API audio -> float mono at the pipeline's rate (48 kHz)."""
     from scipy import signal
@@ -806,7 +821,7 @@ def plan(only: list[int] | None = None, client=None, write: bool = True, out=pri
             sub["tier"], sub["character_count"], sub["character_limit"], left, sub["next_reset"] or "?"))
     else:
         out(SETUP_HINT if not have_key() else "account: (subscription not read)")
-    if write:
+    if write and not only:              # a partial plan (--only) never overwrites the full estimate
         write_needs(res)
     return res
 
@@ -825,12 +840,21 @@ def write_needs(res: dict, path: str | None = None) -> None:
         lines.append("- Your account now: **%s** tier, %s of %s characters used this period, next reset %s. %s" % (
             sub["tier"], format(sub["character_count"], ","), format(sub["character_limit"], ","), sub["next_reset"] or "?",
             "Enough for the whole bake." if sub["character_limit"] - sub["character_count"] >= res["total_to_pay"]
-            else "Not enough for the whole bake: upgrade (the bake stops cleanly at the quota and resumes next month)."))
+            else "Not enough for the whole bake in one period: upgrade for one month, or stay and bake over about %d "
+                 "monthly periods (the bake stops cleanly at the quota and resumes after the reset)." % (
+                     -(-res["total_to_pay"] // max(1, sub["character_limit"])))))
         if sub["tier"].lower() in ("free", ""):
             lines.append("- The Free tier has no commercial licence and needs attribution: a paid plan (Starter or up) is "
                          "needed before the voices ship in a release.")
     else:
         lines.append("- Account not read: " + SETUP_HINT)
+    if 1 not in res["groups"]:
+        lines.append("- Not counted yet: the new cutscene lines (group 1; T-191 adds them to lines.json) and the "
+                     "rewritten lines (T-195..T-199). Rerun `tools/voice.sh plan` after they merge.")
+    uncast = sum(g["uncast"] for g in res["groups"].values())
+    if uncast:
+        lines.append("- %s lines have no ElevenLabs voice yet (T-201 casts them): the estimate counts them anyway." %
+                     format(uncast, ","))
     lines.append("<!-- eleven-plan:end -->")
     block = "\n".join(lines)
     txt = open(path, encoding="utf-8").read() if os.path.exists(path) else "# NEEDS DEVIN\n"
@@ -926,14 +950,8 @@ def bake(only: list[int] | None = None, limit_chars: int | None = None, ids: lis
                             "time": V.today()})
                 break
             try:
-                try:
-                    data, used_fmt, chars = synth(client, j, fmt, sleep)
-                except ApiStop as e:
-                    if e.reason != "format" or fmt == FORMAT_MP3:
-                        raise
-                    out("  %s refused on this plan (%s): switching to %s" % (fmt, e.message[:80], FORMAT_MP3))
-                    fmt = FORMAT_MP3
-                    data, used_fmt, chars = synth(client, j, fmt, sleep)
+                data, used_fmt, chars = synth_any(client, j, fmt, sleep, out)
+                fmt = used_fmt
             except ApiLineError as e:
                 summary["failed"][j.ln.file_id] = scrub(e)
                 out("  FAIL %s %s" % (j.ln.file_id, scrub(e)))
@@ -1115,7 +1133,7 @@ def sfx(name: str, prompt: str, seconds: float | None = None, loop: bool = False
 
 # ───────────────────────────────────────────────────────────── the tiny live check
 
-CHECK_VOICES = {"en": "JBFqnCBsd6RMkjVDRZzb", "ru": "onwK4e9ZLuTAKqWW03F9", "de": "onwK4e9ZLuTAKqWW03F9"}  # premade
+CHECK_VOICES = {"en": "N2lVS1w4EtoT3dr4eOWO", "ru": "onwK4e9ZLuTAKqWW03F9", "de": "onwK4e9ZLuTAKqWW03F9"}  # premade: Callum, Daniel
 
 
 def check(out_dir: str = "", client=None, out=print) -> dict:
@@ -1133,8 +1151,10 @@ def check(out_dir: str = "", client=None, out=print) -> dict:
             if pred(j) and 12 <= j.chars <= 120 and j not in pick:
                 return j
         return None
-    a = first(lambda j: j.ln.char in SQUAD and j.lang == "en" and j.group == 2)
-    b = first(lambda j: j.lang == "ru") or first(lambda j: j.lang == "de")
+    a = first(lambda j: j.ln.char in SQUAD and j.lang == "en" and j.chars >= 30 and re.search(r"^\[[a-z ]+\]", j.text)) \
+        or first(lambda j: j.ln.char in SQUAD and j.lang == "en")
+    b = first(lambda j: j.lang == "ru") or first(lambda j: j.lang == "de" and bool(j.ln.speech) and j.chars >= 30) \
+        or first(lambda j: j.lang == "de")
     pick = [x for x in (a, b) if x]
     total = 0
     res = {"lines": [], "subscription_before": sub0}
@@ -1142,6 +1162,7 @@ def check(out_dir: str = "", client=None, out=print) -> dict:
     out_dir = out_dir or os.path.join(cache_dir(), "check")
     os.makedirs(out_dir, exist_ok=True)
     cache = TakeCache()
+    best_fmt = load_state().get("format") or FORMAT_PCM
     for j in pick:
         if not j.voice_id:
             j.voice_id = CHECK_VOICES.get(j.lang, CHECK_VOICES["en"])
@@ -1152,13 +1173,8 @@ def check(out_dir: str = "", client=None, out=print) -> dict:
             break
         hit = cache.get(j.key)
         if hit is None:
-            try:
-                data, fmt, n = synth(client, j, FORMAT_PCM)
-            except ApiStop as e:
-                if e.reason != "format":
-                    raise
-                out("  pcm_44100 refused on this plan: %s; using %s" % (e.message[:80], FORMAT_MP3))
-                data, fmt, n = synth(client, j, FORMAT_MP3)
+            data, fmt, n = synth_any(client, j, best_fmt, out=out)
+            best_fmt = fmt
             cache.put(j.key, data, {"format": fmt, "model": TTS_MODEL, "voice_id": j.voice_id, "lang": j.lang,
                                     "settings": j.settings, "text": j.text, "chars": n, "line": j.ln.file_id,
                                     "created": V.today()})
@@ -1178,6 +1194,8 @@ def check(out_dir: str = "", client=None, out=print) -> dict:
     sub1 = subscription(client)
     res["subscription_after"] = sub1
     res["credits_used"] = sub1["character_count"] - sub0["character_count"]
+    if best_fmt != FORMAT_PCM:
+        save_state(dict(load_state(), format=best_fmt))      # the bake starts with the format the plan takes
     log({"event": "check", "lines": len(res["lines"]), "chars_sent": total, "credits_delta": res["credits_used"],
          "model": TTS_MODEL})
     out("check: %d lines, %d characters sent, account %d -> %d (%d credits), tier %s, limit %d, reset %s" % (
@@ -1210,7 +1228,7 @@ def stock(fid: str, voice: str, force: bool = False, client=None, cache: TakeCac
     hit = cache.get(j.key)
     if hit is None:
         client = client or make_client()
-        data, fmt, n = synth(client, j, FORMAT_PCM)
+        data, fmt, n = synth_any(client, j, load_state().get("format") or FORMAT_PCM)
         cache.put(j.key, data, {"format": fmt, "model": TTS_MODEL, "voice_id": voice, "lang": j.lang,
                                 "settings": j.settings, "text": j.text, "chars": n, "line": fid, "created": V.today()})
     else:

@@ -307,7 +307,8 @@ def test_pcm_refused_falls_back_to_mp3(eleven, mp3_bytes):
     c = FakeClient(mp3=mp3_bytes)
     c.refuse_pcm = True
     r = E.bake(ids=ids, games=("gl",), client=c, out=lambda *a: None)
-    assert r["baked"] == 2 and [x["format"] for x in c.calls] == ["pcm_44100", "mp3_44100_128", "mp3_44100_128"]
+    assert r["baked"] == 2 and [x["format"] for x in c.calls] == ["pcm_44100", "mp3_44100_192", "mp3_44100_192"]
+    assert E.load_state() == {"format": "mp3_44100_192"}, "the next run starts with the format the plan takes"
 
 
 def test_human_take_wins(eleven):
@@ -337,12 +338,12 @@ def test_speech_field_is_what_is_sent(eleven):
 def test_plan_writes_needs_devin(eleven, tmp_path):
     p = tmp_path / "NEEDS_DEVIN.md"
     p.write_text("# NEEDS DEVIN\n\n## UPDATE 10\n- old\n", encoding="utf-8")
-    r = E.plan(only=[2], client=FakeClient(), out=lambda *a: None)
+    r = E.plan(client=FakeClient(), out=lambda *a: None)
     assert r["total_to_pay"] > 0 and r["subscription"]["tier"] == "creator"
     txt = p.read_text(encoding="utf-8")
     assert txt.index(E.NEEDS_HEADING) < txt.index("## UPDATE 10") and "characters" in txt
     p.write_text(txt.replace("<!-- eleven-plan:end -->", "<!-- eleven-plan:end -->\n- the lead's note"), encoding="utf-8")
-    E.plan(only=[2], client=FakeClient(), out=lambda *a: None)
+    E.plan(client=FakeClient(), out=lambda *a: None)
     txt2 = p.read_text(encoding="utf-8")
     assert txt2.count(E.NEEDS_HEADING) == 1 and txt2.count("eleven-plan:start") == 1 and "the lead's note" in txt2
 
