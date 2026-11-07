@@ -22858,7 +22858,7 @@ bell_id = &"bell_tower_girder"
 size = 0.4
 
 [node name="Bell_bell_gatehouse_roof" type="Node3D" parent="Gameplay" unique_id=2121717922]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 3.85, 7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 3.15, 10.55)
 script = ExtResource("70_jyaj0")
 bell_id = &"bell_gatehouse_roof"
 size = 0.4
