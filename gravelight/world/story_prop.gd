@@ -13,6 +13,10 @@ extends Interactable
 
 const DATA_PATH: String = "res://data/gravelight/story_props.json"
 const INTEL_PATH: String = "res://data/gravelight/intel.json"
+const ARCHIVE_PATH: String = "res://data/gravelight/archive_lazarus.json"
+const LAZARUS_MAP: String = "lazarus"
+## archive_lazarus.json "map" -> the story_props.json "map" key the placement uses (MapRoot's map_key).
+const ARCHIVE_MAP_KEYS: Dictionary = {"map00": "0", "map01": "1", "map02": "2", "map04a": "4a", "map04b": "4b", "map04c": "4c", "map04d": "4d"}
 const STYLES: PackedStringArray = ["guest_book", "logbook", "drawing", "letter", "docket", "clipping"]
 const WALL_STYLES: PackedStringArray = ["drawing", "docket", "clipping"]
 const INK: String = "paint:#2a2432"
@@ -50,12 +54,30 @@ static func spawn_all(map: Node3D, map_key: String) -> int:
 	return n
 
 
-## The intel.json row for an id ({} when there is none).
+## The intel.json row for an id, or the Lazarus Archive row (archive_rows) for an ARC_LZ_ id ({} when there is none).
 static func intel_row(id: StringName) -> Dictionary:
 	for r: Dictionary in GLData.load_json(INTEL_PATH).get("intel", []):
 		if str(r.get("id", "")) == String(id):
 			return r
+	for a: Dictionary in archive_rows():
+		if str(a.get("id", "")) == String(id):
+			return a
 	return {}
+
+
+## UPDATE 11 (T-200): the Lazarus Archive documents (data/gravelight/archive_lazarus.json, T-190) as intel-shaped rows,
+## in their `order`. Their map is "lazarus" (the Archive's own shelf); the placement's map is the story_props key
+## (ARCHIVE_MAP_KEYS). The first read files them like any intel row.
+static func archive_rows() -> Array:
+	var out: Array = []
+	for e: Variant in GLData.load_json(ARCHIVE_PATH).get("entries", []):
+		if not (e is Dictionary):
+			continue
+		var d: Dictionary = e
+		out.append({"id": str(d.get("id", "")), "title": str(d.get("title", "")), "type": "DOC", "map": LAZARUS_MAP,
+			"text": str(d.get("body", "")), "order": int(d.get("order", 0)), "archive_map": str(d.get("map", ""))})
+	out.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return int(a["order"]) < int(b["order"]))
+	return out
 
 
 static func is_wall_style(s: String) -> bool:

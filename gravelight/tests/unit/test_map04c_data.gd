@@ -238,6 +238,6 @@ func test_map_key_derivations_and_the_archive() -> void:
 	for e: Dictionary in GLData.load_json("res://data/gravelight/story_props.json").get("props", []):
 		if str(e.get("map", "")) == "4c":
 			props += 1
-	assert_eq(props, 6, "the hangar's two plus T-171's four story props")
+	assert_eq(props, 9, "the hangar's two plus T-171's four story props plus T-200's three Lazarus documents (diary p6, culture log, Hale's order)")
 	assert_true((GLData.load_json("res://data/maps/bake_config.json")["maps"] as Dictionary).has("map04c_groomlake"), "the minimap bake knows the range")
 	assert_true(((GLData.load_json("res://data/gravelight/objectives.json")["maps"] as Dictionary)).has("map04c_groomlake"), "the objectives block exists")

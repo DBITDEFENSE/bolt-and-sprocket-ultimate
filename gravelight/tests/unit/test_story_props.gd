@@ -32,6 +32,8 @@ func _by_id() -> Dictionary:
 	var out: Dictionary = {}
 	for r: Dictionary in _intel():
 		out[str(r["id"])] = r
+	for a: Dictionary in StoryProp.archive_rows():   # UPDATE 11 (T-200): the Lazarus documents (test_archive_lazarus.gd)
+		out[str(a["id"])] = a
 	return out
 
 
@@ -83,7 +85,7 @@ func test_placements_point_at_fixed_rows() -> void:
 	for e: Dictionary in _props():
 		var id: String = str(e.get("id", ""))
 		assert_true(rows.has(id), "placement %s has an intel row" % id)
-		if rows.has(id):
+		if rows.has(id) and not id.begins_with("ARC_LZ_"):
 			assert_eq(str((rows[id] as Dictionary).get("placement", "")), "fixed", "placement %s points at a fixed row" % id)
 			assert_eq(str((rows[id] as Dictionary).get("map", "")), str(e.get("map", "")), "placement %s is on the row's map" % id)
 		assert_false(placed.has(id), "placement %s is not duplicated" % id)
@@ -115,28 +117,28 @@ func test_text_is_subtitle_safe() -> void:
 func test_spawn_all_places_the_map_0_items() -> void:
 	var root: Node3D = Node3D.new()
 	add_child_autofree(root)
-	assert_eq(StoryProp.spawn_all(root, "0"), 7, "seven Map 0 items (six plus the T-137 poster)")
+	assert_eq(StoryProp.spawn_all(root, "0"), 9, "nine Map 0 items (six plus the T-137 poster, plus T-200's diary page 1 and the front report)")
 	var other: Node3D = Node3D.new()
 	add_child_autofree(other)
-	assert_eq(StoryProp.spawn_all(other, "1"), 2, "Jakub's refusal (T-137) and Fenske's second ledger (T-141) on Map 1")
+	assert_eq(StoryProp.spawn_all(other, "1"), 7, "Jakub's refusal (T-137), Fenske's second ledger (T-141), and T-200's five Map 1 documents (diary page 2, lab report 1, three STAUB memos)")
 	var none: Node3D = Node3D.new()
 	add_child_autofree(none)
 	assert_eq(StoryProp.spawn_all(none, "3"), 0, "none on a map without fixed props")
 	var m2: Node3D = Node3D.new()
 	add_child_autofree(m2)
-	assert_eq(StoryProp.spawn_all(m2, "2"), MAP2_IDS.size(), "the Map 2 items (four, the T-137 surgeon's notes, T-154's five)")
+	assert_eq(StoryProp.spawn_all(m2, "2"), MAP2_IDS.size() + 2, "the Map 2 items (four, the T-137 surgeon's notes, T-154's five; T-200's diary page 3 and the Laboratory inventory)")
 	var m4d: Node3D = Node3D.new()
 	add_child_autofree(m4d)
-	assert_eq(StoryProp.spawn_all(m4d, "4d"), 9, "nine Mondlicht items (four, the T-137 Terms of the Mark, the four U10 props of T-158)")
+	assert_eq(StoryProp.spawn_all(m4d, "4d"), 11, "eleven Mondlicht items (four, the T-137 Terms of the Mark, the four U10 props of T-158; T-200's diary page 7 and the order of last resort)")
 	var m4c: Node3D = Node3D.new()
 	add_child_autofree(m4c)
-	assert_eq(StoryProp.spawn_all(m4c, "4c"), 6, "six Groom Lake items (the manifest, the program log; T-171's shift sheet, fuelling card, specimen tag, watch log)")
+	assert_eq(StoryProp.spawn_all(m4c, "4c"), 9, "nine Groom Lake items (the manifest, the program log; T-171's shift sheet, fuelling card, specimen tag, watch log; T-200's diary page 6, the culture log, Hale's order)")
 	var m4b: Node3D = Node3D.new()
 	add_child_autofree(m4b)
-	assert_eq(StoryProp.spawn_all(m4b, "4b"), 4, "four Kranich items (T-156: the Bordbuch, the crew photo, the aimer's card, the autopilot page)")
+	assert_eq(StoryProp.spawn_all(m4b, "4b"), 5, "five Kranich items (T-156: the Bordbuch, the crew photo, the aimer's card, the autopilot page; T-200's diary page 5)")
 	var m4a: Node3D = Node3D.new()
 	add_child_autofree(m4a)
-	assert_eq(StoryProp.spawn_all(m4a, "4a"), 4, "four Werk Thalbach items (T-155)")
+	assert_eq(StoryProp.spawn_all(m4a, "4a"), 6, "six Werk Thalbach items (T-155; T-200's diary page 4 and the transfer list)")
 	var by_name: Dictionary = {}
 	for c: Node in root.get_children() + other.get_children():
 		by_name[c.name] = c

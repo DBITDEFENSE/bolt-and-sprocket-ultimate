@@ -3,7 +3,7 @@ extends MenuScreen
 ## Intel Archive: every document, photo, cylinder and tape found across matches.
 
 const TYPE_NAMES: Dictionary = {"DOC": "Document", "PHOTO": "Photograph", "CYL": "Cylinder", "RADIO": "Radio", "TAPE": "Ledger tape", "PANEL": "Fine-print panel", "STENCIL": "Stencil", "PLAQUE": "Maker's plate", "FORGE": "Brass plate", "CHALK": "Chalk", "CARD": "Boss card"}
-const MAP_NAMES: Dictionary = {"0": "Crossroads Inn", "1": "Kaltenbrunn", "2": "Totenhafen", "all": "Operation Gravelight", "cabinets": "Helvetia Automaten AG"}
+const MAP_NAMES: Dictionary = {"0": "Crossroads Inn", "1": "Kaltenbrunn", "2": "Totenhafen", "all": "Operation Gravelight", "cabinets": "Helvetia Automaten AG", "lazarus": "Lazarus (Chetverodnevo)"}
 
 var _reader: Label
 
@@ -64,4 +64,10 @@ func _show(r: Dictionary, have: bool) -> void:
 		_reader.text = "%s\n%s\n\n%s" % [r["title"], TYPE_NAMES.get(str(r["type"]), r["type"]), r["text"]]
 	else:
 		_reader.text = "Not yet recovered.\n\n" + ("Somebody in the Crossroads Inn's cellar is waiting to be let out." if str(r.get("placement", "")) == "companion" \
-			else "Intel turns up at random spots during matches.")
+			else _unfound_text(r))
+
+
+## T-200: a Lazarus document is filed by finding its paper where the story left it; intel turns up at random otherwise.
+static func _unfound_text(r: Dictionary) -> String:
+	return "A Lazarus document. It lies where the story left it, on the map." if str(r.get("map", "")) == StoryProp.LAZARUS_MAP \
+		else "Intel turns up at random spots during matches."

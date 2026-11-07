@@ -34,6 +34,7 @@ func _ready() -> void:
 		_intel[str(row["id"])] = row
 	_add_homage_rows()
 	_add_hint_rows()
+	_add_lazarus_rows()
 	load_profile()
 	GLBus.match_started.connect(_on_match_started)
 	GLBus.game_over.connect(_on_game_over)
@@ -482,6 +483,13 @@ func _add_hint_rows() -> void:
 		if c is Dictionary:
 			var id: String = "ARC_HINT_" + k.to_upper()
 			_intel[id] = {"id": id, "title": str(c.get("title", id)), "type": str(c.get("type", "CARD")), "map": str(c.get("map", "")), "text": str(c.get("text", ""))}
+
+
+## UPDATE 11 (T-200): the Lazarus Archive documents (archive_lazarus.json), filed by their story props on the Archive's
+## "lazarus" shelf, in their order. Their story props are placed in story_props.json (docs/U11_CONTRACTS.md C7).
+func _add_lazarus_rows() -> void:
+	for row: Dictionary in StoryProp.archive_rows():
+		_intel[str(row["id"])] = row
 
 
 func intel_rows() -> Array:
