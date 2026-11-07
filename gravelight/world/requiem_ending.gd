@@ -100,8 +100,8 @@ func _once(key: String) -> bool:
 func _shot_heart() -> void:
 	if not _once("heart"):
 		return
-	_shot({"from": _p(1.8, -5.6, 7.0), "to": _p(1.1, -5.7, 5.4), "look": _p(0, 0.2, 0), "look_to": _p(0, 0.5, 0),
-		"fov": 46, "fov_to": 38, "handheld": 0.3, "grade": "violet", "blur": 0.5,
+	_shot({"from": _p(2.6, -5.3, 10.2), "to": _p(1.9, -5.5, 8.6), "look": _p(0, -0.6, 0), "look_to": _p(0, 0.2, 0),
+		"fov": 50, "fov_to": 42, "handheld": 0.3, "grade": "violet", "blur": 0.5,
 		"squad": {"place": _p(0, -7.0, 8.6), "face": _p(0, -6.0, 0)},
 		"light": {"pos": _p(0, -1.0, 2.0), "color": [0.72, 0.5, 1.0], "energy": 1.2, "range": 9.0}}, 6.0)
 	_vo(&"LSL_REC_HIDE_01")

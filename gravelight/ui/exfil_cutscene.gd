@@ -219,7 +219,7 @@ func _fx_moon(shot: CinemaShot) -> void:
 	mat.albedo_texture = tex
 	mat.emission_enabled = true
 	mat.emission = Color(0.55, 0.55, 0.6)
-	mat.emission_energy_multiplier = 0.6
+	mat.emission_energy_multiplier = 0.18   # (lit by the range's sun: a phase, not a flat disc)
 	mat.roughness = 1.0
 	m.material_override = mat
 	m.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF

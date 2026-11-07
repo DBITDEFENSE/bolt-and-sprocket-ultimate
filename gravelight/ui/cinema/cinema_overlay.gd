@@ -180,6 +180,25 @@ func _build_title(root: Control) -> void:
 	_title_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_title_box.modulate.a = 0.0
 	root.add_child(_title_box)
+	# a soft band of shadow behind the card, so the lines read over a bright frame (the salt flat, the snow at dawn)
+	var scrim: TextureRect = TextureRect.new()
+	var grad: Gradient = Gradient.new()
+	grad.offsets = PackedFloat32Array([0.0, 0.35, 0.65, 1.0])
+	grad.colors = PackedColorArray([Color(0, 0, 0, 0), Color(0, 0, 0, 0.42), Color(0, 0, 0, 0.42), Color(0, 0, 0, 0)])
+	var gt: GradientTexture2D = GradientTexture2D.new()
+	gt.gradient = grad
+	gt.fill_from = Vector2(0, 0)
+	gt.fill_to = Vector2(0, 1)
+	gt.width = 4
+	gt.height = 128
+	scrim.texture = gt
+	scrim.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	scrim.stretch_mode = TextureRect.STRETCH_SCALE
+	scrim.anchor_right = 1.0
+	scrim.anchor_top = 0.27
+	scrim.anchor_bottom = 0.68
+	scrim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_title_box.add_child(scrim)
 	_title = Label.new()
 	_title.add_theme_font_override("font", MenuKit.stamp_font())
 	_title.add_theme_font_size_override("font_size", MenuKit.px(104))
@@ -355,6 +374,11 @@ func title_card(title: String, sub: String, time_line: String = "", hold: float 
 	_rule.offset_right = 0.0
 	var k: float = _k()
 	var vp: Vector2 = _view_size()
+	var fs: int = MenuKit.px(104)   # a long place name ("GROOM LAKE, NEVADA · 9 MAY 1945") shrinks to fit the frame
+	var tw_px: float = MenuKit.stamp_font().get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+	if tw_px > vp.x * 0.86:
+		fs = maxi(24, int(float(fs) * vp.x * 0.86 / tw_px))
+	_title.add_theme_font_size_override("font_size", fs)
 	_title.pivot_offset = Vector2(vp.x * 0.45, vp.y * 0.08)
 	_title.scale = Vector2(1.06, 1.06)
 	var tw: Tween = create_tween()
