@@ -13,7 +13,13 @@
     "DEE",
     "HAL",
     "RRK",
-    "WIV"
+    "WIV",
+    "SER",
+    "VOL",
+    "BRG",
+    "SVR",
+    "RTN",
+    "NAR"
   ],
   "player_speakers": [
     "DUT",
@@ -24,7 +30,8 @@
     "BNT",
     "TAG"
   ],
-  "speaker_default_priority": {"UBR": 1, 
+  "speaker_default_priority": {
+    "UBR": 1,
     "OPR": 2,
     "FAS": 4,
     "REI": 4,
@@ -44,7 +51,13 @@
     "DEE": 4,
     "HAL": 4,
     "RRK": 2,
-    "WIV": 4
+    "WIV": 4,
+    "SER": 4,
+    "VOL": 4,
+    "BRG": 4,
+    "NAR": 4,
+    "SVR": 2,
+    "RTN": 1
   },
   "category_priority": {
     "PWR_EXPIRE": 2,
