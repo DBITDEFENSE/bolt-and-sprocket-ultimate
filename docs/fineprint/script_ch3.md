@@ -1513,7 +1513,7 @@ Steam the Blastproof label off over a kettle without tearing it (a hold-and-ease
 - `fp.c3.anni.25` **ANNI** *(she tilts it to the lamp, sees the faint ghost of tiny writing through the paper, and goes very still)* `[gsw]`: ...You wrote on the inside of a beer label.
 - `fp.c3.anni.26` **VENDELIN**: Nobody reads the back of things.
 - `fp.c3.anni.27` **ANNI** `[gsw]`: I do. It's my entire job. *(reading through the paper, slowly)* "Nachtglas." What's Nachtglas?
-- `fp.c3.anni.28` **VENDELIN**: A black glass. In a salt mine in Silesia. There is a great deal of it, and the Reich is putting it into every soldier who will drink from a machine. It makes the living stronger for a few hours. It makes the dead get up. It does not stay where you put it.
+- `fp.c3.anni.28` **VENDELIN**: A black glass. In a salt mine in Silesia. There is a great deal of it, and the Reich is putting it into every soldier who will drink from a machine. It makes the living stronger for a few hours. It keeps the dead moving. It does not stay where you put it.
 
 *Anni picks up her cigarette at last and draws on it, once, for the first time in the scene.*
 

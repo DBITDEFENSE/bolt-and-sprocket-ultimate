@@ -457,7 +457,7 @@ The call runs through three **conference bridges**, violet junction boxes hangin
 - `fp.c1.sol3.07` **sprocket:** And they sent a robot with it. "Field Merchandiser V-1. Status: lost on arrival." They lost him in the first five minutes and wrote him off.
 - `fp.c1.sol3.08` **bolt:** What happened down there?
 - `fp.c1.sol3.09` **sprocket:** Metrics. It's all metrics. "Active retained users, deceased: forty-one thousand." Deceased. They're counting dead people as ACTIVE.
-- `fp.c1.sol3.10` **sprocket:** *[slowly]* Because they are active. Bolt, that's what the product does. It keeps you doing the last thing you were doing. Even after. They didn't just stop people canceling. They stopped them stopping.
+- `fp.c1.sol3.10` **sprocket:** *[slowly]* Because they are active. Bolt. "Natural retention phenomenon. An existing retained base, awaiting a Provider." Something down there was already refusing to end. They didn't stop people canceling. They found a world where nobody could, and put a meter on it.
 - `fp.c1.sol3.11` **bolt:** The dead ones get up.
 - `fp.c1.sol3.12` **sprocket:** The dead ones get up and keep going, and Darkmatter counts every step as engagement. *[a beat]* They're the customers, Bolt. The walking dead are the most loyal customers this company has ever had.
 - `fp.c1.sol3.13` **sprocket:** "RESULTS: EXCEPTIONAL RETENTION. Recommendation: proceed to full market."
@@ -3132,7 +3132,7 @@ Steam the Blastproof label off over a kettle without tearing it (a hold-and-ease
 - `fp.c3.anni.25` **ANNI** *(she tilts it to the lamp, sees the faint ghost of tiny writing through the paper, and goes very still)* `[gsw]`: ...You wrote on the inside of a beer label.
 - `fp.c3.anni.26` **VENDELIN**: Nobody reads the back of things.
 - `fp.c3.anni.27` **ANNI** `[gsw]`: I do. It's my entire job. *(reading through the paper, slowly)* "Nachtglas." What's Nachtglas?
-- `fp.c3.anni.28` **VENDELIN**: A black glass. In a salt mine in Silesia. There is a great deal of it, and the Reich is putting it into every soldier who will drink from a machine. It makes the living stronger for a few hours. It makes the dead get up. It does not stay where you put it.
+- `fp.c3.anni.28` **VENDELIN**: A black glass. In a salt mine in Silesia. There is a great deal of it, and the Reich is putting it into every soldier who will drink from a machine. It makes the living stronger for a few hours. It keeps the dead moving. It does not stay where you put it.
 
 *Anni picks up her cigarette at last and draws on it, once, for the first time in the scene.*
 

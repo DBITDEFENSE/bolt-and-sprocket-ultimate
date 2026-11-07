@@ -438,7 +438,7 @@ The call runs through three **conference bridges**, violet junction boxes hangin
 - `fp.c1.sol3.07` **sprocket:** And they sent a robot with it. "Field Merchandiser V-1. Status: lost on arrival." They lost him in the first five minutes and wrote him off.
 - `fp.c1.sol3.08` **bolt:** What happened down there?
 - `fp.c1.sol3.09` **sprocket:** Metrics. It's all metrics. "Active retained users, deceased: forty-one thousand." Deceased. They're counting dead people as ACTIVE.
-- `fp.c1.sol3.10` **sprocket:** *[slowly]* Because they are active. Bolt, that's what the product does. It keeps you doing the last thing you were doing. Even after. They didn't just stop people canceling. They stopped them stopping.
+- `fp.c1.sol3.10` **sprocket:** *[slowly]* Because they are active. Bolt. "Natural retention phenomenon. An existing retained base, awaiting a Provider." Something down there was already refusing to end. They didn't stop people canceling. They found a world where nobody could, and put a meter on it.
 - `fp.c1.sol3.11` **bolt:** The dead ones get up.
 - `fp.c1.sol3.12` **sprocket:** The dead ones get up and keep going, and Darkmatter counts every step as engagement. *[a beat]* They're the customers, Bolt. The walking dead are the most loyal customers this company has ever had.
 - `fp.c1.sol3.13` **sprocket:** "RESULTS: EXCEPTIONAL RETENTION. Recommendation: proceed to full market."
