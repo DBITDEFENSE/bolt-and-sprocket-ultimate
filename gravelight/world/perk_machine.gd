@@ -47,6 +47,7 @@ func _ready() -> void:
 	cs.position = Vector3(0, _footprint.y * 0.5, 0)
 	_body.add_child(cs)
 	add_child(_body)
+	ArtCollider.fit(self, self, _body)   # T-188: hulls of the cabinet's art, not the 2.4 m box over its rounded top
 	GLBus.power_activated.connect(_refresh_power)
 	_build_lore()
 	if perk_id == &"second_wind":

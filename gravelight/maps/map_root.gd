@@ -57,6 +57,9 @@ func _ready() -> void:
 	for n: Node in get_tree().get_nodes_in_group(&"bake_only"):
 		if n is CollisionObject3D:
 			(n as CollisionObject3D).collision_layer = 0   # T-125: navmesh-bake footprints (empty crate spots) never block
+	# T-188: the NavBlock round a perk machine / the Crucible / the bench / a crate spot / the bank counter only shapes the
+	# baked navmesh (after the loaders below have built the branch and the rooms)
+	(func() -> void: ArtCollider.free_blocks_under(get_tree(), self)).call_deferred()
 	if _online:
 		GameState.player_ids = Net.player_ids()
 		GameState.bot_ids = Net.bot_pids()   # online bots (T-138): simulated on the host, puppets on the clients

@@ -73,6 +73,7 @@ func _ready() -> void:
 	cs.position = Vector3(0, 1.2, 0)
 	body.add_child(cs)
 	add_child(body)
+	ArtCollider.fit(self, self, body)   # T-188: hulls of the forge's art, not the 2.0 x 2.4 x 1.6 m box
 	# the brass plate on the feed door (LORE.md 4.2), readable: why this Crucible is on this map (T-075, MachineLore)
 	var plaque: LorePlaque = LorePlaque.new()
 	plaque.name = "CruciblePlate"

@@ -68,10 +68,18 @@ func test_cabinets_keep_their_colliders_and_areas() -> void:
 		var m: PerkMachine = _machine(id)
 		var shape: String = str((GLData.table("perks")["perks"] as Dictionary)[String(id)].get("shape", "cabinet"))
 		var fp: Vector3 = PerkMachine._shape_footprint(shape)
-		var body: BoxShape3D = _box_of(m, "StaticBody3D")
-		assert_not_null(body, "%s has its body" % id)
-		if body != null:
-			assert_eq(body.size, fp, "%s: the collider is the footprint" % id)
+		# T-188: the body is hulls of the cabinet's art (ArtCollider), no longer the footprint box: inside the footprint
+		# (+ the art's own slack), never taller than the art
+		var sb: StaticBody3D = null
+		for c: Node in m.get_children():
+			if c is StaticBody3D:
+				sb = c
+		assert_not_null(sb, "%s has its body" % id)
+		if sb != null:
+			assert_gt(int(sb.get_meta("art_fit", 0)), 0, "%s: the body is fitted to the art" % id)
+			var cb: AABB = ArtCollider.body_aabb(sb)
+			var ib: AABB = m.global_transform.affine_inverse() * cb if m.is_inside_tree() else cb
+			assert_lt(ib.end.y, fp.y + TOP_SLACK + 0.02, "%s: the collider no taller than the art" % id)
 		var area: BoxShape3D = _box_of(m, "Area3D")
 		assert_not_null(area, "%s has its interaction area" % id)
 		if area != null:
@@ -151,7 +159,8 @@ func _shapes(o: Node3D) -> Array:
 
 
 func _collect_shapes(n: Node, o: Node3D, out: Array) -> void:
-	if n is CollisionShape3D:
+	if n is CollisionShape3D and not (n.get_parent() != null and n.get_parent().has_meta("art_fit")):
+		# (T-188: a body fitted to its art follows that art by design; the use areas and every other body must match)
 		var cs: CollisionShape3D = n as CollisionShape3D
 		var desc: String = cs.shape.get_class()
 		if cs.shape is BoxShape3D:
