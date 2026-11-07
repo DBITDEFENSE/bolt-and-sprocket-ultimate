@@ -104,6 +104,8 @@ static func teller_for(map_id: String) -> Dictionary:
 static func closed_reason() -> String:
 	if bool(GLSettings.values.get("classic_rules", false)):
 		return "classic"
+	if EggMode.on():
+		return "practice"   # T-181: the savings live in the profile; a practice match's fast rounds would farm interest
 	return ""
 
 

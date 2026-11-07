@@ -256,7 +256,10 @@ static func pause_reason(s: Dictionary, c: Dictionary) -> String:
 	if bool(s.get("apart", false)):
 		return "apart"   # U10 T-172 (ee.json together): mid-round in a hot round, too far from the squad
 	var left: int = int(s.get("round_left", -1))
-	if left > 0 and left <= int(pc.get("round_end_left", 2)) and not (pc.get("no_threat_pause_types", []) as Array).has(ty):
+	# T-181: a round stalled on its last zombie pauses even a kill_with_weapon task (`hunt`): Requiem's s8b bot held
+	# the heart for 75 game minutes waiting for kills while round 18's last straggler, which nobody else could reach,
+	# kept every new zombie from coming
+	if left > 0 and left <= int(pc.get("round_end_left", 2)) and (not (pc.get("no_threat_pause_types", []) as Array).has(ty) or bool(s.get("hunt", false))):
 		return "round_end"
 	if bool(s.get("shop", false)):
 		return "shopping"   # T-153: ee.json shop_break: a rich bot steps off the egg to buy its kit

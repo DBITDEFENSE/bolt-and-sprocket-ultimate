@@ -230,6 +230,8 @@ func _on_round_started(round_number: int, special: bool) -> void:
 	if special:
 		_set_special_fx(true)
 		return
+	if EggMode.on():
+		return   # T-181 Easter Egg Mode: no scheduled Foreman (boss_due is false too) and no Screamer
 	if not _map_allows(&"foreman"):
 		return
 	if RoundManager.boss_due() and _count(&"foreman") < int(_ecfg(&"foreman")["max_active"]):
@@ -891,7 +893,7 @@ func _zone_allowed(zone: StringName, player_zones: Dictionary) -> bool:
 
 ## Glasshides: Map 1, round 15+, a growing share of spawns, never more than max_active at once.
 func _roll_glasshide() -> bool:
-	if not _map_allows(&"glasshide"):
+	if not _map_allows(&"glasshide") or EggMode.on():   # T-181: crawlers only in Easter Egg Mode
 		return false
 	var e: Dictionary = _ecfg(&"glasshide")
 	if _count(&"glasshide") >= int(e["max_active"]):

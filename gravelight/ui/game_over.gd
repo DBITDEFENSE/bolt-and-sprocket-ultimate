@@ -184,6 +184,13 @@ func _add_progression(box: VBoxContainer, font: Font) -> void:
 	if sm.is_empty():
 		return
 	var line: Label = Label.new()
+	if bool(sm.get("practice", false)):   # T-181: an Easter Egg Mode match earns nothing on the profile
+		line.text = "Easter Egg Mode: practice, no progress"
+		line.add_theme_font_override("font", font)
+		line.add_theme_font_size_override("font_size", 22)
+		line.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		box.add_child(line)
+		return
 	var r0: int = int(sm.get("rank_before", 1))
 	var r1: int = int(sm.get("rank_after", 1))
 	line.text = "+%d XP    Rank %d%s" % [int(sm.get("xp", 0)), r1, ("   (up from %d!)" % r0) if r1 > r0 else ""]

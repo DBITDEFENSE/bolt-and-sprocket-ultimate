@@ -600,8 +600,8 @@ func _update_hunt(now: float) -> void:
 	var hc: Dictionary = BotAIData.combat("hunt")
 	hunt_at = Vector3.INF
 	var d: ZombieDirector = director()
-	if d == null or RoundManager.state != RoundManager.State.ROUND or RoundManager.to_spawn > 0:
-		_stall_since = -1.0
+	if d == null or RoundManager.state != RoundManager.State.ROUND or RoundManager.to_spawn > 0 or EggMode.on():
+		_stall_since = -1.0   # (T-181 Easter Egg Mode: a round ends on its own clock; nobody hunts the last crawler)
 		return
 	var act: Array = d.active_zombies()
 	if act.is_empty() or act.size() > int(hc.get("max_left", 2)):

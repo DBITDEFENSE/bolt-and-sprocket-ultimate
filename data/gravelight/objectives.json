@@ -796,7 +796,7 @@
         "s2a_radios": {
           "done": "Heard Fasbender's three code fragments on the radios.",
           "hint": "Fasbender said the codes are in the radios. Listen for the ones that crackle. ({n}/3)",
-          "guide": "Three radios crackle (you hear them within 12 m), one on the surface, one in the depths, one in the lab; their spots change each match. Use each to hear a two-digit fragment and whether it comes first, in the middle or last. ({n}/3)",
+          "guide": "Three radios crackle (you hear them within 18 m), one on the surface, one in the depths, one in the lab; their spots change each match. Use each to hear a two-digit fragment and whether it comes first, in the middle or last. ({n}/3)",
           "where": "One radio on the surface, one in the depths, one in the lab",
           "nodes_random": {
             "key": "radios",
@@ -828,7 +828,7 @@
         "s4_key": {
           "done": "Took the Overseer's Key from the Foreman, under the lit bell.",
           "hint": "The Foreman keeps the key to what Reinholt locked away, and he only gives it up beneath a burning bell.",
-          "guide": "Shoot the great bell 14 m above the Salt Chapel altar with an upgraded (Crucible) weapon: it glows amber for 90 s (75 s in co-op) and calls the Foreman if he isn't about. Kill the Foreman inside the chapel while it glows; he drops the Overseer's Key.",
+          "guide": "Shoot the great bell 14 m above the Salt Chapel altar with an upgraded (Crucible) weapon: it glows amber for 150 s (120 s in co-op) and calls the Foreman if he isn't about. Kill the Foreman in or at the chapel while it glows; he drops the Overseer's Key.",
           "where": "Salt Chapel, the bell above the altar",
           "nodes": [
             "ChapelBell"
@@ -846,7 +846,7 @@
         "s6_bells": {
           "done": "Rang the four hidden bells in the music box's order.",
           "hint": "Four small bells hide in the mine, one for each note the music box plays. Ring them in her order. ({n}/4)",
-          "guide": "Find the four small bells (one on the surface, one in Administration or the Barracks, one in the depths, one in the lab; the spots change each match) and shoot them in the melody's order. A wrong bell puts every glow out: start again. ({n}/4)",
+          "guide": "Find the four small bells (one on the surface, one in Administration or the Barracks, one in the depths, one in the lab; the spots change each match) and shoot them in the melody's order. Once the music box has played, the four glow faintly and chime their note now and then; a blast near one rings it too. A bell you already rang this run doesn't count twice; an unrung bell out of order puts every glow out: start again. ({n}/4)",
           "where": "Surface · Admin or Barracks · depths · lab",
           "nodes_random": {
             "key": "bells",

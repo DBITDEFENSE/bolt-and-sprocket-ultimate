@@ -25,6 +25,8 @@ var stats: Dictionary = {}
 var player_stats: Dictionary = {}
 const PLAYER_STAT_KEYS: Array[StringName] = [&"kills", &"headshots", &"marke_kills", &"scrip", &"downs", &"revives"]
 var god_mode: bool = false
+## T-181 Easter Egg Mode for this match (EggMode: off / sparse / none), from the setting at match start.
+var egg_mode: String = "off"
 var input_blocked: bool = false   # dev console / text entry open
 var _start_msec: int = 0
 ## UPDATE 07 Map 4 Act IV (T-112): the map's gravity as a fraction of 1 g (the act json's `gravity_scale`; MapRoot
@@ -64,6 +66,7 @@ func reset_match(new_map_id: StringName, display_name: String, start_zone: Strin
 	slide_distance_mult = 1.0
 	vacuum_cfg = {}
 	retained = false
+	egg_mode = EggMode.mode_of(GLSettings.values)
 	stats = {&"kills": 0, &"headshots": 0, &"melee_kills": 0, &"scrip_earned": 0, &"doors": 0,
 		&"downs": 0, &"boards": 0, &"round": 0, &"marke_kills": 0}
 	player_stats = {}

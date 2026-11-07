@@ -24,6 +24,8 @@ static func detonate(ctx: Node3D, pos: Vector3, cfg: Dictionary, by_player: int,
 				continue
 			var amount: float = dmg * lerpf(1.0, edge, d / radius)
 			z.take_damage(amount, &"torso", weapon_id, by_player, &"explosive")
+	if GameState.map_id == &"map01_kaltenbrunn":
+		QuestBell.splash(tree, space, pos, radius, weapon_id, by_player)   # T-181: a blast rings a bell near it
 	# Self damage (Blastproof Bock: immune). In co-op each peer only hurts its own player: explosions happen on
 	# the thrower's machine, and there's no friendly fire between machines (D-068).
 	for n: Node in tree.get_nodes_in_group(&"players"):

@@ -108,7 +108,7 @@ func test_full_guide_gives_instruction_and_location() -> void:
 	for e: Variant in log["sections"][0]["entries"]:
 		if str((e as Dictionary)["step_id"]) == "s2a_radios":
 			radio = e
-	assert_true(str(radio["text"]).contains("12 m"))
+	assert_true(str(radio["text"]).contains("18 m"))   # T-181: the radios carry 18 m (was 12)
 	assert_eq(str(radio["where"]), _step_text("map01_requiem", "s2a_radios", "where"))
 	assert_true(bool(radio["locatable"]))
 	assert_true((radio["nodes"] as PackedStringArray).has("Radio_radio_mess_kitchen"), "the seeded radios become map nodes")

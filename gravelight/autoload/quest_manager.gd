@@ -356,6 +356,8 @@ func submit(target: StringName, value: String) -> Dictionary:
 			var st: Dictionary = _state[qid][sid]
 			var idx: int = int(st["progress"]) if st["progress"] != null else 0
 			var expected: Array = sequence_inputs(qid, sid)
+			if repeat_ignored(step["params"], expected, idx, value):
+				return {"result": "repeat", "index": idx}
 			if str(expected[idx]) == value:
 				idx += 1
 				st["progress"] = idx
@@ -376,6 +378,18 @@ func submit(target: StringName, value: String) -> Dictionary:
 			GLBus.quest_step_failed.emit(qid, sid, &"wrong_input")
 			return {"result": "wrong", "index": 0}
 	return {"result": "inactive", "index": 0}
+
+
+## T-181: a sequence step with params "repeat_ok" ignores an input it already took in this run (the Four Bells: a
+## second round of a burst into the bell just rung, or a stray hit on one rung before, used to reset all four; only
+## an unrung bell out of order resets now). Pure (test_egg_mode.gd).
+static func repeat_ignored(params: Dictionary, expected: Array, idx: int, value: String) -> bool:
+	if not bool(params.get("repeat_ok", false)) or idx <= 0:
+		return false
+	for i: int in mini(idx, expected.size()):
+		if str(expected[i]) == value:
+			return true
+	return false
 
 
 ## The expected inputs of a sequence step: literal "inputs", or "inputs_from" a random value.
@@ -551,12 +565,24 @@ func _on_enemy_killed_at(enemy_id: StringName, pos: Vector3, by_player: int) -> 
 			var p2: Dictionary = step2["params"]
 			if StringName(p2["enemy"]) != enemy_id:
 				continue
-			var zone_ok: bool = not p2.has("zone") or ZoneVolume.zone_at(get_tree(), pos) == StringName(p2["zone"])
+			var zone_ok: bool = kill_zone_ok(p2, ZoneVolume.zone_at(get_tree(), pos), pos)
 			var flag_ok: bool = not p2.has("world_flag") or GameState.has_flag(StringName(p2["world_flag"]))
 			if zone_ok and flag_ok:
 				_complete(qid, StringName(step2["id"]))
 			else:
 				fail(StringName(qid), StringName(step2["id"]), &"conditions_unmet")
+
+
+## T-181 (pure): a kill_condition's place: in its "zone", or (params "near" [x, y, z] + "near_m") that close to the
+## spot (Requiem s4: the Foreman dies at the Chapel's door or on its steps as often as inside, and the step failed
+## "conditions_unmet" over and over while the squad held the Chapel at round 10).
+static func kill_zone_ok(p: Dictionary, zone_at: StringName, pos: Vector3) -> bool:
+	if not p.has("zone"):
+		return true
+	if zone_at == StringName(str(p["zone"])):
+		return true
+	var nr: Array = p.get("near", [])
+	return nr.size() >= 3 and pos.distance_to(Vector3(float(nr[0]), float(nr[1]), float(nr[2]))) <= float(p.get("near_m", 0.0))
 
 
 func kill_target(step: Dictionary) -> int:
@@ -1080,6 +1106,8 @@ func predict_submit(target: StringName, value: String) -> Dictionary:
 			var st: Dictionary = _state[qid][sid]
 			var idx: int = int(st["progress"]) if st["progress"] != null else 0
 			var expected: Array = sequence_inputs(qid, sid)
+			if repeat_ignored(step["params"], expected, idx, value):
+				return {"result": "repeat", "index": idx}
 			if idx < expected.size() and str(expected[idx]) == value:
 				st["progress"] = idx + 1
 				return {"result": "done" if idx + 1 >= expected.size() else "ok", "index": idx + 1}

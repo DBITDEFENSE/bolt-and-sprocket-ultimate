@@ -55,6 +55,7 @@ var values: Dictionary = {
 	"subtitles": true,
 	"vol_master": 1.0, "vol_music": 0.8, "vol_sfx": 1.0, "vol_vo": 1.0, "vol_jingles": 0.8, "vol_ambience": 1.0,
 	"classic_rules": false,
+	"egg_mode": "off",             # T-181 Easter Egg Mode: off / sparse (a few crawlers) / none (no zombies); practice, no profile progress (EggMode)
 	"hint_mode": false,
 	"colorblind": "off",
 	"film_grain": true,

@@ -3352,10 +3352,12 @@ func build_quest_objects() -> void:
 	for r: Array in radios:
 		_node("res://gravelight/world/quest_radio.gd", "Radio_" + str(r[0]), {"radio_id": StringName(r[0])}, r[1], float(r[2]))
 	_node("res://gravelight/world/switchboard.gd", "Switchboard", {}, Vector3(-3.5, 0, 29.5), 0.0)
-	# Die Totenglocke over the altar, and the Four Bells' candidate spots (one per note group).
+	# Die Totenglocke over the altar, and the Four Bells' candidate spots (one per note group). T-181: the gatehouse's
+	# bell hangs from the front lip of its roof over the WACHE sign (it sat in the middle of the flat roof, out of
+	# sight from the ground and behind the slab for every round: the bots fired 30-70 times and never rang it).
 	_node("res://gravelight/world/quest_bell.gd", "ChapelBell", {"kind": &"chapel", "bell_id": &"chapel_bell", "size": 2.0}, Vector3(12, DY + 10.7, 85), 0.0)
 	var bells: Array = [
-		["n1", "bell_tower_girder", Vector3(20, 6.5, 19.5)], ["n1", "bell_gatehouse_roof", Vector3(8, 3.85, 7)],
+		["n1", "bell_tower_girder", Vector3(20, 6.5, 19.5)], ["n1", "bell_gatehouse_roof", Vector3(8, 3.15, 10.55)],
 		["n1", "bell_boxcar_roof", Vector3(57, 3.75, 24)],
 		["n2", "bell_balcony_rafters", Vector3(-1.5, 6.4, 14)], ["n2", "bell_mess_chandelier", Vector3(24, 3.4, 39)],
 		["n2", "bell_bunk_beam", Vector3(-4, 3.4, 42)],

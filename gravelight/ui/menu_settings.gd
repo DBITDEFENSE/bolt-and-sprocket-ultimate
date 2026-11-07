@@ -66,6 +66,10 @@ func _gameplay() -> void:
 	content.add_child(MenuKit.check("Invert look (Y)", bool(v["invert_y"]), _setter("invert_y")))
 	content.add_child(MenuKit.check("Lean (Z / E)", bool(v.get("lean_enabled", true)), _setter("lean_enabled")))
 	content.add_child(MenuKit.check("Classic Rules (no character traits)", bool(v["classic_rules"]), _setter("classic_rules")))
+	var egg_cur: int = maxi(0, EggMode.MODES.find(EggMode.mode_of(v)))
+	content.add_child(MenuKit.row("Easter Egg Mode (practice)", MenuKit.options(EggMode.MODE_LABELS, egg_cur,
+		func(i: int) -> void: GLSettings.set_value(EggMode.SETTING, EggMode.MODES[i]))))
+	content.add_child(MenuKit.para("Few Crawlers: a couple of slow crawlers a round. No Zombies: rounds pass on a short clock with none. The egg's own enemies (its bosses, holds and kill counts) still come. Practice only: no XP, challenges, stats, best rounds, unlocks, egg rewards or bank. From the next match.", 16, MenuKit.DIM))
 	content.add_child(MenuKit.check("Hint mode (show the next objective)", bool(v["hint_mode"]), _setter("hint_mode")))
 	var spoil: int = maxi(0, ObjectiveLog.LEVELS.find(ObjectiveLog.level(v.get("objective_spoilers", "hints"))))
 	content.add_child(MenuKit.row("Objective spoilers (pause OBJECTIVES tab)", MenuKit.options(ObjectiveLog.LEVEL_NAMES, spoil,

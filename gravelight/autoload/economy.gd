@@ -164,3 +164,10 @@ static func repair_value(already_earned_this_round: int, cfg: Dictionary) -> int
 func _on_round_started(_round: int, _special: bool) -> void:
 	for id: Variant in _repair_earned.keys():
 		_repair_earned[id] = 0
+	# T-181 Easter Egg Mode: with a couple of crawlers a round there is next to nothing to earn, and the egg's doors,
+	# pylons and Crucible still cost: every account gets egg_mode.round_scrip at each round start (moved, not earned)
+	if EggMode.on() and Net.is_authority():
+		var pay: int = int(EggMode.cfg().get("round_scrip", 0))
+		for pid: Variant in _scrip.keys():
+			if pay > 0:
+				grant_raw(int(pid), pay)

@@ -100,6 +100,7 @@ var start_round: int = 0
 ## --homage=0 (tuning only): the Homage Bosses off (no Cousins round at 10 on Map 0); the default (as in every
 ## Update 03 measurement) is on.
 var homage: bool = true
+var egg_mode: String = "off"   # --egg-mode=off|sparse|none (T-181 Easter Egg Mode; the saved setting never leaks in)
 ## --character=<id>: the scripted player's character (default peg, so the bots are Dutch, Deacon and Wren; e.g.
 ## --character=dutch puts Peg among the bots).
 var character: String = "peg"
@@ -221,6 +222,8 @@ func _ready() -> void:
 			power_on = true
 		elif a.begins_with("--give="):
 			give = a.substr(7)
+		elif a.begins_with("--egg-mode="):
+			egg_mode = EggMode.mode_of({EggMode.SETTING: a.substr(11)})
 		elif a.begins_with("--egg-from="):
 			egg_from = a.substr(11)
 		elif a.begins_with("--egg-know="):
@@ -268,6 +271,7 @@ func _ready() -> void:
 	ProfileSave.profile = ProfileSave.new_profile()
 	GLSettings.path = "user://_ai_soak_settings.cfg"   # never write the player's own settings file
 	GLSettings.values["homage_bosses"] = homage
+	GLSettings.values[EggMode.SETTING] = egg_mode
 	GLSettings.values["homage_names"] = "real"
 	GLSettings.values["bot_local_ai"] = false   # T-071: the agent's planner is the scripted one in every soak (no Ollama)
 	Engine.time_scale = speed

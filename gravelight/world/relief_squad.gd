@@ -206,6 +206,8 @@ func _on_round_started(r: int, special: bool) -> void:
 		force_next = false
 		spawn_squad()
 		return
+	if EggMode.on():
+		return   # T-181 Easter Egg Mode: no relief squads (their fight and their risen dead are the pressure it removes)
 	if roll(r, last_round, 1 if active() else 0, blocked_now(special, g), g, rng):
 		spawn_squad()
 

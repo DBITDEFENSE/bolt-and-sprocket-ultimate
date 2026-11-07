@@ -855,7 +855,36 @@ func scout_job() -> Dictionary:
 		for need: Variant in BotEECatalog.missing_info(t, knowledge.known):
 			if _seen_need(str(need)):
 				return {"qid": qid, "sid": sid, "t": {"type": "scout", "need": str(need), "what": str(knowledge.labels.get(str(need), "what we haven't found"))}, "as": "task"}
+		# T-181: a collect step whose things are found by ear or eye (find: heard / seen: Requiem's calling radios)
+		# with none known left to take and some still unfound: scout for them too (T-172: "the scout walks for seen
+		# needs only", so a radio never heard kept s2b and s8a locked for the rest of the match)
+		if collect_scout_due(qid, sid, t):
+			return {"qid": qid, "sid": sid, "t": {"type": "scout", "need": "", "find_step": true, "of": t, "what": str(t.get("what", "what we haven't found"))}, "as": "task"}
 	return {}
+
+
+## T-181: a find: heard / seen collect step with nothing known left to take and something still to find.
+func collect_scout_due(qid: StringName, sid: StringName, t: Dictionary) -> bool:
+	if str(t.get("type", "")) != "collect" or str(t.get("find", "")) == "" or not (t.get("targets") is Dictionary):
+		return false
+	var taken: Array = []
+	var prog: Variant = QuestManager.progress(qid, sid)
+	if prog is Array:
+		for g: Variant in prog:
+			taken.append(str(g))
+	var stand: Array[Player] = squad.standing() if squad != null else []
+	var who: Player = stand[0] if not stand.is_empty() else null
+	var unknown: int = 0
+	for n: Node in resolve(t["targets"]):
+		var n3: Node3D = n as Node3D
+		if n3 == null or not n3.is_visible_in_tree() or taken.has(BotEECatalog.target_id(n3, t)):
+			continue
+		if n3 is Interactable and who != null and not (n3 as Interactable).can_interact(who):
+			continue   # (a radio that is not calling: not one of this match's three)
+		if knowledge.knows(BotEEKnowledge.seen_key(path_of(n3))):
+			return false   # a known one is still to take: the collectors do that
+		unknown += 1
+	return unknown > 0
 
 
 ## Is a bot_knowledge key one learned by seeing things (on_seen)?

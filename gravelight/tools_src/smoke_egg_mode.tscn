@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://gravelight/tools_src/smoke_egg_mode.gd" id="1"]
+
+[node name="SmokeEggMode" type="Node"]
+script = ExtResource("1")

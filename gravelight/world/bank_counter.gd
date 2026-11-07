@@ -20,6 +20,8 @@ func get_prompt(p: Player) -> String:
 	var why: String = BankAccount.closed_reason()
 	if why == "classic":
 		return "The bank is shut (Classic Rules)"
+	if why == "practice":
+		return "The bank is shut (Easter Egg Mode)"
 	return "Bank: ǂ %d saved, +1%% a round" % BankAccount.balance()
 
 
