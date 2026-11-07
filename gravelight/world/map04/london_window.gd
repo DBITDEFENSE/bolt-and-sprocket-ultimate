@@ -1,22 +1,24 @@
 class_name LondonWindow
 extends Node
-## THE LONDON WINDOW (UPDATE 07, docs/MAP4_FERNFLUG.md §4.6, §11.2): the Act II gut punch, in-scene and cutscene-lite
-## on the Requiem ending's pattern: the players keep their place, the camera goes to the aft blister (the LondonCam
-## marker) with a letterbox for ~50 s. The heading line; the coast with a rail battery firing three plumes; London
+## THE LONDON WINDOW (UPDATE 07, docs/MAP4_FERNFLUG.md §4.6, §11.2): the Act II gut punch, in-scene: the players keep
+## their place (their input waits, T-184), the camera goes to the aft blister (the LondonCam marker) for ~50 s on the
+## shared CinemaDirector (the letterbox, the grade, the HUD hidden, the lens pushing in and tilting down on eased curves,
+## the hand-held drift of a bomber in flight, a kick for each burst, "hold to skip"). The heading line; the coast with a rail battery firing three plumes; London
 ## from altitude (the LondonPlate dressing far below and behind, lit by searchlights); three air-bursts; violet
 ## snow falling over the plate; 4 s of silence; the Operator's two lines; one squad line each. After it the sky
 ## through the blisters stays violet to the east (the environment's horizon warms toward violet) for the act.
 ## Fired by the FlightController at act round `london_window_round` (or by a quest step as a cutscene runner:
 ## quest_id/step_id set → QuestManager.complete_step at the end). Skippable with [interact] after the first view
-## (ProfileSave "seen_london_window").
+## (ProfileSave "seen_london_window" is still kept; since T-184 the hold skips the first view too).
 
 var quest_id: StringName = &""
 var step_id: StringName = &""
 var params: Dictionary = {}
 var cfg: Dictionary = {}
 
-var _cam: Camera3D
-var _layer: CanvasLayer
+var _dir: CinemaDirector = null
+var _post: Vector3 = Vector3(74, 1.5, 25.4)
+var _was_blocked: bool = false
 var _done: bool = false
 var _t: float = 0.0
 var _was_god: bool = false
@@ -37,16 +39,12 @@ func _ready() -> void:
 	_seen_before = bool(ProfileSave.profile.get("seen_london_window", false))
 	ProfileSave.profile["seen_london_window"] = true
 	var post: Node3D = map.find_child("LondonCam", true, false) as Node3D
-	_cam = Camera3D.new()
-	_cam.name = "LondonCamera"
-	_cam.far = 1500.0
-	_cam.fov = 58.0
-	add_child(_cam)
-	var at: Vector3 = post.global_position if post != null else Vector3(74, 1.5, 25.4)
-	_cam.global_position = at
-	_cam.look_at(at + Vector3(0, -0.35, -1.0), Vector3.UP)
-	_cam.make_current()
-	_build_letterbox()
+	_post = post.global_position if post != null else Vector3(74, 1.5, 25.4)
+	_was_blocked = GameState.input_blocked
+	GameState.input_blocked = true
+	_dir = CinemaDirector.make(map, {"grade": "night", "far": 1500.0, "skip_after": 3.0, "fade_in_s": 0.8,
+		"music": {"stop": true, "bed": "kranich_wind_gust", "bed_db": -16.0}}, map, {"speed": Campaign.cutscene_speed, "cast": false, "vo": _vo})
+	_dir.skip_requested.connect(_finish)
 	var speed: float = maxf(0.01, Campaign.cutscene_speed)
 	var k: float = 1.0 / speed
 	_at(0.2 * k, _beat_heading)
@@ -63,37 +61,29 @@ func _at(t: float, f: Callable) -> void:
 	get_tree().create_timer(maxf(0.01, t)).timeout.connect(f)
 
 
-func _build_letterbox() -> void:
-	_layer = CanvasLayer.new()
-	_layer.layer = 30
-	add_child(_layer)
-	for top: bool in [true, false]:
-		var bar: ColorRect = ColorRect.new()
-		bar.color = Color.BLACK
-		bar.anchor_left = 0.0
-		bar.anchor_right = 1.0
-		bar.anchor_top = 0.0 if top else 0.87
-		bar.anchor_bottom = 0.13 if top else 1.0
-		bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		_layer.add_child(bar)
-	var hint: Label = Label.new()
-	hint.name = "Skip"
-	hint.text = "[%s] skip" % GLSettings.action_label(&"interact") if _seen_before else ""
-	hint.anchor_left = 0.86
-	hint.anchor_top = 0.9
-	hint.anchor_right = 1.0
-	hint.anchor_bottom = 1.0
-	_layer.add_child(hint)
-
-
-func _process(delta: float) -> void:
-	if _done:
+## A shot from the blister: looking along `dir` (from the post) to `dir_to`, the lens from `fov` to `fov_to`.
+func _shot(dir: Vector3, dir_to: Vector3, fov: float, fov_to: float, secs: float, extra: Dictionary = {}) -> void:
+	if _dir == null or not is_instance_valid(_dir) or _done:
 		return
-	_t += delta
-	var sx: float = sin(_t * 0.6) * 0.004
-	_cam.rotation.z = sx
-	if _seen_before and _t > 3.0 and Input.is_action_just_pressed(&"interact"):
-		_finish()
+	var d: Dictionary = {"move": "static", "from": [_post.x, _post.y, _post.z], "look": _arr(_post + dir * 20.0), "look_to": _arr(_post + dir_to * 20.0),
+		"fov": fov, "fov_to": fov_to, "handheld": 0.3}
+	d.merge(extra, true)
+	_dir.play_shot(d, secs)
+
+
+## The window's own clock (FlightSky's searchlights and bursts read `_t`).
+func _process(delta: float) -> void:
+	if not _done:
+		_t += delta
+
+
+static func _arr(v: Vector3) -> Array:
+	return [v.x, v.y, v.z]
+
+
+func _kick(s: float) -> void:
+	if _dir != null and is_instance_valid(_dir):
+		_dir.cam.impulse(s)
 
 
 func _vo(id: String) -> void:
@@ -113,7 +103,9 @@ func _plate() -> Node3D:
 
 func _beat_heading() -> void:
 	_vo(str(cfg.get("vo_pa", "PA_M4B_HEADING_03")))
-	_banner("THE AFT BLISTER", 2.5)
+	_shot(Vector3(0, -0.3, -1.0).normalized(), Vector3(0, -0.36, -1.0).normalized(), 60.0, 56.0, 6.0)
+	if _dir != null and is_instance_valid(_dir):
+		_dir.overlay.title_card("THE AFT BLISTER", "der Kranich", "", 4.0)
 
 
 ## Three violet-white columns climb from a dark coast, far below and behind.
@@ -136,6 +128,9 @@ func _beat_battery() -> void:
 		tw.tween_property(col, "scale:y", 90.0, 6.0 / maxf(0.01, Campaign.cutscene_speed)).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		tw.parallel().tween_property(col, "position:y", base.y + 45.0, 6.0 / maxf(0.01, Campaign.cutscene_speed))
 	AudioDirector.play_2d("grenade_explode", -14.0, 0.0)
+	_kick(0.12)
+	var to_base: Vector3 = (base + Vector3(0, 30, 0) - _post).normalized()
+	_shot(Vector3(0, -0.36, -1.0).normalized(), to_base, 56.0, 42.0, 12.0, {"look_ease": "sine", "shake": [[0.6, 0.12], [1.2, 0.12]]})
 	_vo(str((cfg.get("squad", {}) as Dictionary).get("peg", "")))   # Peg: "That's not Morgenrot. That's a second battery."
 
 
@@ -154,9 +149,9 @@ func _beat_london() -> void:
 			s.light_volumetric_fog_energy = 2.0
 			s.shadow_enabled = false
 			plate.add_child(s)
-	var tw: Tween = create_tween()
-	tw.tween_method(func(k: float) -> void:
-		_cam.look_at(_cam.global_position + Vector3(0, -0.35 - 0.45 * k, -1.0), Vector3.UP), 0.0, 1.0, 5.0 / maxf(0.01, Campaign.cutscene_speed)).set_trans(Tween.TRANS_SINE)
+	var at: Vector3 = plate.global_position if plate != null else _post + Vector3(0, -40, -145)
+	_shot(Vector3(0, -0.36, -1.0).normalized(), (at - _post).normalized(), 50.0, 40.0, 12.0,
+		{"look_ease": "sine", "hold": 5.0, "grade": "violet", "grade_s": 6.0, "shake": [[6.05, 0.35], [6.55, 0.3], [7.05, 0.35]]})
 
 
 ## Three air-bursts over the rooftops, then violet snow.
@@ -175,8 +170,6 @@ func _beat_bursts() -> void:
 		tw.tween_interval(0.5 * float(i) / maxf(0.01, Campaign.cutscene_speed))
 		tw.tween_property(l, "light_energy", 24.0, 0.15)
 		tw.tween_property(l, "light_energy", 2.0, 2.5)
-	for n: Node in get_tree().get_nodes_in_group(&"players"):
-		n.set("_shake", 0.25)
 	AudioDirector.play_2d("grenade_explode", -4.0, 0.0)
 	_snow = CPUParticles3D.new()
 	_snow.position = base
@@ -206,6 +199,10 @@ func _beat_bursts() -> void:
 
 ## Cut to silence: every bus muted for 4 s.
 func _beat_silence() -> void:
+	var plate: Node3D = _plate()
+	var at: Vector3 = plate.global_position if plate != null else _post + Vector3(0, -40, -145)
+	var to: Vector3 = (at - _post).normalized()
+	_shot(to, to, 40.0, 33.0, 12.0, {"handheld": 0.1, "grade": "violet"})
 	_set_mute(true)
 	get_tree().create_timer(4.0 / maxf(0.01, Campaign.cutscene_speed)).timeout.connect(func() -> void: _set_mute(false))
 
@@ -227,6 +224,10 @@ func _beat_operator() -> void:
 
 ## One line per character present, 2.5 s apart (Wren's is 3 s of silence subtitled "—"); Peg's second line last.
 func _beat_squad() -> void:
+	var plate: Node3D = _plate()
+	var at: Vector3 = plate.global_position if plate != null else _post + Vector3(0, -40, -145)
+	var to: Vector3 = (at - _post).normalized()
+	_shot(to, Vector3(0, -0.3, -1.0).normalized(), 33.0, 52.0, 8.0, {"handheld": 0.22, "grade": "violet", "look_ease": "sine"})
 	var squad: Dictionary = cfg.get("squad", {})
 	var present: Array = []
 	for n: Node in get_tree().get_nodes_in_group(&"players"):
@@ -251,8 +252,11 @@ func _finish() -> void:
 		return
 	_done = true
 	_set_mute(false)
+	GameState.input_blocked = _was_blocked
 	if Net.is_authority():
 		GameState.god_mode = _was_god
+	if _dir != null and is_instance_valid(_dir):
+		_dir.release(true)
 	var map: Node = get_tree().current_scene
 	if map != null and map.get("player") != null and (map.get("player") as Player).camera != null:
 		(map.get("player") as Player).camera.current = true

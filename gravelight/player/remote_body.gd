@@ -61,6 +61,8 @@ var character: StringName = &"dutch"
 ## Set by the owner each frame: nothing to shoot, nowhere to go (idle fidgets may play). Remote co-op players:
 ## the body decides from speed and recent shots.
 var calm: bool = false
+## T-184: a cutscene's stand-in (CinemaCast) plays this teammate; the puppet stays hidden until it is released.
+var cinema_hidden: bool = false
 var _pivot: Node3D
 var _hips: Node3D
 var _chest: Node3D
@@ -681,7 +683,7 @@ func _active_pose(downed: bool, moving: bool) -> StringName:
 ## Called every physics frame by the puppet with its replicated state.
 func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 	var spectate: bool = (flags & NetMatch.PF_SPECTATE) != 0
-	visible = not spectate
+	visible = not spectate and not cinema_hidden
 	if spectate:
 		return
 	var downed: bool = (flags & NetMatch.PF_DOWNED) != 0
