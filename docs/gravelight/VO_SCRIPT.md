@@ -461,7 +461,7 @@ The radio behind the Crossroads Inn bar plays these on schedule (on round start,
 | FAS_M0_R7_01 | round 7 start | I have notes. Frequencies. I left them— the innkeeper's family, they were... *[pause]* ...I left them in the house. Find them. Tune the set. |
 | FAS_M0_R8_01 | round 8 end | Dr. Reinholt does not know I am transmitting. If she knew— no. Never mind what she would do. |
 | FAS_M0_R10_01 | round 10 start | Gravelight, it is round— it is the tenth wave. You are still alive. That is... more than I hoped. More than I *deserve* to hope. |
-| FAS_M0_R12_01 | round 12 start | If the signal is lost, you will still come. You must. I have everything they want. Everything. |
+| FAS_M0_R12_01 | round 12 start | If the signal is lost, you will still come. You must. *[quieter]* In November the trains came in from the east. Sealed wagons. Russian soldiers, Gravelight. Their own dead. What was in them did not come out of this mountain. It came *to* us. *[breath]* I have everything they want. Everything. |
 | FAS_M0_R15_01 | round 15 start | [very clear, then cutting out] Gravelight, a word of warning. The voice on the loudspeakers, the cheerful one. Do not believe a single— *[cut]* |
 | FAS_M0_R20_01 | round 20 start | [faint] ...still there? *[soft laugh]* Stubborn. Good. Stubborn is good. |
 | FAS_M0_IDLE_01 | radio interacted, no quest | [static] —asmacher... the notes... the frequencies... |
@@ -472,7 +472,7 @@ The player finds 3 notes (randomized among 6 spots across TAPROOM / UPSTAIRS / S
 | ID | Freq | Line |
 |---|---|---|
 | FAS_M0_FREQ1_01 | 3.120 | [tuned, clear] Yes! Yes, this is better. Gravelight, my name is Emil Fasbender. I am a physicist at the Kaltenbrunn works. I was the one who called London. I am the reason you are here. |
-| FAS_M0_FREQ2_01 | 5.785 | In the mine they found a stone. Black glass, veins like a bruise. It hums. The dead near it... remember. Only one thing. Hunger. Reinholt calls it a miracle. I call it a *mistake* we keep making. |
+| FAS_M0_FREQ2_01 | 5.785 | In the mine they found a stone. Black glass, veins like a bruise. It hums. It does not raise the dead, Gravelight. I want to be exact; it is the last thing I can still be. Something was already in their blood. The Russians had it first, and lost it, and it walked west on its own feet. Near the glass it stops waiting. It stops waiting four days. Reinholt calls it *Lazarusblut*. She says it like a prayer. I say it like a confession. |
 | FAS_M0_FREQ3_01 | 7.440 | Listen carefully. In the morning the snow will stop and they will stop with it, for a while. Follow the rail line east, nine kilometres. A gatehouse, a headframe tower. I will find you. And Gravelight... bring whoever is still standing. *[pause]* Bring all of them. *[click]* |
 | FAS_M0_FREQ_DONE_PEG | (after 3, if Peg present) | [faint, almost off-mic] ...and Lieutenant Ashworth, I know what London asked of you. We will discuss it. |
 
@@ -492,7 +492,7 @@ Three radios at randomized locations (pools: Gatehouse / Coal Shed / Boxcar / Ad
 | ID | Line |
 |---|---|
 | FAS_M1_SWITCH_01 | *[line clicks open, clean audio, no static for the first time]* ...Hello? Gravelight? Oh, thank God. Thank God. You made it to the mine. |
-| FAS_M1_SWITCH_02 | I am below you, in a place the Ledger cannot hear, which is very few places. Listen. The heart in the vault, the great crystal. Everything here draws from it. The dead, the tonics, the crates, the *voice*. If it breaks, it all breaks. |
+| FAS_M1_SWITCH_02 | I am below you, in a place the Ledger cannot hear, which is very few places. Listen. The heart in the vault, the great crystal. Everything here draws from it. The tonics, the crates, the *voice*. It did not make the dead; nothing here made them. But it makes them quick, and it makes them *listen*. If it breaks, it all breaks. |
 | FAS_M1_SWITCH_03 | Augusta, Dr. Reinholt, does not want it broken. She wants it *louder*. She believes her daughter is inside. *[pause]* I don't know that she's wrong. That's what frightens me. |
 | FAS_M1_SWITCH_04 | There is a bell, a weapon I designed for clearing collapses. The Totenglocke. The parts are scattered. Build it, and I will tell you what comes next. |
 
@@ -535,8 +535,8 @@ Three cylinders hidden in Admin (Reinholt's office), the Barracks (the chaplain'
 |---|---|---|
 | REI_CYL1_01 | 1, 1938 | *[hiss]* Laboratory diary, Kaltenbrunn, the eleventh of December, nineteen thirty-eight. The specimen from shaft four is... remarkable. It is warm in the hand. It makes a sound like a held breath. Emil says it is only piezoelectric. Emil is very sure of everything until he isn't. |
 | LSL_REC_CYL1_01 | 1 (end) | *[child, close to the horn]* Mama, is it recording? Is it— *[giggle]* Hallo! This is Liesl! Herr Tamtam says hallo too! *[toy drum: rum-tum, tum-a-tum]* |
-| REI_CYL2_01 | 2, 1939 | *[hiss, voice flat]* The fourteenth of February, nineteen thirty-nine. Liesl died at four in the morning. Diphtheria. A membrane across her throat. I am a doctor. I could do nothing. *[long pause]* The stone hummed all night. I listened to it, so I would not have to listen to the silence in her room. |
-| REI_CYL3_01 | 3, 1943 | *[hiss, clear, warm, certain]* Subject seven-forty walked. Not hunger, not at first. For one minute it looked for something. It went to the window. *They remember.* The last impulse. Liesl's last impulse was to call for me. I was there when she died. I heard it. If the impulse remains, then *she* remains, somewhere in the glass. I only need it louder. |
+| REI_CYL2_01 | 2, 1939 | *[hiss, voice flat]* The fourteenth of February, nineteen thirty-nine. Liesl died at four in the morning. Diphtheria. A membrane across her throat. I am a doctor. I could do nothing. *[long pause]* There is a man in the Gospel who was four days in his grave, and his sisters had only to ask. *[pause]* I have asked. The stone hummed all night. I listened to it, so I would not have to listen to the silence in her room. |
+| REI_CYL3_01 | 3, 1943 | *[hiss, clear, warm, certain]* Subject seven-forty walked. Four days from the death, to the hour, as they all do; near the heart, less. Not hunger, not at first. For one minute it looked for something. It went to the window. *They remember.* It is in the blood, Emil, not in your glass. The glass only answers it, and keeps what answers. I have named it in the files for a man who was four days dead and came home. *Lazarusblut.* Liesl's last impulse was to call for me. I was there when she died. I heard it. If the impulse remains, then *she* remains, somewhere in the glass. I only need it louder. |
 | LSL_REC_CYL3_01 | 3 (end, faint, wrong speed) | *[child's voice, slowed, as if from far away]* Mama... count to a hundred... and then come find me... |
 
 **(§11 amendment)** `REI_CYL1_01`: "the eleventh of **October**, nineteen thirty-eight" → "the eleventh of **December**." The specimen can't predate the locked probe landing of 9 November 1938. Nothing else in the line changes.
@@ -551,7 +551,7 @@ Three cylinders hidden in Admin (Reinholt's office), the Barracks (the chaplain'
 |---|---|---|
 | REI_S5_BOX_01 | music box played | [PA, faint, private] ...that is hers. Put it down. *[pause]* No. Play it. Play it again. I haven't heard it in five years. |
 | REI_S7_DRUMMER_01 | drummer shot | You've broken her toy. She took that drummer to bed every night. *[breath]* It doesn't matter. Things break. That's what I've been trying to undo. |
-| REI_S8_01 | shard in Crucible | Emil has told you to kill the heart. Has he told you what is *in* it? Thousands. Every miner, every laborer, every one you've "quieted." Their last moments, kept. You are not killing monsters. You are burning a library. |
+| REI_S8_01 | shard in Crucible | Emil has told you to kill the heart. Has he told you what is *in* it? Thousands. Every miner, every soldier, every villager you have "quieted" tonight. Their last moments, kept. You are not killing monsters. You are burning a library. |
 
 ### 5.4 Heartstorm PA hijacks (step 9, tier 4, timed)
 | ID | Time | Line |
@@ -562,7 +562,7 @@ Three cylinders hidden in Admin (Reinholt's office), the Barracks (the chaplain'
 | REI_HEART_45 | 0:45 | You there, the Polish girl. Your brother is in there too. Tomasz. Yes, I know the name. I know every name. You could *hear* him again. |
 | REI_HEART_60 | 1:00 | *[Foreman spawns]* Mahlknecht! Protect it! |
 | REI_HEART_75 | 1:15 | Lieutenant Ashworth. London wants a piece of it too, don't they? Ask your lieutenant what she carries home. |
-| REI_HEART_90 | 1:30 | *[Foreman 2 spawns]* Please. Please. She is nine years old. She has been nine years old for five years. |
+| REI_HEART_90 | 1:30 | *[Foreman 2 spawns]* Please. Please. She is seven years old. She has been seven years old for five years. |
 | REI_HEART_105 | 1:45 | *[breaking]* Liesl, run. Run to Mama. *Run!* |
 | REI_HEART_END | 2:00 | *[scream that becomes the bell toll; PA dies]* |
 
@@ -1413,7 +1413,7 @@ his banter are `BNT_*` exchanges on the squad's player channel. The other surviv
 - `JAK_SCREAMER_01`: "That voice. In the deep levels you learn not to answer voices."
 
 **`ZONE_*`** (a door opens on a part of the mine he knows):
-- `JAK_ZONE_B_RAILYARD_01`: "The rail yard. They brought us in through here. The wagon slats were nailed shut. You count the gaps of light to know the time."
+- `JAK_ZONE_B_RAILYARD_01`: "The rail yard. They brought us in through here. The wagon slats were nailed shut. You count the gaps of light to know the time. ...In November other wagons came. Sealed ones. They unloaded them at night, and the men who did it never came down to us again."
 - `JAK_ZONE_C_ADMIN_01`: "Administration. They kept our names in there. Numbers first, then names, then only numbers."
 - `JAK_ZONE_D_BARRACKS_01`: "The guards' barracks. Warm stoves. We could smell their coffee from the galleries."
 - `JAK_ZONE_E_LIFT_01`: "The cage lift. Sixty men to a cage. Hold the rail. It drops faster than you think."
@@ -1474,6 +1474,7 @@ his banter are `BNT_*` exchanges on the squad's player channel. The other surviv
 - `JAK_CHATTER_02`: "My Marta would say I look thin. She would be right."
 - `JAK_CHATTER_03`: "You fight well. Your mothers should be proud. Write to them."
 - `JAK_CHATTER_04`: "I used to hate the dark. Then I worked in it for twenty years. Now I only hate what lives in it."
+- `JAK_CHATTER_05`: "The ones in the greatcoats. Russians. ...They walked from their own graves to ours. Nobody should have to walk that far." *(UPDATE 11, T-198: the Soviet risen on Map 0 and Kaltenbrunn; grief, never a joke about the dead)*
 
 ### 16.4 The squad about Jakub
 
@@ -2107,7 +2108,7 @@ player is near), `flinch` (a shot close by, sometimes), `armed` (handed the rifl
 ### 22.1 Konrad Wiesner (`WIE`)
 - `WIE_SURV_REVEAL_01`: "Stop! Stop, don't shoot... we're alive. We're alive in here. You came up the stairs... are they behind you?"
 - `WIE_SURV_SCARED_01`: "I heard them in the hall. Scratching at the wainscot like rats. Thirty years I have not been this afraid."
-- `WIE_SURV_SCARED_02`: "I was at Verdun, you know. Nineteen sixteen. ...The dead stayed down at Verdun."
+- `WIE_SURV_SCARED_02`: "I was at Verdun, you know. Nineteen sixteen. ...There were Russians on the road tonight. Greatcoats, no boots, walking with our own. The dead stayed down at Verdun."
 - `WIE_SURV_FLINCH_01`: "[flinching] God in heaven!"
 - `WIE_SURV_ARMED_01`: "A Karabiner. A ninety-eight. ...My hands remember. Go on, go. I'll hold the hall."
 - `WIE_SURV_FIGHT_01`: "Coming along the hall! I have him!"
@@ -2546,7 +2547,7 @@ The Operator is local here for the first time: it is in the walls. Its slips run
 
 | ID | Line | When |
 |---|---|---|
-| WIV_M4D_INTRO_01 | There you are. We've been following your journey with such interest. You've come all this way. Let's get you set {up}. | the Manager attends |
+| WIV_M4D_INTRO_01 | There you are. We've been following your journey with such interest. We found you, you know. Years ago. Something on your little world that would not stay down, and a market that would not stay closed. You've come all this way. Let's get you set {up}. | the Manager attends |
 | WIV_M4D_PHASE_01 | Onboarding. We'll take care of everything. We always {have}. | the first contract |
 | WIV_M4D_PHASE_02 | Renewal. We'd like to offer you a trial of everything. Everything. Go on. There's no obligation. There's never any {obligation}. | the second contract |
 | WIV_M4D_TRIAL_END_01 | The trial has ended. We hope you enjoyed it. We'll be happy to offer it {again}. | the trial's minute is up |
@@ -2687,7 +2688,7 @@ The Operator is local here for the first time: it is in the walls. Its slips run
 | DEE_M4C_LAST_02 | Go on. I've got the range, and a radio, and nothing goes to waste. That includes you. Come {back}. | the gantry, the cage egg done |
 | HAL_M4C_GLASS_01 | Lieutenant Ashworth. You're rather late. I had a man at the siding in Thalbach for {you}. | the hangar opens |
 | HAL_M4C_GLASS_02 | The crate, yes. Your crate. Please don't look at the sergeant like that; she had no part in it. I had no part in it. It was simply the {orders}. | the manifest read |
-| HAL_M4C_GLASS_03 | That is why the program exists. It talks to the Moon, Lieutenant. Something on the Moon talks back. We would like to know what, before the Russians {do}. | the program log read |
+| HAL_M4C_GLASS_03 | That is why the program exists, Lieutenant. The sickness and the stone, in jars, with your name on the manifest. The Russians had the one for fourteen years and buried it; the Germans had the other and ground it to dust. It talks to the Moon. Something on the Moon talks back. We would like to know what, before the Russians {do}. | the program log read |
 | HAL_M4C_CHOICE_01 | That is the engine. The actual engine. Lieutenant, with that we are a year ahead of everyone. With that, nobody needs to go to the Moon at all. Hand it through the hatch and your orders are complete. Every one of {them}. | the core carried in |
 | HAL_M4C_CHOICE_02 | I'm not going to insist. I've never had {to}. | the choice holds |
 | HAL_M4C_RESIGN_01 | ...I see. I shall note that you were under considerable {strain}. | keep |
@@ -2855,8 +2856,8 @@ they play everywhere.
 | `OPR_MARKE_OPR_01` | OPR | "[warm] A valued customer, {retained}. Thank you for keeping the account {active}." |
 | `OPR_MARKE_OPR_02` | OPR | "Oh, you've found the loyalty programme! Protection against the sickness, the poster said, and so it {is}, in a way. Every member is counted, in the hand or on the brow. {Nobody} is lost to us." |
 | `OPR_MARKE_OPR_03` | OPR | "One mark, one name, one {account}. Closed with... [tape squeal] ...no. No. Accounts here do not {close}." |
-| `FAS_MARKE_RELAY_01` | FAS | "[radio, low] You have found the marks. Listen to me. The chip does nothing by itself. It listens. It listens for the Ledger's carrier, the hum, the thing you feel in your teeth. While the hum reaches it, the body remembers the last thing it wanted. Silence the carrier and they lie down. I have seen it once, for eleven seconds, when Opitz blew a fuse. Eleven seconds of quiet. Then it came back." |
-| `FAS_MARKE_RELAY_02` | FAS | "They offered me one in forty-two. I refused, and Lenz wrote my name in a column. It is the only wise thing I did in that place." |
+| `FAS_MARKE_RELAY_01` | FAS | "[radio, low] You have found the marks. Listen to me. The chip does nothing by itself. It is a grain of the glass under the skin, and it listens. It listens for the Ledger's carrier, the hum, the thing you feel in your teeth. While the hum reaches it, the body gets up when it is told and walks where it is pointed. The Russians could not make their dead obey. Abteilung III did it with a needle. Silence the carrier and they lie down. I have seen it once, for eleven seconds, when Opitz blew a fuse. Eleven seconds of quiet. Then it came back." |
+| `FAS_MARKE_RELAY_02` | FAS | "They offered me one in forty-two. I refused, and Lenz wrote my name in a column. This winter the poster gained a second line: protection against the Lazarus sickness. It is not protection. It is a leash. ...Saying no is the only wise thing I did in that place." |
 
 ## 26. RELIEF SQUADS (UPDATE 09 §4, DECISIONS T-142; data/gravelight/squads.json)
 
@@ -2877,7 +2878,7 @@ the Volkssturm are old men, played with dignity; nobody names the Marke (the squ
 | `SQD_AK_CONTACT_02` | SQD | "They come! Hold the line, chłopaki!" |
 | `SQD_AK_CONTACT_03` | SQD | "Dead ones, many. Shoot for the head!" |
 | `SQD_AK_HURT_01` | SQD | "Ah! It's nothing. Nothing." |
-| `SQD_AK_HURT_02` | SQD | "Psiakrew... they bit through the coat." |
+| `SQD_AK_HURT_02` | SQD | "Psiakrew... they bit through the coat. ...Don't look at me like that. It is only the coat." |
 | `SQD_AK_DOWN_01` | SQD | "Man down! Pomocy, help him!" |
 | `SQD_AK_DOWN_02` | SQD | "They have Stefan! Get him up!" |
 | `SQD_AK_LEAVE_01` | SQD | "We go now. Others wait for us in the forest. Z Bogiem." |
@@ -2886,24 +2887,24 @@ the Volkssturm are old men, played with dignity; nobody names the Marke (the squ
 | `SQD_AK_SURVIVE_02` | SQD | "I am still breathing. Dziękuję. Thank you." |
 | `SQD_SOV_ARRIVE_01` | SQD | "Razvedka! Red Army scouts. We followed your shooting." |
 | `SQD_SOV_ARRIVE_02` | SQD | "Tovarishchi! Easy with the rifles. We are scouts, from the east." |
-| `SQD_SOV_ARRIVE_03` | SQD | "Soviet patrol. We saw the dead walking on the road and came to see who is still alive." |
+| `SQD_SOV_ARRIVE_03` | SQD | "Soviet patrol. We followed the dead west from the river. Our own, some of them. ...Do not ask. Who here is still alive?" |
 | `SQD_SOV_CONTACT_01` | SQD | "Here they come! Vperyod!" |
 | `SQD_SOV_CONTACT_02` | SQD | "Ogon! Fire, fire!" |
 | `SQD_SOV_CONTACT_03` | SQD | "Davai, davai, shoot them in the head!" |
 | `SQD_SOV_HURT_01` | SQD | "Chyort! I am hit." |
-| `SQD_SOV_HURT_02` | SQD | "Only a scratch. Keep shooting." |
+| `SQD_SOV_HURT_02` | SQD | "Only a scratch. ...Only a scratch. Keep shooting. Keep shooting." |
 | `SQD_SOV_DOWN_01` | SQD | "Sasha is down! Pomogi!" |
 | `SQD_SOV_DOWN_02` | SQD | "They got Kolya! Somebody, get him!" |
-| `SQD_SOV_LEAVE_01` | SQD | "Our orders are east. We go. Udachi, comrades." |
+| `SQD_SOV_LEAVE_01` | SQD | "Our orders are east. Back through them. We go. Udachi, comrades." |
 | `SQD_SOV_LEAVE_02` | SQD | "We must report this. Hold out. We go back." |
-| `SQD_SOV_SURVIVE_01` | SQD | "I am the last one. I will report what we saw here." |
+| `SQD_SOV_SURVIVE_01` | SQD | "I am the last one. I will report what we saw here. They will write 'epidemic'. They always write epidemic." |
 | `SQD_SOV_SURVIVE_02` | SQD | "Still alive. Spasibo, comrades." |
 | `SQD_VS_ARRIVE_01` | SQD | "Nicht schießen! We are only old men from the village. We threw the armbands in the ditch." |
 | `SQD_VS_ARRIVE_02` | SQD | "Volkssturm, ja. But we are finished with that. Let us stand with you." |
 | `SQD_VS_ARRIVE_03` | SQD | "We heard you fighting. Better to stand here than hang for running." |
 | `SQD_VS_CONTACT_01` | SQD | "Da! There they come. Steady, old hands." |
 | `SQD_VS_CONTACT_02` | SQD | "Feuer! Aim low, Herr Nachbar, they are close." |
-| `SQD_VS_CONTACT_03` | SQD | "Mein Gott, so many. Shoot, shoot!" |
+| `SQD_VS_CONTACT_03` | SQD | "Mein Gott, so many. Russians, and our own, together. Shoot, shoot!" |
 | `SQD_VS_HURT_01` | SQD | "Ach... my old bones." |
 | `SQD_VS_HURT_02` | SQD | "I am hit. It is not so bad. Not so bad." |
 | `SQD_VS_DOWN_01` | SQD | "Karl is down! Help him up, quickly!" |
@@ -2926,7 +2927,7 @@ the Volkssturm are old men, played with dignity; nobody names the Marke (the squ
 | `SQD_CDO_LEAVE_02` | SQD | "That's us. Back to the beach, lads, at the double." |
 | `SQD_CDO_SURVIVE_01` | SQD | "Just me, then. I'll see the night out with you." |
 | `SQD_CDO_SURVIVE_02` | SQD | "Still standing. Someone has to tell them at home." |
-| `SQD_KM_ARRIVE_01` | SQD | "Nicht schießen! Navy. We left the pens. We are done with all of it." |
+| `SQD_KM_ARRIVE_01` | SQD | "Nicht schießen! Navy. We left the pens. We saw what Brecht found in the lead boxes. We are done with all of it." |
 | `SQD_KM_ARRIVE_02` | SQD | "We are sailors, not fighters. But we can shoot. Let us help." |
 | `SQD_KM_ARRIVE_03` | SQD | "The port is lost. Mein Gott, the things in the water. We come to you." |
 | `SQD_KM_CONTACT_01` | SQD | "Achtung! On the quay, there!" |
@@ -2945,7 +2946,7 @@ the Volkssturm are old men, played with dignity; nobody names the Marke (the squ
 | `SQD_PARA_ARRIVE_03` | SQD | "Thank God, somebody alive. We've been fighting these things since we hit the ground." |
 | `SQD_PARA_CONTACT_01` | SQD | "Here they come! Light 'em up!" |
 | `SQD_PARA_CONTACT_02` | SQD | "Contact! Shoot for the head, they don't stop otherwise!" |
-| `SQD_PARA_CONTACT_03` | SQD | "Holy smokes, there's a ton of 'em!" |
+| `SQD_PARA_CONTACT_03` | SQD | "Lord God. There's a ton of 'em. Fire!" |
 | `SQD_PARA_HURT_01` | SQD | "I'm hit! I'm okay, I'm okay." |
 | `SQD_PARA_HURT_02` | SQD | "Son of a gun got me." |
 | `SQD_PARA_DOWN_01` | SQD | "Medic! Somebody get Murphy back up!" |
