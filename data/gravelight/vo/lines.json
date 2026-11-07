@@ -13065,7 +13065,7 @@
     "speaker": "SER",
     "category": "LZS",
     "text": "What was closed on the fourth day, let no one open.",
-    "speech": "Еже затворися въ четвертый день, никтоже да не отверзетъ."
+    "speech": "Є́же затвори́ся въ де́нь четве́ртый, никто́же да отве́рзетъ."
   },
   "SER_LZS_06": {
     "speaker": "SER",
@@ -13136,8 +13136,8 @@
   "VOL_LZS_08": {
     "speaker": "VOL",
     "category": "LZS",
-    "text": "Paint. It's paint! Priests have done worse than this. Inventory it and box it.",
-    "speech": "Краска. Это краска! Попы и не на такое способны. Описать и в ящик."
+    "text": "Paint. It's paint! Priests have faked worse than this. Inventory it and box it.",
+    "speech": "Краска. Это краска! Попы и не такое подделывали. Описать и в ящик."
   },
   "VOL_LZS_09": {
     "speaker": "VOL",
@@ -13691,18 +13691,18 @@
     "speaker": "SER",
     "category": "DIARY_MAP04C",
     "text": "Bright Monday. The fourth day. They came up a little after dark. I was in the church and heard the rope posts fall. I will not write what they look like; whoever reads this will know, or will not need to. I struck the bell where she lies, with the smithy hammer, because a bell is what the village knows to come to, and they came, running, and I barred the doors from inside. Forty-one of us. The children are asleep on the vestment chests. Grach and Avdotya walked round the church all night, slowly, the way the sick walk, and in the morning they stood at the door and did not try it. They do not try doors. They wait. Lord, I buried them with my own hands and I said the words. The words were right. It is not the words that were wrong.",
-    "speech": "[quietly] Светлый понедельник. Четвёртый день. Они вышли вскоре после темноты. Я был в церкви и услышал, как упали колышки с верёвкой. Я не стану писать, какие они. Кто прочтёт, тот знает, или ему не нужно. Я ударил молотом по колоколу, где он лежит, потому что на колокол деревня знает, что идти, и они пришли, бегом, и я закрыл двери брусом изнутри. Сорок один человек. Дети спят на сундуках с ризами. Грач и Авдотья всю ночь ходили вокруг церкви, медленно, как ходят больные, а утром стояли у двери и не трогали её. Они не трогают дверей. Они ждут. Господи, я похоронил их своими руками и сказал слова. Слова были верные. Не слова были неверны."
+    "speech": "[quietly] Светлый понедельник. Четвёртый день. Они вышли вскоре после темноты. Я был в церкви и услышал, как упали колышки с верёвкой. Я не стану писать, какие они. Кто прочтёт, тот знает, или ему не нужно. Я ударил молотом по колоколу, где он лежит, потому что деревня знает одно: колокол зовёт — иди. И они пришли, бегом, и я закрыл двери брусом изнутри. Сорок один человек. Дети спят на сундуках с ризами. Грач и Авдотья всю ночь ходили вокруг церкви, медленно, как ходят больные, а утром стояли у двери и не трогали её. Они не трогают дверей. Они ждут. Господи, я похоронил их своими руками и сказал слова. Слова были верные. Не слова были неверны."
   },
   "SER_DIARY_MAP04D_01": {
     "speaker": "SER",
     "category": "DIARY_MAP04D",
-    "text": "The eleventh. Three days in the church. They will not come in: a man with a megaphone said twice that the district is closed for typhus and help is coming, and then the megaphone said nothing more. Pyotr Ilyich keeps the count of the days in chalk on the wall, because the fourth day is the only thing now. Oil in the lamp for one more night. We kept it five hundred years and none of us knew what for, and the ones who opened it were not wicked men. Men with a paper and a truck. It only ever needed that. Whoever finds this: it was not the Lord who did this, and not that poor boy in the good coat either, not all of it. It was that nobody was left to keep watch. Keep watch. I am going down to the crypt to fill the lamp, and then I will open the church door myself, so that none of them has to be the one. Remember, O Lord, Thy servant Serafim, and Matvei, and Avdotya, and all of them, by name.",
-    "speech": "[quietly] Одиннадцатое. Три дня в церкви. Они не войдут: человек с рупором сказал дважды, что уезд закрыт по тифу и помощь идёт, а потом рупор замолчал. Пётр Ильич ведёт счёт дням мелом на стене, потому что четвёртый день — это теперь единственное. Масла в лампаде на одну ночь. Мы хранили её пятьсот лет, и никто из нас не знал зачем, а те, кто открыл, были не злые люди. Люди с бумагой и грузовиком. Только этого и было нужно. Кто найдёт это: виноват не Господь, и не тот бедный мальчик в хорошем пальто, не во всём. Виновато то, что некому стало сторожить. Сторожите. Я иду в склеп заправить лампаду, а потом сам открою дверь церкви, чтобы никому из них не пришлось. Помяни, Господи, раба Твоего Серафима, и Матвея, и Авдотью, и всех их, по именам."
+    "text": "The eleventh. Three days in the church. They will not come in: a man with a megaphone said twice that the district is closed for typhus and help is coming, and then the megaphone said nothing more. Pyotr Ilyich keeps the count of the days in chalk on the wall, because the fourth day is the only thing now. Oil in the lamp for one more night. We kept it five hundred years and none of us knew what for, and the ones who opened it were not wicked men. Men with a paper and a truck. It only ever needed that. Whoever finds this: it was not the Lord who did this, and not that poor boy in the good coat either, not all of it. It was that nobody was left to keep watch. Keep watch. I am going down to the crypt to fill the lamp, and then I will go out through the church door myself, and Pyotr Ilyich will bar it behind me, so that none of them has to be the one who goes. Remember, O Lord, Thy servant Serafim, and Matvei, and Avdotya, and all of them, by name.",
+    "speech": "[quietly] Одиннадцатое. Три дня в церкви. Они не войдут: человек с рупором сказал дважды, что уезд закрыт по тифу и помощь идёт, а потом рупор замолчал. Пётр Ильич ведёт счёт дням мелом на стене, потому что четвёртый день — это теперь единственное. Масла в лампаде на одну ночь. Мы хранили её пятьсот лет, и никто из нас не знал зачем, а те, кто открыл, были не злые люди. Люди с бумагой и грузовиком. Только этого и было нужно. Кто найдёт это: виноват не Господь, и не тот бедный мальчик в хорошем пальто, не во всём. Виновато то, что некому стало сторожить. Сторожите. Я иду в склеп заправить лампаду, а потом сам выйду за дверь церкви, и Пётр Ильич заложит её за мной брусом, чтобы никому из них не пришлось идти. Помяни, Господи, раба Твоего Серафима, и Матвея, и Авдотью, и всех их, по именам."
   },
   "OPR_ROUND_START_14": {
     "speaker": "OPR",
     "category": "ROUND_START",
-    "text": "[warmly] Some of tonight's guests have walked here all the way from the {east}. Greatcoats, no boots, through the snow. Do give them a warm welcome. They can't feel it, but {I} can."
+    "text": "[warmly] Some of tonight's guests have walked here all the way from the {east}. Greatcoats and frost, straight through the snow. Do give them a warm welcome. They can't feel it, but {I} can."
   },
   "OPR_ROUND_START_15": {
     "speaker": "OPR",

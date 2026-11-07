@@ -34,7 +34,7 @@ victims himself. The OGPU seals the district as a typhus quarantine. Chetverodne
 bitten, carries the vessel to Moscow in a lead case.
 
 **Laboratory No. 4, "FOURTH DAY" (ЧЕТВЁРТЫЙ ДЕНЬ).** From July 1934 (the NKVD exists from then) the vessel is a secret
-NKVD programme under Volkov, who rises through the purges by being useful. Its files call the sickness **"Lazar"**. What
+NKVD programme under Volkov (state security's, so NKGB from April 1943; LAZARUS §3.1), who rises through the purges by being useful. Its files call the sickness **"Lazar"**. What
 they learn: it lives in blood; the dead rise on the fourth day; the risen spread it by bite; **it cannot be made to
 obey.** Its test subjects were camp prisoners, handled in the game only as documents, empty bunks and a list of names,
 never as zombies and never as spectacle. By 1939 it is a weapon of last resort in a vault.
