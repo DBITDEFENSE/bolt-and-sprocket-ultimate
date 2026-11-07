@@ -290,6 +290,8 @@ func value() -> float:
 		return 0.0
 	if errand_window():
 		return 0.0   # U10 (T-163): the last ones are the squad's; the agent has an errand
+	if brain.ee != null and brain.ee.active() and bool((brain.ee.task.get("def", {}) as Dictionary).get("final", false)) and not brain.ee.holding_now():
+		return 0.0   # T-181: the egg's final step to start (the Heartstorm): no train away from it (the squad waits at the heart)
 	if brain.crawler != null and brain.crawler.holding():
 		return 0.0   # pass 3: the crawler break (errands, not a train)
 	var now: float = brain.squad.time()

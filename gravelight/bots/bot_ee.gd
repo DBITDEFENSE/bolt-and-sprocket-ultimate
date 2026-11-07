@@ -167,9 +167,13 @@ func _log(s: String) -> void:
 
 ## The utility input (actions.json ee_task): 0 = nothing to do now.
 func value() -> float:
-	if brain != null and brain.is_player_bot and active() and not AgentPlan.egg_may_work_now(brain):
+	# T-181: the egg's final step (the Heartstorm, which the agent starts as the player) beats the plan's gates: the
+	# squad stood at the heart for 25 game minutes while the agent, downed out of its Ironhide, kept walking off in
+	# each break to a perk it never reached, so the egg never ended
+	var final_step: bool = active() and bool((task.get("def", {}) as Dictionary).get("final", false))
+	if brain != null and brain.is_player_bot and active() and not final_step and not AgentPlan.egg_may_work_now(brain):
 		return 0.0   # T-086: the agent's egg work keeps to the breaks until its plan says it can afford a round
-	if brain != null and brain.is_player_bot and active() and not holding_now() and AgentPlan.buy_first(brain):
+	if brain != null and brain.is_player_bot and active() and not final_step and not holding_now() and AgentPlan.buy_first(brain):
 		return 0.0   # U10 (T-163): the plan's purchase takes this break (Ironhide before the next pylon)
 	if not active() or str(task.get("paused", "")) != "":
 		return 0.0
@@ -1375,8 +1379,8 @@ func _do_shoot(n: Node3D, delta: float) -> void:
 		if lst0.size() >= int(_cfg().get("vantages_max", 3)) * 2:
 			_finish(false, "missed")
 		return
-	if here:
-		brain.loco.stop()
+	if here or player.global_position.distance_to(vp) <= 1.6:
+		brain.loco.stop()   # (at the vantage by the 1.6 m count: the old 0.8 m walk kept it stepping, never turning to fire)
 	elif not _walk(vp, 0.8, delta):
 		return
 	if forced_slot() >= 0 and player.weapons.current_index != forced_slot():
