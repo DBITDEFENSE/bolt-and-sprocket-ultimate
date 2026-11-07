@@ -1217,7 +1217,7 @@
   "DUT_POWERUP_SEEN_01": {
     "speaker": "DUT",
     "category": "POWERUP_SEEN",
-    "text": "Something shiny over there. Grab it."
+    "text": "Something dropped over there. Grab it. Don't look at what dropped it."
   },
   "DUT_CMD_FOLLOW_01": {
     "speaker": "DUT",
@@ -1232,7 +1232,7 @@
   "DUT_CMD_REPAIR_01": {
     "speaker": "DUT",
     "category": "CMD_REPAIR",
-    "text": "Hammer time. I'll do the windows."
+    "text": "Windows. On it. Keep 'em off me while I nail."
   },
   "DUT_CMD_REVIVE_01": {
     "speaker": "DUT",
@@ -1262,7 +1262,7 @@
   "DUT_BONUS_MARATHON_01": {
     "speaker": "DUT",
     "category": "BONUS_MARATHON",
-    "text": "Legs feel twenty again. Twenty and stupid."
+    "text": "Legs feel twenty again. [a breath] Twenty, and not here."
   },
   "DUT_BONUS_HAWKEYE_01": {
     "speaker": "DUT",
@@ -1302,7 +1302,7 @@
   "PEG_BOARD_02": {
     "speaker": "PEG",
     "category": "BOARD",
-    "text": "That window is closed for business."
+    "text": "That window's closed. For now."
   },
   "PEG_REVIVE_10": {
     "speaker": "PEG",
@@ -1312,7 +1312,7 @@
   "PEG_POWERUP_SEEN_01": {
     "speaker": "PEG",
     "category": "POWERUP_SEEN",
-    "text": "Something's dropped. Do pick it up before it sulks off."
+    "text": "Something's dropped. Pick it up before it fades."
   },
   "PEG_CMD_FOLLOW_01": {
     "speaker": "PEG",
@@ -1352,7 +1352,7 @@
   "PEG_BONUS_TWINBARREL_01": {
     "speaker": "PEG",
     "category": "BONUS_TWINBARREL",
-    "text": "Goodness. This rate of fire is frankly indecent."
+    "text": "This rate of fire is frankly indecent. [a pause] Good."
   },
   "PEG_BONUS_MARATHON_01": {
     "speaker": "PEG",
@@ -1362,7 +1362,7 @@
   "PEG_BONUS_HAWKEYE_01": {
     "speaker": "PEG",
     "category": "BONUS_HAWKEYE",
-    "text": "The brandy's done wonders for my aim. And my mood."
+    "text": "The brandy's done wonders for my aim. [a pause] Not my mood. Nothing will do that."
   },
   "PEG_BONUS_PACKMULE_01": {
     "speaker": "PEG",
@@ -1372,12 +1372,12 @@
   "PEG_BONUS_BLASTPROOF_01": {
     "speaker": "PEG",
     "category": "BONUS_BLASTPROOF",
-    "text": "Bang. Nothing. Splendid. Remind me to thank the brewer."
+    "text": "Bang. Nothing. [a breath] Splendid. Remind me to thank the brewer, if she's still alive."
   },
   "PEG_BONUS_OVERCLOCK_01": {
     "speaker": "PEG",
     "category": "BONUS_OVERCLOCK",
-    "text": "My rifle just electrocuted someone. How very modern."
+    "text": "My rifle just electrocuted one of them. [a pause] How very modern. How very this place."
   },
   "DEA_RELOAD_01": {
     "speaker": "DEA",
@@ -1577,132 +1577,132 @@
   "DUT_SPAWN_01": {
     "speaker": "DUT",
     "category": "SPAWN",
-    "text": "Kaltenbrunn. Smells like the mill with the lights off. Let's get to work."
+    "text": "Kaltenbrunn. [a breath] Smells like the mill with the lights off. Babcia said don't go down the salt. ...Boots on."
   },
   "DUT_SPAWN_02": {
     "speaker": "DUT",
     "category": "SPAWN",
-    "text": "All right. Boots on, heads down. Nobody dies before payday."
+    "text": "All right. Heads down, hands warm, rosary where you can reach it. Nobody dies tonight. [quiet] Nobody who's gonna stay dead, anyway."
   },
   "DUT_ROUND_START_01": {
     "speaker": "DUT",
     "category": "ROUND_START",
-    "text": "Here they come. Same shift, different faces."
+    "text": "Here they come. [a breath] Same shift. Different faces. Don't look at the faces."
   },
   "DUT_ROUND_START_02": {
     "speaker": "DUT",
     "category": "ROUND_START",
-    "text": "Punch in, fellas. Clock's running."
+    "text": "Punch in. Clock's running. [quiet] Jezus Maria, it's running."
   },
   "DUT_ROUND_END_01": {
     "speaker": "DUT",
     "category": "ROUND_END",
-    "text": "Whistle. Breathe while you can."
+    "text": "Whistle. [breathing heavily] Breathe. Breathe while you can. Check your fingers, check your feet."
   },
   "DUT_ROUND_END_02": {
     "speaker": "DUT",
     "category": "ROUND_END",
-    "text": "That's the round. Anybody hurt? Anybody care?"
+    "text": "That's the round. Anybody hurt? [a pause] Anybody bit? Say so now. Say so now, I mean it."
   },
   "DUT_BUY_AMMO_01": {
     "speaker": "DUT",
     "category": "BUY_AMMO",
-    "text": "Topped off. Costs more than beer, hits about the same."
+    "text": "Topped off. Costs more than beer. [a breath] I'd trade it for beer. I'd trade it for sleep."
   },
   "DUT_TEAM_DOWN_01": {
     "speaker": "DUT",
     "category": "TEAM_DOWN",
-    "text": "Man down! Hold on, I'm coming!"
+    "text": "[shouting] Man down! Hold on, hold on, I'm coming!"
   },
   "DUT_TEAM_DOWN_02": {
     "speaker": "DUT",
     "category": "TEAM_DOWN",
-    "text": "Somebody's on the floor. Cover me, I'll get 'em."
+    "text": "Somebody's on the floor! Cover me, I'm getting 'em. Nobody stays on the floor!"
   },
   "DUT_INTEL_01": {
     "speaker": "DUT",
     "category": "INTEL",
-    "text": "Paper. Somebody wrote this down for a reason. Hang onto it."
+    "text": "Paper. Somebody wrote this down scared. [a pause] Hang onto it. Scared men write true."
   },
   "DUT_DENY_NO_POWER_01": {
     "speaker": "DUT",
     "category": "DENY_NO_POWER",
-    "text": "Dead as a doornail. Needs juice."
+    "text": "Dead. Needs juice. [a pause] Only thing in here that stays dead."
   },
   "DUT_DENY_CAP_01": {
     "speaker": "DUT",
     "category": "DENY_CAP",
-    "text": "I'm full up. Any more of this stuff and I'll float."
+    "text": "I'm full up. Any more of this stuff and I'll stop being me."
   },
   "DUT_DENY_NO_SCRIP_01": {
     "speaker": "DUT",
     "category": "DENY_NO_SCRIP",
-    "text": "Short again. Story of my paycheck."
+    "text": "Short again. [exhausted] Story of my whole life. Payday's always one more shift."
   },
   "PEG_SPAWN_01": {
     "speaker": "PEG",
     "category": "SPAWN",
-    "text": "Kaltenbrunn. Right. Weapons ready, manners optional."
+    "text": "Kaltenbrunn. [a pause] Right. This is where they made it. Weapons ready. Gloves on; touch nothing with bare hands."
   },
   "PEG_SPAWN_02": {
     "speaker": "PEG",
     "category": "SPAWN",
-    "text": "Everyone stay close and try not to die. It's such a bother for the paperwork."
+    "text": "Everyone stay close. [a breath] Nobody dies tonight. I have written enough letters to mothers for one war."
   },
   "PEG_ROUND_START_01": {
     "speaker": "PEG",
     "category": "ROUND_START",
-    "text": "Company. Do form a queue, there's good chaps."
+    "text": "Company. [a pause] Form up. Fire low and steady, there's good chaps."
   },
   "PEG_ROUND_START_02": {
     "speaker": "PEG",
     "category": "ROUND_START",
-    "text": "And we're on again. Splendid."
+    "text": "And we're on again. [a breath] Right. Splendid."
   },
   "PEG_ROUND_END_01": {
     "speaker": "PEG",
     "category": "ROUND_END",
-    "text": "Quiet. One does cherish these little intervals."
+    "text": "Quiet. [exhausted] Reload. Breathe. One does cherish these little intervals; one rather lives for them."
   },
   "PEG_ROUND_END_02": {
     "speaker": "PEG",
     "category": "ROUND_END",
-    "text": "That's the lot. Reload, regroup, and for heaven's sake someone find the tea."
+    "text": "That's the lot. Reload, regroup, check your hands for bites. [a pause] And if anyone finds tea, I shall weep."
   },
   "PEG_BUY_AMMO_01": {
     "speaker": "PEG",
     "category": "BUY_AMMO",
-    "text": "Restocked. The Crown will reimburse me. Eventually."
+    "text": "Restocked. [a breath] The Crown will reimburse me. The Crown owes me rather more than ammunition."
   },
   "PEG_TEAM_DOWN_01": {
     "speaker": "PEG",
     "category": "TEAM_DOWN",
-    "text": "Someone's down. Keep them talking, I'm on my way."
+    "text": "Someone's down. Keep them talking. I'm on my way; keep them talking."
   },
   "PEG_TEAM_DOWN_02": {
     "speaker": "PEG",
     "category": "TEAM_DOWN",
-    "text": "Casualty. Do try not to bleed on anything important."
+    "text": "Casualty. Hold on. [a breath] You will hold on. That's an order."
   },
   "PEG_INTEL_01": {
     "speaker": "PEG",
     "category": "INTEL",
-    "text": "A document. Mr. Hale will want this. Everyone wants everything."
+    "text": "A document. [a pause] Mr. Hale will want this. Mr. Hale wants everything, and I've begun to wonder why."
   },
   "PEG_DENY_NO_POWER_01": {
     "speaker": "PEG",
     "category": "DENY_NO_POWER",
-    "text": "No power. Of course not. Nothing in this country works without a committee."
+    "text": "No power. [a pause] Of course not. Someone find the switch."
   },
   "PEG_DENY_CAP_01": {
     "speaker": "PEG",
     "category": "DENY_CAP",
-    "text": "I think that's quite enough of the local spirits, thank you."
+    "text": "No more. I can feel what's already in me, and I don't like how much it likes me."
   },
   "PEG_DENY_NO_SCRIP_01": {
     "speaker": "PEG",
     "category": "DENY_NO_SCRIP",
-    "text": "Insufficient funds. How terribly common."
+    "text": "Insufficient funds. [a breath] How terribly ordinary. One almost welcomes it."
   },
   "DEA_SPAWN_01": {
     "speaker": "DEA",
@@ -1837,287 +1837,287 @@
   "DUT_BUY_PISTOL_01": {
     "speaker": "DUT",
     "category": "BUY_PISTOL",
-    "text": "Pistol. Great. I'll throw it at 'em when it's empty."
+    "text": "Forty-five. Seven rounds. When it's empty I throw it, and then I guess I pray."
   },
   "DUT_BUY_RIFLE_01": {
     "speaker": "DUT",
     "category": "BUY_RIFLE",
-    "text": "Bolt action. Slow, honest work. Like the mill."
+    "text": "Bolt action. One at a time. Slow, honest work, and my hands are too cold for anything fancier."
   },
   "DUT_BUY_RIFLE_02": {
     "speaker": "DUT",
     "category": "BUY_RIFLE",
-    "text": "Garand. Now that's a rifle a man can marry."
+    "text": "Garand. Eight rounds and that ping when she's dry. [a pause] ...Every man I went up that cliff with carried one of these."
   },
   "DUT_BUY_SMG_01": {
     "speaker": "DUT",
     "category": "BUY_SMG",
-    "text": "Chopper. Spray and pray, and I ain't much for praying."
+    "text": "Chopper. Spray and pray. [a breath] I've been doing more of the second one lately."
   },
   "DUT_BUY_SHOTGUN_01": {
     "speaker": "DUT",
     "category": "BUY_SHOTGUN",
-    "text": "Trench gun. Now we're talking the same language."
+    "text": "Trench gun. My old man's war had these. Close work. You don't forget the close work."
   },
   "DUT_BUY_LMG_01": {
     "speaker": "DUT",
     "category": "BUY_LMG",
-    "text": "Heavy. Good. I like a gun that can take a punch."
+    "text": "Heavy. Good. Something to hide behind that shoots back."
   },
   "DUT_BUY_LAUNCHER_01": {
     "speaker": "DUT",
     "category": "BUY_LAUNCHER",
-    "text": "A stovepipe. Everybody stand way the hell back."
+    "text": "A stovepipe. Back up. Everybody way the hell back. I ain't carrying anybody home in a helmet."
   },
   "DUT_BUY_WONDER_01": {
     "speaker": "DUT",
     "category": "BUY_WONDER",
-    "text": "This thing hums. Guns shouldn't hum."
+    "text": "It hums. Same hum as the floor. Same hum as them. [a pause] I'm gonna point it at them anyway."
   },
   "DUT_BUY_MELEE_01": {
     "speaker": "DUT",
     "category": "BUY_MELEE",
-    "text": "A shovel. My old man would be proud. Finally doing honest work."
+    "text": "A shovel. I've dug plenty of holes with one of these. First time I've had to put a man back in his."
   },
   "DUT_CRATE_GOOD_01": {
     "speaker": "DUT",
     "category": "CRATE_GOOD",
-    "text": "Well, look at that. Christmas came late."
+    "text": "Well. Look at that. [a breath] Somebody up there heard me. Don't tell Deacon."
   },
   "DUT_CRATE_GOOD_02": {
     "speaker": "DUT",
     "category": "CRATE_GOOD",
-    "text": "Thank you, box. I take back half of what I said about you."
+    "text": "Thank you, box. I take back half of what I said. The half I said out loud."
   },
   "DUT_CRATE_BAD_01": {
     "speaker": "DUT",
     "category": "CRATE_BAD",
-    "text": "Nine-fifty for this? I've been robbed by nicer crooks in Pittsburgh."
+    "text": "Nine-fifty. For this. [exhausted] There's loan sharks on Polish Hill who'd be ashamed."
   },
   "DUT_CRATE_BAD_02": {
     "speaker": "DUT",
     "category": "CRATE_BAD",
-    "text": "This box hates me personally."
+    "text": "The box knows me. The box knows exactly what I can't afford to lose."
   },
   "DUT_CRATE_DRUMMER_01": {
     "speaker": "DUT",
     "category": "CRATE_DRUMMER",
-    "text": "The little drummer again. Somebody's kid owned that."
+    "text": "The little drummer. Some kid wound him up one Christmas and never got to see him stop."
   },
   "DUT_CRATE_DRUMMER_02": {
     "speaker": "DUT",
     "category": "CRATE_DRUMMER",
-    "text": "Yeah, yeah, march on outta here, tin man."
+    "text": "Go on. March. Everybody else in this country is."
   },
   "DUT_PERK_IRONHIDE_01": {
     "speaker": "DUT",
     "category": "PERK_IRONHIDE",
-    "text": "Tastes like a stout somebody drowned in. Hits like one too."
+    "text": "Stout. Tastes like the bottom of the Mon. [a breath] Thicker skin. Fine. Been growing that since I was fifteen."
   },
   "DUT_PERK_SECONDWIND_01": {
     "speaker": "DUT",
     "category": "PERK_SECONDWIND",
-    "text": "Schnapps from a nun. Babcia would've approved. Na zdrowie. (Cheers.)"
+    "text": "Schnapps from a nun. Babcia'd have crossed herself and drunk it anyway. Na zdrowie. (Cheers.)"
   },
   "DUT_PERK_TRIGGER_01": {
     "speaker": "DUT",
     "category": "PERK_TRIGGER",
-    "text": "My hands are shaking. That's the tonic, not me. Mostly."
+    "text": "Hands are shaking. That's the tonic. [a pause] Tonight it's the tonic."
   },
   "DUT_PERK_TWINBARREL_01": {
     "speaker": "DUT",
     "category": "PERK_TWINBARREL",
-    "text": "Bitters. Like my old man's mood. Works about as fast."
+    "text": "Bitters. My old man drank these and said nothing for thirty years. I'm starting to see why."
   },
   "DUT_PERK_MARATHON_01": {
     "speaker": "DUT",
     "category": "PERK_MARATHON",
-    "text": "I don't run. I'm making an exception."
+    "text": "I don't run. Ran once, up a cliff. [exhausted] Fine. Twice."
   },
   "DUT_PERK_HAWKEYE_01": {
     "speaker": "DUT",
     "category": "PERK_HAWKEYE",
-    "text": "Brandy. Fancy. My eyes feel like somebody scrubbed 'em."
+    "text": "Brandy. Eyes feel scrubbed. [a pause] ...Now I can see their faces. I didn't want to see their faces."
   },
   "DUT_PERK_PACKMULE_01": {
     "speaker": "DUT",
     "category": "PERK_PACKMULE",
-    "text": "Another gun to carry. Story of my life. I'm the mule."
+    "text": "Another gun. More weight. [a breath] Weight I can do. Weight's the one thing I was ever good for."
   },
   "DUT_PERK_BLASTPROOF_01": {
     "speaker": "DUT",
     "category": "PERK_BLASTPROOF",
-    "text": "Bock beer that makes you bombproof. Only in Europe."
+    "text": "Bock. Bombproof, it says. Nothing's bombproof. But I'll take the beer."
   },
   "DUT_PWR_RESUPPLY_01": {
     "speaker": "DUT",
     "category": "PWR_RESUPPLY",
-    "text": "Ammo. Bless whoever's upstairs."
+    "text": "Ammo. [a breath] Thank You. I mean it this time."
   },
   "DUT_PWR_DEATHSDOOR_01": {
     "speaker": "DUT",
     "category": "PWR_DEATHSDOOR",
-    "text": "Everything dies. Like usual, only faster."
+    "text": "One shot each. Make 'em count. They died once already; don't make 'em do it slow."
   },
   "DUT_PWR_DOUBLESCRIP_01": {
     "speaker": "DUT",
     "category": "PWR_DOUBLESCRIP",
-    "text": "Double pay. Wish the Army ran like this."
+    "text": "Double pay. The Army gave me ten bucks a month extra for nights like this. This is the first raise I ever got."
   },
   "DUT_PWR_BLACKOUT_01": {
     "speaker": "DUT",
     "category": "PWR_BLACKOUT",
-    "text": "Lights out, fellas. Rest easy."
+    "text": "All of 'em down at once. [quiet] Rest easy. Stay down this time."
   },
   "DUT_PWR_FORTIFY_01": {
     "speaker": "DUT",
     "category": "PWR_FORTIFY",
-    "text": "Boards back up. Saves my back."
+    "text": "Boards back up on their own. I'm not asking how. Not tonight."
   },
   "DUT_PWR_CLEARANCE_01": {
     "speaker": "DUT",
     "category": "PWR_CLEARANCE",
-    "text": "Clearance sale at the box. Line up, ladies."
+    "text": "Crate's cheap. Go on, somebody buy something before it changes its mind."
   },
   "DUT_BELL_01": {
     "speaker": "DUT",
     "category": "BELL",
-    "text": "That bell. Somebody tell it to shut up."
+    "text": "That bell. [a breath] Every time it rings, more of 'em get up. Somebody make it stop."
   },
   "DUT_BELL_02": {
     "speaker": "DUT",
     "category": "BELL",
-    "text": "Fog's rolling in. Here come the lantern boys."
+    "text": "Fog. Here come the lanterns. Watch the fog, not the windows."
   },
   "DUT_FOREMAN_01": {
     "speaker": "DUT",
     "category": "FOREMAN",
-    "text": "The boss is here. I hated foremen before he had a drill for an arm."
+    "text": "Foreman. Drill for an arm. [exhausted] I had foremen like him before somebody did that to him."
   },
   "DUT_FOREMAN_02": {
     "speaker": "DUT",
     "category": "FOREMAN",
-    "text": "C'mon, big man. I've punched out bigger guys than you. Not many."
+    "text": "Come on, big man. Come on. Somebody did this to you, and I'm sorry, and I'm still gonna put you down."
   },
   "DUT_SCREAMER_01": {
     "speaker": "DUT",
     "category": "SCREAMER",
-    "text": "Somebody shut that nurse up before my ears bleed."
+    "text": "Nurse! Drop her fast, before she screams the whole county in!"
   },
   "DUT_GLASSHIDE_01": {
     "speaker": "DUT",
     "category": "GLASSHIDE",
-    "text": "This one's got glass for a gut. Aim high!"
+    "text": "Glass in the gut on this one! Aim high, the head!"
   },
   "DUT_AMMO_LOW_01": {
     "speaker": "DUT",
     "category": "AMMO_LOW",
-    "text": "Running light here."
+    "text": "Running light. Running light here!"
   },
   "DUT_AMMO_NONE_01": {
     "speaker": "DUT",
     "category": "AMMO_NONE",
-    "text": "Empty. Swell. Just swell."
+    "text": "Empty. [a breath] Swell. Swell."
   },
   "DUT_DOWN_01": {
     "speaker": "DUT",
     "category": "DOWN",
-    "text": "Ah, hell. I'm down. Somebody grab me."
+    "text": "[pained] Ah, hell. I'm down. Down! Somebody... somebody grab me."
   },
   "DUT_DOWN_02": {
     "speaker": "DUT",
     "category": "DOWN",
-    "text": "Babcia... not like this. Not here."
+    "text": "[breathing heavily] Not here. Babcia, not in the salt. Not in the... [a breath] get me up."
   },
   "DUT_REVIVE_01": {
     "speaker": "DUT",
     "category": "REVIVE",
-    "text": "Up you get. Don't make me carry you."
+    "text": "Up. Up, I got you. Don't you dare make me carry you home."
   },
   "DUT_REVIVE_02": {
     "speaker": "DUT",
     "category": "REVIVE",
-    "text": "Off the floor. Floor's for the dead ones."
+    "text": "Off the floor. Off the floor, the floor's theirs. Come on."
   },
   "DUT_REVIVED_01": {
     "speaker": "DUT",
     "category": "REVIVED",
-    "text": "Thanks. I owe you a beer. A bad one."
+    "text": "[breathing heavily] Thanks. ...I owe you. I'll pay in beer. Bad beer, first bar that's still standing."
   },
   "DUT_STREAK_01": {
     "speaker": "DUT",
     "category": "STREAK",
-    "text": "Keep 'em coming. I got all night, unfortunately."
+    "text": "Keep coming. I got all night. [exhausted] God help me, I got all night."
   },
   "DUT_STREAK_02": {
     "speaker": "DUT",
     "category": "STREAK",
-    "text": "Like stacking pig iron. Just keep lifting."
+    "text": "Like stacking pig iron. Don't think. Lift. Don't think."
   },
   "DUT_HEADSHOT_01": {
     "speaker": "DUT",
     "category": "HEADSHOT",
-    "text": "Right in the thinker."
+    "text": "Right in the head. [quiet] That's the kind way."
   },
   "DUT_HEADSHOT_02": {
     "speaker": "DUT",
     "category": "HEADSHOT",
-    "text": "Rest easy, cousin."
+    "text": "Rest easy, cousin. Stay down this time."
   },
   "DUT_CRAWLER_01": {
     "speaker": "DUT",
     "category": "CRAWLER",
-    "text": "This one's crawling. Leave him. He ain't going anywhere fast."
+    "text": "Crawler. Leave him, he's slow. [a breath] ...Somebody finish him when there's time. Nobody should be left like that."
   },
   "DUT_DOOR_01": {
     "speaker": "DUT",
     "category": "DOOR",
-    "text": "Door's open. Something's always behind the door."
+    "text": "Door's open. There's always something behind the door, and it's always somebody's kid."
   },
   "DUT_POWER_01": {
     "speaker": "DUT",
     "category": "POWER",
-    "text": "Lights. Now I can see what's eating me."
+    "text": "Lights. [a breath] Now I can see what's eating me. I liked it better guessing."
   },
   "DUT_CRUCIBLE_01": {
     "speaker": "DUT",
     "category": "CRUCIBLE",
-    "text": "Put my gun in a furnace and it came out meaner. That's the mill all over."
+    "text": "Put my gun in the fire and it came out meaner. The mill did that to steel. The mill did that to my old man."
   },
   "DUT_CRUCIBLE_02": {
     "speaker": "DUT",
     "category": "CRUCIBLE",
-    "text": "Smells like the Monongahela on a hot day. Works, though."
+    "text": "Smells like the Mon in August. Works, though. Everything down here works. That's what scares me."
   },
   "DUT_TRAP_01": {
     "speaker": "DUT",
     "category": "TRAP",
-    "text": "Hit the switch and watch the fireworks."
+    "text": "Switch is thrown. Stay clear of it. Let the machine do the dirty part."
   },
   "DUT_EE_01": {
     "speaker": "DUT",
     "category": "EE",
-    "text": "That music box. Some little girl's. I hate this place more every minute."
+    "text": "A music box. Some little girl's. [quiet] She's down here somewhere. I know it like I know my own name."
   },
   "DUT_EE_02": {
     "speaker": "DUT",
     "category": "EE",
-    "text": "Bells in the right order. Like church back home."
+    "text": "Bells in the right order. [a breath] Like Sunday at Immaculate Heart. Babcia'd have known the tune."
   },
   "DUT_EE_03": {
     "speaker": "DUT",
     "category": "EE",
-    "text": "The heart's gonna blow. Good. Let it."
+    "text": "The heart's gonna blow. Good. [shouting] Let it! Hold the line and let it!"
   },
   "DUT_EXHAUST_01": {
     "speaker": "DUT",
     "category": "EXHAUST",
-    "text": "Round fifty. I forgot what sitting down feels like."
+    "text": "[exhausted] Round fifty. I can't feel my feet. I don't know if that's the cold or if they quit."
   },
   "DUT_EXHAUST_02": {
     "speaker": "DUT",
     "category": "EXHAUST",
-    "text": "My arms are done. I'm fighting with spite now."
+    "text": "[exhausted] Arms are gone. I'm fighting on spite and Hail Marys, and I'm low on both."
   },
   "DUT_POL_01": {
     "speaker": "DUT",
@@ -2142,222 +2142,222 @@
   "PEG_BUY_PISTOL_01": {
     "speaker": "PEG",
     "category": "BUY_PISTOL",
-    "text": "A sidearm. How very last resort."
+    "text": "A sidearm. Last resort. [a pause] We've been at the last resort for some time, haven't we."
   },
   "PEG_BUY_RIFLE_01": {
     "speaker": "PEG",
     "category": "BUY_RIFLE",
-    "text": "A rifle. Sensible. Rather like sensible shoes."
+    "text": "A rifle. One shot, taken properly. My father's rule: if it takes two, you weren't looking."
   },
   "PEG_BUY_RIFLE_02": {
     "speaker": "PEG",
     "category": "BUY_RIFLE",
-    "text": "German bolt action. One does admire their workmanship, if not their politics."
+    "text": "A German rifle. Well made. Some boy of nineteen was issued it and told it would keep him safe."
   },
   "PEG_BUY_SMG_01": {
     "speaker": "PEG",
     "category": "BUY_SMG",
-    "text": "A Tommy gun. The Americans do love a crowd-pleaser."
+    "text": "A Thompson. Crude, loud, and I am past caring. Give it here."
   },
   "PEG_BUY_SHOTGUN_01": {
     "speaker": "PEG",
     "category": "BUY_SHOTGUN",
-    "text": "A shotgun. Crude. Effective. Like most of my colleagues."
+    "text": "A shotgun. For when they're close enough to see what they were. [a breath] Right."
   },
   "PEG_BUY_LMG_01": {
     "speaker": "PEG",
     "category": "BUY_LMG",
-    "text": "Belt-fed. Now we're having a proper conversation."
+    "text": "Belt-fed. Good. Find me a doorway and I shall hold it until I can't."
   },
   "PEG_BUY_LAUNCHER_01": {
     "speaker": "PEG",
     "category": "BUY_LAUNCHER",
-    "text": "Oh, hello, darling. You and I are going to get along famously."
+    "text": "Oh. [a pause] Hello. ...Forgive me. One shouldn't be glad of anything tonight. I am glad of this."
   },
   "PEG_BUY_WONDER_01": {
     "speaker": "PEG",
     "category": "BUY_WONDER",
-    "text": "Fascinating. Mr. Hale would... never mind."
+    "text": "It hums. The same note as the glass. Mr. Hale would want it crated and... [a pause] Never mind what Mr. Hale would want."
   },
   "PEG_BUY_MELEE_01": {
     "speaker": "PEG",
     "category": "BUY_MELEE",
-    "text": "A shovel. My father would weep with pride."
+    "text": "A shovel. My father buried a great many friends with one of these. He'd be glad I've finally learned the use of it."
   },
   "PEG_CRATE_GOOD_01": {
     "speaker": "PEG",
     "category": "CRATE_GOOD",
-    "text": "Oh, that's rather splendid."
+    "text": "Oh. [a breath] That's rather good. Thank you. Whoever."
   },
   "PEG_CRATE_GOOD_02": {
     "speaker": "PEG",
     "category": "CRATE_GOOD",
-    "text": "The crate is feeling generous. Let's not question it."
+    "text": "The crate's being kind. Nothing here is kind without a reason. I'll take it anyway."
   },
   "PEG_CRATE_BAD_01": {
     "speaker": "PEG",
     "category": "CRATE_BAD",
-    "text": "Nine hundred and fifty Scrip. For that. Marvellous."
+    "text": "Nine hundred and fifty Scrip. For that. [a pause] Marvellous. Simply marvellous."
   },
   "PEG_CRATE_BAD_02": {
     "speaker": "PEG",
     "category": "CRATE_BAD",
-    "text": "I'll be filing a complaint with the quartermaster. Whoever, or whatever, that is."
+    "text": "I shall file a complaint with the quartermaster. If anyone finds out who, or what, that is, do tell me."
   },
   "PEG_CRATE_DRUMMER_01": {
     "speaker": "PEG",
     "category": "CRATE_DRUMMER",
-    "text": "The drummer. Somebody wound him up and nobody's stopped him since."
+    "text": "The drummer. A child's toy. [quiet] One does wonder where the child is."
   },
   "PEG_CRATE_DRUMMER_02": {
     "speaker": "PEG",
     "category": "CRATE_DRUMMER",
-    "text": "Off it goes. Do note where it lands, everyone."
+    "text": "Off it goes. Note where it lands, everyone. We'll need it again."
   },
   "PEG_PERK_IRONHIDE_01": {
     "speaker": "PEG",
     "category": "PERK_IRONHIDE",
-    "text": "Stout. Ghastly. Fortifying. Very British, actually."
+    "text": "Stout. Ghastly. [a breath] It's the only warm thing I've swallowed in two days. Fortifying."
   },
   "PEG_PERK_SECONDWIND_01": {
     "speaker": "PEG",
     "category": "PERK_SECONDWIND",
-    "text": "Made by a nun, apparently. I'd pray, but I'll settle for this."
+    "text": "Made by a nun, the label says. [a pause] I hadn't prayed since France. I find I'm doing it now, under my breath. Don't tell anyone."
   },
   "PEG_PERK_TRIGGER_01": {
     "speaker": "PEG",
     "category": "PERK_TRIGGER",
-    "text": "Rather like strong tea with a grudge."
+    "text": "Strong tea with a grudge. My hands have stopped shaking. They were shaking; I'd thought nobody had noticed."
   },
   "PEG_PERK_TWINBARREL_01": {
     "speaker": "PEG",
     "category": "PERK_TWINBARREL",
-    "text": "Bitters. A gin would improve it enormously."
+    "text": "Bitters. [a pause] My father took his neat, the year he came home. I begin to understand him."
   },
   "PEG_PERK_MARATHON_01": {
     "speaker": "PEG",
     "category": "PERK_MARATHON",
-    "text": "I haven't run like this since the hockey pitch at Cheltenham."
+    "text": "I haven't run like this since the hockey pitch. [exhausted] Nobody at Cheltenham was trying to eat me."
   },
   "PEG_PERK_HAWKEYE_01": {
     "speaker": "PEG",
     "category": "PERK_HAWKEYE",
-    "text": "Brandy for marksmen. Well. Bottoms up and eyes front."
+    "text": "Brandy for marksmen. Eyes front. [a breath] Do not look at their faces. That's an order, and I'm giving it to myself."
   },
   "PEG_PERK_PACKMULE_01": {
     "speaker": "PEG",
     "category": "PERK_PACKMULE",
-    "text": "One more gun. One can never have too many options."
+    "text": "One more gun. One more thing to carry. [a pause] I am carrying rather a lot already."
   },
   "PEG_PERK_BLASTPROOF_01": {
     "speaker": "PEG",
     "category": "PERK_BLASTPROOF",
-    "text": "Oh, I know this one. The Demolitions School kept it in the staff room."
+    "text": "Oh. I know this one. [a pause] The Demolitions School kept a bottle in the staff room. Nobody asked where it came from. I should have."
   },
   "PEG_PWR_RESUPPLY_01": {
     "speaker": "PEG",
     "category": "PWR_RESUPPLY",
-    "text": "Ammunition. How thoughtful."
+    "text": "Ammunition. [a breath] Thank you. One takes what one is given."
   },
   "PEG_PWR_DEATHSDOOR_01": {
     "speaker": "PEG",
     "category": "PWR_DEATHSDOOR",
-    "text": "Everything dies in one. Let's be efficient about it."
+    "text": "One round each, now. Be quick, and be kind about it."
   },
   "PEG_PWR_DOUBLESCRIP_01": {
     "speaker": "PEG",
     "category": "PWR_DOUBLESCRIP",
-    "text": "Double credit. The Ledger's in a generous mood."
+    "text": "Double credit. The Ledger is being generous. [a pause] I do wish I knew what it thinks we owe."
   },
   "PEG_PWR_BLACKOUT_01": {
     "speaker": "PEG",
     "category": "PWR_BLACKOUT",
-    "text": "Clean sweep. Very tidy."
+    "text": "All of them, at once. [quiet] ...Good. Good. Stay down."
   },
   "PEG_PWR_FORTIFY_01": {
     "speaker": "PEG",
     "category": "PWR_FORTIFY",
-    "text": "Windows secured. Carry on."
+    "text": "Windows secured. Don't ask by whom. Carry on."
   },
   "PEG_PWR_CLEARANCE_01": {
     "speaker": "PEG",
     "category": "PWR_CLEARANCE",
-    "text": "A sale. Even the dead have them."
+    "text": "The crate's cheap. Spend it; we may not be here for the next one."
   },
   "PEG_BELL_01": {
     "speaker": "PEG",
     "category": "BELL",
-    "text": "The bell. Fasbender said not to let it ring. It's ringing."
+    "text": "The bell. Fasbender said not to let it ring. [a pause] It's ringing. Positions."
   },
   "PEG_BELL_02": {
     "speaker": "PEG",
     "category": "BELL",
-    "text": "Fog. Positions, everyone. They come out of it, not the windows."
+    "text": "Fog. Positions, everyone. They come out of the fog, not the windows. Don't waste rounds on the windows."
   },
   "PEG_FOREMAN_01": {
     "speaker": "PEG",
     "category": "FOREMAN",
-    "text": "That is a very large man with a very large drill. Weak point, people. Find it."
+    "text": "A very large man with a very large drill. He was somebody's foreman. Weak point, people. Find it."
   },
   "PEG_FOREMAN_02": {
     "speaker": "PEG",
     "category": "FOREMAN",
-    "text": "Aim for the glowing bit. It's always the glowing bit."
+    "text": "Aim for the glowing part. [a breath] It is always the glowing part. God help us, it always is."
   },
   "PEG_SCREAMER_01": {
     "speaker": "PEG",
     "category": "SCREAMER",
-    "text": "A nurse. Do kill her quickly. She'll scramble us all."
+    "text": "A nurse. Kill her quickly, please. She'll scramble us all. [a pause] ...Quickly. She used to help people."
   },
   "PEG_GLASSHIDE_01": {
     "speaker": "PEG",
     "category": "GLASSHIDE",
-    "text": "Armoured torso. Head or high explosive. I know which I prefer."
+    "text": "Glass in the torso. Head or high explosive. Nothing else will do."
   },
   "PEG_AMMO_LOW_01": {
     "speaker": "PEG",
     "category": "AMMO_LOW",
-    "text": "Ammunition's getting rather thin."
+    "text": "Ammunition's rather thin. Rather thin, everyone."
   },
   "PEG_AMMO_NONE_01": {
     "speaker": "PEG",
     "category": "AMMO_NONE",
-    "text": "I'm dry. Inconvenient."
+    "text": "I'm dry. [a pause] That's... inconvenient."
   },
   "PEG_DOWN_01": {
     "speaker": "PEG",
     "category": "DOWN",
-    "text": "I'm down. A little assistance, if you'd be so kind."
+    "text": "[pained] I'm down. Some assistance, if you'd be so kind. [a breath] Quite soon, if you'd be so kind."
   },
   "PEG_DOWN_02": {
     "speaker": "PEG",
     "category": "DOWN",
-    "text": "Not here. I have orders to... oh, damn it."
+    "text": "[breathing heavily] Not here. I have orders to... [a pause] oh, damn the orders. Somebody."
   },
   "PEG_REVIVE_01": {
     "speaker": "PEG",
     "category": "REVIVE",
-    "text": "Up. We've no time for lying about."
+    "text": "Up. Up, I have you. We've no time for lying about."
   },
   "PEG_REVIVE_02": {
     "speaker": "PEG",
     "category": "REVIVE",
-    "text": "On your feet. I'm not filing the paperwork for you."
+    "text": "On your feet. [quiet] I am not writing to your mother. On your feet."
   },
   "PEG_REVIVED_01": {
     "speaker": "PEG",
     "category": "REVIVED",
-    "text": "Thank you. I'll pretend that didn't happen."
+    "text": "[breathing heavily] Thank you. ...I shall pretend that didn't happen. Do the same."
   },
   "PEG_STREAK_01": {
     "speaker": "PEG",
     "category": "STREAK",
-    "text": "Rather a good rhythm going, aren't we?"
+    "text": "Rhythm. Keep the rhythm. Don't count them, just keep the rhythm."
   },
   "PEG_STREAK_02": {
     "speaker": "PEG",
     "category": "STREAK",
-    "text": "Keep them coming. I'm just warming up."
+    "text": "Keep them coming. [a breath] I'm quite calm. I'm told it's alarming."
   },
   "PEG_HEADSHOT_01": {
     "speaker": "PEG",
@@ -2367,77 +2367,77 @@
   "PEG_HEADSHOT_02": {
     "speaker": "PEG",
     "category": "HEADSHOT",
-    "text": "One should always aim for the brain. It's where the trouble lives."
+    "text": "The head. Always the head. [quiet] It's the kindest thing left to do for them."
   },
   "PEG_CRAWLER_01": {
     "speaker": "PEG",
     "category": "CRAWLER",
-    "text": "Legless and still determined. One almost admires it."
+    "text": "Legless, and still coming. [a pause] Don't leave it like that. One wouldn't leave a horse like that."
   },
   "PEG_DOOR_01": {
     "speaker": "PEG",
     "category": "DOOR",
-    "text": "Door's open. Carry on, then."
+    "text": "Door's open. [a breath] Carry on, then. Eyes up."
   },
   "PEG_POWER_01": {
     "speaker": "PEG",
     "category": "POWER",
-    "text": "Power's on. Now we see what they built here."
+    "text": "Power's on. [a pause] Now we see what they built here. I rather wish we didn't have to."
   },
   "PEG_CRUCIBLE_01": {
     "speaker": "PEG",
     "category": "CRUCIBLE",
-    "text": "It's... re-teaching the weapon. That shouldn't be possible. Make a note."
+    "text": "It's re-teaching the weapon. That shouldn't be possible. [a pause] Make a note. London will want a note."
   },
   "PEG_CRUCIBLE_02": {
     "speaker": "PEG",
     "category": "CRUCIBLE",
-    "text": "Interesting. How much of this material is in that furnace?"
+    "text": "How much of the glass is in that furnace? ...Don't answer. I'm not meant to be asking."
   },
   "PEG_TRAP_01": {
     "speaker": "PEG",
     "category": "TRAP",
-    "text": "Lever pulled. Do stand clear."
+    "text": "Lever pulled. Stand clear. [quiet] Don't watch, if you can help it."
   },
   "PEG_EE_01": {
     "speaker": "PEG",
     "category": "EE",
-    "text": "A music box. Four notes. It's a key of some sort."
+    "text": "A music box. Four notes. [a pause] It's a key of some sort. Somebody's child wound it."
   },
   "PEG_EE_02": {
     "speaker": "PEG",
     "category": "EE",
-    "text": "The shard. Careful with it. Nobody touch it with bare hands."
+    "text": "The shard. Careful. Nobody touch it with bare hands. [a pause] ...Give it to me. I have a tin."
   },
   "PEG_EE_03": {
     "speaker": "PEG",
     "category": "EE",
-    "text": "The heart's overloading. Hold this position. Hold it!"
+    "text": "The heart's overloading. Hold this position. Hold it. [a breath] Hold it, please."
   },
   "PEG_EXHAUST_01": {
     "speaker": "PEG",
     "category": "EXHAUST",
-    "text": "Fifty rounds. I'd kill for a cup of tea. I have, in fact, killed for less."
+    "text": "[exhausted] Fifty rounds. I'd kill for a cup of tea. [a pause] I've killed for less tonight. Rather a lot less."
   },
   "PEG_EXHAUST_02": {
     "speaker": "PEG",
     "category": "EXHAUST",
-    "text": "If I sit down I shan't get up again. So I shan't sit down."
+    "text": "[exhausted] If I sit down I shan't get up. [a breath] Nobody here gets up the same. So I shan't sit down."
   },
   "PEG_LANTERN_01": {
     "speaker": "PEG",
     "category": "LANTERN",
-    "text": "Mr. Hale will want to know about... the Ledger. For the report."
+    "text": "Mr. Hale will want to know about... the Ledger. For the report. [a pause] Only the Ledger."
   },
   "PEG_LANTERN_02": {
     "speaker": "PEG",
     "category": "LANTERN",
-    "text": "Stable in transit. Good. That's good to know."
+    "text": "Stable in transit, he said. In lead, kept cold. [a pause] Good. That's... good to know."
   },
   "PEG_LANTERN_03": {
     "speaker": "PEG",
     "category": "LANTERN",
-    "text": "Nobody needs to know what's in my pack. Least of all you."
+    "text": "Nobody needs to know what's in my pack. [a pause] Least of all you. Least of all me."
   },
   "DEA_BUY_PISTOL_01": {
     "speaker": "DEA",
@@ -3182,23 +3182,23 @@
   "BNT_DUT_PEG_01": {
     "speaker": "BNT",
     "category": "DUT_PEG",
-    "text": "Lieutenant, how come the British always talk like they're ordering tea?",
+    "text": "Lieutenant. How do you do it? Talk like you're ordering tea.",
     "exchange": [
       [
         "DUT",
-        "Lieutenant, how come the British always talk like they're ordering tea?"
+        "Lieutenant. How do you do it? Talk like you're ordering tea."
       ],
       [
         "PEG",
-        "Because, Sergeant, we usually are."
+        "Because if I stop, Sergeant, I shall start screaming, and then where would we be."
       ],
       [
         "DUT",
-        "Even now?"
+        "...Fair enough."
       ],
       [
         "PEG",
-        "Especially now."
+        "Quite."
       ]
     ]
   },
@@ -3213,15 +3213,15 @@
       ],
       [
         "DUT",
-        "Yeah. Steady drip. Like a faucet back home."
+        "Yeah. [a breath] It's a scratch. It's a scratch, not a bite. I checked."
       ],
       [
         "PEG",
-        "That is not reassuring."
+        "Show me. ...Show me, Sergeant."
       ],
       [
         "DUT",
-        "Wasn't trying to reassure you, ma'am."
+        "...It's a scratch, ma'am."
       ]
     ]
   },
@@ -3236,26 +3236,26 @@
       ],
       [
         "PEG",
-        "Charges. Detonators. Two sample jars with London's seal on them, still empty. Tea."
+        "Charges. Detonators. [a pause] Tea."
       ],
       [
         "DUT",
-        "Uh-huh."
+        "Uh-huh. Heavy tea."
       ]
     ]
   },
   "BNT_DUT_PEG_04": {
     "speaker": "BNT",
     "category": "DUT_PEG",
-    "text": "Lieutenant, you ever miss anything? Ever once?",
+    "text": "Lieutenant. You ever scared? Ever once?",
     "exchange": [
       [
         "DUT",
-        "Lieutenant, you ever miss anything? Ever once?"
+        "Lieutenant. You ever scared? Ever once?"
       ],
       [
         "PEG",
-        "Breakfast, Sergeant. Every single day."
+        "Constantly, Sergeant. I simply find it rude to mention."
       ]
     ]
   },
@@ -3270,11 +3270,11 @@
       ],
       [
         "DUT",
-        "Yeah. Babcia's tune. Keeps my hands steady."
+        "Yeah. Babcia's hymn. [a pause] Keeps my hands from shaking. Mostly."
       ],
       [
         "PEG",
-        "Carry on, then. Quietly."
+        "Carry on, then. [quiet] Quietly. I rather like it."
       ]
     ]
   },
@@ -3320,7 +3320,7 @@
       ],
       [
         "DUT",
-        "Still here. Don't push it."
+        "Still here. ...Don't push it, Deacon. I don't know who's listening."
       ]
     ]
   },
@@ -3358,7 +3358,7 @@
       ],
       [
         "DUT",
-        "I hear it. I'm choosing not to."
+        "I hear it. [quiet] It's in my teeth. I'm choosing not to."
       ]
     ]
   },
@@ -3377,7 +3377,7 @@
       ],
       [
         "DUT",
-        "Mine's called 'the gun.'"
+        "Mine's called 'the gun.' [a pause] ...Don't tell her, but I talk to it too."
       ]
     ]
   },
@@ -3423,7 +3423,7 @@
       ],
       [
         "DUT",
-        "Yeah. She said that, too."
+        "Yeah. [a pause] She said that too. Then she said don't go down the salt, and went to sleep."
       ]
     ]
   },
@@ -3484,7 +3484,7 @@
       ],
       [
         "DUT",
-        "I don't count."
+        "I don't count. [quiet] I stopped counting on a beach in June."
       ],
       [
         "WRN",
@@ -3503,7 +3503,7 @@
       ],
       [
         "PEG",
-        "Professional curiosity, Corporal."
+        "Professional curiosity, Corporal. [a pause] Nothing more."
       ],
       [
         "DEA",
@@ -3511,7 +3511,7 @@
       ],
       [
         "PEG",
-        "Your father sounds exhausting."
+        "Your father sounds like a wise man. Don't tell him I said so."
       ]
     ]
   },
@@ -3549,7 +3549,7 @@
       ],
       [
         "PEG",
-        "Constantly. It's the 'during' I try not to think about."
+        "There's a flat in Islington with my mother in it. I think about that. [a pause] Then I stop."
       ]
     ]
   },
@@ -3579,7 +3579,7 @@
       ],
       [
         "PEG",
-        "Once. In 1941. It was most inconvenient."
+        "Once. France, 'forty-three. Two of my people were dead and I was told why afterwards. [a pause] It was most inconvenient."
       ]
     ]
   },
@@ -3594,7 +3594,7 @@
       ],
       [
         "PEG",
-        "I came for exactly what I was ordered to come for."
+        "I came for exactly what I was ordered to come for. [a pause] Fasbender is on the list."
       ],
       [
         "WRN",
@@ -3655,7 +3655,7 @@
       ],
       [
         "PEG",
-        "They say to bring out the samples. And whoever can explain them."
+        "They say to bring the samples out. [a pause] And the asset."
       ],
       [
         "WRN",
@@ -3843,42 +3843,42 @@
   "DUT_PERK_FERNET_01": {
     "speaker": "DUT",
     "category": "PERK_FERNET",
-    "text": "Tastes like Babcia's cough syrup. Everything looks... louder."
+    "text": "Tastes like Babcia's cough syrup. Everything looks... louder. Sharper. I can see every seam in this place."
   },
   "DUT_PERK_FERNET_02": {
     "speaker": "DUT",
     "category": "PERK_FERNET",
-    "text": "Bitter. Now I can see the stuff this place is trying to hide. Swell. More stuff."
+    "text": "Bitter. Now I can see what this place is hiding. [exhausted] Swell. I was doing fine not seeing it."
   },
   "DUT_PERK_OVERCLOCK_01": {
     "speaker": "DUT",
     "category": "PERK_OVERCLOCK",
-    "text": "My fillings are buzzing. Nobody said nothing about fillings."
+    "text": "My fillings are buzzing. [a pause] Nobody said nothing about fillings. Nobody says nothing about anything down here."
   },
   "DUT_PERK_OVERCLOCK_02": {
     "speaker": "DUT",
     "category": "PERK_OVERCLOCK",
-    "text": "Run the gun dry and it bites back. My kind of gun."
+    "text": "Run her dry and she bites back. Good. Something else down here that fights when it's empty."
   },
   "PEG_PERK_FERNET_01": {
     "speaker": "PEG",
     "category": "PERK_FERNET",
-    "text": "Bitter as a Whitehall memo. And just as revealing, for once."
+    "text": "Bitter as a Whitehall memo. [a pause] And for once, as revealing. I can see what they've hidden."
   },
   "PEG_PERK_FERNET_02": {
     "speaker": "PEG",
     "category": "PERK_FERNET",
-    "text": "Everything has edges now. I can see where they've hidden things. How very useful."
+    "text": "Everything has edges now. I can see where they've hidden things. [quiet] I know rather a lot about hiding things."
   },
   "PEG_PERK_OVERCLOCK_01": {
     "speaker": "PEG",
     "category": "PERK_OVERCLOCK",
-    "text": "Oh, I like that. Every empty magazine a small detonation."
+    "text": "Oh. Every empty magazine a small detonation. [a pause] I'm sorry. I do like that. I've no business liking anything tonight."
   },
   "PEG_PERK_OVERCLOCK_02": {
     "speaker": "PEG",
     "category": "PERK_OVERCLOCK",
-    "text": "Electrical. Cheerful. I don't trust it at all. Another, please."
+    "text": "Electrical. Cheerful. I don't trust it at all. [a breath] Another, please."
   },
   "DEA_PERK_FERNET_01": {
     "speaker": "DEA",
@@ -4192,7 +4192,7 @@
   "DUT_SKY_PLANE_DOWN_02": {
     "speaker": "DUT",
     "category": "SKY_PLANE_DOWN",
-    "text": "There goes another one. Hope somebody finds them quicker than anybody found us."
+    "text": "There goes another one. [quiet] If they walk out of that, they're walking into what we're looking at. God help 'em."
   },
   "PEG_SKY_PLANE_DOWN_01": {
     "speaker": "PEG",
@@ -4202,7 +4202,7 @@
   "PEG_SKY_PLANE_DOWN_02": {
     "speaker": "PEG",
     "category": "SKY_PLANE_DOWN",
-    "text": "Down behind the ridge. I'd tell you they'll be fine. I'd be lying."
+    "text": "Down behind the ridge. [a pause] I'd tell you they'll be fine. I've stopped telling people that."
   },
   "DEA_SKY_PLANE_DOWN_01": {
     "speaker": "DEA",
@@ -4227,12 +4227,12 @@
   "DUT_WRECK_PILOT_01": {
     "speaker": "DUT",
     "category": "WRECK_PILOT",
-    "text": "Selwyn? ...He's breathing. I checked him for a pulse myself, I'd have sworn. Hang on, Lieutenant. We'll get you something to shoot."
+    "text": "Selwyn? ...He's breathing. I checked him for a pulse myself, I'd have sworn. [a breath] Hang on, Lieutenant. We'll get you something to shoot."
   },
   "PEG_WRECK_PILOT_01": {
     "speaker": "PEG",
     "category": "WRECK_PILOT",
-    "text": "The pilot's alive. Dutch swore Selwyn was dead in that seat. The cold must have slowed his heart. ...Thank God for the cold."
+    "text": "The pilot's alive. Dutch swore Selwyn was dead in that seat. The cold must have slowed his heart. [a pause] ...Thank God for the cold. Thank God it's still him."
   },
   "DEA_WRECK_PILOT_01": {
     "speaker": "DEA",
@@ -4247,12 +4247,12 @@
   "DUT_MIDNIGHT_01": {
     "speaker": "DUT",
     "category": "MIDNIGHT",
-    "text": "Midnight. Christmas Eve. Babcia'd be setting an extra plate about now. For the stranger who knocks."
+    "text": "Midnight. Christmas Eve. Wigilia. Babcia set an extra plate every year, for the stranger who knocks. [quiet] ...Nobody open the door."
   },
   "PEG_MIDNIGHT_01": {
     "speaker": "PEG",
     "category": "MIDNIGHT",
-    "text": "Midnight. Happy Christmas Eve, everyone. Do try not to die on it."
+    "text": "Midnight. Christmas Eve. [a pause] Happy Christmas, everyone. I mean that. Do try to be alive for the morning."
   },
   "DEA_MIDNIGHT_01": {
     "speaker": "DEA",
@@ -4332,7 +4332,7 @@
   "DUT_SQ3_CMD_BUY_PERKS_01": {
     "speaker": "DUT",
     "category": "CMD_BUY_PERKS",
-    "text": "Drinks are on me. Well. On me."
+    "text": "Drinks. Fine. Whatever keeps me standing."
   },
   "DUT_SQ3_CMD_SAVE_SCRIP_01": {
     "speaker": "DUT",
@@ -4362,12 +4362,12 @@
   "DUT_SQ3_CHATTER_01": {
     "speaker": "DUT",
     "category": "CHATTER",
-    "text": "My knees are older than this inn."
+    "text": "[exhausted] My knees are older than this inn. Can't feel the left one."
   },
   "DUT_SQ3_CHATTER_02": {
     "speaker": "DUT",
     "category": "CHATTER",
-    "text": "Back home the worst thing in the dark was a coyote."
+    "text": "Back home the worst thing in the dark was a drunk on the Bloomfield Bridge. [a pause] I miss him."
   },
   "PEG_SQ3_SPRINTER_BEHIND_01": {
     "speaker": "PEG",
@@ -4432,32 +4432,32 @@
   "PEG_SQ3_CMD_TRAIN_01": {
     "speaker": "PEG",
     "category": "CMD_TRAIN",
-    "text": "Train them. Yes, I know the drill."
+    "text": "Train them. Round and round. Yes."
   },
   "PEG_SQ3_CMD_BUY_PERKS_01": {
     "speaker": "PEG",
     "category": "CMD_BUY_PERKS",
-    "text": "A drink for the road. Several, in fact."
+    "text": "A drink. [a pause] Several. I know."
   },
   "PEG_SQ3_CMD_SAVE_SCRIP_01": {
     "speaker": "PEG",
     "category": "CMD_SAVE_SCRIP",
-    "text": "Saving. Frugality is a virtue."
+    "text": "Saving. Understood."
   },
   "PEG_SQ3_CMD_OPEN_DOOR_01": {
     "speaker": "PEG",
     "category": "CMD_OPEN_DOOR",
-    "text": "That door? Consider it opened."
+    "text": "That door. Right. Cover it when it opens."
   },
   "PEG_SQ3_CMD_FETCH_PART_01": {
     "speaker": "PEG",
     "category": "CMD_FETCH_PART",
-    "text": "I'll fetch it. Mind the shop."
+    "text": "I'll fetch it. Hold here."
   },
   "PEG_SQ3_CHATTER_01": {
     "speaker": "PEG",
     "category": "CHATTER",
-    "text": "If anyone at Bletchley asks, this was a quiet posting."
+    "text": "[quiet] If anyone in London asks, this was a quiet posting. [a pause] They won't ask. They never do."
   },
   "PEG_SQ3_CHATTER_02": {
     "speaker": "PEG",
@@ -5271,12 +5271,12 @@
   "DUT_JAKUB_MEET_01": {
     "speaker": "DUT",
     "category": "JAKUB_MEET",
-    "text": "Walter Kowalczyk. Call me Dutch. My Babcia came from Wilcza Góra. ...Maybe our families knew each other."
+    "text": "Walter Kowalczyk. Call me Dutch. My Babcia came from Wilcza Góra. [a pause] ...Maybe our families knew each other."
   },
   "PEG_JAKUB_MEET_01": {
     "speaker": "PEG",
     "category": "JAKUB_MEET",
-    "text": "Lieutenant Ashworth. Stay close, keep your head down, and if you know a way out of here, I want it."
+    "text": "Lieutenant Ashworth. Stay close, keep your head down. [a pause] If you know a way out of here, I want it. If you know what they did down there, I want that more."
   },
   "DEA_JAKUB_MEET_01": {
     "speaker": "DEA",
@@ -5291,12 +5291,12 @@
   "DUT_JAKUB_FALLEN_01": {
     "speaker": "DUT",
     "category": "JAKUB_FALLEN",
-    "text": "Jakub's out cold. He's breathing. We can't carry him and fight. ...We'll come back for you, old man."
+    "text": "Jakub's out cold. He's breathing. We can't carry him and fight. ...We'll come back for you, old man. [quiet] Stay breathing. You hear me? Stay breathing."
   },
   "PEG_JAKUB_FALLEN_01": {
     "speaker": "PEG",
     "category": "JAKUB_FALLEN",
-    "text": "He's breathing, but he won't wake. Leave him where he lies. They've no interest in him now."
+    "text": "He's breathing, but he won't wake. Leave him where he lies. [a pause] They've no interest in him now. Pray God that holds."
   },
   "DEA_JAKUB_FALLEN_01": {
     "speaker": "DEA",
@@ -5323,7 +5323,7 @@
       ],
       [
         "DUT",
-        "Yeah. She did too."
+        "Yeah. [quiet] She did too. Louder every year."
       ]
     ]
   },
@@ -5429,7 +5429,7 @@
   "PEG_GUNSMITH_01": {
     "speaker": "PEG",
     "category": "GUNSMITH",
-    "text": "Section Five would have killed for a bench like this. Possibly literally."
+    "text": "Section Five would have killed for a bench like this. [a pause] I expect they have."
   },
   "PEG_GUNSMITH_02": {
     "speaker": "PEG",
@@ -5509,7 +5509,7 @@
   "DUT_SQ4_EE_ACK_KILL_WITH_WEAPON_01": {
     "speaker": "DUT",
     "category": "EE_ACK_KILL_WITH_WEAPON",
-    "text": "Bell gun and a crowd. Now we're talking."
+    "text": "Bell gun and a crowd. [a breath] All right. Send 'em."
   },
   "DUT_SQ4_EE_ACK_TURN_KEY_01": {
     "speaker": "DUT",
@@ -5594,7 +5594,7 @@
   "PEG_SQ4_EE_ACK_COLLECT_02": {
     "speaker": "PEG",
     "category": "EE_ACK_COLLECT",
-    "text": "Fetching. Try not to miss me."
+    "text": "Fetching. Cover the door while I'm gone."
   },
   "PEG_SQ4_EE_ACK_SHOOT_TARGET_01": {
     "speaker": "PEG",
@@ -5644,7 +5644,7 @@
   "PEG_SQ4_EE_DONE_01": {
     "speaker": "PEG",
     "category": "EE_DONE",
-    "text": "Done. Neatly, I might add."
+    "text": "Done. [a breath] Done."
   },
   "PEG_SQ4_EE_HANDOFF_01": {
     "speaker": "PEG",
@@ -6096,7 +6096,7 @@
   "DUT_SQ5_MARK_BOUGHT_HAWKEYE_01": {
     "speaker": "DUT",
     "category": "MARK_BOUGHT_HAWKEYE",
-    "text": "Hawkeye. I see every whisker on 'em."
+    "text": "Hawkeye. I see every face on 'em. Didn't want to."
   },
   "DUT_SQ5_MARK_BOUGHT_PACKMULE_01": {
     "speaker": "DUT",
@@ -6366,7 +6366,7 @@
   "PEG_SQ5_MARK_BOUGHT_IRONHIDE_01": {
     "speaker": "PEG",
     "category": "MARK_BOUGHT_IRONHIDE",
-    "text": "Ironhide. I feel positively armoured."
+    "text": "Ironhide. Armoured, after a fashion."
   },
   "PEG_SQ5_MARK_BOUGHT_SECONDWIND_01": {
     "speaker": "PEG",
@@ -6386,7 +6386,7 @@
   "PEG_SQ5_MARK_BOUGHT_MARATHON_01": {
     "speaker": "PEG",
     "category": "MARK_BOUGHT_MARATHON",
-    "text": "Marathon Malt. I could run to Dover."
+    "text": "Marathon Malt. I can run. I'd rather not have to."
   },
   "PEG_SQ5_MARK_BOUGHT_HAWKEYE_01": {
     "speaker": "PEG",
@@ -6401,7 +6401,7 @@
   "PEG_SQ5_MARK_BOUGHT_BLASTPROOF_01": {
     "speaker": "PEG",
     "category": "MARK_BOUGHT_BLASTPROOF",
-    "text": "Blastproof. My satchels and I are friends again."
+    "text": "Blastproof. I can work close again."
   },
   "PEG_SQ5_MARK_BOUGHT_OVERCLOCK_01": {
     "speaker": "PEG",
@@ -7276,7 +7276,7 @@
   "DUT_SQ6_PERK_TIER_01": {
     "speaker": "DUT",
     "category": "PERK_TIER",
-    "text": "Second helping. Tastes worse. Works better. That's the Army in a bottle."
+    "text": "Second helping. Tastes worse. Works better. [a pause] That's the Army in a bottle, and I drank it."
   },
   "DUT_SQ6_PERK_TIER_02": {
     "speaker": "DUT",
@@ -7286,7 +7286,7 @@
   "DUT_SQ6_PERK_PROC_01": {
     "speaker": "DUT",
     "category": "PERK_PROC",
-    "text": "Whoa. That should've put me down."
+    "text": "[breathing heavily] That should've put me down. ...Why didn't that put me down."
   },
   "DUT_SQ6_PLAQUE_01": {
     "speaker": "DUT",
@@ -7296,12 +7296,12 @@
   "DUT_SQ6_PLAQUE_CRUCIBLE_01": {
     "speaker": "DUT",
     "category": "PLAQUE_CRUCIBLE",
-    "text": "Patent pending. Somebody's paying a lawyer for this thing."
+    "text": "Patent pending. Somebody's paying a lawyer for this thing. Somebody else paid for it first."
   },
   "PEG_SQ6_PERK_TIER_01": {
     "speaker": "PEG",
     "category": "PERK_TIER",
-    "text": "A stronger measure. London will want a sample of this. London wants a sample of everything."
+    "text": "A stronger measure. [a pause] London will want a sample. London wants a sample of everything down here. Everything."
   },
   "PEG_SQ6_PERK_TIER_02": {
     "speaker": "PEG",
@@ -7311,7 +7311,7 @@
   "PEG_SQ6_PERK_PROC_01": {
     "speaker": "PEG",
     "category": "PERK_PROC",
-    "text": "Didn't feel that. I'm choosing not to think about why."
+    "text": "Didn't feel that. [a pause] I am choosing not to think about why. I'm choosing quite hard."
   },
   "PEG_SQ6_PLAQUE_01": {
     "speaker": "PEG",
@@ -7446,12 +7446,12 @@
   "DUT_INN_RISE_01": {
     "speaker": "DUT",
     "category": "INN_RISE",
-    "text": "He's getting up. ...He's getting up! That's not him any more, put him down!"
+    "text": "He's getting up. [a breath] ...He's getting up. [shouting] That's not Willi any more, put him down! Put him DOWN!"
   },
   "PEG_INN_RISE_01": {
     "speaker": "PEG",
     "category": "INN_RISE",
-    "text": "Oh, no. No, no, no. Willi. ...I'm sorry, love."
+    "text": "Oh, no. No, no, no. Willi. [quiet] ...I'm sorry, love. Somebody. Please."
   },
   "DEA_INN_RISE_01": {
     "speaker": "DEA",
@@ -7616,12 +7616,12 @@
   "DUT_INN_SURV_TURN_01": {
     "speaker": "DUT",
     "category": "INN_SURV_TURN",
-    "text": "One of the civvies upstairs is moving again. That's not them any more. Put them down!"
+    "text": "One of the civvies upstairs is moving again. [a breath] That's not them. That's not them any more. Put them down."
   },
   "PEG_INN_SURV_TURN_01": {
     "speaker": "PEG",
     "category": "INN_SURV_TURN",
-    "text": "Oh, no. Upstairs. One of ours upstairs is getting up. ...I'm sorry. Make it quick."
+    "text": "Oh, no. Upstairs. One of ours upstairs is getting up. [quiet] ...I'm sorry. Make it quick. Make it kind."
   },
   "DEA_INN_SURV_TURN_01": {
     "speaker": "DEA",
@@ -7696,12 +7696,12 @@
   "DUT_ECO_PWR_TONIC_01": {
     "speaker": "DUT",
     "category": "ECO_PWR_TONIC",
-    "text": "Free drink. First thing in this war that didn't cost me."
+    "text": "Free drink. [a pause] Nothing's free. Drink it anyway. Drink it before your hands stop working."
   },
   "PEG_ECO_PWR_TONIC_01": {
     "speaker": "PEG",
     "category": "ECO_PWR_TONIC",
-    "text": "A complimentary tonic. I shan't ask what's in it."
+    "text": "A complimentary tonic. [a pause] I shan't ask what's in it. I rather suspect I'll be told."
   },
   "DEA_ECO_PWR_TONIC_01": {
     "speaker": "DEA",
@@ -7741,12 +7741,12 @@
   "DUT_ECO_SALVAGE_01": {
     "speaker": "DUT",
     "category": "ECO_SALVAGE",
-    "text": "Dog tags. Somebody's boy. I'll carry 'em."
+    "text": "Dog tags. Somebody's boy. [quiet] I'll carry 'em. I carry everybody's."
   },
   "PEG_ECO_SALVAGE_01": {
     "speaker": "PEG",
     "category": "ECO_SALVAGE",
-    "text": "Tags. Someone ought to know where he ended up."
+    "text": "Tags. [quiet] Someone ought to know where he ended up. Someone ought to be told properly, by name."
   },
   "DEA_ECO_SALVAGE_01": {
     "speaker": "DEA",
@@ -7761,22 +7761,22 @@
   "DUT_SQ7_M0_EGG_HEARD_01": {
     "speaker": "DUT",
     "category": "M0_EGG_HEARD",
-    "text": "That set behind the bar just said Gravelight. That's us, folks."
+    "text": "That set behind the bar just said Gravelight. [a pause] That's us. Somebody out there knows we're alive."
   },
   "DUT_SQ7_M0_EGG_HEARD_02": {
     "speaker": "DUT",
     "category": "M0_EGG_HEARD",
-    "text": "Our call sign. On a German radio. Swell."
+    "text": "Our call sign. On a German radio. [exhausted] Swell. Just swell."
   },
   "PEG_SQ7_M0_EGG_HEARD_01": {
     "speaker": "PEG",
     "category": "M0_EGG_HEARD",
-    "text": "Gravelight is our call sign. Nobody this side of London should have it."
+    "text": "Gravelight is our call sign. Nobody this side of London should have it. [a pause] ...Someone this side of London does."
   },
   "PEG_SQ7_M0_EGG_HEARD_02": {
     "speaker": "PEG",
     "category": "M0_EGG_HEARD",
-    "text": "Someone out there knows the name of this mission. Interesting."
+    "text": "Someone out there knows the name of this mission. [quiet] I was told very few people did. I was told a number of things."
   },
   "DEA_SQ7_M0_EGG_HEARD_01": {
     "speaker": "DEA",
@@ -7941,7 +7941,7 @@
   "DUT_SQ7_M0_EGG_NOTES_DONE_01": {
     "speaker": "DUT",
     "category": "M0_EGG_NOTES_DONE",
-    "text": "Three notes, three numbers. Let's go make a phone call."
+    "text": "Three notes, three numbers. [a breath] Radio's behind the bar. Let's go find out who's out there."
   },
   "DUT_SQ7_M0_EGG_NOTES_DONE_02": {
     "speaker": "DUT",
@@ -7956,7 +7956,7 @@
   "PEG_SQ7_M0_EGG_NOTES_DONE_02": {
     "speaker": "PEG",
     "category": "M0_EGG_NOTES_DONE",
-    "text": "We have his frequencies. Lock them in sequence, lowest first. And nobody touch it drunk."
+    "text": "We have his frequencies. Lock them in sequence, lowest first. [a pause] Steady hands. Mine aren't; someone else turn it."
   },
   "DEA_SQ7_M0_EGG_NOTES_DONE_01": {
     "speaker": "DEA",
@@ -7986,12 +7986,12 @@
   "DUT_SQ7_M0_EGG_LOCK1_01": {
     "speaker": "DUT",
     "category": "M0_EGG_LOCK1",
-    "text": "So that's our defector. Sounds like he's about to cry."
+    "text": "So that's our defector. [quiet] Sounds like a man who hasn't slept since he did whatever he did."
   },
   "PEG_SQ7_M0_EGG_LOCK1_01": {
     "speaker": "PEG",
     "category": "M0_EGG_LOCK1",
-    "text": "Fasbender. Glasmacher. That's our man. London said physicist, not penitent."
+    "text": "Fasbender. Glasmacher. That's our man. [a pause] London said physicist. They didn't say penitent. They didn't say much."
   },
   "DEA_SQ7_M0_EGG_LOCK1_01": {
     "speaker": "DEA",
@@ -8011,12 +8011,12 @@
   "DUT_SQ7_M0_EGG_LOCK2_01": {
     "speaker": "DUT",
     "category": "M0_EGG_LOCK2",
-    "text": "Black glass in the salt. Babcia's letter said that. I thought it was a story."
+    "text": "Black glass in the salt. Babcia's letter said that. [quiet] I thought it was an old woman's story. I got it in my pocket. I ain't read it in years."
   },
   "PEG_SQ7_M0_EGG_LOCK2_01": {
     "speaker": "PEG",
     "category": "M0_EGG_LOCK2",
-    "text": "A stone that hums. London wants a piece of it. Of course they do."
+    "text": "A stone that hums. [a pause] London wants a piece of it. London wants a piece of whatever is in those men out there, too. ...Carry on."
   },
   "DEA_SQ7_M0_EGG_LOCK2_01": {
     "speaker": "DEA",
@@ -8081,12 +8081,12 @@
   "DUT_SQ7_M0_EGG_DONE_01": {
     "speaker": "DUT",
     "category": "M0_EGG_DONE",
-    "text": "Nine kilometres. In snow. With them. Swell."
+    "text": "Nine kilometres. In the snow. With them walking. [exhausted] ...Yeah. Swell."
   },
   "DUT_SQ7_M0_EGG_DONE_02": {
     "speaker": "DUT",
     "category": "M0_EGG_DONE",
-    "text": "The rail line east. When the snow quits. Until then, this inn is ours."
+    "text": "The rail line east. When the snow quits. Until then this inn is ours, and yinz are gonna hold it with me."
   },
   "PEG_SQ7_M0_EGG_DONE_01": {
     "speaker": "PEG",
@@ -8096,7 +8096,7 @@
   "PEG_SQ7_M0_EGG_DONE_02": {
     "speaker": "PEG",
     "category": "M0_EGG_DONE",
-    "text": "He said bring all of them. Twice. We'll discuss what he meant when I'm looking at him."
+    "text": "He said bring all of them. Twice. [a pause] We'll discuss what he meant when I'm looking at him. I think I already know."
   },
   "DEA_SQ7_M0_EGG_DONE_01": {
     "speaker": "DEA",
@@ -8126,12 +8126,12 @@
   "DUT_SQ7_M0_EGG_TONICS_01": {
     "speaker": "DUT",
     "category": "M0_EGG_TONICS",
-    "text": "The machines just lit up. All of 'em. Nobody paid."
+    "text": "The machines just lit up. All of 'em. Nobody paid. [quiet] Somebody always pays."
   },
   "PEG_SQ7_M0_EGG_TONICS_01": {
     "speaker": "PEG",
     "category": "M0_EGG_TONICS",
-    "text": "Nothing in this country is free. Drink anyway."
+    "text": "Nothing here is free. [a pause] Drink anyway. We'll learn the price later; we always do."
   },
   "DEA_SQ7_M0_EGG_TONICS_01": {
     "speaker": "DEA",
@@ -8266,22 +8266,22 @@
   "DUT_PERK_SKYHOOK_01": {
     "speaker": "DUT",
     "category": "PERK_SKYHOOK",
-    "text": "Fizzy. ...Hey. HEY. The floor got further away."
+    "text": "Fizzy. ...Hey. HEY. The floor got further away. [breathing heavily] Okay. Okay. Don't look down, Walter."
   },
   "DUT_PERK_SKYHOOK_02": {
     "speaker": "DUT",
     "category": "PERK_SKYHOOK",
-    "text": "Tastes like a wedding. A wedding where somebody jumped off something."
+    "text": "Tastes like a wedding on Polish Hill. [a pause] The kind where somebody ends up on the roof and nobody remembers how."
   },
   "PEG_PERK_SKYHOOK_01": {
     "speaker": "PEG",
     "category": "PERK_SKYHOOK",
-    "text": "Sekt. Of course it's Sekt. One doesn't open champagne for a landing."
+    "text": "Sekt. [a pause] We opened one in France once, the night before a drop. Two of us came back. ...It's quite good."
   },
   "PEG_PERK_SKYHOOK_02": {
     "speaker": "PEG",
     "category": "PERK_SKYHOOK",
-    "text": "...I feel I ought to have a parachute. I feel I am a parachute."
+    "text": "...I feel I ought to have a parachute. [a breath] I feel I am one. Land, the label says. Right."
   },
   "DEA_PERK_SKYHOOK_01": {
     "speaker": "DEA",
@@ -8306,22 +8306,22 @@
   "DUT_PERK_MAGPIE_01": {
     "speaker": "DUT",
     "category": "PERK_MAGPIE",
-    "text": "Honey. And... metal? Like licking a pawn shop. ...I like it."
+    "text": "Honey. And metal. Like licking a pawn shop. [quiet] ...Somebody made this out here with nothing. I like her already."
   },
   "DUT_PERK_MAGPIE_02": {
     "speaker": "DUT",
     "category": "PERK_MAGPIE",
-    "text": "Pick it up, it's yours now. Lady after my own heart."
+    "text": "Pick it up, it's yours now. [a pause] Everything they dropped. Their tags too. Somebody's gotta carry those."
   },
   "PEG_PERK_MAGPIE_01": {
     "speaker": "PEG",
     "category": "PERK_MAGPIE",
-    "text": "Mead. A sergeant brewed mead on a bomb range. I'm going to write her a commendation and she's going to frame it in the cage."
+    "text": "Mead. A sergeant brewed mead on a bomb range, alone, in a cage. [a pause] I'll write her a commendation. It's the least and the most I can do."
   },
   "PEG_PERK_MAGPIE_02": {
     "speaker": "PEG",
     "category": "PERK_MAGPIE",
-    "text": "Everything the dead drop is ours. It always was. Now we're simply picking it up."
+    "text": "Everything the dead drop is ours. It always was. [quiet] I used to call that retrieval. It was looting with a directive."
   },
   "DEA_PERK_MAGPIE_01": {
     "speaker": "DEA",
@@ -8521,12 +8521,12 @@
   "DUT_M4B_ARRIVE_01": {
     "speaker": "DUT",
     "category": "M4B_ARRIVE",
-    "text": "Nobody's flying it. Nobody's flying the plane. I want that {noted}."
+    "text": "Nobody's flying it. [breathing heavily] Nobody's flying the plane. I want that {noted}. Somebody write that down."
   },
   "DUT_M4B_TURB_01": {
     "speaker": "DUT",
     "category": "M4B_TURB",
-    "text": "Whoa... whoa... who's {driving}?"
+    "text": "[shouting] Whoa... whoa... who's {driving}? WHO'S DRIVING?"
   },
   "DUT_M4B_BREACH_01": {
     "speaker": "DUT",
@@ -8536,7 +8536,7 @@
   "DUT_M4B_STRAFE_01": {
     "speaker": "DUT",
     "category": "M4B_STRAFE",
-    "text": "Those are ours too! They're shooting at us with our... okay, fair, we're in the bad {plane}."
+    "text": "Those are ours! They're shooting at... [a breath] yeah. Yeah, fair. We're in the bad {plane}."
   },
   "DUT_M4B_LONDON_01": {
     "speaker": "DUT",
@@ -8556,7 +8556,7 @@
   "DUT_M4B_CRASH_01": {
     "speaker": "DUT",
     "category": "M4B_CRASH",
-    "text": "That's not an airfield. ...That's not {anything}."
+    "text": "[quiet] That's not an airfield. ...That's not {anything}."
   },
   "PEG_M4B_ARRIVE_01": {
     "speaker": "PEG",
@@ -8571,12 +8571,12 @@
   "PEG_M4B_BREACH_01": {
     "speaker": "PEG",
     "category": "M4B_BREACH",
-    "text": "Seal it. SEAL it, or we'll be a great deal {lighter}."
+    "text": "Seal it. Seal it now, or we'll be a great deal {lighter}."
   },
   "PEG_M4B_LONDON_01": {
     "speaker": "PEG",
     "category": "M4B_LONDON",
-    "text": "That's not Morgenrot. That's... that's a second {battery}."
+    "text": "That's not Morgenrot. That's... that's a second {battery}. [quiet] That's the dust. They're putting the dust on London."
   },
   "PEG_M4B_LONDON_02": {
     "speaker": "PEG",
@@ -8826,7 +8826,7 @@
   "DUT_M4A_ARRIVE_01": {
     "speaker": "DUT",
     "category": "M4A_ARRIVE",
-    "text": "A factory town. Great. I grew up in one. The smell's the {same}."
+    "text": "A factory town. [exhausted] I grew up in one. The smell's the {same}. Hot metal and nobody talking."
   },
   "DUT_M4A_FILE_01": {
     "speaker": "DUT",
@@ -8846,7 +8846,7 @@
   "DUT_M4A_TUNNEL_01": {
     "speaker": "DUT",
     "category": "M4A_TUNNEL",
-    "text": "Okay, Pittsburgh, nothing surprises you. The WIND is on our {side}."
+    "text": "Okay. Okay, Kowalczyk, nothing surprises you. [a breath] The WIND is on our {side}."
   },
   "DUT_M4A_GLIDER_01": {
     "speaker": "DUT",
@@ -8861,7 +8861,7 @@
   "PEG_M4A_ARRIVE_01": {
     "speaker": "PEG",
     "category": "M4A_ARRIVE",
-    "text": "An aircraft works. Hale's cable said 'retrieve the engines.' He didn't say what they were {in}."
+    "text": "An aircraft works. Hale's cable said 'retrieve the engines.' [a pause] He didn't say what they were {in}. He never says what things are in."
   },
   "PEG_M4A_FILE_01": {
     "speaker": "PEG",
@@ -8886,7 +8886,7 @@
   "PEG_M4A_GLIDER_01": {
     "speaker": "PEG",
     "category": "M4A_GLIDER",
-    "text": "Balsa and tissue. Rather good {work}."
+    "text": "Balsa and tissue. [quiet] Rather good {work}. Somebody loved this."
   },
   "PEG_M4A_JETTE_01": {
     "speaker": "PEG",
@@ -9166,7 +9166,7 @@
   "DUT_M4D_LOWG_01": {
     "speaker": "DUT",
     "category": "M4D_LOWG",
-    "text": "I weigh NOTHING. I've never weighed {nothing}!"
+    "text": "I weigh nothing. [a breath] First time in my life I've weighed {nothing}."
   },
   "DUT_M4D_PILCH_01": {
     "speaker": "DUT",
@@ -9196,7 +9196,7 @@
   "DUT_M4D_MANAGER_01": {
     "speaker": "DUT",
     "category": "M4D_MANAGER",
-    "text": "That's a vending machine in a suit. ...A tall one. A real tall {one}."
+    "text": "[quiet] That's a vending machine in a suit. ...A tall one. A real tall {one}."
   },
   "PEG_M4D_ARRIVE_01": {
     "speaker": "PEG",
@@ -9751,7 +9751,7 @@
   "DUT_M4C_ARRIVE_01": {
     "speaker": "DUT",
     "category": "M4C_ARRIVE",
-    "text": "Nevada. We're in NEVADA. I've never been to Nevada. Nobody's ever been to {Nevada}."
+    "text": "Nevada. [breathing heavily] We're in Nevada. ...I've never been west of Ohio. Nobody's ever been to {Nevada}."
   },
   "DUT_M4C_CRATE_01": {
     "speaker": "DUT",
@@ -9761,7 +9761,7 @@
   "DUT_M4C_CRATE_02": {
     "speaker": "DUT",
     "category": "M4C_CRATE",
-    "text": "You were gonna hand it to a guy in a {HAT}."
+    "text": "You were gonna hand it to a guy in a {HAT}. [quiet] You saw what it does. You were there when Willi got up. And you were gonna hand it over."
   },
   "DUT_M4C_RESIGN_01": {
     "speaker": "DUT",
@@ -9771,12 +9771,12 @@
   "DUT_M4C_DEE_01": {
     "speaker": "DUT",
     "category": "M4C_DEE",
-    "text": "A sergeant! A real live sergeant! Ma'am, I have never been so happy to see a supply clerk in my {life}."
+    "text": "A sergeant. A real live American sergeant. [a breath] Ma'am, I have never been so happy to see anybody in my {life}. Don't make me say it twice."
   },
   "DUT_M4C_BURROW_01": {
     "speaker": "DUT",
     "category": "M4C_BURROW",
-    "text": "Under the SALT. They're under the salt. Of course they {are}."
+    "text": "Under the salt. [quiet] They're under the salt. Babcia. ...Of course they {are}."
   },
   "DUT_M4C_CANARY_01": {
     "speaker": "DUT",
@@ -9801,12 +9801,12 @@
   "PEG_M4C_CRATE_01": {
     "speaker": "PEG",
     "category": "M4C_CRATE",
-    "text": "Yes. I signed for it. In April, on a dock, in the dark. It was going to London. It was always going to end up here. I didn't know that. I should {have}."
+    "text": "Yes. I signed for it. In April, on a dock, in the dark. [a pause] Samples. The sickness and the glass, in lead, as ordered. It was going to London. It was always going to end up here. I didn't know that. I should {have}."
   },
   "PEG_M4C_CRATE_02": {
     "speaker": "PEG",
     "category": "M4C_CRATE",
-    "text": "Directive LANTERN. Retrieve at any cost. Report to Mr. Hale. ...He's in the office. He's been in the office the whole {time}."
+    "text": "Directive LANTERN. Retrieve samples of the sickness and the crystal, at any cost. Report to Mr. Hale. [a pause] ...He's in the office. He's been in the office the whole {time}."
   },
   "PEG_M4C_HALE_01": {
     "speaker": "PEG",
@@ -10056,7 +10056,7 @@
   "DUT_SQ8_PERK_TIER4_01": {
     "speaker": "DUT",
     "category": "PERK_TIER4",
-    "text": "This one's mine for good. Whatever's in it, it's staying in."
+    "text": "This one's mine for good. Whatever's in it, it's staying in. [quiet] Along with everything else that got in me tonight."
   },
   "DUT_SQ8_PERK_TIER4_02": {
     "speaker": "DUT",
@@ -10066,12 +10066,12 @@
   "PEG_SQ8_PERK_TIER4_01": {
     "speaker": "PEG",
     "category": "PERK_TIER4",
-    "text": "This one's mine for good. I'll explain it to London later."
+    "text": "This one's mine for good. I shan't explain it to London. London doesn't explain itself to me."
   },
   "PEG_SQ8_PERK_TIER4_02": {
     "speaker": "PEG",
     "category": "PERK_TIER4",
-    "text": "A permanent measure. I'd file a complaint if it didn't work so well."
+    "text": "A permanent measure. [a pause] Nothing about tonight was meant to be permanent."
   },
   "DEA_SQ8_PERK_TIER4_01": {
     "speaker": "DEA",
@@ -10101,17 +10101,17 @@
   "DUT_SQ8_LATE_KIT_01": {
     "speaker": "DUT",
     "category": "LATE_KIT",
-    "text": "Round twenty-five. Fine. Hand me the good stuff and point me at 'em."
+    "text": "Round twenty-five. [exhausted] Fine. Hand me the good stuff and point me at 'em. I'll go till I don't."
   },
   "DUT_SQ8_LATE_KIT_02": {
     "speaker": "DUT",
     "category": "LATE_KIT",
-    "text": "Chicago Lament, second pressing. Now we're talking."
+    "text": "Chicago Lament, second pressing. Thirty in the stick. Make 'em count."
   },
   "PEG_SQ8_LATE_KIT_01": {
     "speaker": "PEG",
     "category": "LATE_KIT",
-    "text": "Twenty-five rounds. I've earned the strong measure and a proper gun."
+    "text": "Twenty-five rounds. [exhausted] The strong measure and a proper gun. I've earned neither. I'll take both."
   },
   "PEG_SQ8_LATE_KIT_02": {
     "speaker": "PEG",
@@ -10466,7 +10466,7 @@
   "PEG_MARKE_FIRST_01": {
     "speaker": "PEG",
     "category": "MARKE_FIRST",
-    "text": "Right hand, between the thumb and the finger. A chip of the stuff, under the skin. [a pause] My orders had a line about tokens. 'Retrieve the tokens.' I took it to mean their papers. ...Carry on."
+    "text": "Right hand, between the thumb and the finger. A chip of the glass, under the skin. [a pause] My orders had a line about tokens. 'Retrieve the tokens, from the dead, do not ask the bearer.' I took it to mean their papers. I didn't let it mean anything. ...Carry on."
   },
   "PEG_MARKE_KILL_01": {
     "speaker": "PEG",
@@ -10506,7 +10506,7 @@
   "DUT_MARKE_FIRST_01": {
     "speaker": "DUT",
     "category": "MARKE_FIRST",
-    "text": "The hand. Something's lit up in the hand. ...They put a piece of that rock in these guys? On purpose? [spits] Swell. Shoot the hand, then."
+    "text": "The hand. Something's lit up in the hand. [a pause] ...They put a piece of that rock in these guys. On purpose. Sold it to 'em, probably, like a medal. [spits] Shoot the hand, then."
   },
   "DUT_MARKE_KILL_01": {
     "speaker": "DUT",
@@ -10516,7 +10516,7 @@
   "DUT_MARKE_KILL_02": {
     "speaker": "DUT",
     "category": "MARKE_KILL",
-    "text": "They signed up for that. Nobody signs up for that."
+    "text": "They signed up for that. [quiet] Somebody told 'em it'd keep 'em safe. Nobody signs up for that."
   },
   "DUT_MARKE_KILL_03": {
     "speaker": "DUT",
@@ -11081,12 +11081,12 @@
   "DUT_SQD_RISE_01": {
     "speaker": "DUT",
     "category": "SQD_RISE",
-    "text": "Aw, hell. Sorry, pal. Nothing personal."
+    "text": "Aw, hell. [quiet] Sorry, pal. You came for us. ...Sorry."
   },
   "DUT_SQD_RISE_02": {
     "speaker": "DUT",
     "category": "SQD_RISE",
-    "text": "They got back up. Course they got back up."
+    "text": "They got back up. [exhausted] Course they got back up. Everybody gets back up. Everybody but us."
   },
   "PEG_SQD_RISE_01": {
     "speaker": "PEG",
@@ -11096,7 +11096,7 @@
   "PEG_SQD_RISE_02": {
     "speaker": "PEG",
     "category": "SQD_RISE",
-    "text": "We'll mourn them later. Now we shoot them."
+    "text": "We'll mourn them later. [a pause] I keep saying later. Now we shoot them."
   },
   "MIN_PEOPLE_TALK_01": {
     "speaker": "MIN",
@@ -11386,7 +11386,7 @@
   "PEG_PERK_LEDGER_01": {
     "speaker": "PEG",
     "category": "PERK_LEDGER",
-    "text": "A lager that keeps books. The War Office would have bought a thousand."
+    "text": "A lager that keeps books. [a pause] The War Office would have bought a thousand. The War Office bought worse, through me."
   },
   "PEG_PERK_LEDGER_02": {
     "speaker": "PEG",
@@ -11601,7 +11601,7 @@
   "DUT_BONUS_LEDGER_01": {
     "speaker": "DUT",
     "category": "BONUS_LEDGER",
-    "text": "Every hit rings a bell now. I could get used to this."
+    "text": "Every hit rings a bell now. [a pause] Something's counting. I could do without being counted."
   },
   "PEG_BONUS_LEDGER_01": {
     "speaker": "PEG",
@@ -11951,13 +11951,13 @@
   "DUT_PAUL_01": {
     "speaker": "DUT",
     "category": "PAUL",
-    "text": "That's an American voice on the PA. ...That's an American VOICE.",
+    "text": "That's an American voice on the PA. [a pause] ...That's an American VOICE. Yinz hear that? That's one of ours.",
     "condition": "the PA roar"
   },
   "DUT_PAUL_02": {
     "speaker": "DUT",
     "category": "PAUL",
-    "text": "Big fella's wearing dog tags. Ours. Aw, hell.",
+    "text": "Big fella's wearing dog tags. Ours. [quiet] Aw, hell. Aw, hell, what'd they do to you, buddy.",
     "condition": "first sight"
   },
   "DUT_PAUL_RAGE_01": {
@@ -11969,7 +11969,7 @@
   "DUT_PAUL_DEAD_01": {
     "speaker": "DUT",
     "category": "PAUL_DEAD",
-    "text": "Every unit's got one. The big one. The one who carries you.",
+    "text": "Every outfit's got one. The big one. The one who carries you. [a pause] Nobody carried him.",
     "condition": "after the fall (tier 2)"
   },
   "DUT_PAUL_CUP_01": {
@@ -11981,7 +11981,7 @@
   "PEG_PAUL_01": {
     "speaker": "PEG",
     "category": "PAUL",
-    "text": "American. A private, engineers, what's left of the sleeve says so. They did this to one of ours.",
+    "text": "American. A private, engineers, what's left of the sleeve says so. [a pause] They did this to one of ours. They dosed him and wrote it down.",
     "condition": "first sight"
   },
   "PEG_PAUL_02": {
@@ -11993,7 +11993,7 @@
   "PEG_PAUL_DEAD_01": {
     "speaker": "PEG",
     "category": "PAUL_DEAD",
-    "text": "Note it. Private Paul. Carried his share. ...Somebody in London ought to read that.",
+    "text": "Note it. Private Paul. Carried his share. [a pause] Somebody in London ought to read that. I shall make certain they do.",
     "condition": "after the fall (tier 2)"
   },
   "PEG_PAUL_CUP_01": {
@@ -12053,7 +12053,7 @@
   "DUT_SLENDER_01": {
     "speaker": "DUT",
     "category": "SLENDER",
-    "text": "Tall fella with a lantern. Just watching. I hate the ones that just watch.",
+    "text": "Tall fella with a lantern. Just watching. [quiet] Writing. I've been watched by enough men with clipboards.",
     "condition": "first sight"
   },
   "DUT_SLENDER_02": {
@@ -12065,7 +12065,7 @@
   "DUT_QUARANTINE_01": {
     "speaker": "DUT",
     "category": "QUARANTINE",
-    "text": "Room full of books and a clock that don't move. I'm never goin' in a library again.",
+    "text": "Room full of books and a clock that don't move. [breathing heavily] ...I'm out. I'm out. Don't let him take me in there again.",
     "condition": "returned from the Watch Room"
   },
   "DUT_SLENDER_DEAD_01": {
@@ -12077,7 +12077,7 @@
   "PEG_SLENDER_01": {
     "speaker": "PEG",
     "category": "SLENDER",
-    "text": "He only bleeds in the light. Bring him to the floodlights. Politely.",
+    "text": "He only bleeds in the light. Bring him to the floodlights. [a pause] Carefully.",
     "condition": "his first smoke-hit in darkness"
   },
   "PEG_SLENDER_02": {
@@ -12089,7 +12089,7 @@
   "PEG_QUARANTINE_01": {
     "speaker": "PEG",
     "category": "QUARANTINE",
-    "text": "A clerk's office with no clerk. I've been interrogated in worse.",
+    "text": "A clerk's office with no clerk. [a breath] I've been questioned in worse rooms. Never by anything like that.",
     "condition": "returned"
   },
   "PEG_SLENDER_DEAD_01": {
@@ -12450,12 +12450,12 @@
   "DUT_M4B_FORMATION_DOWN_01": {
     "speaker": "DUT",
     "category": "M4B_FORMATION_DOWN",
-    "text": "One of the formation's going down. Burning all the way. Nobody's getting out of {that}."
+    "text": "One of the formation's going down. Burning all the way. [quiet] Nobody's getting out of {that}. ...Nobody was in it. Tell me nobody was in it."
   },
   "PEG_M4B_FORMATION_DOWN_01": {
     "speaker": "PEG",
     "category": "M4B_FORMATION_DOWN",
-    "text": "Flak got the one on our wing. That could have been {us}."
+    "text": "Flak got the one on our wing. [a pause] That could have been {us}. One rather wishes it had been something that simple."
   },
   "DEA_M4B_FORMATION_DOWN_01": {
     "speaker": "DEA",
@@ -12675,7 +12675,7 @@
   "DUT_BALLAST_LOAD_01": {
     "speaker": "DUT",
     "category": "BALLAST_LOAD",
-    "text": "That's a man in there. Was."
+    "text": "[quiet] That's a man in there. Was. Easy with him."
   },
   "PEG_BALLAST_LOAD_01": {
     "speaker": "PEG",
@@ -12795,7 +12795,7 @@
   "PEG_BOSS_KIELHOLER_01": {
     "speaker": "PEG",
     "category": "BOSS_KIELHOLER",
-    "text": "Diving dress, captain's cuffs. That's Lenz. The man who wouldn't sail."
+    "text": "Diving dress, captain's cuffs. That's Lenz. [a pause] The man who opened a coffin and wouldn't sail. He knew what the dust was for."
   },
   "PEG_BOSS_KIELHOLER_02": {
     "speaker": "PEG",
@@ -12940,7 +12940,7 @@
   "DUT_LF_CUT_01": {
     "speaker": "DUT",
     "category": "LF_CUT",
-    "text": "Everybody below. Hatches shut. Let's give them the deep water."
+    "text": "Everybody below. Hatches shut. Yinz too, down the ladder. [quiet] Let's give them the deep water. Let the sea keep what the Reich was selling."
   },
   "OPR_LF_CUT_01": {
     "speaker": "OPR",
@@ -12950,7 +12950,7 @@
   "PEG_LF_TELEGRAM_01": {
     "speaker": "PEG",
     "category": "LF_TELEGRAM",
-    "text": "Basel. Hale. On the next tide. My orders said retrieve the tokens. I'm keeping this instead."
+    "text": "Basel. Hale. On the next tide. [a pause] My orders said retrieve the samples. The sickness, the glass, the tokens. ...I'm keeping this instead."
   },
   "JES_PEOPLE_TALK_01": {
     "speaker": "JES",
