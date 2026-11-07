@@ -954,22 +954,22 @@ HB2 / HB3 rows (extracted, UPDATE 10 s4, T-159 / T-160):
 | `PEG_COUSINS_DEAD_01` | round cleared | Three girls in a cellar, told to wait for someone who wasn't coming. I know a little about orders like that. |
 | `PEG_LETTER_01` | reads the letter | "Keep playing, and stay quiet until I come back." ...She meant it kindly. They always mean it kindly. |
 | `PEG_KINDERHAMMER_01` | picks it up | A splitting maul that comes back. I can think of three uses already. |
-| `DEA_COUSINS_01` | the fire dies | Fire's out. Didn't burn down. Something just... told it to stop. |
-| `DEA_COUSINS_02` | the clapping | Lord. That's a clapping game. Ruthie plays that on the porch. |
-| `DEA_HAMMER_01` | the first Mallet Throw | That's a splitting maul. She's throwing it like it weighs nothing. |
+| `DEA_COUSINS_01` | the fire dies | Fire's out. Didn't burn down. Something just... told it to stop. [quietly] Lord. |
+| `DEA_COUSINS_02` | the clapping | Lord. That's a clapping game. Ruthie plays that on the porch. [a breath] Ruthie's asleep. Ruthie's asleep. |
+| `DEA_HAMMER_01` | the first Mallet Throw | That's a splitting maul. She throws it like it weighs nothing. Heads down when it comes back. |
 | `DEA_REACH_01` | Through-the-Wall | Arms through the floorboards! Watch your feet! |
-| `DEA_ALIX_01` | Alix rises | She's holding her hand out like she's waiting on somebody to take it. Lord, who's she waiting on? |
-| `DEA_COUSINS_DEAD_01` | round cleared | Rest now, girls. Game's over. Somebody came. ...It was just us. |
+| `DEA_ALIX_01` | Alix rises | She's holding her hand out like she's waiting on somebody to take it. [quietly] Lord, don't anybody take it. |
+| `DEA_COUSINS_DEAD_01` | round cleared | Rest now, girls. Game's over. Somebody came. [a breath] ...It was just us. I'm sorry it was just us. |
 | `DEA_LETTER_01` | reads the letter | Ruthie's twelve. ...I'm gonna go stand outside a minute. |
-| `DEA_KINDERHAMMER_01` | picks it up | Good balance on this. Somebody took care of this tool. |
-| `WRN_COUSINS_01` | the lamps going out | The lamps. One. Two. Three. Someone is counting them out. |
-| `WRN_COUSINS_02` | the humming | A counting game. Every village has one. This one is wrong. |
+| `DEA_KINDERHAMMER_01` | picks it up | Good balance on this. Somebody took care of this tool. [quietly] Somebody took care of them, once. |
+| `WRN_COUSINS_01` | the lamps going out | The lamps. One. Two. Three. Someone is counting them out. [a breath] I do not like being counted. |
+| `WRN_COUSINS_02` | the humming | A counting game. Every village has one. [quietly] This one is wrong. Something in it is wrong. |
 | `WRN_HAMMER_01` | the first Mallet Throw | When the hammer is in the air, she has nothing. Shoot her then. |
 | `WRN_REACH_01` | the first grab | The wrists. They glow. Shoot the wrists. |
 | `WRN_ALIX_01` | Alix's first freeze | She only moves when we look away. So nobody looks away. |
-| `WRN_COUSINS_DEAD_01` | round cleared | I will not write them in the book. They were not marks. |
-| `WRN_LETTER_01` | reads the letter | She went to get her daughter. That is all. That is the whole story. |
-| `WRN_KINDERHAMMER_01` | picks it up | Heavy. Good. It comes back, which is more than most things here. |
+| `WRN_COUSINS_DEAD_01` | round cleared | I will not write them in the book. They were not marks. [a breath] They were children. Somebody's. |
+| `WRN_LETTER_01` | reads the letter | She went to get her daughter. That is all. That is the whole story. [quietly] It is everybody's whole story. |
+| `WRN_KINDERHAMMER_01` | picks it up | Heavy. Good. It comes back. [a breath] More than most things here. |
 
 HB2 / HB3 rows (extracted, UPDATE 10 s4, T-159 / T-160):
 
@@ -985,11 +985,11 @@ HB2 / HB3 rows (extracted, UPDATE 10 s4, T-159 / T-160):
 | `PEG_PAUL_DEAD_01` | after the fall (tier 2) | Note it. Private Paul. Carried his share. ...Somebody in London ought to read that. |
 | `PEG_PAUL_DEAD_NAMED_01` (reserved until the surname is supplied; not extracted) | the same, when `[PAUL_LASTNAME]` is filled | Note it. Private Paul %PAUL_LASTNAME%. Carried his share. ...Somebody in London ought to read that. |
 | `PEG_PAUL_CUP_01` | Peg receives the cup | [quietly] I'll see it gets home, Private. You have my word. |
-| `DEA_PAUL_01` | first sight | That's a soldier. That's a GI. Lord have mercy, what'd they pump into him? |
-| `DEA_PAUL_02` | Calm, after a bottle breaks | Easy, big man. Easy. Nobody's leaving you. |
+| `DEA_PAUL_01` | first sight | That's a soldier. That's a GI. [a breath] Lord have mercy. What did they put in him. What did they put in him. |
+| `DEA_PAUL_02` | Calm, after a bottle breaks | Easy, big man. Easy. Nobody's leaving you. [quietly] Nobody's leaving you here. |
 | `DEA_PAUL_PRAYER_01` | after the fall: the unique kneel (tier 2) | Lord, this man carried his brothers when they couldn't carry themselves. Carry him now. He's done his share. Amen. |
 | `DEA_PAUL_CUP_01` | Deacon receives the cup | [softly] I'll keep it shined for you. |
-| `WRN_PAUL_01` | first sight | They dosed him to see when he would die. He would not die. ...I know this file. I know this kind of file. |
+| `WRN_PAUL_01` | first sight | They dosed him to see when he would die. He would not die. [a breath] ...I know this file. I have seen this kind of file. In two languages. |
 | `WRN_PAUL_02` | his first turn away | The back of his neck, when he turns. The line goes in there. |
 | `WRN_PAUL_NAME_01` | after the fall: writes in her notebook (tier 2) | [writing] Paul. ...Not a mark. A name. |
 | `WRN_PAUL_CUP_01` | Wren receives the cup | [quiet] I will carry it. He carried enough. |
@@ -1001,14 +1001,14 @@ HB2 / HB3 rows (extracted, UPDATE 10 s4, T-159 / T-160):
 | `PEG_SLENDER_02` | Shift Change | Three of him. Watch the lanterns. The steady one's real. |
 | `PEG_QUARANTINE_01` | returned | A clerk's office with no clerk. I've been interrogated in worse. |
 | `PEG_SLENDER_DEAD_01` | his death | A man who kept his post when everyone else ran. I've known worse men in better uniforms. |
-| `DEA_SLENDER_01` | first sight | He's just doing his rounds. Lord, he's been doing his rounds this whole time. |
+| `DEA_SLENDER_01` | first sight | He's just doing his rounds. [quietly] Lord, he's been doing his rounds this whole time. Nobody told him. |
 | `DEA_SLENDER_02` | his keys fall silent near Deacon | Keys went quiet— MOVE! |
-| `DEA_QUARANTINE_01` | returned | Clock stopped at three. Mama always said nothing good happens after three. |
-| `DEA_SLENDER_DEAD_01` | his death | Rest easy, watchman. We'll keep the lights on. |
+| `DEA_QUARANTINE_01` | returned | Clock stopped at three. [a breath] Mama said nothing good happens after three. She never said what happens if it stays three. |
+| `DEA_SLENDER_DEAD_01` | his death | Rest easy, watchman. [quietly] 'Watchman, what of the night?' ...It's over for you. We'll keep the lights. |
 | `WRN_SLENDER_01` | the first mirror stop | He stops when I stop. He turns when I turn. ...Good. I can count on him. |
 | `WRN_SLENDER_02` | his book appears | The book! Shoot the book out of his hands! |
-| `WRN_QUARANTINE_01` | returned | My page was neat. He has better handwriting than me. |
-| `WRN_SLENDER_DEAD_01` | his death | He wrote everything down. Every hour. ...I understand him. |
+| `WRN_QUARANTINE_01` | returned | My page was neat. He has better handwriting than me. [quietly] He had more time. |
+| `WRN_SLENDER_DEAD_01` | his death | He wrote everything down. Every hour. ...I understand him. [a breath] I do not want to understand him. |
 
 ### 12.6 Bolt (with Sprocket) and Vendelin
 
@@ -1099,41 +1099,41 @@ Ironhide when first hurt, Second Wind on the first revive; otherwise at the star
 
 ### 13.3 Deacon (`DEA`)
 - `DEA_RELOAD_01`: "Reloading!"
-- `DEA_RELOAD_02`: "Feeding her. Give me a second."
+- `DEA_RELOAD_02`: "Feeding her. Give me a second. One second."
 - `DEA_BOARD_01`: "Board's up!"
-- `DEA_BOARD_02`: "Window's fixed. Good as new. Well. Good."
-- `DEA_REVIVE_10`: "I've got you, hold on. Breathe with me."
+- `DEA_BOARD_02`: "Window's fixed. Good as new. [a breath] Well. Good enough."
+- `DEA_REVIVE_10`: "I've got you, hold on. Breathe with me. In. Out. Breathe."
 - `DEA_POWERUP_SEEN_01`: "Blessing on the floor over there. Don't let it go to waste."
 - `DEA_CMD_FOLLOW_01`: "With you."
-- `DEA_CMD_HOLD_01`: "Planting my feet. They come to us."
-- `DEA_CMD_REPAIR_01`: "Repairs. Now you're speaking my language."
-- `DEA_CMD_REVIVE_01`: "Anybody falls, I'm the one picking them up."
-- `DEA_BONUS_IRONHIDE_01`: "Stout's still in me. I'm built like a Sherman today."
-- `DEA_BONUS_SECONDWIND_01`: "Schnapps working. I'll have you back on your feet before the Lord notices."
+- `DEA_CMD_HOLD_01`: "Planting my feet. They come to us. [quietly] Lord, let 'em come slow."
+- `DEA_CMD_REPAIR_01`: "Repairs. [a breath] All right. Something I can mend."
+- `DEA_CMD_REVIVE_01`: "Anybody falls, I'm picking them up. Before anything else does."
+- `DEA_BONUS_IRONHIDE_01`: "Stout's still in me. Built like a Sherman tonight. [quietly] Shermans burn, Lord. I know."
+- `DEA_BONUS_SECONDWIND_01`: "Schnapps working. I'll have you up before anything else gets a look at you."
 - `DEA_BONUS_TRIGGER_01`: "Hands are quicker than they ought to be. I'll take it."
 - `DEA_BONUS_TWINBARREL_01`: "Timing's advanced on this gun. Runs hot. Runs good."
-- `DEA_BONUS_MARATHON_01`: "Engine's tuned. I could run all night."
-- `DEA_BONUS_HAWKEYE_01`: "Eyes are clear as Sunday morning."
+- `DEA_BONUS_MARATHON_01`: "Engine's tuned. I could run all night. [a breath] Might have to."
+- `DEA_BONUS_HAWKEYE_01`: "Eyes clear as Sunday morning. [quietly] Wish I was looking at Sunday morning."
 - `DEA_BONUS_PACKMULE_01`: "Room for one more tool on the belt. Always is."
 - `DEA_BONUS_BLASTPROOF_01`: "Blast washed right over me. Armor plating, the bottle said."
 - `DEA_BONUS_OVERCLOCK_01`: "Something in this gun's wired wrong. Wired wrong the right way."
 
 ### 13.4 Wren (`WRN`)
 - `WRN_RELOAD_01`: "Reloading!"
-- `WRN_RELOAD_02`: "Empty. One moment."
+- `WRN_RELOAD_02`: "Empty. One moment. [a breath] One."
 - `WRN_BOARD_01`: "Board's up!"
 - `WRN_BOARD_02`: "Window closed."
-- `WRN_REVIVE_10`: "I've got you. Hold on. Hold on."
+- `WRN_REVIVE_10`: "I've got you. Hold on. Hold on. Look at me, not at them."
 - `WRN_POWERUP_SEEN_01`: "There. Something fell. Take it."
 - `WRN_CMD_FOLLOW_01`: "I follow."
 - `WRN_CMD_HOLD_01`: "I hold. They come, I count them."
 - `WRN_CMD_REPAIR_01`: "Boards. Yes."
-- `WRN_CMD_REVIVE_01`: "Nobody stays on the floor. Not here."
+- `WRN_CMD_REVIVE_01`: "Nobody stays on the floor. Not here. [quietly] Not in this place."
 - `WRN_BONUS_IRONHIDE_01`: "The stout is still in me. Hit me. They will see."
 - `WRN_BONUS_SECONDWIND_01`: "Schnapps. Quick hands for lifting. Good."
 - `WRN_BONUS_TRIGGER_01`: "Reload, fast. The tonic is still in my fingers."
-- `WRN_BONUS_TWINBARREL_01`: "Faster. The gun is hungry tonight."
-- `WRN_BONUS_MARATHON_01`: "I can run forever. I ran here from Kraków, almost."
+- `WRN_BONUS_TWINBARREL_01`: "Faster. [a breath] The gun is hungry tonight. So are they."
+- `WRN_BONUS_MARATHON_01`: "I can run forever. [quietly] I have been running since thirty-nine."
 - `WRN_BONUS_HAWKEYE_01`: "The brandy. My eye is clear. Into the book."
 - `WRN_BONUS_PACKMULE_01`: "Three guns. More marks in the notebook."
 - `WRN_BONUS_BLASTPROOF_01`: "Fire, and I am still here. Good beer."
@@ -1154,10 +1154,10 @@ hills (it mirrors GRAVELIGHT ONE's own fall). One random standing survivor.
 - `DUT_SKY_PLANE_DOWN_02`: "There goes another one. Hope somebody finds them quicker than anybody found us."
 - `PEG_SKY_PLANE_DOWN_01`: "One of ours is burning. ...Count the chutes. Come on. Count the chutes."
 - `PEG_SKY_PLANE_DOWN_02`: "Down behind the ridge. I'd tell you they'll be fine. I'd be lying."
-- `DEA_SKY_PLANE_DOWN_01`: "Engine's on fire. Lord, let that pilot glide it in like ours did."
-- `DEA_SKY_PLANE_DOWN_02`: "That's ten men in that thing. ...Somebody say a word for them."
-- `WRN_SKY_PLANE_DOWN_01`: "Burning, losing height, same bearing we came in on. I'm writing down the time."
-- `WRN_SKY_PLANE_DOWN_02`: "No violet light this time. Only flak. ...That is almost a comfort."
+- `DEA_SKY_PLANE_DOWN_01`: "Engine's on fire. Lord, let that pilot glide it in like ours did. [quietly] Let somebody be alive at the end of it."
+- `DEA_SKY_PLANE_DOWN_02`: "That's ten men in that thing. ...Somebody say a word for them. [a breath] 'Yea, though I walk through the valley.' ...That's all I've got."
+- `WRN_SKY_PLANE_DOWN_01`: "Burning, losing height, same bearing we came in on. I'm writing down the time. [quietly] Somebody will want the time."
+- `WRN_SKY_PLANE_DOWN_02`: "No violet light this time. Only flak. ...That is almost a comfort. [a breath] Almost."
 
 **`WRECK_PILOT`**: the first time a survivor gets a clear look at GRAVELIGHT ONE's open cockpit (within ~27 m, looking at
 it). Dutch says it if he is in the match; otherwise whoever is. T-126: Flight Lieutenant Selwyn is alive in that seat, pinned
@@ -1166,15 +1166,15 @@ no pulse after the crash. The line also tells the squad they can arm him (Trappe
 
 - `DUT_WRECK_PILOT_01`: "Selwyn? ...He's breathing. I checked him for a pulse myself, I'd have sworn. Hang on, Lieutenant. We'll get you something to shoot."
 - `PEG_WRECK_PILOT_01`: "The pilot's alive. Dutch swore Selwyn was dead in that seat. The cold must have slowed his heart. ...Thank God for the cold."
-- `DEA_WRECK_PILOT_01`: "Lord, Selwyn's moving. He's pinned under the panel. We can't lift that, but we can put a rifle in his hands."
+- `DEA_WRECK_PILOT_01`: "Lord, Selwyn's moving. He's pinned under the panel. We can't lift that. [a breath] But we can put a rifle in his hands."
 - `WRN_WRECK_PILOT_01`: "The pilot. He's alive. Legs trapped under the panel. Write that down: Selwyn, alive. ...I am writing that down."
 
 **`MIDNIGHT`**: the church on the far hill rings twelve during round 9: it is the twenty-fourth, Christmas Eve (Wigilia).
 
 - `DUT_MIDNIGHT_01`: "Midnight. Christmas Eve. Babcia'd be setting an extra plate about now. For the stranger who knocks."
 - `PEG_MIDNIGHT_01`: "Midnight. Happy Christmas Eve, everyone. Do try not to die on it."
-- `DEA_MIDNIGHT_01`: "Christmas Eve. Ruthie's asleep by now. ...Good. That's good."
-- `WRN_MIDNIGHT_01`: "Twelve. It's the twenty-fourth. Wigilia. Somewhere my mother is looking at the first star."
+- `DEA_MIDNIGHT_01`: "Christmas Eve. Ruthie's asleep by now. ...Good. That's good. [quietly] 'Unto you is born this day.' ...Sleep on, honey."
+- `WRN_MIDNIGHT_01`: "Twelve. It is the twenty-fourth. Wigilia. [a breath] Somewhere my mother is looking at the first star. She sets a plate for the one who is missing. [quietly] Two plates, this year."
 
 
 ## 15. AI teammate callouts, orders and chatter (Update 03 §5, DECISIONS T-055)
@@ -1236,23 +1236,23 @@ The ids carry `SQ3` so the voice bake can run them alone (`python gravelight/too
 
 ### 15.3 Deacon (`DEA`)
 - `DEA_SQ3_SPRINTER_BEHIND_01`: "Fast one behind you, brother!"
-- `DEA_SQ3_BOSS_INCOMING_01`: "Lord, here comes a big one."
-- `DEA_SQ3_CRATE_MOVED_01`: "Crate's gone and moved itself."
+- `DEA_SQ3_BOSS_INCOMING_01`: "Lord, here comes a big one. Here he comes."
+- `DEA_SQ3_CRATE_MOVED_01`: "Crate's gone and moved itself. [quietly] Nothing stays put here."
 - `DEA_SQ3_WINDOW_OPEN_01`: "That window's open! Somebody get a board on it!"
 - `DEA_SQ3_COVER_01`: "Go on, get 'em up. I'm watching."
 - `DEA_SQ3_PING_RESUPPLY_01`: "Resupply over here! Blessing on the floor."
 - `DEA_SQ3_PING_DEATHSDOOR_01`: "Death's Door, right here."
 - `DEA_SQ3_PING_DOUBLESCRIP_01`: "Double Scrip! Make it count."
 - `DEA_SQ3_PING_BLACKOUT_01`: "Blackout on the floor."
-- `DEA_SQ3_PING_FORTIFY_01`: "Fortify! Every board at once. My kind of miracle."
+- `DEA_SQ3_PING_FORTIFY_01`: "Fortify! Every board at once. [a breath] Take the miracle. Don't ask."
 - `DEA_SQ3_PING_CLEARANCE_01`: "Clearance! Crate's half off."
 - `DEA_SQ3_CMD_TRAIN_01`: "Keep 'em on a string. I'm with you."
 - `DEA_SQ3_CMD_BUY_PERKS_01`: "Machines take Scrip, and I've got Scrip."
 - `DEA_SQ3_CMD_SAVE_SCRIP_01`: "I'll hold onto it."
-- `DEA_SQ3_CMD_OPEN_DOOR_01`: "I'll open her up."
-- `DEA_SQ3_CMD_FETCH_PART_01`: "Parts? Now you're talking."
-- `DEA_SQ3_CHATTER_01`: "This machine's got a rattle. Hush now, sweetheart."
-- `DEA_SQ3_CHATTER_02`: "Pass me the wrench when we're done. Something in there's loose."
+- `DEA_SQ3_CMD_OPEN_DOOR_01`: "I'll open her up. Lord, let it be empty behind."
+- `DEA_SQ3_CMD_FETCH_PART_01`: "Parts? [a breath] All right. Something I can hold onto."
+- `DEA_SQ3_CHATTER_01`: "This machine's got a rattle. Hush now, sweetheart. Hush."
+- `DEA_SQ3_CHATTER_02`: "Pass me the wrench when we're done. Something in there's loose. I'd like one thing in this house fixed."
 
 ### 15.4 Wren (`WRN`)
 - `WRN_SQ3_SPRINTER_BEHIND_01`: "Behind you. Fast."
@@ -1274,11 +1274,11 @@ The ids carry `SQ3` so the voice bake can run them alone (`python gravelight/too
 - `WRN_SQ3_TALLY_25_01`: "Twenty-five."
 - `WRN_SQ3_TALLY_50_01`: "Fifty. I am counting."
 - `WRN_SQ3_TALLY_100_01`: "One hundred. I write it down."
-- `WRN_SQ3_TALLY_150_01`: "One hundred fifty."
+- `WRN_SQ3_TALLY_150_01`: "One hundred fifty. [a breath]"
 - `WRN_SQ3_TALLY_200_01`: "Two hundred. For my brother."
-- `WRN_SQ3_TALLY_300_01`: "Three hundred. Still counting."
-- `WRN_SQ3_CHATTER_01`: "I write down their number. Someone should."
-- `WRN_SQ3_CHATTER_02`: "My brother would like this inn. He liked any place with a fire."
+- `WRN_SQ3_TALLY_300_01`: "Three hundred. [exhausted] Still counting. Somebody has to."
+- `WRN_SQ3_CHATTER_01`: "I write down their number. Someone should. [quietly] Nobody wrote down his."
+- `WRN_SQ3_CHATTER_02`: "My brother would like this inn. He liked any place with a fire. [a breath] He would not like the windows."
 
 
 ## 16. Jakub Ostrowski (`JAK`), the prisoner companion (Update 02 §6.2, DECISIONS T-051)
@@ -1480,14 +1480,14 @@ his banter are `BNT_*` exchanges on the squad's player channel. The other surviv
 **`JAKUB_MEET`** (the survivor who freed him, as he joins):
 - `DUT_JAKUB_MEET_01`: "Walter Kowalczyk. Call me Dutch. My Babcia came from Wilcza Góra. ...Maybe our families knew each other."
 - `PEG_JAKUB_MEET_01`: "Lieutenant Ashworth. Stay close, keep your head down, and if you know a way out of here, I want it."
-- `DEA_JAKUB_MEET_01`: "Elijah Brooks. Folks call me Deacon. You've been through it, haven't you. Well. You're with us now."
-- `WRN_JAKUB_MEET_01`: "Ostrowski. From Wilcza Góra. ...I know your face. I was a girl."
+- `DEA_JAKUB_MEET_01`: "Elijah Brooks. Folks call me Deacon. You've been through it, haven't you. [a breath] Well. You're with us now. Nobody leaves you."
+- `WRN_JAKUB_MEET_01`: "Ostrowski. From Wilcza Góra. ...I know your face. I was a girl. [quietly] You had a dog."
 
 **`JAKUB_FALLEN`** (he bled out: out cold, breathing, left where he fell; he comes back on the next map):
 - `DUT_JAKUB_FALLEN_01`: "Jakub's out cold. He's breathing. We can't carry him and fight. ...We'll come back for you, old man."
 - `PEG_JAKUB_FALLEN_01`: "He's breathing, but he won't wake. Leave him where he lies. They've no interest in him now."
-- `DEA_JAKUB_FALLEN_01`: "Lord, keep that man breathing. He's out. We'll come back for him, you hear me?"
-- `WRN_JAKUB_FALLEN_01`: "Jakub. ...He breathes. Leave him. He has walked out of worse places than this."
+- `DEA_JAKUB_FALLEN_01`: "Lord, keep that man breathing. He's out. We'll come back for him, you hear me? [quietly] Keep him. Please."
+- `WRN_JAKUB_FALLEN_01`: "Jakub. ...He breathes. Leave him. He has walked out of worse places than this. [a breath] He will walk out of this."
 
 ### 16.5 Banter and the Wren scene
 
@@ -1539,10 +1539,10 @@ hand him a pistol already loaded with them). Unbaked lines play as subtitles unt
 - `DUT_GUNSMITH_02`: "My uncle fixed tractors with less. This'll do."
 - `PEG_GUNSMITH_01`: "Section Five would have killed for a bench like this. Possibly literally."
 - `PEG_GUNSMITH_02`: "Better. Now it does what it's told."
-- `DEA_GUNSMITH_01`: "Every engine wants a little love. Guns too. Mostly guns."
+- `DEA_GUNSMITH_01`: "Every engine wants a little love. Guns too. [a breath] Mostly guns, tonight."
 - `DEA_GUNSMITH_02`: "Seated, snug, and squared away. Like a good track pin."
-- `WRN_GUNSMITH_01`: "Not my rifle. But it's learning."
-- `WRN_GUNSMITH_02`: "Sights right, grip right. Now it only has to be honest."
+- `WRN_GUNSMITH_01`: "Not my rifle. But it is learning."
+- `WRN_GUNSMITH_02`: "Sights right, grip right. Now it only has to be honest. [quietly] Nothing else here is."
 - `JAK_GUNSMITH_01`: "In the mine we mended everything twice. Here, once will have to do."
 
 **`GUNSMITH_REFUSE`** (Jakub and the Nachtglas rounds):
@@ -1625,18 +1625,18 @@ them alone (`python gravelight/tools_src/gen_vo.py --only=DUT_SQ4`).
 - `DEA_SQ4_EE_ACK_KILL_WITH_WEAPON_01`: "Ring that bell, sweetheart. Bring 'em close."
 - `DEA_SQ4_EE_ACK_TURN_KEY_01`: "Hand's on the key. Waiting on yours."
 - `DEA_SQ4_EE_PLAYER_ONLY_01`: "That's yours to do. I'll keep the wolves off."
-- `DEA_SQ4_EE_PROGRESS_01`: "There's one. Praise be."
+- `DEA_SQ4_EE_PROGRESS_01`: "There's one. [a breath] Thank You."
 - `DEA_SQ4_EE_PROGRESS_02`: "Another one done. Keep it coming."
 - `DEA_SQ4_EE_DONE_01`: "That's done. Amen."
 - `DEA_SQ4_EE_HANDOFF_01`: "She's ready. The last turn's yours."
 - `DEA_SQ4_EE_CANT_01`: "Can't manage that one right now."
 - `DEA_SQ4_EE_CANT_INFO_01`: "Not yet. I don't know the words to that hymn."
 - `DEA_SQ4_EE_CANT_FIND_01`: "Haven't found it yet. Lead me to it."
-- `DEA_SQ4_EE_CANT_RISKY_01`: "That could bring the roof down on us. You say the word."
+- `DEA_SQ4_EE_CANT_RISKY_01`: "That could bring the roof down on us. [quietly] You say the word. I'll do it."
 - `DEA_SQ4_EE_WAIT_PLAYER_01`: "This part needs you with me."
 - `DEA_SQ4_EE_INTERRUPTED_01`: "Hold on now. Trouble first."
 - `DEA_SQ4_EE_RESUME_01`: "Back to it."
-- `DEA_SQ4_EE_RESUME_02`: "Alright. Back to the Lord's work."
+- `DEA_SQ4_EE_RESUME_02`: "All right. Back to it. Lord willing."
 
 ### 17.4 Wren (`WRN`)
 - `WRN_SQ4_EE_ACK_01`: "Yes. I do it."
@@ -1654,7 +1654,7 @@ them alone (`python gravelight/tools_src/gen_vo.py --only=DUT_SQ4`).
 - `WRN_SQ4_EE_DONE_01`: "Done."
 - `WRN_SQ4_EE_HANDOFF_01`: "Ready. The last one is yours."
 - `WRN_SQ4_EE_CANT_01`: "No. Not now."
-- `WRN_SQ4_EE_CANT_INFO_01`: "We do not know it yet. I don't guess."
+- `WRN_SQ4_EE_CANT_INFO_01`: "We do not know it yet. I do not guess. Guessing is how you die here."
 - `WRN_SQ4_EE_CANT_FIND_01`: "Not found yet. Show me."
 - `WRN_SQ4_EE_CANT_RISKY_01`: "This can go wrong. You say, I do."
 - `WRN_SQ4_EE_WAIT_PLAYER_01`: "You must be here for this."
@@ -1831,7 +1831,7 @@ Crucible); he goes, defends, regroups and calls danger. The ids carry `SQ5` so t
 - `DEA_SQ5_MARK_ACK_GO_01`: "Heading that way."
 - `DEA_SQ5_MARK_ACK_DEFEND_01`: "I'll keep watch there and mend what breaks."
 - `DEA_SQ5_MARK_ACK_REGROUP_01`: "Gathering up. Coming."
-- `DEA_SQ5_MARK_DANGER_01`: "Lord, stay away from that spot."
+- `DEA_SQ5_MARK_DANGER_01`: "Lord, stay away from that spot. Stay away."
 - `DEA_SQ5_MARK_DANGER_02`: "Keep clear of there, brother."
 - `DEA_SQ5_MARK_AFFORD_01`: "I've got enough now. Going."
 - `DEA_SQ5_MARK_BOUGHT_01`: "Done and done."
@@ -1847,7 +1847,7 @@ Crucible); he goes, defends, regroups and calls danger. The ids carry `SQ5` so t
 - `DEA_SQ5_MARK_BOUGHT_GUN_01`: "Bought it. Fine piece of machinery."
 - `DEA_SQ5_MARK_BOUGHT_DOOR_01`: "Door's open. Watch it now."
 - `DEA_SQ5_MARK_BOUGHT_AMMO_01`: "Loaded up."
-- `DEA_SQ5_MARK_BOUGHT_CRATE_01`: "Crate's turning. Let's pray on it."
+- `DEA_SQ5_MARK_BOUGHT_CRATE_01`: "Crate's turning. [quietly] Let's pray on it."
 - `DEA_SQ5_MARK_BOUGHT_CRUCIBLE_01`: "She's in the forge. Keep 'em off me a minute."
 - `DEA_SQ5_MARK_BOUGHT_TRAP_01`: "Trap's running. Stand back."
 - `DEA_SQ5_MARK_BOUGHT_BENCH_01`: "Bench work's finished. Fits like it grew there."
@@ -1869,9 +1869,9 @@ Crucible); he goes, defends, regroups and calls danger. The ids carry `SQ5` so t
 - `DEA_SQ5_MARK_SHORT_3000_01`: "I'm 3,000 shy, brother. I'll earn it."
 - `DEA_SQ5_MARK_SHORT_4000_01`: "I'm 4,000 shy, brother. I'll earn it."
 - `DEA_SQ5_MARK_SHORT_5000_01`: "I'm 5,000 shy, brother. I'll earn it."
-- `DEA_SQ5_MARK_SHORT_LOTS_01`: "That's more Scrip than I've seen all week. I'll work on it."
+- `DEA_SQ5_MARK_SHORT_LOTS_01`: "That's more Scrip than I've seen all week. [a breath] I'll work on it."
 - `DEA_SQ5_MARK_SHORT_01`: "Can't cover that yet. I'll earn it."
-- `DEA_SQ5_MARK_EXPIRED_01`: "Couldn't come up with it. Letting that one go."
+- `DEA_SQ5_MARK_EXPIRED_01`: "Couldn't come up with it. Letting that one go. [quietly] Letting it go."
 - `DEA_SQ5_MARK_FOR_YOU_HOLD_01`: "Got it for you. Come take it."
 - `DEA_SQ5_MARK_FOR_YOU_DROP_01`: "Left it at your feet. Take good care of her."
 - `DEA_SQ5_MARK_RESUME_01`: "Back to it."
@@ -1892,7 +1892,7 @@ Crucible); he goes, defends, regroups and calls danger. The ids carry `SQ5` so t
 - `WRN_SQ5_MARK_ACK_GO_01`: "I go there."
 - `WRN_SQ5_MARK_ACK_DEFEND_01`: "I hold there."
 - `WRN_SQ5_MARK_ACK_REGROUP_01`: "Coming."
-- `WRN_SQ5_MARK_DANGER_01`: "Bad place. Stay away."
+- `WRN_SQ5_MARK_DANGER_01`: "Bad place. Stay away. [quietly] I have seen what is there."
 - `WRN_SQ5_MARK_DANGER_02`: "Not there. Danger."
 - `WRN_SQ5_MARK_AFFORD_01`: "Now I have enough. I go."
 - `WRN_SQ5_MARK_BOUGHT_01`: "Done."
@@ -1932,7 +1932,7 @@ Crucible); he goes, defends, regroups and calls danger. The ids carry `SQ5` so t
 - `WRN_SQ5_MARK_SHORT_5000_01`: "Need 5,000 more. I earn it."
 - `WRN_SQ5_MARK_SHORT_LOTS_01`: "Too much. I earn it slowly."
 - `WRN_SQ5_MARK_SHORT_01`: "Not enough Scrip. Wait."
-- `WRN_SQ5_MARK_EXPIRED_01`: "Not enough. I stop."
+- `WRN_SQ5_MARK_EXPIRED_01`: "Not enough. I stop. [a breath] I stop."
 - `WRN_SQ5_MARK_FOR_YOU_HOLD_01`: "For you. Take it from me."
 - `WRN_SQ5_MARK_FOR_YOU_DROP_01`: "At your feet. Take."
 - `WRN_SQ5_MARK_RESUME_01`: "Back to it."
@@ -1985,10 +1985,10 @@ the permanent tier; forced, every time); the Operator on the match's first (`PER
 - `DUT_SQ8_PERK_TIER4_02`: "Bottle number four. Nobody's taking this one off me."
 - `PEG_SQ8_PERK_TIER4_01`: "This one's mine for good. I'll explain it to London later."
 - `PEG_SQ8_PERK_TIER4_02`: "A permanent measure. I'd file a complaint if it didn't work so well."
-- `DEA_SQ8_PERK_TIER4_01`: "This one's mine for good. Lord, keep it that way."
-- `DEA_SQ8_PERK_TIER4_02`: "Fourth glass. That one went all the way down. I can feel it in my bones."
+- `DEA_SQ8_PERK_TIER4_01`: "This one's mine for good. [quietly] Lord, keep it that way. Keep something that way."
+- `DEA_SQ8_PERK_TIER4_02`: "Fourth glass. Went all the way down. I feel it in my bones. [a breath] Fourth. Of course it's the fourth."
 - `WRN_SQ8_PERK_TIER4_01`: "This one's mine for good. I'm writing that down so I believe it."
-- `WRN_SQ8_PERK_TIER4_02`: "Four measures. It doesn't wear off. One fewer thing to count."
+- `WRN_SQ8_PERK_TIER4_02`: "Four measures. It does not wear off. [quietly] One fewer thing to count."
 - `JAK_SQ8_PERK_TIER4_01`: "This one stays with me. Like the cold. Like the songs."
 
 **U08 (T-130) the late kit**: `LATE_KIT`: a bot gears up from round 25 (a tier III tonic and the Chicago Lament II;
@@ -1997,10 +1997,10 @@ BotSquad.apply_late_kit; forced). Bake with the SQ8 prefixes.
 - `DUT_SQ8_LATE_KIT_02`: "Chicago Lament, second pressing. Now we're talking."
 - `PEG_SQ8_LATE_KIT_01`: "Twenty-five rounds. I've earned the strong measure and a proper gun."
 - `PEG_SQ8_LATE_KIT_02`: "The Thompson again, taught twice. Let's not waste it."
-- `DEA_SQ8_LATE_KIT_01`: "Lord, it's a long night. All right. I'm loaded for the rest of it."
-- `DEA_SQ8_LATE_KIT_02`: "Fresh tonic, fresh drum. Come on then."
-- `WRN_SQ8_LATE_KIT_01`: "Round twenty-five. New gun, new measure. I'm counting from here."
-- `WRN_SQ8_LATE_KIT_02`: "Chicago Lament, twice taught. Thirty rounds. I'll make them count."
+- `DEA_SQ8_LATE_KIT_01`: "Lord, it's a long night. [exhausted] All right. I'm loaded for the rest of it. Whatever the rest is."
+- `DEA_SQ8_LATE_KIT_02`: "Fresh tonic, fresh drum. [a breath] Come on, then. Come on."
+- `WRN_SQ8_LATE_KIT_01`: "Round twenty-five. New gun, new measure. I am counting from here. [quietly] Again."
+- `WRN_SQ8_LATE_KIT_02`: "Chicago Lament, twice taught. Thirty rounds. I will make them count. [a breath] I always do."
 
 **Dutch (`DUT`)**
 - `DUT_SQ6_PERK_TIER_01`: "Second helping. Tastes worse. Works better. That's the Army in a bottle."
@@ -2017,18 +2017,18 @@ BotSquad.apply_late_kit; forced). Bake with the SQ8 prefixes.
 - `PEG_SQ6_PLAQUE_CRUCIBLE_01`: "Crate two of three. So where's the third?"
 
 **Deacon (`DEA`)**
-- `DEA_SQ6_PERK_TIER_01`: "Second chamber behind the first. Clever plumbing. Hate it."
-- `DEA_SQ6_PERK_TIER_02`: "It read my hand before it poured. Machine shouldn't do that."
-- `DEA_SQ6_PERK_PROC_01`: "Lord. Something in me just held."
-- `DEA_SQ6_PLAQUE_01`: "Swiss rivets. Good work on a bad job."
-- `DEA_SQ6_PLAQUE_CRUCIBLE_01`: "Mod. R-E. Pat. pend. Somebody's waiting on a patent for this thing. Hope they never get it."
+- `DEA_SQ6_PERK_TIER_01`: "Second chamber behind the first. Clever plumbing. [quietly] Hate it. Hate how much I like it."
+- `DEA_SQ6_PERK_TIER_02`: "It read my hand before it poured. [a breath] A machine shouldn't know a man's hand. Nothing here should."
+- `DEA_SQ6_PERK_PROC_01`: "Lord. [a breath] Something in me just held. Thank You."
+- `DEA_SQ6_PLAQUE_01`: "Swiss rivets. Good work on a bad job. [quietly] Most of the work here is."
+- `DEA_SQ6_PLAQUE_CRUCIBLE_01`: "Mod. R-E. Pat. pend. Somebody's waiting on a patent for this thing. [a breath] Lord, let 'em wait forever."
 
 **Wren (`WRN`)**
-- `WRN_SQ6_PERK_TIER_01`: "More. It always wants you to have more."
+- `WRN_SQ6_PERK_TIER_01`: "More. It always wants you to have more. [quietly] That is how they got the laborers too. More."
 - `WRN_SQ6_PERK_TIER_02`: "The owl on the glass. Somebody here was on our side."
-- `WRN_SQ6_PERK_PROC_01`: "Not yet. Not today."
+- `WRN_SQ6_PERK_PROC_01`: "Not yet. [a breath] Not today. Not here."
 - `WRN_SQ6_PLAQUE_01`: "They wrote down who made it. They never write down who it was made from."
-- `WRN_SQ6_PLAQUE_CRUCIBLE_01`: "A furnace that teaches guns. Of course they built that before bread."
+- `WRN_SQ6_PLAQUE_CRUCIBLE_01`: "A furnace that teaches guns. [quietly] Of course they built it before bread. They always build it before bread."
 
 **Jakub (`JAK`)** (he never drinks; the plates only)
 - `JAK_PERK_REFUSE_M4_01`: "No. Not that one either." *(UPDATE 07, T-105: the two Map 4 tonics; the usual PERK_REFUSE route)*
@@ -2074,8 +2074,8 @@ snow; Sobotta dies inside by the table and rises among the squad.
 **`INN_RISE`**: the squad, when Sobotta gets up off the floor (one random standing survivor, tier 2).
 - `DUT_INN_RISE_01`: "He's getting up. ...He's getting up! That's not him any more, put him down!"
 - `PEG_INN_RISE_01`: "Oh, no. No, no, no. Willi. ...I'm sorry, love."
-- `DEA_INN_RISE_01`: "Lord have mercy, the boy's standing up. That isn't him. That isn't him!"
-- `WRN_INN_RISE_01`: "The soldier. He is standing. Do not look at his face. Shoot."
+- `DEA_INN_RISE_01`: "Lord have mercy, the boy's standing up. That isn't him. [shouting] That isn't him!"
+- `WRN_INN_RISE_01`: "The soldier. He is standing. Do not look at his face. [a breath] Shoot. Shoot."
 
 **Before round 1, T-076** (`INN_CHAT`, during the look-around, times in seconds of settled view; Rother's and Trudi's
 welcome always play, these only while the player looks away from the front door. The cue `KUB_INN_WINDOW_01` now
@@ -2141,8 +2141,8 @@ player is near), `flinch` (a shot close by, sometimes), `armed` (handed the rifl
 When a dead survivor is about to rise (one random standing squad member, after the "[Name is turning]" subtitle).
 - `DUT_INN_SURV_TURN_01`: "One of the civvies upstairs is moving again. That's not them any more. Put them down!"
 - `PEG_INN_SURV_TURN_01`: "Oh, no. Upstairs. One of ours upstairs is getting up. ...I'm sorry. Make it quick."
-- `DEA_INN_SURV_TURN_01`: "Lord, one of the folks upstairs is rising. Don't let them suffer it. Put them to rest."
-- `WRN_INN_SURV_TURN_01`: "Upstairs. The civilian is turning. Do not wait for them to look at you."
+- `DEA_INN_SURV_TURN_01`: "Lord, one of the folks upstairs is rising. Don't let them suffer it. [quietly] Put them to rest. Please."
+- `WRN_INN_SURV_TURN_01`: "Upstairs. The civilian is turning. Do not wait for them to look at you. [quietly] You will not shoot if they look at you."
 
 ## 23. The round-5 milestone, the tonic bottle and the Scrip bonuses (DECISIONS T-078)
 
@@ -2179,14 +2179,14 @@ the tags are the dead's names, said with respect; Jakub never drinks (he only po
 - `PEG_ECO_SALVAGE_01`: "Tags. Someone ought to know where he ended up."
 
 **Deacon (`DEA`)**
-- `DEA_ECO_PWR_TONIC_01`: "Bottle for everybody. Drink it slow, it's all we get."
+- `DEA_ECO_PWR_TONIC_01`: "Bottle for everybody. Drink it slow. [a breath] It's all we get, and we didn't earn it."
 - `DEA_ECO_PING_TONIC_01`: "Bottle here! One for each of us."
-- `DEA_ECO_SALVAGE_01`: "Tags. Rest easy, son. I've got your name."
+- `DEA_ECO_SALVAGE_01`: "Tags. [quietly] Rest easy, son. I've got your name. Somebody'll know where you are."
 
 **Wren (`WRN`)**
-- `WRN_ECO_PWR_TONIC_01`: "A gift. Nothing here is a gift. Drink anyway."
+- `WRN_ECO_PWR_TONIC_01`: "A gift. Nothing here is a gift. [a breath] Drink anyway. Drink."
 - `WRN_ECO_PING_TONIC_01`: "Bottle. Here."
-- `WRN_ECO_SALVAGE_01`: "A name. They had names, once."
+- `WRN_ECO_SALVAGE_01`: "A name. [quietly] They had names, once. I keep them. Somebody should keep them."
 
 **Jakub (`JAK`)**
 - `JAK_ECO_PING_TONIC_01`: "A bottle, over there! For you, not for me."
@@ -2239,10 +2239,10 @@ Bots in Full Partner add `EE_COMMIT_SELF` (section 18) when the player hasn't co
 - `DUT_SQ7_M0_EGG_HEARD_02` (Dutch): "Our call sign. On a German radio. Swell."
 - `PEG_SQ7_M0_EGG_HEARD_01` (Peg): "Gravelight is our call sign. Nobody this side of London should have it."
 - `PEG_SQ7_M0_EGG_HEARD_02` (Peg): "Someone out there knows the name of this mission. Interesting."
-- `DEA_SQ7_M0_EGG_HEARD_01` (Deacon): "Lord. Somebody out there's calling for us by name."
-- `DEA_SQ7_M0_EGG_HEARD_02` (Deacon): "That voice knows who we are. Friendly or not, that's something."
-- `WRN_SQ7_M0_EGG_HEARD_01` (Wren): "He says Gravelight. He knows the plane. Someone was waiting for us."
-- `WRN_SQ7_M0_EGG_HEARD_02` (Wren): "A man alone, calling and calling. He has been doing this a while."
+- `DEA_SQ7_M0_EGG_HEARD_01` (Deacon): "Lord. Somebody out there is calling for us by name. [a breath] By name."
+- `DEA_SQ7_M0_EGG_HEARD_02` (Deacon): "That voice knows who we are. Friendly or not, that's something. [quietly] That's something."
+- `WRN_SQ7_M0_EGG_HEARD_01` (Wren): "He says Gravelight. He knows the plane. [a breath] Someone was waiting for us. I do not like being waited for."
+- `WRN_SQ7_M0_EGG_HEARD_02` (Wren): "A man alone, calling and calling. He has been doing this a while. [quietly] Nobody calls that long unless he has to."
 
 **`M0_EGG_LOOK`**
 - `DUT_SQ7_M0_EGG_LOOK_01` (Dutch): "Innkeeper kept a pencil by that set. People who listen write things down. Look for paper."
@@ -2259,7 +2259,7 @@ Bots in Full Partner add `EE_COMMIT_SELF` (section 18) when the player hasn't co
 - `DUT_SQ7_M0_EGG_NOTE_02` (Dutch): "Paper with a number on it. Hand-written. This goes with the radio."
 - `PEG_SQ7_M0_EGG_NOTE_01` (Peg): "A frequency, numbered. Someone meant these to be read in order."
 - `PEG_SQ7_M0_EGG_NOTE_02` (Peg): "Note in hand. Megacycles and a numeral. That's for the set behind the bar."
-- `DEA_SQ7_M0_EGG_NOTE_01` (Deacon): "Here's one. Numbers and a numeral, in a careful hand. Somebody was scared when he wrote this."
+- `DEA_SQ7_M0_EGG_NOTE_01` (Deacon): "Here's one. Numbers and a numeral, in a careful hand. [quietly] Somebody was scared when he wrote this. Careful is how scared folks write."
 - `DEA_SQ7_M0_EGG_NOTE_02` (Deacon): "Got a note. He numbered them. Means there's more than one."
 - `WRN_SQ7_M0_EGG_NOTE_01` (Wren): "A note. Frequency and a number. I keep it."
 - `WRN_SQ7_M0_EGG_NOTE_02` (Wren): "Here. Written fast, but numbered. He knew someone would come."
@@ -2294,15 +2294,15 @@ Bots in Full Partner add `EE_COMMIT_SELF` (section 18) when the player hasn't co
 **`M0_EGG_LOCK1`**
 - `DUT_SQ7_M0_EGG_LOCK1_01` (Dutch): "So that's our defector. Sounds like he's about to cry."
 - `PEG_SQ7_M0_EGG_LOCK1_01` (Peg): "Fasbender. Glasmacher. That's our man. London said physicist, not penitent."
-- `DEA_SQ7_M0_EGG_LOCK1_01` (Deacon): "'The reason you are here.' Man says that like a confession."
-- `WRN_SQ7_M0_EGG_LOCK1_01` (Wren): "Kaltenbrunn. The salt works. My brother's letters came from there."
+- `DEA_SQ7_M0_EGG_LOCK1_01` (Deacon): "'The reason you are here.' [a breath] Man says that like a confession. I know what a confession sounds like."
+- `WRN_SQ7_M0_EGG_LOCK1_01` (Wren): "Kaltenbrunn. The salt works. [quietly] My brother's letters came from there. One letter."
 - `JAK_SQ7_M0_EGG_LOCK1_01` (Jakub): "Fasbender. I know that name. The men from his department never went down with us."
 
 **`M0_EGG_LOCK2`**
 - `DUT_SQ7_M0_EGG_LOCK2_01` (Dutch): "Black glass in the salt. Babcia's letter said that. I thought it was a story."
 - `PEG_SQ7_M0_EGG_LOCK2_01` (Peg): "A stone that hums. London wants a piece of it. Of course they do."
-- `DEA_SQ7_M0_EGG_LOCK2_01` (Deacon): "The dead remember. One thing. Lord, let that be the worst of it."
-- `WRN_SQ7_M0_EGG_LOCK2_01` (Wren): "It hums, he says. Tomasz wrote of a hum. Then he stopped writing."
+- `DEA_SQ7_M0_EGG_LOCK2_01` (Deacon): "The dead remember. One thing. [quietly] Lord, let that be the worst of it. ...It won't be."
+- `WRN_SQ7_M0_EGG_LOCK2_01` (Wren): "It hums, he says. Tomasz wrote of a hum. [a breath] Then he stopped writing."
 - `JAK_SQ7_M0_EGG_LOCK2_01` (Jakub): "The black glass. We cut round it in Gallery Nine. We were told not to touch it. We touched it."
 
 **`M0_EGG_WRONG`**
@@ -2321,17 +2321,17 @@ Bots in Full Partner add `EE_COMMIT_SELF` (section 18) when the player hasn't co
 - `DUT_SQ7_M0_EGG_DONE_02` (Dutch): "The rail line east. When the snow quits. Until then, this inn is ours."
 - `PEG_SQ7_M0_EGG_DONE_01` (Peg): "Kaltenbrunn, nine kilometres east by rail, when the snow stops. Until then we hold this house. That's the mission."
 - `PEG_SQ7_M0_EGG_DONE_02` (Peg): "He said bring all of them. Twice. We'll discuss what he meant when I'm looking at him."
-- `DEA_SQ7_M0_EGG_DONE_01` (Deacon): "'Bring all of them.' He said it twice. Why would a man say that twice?"
+- `DEA_SQ7_M0_EGG_DONE_01` (Deacon): "'Bring all of them.' He said it twice. [quietly] Why would a man say that twice. ...Because he's seen what happens to the ones left behind."
 - `DEA_SQ7_M0_EGG_DONE_02` (Deacon): "A gatehouse and a headframe. We'll know it when we see it. First we live till morning."
 - `WRN_SQ7_M0_EGG_DONE_01` (Wren): "East. The rail line. It goes to the salt works. I know that line."
-- `WRN_SQ7_M0_EGG_DONE_02` (Wren): "That other voice. Cheerful. On his frequency. That was not Fasbender."
+- `WRN_SQ7_M0_EGG_DONE_02` (Wren): "That other voice. Cheerful. On his frequency. [a breath] That was not Fasbender. Nobody is cheerful on a frequency like that."
 - `JAK_SQ7_M0_EGG_DONE_01` (Jakub): "I walked that line, the other way, with ten men behind me. I will walk it back."
 
 **`M0_EGG_TONICS`**
 - `DUT_SQ7_M0_EGG_TONICS_01` (Dutch): "The machines just lit up. All of 'em. Nobody paid."
 - `PEG_SQ7_M0_EGG_TONICS_01` (Peg): "Nothing in this country is free. Drink anyway."
-- `DEA_SQ7_M0_EGG_TONICS_01` (Deacon): "Every cabinet in the house just woke up. That voice did that. Think on it."
-- `WRN_SQ7_M0_EGG_TONICS_01` (Wren): "The cabinets. Open. All of them. A gift from a voice we don't know."
+- `DEA_SQ7_M0_EGG_TONICS_01` (Deacon): "Every cabinet in the house just woke up. That voice did that. [quietly] Think on who's buying."
+- `WRN_SQ7_M0_EGG_TONICS_01` (Wren): "The cabinets. Open. All of them. [a breath] A gift from a voice we do not know. I know what gifts like that cost."
 - `JAK_SQ7_M0_EGG_TONICS_01` (Jakub): "Those machines. I told you what they put in them. Now they pour it free. Think why."
 
 ## 14. MAP 4 "FERNFLUG" (UPDATE 07; design doc `docs/MAP4_FERNFLUG.md` §12): the lines the build references
@@ -2451,15 +2451,15 @@ manifest's `missing` ("map4: bake on the PC") and play as timed silence with sub
 | PEG_M4B_CRASH_01 | Hold on to something {British}. | the crash |
 | DEA_M4B_ARRIVE_01 | No crew. Harnesses buckled over nobody. ...Lord, that's wrong. That's wrong in a way I don't have a word {for}. | arrival |
 | DEA_M4B_TURB_01 | Easy, girl. Easy. Nobody's at the {stick}. | turbulence |
-| DEA_M4B_CRUCIBLE_01 | They bolted a forge to the galley floor. For the crew. The crew they didn't {have}. | the Crucible |
-| DEA_M4B_BORDWART_01 | He's part of the engine. He's PART of it. Anselm... I'm sorry, brother. I'm gonna shut her {down}. | the Bordwart |
+| DEA_M4B_CRUCIBLE_01 | They bolted a forge to the galley floor. For the crew. [quietly] The crew they didn't {have}. | the Crucible |
+| DEA_M4B_BORDWART_01 | He's part of the engine. He's PART of it. Anselm... [a breath] I'm sorry, brother. I'm gonna shut her {down}. | the Bordwart |
 | DEA_M4B_LONDON_01 | ...Oh, no. Oh, no, no, {no}. | the London window |
 | DEA_M4B_BOMBRUN_01 | I'll take the far racks! Deacon's on the far {racks}! | the bomb run |
 | DEA_M4B_RACK_JAM_01 | Jammed! She's {holding}! | a rack jammed |
-| DEA_M4B_AUTOPILOT_01 | Okay. Okay, girl. Key's in. Now I need you to let {go}. | the autopilot unlocked |
+| DEA_M4B_AUTOPILOT_01 | Okay. Okay, girl. Key's in. [quietly] Now I need you to let {go}. | the autopilot unlocked |
 | DEA_M4B_AUTOPILOT_02 | Easy. Easy, girl. You don't have to go where they pointed {you}. | the crash cutscene |
-| DEA_M4B_HEADING_01 | That's not home. Where's it taking {us}? | after the bomb run |
-| WRN_M4B_ARRIVE_01 | No crew. Buckled harnesses. ...They were taken OUT. Like Tomek. Like all of {them}. | arrival |
+| DEA_M4B_HEADING_01 | That's not home. [a breath] Where's it taking {us}? | after the bomb run |
+| WRN_M4B_ARRIVE_01 | No crew. Buckled harnesses. ...They were taken OUT. Like Tomek. [a breath] Like all of {them}. | arrival |
 | WRN_M4B_TAGS_01 | 'Riedl, A.' ...I'll keep {it}. | the first crew tag |
 | WRN_M4B_TAGS_03 | Three names. They had names. I have them {now}. | the third crew tag |
 | WRN_M4B_BREACH_01 | Hole in the wing. Good. It's a {window}. | a breach |
@@ -2499,13 +2499,13 @@ manifest's `missing` ("map4: bake on the PC") and play as timed silence with sub
 | PEG_M4A_GLIDER_01 | Balsa and tissue. Rather good {work}. | a glider model (M4A_GLIDER) |
 | PEG_M4A_JETTE_01 | 'Nein.' One word. More than anyone else here {managed}. | Jette's logbook (M4A_JETTE) |
 | DEA_M4A_ARRIVE_01 | Lord, listen to that. Something in that hangar's running and it's running {sweet}. | arrival |
-| DEA_M4A_FILE_01 | That engine's not burning anything. It's just... turning. Nothing turns for free. {Nothing}. | a file read (M4A_FILE) |
+| DEA_M4A_FILE_01 | That engine's not burning anything. It's just... turning. [quietly] Nothing turns for free. {Nothing}. | a file read (M4A_FILE) |
 | DEA_M4A_FILE_02 | 'Provided.' They put a crew on a list and never put one on the {plane}. | a file read (M4A_FILE) |
 | DEA_M4A_KRANICH_01 | ...She's beautiful. God forgive me, she's the most beautiful thing I ever saw and she's full of {poison}. | the hangar |
 | DEA_M4A_TUNNEL_01 | Easy, girl. Blow 'em over. That's {it}. | the tunnel ran (M4A_TUNNEL) |
 | DEA_M4A_GLIDER_01 | Somebody made this with their hands. For nothing but the {flying}. | a glider model (M4A_GLIDER) |
 | DEA_M4A_JETTE_01 | She wouldn't fly it and she wouldn't drug the men. That's good {hands}. | Jette's logbook (M4A_JETTE) |
-| WRN_M4A_ARRIVE_01 | The transfer lists said Thalbach. Two hundred names. I'm going to find where they put {them}. | arrival |
+| WRN_M4A_ARRIVE_01 | The transfer lists said Thalbach. Two hundred names. [a breath] I am going to find where they put {them}. | arrival |
 | WRN_M4A_FILE_01 | Engines sold. Routes written. Crews 'provided'. Everything here was bought from {someone}. | a file read (M4A_FILE) |
 | WRN_M4A_FILE_02 | A waypoint in a desert. They were never coming {back}. | a file read (M4A_FILE) |
 | WRN_M4A_KRANICH_01 | Sixty-one. Sixty-two. ...That thing has no number. I don't have a number for {that}. | the hangar |
@@ -2581,20 +2581,20 @@ The Operator is local here for the first time: it is in the walls. Its slips run
 | PEG_M4D_MANAGER_01 | That's her. The woman in violet. Reinholt's {woman}. | the Manager attends |
 | PEG_M4D_RENEW_01 | That's rather the {point}. | the renewal ending |
 | PEG_M4D_CANCEL_01 | On behalf of His Majesty's Government, and everyone else: we {decline}. | the key (tier 4) |
-| DEA_M4D_ARRIVE_01 | It's a store. The whole place is a {store}. | arrival |
+| DEA_M4D_ARRIVE_01 | It's a store. [quietly] The whole place is a {store}. | arrival |
 | DEA_M4D_CRUCIBLE_01 | Unit one. The first forge. ...They've never even turned it on. Easy, girl. Somebody's here {now}. | the first Crucible |
-| DEA_M4D_HUM_01 | That hum. That's the same hum as the lantern. That's the same hum as the inn. It's all one machine. It was always one {machine}. | the retention hall |
-| DEA_M4D_PILCH_01 | That's not a machine with a man in it. That's a man with a machine on him. ...You can't fix that. You can only stop {it}. | the Account |
+| DEA_M4D_HUM_01 | That hum. Same hum as the lantern. Same hum as the inn. It's all one machine. [a breath] It was always one {machine}. | the retention hall |
+| DEA_M4D_PILCH_01 | That's not a machine with a man in it. That's a man with a machine on him. ...You can't fix that. [quietly] You can only stop {it}. | the Account |
 | DEA_M4D_MANAGER_01 | Ma'am, I've talked to a lot of machines. You're the first one I don't want to {help}. | the Manager attends |
 | DEA_M4D_RENEW_01 | ...Lord. I'm not tired. Why am I not {tired}. | the renewal ending |
-| DEA_M4D_CANCEL_01 | Go on and rest now, all of you. We're done {here}. | the key (tier 4) |
+| DEA_M4D_CANCEL_01 | Go on and rest now, all of you. [a breath] 'The last enemy that shall be destroyed is death.' ...We're done {here}. | the key (tier 4) |
 | WRN_M4D_ARRIVE_01 | 'Nobody cancels.' ...We'll {see}. | arrival |
 | WRN_M4D_TAGS_01 | 'Riedl.' Here. He's {here}. | the first crew tag matched |
 | WRN_M4D_TAGS_02 | 'Haas.' ...{Here}. | the second |
 | WRN_M4D_TAGS_03 | All three. They flew them here. In their harnesses. ...I have their names. That's what I can do. It's the only thing I can {do}. | the third |
 | WRN_M4D_LOWG_01 | I can see the whole yard from up here. Two hundred metres. ...Easy. Too {easy}. | the first jump |
 | WRN_M4D_COLUMN_01 | I'll read it. I read everything. Somebody has {to}. | the first column |
-| WRN_M4D_MANAGER_01 | She sold them the engines. She sold the inn its coffins. ...Sixty-two. I'm counting {you}. | the Manager attends |
+| WRN_M4D_MANAGER_01 | She sold them the engines. She sold the inn its coffins. She sold the sickness its glass. ...Sixty-two. I'm counting {you}. | the Manager attends |
 | WRN_M4D_RENEW_01 | ...I can't count any higher. Why can't I {count}. | the renewal ending |
 | WRN_M4D_CANCEL_01 | For Tomasz. For Agnieszka. For two hundred names. ...{No}. | the key (tier 4) |
 | WRN_M4D_END_01 | Sixty-three. ...and {one}. | the cancel ending |
@@ -2727,7 +2727,7 @@ The Operator is local here for the first time: it is in the walls. Its slips run
 | DEA_M4C_LODESTONE_01 | ...It's pulling. It's listening. Easy now. {Easy}. | the Lodestone's first pickup |
 | DEA_M4C_BUILD_01 | Dee, ma'am, you built a reactor into a lantern. I'd marry you if I wasn't spoken {for}. | the Lodestone is built |
 | DEA_M4C_CANARY_01 | Don't break the glass. God, don't break the {glass}. | the first Canary |
-| DEA_M4C_HALE_01 | Sir. With respect. You put men in glass boxes. I've got nothing else to say to {you}. | Peg's choice decided |
+| DEA_M4C_HALE_01 | Sir. With respect. You put men in glass boxes. [quietly] I've got nothing else to say to {you}. | Peg's choice decided |
 | DEA_M4C_MOON_01 | 'The heavens declare the glory of God.' ...Somebody's put a light on 'em. We're gonna go switch it {off}. | the rocket cutscene |
 | WRN_M4C_ARRIVE_01 | A desert. I've never seen one. It's like the salt. It's exactly like the {salt}. | arrival |
 | WRN_M4C_CRATE_01 | I told you at the pens. I told you I'd seen it. ...You should have said, Peg. You should have just {said}. | the manifest read (tier 4) |
@@ -2792,13 +2792,13 @@ Tier 2 unless the speaker's channel says otherwise (`PA` the Bordfunk, German wi
 | DEA_M4B_WING_01 | The panel's gone. That's a way out onto the wing. In flight. Clip in or don't {go}. | the panel tears |
 | DUT_M4B_WING_FALL_01 | The rope held. My stomach {didn't}. | thrown off the wing |
 | PEG_M4B_WING_FALL_01 | Note to self: clip in. Underline {clip}. | thrown off the wing |
-| DEA_M4B_WING_FALL_01 | Lord, I saw the sea. Haul me in, I'm {done}. | thrown off the wing |
+| DEA_M4B_WING_FALL_01 | Lord, I saw the sea. [breathing heavily] Haul me in, I'm {done}. | thrown off the wing |
 | WRN_M4B_WING_FALL_01 | I am not writing that one {down}. | thrown off the wing |
 | DUT_M4B_ROSTER_01 | Three names on the roster, rubbed out. Write 'em back in, {somebody}. | the crew's tags, step 2 |
 | PEG_M4B_ROSTER_01 | Riedl, Haas, Pohl. The roster had them in pencil. Someone took an eraser to three {men}. | the crew's tags, step 2 |
 | DEA_M4B_ROSTER_01 | There. Their names are back where they belong. The tape deck's got a reel with the same three {names}. | the crew's tags, step 2 |
 | WRN_M4B_ROSTER_01 | Riedl. Haas. Pohl. I'm writing them back in. In ink this {time}. | the crew's tags, step 2 |
-| WRN_M4B_LASTCALL_REPLY_01 | Collected. Like my brother. They knew, at the end. They {knew}. | after the reel |
+| WRN_M4B_LASTCALL_REPLY_01 | Collected. Like my brother. They knew, at the end. [quietly] They {knew}. | after the reel |
 | RUH_PEOPLE_TALK_01 | I was not supposed to be on this aeroplane. I was supposed to be counting the wages. I am still counting the {wages}. | ExtraPeople (Ruhland at the Bordkasse; Riedl on the intercom until act round 4) |
 | RUH_PEOPLE_TALK_02 | The cash box is the Werk's. The ledger is the Werk's. I am, apparently, also the {Werk's}. | ExtraPeople (Ruhland at the Bordkasse; Riedl on the intercom until act round 4) |
 | RUH_PEOPLE_ASK_01 | The Bordkasse's ledger went forward with the paymaster's satchel. The flight deck. Bring it to me and I can make the sums come out {honest}. | ExtraPeople (Ruhland at the Bordkasse; Riedl on the intercom until act round 4) |
@@ -2815,7 +2815,7 @@ Tier 2 unless the speaker's channel says otherwise (`PA` the Bordfunk, German wi
 | RDL_PEOPLE_PING_01 | Something in the port wing. Several. Moving forward. I can hear them on the spar. | ExtraPeople: Riedl's favour (his engine log from the galley; he listens to the wing) |
 | DUT_M4B_FORMATION_DOWN_01 | One of the formation's going down. Burning all the way. Nobody's getting out of {that}. | a formation bomber goes down |
 | PEG_M4B_FORMATION_DOWN_01 | Flak got the one on our wing. That could have been {us}. | a formation bomber goes down |
-| DEA_M4B_FORMATION_DOWN_01 | Lord keep them. Whoever's in it. If anybody {is}. | a formation bomber goes down |
+| DEA_M4B_FORMATION_DOWN_01 | Lord keep them. Whoever's in it. [a breath] If anybody {is}. | a formation bomber goes down |
 | WRN_M4B_FORMATION_DOWN_01 | Empty, I bet. Like this one. Flying for {nobody}. | a formation bomber goes down |
 
 ## 25. THE MARK (UPDATE 09 §1, DECISIONS T-137; canon CANON §2.2, LORE §2.5)
@@ -2832,15 +2832,15 @@ they play everywhere.
 
 | ID | Speaker | Line |
 |---|---|---|
-| `DEA_MARKE_FIRST_01` | DEA | "[quiet] Hold on. Look at the hand. ...Right hand. There's a light in it, under the skin. [a breath] 'The mark in the right hand, or in the forehead.' My daddy read that one slow, every time. Lord. I did not come all this way to find it true." |
-| `DEA_MARKE_KILL_01` | DEA | "Right in the mark. Went out like a lamp." |
+| `DEA_MARKE_FIRST_01` | DEA | "[quiet] Hold on. Look at the hand. ...Right hand. There's a light in it, under the skin. [a breath] 'And he causeth all... to receive a mark in their right hand, or in their foreheads.' My daddy read that one slow, every time. [quietly] Lord. I did not come all this way to find it true." |
+| `DEA_MARKE_KILL_01` | DEA | "Right in the mark. Went out like a lamp. [quietly] Like a lamp." |
 | `DEA_MARKE_KILL_02` | DEA | "Forehead, this one. Same little light. Same book." |
-| `DEA_MARKE_KILL_03` | DEA | "I keep hitting that spot, and I keep not liking how easy they go." |
+| `DEA_MARKE_KILL_03` | DEA | "I keep hitting that spot, and I keep not liking how easy they go. [a breath] Somebody made 'em easy." |
 | `PEG_MARKE_FIRST_01` | PEG | "Right hand, between the thumb and the finger. A chip of the stuff, under the skin. [a pause] My orders had a line about tokens. 'Retrieve the tokens.' I took it to mean their papers. ...Carry on." |
 | `PEG_MARKE_KILL_01` | PEG | "That's the token. One for the tin, then." |
 | `PEG_MARKE_KILL_02` | PEG | "Another in the hand. London wanted these and never said what for. I begin to see why they didn't." |
 | `PEG_MARKE_KILL_03` | PEG | "Shoot the hand. Don't ask me how I know. I read it somewhere I wasn't meant to." |
-| `WRN_MARKE_FIRST_01` | WRN | "I have seen it before tonight. On the dead by the road. A glass splinter in the right hand, and it was still warm. Same hand, every time. I thought it was a wound. It is not a wound." |
+| `WRN_MARKE_FIRST_01` | WRN | "I have seen it before tonight. On the dead by the road. A glass splinter in the right hand, and it was still warm. Same hand, every time. I thought it was a wound. [a breath] It is not a wound. The Russian dead do not have it. Only theirs. [quietly] Somebody gave it to them." |
 | `WRN_MARKE_KILL_01` | WRN | "Same hand. Every time." |
 | `WRN_MARKE_KILL_02` | WRN | "The splinter. Hit it and they fall like men again." |
 | `WRN_MARKE_KILL_03` | WRN | "Above the eye, that one. They put it there. So did I." |
@@ -2973,10 +2973,10 @@ The squad on the first soldier who gets up (`SQD_RISE`, a story beat, once a mat
 
 | ID | Speaker | Line |
 |---|---|---|
-| `DEA_SQD_RISE_01` | DEA | "They came to help us, and now they're getting up. Lord, have mercy." |
+| `DEA_SQD_RISE_01` | DEA | "They came to help us, and now they're getting up. [a breath] Don't anybody call it a judgment. It ain't. It's a debt. ...Lord, have mercy." |
 | `DEA_SQD_RISE_02` | DEA | "Don't look at the faces. Just... don't look at the faces." |
-| `WRN_SQD_RISE_01` | WRN | "Those were the men who came for us. Now they come for us again." |
-| `WRN_SQD_RISE_02` | WRN | "Shoot them. They would want it. I would want it." |
+| `WRN_SQD_RISE_01` | WRN | "Those were the men who came for us. [quietly] Now they come for us again. They do not know the difference." |
+| `WRN_SQD_RISE_02` | WRN | "Shoot them. They would want it. [a breath] I would want it. Promise me you would." |
 | `DUT_SQD_RISE_01` | DUT | "Aw, hell. Sorry, pal. Nothing personal." |
 | `DUT_SQD_RISE_02` | DUT | "They got back up. Course they got back up." |
 | `PEG_SQD_RISE_01` | PEG | "They're turning. Put them down before they stand." |

@@ -11396,22 +11396,22 @@
   "DEA_PERK_LEDGER_01": {
     "speaker": "DEA",
     "category": "PERK_LEDGER",
-    "text": "Ka-ching. Lord forgive me, that's a beautiful sound."
+    "text": "Ka-ching. [a breath] Lord forgive me, that's a beautiful sound in an ugly place."
   },
   "DEA_PERK_LEDGER_02": {
     "speaker": "DEA",
     "category": "PERK_LEDGER",
-    "text": "Machine says I'm solvent. Machine's the first one ever did."
+    "text": "Machine says I'm solvent. [quietly] Machine's the first one ever did. Don't trust it."
   },
   "WRN_PERK_LEDGER_01": {
     "speaker": "WRN",
     "category": "PERK_LEDGER",
-    "text": "Cold, cheap, and it counts. Like the man who made it, probably."
+    "text": "Cold, cheap, and it counts. [a breath] Like the man who made it. Like me."
   },
   "WRN_PERK_LEDGER_02": {
     "speaker": "WRN",
     "category": "PERK_LEDGER",
-    "text": "A bell every time I earn. I will shoot the bell."
+    "text": "A bell every time I earn. [quietly] I will shoot the bell."
   },
   "JAK_PERK_LEDGER_01": {
     "speaker": "JAK",
@@ -11611,12 +11611,12 @@
   "DEA_BONUS_LEDGER_01": {
     "speaker": "DEA",
     "category": "BONUS_LEDGER",
-    "text": "A little extra in the tin every time. The Lord provides, and so does the lager."
+    "text": "A little extra in the tin every time. [quietly] The Lord provides. So does the lager. One of 'em wants it back."
   },
   "WRN_BONUS_LEDGER_01": {
     "speaker": "WRN",
     "category": "BONUS_LEDGER",
-    "text": "It's counting for me. Fine. I count too."
+    "text": "It is counting for me. Fine. [a breath] I count too. I count better."
   },
   "OPR_BOSS_PAUL_01": {
     "speaker": "OPR",
@@ -12280,17 +12280,17 @@
   "WRN_M4D_EARTH_DIM_01": {
     "speaker": "WRN",
     "category": "M4D_EARTH",
-    "text": "Look at the Earth. The violet. It's pulling back."
+    "text": "Look at the Earth. The violet. [a breath] It is pulling back."
   },
   "WRN_M4D_EARTH_DIM_02": {
     "speaker": "WRN",
     "category": "M4D_EARTH",
-    "text": "London is dark again. Good. Dark is good."
+    "text": "London is dark again. [quietly] Good. Dark is good. Dark means they are lying down."
   },
   "WRN_M4D_EARTH_SPREAD_01": {
     "speaker": "WRN",
     "category": "M4D_EARTH",
-    "text": "It's spreading over the Earth. Every round, a little more."
+    "text": "It is spreading over the Earth. Every round, a little more. [a breath] Every round, more of them get up."
   },
   "JAK_M4D_CONSOLE_01": {
     "speaker": "JAK",
@@ -12620,7 +12620,7 @@
   "DEA_M4A_RAID_01": {
     "speaker": "DEA",
     "category": "M4A_RAID",
-    "text": "Lord, that was close. Nobody under it. Good."
+    "text": "Lord, that was close. Nobody under it. [a breath] Good."
   },
   "WRN_M4A_RAID_01": {
     "speaker": "WRN",
@@ -12685,7 +12685,7 @@
   "DEA_BALLAST_LOAD_01": {
     "speaker": "DEA",
     "category": "BALLAST_LOAD",
-    "text": "Lord, keep him. Wherever they're taking him."
+    "text": "Lord, keep him. Wherever they're sending him. [quietly] Wherever they're sending what's in him."
   },
   "WRN_BALLAST_LOAD_01": {
     "speaker": "WRN",
@@ -12705,12 +12705,12 @@
   "DEA_BALLAST_DUMP_01": {
     "speaker": "DEA",
     "category": "BALLAST_DUMP",
-    "text": "Lord, forgive me, that's the only burial they get."
+    "text": "Lord, forgive me. That's the only burial they get. [quietly] Let the sea keep them. Let it keep them down."
   },
   "WRN_BALLAST_DUMP_01": {
     "speaker": "WRN",
     "category": "BALLAST_DUMP",
-    "text": "Rest easy. Nobody's selling you now."
+    "text": "Rest easy. Nobody is selling you now. [a breath] Nobody."
   },
   "PEG_BALLAST_DUMP_THIRD_01": {
     "speaker": "PEG",
@@ -12730,7 +12730,7 @@
   "DEA_WONDER_UNDERTOW_01": {
     "speaker": "DEA",
     "category": "WONDER_UNDERTOW",
-    "text": "Lord, it's humming. They all hum."
+    "text": "Lord, it's humming. They all hum. [quietly] Everything they build hums the same note."
   },
   "WRN_WONDER_UNDERTOW_01": {
     "speaker": "WRN",
@@ -12805,12 +12805,12 @@
   "DEA_BOSS_KIELHOLER_01": {
     "speaker": "DEA",
     "category": "BOSS_KIELHOLER",
-    "text": "Lord, he's still guarding that boat. Let's give the man his rest."
+    "text": "Lord, he's still guarding that boat. [a breath] Let's give the man his rest. He's earned it twice."
   },
   "DEA_BOSS_KIELHOLER_02": {
     "speaker": "DEA",
     "category": "BOSS_KIELHOLER",
-    "text": "Go on home, Captain. Your watch is over."
+    "text": "Go on home, Captain. Your watch is over. [quietly] It's over."
   },
   "WRN_BOSS_KIELHOLER_01": {
     "speaker": "WRN",
@@ -12820,7 +12820,7 @@
   "WRN_BOSS_KIELHOLER_02": {
     "speaker": "WRN",
     "category": "BOSS_KIELHOLER",
-    "text": "He let go at the end. Didn't fight it."
+    "text": "He let go at the end. Did not fight it. [a breath] I will write that he did not fight it."
   },
   "RAD_M2_CODE_01": {
     "speaker": "RAD",
@@ -12900,12 +12900,12 @@
   "DEA_LF_DIESELS_01": {
     "speaker": "DEA",
     "category": "LF_DIESELS",
-    "text": "There she is. Listen to that. Somebody built that to be quiet. Now she's loud."
+    "text": "There she is. Listen to that. Somebody built her to be quiet. [a breath] Now she's loud. Lord, let her stay loud long enough."
   },
   "DEA_LF_LOG_01": {
     "speaker": "DEA",
     "category": "LF_LOG",
-    "text": "Somebody built that boat to be quiet. I'd like to hear it loud, once. Brecht wrote down how."
+    "text": "Somebody built that boat to be quiet. I'd like to hear it loud, once. [quietly] Brecht wrote down how."
   },
   "OPR_LF_KEY_01": {
     "speaker": "OPR",
