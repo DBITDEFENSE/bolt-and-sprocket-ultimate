@@ -51,7 +51,7 @@ func _build() -> void:
 	cyl(dial, Vector3.ZERO, 0.11, 0.05, "bakelite")
 	box(dial, Vector3(0, 0.03, 0.07), Vector3(0.02, 0.012, 0.07), "brass")
 	marker("Dial", Vector3(0.4 - 0.45, 1.2, -1.4 + 0.02))
-	var r: CinemaPerson = person(self, "reinholt", look_of("reinholt"), Vector3(0.0, 0, -0.75), 180.0, "hold")
+	var r: CinemaPerson = person(self, "reinholt", look_of("reinholt"), Vector3(0.0, 0, -0.72), 0.0, "hold")
 	r.name = "Reinholt"
 	r.hold_lift = 0.85
 	ball(r, Vector3(0.12, 1.66, 0.02), Vector3(0.01, 0.01, 0.14), "#c2a060")   # the pencil behind her ear

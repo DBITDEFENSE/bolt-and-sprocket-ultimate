@@ -32,7 +32,7 @@ var _flare_clock: float = 0.0
 
 func _build() -> void:
 	env({"sky_top": [0.006, 0.008, 0.02], "sky_horizon": [0.04, 0.04, 0.07], "ground": [0.02, 0.02, 0.03], "sky_e": 1.0,
-		"ambient": [0.2, 0.22, 0.32], "ambient_e": 0.12, "fog": [0.03, 0.03, 0.05], "fog_d": 0.0004, "glow_t": 0.8, "glow_i": 1.0, "bloom": 0.1})
+		"ambient": [0.2, 0.22, 0.32], "ambient_e": 0.12, "fog": [0.03, 0.03, 0.05], "fog_d": 0.00015, "glow_t": 0.8, "glow_i": 1.0, "bloom": 0.1})
 	sun(Vector3(-35, 40, 0), [0.45, 0.5, 0.7], 0.12)
 	_hull()
 	_cockpit()
@@ -156,7 +156,7 @@ func _passengers() -> void:
 	var roster: Array = get_meta("roster", CinemaLibrary.SQUAD) as Array
 	for i: int in mini(4, roster.size()):
 		var who: String = str(roster[i])
-		var z: float = 1.65 - 1.05 * float(i)
+		var z: float = [1.65, -0.45, -1.5, -2.55][i]   # (the seat under the window bay at z 0.35 is left empty for the view)
 		var p: CinemaPerson = person(self, "passenger_%d" % i, {"person": who}, Vector3(-0.98, 0.0, z), -90.0, "sit")
 		p.name = "Passenger_%d" % i
 		box(self, Vector3(-0.45, 0.15, z), Vector3(0.35, 0.3, 0.25), "olive_drab", Vector3(0, rng.randf_range(-20, 20), 0))   # kit between the boots
@@ -189,8 +189,8 @@ func _outside() -> void:
 	walkers_mm = multi(ground, Props.unit_box(), figs, flat(Color(0.05, 0.05, 0.06)), "Columns")
 	# the violet column ahead, bearing oh-four-oh
 	var vm: StandardMaterial3D = glow(Color(0.62, 0.35, 1.0), 3.0)
-	cyl(self, Vector3(2600, 600, -9000), 90.0, 3600.0, vm, Vector3.ZERO, "VioletColumn")
-	glow_dot(self, Vector3(2600, -400, -8900), 1400.0, Color(0.5, 0.25, 0.9), 0.6)
+	cyl(self, Vector3(1000, 600, -3600), 70.0, 3600.0, vm, Vector3.ZERO, "VioletColumn")
+	glow_dot(self, Vector3(1000, -400, -3500), 1100.0, Color(0.5, 0.25, 0.9), 0.6)
 	for k2: int in 4:
 		_new_flare(k2)
 

@@ -109,7 +109,7 @@ func _piece(bone: String, mesh: Mesh, pos: Vector3, scl: Vector3, color: Color, 
 
 
 func _extra(x: String, cloth: Color) -> void:
-	var col: Color = _c3(look_row.get(x + "_color", [])) if look_row.has(x + "_color") else cloth
+	var col: Color = (_c3(look_row.get(x + "_color", [])) if look_row.has(x + "_color") else cloth).darkened(0.3)   # (the kit's own cloth reads darker than a flat colour)
 	var sph: SphereMesh = Props.unit_sphere()
 	var cy: CylinderMesh = Props.unit_cyl()
 	var bx: BoxMesh = Props.unit_box()

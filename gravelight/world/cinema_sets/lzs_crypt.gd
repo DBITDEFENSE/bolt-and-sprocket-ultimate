@@ -32,7 +32,10 @@ func _build() -> void:
 		box(self, Vector3(sx, -1.0, -2.2), Vector3(0.2, 4.4, 5.2), stone)
 	box(self, Vector3(0, 0.95, -1.2), Vector3(1.9, 0.2, 3.0), "beam")
 	box(self, Vector3(0, -2.5, -4.0), Vector3(1.9, 0.2, 1.2), stone)        # the landing
-	box(self, Vector3(0, 0.0, -3.9), Vector3(1.9, 0.2, 1.2), stone, Vector3(-38, 0, 0))   # the low ceiling over it
+	box(self, Vector3(0, 0.45, -3.85), Vector3(1.9, 0.2, 1.1), stone)   # the ceiling over the landing (high: the lintel stays clear)
+	var stair_l: OmniLight3D = omni(self, Vector3(0, -0.6, -2.2), [1.0, 0.7, 0.42], 0.7, 5.0)   # the lanterns' spill on the steps
+	stair_l.set_meta("flicker", 0.7)
+	stair_l.add_to_group(&"cinema_flicker")
 	# the wall with the low door (1.0 x 1.7)
 	var wz: float = -4.5
 	box(self, Vector3(-1.05, -1.0, wz), Vector3(1.1, 3.2, 0.4), stone)
@@ -41,7 +44,7 @@ func _build() -> void:
 	box(self, Vector3(0, -0.72, wz + 0.21), Vector3(1.3, 0.16, 0.04), "stone")   # the lintel's face
 	var bar: Node3D = group(self, "DoorBar", Vector3(0.62, -1.6, wz + 0.25))
 	box(bar, Vector3.ZERO, Vector3(0.08, 0.08, 0.08), "iron")
-	var ins: Label3D = words(self, INSCRIPTION, Vector3(0, -0.36, wz + 0.205), 0.0022, Color(0.14, 0.11, 0.09), 0.0, "Inscription")
+	var ins: Label3D = words(self, INSCRIPTION, Vector3(0, -0.36, wz + 0.23), 0.0022, Color(0.14, 0.11, 0.09), 0.0, "Inscription")
 	ins.font_size = 48
 	ins.line_spacing = -4.0
 	# the lamp on its chain over the door
@@ -146,7 +149,7 @@ func _people() -> void:
 func fx_descend(secs: float) -> void:
 	for k: int in bearers.size():
 		var b: CinemaPerson = bearers[k]
-		b.position = Vector3(-0.3 + 0.6 * float(k), -0.4 * float(k), -0.4 - 0.5 * float(k))
+		b.position = Vector3(-0.42 + 0.84 * float(k), -0.9 - 0.4 * float(k), -1.6 - 0.6 * float(k))   # ahead, either side of the lens
 		b.reset_motion()
 		tween_to(b, "position", Vector3(-0.3 + 0.6 * float(k), -2.4, -3.6 - 0.3 * float(k)), secs * 0.95, Tween.TRANS_LINEAR)
 	volkov.position = Vector3(0.1, -0.2, -0.2)
@@ -172,7 +175,7 @@ func fx_at_inscription(_secs: float) -> void:
 
 ## Shot 20-21: in the crypt: the brigade fill the door; Serafim in the doorway between two of them.
 func fx_enter(_secs: float) -> void:
-	volkov.position = Vector3(0.3, -2.4, -6.6)
+	volkov.position = Vector3(1.25, -2.4, -6.9)
 	volkov.rotation.y = 0.0
 	volkov.set_pose(&"stand")
 	volkov.reset_motion()

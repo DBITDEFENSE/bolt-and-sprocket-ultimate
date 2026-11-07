@@ -14,7 +14,7 @@ var props: Array[Node3D] = []
 func _build() -> void:
 	env({"sky_top": [0.01, 0.012, 0.03], "sky_horizon": [0.05, 0.05, 0.09], "ground": [0.03, 0.03, 0.04], "ambient": [0.28, 0.3, 0.42], "ambient_e": 0.3,
 		"fog": [0.05, 0.05, 0.08], "fog_d": 0.0022, "glow_t": 0.8, "glow_i": 1.0, "bloom": 0.1})
-	sun(Vector3(-28, 140, 0), [0.55, 0.6, 0.78], 0.22)
+	sun(Vector3(-28, 140, 0), [0.55, 0.6, 0.78], 0.5)
 	var snow: StandardMaterial3D = noisy(Color(0.55, 0.57, 0.66), Color(0.76, 0.78, 0.86), 0.03, 8.0, 0.85)
 	plane(self, Vector3(0, 0, 0), Vector2(3000, 3000), snow)
 	var woods: Array = []
@@ -64,7 +64,7 @@ func _roof(parent: Node3D, base: Vector3, w: float, d: float, rise: float) -> vo
 func _plane() -> void:
 	plane_n = group(self, "Plane", Vector3(-300, 120, 500))
 	var body: Node3D = group(plane_n, "Airframe")
-	var olive: StandardMaterial3D = flat(Color(0.12, 0.13, 0.11), 0.6)
+	var olive: StandardMaterial3D = flat(Color(0.2, 0.21, 0.18), 0.55)
 	cyl(body, Vector3(0, 0, 0), 1.25, 13.0, olive, Vector3(90, 0, 0))                  # the fuselage, nose to -z
 	ball(body, Vector3(0, 0.1, -6.6), Vector3(2.4, 2.4, 3.2), olive)                   # the nose
 	cone(body, Vector3(0, 0.35, 8.4), 1.2, 0.35, 4.0, olive, 12, Vector3(-86, 0, 0))   # the tail cone

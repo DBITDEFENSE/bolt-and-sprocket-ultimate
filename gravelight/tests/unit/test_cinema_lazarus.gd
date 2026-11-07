@@ -106,7 +106,7 @@ func test_no_line_talks_over_another_at_reading_speed() -> void:
 func test_the_cards_read_exactly() -> void:
 	var want: Dictionary = {
 		"lazarus_saturday": [["CHETVERODNEVO", "a village a long day's cart from the district town", "Lazarus Saturday  ·  12 April 1930"], ["The fourth day.", "", ""], ["Chetverodnevo is not on any map.", "", ""]],
-		"fourth_day": [["EAST PRUSSIA", "the East Prussian line", "October 1944  ·  rain"], ["Four days later.", "", ""]],
+		"fourth_day": [["EAST PRUSSIA", "the East Prussian line · the German line", "October 1944  ·  rain"], ["Four days later.", "", ""]],
 		"staub": [["KALTENBRUNN", "Staubmühle II · Projekt Wiederkehr", "20 December 1944  ·  21:50"]],
 		"gravelight_one": [["GRAVELIGHT ONE", "a C-47 out of Brindisi · over the Silesian front", "23 December 1944  ·  23:10"]],
 		"epilogue_1953": [["MOSCOW", "Laboratory No. 4 · the vault", "1953"], ["The vessel is still there.", "", ""], ["It is still wet.", "", ""]],

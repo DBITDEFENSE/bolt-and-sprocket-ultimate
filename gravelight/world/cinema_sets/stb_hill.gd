@@ -95,6 +95,9 @@ func _station(at: Vector3) -> void:
 	cone(vane, Vector3(0.6, 0, 0), 0.06, 0.0, 0.18, "steel", 4, Vector3(0, 0, -90))
 	box(vane, Vector3(-0.5, 0.05, 0), Vector3(0.3, 0.22, 0.01), "steel")
 	marker("Vane", at + Vector3(2.6, 6.4, 2.0))
+	omni(h, Vector3(1.6, 5.8, 1.0), [1.0, 0.8, 0.55], 1.6, 5.0)   # the hut's lamp on its bracket, lighting the mast
+	box(h, Vector3(1.6, 5.85, 1.0), Vector3(0.12, 0.16, 0.12), glow(Color(1.0, 0.82, 0.55), 2.0))
+	box(h, Vector3(2.1, 5.9, 1.5), Vector3(1.0, 0.04, 0.04), "steel", Vector3(0, 45, 0))
 
 
 func _valley() -> void:
@@ -109,7 +112,7 @@ func _valley() -> void:
 		spots.append(Vector3(rng.randf_range(120, 520), 1.5, rng.randf_range(-320, 320)))
 	spots.append(Vector3(-420, 3.0, -430))   # the lamp at the Kreuzweg, far north-west
 	for p: Variant in spots:
-		var d: MeshInstance3D = glow_dot(v, p as Vector3, 3.2, warm, 1.7)
+		var d: MeshInstance3D = glow_dot(v, p as Vector3, 9.0, warm, 2.2)
 		lights.append([d, (p as Vector3).x])
 	lights.sort_custom(func(a: Array, b: Array) -> bool: return float(a[1]) > float(b[1]))   # east first
 

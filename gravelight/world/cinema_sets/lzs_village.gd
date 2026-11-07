@@ -401,7 +401,7 @@ func fx_bell_rope(_secs: float) -> void:
 		brigade[b].rotation.y = deg_to_rad(-160.0 if b == 0 else 160.0)
 		brigade[b].reset_motion()
 	for b2: int in range(2, brigade.size()):
-		brigade[b2].position = Vector3(6.5 + 0.8 * float(b2 % 3), 0, 3.5 + 0.8 * float(b2))
+		brigade[b2].position = Vector3(1.0 + 1.1 * float(b2 % 3), 0, 11.0 + 0.9 * float(b2))   # (clear of where the bell comes down)
 		brigade[b2].rotation.y = deg_to_rad(180.0)
 		brigade[b2].set_pose(&"hold")
 		brigade[b2].reset_motion()

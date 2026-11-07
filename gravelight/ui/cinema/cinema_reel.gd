@@ -206,6 +206,7 @@ func _process(delta: float) -> void:
 	if done or director == null or director.done:
 		return
 	var dt: float = delta * speed
+	_pre_dip(dt)
 	var i: int = CinemaShot.index_at(director.shots, director.t + dt)
 	if i != _seen_shot and i >= 0:
 		_seen_shot = i
@@ -219,6 +220,24 @@ func _process(delta: float) -> void:
 		return
 	_timed_fx()
 	_tick_beds()
+
+
+## A cut to another stage by a dip or a blend: the picture goes to black over the first half of the dip *before*
+## the shot starts, so the swap happens on black (the director's dip then holds and fades back in).
+func _pre_dip(dt: float) -> void:
+	var nx: int = director.shot_i + 1
+	if nx <= 0 or nx >= director.shots.size() or _fired.has("pre%d" % nx):
+		return
+	var ns: CinemaShot = director.shots[nx]
+	var cur: CinemaShot = director.shots[director.shot_i]
+	if bool(ns.raw.get("black", false)) or bool(cur.raw.get("black", false)) or ns.cut == "cut":
+		return
+	if str(ns.raw.get("_set", stage_id)) == str(cur.raw.get("_set", stage_id)):
+		return
+	var half: float = maxf(0.2, ns.blend) * 0.5
+	if director.t + dt >= ns.t - half:
+		_fired["pre%d" % nx] = true
+		director.overlay.fade(1.0, half)
 
 
 func _on_shot(_i: int, s: CinemaShot) -> void:

@@ -88,8 +88,13 @@ static func resolved(id: String, roster: Array = [], has_sound: Callable = Calla
 		return d
 	var seats: Array[String] = seat_roster(roster)
 	var hs: Callable = has_sound if has_sound.is_valid() else func(k: String) -> bool: return AudioDirector.has_sound(k)
+	var prev_set: String = ""
 	for s: Variant in d.get("shots", []):
 		var sh: Dictionary = s
+		var sid: String = str(sh.get("_set", prev_set))
+		if prev_set != "" and sid != prev_set and str(sh.get("cut", "cut")) == "blend":
+			sh["cut"] = "dip"   # a camera blend across two stages means nothing: it dips through black instead
+		prev_set = sid
 		var lines: Array = sh.get("lines", []).duplicate()
 		for sl: Variant in sh.get("squad_lines", []):
 			var e: Array = sl

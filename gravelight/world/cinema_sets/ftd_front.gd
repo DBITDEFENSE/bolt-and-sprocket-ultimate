@@ -13,7 +13,7 @@ var _t: float = 0.0
 
 func _build() -> void:
 	env({"sky_top": [0.3, 0.32, 0.34], "sky_horizon": [0.42, 0.43, 0.44], "ground": [0.12, 0.11, 0.1], "ambient": [0.45, 0.47, 0.5], "ambient_e": 0.6,
-		"fog": [0.4, 0.41, 0.42], "fog_d": 0.0075, "glow_t": 1.5})
+		"fog": [0.4, 0.41, 0.42], "fog_d": 0.0028, "glow_t": 1.5})
 	sun(Vector3(-60, -30, 0), [0.75, 0.78, 0.82], 0.35)
 	var mud: StandardMaterial3D = noisy(Color(0.17, 0.14, 0.1), Color(0.3, 0.25, 0.18), 0.1, 5.0, 0.7, 0.4)
 	plane(self, Vector3(0, 0, 226.0), Vector2(900, 450), mud)     # (the trench at z -1..1 is left open)
@@ -142,7 +142,7 @@ func fx_shells_soft(_secs: float) -> void:
 		later(float(times[s]) - 0.1, func() -> void:
 			for k: int in 4:
 				var p: Vector3 = Vector3(-22.0 + 14.0 * float(k) + rng.randf_range(-4, 4), 0.2, rng.randf_range(-6.0, 6.0))
-				var d: GPUParticles3D = dust(self, p, Color(0.34, 0.27, 0.17, 0.85), 5.0, 0.45, 7.0, 22, 2.5)
+				var d: GPUParticles3D = dust(self, p, Color(0.3, 0.23, 0.14, 0.95), 9.0, 0.45, 7.0, 26, 3.5)
 				var pm: ParticleProcessMaterial = d.process_material as ParticleProcessMaterial
 				pm.direction = Vector3(1, 0.15, 0)
 				pm.spread = 180.0
