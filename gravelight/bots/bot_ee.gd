@@ -93,6 +93,7 @@ func start(qid: StringName, sid: StringName, t: Dictionary, ordered: bool, sourc
 	_replan = true
 	_failed_nodes.clear()
 	_fail_count.clear()
+	_vantage.clear()   # T-181: a target's vantage (or its INF "none found") is this task's: it kept every later try "unreachable"
 	_log("start %s/%s (%s, %s%s)" % [qid, sid, task["type"], source, ", ordered" if ordered else ""])
 	_announce_start()
 
@@ -292,6 +293,7 @@ func _pause_state() -> Dictionary:
 			_shop_last_errand = _now()
 	return {"type": str(task["type"]) if str(_plan.get("do", "")) != "hold" else "hold_zone", "pressure": brain.perception.pressure,
 		"teammate_down": down, "round_left": left, "player_away": away, "shop": shop, "pause_pressure": float(t.get("pause_pressure", -1.0)),
+		"hunt": hunt_pause and str(task["type"]) == "kill_with_weapon",
 		"apart": _apart(left)}
 
 
@@ -1339,7 +1341,7 @@ func _do_shoot(n: Node3D, delta: float) -> void:
 	# budget (shoot_walk_budget: the Four Bells hang 60-100 m apart, surface to depths, and the 35 s stall clock ran
 	# out on the walk itself: "no shot at Bell_coldstore_pipe" was a bot still on the stairs); the stall clock counts
 	# only at the vantage, where the aim should fire within shoot_stall_s.
-	var at_v: bool = player.global_position.distance_to(vp) <= 1.2
+	var at_v: bool = player.global_position.distance_to(vp) <= 1.6
 	# T-181: a clear shot from where the bot stands, close to the vantage or the target, is as good as the vantage
 	# (the soaks' "never reached the spot ... (2 m left)": a vantage snapped on a boxcar's or a gatehouse's edge
 	# that the bot could get within 2 m of, never 1.2 m, while its eye already had the bell in a clean line)
