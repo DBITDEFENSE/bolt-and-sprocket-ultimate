@@ -13,6 +13,11 @@ extends Node
 ##                               "return" (the bars and the grade go, the player's camera comes back)
 ##   music {stop, stinger, stinger_at, bed, bed_db, out_at}   the score: what stops, the opening stinger, an
 ##                               ambience bed for the scene that swells in and out
+## T-194 (UPDATE 11, the LAZARUS cutscenes) adds three shot events:
+##   lines [[t, id], ...]        more lines than vo / vo2 (each once, at its shot-local time)
+##   card {title, subtitle, time, at, hold}   a title card mid-timeline (once per shot; a title-only card is fine)
+##   black true                  the shot is black (a card on black, a sound over black): the picture fades out over
+##                               `black_in` (0.4 s); the next shot that is not black fades back in over its `blend`
 ## Script-driven cutscenes (the endings) call `play_shot(dict, seconds)` instead of a timeline.
 ## Signals: shot_started(i, shot), skip_requested, finished. `step(dt)` is the whole update (tests drive it; the
 ## node drives itself with `auto` on), scaled by `speed` (Campaign.cutscene_speed). `missing` lists any `target` /
@@ -50,6 +55,7 @@ var _cache: Dictionary = {}
 var _title_shown: bool = false
 var _fading: bool = false
 var _manual_end: float = -1.0
+var _in_black: bool = false   # T-194: the last shot was a black one
 
 
 ## Builds a director under `parent` for `d` over `map_node` (where the shots' node names are found).
@@ -90,9 +96,11 @@ func _ready() -> void:
 	if use_cast and map != null:
 		cast = CinemaCast.gather(map)
 	var fade_in: float = float(def.get("fade_in_s", 0.9))   # 0: no fade from black (an in-game ending)
-	overlay.set_black(1.0 if fade_in > 0.0 else 0.0)
-	if fade_in > 0.0:
+	var opens_black: bool = not shots.is_empty() and bool(shots[0].raw.get("black", false))
+	overlay.set_black(1.0 if fade_in > 0.0 or opens_black else 0.0)
+	if fade_in > 0.0 and not opens_black:   # (a cutscene that opens on black stays black until its first picture)
 		overlay.fade(0.0, fade_in)
+	_in_black = opens_black
 	overlay.bars(true, 0.8)
 	overlay.grade(def.get("grade", "neutral"), 0.0)
 	_music_open()   # (the first shot starts on the first step, after the owner has connected shot_started)
@@ -154,8 +162,15 @@ func _begin_shot(s: CinemaShot) -> void:
 	if not cam.current:
 		cam.make_current()
 	cam.play(s)
-	if s.cut == "dip":
+	var is_black: bool = bool(s.raw.get("black", false))
+	if is_black:
+		if not _in_black:
+			overlay.fade(1.0, float(s.raw.get("black_in", 0.4)))
+	elif _in_black:
+		overlay.fade(0.0, maxf(0.3, s.blend if s.cut != "cut" else 0.6))   # out of black into the picture
+	elif s.cut == "dip":
 		overlay.dip(maxf(0.2, s.blend))
+	_in_black = is_black
 	if s.grade != null:
 		overlay.grade(s.grade, float(s.raw.get("grade_s", 1.2 if s.cut != "cut" else 0.0)))
 	var lt: Variant = s.raw.get("light", null)
@@ -213,6 +228,15 @@ func _shot_events(s: CinemaShot, lt: float) -> void:
 	var cap: Variant = s.raw.get("caption", null)
 	if cap is Dictionary and lt >= float((cap as Dictionary).get("at", 0.3)) and _once(key + "cap"):
 		overlay.caption(str(cap.get("text", "")), float(cap.get("hold", 4.0)))
+	var ln: Variant = s.raw.get("lines", [])
+	if ln is Array:
+		for li: int in (ln as Array).size():
+			var e2: Variant = ln[li]
+			if e2 is Array and (e2 as Array).size() >= 2 and str(e2[1]) != "" and lt >= float(e2[0]) and _once(key + "ln%d" % li):
+				_say(str(e2[1]))
+	var cd: Variant = s.raw.get("card", null)
+	if cd is Dictionary and lt >= float((cd as Dictionary).get("at", 0.5)) and _once(key + "card"):
+		overlay.title_card(str(cd.get("title", "")), str(cd.get("subtitle", "")), str(cd.get("time", "")), float(cd.get("hold", 5.0)))
 	for kv: Variant in s.shake:
 		if kv is Array and (kv as Array).size() >= 2 and lt >= float(kv[0]) and _once(key + "kick%.2f" % float(kv[0])):
 			cam.impulse(float(kv[1]))
@@ -383,6 +407,14 @@ static func validate(d: Dictionary, lines: Dictionary = {}) -> PackedStringArray
 		for key: String in ["vo", "vo2"]:
 			if str(s.get(key, "")) != "" and not lines.is_empty() and not lines.has(str(s[key])):
 				out.append("%s: VO line %s is not in lines.json" % [tag, str(s[key])])
+		for le: Variant in s.get("lines", []):
+			if not (le is Array) or (le as Array).size() < 2:
+				out.append("%s: a lines entry is not [t, id]" % tag)
+			elif not lines.is_empty() and not lines.has(str(le[1])):
+				out.append("%s: VO line %s is not in lines.json" % [tag, str(le[1])])
+		var cdv: Variant = s.get("card", null)
+		if cdv != null and (not (cdv is Dictionary) or str((cdv as Dictionary).get("title", "")) == ""):
+			out.append("%s: a card has no title" % tag)
 		for e: Variant in s.get("sfx", []):
 			if e is Array and (e as Array).size() >= 2 and not AudioDirector.has_sound(str(e[1])):
 				out.append("%s: no sound %s" % [tag, str(e[1])])

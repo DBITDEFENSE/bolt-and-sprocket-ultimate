@@ -31,6 +31,9 @@ var _last_focus: Dictionary = {}     # column -> link name
 
 func _ready() -> void:
 	GLSettings.activate()
+	if not Net.is_online() and not Net.reopen_lobby and CinemaTheatre.wants_prologue():
+		CinemaTheatre.play_ids(get_tree(), ["lazarus_saturday"], "menu")   # T-194: the prologue, first launch only
+		return
 	Game.set_mode(Game.Mode.GRAVELIGHT)
 	get_tree().paused = false
 	GameState.phase = GameState.Phase.MENU
@@ -83,6 +86,13 @@ func _ready() -> void:
 		reopen = true
 	if (Net.is_online() or reopen) and _screen == null:
 		open_screen.call_deferred(MenuLobby)
+	elif CinemaTheatre.open_gallery and _screen == null:   # T-194: back from a replay: the Archive's gallery again
+		CinemaTheatre.open_gallery = false
+		(func() -> void:
+			var a: MenuArchive = MenuArchive.new()
+			a.gallery = true
+			_screen = a
+			_show_screen(a)).call_deferred()
 
 
 ## The left side darkens toward the column (readable over the scene), with a soft vignette at the foot.

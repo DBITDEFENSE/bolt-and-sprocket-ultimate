@@ -33,6 +33,9 @@ const PRESETS: Dictionary = {
 	"desert": {"exposure": 1.04, "contrast": 1.06, "saturation": 0.9, "tint": [1.07, 1.0, 0.88], "lift": [0.012, 0.008, 0.0], "vignette": 0.26},
 	"space": {"exposure": 1.0, "contrast": 1.14, "saturation": 0.8, "tint": [0.96, 0.97, 1.05], "lift": [0.0, 0.0, 0.01], "vignette": 0.46},
 	"memory": {"exposure": 1.02, "contrast": 1.04, "saturation": 0.32, "tint": [1.06, 0.98, 0.86], "lift": [0.03, 0.02, 0.01], "vignette": 0.52},
+	# T-194 (docs/CUTSCENES_LAZARUS.md): 1930's thaw (grey light, the colour gone out of it) and the fever ward
+	"thaw": {"exposure": 0.98, "contrast": 1.04, "saturation": 0.55, "tint": [0.97, 1.0, 0.96], "lift": [0.02, 0.022, 0.018], "vignette": 0.38},
+	"ward": {"exposure": 1.06, "contrast": 1.0, "saturation": 0.4, "tint": [1.02, 1.0, 0.95], "lift": [0.03, 0.03, 0.028], "vignette": 0.46},
 }
 
 const GRADE_SHADER: String = """
@@ -91,6 +94,7 @@ var _hidden_world: Array[Node] = []
 var _grade_tween: Tween = null
 var _subs_cinema: bool = false
 var _armed: bool = false   # a fresh press: a key still held from the beacon's vote does not count
+var _black_tween: Tween = null   # T-194: one tween owns the black at a time (a fade cut short by a dip or a black shot)
 
 
 func _ready() -> void:
@@ -303,12 +307,21 @@ func bars_shown() -> float:
 
 
 func fade(alpha: float, seconds: float) -> void:
+	_kill_black()
 	var tw: Tween = create_tween()
+	_black_tween = tw
 	tw.tween_property(_black, "modulate:a", clampf(alpha, 0.0, 1.0), maxf(0.01, seconds * _k())).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 
 func set_black(alpha: float) -> void:
+	_kill_black()
 	_black.modulate.a = clampf(alpha, 0.0, 1.0)
+
+
+func _kill_black() -> void:
+	if _black_tween != null and _black_tween.is_valid():
+		_black_tween.kill()
+	_black_tween = null
 
 
 func black() -> float:
@@ -318,7 +331,9 @@ func black() -> float:
 ## A dip through black between two shots: down in half, up in half.
 func dip(seconds: float) -> void:
 	var half: float = maxf(0.01, seconds * 0.5 * _k())
+	_kill_black()
 	var tw: Tween = create_tween()
+	_black_tween = tw
 	tw.tween_property(_black, "modulate:a", 1.0, half).set_trans(Tween.TRANS_SINE)
 	tw.tween_property(_black, "modulate:a", 0.0, half).set_trans(Tween.TRANS_SINE)
 
