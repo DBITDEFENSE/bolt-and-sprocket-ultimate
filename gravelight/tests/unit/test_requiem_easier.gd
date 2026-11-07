@@ -66,3 +66,13 @@ func test_aim_tolerance_from_size() -> void:
 	assert_gt(close, far, "a close target allows a wider angle")
 	assert_lte(close, float(ee["aim_tol_max_deg"]))
 	assert_gte(far, 1.0, "never under the old 1 degree")
+
+
+func test_use_from_arms_reach() -> void:
+	assert_true(BotTasks.use_reach_ok(1.5, 3.0, 0.2, true), "wedged 1.5 m short of the stand point: use it from here")
+	assert_true(BotTasks.use_reach_ok(1.0, 2.0, 0.2, false), "within reach of the thing itself")
+	assert_false(BotTasks.use_reach_ok(1.5, 3.0, 0.2, false), "still walking, not yet in reach: keep going")
+	assert_false(BotTasks.use_reach_ok(4.0, 1.0, 0.2, true), "far from the stand point: never")
+	assert_false(BotTasks.use_reach_ok(1.0, 1.0, 3.5, true), "another floor: never")
+	for k: String in ["shoot_here_m", "shoot_here_near_vantage_m"]:
+		assert_true(ee.has(k), "ee.json %s" % k)

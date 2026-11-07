@@ -300,9 +300,15 @@ func _obj_use(delta: float, e: Dictionary, node: Node3D) -> void:
 	if it == null or not it.can_interact(player):
 		e["state"] = "failed"
 		return
-	if not walk_to(e.get("stand", node.global_position), 0.6, e, delta):
-		e["hold"] = 0.0
-		return
+	var st: Vector3 = e.get("stand", node.global_position)
+	if not walk_to(st, 0.6, e, delta):
+		# T-181: within arm's reach of the thing and wedged short of the stand point (a stand point snapped against a
+		# prop the navmesh doesn't know, the Crucible room's): use it from here, as a player would
+		var reach: Vector3 = it.area.global_position if it.area != null else node.global_position
+		if not (use_reach_ok(_flat(st, player.global_position), _flat(reach, player.global_position), absf(st.y - player.global_position.y), brain.loco.is_stuck())):
+			e["hold"] = 0.0
+			return
+		brain.loco.stop()
 	_look(it.area.global_position if it.area != null else node.global_position)
 	e["hold"] = float(e.get("hold", 0.0)) + delta
 	brain.committed = true
@@ -317,6 +323,12 @@ func _obj_use(delta: float, e: Dictionary, node: Node3D) -> void:
 		e["until"] = brain.squad.time() + 120.0
 		return
 	e["state"] = "done"
+
+
+## T-181 (pure): a use errand may act from where the bot stands: within 1.8 m of its stand point (same floor) and
+## either wedged there or within 2.2 m of the thing itself.
+static func use_reach_ok(to_stand_m: float, to_thing_m: float, dy: float, stuck: bool) -> bool:
+	return to_stand_m <= 1.8 and dy < 1.8 and (stuck or to_thing_m <= 2.2)
 
 
 func _obj_inputs(delta: float, e: Dictionary, node: Node3D) -> void:

@@ -1152,12 +1152,23 @@ func _run_errand(e: Dictionary, delta: float) -> String:
 		_errand["state"] = "running"
 		_errand["qid"] = String(task["qid"])
 		_errand["sid"] = String(task["sid"])
+	# T-181: the errand's clock stands still while the task is paused (a fight, a shopping break): the shard's walk
+	# into the Core Vault was paused and resumed until its 45 s ran out ("couldn't use Crucible" 165 times, T-172)
+	var last: float = float(_errand.get("last_t", _now()))
+	if _now() - last > 0.5:
+		_errand["until"] = float(_errand["until"]) + (_now() - last)
+	_errand["last_t"] = _now()
 	var r: String = brain.tasks.run(_errand, delta)
+	if r == "failed":
+		_errand_failed = _errand.duplicate()
 	if r != "running":
 		_errand = {}
 	if r == "done" and active():
 		task["prog_t"] = _now()   # U10 (T-163): progress, for the "nothing to do" cancel
 	return r
+
+
+var _errand_failed: Dictionary = {}   # T-181: the last failed errand (the "couldn't use" log says why)
 
 
 func _do_use(n: Node3D, delta: float) -> void:
@@ -1198,6 +1209,8 @@ func _do_use(n: Node3D, delta: float) -> void:
 		var why: String = ""
 		if n is Crucible:
 			why = " (phase %d, fed by p%d, usable %s)" % [int((n as Crucible).phase), int(n.get("_fed_by")), str((n as Crucible).can_interact(player))]
+		why += " [%s, %.1f m from the stand point, no path %.1f s]" % ["timed out" if _now() > float(_errand_failed.get("until", INF)) else "failed",
+			player.global_position.distance_to(sp), float(_errand_failed.get("nopath_t", 0.0))]
 		_log("couldn't use %s%s" % [n.name, why])
 		_mark_failed(n, 15.0)
 		task["cur"] = null
@@ -1327,11 +1340,23 @@ func _do_shoot(n: Node3D, delta: float) -> void:
 	# out on the walk itself: "no shot at Bell_coldstore_pipe" was a bot still on the stairs); the stall clock counts
 	# only at the vantage, where the aim should fire within shoot_stall_s.
 	var at_v: bool = player.global_position.distance_to(vp) <= 1.2
+	# T-181: a clear shot from where the bot stands, close to the vantage or the target, is as good as the vantage
+	# (the soaks' "never reached the spot ... (2 m left)": a vantage snapped on a boxcar's or a gatehouse's edge
+	# that the bot could get within 2 m of, never 1.2 m, while its eye already had the bell in a clean line)
+	var here: bool = false
+	if not at_v and (player.global_position.distance_to(vp) <= float(_cfg().get("shoot_here_near_vantage_m", 6.0)) \
+			or brain.aim.eye().distance_to(n.global_position) <= float(_cfg().get("shoot_here_m", 14.0))):
+		var hk: String = "here_%d" % id
+		if _now() - float(task.get(hk + "_t", -INF)) > 0.25:
+			task[hk + "_t"] = _now()
+			task[hk] = brain.shot_clear(brain.aim.eye(), n.global_position)
+		here = bool(task.get(hk, false))
+		at_v = here
 	if not at_v:
 		task[wk] = float(task.get(wk, 0.0)) + delta
 	else:
 		task[stk] = float(task.get(stk, 0.0)) + delta
-	if float(task[stk]) > float(_cfg().get("shoot_stall_s", 35.0)) or float(task.get(wk, 0.0)) > float(task.get("wbudget_%d" % id, 60.0)):
+	if float(task.get(stk, 0.0)) > float(_cfg().get("shoot_stall_s", 35.0)) or float(task.get(wk, 0.0)) > float(task.get("wbudget_%d" % id, 60.0)):
 		var why: String = "no shot at %s from %s" % [n.name, str(vp.snapped(Vector3.ONE * 0.1))]
 		if not at_v:
 			why = "never reached the spot for %s at %s (%.0f m left)" % [n.name, str(vp.snapped(Vector3.ONE * 0.1)), player.global_position.distance_to(vp)]
@@ -1348,7 +1373,9 @@ func _do_shoot(n: Node3D, delta: float) -> void:
 		if lst0.size() >= int(_cfg().get("vantages_max", 3)) * 2:
 			_finish(false, "missed")
 		return
-	if not _walk(vp, 0.8, delta):
+	if here:
+		brain.loco.stop()
+	elif not _walk(vp, 0.8, delta):
 		return
 	if forced_slot() >= 0 and player.weapons.current_index != forced_slot():
 		brain.aim.select(forced_slot())
