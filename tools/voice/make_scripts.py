@@ -8,6 +8,7 @@
                                             path to an older script_index.json, or "recorded" (per actor: lines added
                                             since that actor's last import + lines reworded after they recorded them)
   tools/voice.sh scripts --actor=paul       one actor only
+  (a full run also writes voice_scripts/VOICE_SCRIPT_ALL_LINES.pdf: every spoken line, by character; U11)
 
 Lines come from data/gravelight/vo/lines.json (banter / tag exchanges per part), data/gravelight/bosses/*.json and
 every Bolt & Sprocket line table the game voices (voicelib.BS_LINE_SOURCES); UI, banner, hint, sign and memo text
@@ -211,6 +212,10 @@ def _story(actor: str, lines: list[V.Line], cast: dict, title_extra: str, date: 
                         block.append(Paragraph("<b>%s:</b> %s" % (who.upper(), markup(txt)), st["line"]))
                     else:
                         block.append(Paragraph("%s: %s" % (who, html.escape(V.spoken_text(txt))), st["cue"]))
+            elif ln.speech:
+                # U11: a line spoken in Russian / German / Church Slavonic: the actor reads `speech`; the subtitle under it
+                block.append(Paragraph(html.escape(ln.speech), st["line"]))
+                block.append(Paragraph("subtitle: " + html.escape(V.spoken_text(ln.text)), st["cue"]))
             else:
                 block.append(Paragraph(markup(ln.text), st["line"]))
             note = acting_note(ln)
@@ -367,6 +372,13 @@ def main(argv: list[str] | None = None) -> int:
         for ln in al:
             per[(ln.game, ln.char)] = per.get((ln.game, ln.char), 0) + 1
         counts.append((actor, len(al), per))
+    if not a.since and not a.actor and not a.no_pdf:
+        # U11 FINISH: one PDF of every spoken line, by character (the cast's order), for reading through
+        allst = _story("all", sorted(lines, key=lambda ln: (ln.game, V.character_label(cast, ln.game, ln.char), ln.order)),
+                       cast, "", date)
+        from reportlab.platypus import Paragraph
+        allst[1] = Paragraph("Every line, by character", _styles()["title"])
+        build_pdf(os.path.join(a.out, "VOICE_SCRIPT_ALL_LINES.pdf"), allst, "Every voice line, by character")
     if not a.since and not a.actor:
         rows = ["Line counts per actor (voice_scripts/ %s; %d spoken lines in all)" % (date, len(lines)), ""]
         for actor, n, per in counts:

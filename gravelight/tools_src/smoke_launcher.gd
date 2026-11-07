@@ -129,6 +129,17 @@ func _check_u09_targets() -> void:
 		else:
 			_check(kind == "egg" and target in ["map01", "map02"], "U10 '%s' egg map known" % str(b[0]))
 		_check(str(b[7]) == "" or str(b[7]) in DevLauncher.U10_SETPIECES, "U10 '%s' setpiece known: %s" % [str(b[0]), str(b[7])])
+	# UPDATE 11 FINISH: the six buttons' targets (cutscene ids in the library, the map scene, the review page script)
+	_check(DevLauncher.U11_BUTTONS.size() == 6, "six Update 11 buttons")
+	for b: Array in DevLauncher.U11_BUTTONS:
+		var k: String = str(b[2])
+		if k == "cut":
+			_check(CinemaLibrary.data().get("cutscenes", {}).has(str(b[3])), "U11 '%s' cutscene exists" % str(b[0]))
+		elif k in ["crash", "hard_truth"]:
+			_check(ResourceLoader.exists(str(b[3])), "U11 '%s' scene exists" % str(b[0]))
+		else:
+			_check(k == "review" and FileAccess.file_exists("res://tools/voice/review.py"), "U11 '%s' review page script exists" % str(b[0]))
+	_check(ResourceLoader.exists(CinemaTheatre.LAUNCHER), "the theatre's way back to the launcher exists")
 	# the flags of the two test-lobby windows parse the way the game reads them
 	for set: Array in [DevLauncher.HOST_ARGS, DevLauncher.GUEST_ARGS]:
 		for a: Variant in set:

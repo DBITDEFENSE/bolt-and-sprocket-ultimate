@@ -1,72 +1,146 @@
-Line counts per actor (voice_scripts/ (script version 376715f3); 3029 spoken lines in all)
+Line counts per actor (voice_scripts/ (script version 68a5ce91); 3414 spoken lines in all)
 
 cousin_1                  12   The Cousins (together) 4, The Hammer (Mara) 8
 cousin_2                  10   The Cousins (together) 4, The Reach (Jo) 6
 cousin_3                  12   The Cousins (together) 4, The Third Hand (Alix) 8
-devin                      0   no lines yet
-paul                       0   no lines yet
-slot_amm                  15   AMM 15
-slot_blt                   4   BLT 4
+devin                     20   THE SLENDER (homage boss, in game) 20
+paul                      21   PAUL (homage boss, in game) 21
+slot_amm                  15   Fw. August "Gustl" Ammer 15
+slot_blt                   4   Bolt (Gravelight cameo) 4
 slot_bra                   9   Fraeulein Hedwig Brandt 9
+slot_brg                   8   The 1930 brigade's megaphone 8
+slot_brk                   8   Otto Brack 8
+slot_bs_agnieszka          0   no lines yet
+slot_bs_ammer              0   no lines yet
+slot_bs_anni               0   no lines yet
+slot_bs_associate          0   no lines yet
+slot_bs_bandleader         0   no lines yet
 slot_bs_bathrobe           8   Confused Customer 8
 slot_bs_bellhop           12   Bellhop-9 12
 slot_bs_blartz            96   Blartz 96
 slot_bs_bolt              92   Bolt 92
+slot_bs_bruck              0   no lines yet
 slot_bs_cc                10   The Content Creator 10
+slot_bs_churn_warden       0   no lines yet
 slot_bs_clerk              9   Gilda — Kiosk #7 9
 slot_bs_concierge          9   Concierge-Tron 9
 slot_bs_corn              31   Steward Cornelius 31
+slot_bs_counsel_9          0   no lines yet
+slot_bs_courtesy           0   no lines yet
+slot_bs_customs_man        0   no lines yet
 slot_bs_darkmatter         2   Darkmatter Subscriptions Llc 2
+slot_bs_deacon             0   no lines yet
 slot_bs_dent               9   Dent — Test Unit #001 9
+slot_bs_dm_pa              0   no lines yet
+slot_bs_dutch              0   no lines yet
+slot_bs_endres             0   no lines yet
+slot_bs_exit_survey        0   no lines yet
+slot_bs_fasbender          0   no lines yet
+slot_bs_florian            0   no lines yet
+slot_bs_freen              0   no lines yet
 slot_bs_gasket            13   Mama Gasket 13
 slot_bs_glambot           46   Glambot Prime 46
+slot_bs_grenz              0   no lines yet
 slot_bs_grindstone        17   Chairman Grindstone 17
+slot_bs_grosi              0   no lines yet
+slot_bs_guard              0   no lines yet
+slot_bs_hadamik            0   no lines yet
+slot_bs_halina             0   no lines yet
+slot_bs_hasse              0   no lines yet
+slot_bs_ilse               0   no lines yet
+slot_bs_imhof              0   no lines yet
 slot_bs_intern            25   Intern #4401 25
+slot_bs_kask               0   no lines yet
+slot_bs_kessler            0   no lines yet
+slot_bs_koschny            0   no lines yet
+slot_bs_leather_coat       0   no lines yet
+slot_bs_loader             0   no lines yet
+slot_bs_marta              0   no lines yet
 slot_bs_middleman_a        3   Middleman A 3
 slot_bs_middleman_b        3   Middleman B 3
+slot_bs_miner_1            0   no lines yet
+slot_bs_miner_2            0   no lines yet
+slot_bs_miner_3            0   no lines yet
+slot_bs_nawrath            0   no lines yet
+slot_bs_nextera            0   no lines yet
+slot_bs_notary             0   no lines yet
+slot_bs_operator           0   no lines yet
+slot_bs_opitz              0   no lines yet
 slot_bs_pa                63   Omniscrap Pa 63
+slot_bs_peg                0   no lines yet
+slot_bs_pfortner           0   no lines yet
+slot_bs_pilch              0   no lines yet
+slot_bs_piotr              0   no lines yet
+slot_bs_radio              0   no lines yet
+slot_bs_recruits           0   no lines yet
+slot_bs_reinholt           0   no lines yet
+slot_bs_repossessor        0   no lines yet
+slot_bs_res                0   no lines yet
 slot_bs_retention          6   The Retention Specialist 6
 slot_bs_rusty              9   Rusty 9
+slot_bs_saathoff           0   no lines yet
+slot_bs_sable              0   no lines yet
+slot_bs_singer             0   no lines yet
+slot_bs_soldier            0   no lines yet
+slot_bs_soldier_1          0   no lines yet
 slot_bs_sprocket         235   Sprocket 235
 slot_bs_squat             23   The Squatter 23
+slot_bs_ss_guard           0   no lines yet
 slot_bs_statue             1   Statue 1
 slot_bs_tourist            6   Tourist 6
-slot_bwt                   7   BWT 7
-slot_cou                   8   COU 8
-slot_dea                 315   Cpl. Elijah "Deacon" Brooks 315
-slot_dee                  18   DEE 18
-slot_des                   8   DES 8
-slot_dut                 321   Sgt. Walter "Dutch" Kowalczyk 321
+slot_bs_underwriter        0   no lines yet
+slot_bs_upsell_drone       0   no lines yet
+slot_bs_vendelin           0   no lines yet
+slot_bs_venner             0   no lines yet
+slot_bs_widow              0   no lines yet
+slot_bs_wren               0   no lines yet
+slot_bwt                   7   Der Bordwart 7
+slot_cou                   8   Lotte Hager 8
+slot_dea                 338   Cpl. Elijah "Deacon" Brooks 338
+slot_dee                  21   Dee 21
+slot_des                   8   Gerd Lanz 8
+slot_dut                 342   Sgt. Walter "Dutch" Kowalczyk 342
 slot_fas                  56   Dr. Emil Fasbender 56
-slot_hal                   8   HAL 8
-slot_jak                 190   Jakub Ostrowski 190
-slot_jes                   8   JES 8
-slot_jet                  12   JET 12
+slot_hal                  10   Hale 10
+slot_hrm                   7   Liese Harms 7
+slot_jak                 194   Jakub Ostrowski 194
+slot_jes                  16   Zahlmeistersmaat Karl Jessen 16
+slot_jet                  12   Henriette "Jette" Maurer 12
+slot_klh                   4   Der Kielholer (Kptlt. Arvid Lenz) 4
 slot_kro                   9   Ida Kroll 9
 slot_kub                   3   Franz Kubiak 3
 slot_lsl                  10   Liesl 10
-slot_med                   8   MED 8
-slot_min                   8   MIN 8
-slot_opr                 328   The Operator 328
-slot_pa                   15   PA 15
-slot_peg                 309   Lt. Margaret "Peg" Ashworth 309
-slot_pet                  10   PET 10
+slot_med                   8   Matthias Roth 8
+slot_min                   8   Alois Brzezina 8
+slot_nar                   0   no lines yet
+slot_ogp                   7   Obergefreiter Pohl 7
+slot_opr                 397   The Operator 397
+slot_pa                   28   The Fernflug works PA / Bordfunk 28
+slot_peg                 330   Lt. Margaret "Peg" Ashworth 330
+slot_pet                  12   Hinnerk Petersen 12
 slot_poh                   2   Frau Agnes Pohl 2
-slot_pru                   8   PRU 8
-slot_rad                   9   RAD 9
-slot_rei                  23   Dr. Augusta Reinholt 23
+slot_pru                   8   Pvt. Eugene Pruitt 8
+slot_rad                  12   Marta Seidl 12
+slot_rdl                   8   Bordmechaniker Anselm Riedl on the engine-room intercom before he is the Bordwart (40s 8
+slot_rei                  29   Dr. Augusta Reinholt 29
 slot_rot                   3   Ewald Rother 3
-slot_rrk                   7   RRK 7
-slot_ruh                  10   RUH 10
-slot_sel                  15   SEL 15
+slot_rrk                   7   Rourke 7
+slot_rtn                  16   The Returned 16
+slot_ruh                  16   Ilse Ruhland 16
+slot_sel                  23   Flt Lt Harry Selwyn 23
+slot_ser                  16   Father Serafim Lebedev 16
 slot_sob                   5   Gefreiter Willi Sobotta 5
-slot_spr                   5   SPR 5
+slot_spr                   5   Sprocket (Gravelight cameo) 5
 slot_sqd                  98   Relief squad soldiers (T-142) 98
-slot_tel                  19   TEL 19
+slot_svr                  29   Soviet radio traffic 29
+slot_tel                  19   Erwin Lassmann 19
 slot_tru                  12   Trudi Hanke 12
-slot_ven                   9   VEN 9
-slot_wid                   8   WID 8
+slot_ubr                   6   U-boat radio 6
+slot_ven                   9   Vendelin (Gravelight cameo) 9
+slot_vol                  16   Arkady Volkov 16
+slot_wdl                   8   Erich Wendel 8
+slot_wid                   8   Hanne Ebert 8
 slot_wie                   9   Konrad Wiesner 9
-slot_wit                  12   WIT 12
-slot_wiv                  13   WIV 13
-slot_wrn                 329   Zofia "Wren" Nowak 329
+slot_wit                  12   Wittkamp 12
+slot_wiv                  13   The Woman in Violet 13
+slot_wrn                 351   Zofia "Wren" Nowak 351

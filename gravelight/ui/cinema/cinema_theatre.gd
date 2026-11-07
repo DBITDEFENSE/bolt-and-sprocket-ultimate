@@ -3,7 +3,8 @@ extends Node
 ## T-194: the LAZARUS cutscenes outside a match, on a scene of their own (gravelight/ui/cinema/cinema_theatre.tscn):
 ## the prologue LAZARUS SATURDAY before the main menu on the first launch, and every cutscene the Archive's gallery
 ## replays. `CinemaTheatre.play_ids(tree, ids, back)` queues the reel and changes to the scene; at the end (or a skip)
-## the scene goes `back` ("menu": the CLAUDE ZOMBIES menu, "archive": the menu with the Archive's gallery open again).
+## the scene goes `back` ("menu": the CLAUDE ZOMBIES menu, "archive": the menu with the Archive's gallery open again,
+## "launcher": the dev launcher).
 ## The Archive also replays the campaign hops (exfil_*): their maps load as for a match with nobody else in it, the
 ## rounds stopped, and the hop plays on ExfilCutscene with no beacon (it ends instead of travelling); see
 ## `replay_exfil` and LazarusCinema.on_rounds_started.
@@ -13,6 +14,8 @@ extends Node
 
 const SCENE: String = "res://gravelight/ui/cinema/cinema_theatre.tscn"
 const MENU: String = "res://gravelight/ui/main_menu.tscn"
+## "launcher": the dev launcher's U11 buttons come back to it (Play.bat).
+const LAUNCHER: String = "res://ui/dev_launcher.tscn"
 
 static var queue: Array = []
 static var back: String = "menu"
@@ -108,4 +111,4 @@ func _on_cut_ended(_i: int, id: String, _skipped: bool) -> void:
 func _on_finished() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	open_gallery = back == "archive"
-	get_tree().change_scene_to_file.call_deferred(MENU)
+	get_tree().change_scene_to_file.call_deferred(LAUNCHER if back == "launcher" else MENU)

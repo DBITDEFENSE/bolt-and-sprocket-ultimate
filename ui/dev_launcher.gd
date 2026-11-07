@@ -61,6 +61,19 @@ const U10_BUTTONS: Array = [
 	["Fernflug Act IV terminator", "Mondlicht at act round 33: 5 s in the terminator stands at 55% (the yard, the concourse and reception are night; the store still day). The heater switch halves the suit strain.", "act", "map04d_mondlicht", 33, -1, false, "terminator"],
 ]
 const U10_SETPIECES: Array = ["spring", "sail", "air_raid", "wing_walk", "dust_storm", "terminator"]
+## UPDATE 11 FINISH (T-203): [label, hint, kind, target]. kind "cut" plays a LAZARUS cutscene on its own scene
+## (CinemaTheatre, back to this launcher's menu); "crash" starts Map 0 with the rebuilt GRAVELIGHT ONE forced before
+## the match start; "hard_truth" starts Map 0 at round 2 with the rule on and a bot bleeding out a few seconds in;
+## "review" opens the voice review page (the ElevenLabs takes are marked AI there). smoke_launcher checks the targets.
+const U11_MAP0: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
+const U11_BUTTONS: Array = [
+	["Prologue — Lazarus Saturday", "Chetverodnevo, April 1930 (about 4 min): the prologue the game plays once before the main menu on first launch. Hold to skip.", "cut", "lazarus_saturday"],
+	["Cutscene — Fourth Day (1944)", "East Prussia, October 1944 (about 1:45): the opening of a new campaign, before Map 0's crash.", "cut", "fourth_day"],
+	["Cutscene — Staub", "Kaltenbrunn, 20 December 1944 (about 1:15): the campaign's arrival at Kaltenbrunn.", "cut", "staub"],
+	["Map 0 — new crash intro", "GRAVELIGHT ONE rebuilt (about 1:25): the C-47 over the front, the dead walking west below, the violet column, the crash; then the inn's match start with 3 bots.", "crash", U11_MAP0],
+	["Hard Truth test (bleed-out rises)", "Map 0 at round 2, 3 bots, the fourth-day rule on: 8 s in a bot goes down and bleeds out; 4 s later its body gets up. Put it down for its death crate.", "hard_truth", U11_MAP0],
+	["Voice review (ElevenLabs takes)", "The voice review page in your browser: every line with its take; the ElevenLabs takes are marked AI. Your own recordings still replace them line by line.", "review", ""],
+]
 ## the user args of the two windows of "Host a test lobby (local)": [host, guest]
 const HOST_ARGS: Array = ["--mock-online-serve=28500", "--open=online", "--auto-host"]
 const GUEST_ARGS: Array = ["--mock-online=28500", "--open=online", "--auto-join"]
@@ -194,6 +207,8 @@ func _ready() -> void:
 	_add_u09_buttons(col, map0)
 	col.add_child(_header("Update 10 — beyond the inn (Totenhafen's systems, the homage bosses, the Fernflug set-pieces)"))
 	_add_u10_buttons(col)
+	col.add_child(_header("Update 11 — LAZARUS (the new cutscenes, the fourth-day rule, the ElevenLabs voices)"))
+	_add_u11_buttons(col)
 	col.add_child(_header("Muster (your sidearm and Field Habits; saved per survivor, used by every match)"))
 	col.add_child(MenuKit.button("Muster — pick the sidearm and Field Habits for the survivor above", func() -> void: add_child(MenuMuster.new(CHARACTERS[_char.selected])), 22, "ui_confirm"))
 	col.add_child(_header("Bot mode (an AI plays your survivor; F6 or any input takes over)"))
@@ -248,6 +263,31 @@ func _add_u09_buttons(col: Control, _map0: String) -> void:
 	col.add_child(MenuKit.para("Each act opens in campaign mode with its arrival kit; Acts II to IV start with the launcher's Scrip for that round.", 16, MenuKit.DIM))
 	_hinted(col, "Main menu (new)", "The rebuilt CLAUDE ZOMBIES main menu (the 3D inn scene, Play / Muster / Archive / Extras).",
 		func() -> void: get_tree().change_scene_to_file(MAIN_MENU_NEW))
+
+
+## UPDATE 11 FINISH: the six buttons the work order names, from U11_BUTTONS.
+func _add_u11_buttons(col: Control) -> void:
+	for b: Array in U11_BUTTONS:
+		var btn: Button = _hinted(col, str(b[0]), str(b[1]), func() -> void: _press_u11(b))
+		if str(b[2]) in ["crash", "hard_truth"]:
+			btn.disabled = not ResourceLoader.exists(str(b[3]))
+
+
+func _press_u11(b: Array) -> void:
+	var kind: String = str(b[2])
+	var target: String = str(b[3])
+	match kind:
+		"cut":
+			CinemaTheatre.play_ids(get_tree(), [target], "launcher")
+		"crash":
+			LazarusCinema.force_ids = ["gravelight_one"]
+			_start_gl(target, 1, "", 3)
+		"hard_truth":
+			GLSettings.values[HardTruth.SETTING] = "on"   # this session only (not saved)
+			_pending_setpiece = "hard_truth"
+			_start_gl(target, 2, "", 3)
+		"review":
+			_open_voice_review()
 
 
 ## UPDATE 10 section 9: one button per set-piece the work order names, from U10_BUTTONS.
@@ -319,6 +359,35 @@ static func _force_setpiece(piece: String) -> void:
 			var t: Node = tree.get_first_node_in_group(&"terminator")
 			if t != null and t.has_method("debug_progress"):
 				t.call("debug_progress", 0.55)
+		"hard_truth":
+			_force_hard_truth(tree)
+
+
+## UPDATE 11: a squad bot (not a companion) goes down and its bleed-out clock runs out, so the fourth-day rule lays its
+## body; nobody needs to stand by. The same steps as smoke_hard_truth.
+static func _force_hard_truth(tree: SceneTree) -> void:
+	var root: MapRoot = tree.current_scene as MapRoot
+	if root == null or root.session == null:
+		return
+	var bot: Player = null
+	for n: Node in tree.get_nodes_in_group(&"bots"):
+		var p: Player = n as Player
+		if p != null and not p.is_companion and root.session.coop.is_alive(p.player_id):
+			bot = p
+			break
+	if bot == null:
+		return
+	var god: bool = GameState.god_mode
+	GameState.god_mode = false
+	bot.take_hit(99999.0, null)
+	GameState.god_mode = god
+	tree.create_timer(0.5).timeout.connect(func() -> void:
+		if root.session.coop.is_downed(bot.player_id):
+			(root.session.coop.players[bot.player_id] as Dictionary)["bleed"] = 0.05
+			(root.session.coop.players[bot.player_id] as Dictionary)["reviver"] = 0
+		var hud: Node = tree.get_first_node_in_group(&"hud")
+		if hud != null and hud.has_method("show_banner"):
+			hud.call("show_banner", "HARD TRUTH: a teammate bled out. The fourth second...", 5.0))
 
 
 ## Two game windows over the local mock relay: the host serves the relay and creates a public lobby, the guest
