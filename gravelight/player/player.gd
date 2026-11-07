@@ -106,6 +106,8 @@ var _slide_k: float = 0.0                # 0..1 camera blend for the slide dip /
 # Skyhook Sekt's air hop / stomp.
 var _push_v: Vector3 = Vector3.ZERO
 var _push_t: float = 0.0
+## Seconds of legit air time left from a launch plate's arc (T-185: BoundsGuard leaves the flight alone).
+var air_grace_t: float = 0.0
 var _hops_left: int = 0
 var _did_hop: bool = false
 var _stomp_cd: float = 0.0
@@ -385,6 +387,8 @@ func _gather_intent() -> Dictionary:
 func _physics_process(delta: float) -> void:
 	if _push_t > 0.0:
 		_push_t -= delta   # every body, bots included (their adapter adds push_velocity())
+	if air_grace_t > 0.0:
+		air_grace_t -= delta
 	_stomp_cd = maxf(0.0, _stomp_cd - delta)
 	if not is_local:
 		if not is_bot:
@@ -572,9 +576,7 @@ func _update_movement(delta: float) -> void:
 	_update_stance_shape(delta)
 	_slide_k = move_toward(_slide_k, 1.0 if sliding else 0.0, delta * (9.0 if sliding else 5.0))
 	var fall_speed: float = -velocity.y
-	if _push_t > 0.0:
-		velocity += _push_v
-	move_and_slide()
+	move_with_push()
 	if not _was_on_floor and is_on_floor():
 		_on_landed(fall_speed)
 	if is_on_floor():
@@ -1565,7 +1567,15 @@ func external_push(v: Vector3, seconds: float, kind: StringName = &"push") -> vo
 	var resist: float = float(PerkManager.stat(player_id, "pull_resist" if kind == &"pull" else "push_resist", 0.0))
 	if kind == &"pull" and lodestone_ballast():
 		return
-	_push_v = v * (1.0 - clampf(resist, 0.0, 1.0))
+	var pv: Vector3 = v * (1.0 - clampf(resist, 0.0, 1.0))
+	if pv.y > 0.0:
+		# T-185: a push's lift is a take-off, once (as Zombie._update_push does): the body leaves the floor at that
+		# speed and gravity brings it down. Held as a speed every frame it built up to a launch (the shaft grate's
+		# 3 m/s for 0.5 s threw a player ~90 m/s upward).
+		if is_local or is_bot:
+			velocity.y = maxf(velocity.y, pv.y)
+		pv.y = 0.0
+	_push_v = pv
 	_push_t = maxf(0.05, seconds)
 
 
@@ -1576,6 +1586,7 @@ func pad_launch(v: Vector3, seconds: float) -> void:
 	if downed or spectating:
 		return
 	velocity = v
+	air_grace_t = seconds + 1.0
 	_air_cap = Vector2(v.x, v.z).length()
 	if not is_bot:
 		_lunge_t = maxf(0.05, seconds - 0.05)
@@ -1587,6 +1598,35 @@ func pad_launch(v: Vector3, seconds: float) -> void:
 ## The current push (zero when none), for the bots' movement adapter.
 func push_velocity() -> Vector3:
 	return _push_v if _push_t > 0.0 else Vector3.ZERO
+
+
+## One move_and_slide with the outside push on top of the body's own velocity (T-185). A push is a speed (m/s)
+## added for its seconds, not an acceleration: it goes in for the move and comes back out after it, by as much of
+## it as the collision left (a wall that stopped the push takes nothing more of your own speed). Before T-185 it was
+## added every frame and never taken out: a 1.6 m/s tilt built up to 16 m/s, the bomb-bay doors' 5 m/s to 30 m/s,
+## and a body thrown that fast slid up whatever low edge it hit and into the sky.
+func move_with_push() -> void:
+	var pv: Vector3 = push_velocity()
+	if pv == Vector3.ZERO:
+		move_and_slide()
+		return
+	var pre: Vector3 = velocity + pv
+	velocity = pre
+	move_and_slide()
+	velocity = push_removed(pre, velocity, pv)
+
+
+## The body's own velocity after a pushed move: `after` (what move_and_slide left of `pre` = own + `pv`) less the
+## share of the push the collision let through, per axis (a free move gives the own velocity back exactly; a wall
+## that stopped the axis leaves 0, never a bounce back off it).
+static func push_removed(pre: Vector3, after: Vector3, pv: Vector3) -> Vector3:
+	var out: Vector3 = after
+	for i: int in 3:
+		if absf(pv[i]) < 0.0001:
+			continue
+		var k: float = 1.0 if absf(pre[i]) < 0.01 else clampf(after[i] / pre[i], 0.0, 1.0)
+		out[i] = after[i] - pv[i] * k
+	return out
 
 
 ## True while the Lodestone is in hand: immune to pulls and to its own slam's shockwave (docs/MAP4_FERNFLUG.md 8.2).
