@@ -505,6 +505,210 @@
       ],
       "yaw": 0,
       "where": "Radar tower, the shack's south wall right of the lit window, beside the radio"
+    },
+    {
+      "id": "ARC_LZ_SER_DIARY_MAP00",
+      "map": "0",
+      "style": "letter",
+      "position": [
+        31.5,
+        -3.45,
+        21.0
+      ],
+      "yaw": 0,
+      "where": "Inn cellar, the Helvetia crate bay by the crate column, on the floor (the Lost Requisition Crate's spill); walkable, 2 m from the north pillar docket"
+    },
+    {
+      "id": "ARC_LZ_FRONT_REPORT",
+      "map": "0",
+      "style": "letter",
+      "position": [
+        14.0,
+        0.0,
+        45.5
+      ],
+      "yaw": 0,
+      "where": "Stable yard, the carters' road west of the gate (Door_Gate at x 18), in the snow by the dispatch case"
+    },
+    {
+      "id": "ARC_LZ_SER_DIARY_MAP01",
+      "map": "1",
+      "style": "letter",
+      "position": [
+        44.0,
+        -18.0,
+        121.5
+      ],
+      "yaw": 0,
+      "where": "Crucible room (Core Vault), the floor at the foot of the feed door's brass plate (45.4, -17.6, 123.4), 2 m west of it"
+    },
+    {
+      "id": "ARC_LZ_LAB_REPORT_1",
+      "map": "1",
+      "style": "letter",
+      "position": [
+        72.0,
+        -11.0,
+        83.0
+      ],
+      "yaw": 90,
+      "where": "Lab Wing, the Fasbender bench (72, -11.5, 83), where the clerks laid out the satchels"
+    },
+    {
+      "id": "ARC_LZ_STAUB_MEMO_1",
+      "map": "1",
+      "style": "docket",
+      "position": [
+        76.0,
+        -9.5,
+        81.45
+      ],
+      "yaw": 0,
+      "where": "Lab Wing formulation room, north face of the wall at z 81.5, facing the tonic vats (68, -12, 81.2) across the room"
+    },
+    {
+      "id": "ARC_LZ_STAUB_MEMO_2",
+      "map": "1",
+      "style": "docket",
+      "position": [
+        -0.45,
+        1.5,
+        21.5
+      ],
+      "yaw": 90,
+      "where": "Administration Block, west face of the x 0 wall beside Door_Admin (z 25): the notice board"
+    },
+    {
+      "id": "ARC_LZ_STAUB_MEMO_3",
+      "map": "1",
+      "style": "docket",
+      "position": [
+        46.0,
+        -10.2,
+        60.6
+      ],
+      "yaw": 180,
+      "where": "Generator Hall, south face of the north wall (z 60.5), beside the Hauptschalter (46.5, -11.7, 61.2): the weather board"
+    },
+    {
+      "id": "ARC_LZ_LAB_INVENTORY",
+      "map": "2",
+      "style": "letter",
+      "position": [
+        57.0,
+        0.0,
+        19.0
+      ],
+      "yaw": 0,
+      "where": "Warhead cage (walls at x 52 and z 16), on the floor inside beside the lead coffins (Coffin at 60.5, 23)"
+    },
+    {
+      "id": "ARC_LZ_SER_DIARY_MAP02",
+      "map": "2",
+      "style": "letter",
+      "position": [
+        42.0,
+        0.0,
+        52.0
+      ],
+      "yaw": 0,
+      "where": "Pen Hall, the floor by the crane office's west wall (INT_M2_03 docket at x 44), where the cabinet came north with the ballast"
+    },
+    {
+      "id": "ARC_LZ_SER_DIARY_MAP04A",
+      "map": "4a",
+      "style": "letter",
+      "position": [
+        -50.0,
+        0.0,
+        70.0
+      ],
+      "yaw": 0,
+      "where": "Montage hall, west of the rivet wall (x -48), on the floor 2 m from the Kraftzentrale rivet log"
+    },
+    {
+      "id": "ARC_LZ_LAB_SUBJECTS",
+      "map": "4a",
+      "style": "docket",
+      "position": [
+        2.5,
+        1.5,
+        57.8
+      ],
+      "yaw": 0,
+      "where": "Bahnhof hut (Werk Thalbach), the north wall (z 58) inside the hut, beside the transfer list's place"
+    },
+    {
+      "id": "ARC_LZ_SER_DIARY_MAP04B",
+      "map": "4b",
+      "style": "letter",
+      "position": [
+        -5.6,
+        0.6,
+        6.0
+      ],
+      "yaw": 0,
+      "where": "Aft bomb bay, casing rack 1 (left, z 6), its top at 0.6, among the stores"
+    },
+    {
+      "id": "ARC_LZ_SER_DIARY_MAP04C",
+      "map": "4c",
+      "style": "letter",
+      "position": [
+        23.0,
+        1.4,
+        63.0
+      ],
+      "yaw": 0,
+      "where": "Groom Lake hangar, the British crate's lid (1.4) beside the manifest (24.0, 1.45, 64.0)"
+    },
+    {
+      "id": "ARC_LZ_LAB_CULTURE_LOG",
+      "map": "4c",
+      "style": "letter",
+      "position": [
+        -62.0,
+        -5.5,
+        128.0
+      ],
+      "yaw": 0,
+      "where": "Laboratory, the specimen-room desk south of the specimen tag (-62, -4.5, 123.85), floor -5.5"
+    },
+    {
+      "id": "ARC_LZ_HALE_ORDER",
+      "map": "4c",
+      "style": "letter",
+      "position": [
+        26.5,
+        1.1,
+        91.5
+      ],
+      "yaw": 180,
+      "where": "Groom Lake office, the glass front's sill beside the program log (28, 1.1, 91.5), read through the glass"
+    },
+    {
+      "id": "ARC_LZ_SER_DIARY_MAP04D",
+      "map": "4d",
+      "style": "letter",
+      "position": [
+        28.0,
+        2.4,
+        34.0
+      ],
+      "yaw": 0,
+      "where": "Fulfillment, the top of the artifacts rack (NavBlock_Rack at 28, 34), where the field units shelved one object"
+    },
+    {
+      "id": "ARC_LZ_LAB_LAST_RESORT",
+      "map": "4d",
+      "style": "letter",
+      "position": [
+        28.0,
+        1.1,
+        -30.0
+      ],
+      "yaw": 90,
+      "where": "The Account, the console top (28, 1.1, -30), by the Terms of the Mark"
     }
   ]
 }
