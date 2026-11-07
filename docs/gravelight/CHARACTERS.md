@@ -53,6 +53,7 @@ He was attached to Operation Gravelight because he speaks Polish, and because hi
 - His default register is complaint. He complains the way other men pray: steadily, to keep going. He is never actually panicking. When he goes quiet, the squad worries.
 - His Polish is kitchen Polish learned from an old woman: wrong genders, wrong cases, a grandmother's accent. Read it confidently and wrong. Wren corrects him; he never learns.
 - Softens noticeably around Wren. Talks to the dead Gängers like disappointed relatives.
+- **(UPDATE 11, T-196)** Harder and quieter. The complaint is still how he keeps going, but under it are the prayers he would deny (a Hail Mary between rounds, the rosary in his pocket, "Jezus Maria"), the cold in his hands and feet, and the thing he saw from the plane: men in greatcoats walking west. "Yinz" once per map and only in that map's own lines. He never mocks the dead of any side; they are "somebody's kid". Normandy stays the thing he won't talk about: four half-lines in the whole game, none of them finished.
 
 ### Personal stake
 The forced laborers and miners here are Silesian and Polish. Some of the Gängers could be from Wilcza Góra, which means some of them could be his distant kin. The closer he gets to the village, the harder that is to joke about.
@@ -72,75 +73,75 @@ Babcia knew about the "black glass in the salt" decades before the Reich found i
 ### Quotes
 
 **Buying weapons**
-- `DUT_BUY_PISTOL_01`: "Pistol. Great. I'll throw it at 'em when it's empty."
-- `DUT_BUY_RIFLE_01`: "Bolt action. Slow, honest work. Like the mill."
-- `DUT_BUY_RIFLE_02`: "Garand. Now that's a rifle a man can marry."
-- `DUT_BUY_SMG_01`: "Chopper. Spray and pray, and I ain't much for praying."
-- `DUT_BUY_SHOTGUN_01`: "Trench gun. Now we're talking the same language."
-- `DUT_BUY_LMG_01`: "Heavy. Good. I like a gun that can take a punch."
-- `DUT_BUY_LAUNCHER_01`: "A stovepipe. Everybody stand way the hell back."
-- `DUT_BUY_WONDER_01`: "This thing hums. Guns shouldn't hum."
-- `DUT_BUY_MELEE_01`: "A shovel. My old man would be proud. Finally doing honest work."
+- `DUT_BUY_PISTOL_01`: "Forty-five. Seven rounds. When it's empty I throw it, and then I guess I pray."
+- `DUT_BUY_RIFLE_01`: "Bolt action. One at a time. Slow, honest work, and my hands are too cold for anything fancier."
+- `DUT_BUY_RIFLE_02`: "Garand. Eight rounds and that ping when she's dry. [a pause] ...Every man I went up that cliff with carried one of these."
+- `DUT_BUY_SMG_01`: "Chopper. Spray and pray. [a breath] I've been doing more of the second one lately."
+- `DUT_BUY_SHOTGUN_01`: "Trench gun. My old man's war had these. Close work. You don't forget the close work."
+- `DUT_BUY_LMG_01`: "Heavy. Good. Something to hide behind that shoots back."
+- `DUT_BUY_LAUNCHER_01`: "A stovepipe. Back up. Everybody way the hell back. I ain't carrying anybody home in a helmet."
+- `DUT_BUY_WONDER_01`: "It hums. Same hum as the floor. Same hum as them. [a pause] I'm gonna point it at them anyway."
+- `DUT_BUY_MELEE_01`: "A shovel. I've dug plenty of holes with one of these. First time I've had to put a man back in his."
 
 **Mystery Crate**
-- `DUT_CRATE_GOOD_01`: "Well, look at that. Christmas came late."
-- `DUT_CRATE_GOOD_02`: "Thank you, box. I take back half of what I said about you."
-- `DUT_CRATE_BAD_01`: "Nine-fifty for this? I've been robbed by nicer crooks in Pittsburgh."
-- `DUT_CRATE_BAD_02`: "This box hates me personally."
-- `DUT_CRATE_DRUMMER_01`: "The little drummer again. Somebody's kid owned that."
-- `DUT_CRATE_DRUMMER_02`: "Yeah, yeah, march on outta here, tin man."
+- `DUT_CRATE_GOOD_01`: "Well. Look at that. [a breath] Somebody up there heard me. Don't tell Deacon."
+- `DUT_CRATE_GOOD_02`: "Thank you, box. I take back half of what I said. The half I said out loud."
+- `DUT_CRATE_BAD_01`: "Nine-fifty. For this. [exhausted] There's loan sharks on Polish Hill who'd be ashamed."
+- `DUT_CRATE_BAD_02`: "The box knows me. The box knows exactly what I can't afford to lose."
+- `DUT_CRATE_DRUMMER_01`: "The little drummer. Some kid wound him up one Christmas and never got to see him stop."
+- `DUT_CRATE_DRUMMER_02`: "Go on. March. Everybody else in this country is."
 
 **Perks**
-- `DUT_PERK_IRONHIDE_01`: "Tastes like a stout somebody drowned in. Hits like one too."
-- `DUT_PERK_SECONDWIND_01`: "Schnapps from a nun. Babcia would've approved. *Na zdrowie.*" `[Polish: "Cheers."]`
-- `DUT_PERK_TRIGGER_01`: "My hands are shaking. That's the tonic, not me. Mostly."
-- `DUT_PERK_TWINBARREL_01`: "Bitters. Like my old man's mood. Works about as fast."
-- `DUT_PERK_MARATHON_01`: "I don't run. I'm making an exception."
-- `DUT_PERK_HAWKEYE_01`: "Brandy. Fancy. My eyes feel like somebody scrubbed 'em."
-- `DUT_PERK_PACKMULE_01`: "Another gun to carry. Story of my life. I'm the mule."
-- `DUT_PERK_BLASTPROOF_01`: "Bock beer that makes you bombproof. Only in Europe."
+- `DUT_PERK_IRONHIDE_01`: "Stout. Tastes like the bottom of the Mon. [a breath] Thicker skin. Fine. Been growing that since I was fifteen."
+- `DUT_PERK_SECONDWIND_01`: "Schnapps from a nun. Babcia'd have crossed herself and drunk it anyway. *Na zdrowie.*" `[Polish: "Cheers."]`
+- `DUT_PERK_TRIGGER_01`: "Hands are shaking. That's the tonic. [a pause] Tonight it's the tonic."
+- `DUT_PERK_TWINBARREL_01`: "Bitters. My old man drank these and said nothing for thirty years. I'm starting to see why."
+- `DUT_PERK_MARATHON_01`: "I don't run. Ran once, up a cliff. [exhausted] Fine. Twice."
+- `DUT_PERK_HAWKEYE_01`: "Brandy. Eyes feel scrubbed. [a pause] ...Now I can see their faces. I didn't want to see their faces."
+- `DUT_PERK_PACKMULE_01`: "Another gun. More weight. [a breath] Weight I can do. Weight's the one thing I was ever good for."
+- `DUT_PERK_BLASTPROOF_01`: "Bock. Bombproof, it says. Nothing's bombproof. But I'll take the beer."
 
 **Power-ups**
-- `DUT_PWR_RESUPPLY_01`: "Ammo. Bless whoever's upstairs."
-- `DUT_PWR_DEATHSDOOR_01`: "Everything dies. Like usual, only faster."
-- `DUT_PWR_DOUBLESCRIP_01`: "Double pay. Wish the Army ran like this."
-- `DUT_PWR_BLACKOUT_01`: "Lights out, fellas. Rest easy."
-- `DUT_PWR_FORTIFY_01`: "Boards back up. Saves my back."
-- `DUT_PWR_CLEARANCE_01`: "Clearance sale at the box. Line up, ladies."
+- `DUT_PWR_RESUPPLY_01`: "Ammo. [a breath] Thank You. I mean it this time."
+- `DUT_PWR_DEATHSDOOR_01`: "One shot each. Make 'em count. They died once already; don't make 'em do it slow."
+- `DUT_PWR_DOUBLESCRIP_01`: "Double pay. The Army gave me ten bucks a month extra for nights like this. This is the first raise I ever got."
+- `DUT_PWR_BLACKOUT_01`: "All of 'em down at once. [quiet] Rest easy. Stay down this time."
+- `DUT_PWR_FORTIFY_01`: "Boards back up on their own. I'm not asking how. Not tonight."
+- `DUT_PWR_CLEARANCE_01`: "Crate's cheap. Go on, somebody buy something before it changes its mind."
 
 **Special enemies**
-- `DUT_BELL_01`: "That bell. Somebody tell it to shut up."
-- `DUT_BELL_02`: "Fog's rolling in. Here come the lantern boys."
-- `DUT_FOREMAN_01`: "The boss is here. I hated foremen before he had a drill for an arm."
-- `DUT_FOREMAN_02`: "C'mon, big man. I've punched out bigger guys than you. Not many."
-- `DUT_SCREAMER_01`: "Somebody shut that nurse up before my ears bleed."
-- `DUT_GLASSHIDE_01`: "This one's got glass for a gut. Aim high!"
+- `DUT_BELL_01`: "That bell. [a breath] Every time it rings, more of 'em get up. Somebody make it stop."
+- `DUT_BELL_02`: "Fog. Here come the lanterns. Watch the fog, not the windows."
+- `DUT_FOREMAN_01`: "Foreman. Drill for an arm. [exhausted] I had foremen like him before somebody did that to him."
+- `DUT_FOREMAN_02`: "Come on, big man. Come on. Somebody did this to you, and I'm sorry, and I'm still gonna put you down."
+- `DUT_SCREAMER_01`: "Nurse! Drop her fast, before she screams the whole county in!"
+- `DUT_GLASSHIDE_01`: "Glass in the gut on this one! Aim high, the head!"
 
 **Combat state**
-- `DUT_AMMO_LOW_01`: "Running light here."
-- `DUT_AMMO_NONE_01`: "Empty. Swell. Just swell."
-- `DUT_DOWN_01`: "Ah, hell. I'm down. Somebody grab me."
-- `DUT_DOWN_02`: "Babcia... not like this. Not here."
-- `DUT_REVIVE_01`: "Up you get. Don't make me carry you."
-- `DUT_REVIVE_02`: "Off the floor. Floor's for the dead ones."
-- `DUT_REVIVED_01`: "Thanks. I owe you a beer. A bad one."
-- `DUT_STREAK_01`: "Keep 'em coming. I got all night, unfortunately."
-- `DUT_STREAK_02`: "Like stacking pig iron. Just keep lifting."
-- `DUT_HEADSHOT_01`: "Right in the thinker."
-- `DUT_HEADSHOT_02`: "Rest easy, cousin."
-- `DUT_CRAWLER_01`: "This one's crawling. Leave him. He ain't going anywhere fast."
+- `DUT_AMMO_LOW_01`: "Running light. Running light here!"
+- `DUT_AMMO_NONE_01`: "Empty. [a breath] Swell. Swell."
+- `DUT_DOWN_01`: "[pained] Ah, hell. I'm down. Down! Somebody... somebody grab me."
+- `DUT_DOWN_02`: "[breathing heavily] Not here. Babcia, not in the salt. Not in the... [a breath] get me up."
+- `DUT_REVIVE_01`: "Up. Up, I got you. Don't you dare make me carry you home."
+- `DUT_REVIVE_02`: "Off the floor. Off the floor, the floor's theirs. Come on."
+- `DUT_REVIVED_01`: "[breathing heavily] Thanks. ...I owe you. I'll pay in beer. Bad beer, first bar that's still standing."
+- `DUT_STREAK_01`: "Keep coming. I got all night. [exhausted] God help me, I got all night."
+- `DUT_STREAK_02`: "Like stacking pig iron. Don't think. Lift. Don't think."
+- `DUT_HEADSHOT_01`: "Right in the head. [quiet] That's the kind way."
+- `DUT_HEADSHOT_02`: "Rest easy, cousin. Stay down this time."
+- `DUT_CRAWLER_01`: "Crawler. Leave him, he's slow. [a breath] ...Somebody finish him when there's time. Nobody should be left like that."
 
 **World**
-- `DUT_DOOR_01`: "Door's open. Something's always behind the door."
-- `DUT_POWER_01`: "Lights. Now I can see what's eating me."
-- `DUT_CRUCIBLE_01`: "Put my gun in a furnace and it came out meaner. That's the mill all over."
-- `DUT_CRUCIBLE_02`: "Smells like the Monongahela on a hot day. Works, though."
-- `DUT_TRAP_01`: "Hit the switch and watch the fireworks."
-- `DUT_EE_01`: "That music box. Some little girl's. I hate this place more every minute."
-- `DUT_EE_02`: "Bells in the right order. Like church back home."
-- `DUT_EE_03`: "The heart's gonna blow. Good. Let it."
-- `DUT_EXHAUST_01`: "Round fifty. I forgot what sitting down feels like."
-- `DUT_EXHAUST_02`: "My arms are done. I'm fighting with spite now."
+- `DUT_DOOR_01`: "Door's open. There's always something behind the door, and it's always somebody's kid."
+- `DUT_POWER_01`: "Lights. [a breath] Now I can see what's eating me. I liked it better guessing."
+- `DUT_CRUCIBLE_01`: "Put my gun in the fire and it came out meaner. The mill did that to steel. The mill did that to my old man."
+- `DUT_CRUCIBLE_02`: "Smells like the Mon in August. Works, though. Everything down here works. That's what scares me."
+- `DUT_TRAP_01`: "Switch is thrown. Stay clear of it. Let the machine do the dirty part."
+- `DUT_EE_01`: "A music box. Some little girl's. [quiet] She's down here somewhere. I know it like I know my own name."
+- `DUT_EE_02`: "Bells in the right order. [a breath] Like Sunday at Immaculate Heart. Babcia'd have known the tune."
+- `DUT_EE_03`: "The heart's gonna blow. Good. [shouting] Let it! Hold the line and let it!"
+- `DUT_EXHAUST_01`: "[exhausted] Round fifty. I can't feel my feet. I don't know if that's the cold or if they quit."
+- `DUT_EXHAUST_02`: "[exhausted] Arms are gone. I'm fighting on spite and Hail Marys, and I'm low on both."
 
 **Polish (Dutch's "kitchen Polish")**
 - `DUT_POL_01`: "*Jestem głodna.*" `[Polish (wrong): "I am hungry" in the feminine form. Wren corrects.]`
@@ -164,6 +165,7 @@ She is the commander of Operation Gravelight. Officially, her mission is to extr
 - Sardonic understatement is her armor: a horde is "a spot of bother." She swears rarely, and when she does it's devastating.
 - When she's lying, she gets *more* precise, not less. The actor should play the LANTERN hints as tiny, nearly invisible pauses.
 - Professional fascination with explosives, said with unsettling warmth.
+- **(UPDATE 11, T-196)** She still never raises her voice: no line of hers carries a shout, and the worse the night gets the more exactly she speaks. The fear shows as precision and as prayer she denies having said. Her secret (the sample order) colours her lines more with every map: a pause at "London wants a piece of it" on Map 0, "I have a tin" at the shard, "the samples out... and the asset" to Wren, the token clause quoted in full at the Mark, the telegram at Totenhafen, and Act III says it plainly. The humour is British understatement under strain, thinner map by map, and gone by the London window.
 
 ### Personal stake
 She lost two teams in France following orders she didn't fully understand. LANTERN is the same kind of order, and she has started to suspect it's worse.
@@ -183,80 +185,80 @@ She lost two teams in France following orders she didn't fully understand. LANTE
 ### Quotes
 
 **Buying weapons**
-- `PEG_BUY_PISTOL_01`: "A sidearm. How very last resort."
-- `PEG_BUY_RIFLE_01`: "A rifle. Sensible. Rather like sensible shoes."
-- `PEG_BUY_RIFLE_02`: "German bolt action. One does admire their workmanship, if not their politics."
-- `PEG_BUY_SMG_01`: "A Tommy gun. The Americans do love a crowd-pleaser."
-- `PEG_BUY_SHOTGUN_01`: "A shotgun. Crude. Effective. Like most of my colleagues."
-- `PEG_BUY_LMG_01`: "Belt-fed. Now we're having a proper conversation."
-- `PEG_BUY_LAUNCHER_01`: "Oh, hello, darling. You and I are going to get along famously."
-- `PEG_BUY_WONDER_01`: "Fascinating. Mr. Hale would... never mind."
-- `PEG_BUY_MELEE_01`: "A shovel. My father would weep with pride."
+- `PEG_BUY_PISTOL_01`: "A sidearm. Last resort. [a pause] We've been at the last resort for some time, haven't we."
+- `PEG_BUY_RIFLE_01`: "A rifle. One shot, taken properly. My father's rule: if it takes two, you weren't looking."
+- `PEG_BUY_RIFLE_02`: "A German rifle. Well made. Some boy of nineteen was issued it and told it would keep him safe."
+- `PEG_BUY_SMG_01`: "A Thompson. Crude, loud, and I am past caring. Give it here."
+- `PEG_BUY_SHOTGUN_01`: "A shotgun. For when they're close enough to see what they were. [a breath] Right."
+- `PEG_BUY_LMG_01`: "Belt-fed. Good. Find me a doorway and I shall hold it until I can't."
+- `PEG_BUY_LAUNCHER_01`: "Oh. [a pause] Hello. ...Forgive me. One shouldn't be glad of anything tonight. I am glad of this."
+- `PEG_BUY_WONDER_01`: "It hums. The same note as the glass. Mr. Hale would want it crated and... [a pause] Never mind what Mr. Hale would want."
+- `PEG_BUY_MELEE_01`: "A shovel. My father buried a great many friends with one of these. He'd be glad I've finally learned the use of it."
 
 **Mystery Crate**
-- `PEG_CRATE_GOOD_01`: "Oh, that's rather splendid."
-- `PEG_CRATE_GOOD_02`: "The crate is feeling generous. Let's not question it."
-- `PEG_CRATE_BAD_01`: "Nine hundred and fifty Scrip. For that. Marvellous."
-- `PEG_CRATE_BAD_02`: "I'll be filing a complaint with the quartermaster. Whoever, or whatever, that is."
-- `PEG_CRATE_DRUMMER_01`: "The drummer. Somebody wound him up and nobody's stopped him since."
-- `PEG_CRATE_DRUMMER_02`: "Off it goes. Do note where it lands, everyone."
+- `PEG_CRATE_GOOD_01`: "Oh. [a breath] That's rather good. Thank you. Whoever."
+- `PEG_CRATE_GOOD_02`: "The crate's being kind. Nothing here is kind without a reason. I'll take it anyway."
+- `PEG_CRATE_BAD_01`: "Nine hundred and fifty Scrip. For that. [a pause] Marvellous. Simply marvellous."
+- `PEG_CRATE_BAD_02`: "I shall file a complaint with the quartermaster. If anyone finds out who, or what, that is, do tell me."
+- `PEG_CRATE_DRUMMER_01`: "The drummer. A child's toy. [quiet] One does wonder where the child is."
+- `PEG_CRATE_DRUMMER_02`: "Off it goes. Note where it lands, everyone. We'll need it again."
 
 **Perks**
-- `PEG_PERK_IRONHIDE_01`: "Stout. Ghastly. Fortifying. Very British, actually."
-- `PEG_PERK_SECONDWIND_01`: "Made by a nun, apparently. I'd pray, but I'll settle for this."
-- `PEG_PERK_TRIGGER_01`: "Rather like strong tea with a grudge."
-- `PEG_PERK_TWINBARREL_01`: "Bitters. A gin would improve it enormously."
-- `PEG_PERK_MARATHON_01`: "I haven't run like this since the hockey pitch at Cheltenham."
-- `PEG_PERK_HAWKEYE_01`: "Brandy for marksmen. Well. Bottoms up and eyes front."
-- `PEG_PERK_PACKMULE_01`: "One more gun. One can never have too many options."
-- `PEG_PERK_BLASTPROOF_01`: "Oh, I *know* this one. The Demolitions School kept it in the staff room."
+- `PEG_PERK_IRONHIDE_01`: "Stout. Ghastly. [a breath] It's the only warm thing I've swallowed in two days. Fortifying."
+- `PEG_PERK_SECONDWIND_01`: "Made by a nun, the label says. [a pause] I hadn't prayed since France. I find I'm doing it now, under my breath. Don't tell anyone."
+- `PEG_PERK_TRIGGER_01`: "Strong tea with a grudge. My hands have stopped shaking. They were shaking; I'd thought nobody had noticed."
+- `PEG_PERK_TWINBARREL_01`: "Bitters. [a pause] My father took his neat, the year he came home. I begin to understand him."
+- `PEG_PERK_MARATHON_01`: "I haven't run like this since the hockey pitch. [exhausted] Nobody at Cheltenham was trying to eat me."
+- `PEG_PERK_HAWKEYE_01`: "Brandy for marksmen. Eyes front. [a breath] Do not look at their faces. That's an order, and I'm giving it to myself."
+- `PEG_PERK_PACKMULE_01`: "One more gun. One more thing to carry. [a pause] I am carrying rather a lot already."
+- `PEG_PERK_BLASTPROOF_01`: "Oh. I know this one. [a pause] The Demolitions School kept a bottle in the staff room. Nobody asked where it came from. I should have."
 
 **Power-ups**
-- `PEG_PWR_RESUPPLY_01`: "Ammunition. How thoughtful."
-- `PEG_PWR_DEATHSDOOR_01`: "Everything dies in one. Let's be efficient about it."
-- `PEG_PWR_DOUBLESCRIP_01`: "Double credit. The Ledger's in a generous mood."
-- `PEG_PWR_BLACKOUT_01`: "Clean sweep. Very tidy."
-- `PEG_PWR_FORTIFY_01`: "Windows secured. Carry on."
-- `PEG_PWR_CLEARANCE_01`: "A sale. Even the dead have them."
+- `PEG_PWR_RESUPPLY_01`: "Ammunition. [a breath] Thank you. One takes what one is given."
+- `PEG_PWR_DEATHSDOOR_01`: "One round each, now. Be quick, and be kind about it."
+- `PEG_PWR_DOUBLESCRIP_01`: "Double credit. The Ledger is being generous. [a pause] I do wish I knew what it thinks we owe."
+- `PEG_PWR_BLACKOUT_01`: "All of them, at once. [quiet] ...Good. Good. Stay down."
+- `PEG_PWR_FORTIFY_01`: "Windows secured. Don't ask by whom. Carry on."
+- `PEG_PWR_CLEARANCE_01`: "The crate's cheap. Spend it; we may not be here for the next one."
 
 **Special enemies**
-- `PEG_BELL_01`: "The bell. Fasbender said not to let it ring. It's ringing."
-- `PEG_BELL_02`: "Fog. Positions, everyone. They come out of it, not the windows."
-- `PEG_FOREMAN_01`: "That is a very large man with a very large drill. Weak point, people. Find it."
-- `PEG_FOREMAN_02`: "Aim for the glowing bit. It's always the glowing bit."
-- `PEG_SCREAMER_01`: "A nurse. Do kill her quickly. She'll scramble us all."
-- `PEG_GLASSHIDE_01`: "Armoured torso. Head or high explosive. I know which I prefer."
+- `PEG_BELL_01`: "The bell. Fasbender said not to let it ring. [a pause] It's ringing. Positions."
+- `PEG_BELL_02`: "Fog. Positions, everyone. They come out of the fog, not the windows. Don't waste rounds on the windows."
+- `PEG_FOREMAN_01`: "A very large man with a very large drill. He was somebody's foreman. Weak point, people. Find it."
+- `PEG_FOREMAN_02`: "Aim for the glowing part. [a breath] It is always the glowing part. God help us, it always is."
+- `PEG_SCREAMER_01`: "A nurse. Kill her quickly, please. She'll scramble us all. [a pause] ...Quickly. She used to help people."
+- `PEG_GLASSHIDE_01`: "Glass in the torso. Head or high explosive. Nothing else will do."
 
 **Combat state**
-- `PEG_AMMO_LOW_01`: "Ammunition's getting rather thin."
-- `PEG_AMMO_NONE_01`: "I'm dry. Inconvenient."
-- `PEG_DOWN_01`: "I'm down. A little assistance, if you'd be so kind."
-- `PEG_DOWN_02`: "Not here. I have orders to... oh, damn it."
-- `PEG_REVIVE_01`: "Up. We've no time for lying about."
-- `PEG_REVIVE_02`: "On your feet. I'm not filing the paperwork for you."
-- `PEG_REVIVED_01`: "Thank you. I'll pretend that didn't happen."
-- `PEG_STREAK_01`: "Rather a good rhythm going, aren't we?"
-- `PEG_STREAK_02`: "Keep them coming. I'm just warming up."
+- `PEG_AMMO_LOW_01`: "Ammunition's rather thin. Rather thin, everyone."
+- `PEG_AMMO_NONE_01`: "I'm dry. [a pause] That's... inconvenient."
+- `PEG_DOWN_01`: "[pained] I'm down. Some assistance, if you'd be so kind. [a breath] Quite soon, if you'd be so kind."
+- `PEG_DOWN_02`: "[breathing heavily] Not here. I have orders to... [a pause] oh, damn the orders. Somebody."
+- `PEG_REVIVE_01`: "Up. Up, I have you. We've no time for lying about."
+- `PEG_REVIVE_02`: "On your feet. [quiet] I am not writing to your mother. On your feet."
+- `PEG_REVIVED_01`: "[breathing heavily] Thank you. ...I shall pretend that didn't happen. Do the same."
+- `PEG_STREAK_01`: "Rhythm. Keep the rhythm. Don't count them, just keep the rhythm."
+- `PEG_STREAK_02`: "Keep them coming. [a breath] I'm quite calm. I'm told it's alarming."
 - `PEG_HEADSHOT_01`: "Clean."
-- `PEG_HEADSHOT_02`: "One should always aim for the brain. It's where the trouble lives."
-- `PEG_CRAWLER_01`: "Legless and still determined. One almost admires it."
+- `PEG_HEADSHOT_02`: "The head. Always the head. [quiet] It's the kindest thing left to do for them."
+- `PEG_CRAWLER_01`: "Legless, and still coming. [a pause] Don't leave it like that. One wouldn't leave a horse like that."
 
 **World**
-- `PEG_DOOR_01`: "Door's open. Carry on, then."
-- `PEG_POWER_01`: "Power's on. Now we see what they built here."
-- `PEG_CRUCIBLE_01`: "It's... re-teaching the weapon. That shouldn't be possible. Make a note."
-- `PEG_CRUCIBLE_02`: "Interesting. How much of this material is in that furnace?"
-- `PEG_TRAP_01`: "Lever pulled. Do stand clear."
-- `PEG_EE_01`: "A music box. Four notes. It's a key of some sort."
-- `PEG_EE_02`: "The shard. Careful with it. Nobody touch it with bare hands."
-- `PEG_EE_03`: "The heart's overloading. Hold this position. Hold it!"
-- `PEG_EXHAUST_01`: "Fifty rounds. I'd kill for a cup of tea. I have, in fact, killed for less."
-- `PEG_EXHAUST_02`: "If I sit down I shan't get up again. So I shan't sit down."
+- `PEG_DOOR_01`: "Door's open. [a breath] Carry on, then. Eyes up."
+- `PEG_POWER_01`: "Power's on. [a pause] Now we see what they built here. I rather wish we didn't have to."
+- `PEG_CRUCIBLE_01`: "It's re-teaching the weapon. That shouldn't be possible. [a pause] Make a note. London will want a note."
+- `PEG_CRUCIBLE_02`: "How much of the glass is in that furnace? ...Don't answer. I'm not meant to be asking."
+- `PEG_TRAP_01`: "Lever pulled. Stand clear. [quiet] Don't watch, if you can help it."
+- `PEG_EE_01`: "A music box. Four notes. [a pause] It's a key of some sort. Somebody's child wound it."
+- `PEG_EE_02`: "The shard. Careful. Nobody touch it with bare hands. [a pause] ...Give it to me. I have a tin."
+- `PEG_EE_03`: "The heart's overloading. Hold this position. Hold it. [a breath] Hold it, please."
+- `PEG_EXHAUST_01`: "[exhausted] Fifty rounds. I'd kill for a cup of tea. [a pause] I've killed for less tonight. Rather a lot less."
+- `PEG_EXHAUST_02`: "[exhausted] If I sit down I shan't get up. [a breath] Nobody here gets up the same. So I shan't sit down."
 
 **LANTERN hints (rare, low priority)**
-- `PEG_LANTERN_01`: "Mr. Hale will want to know about... the Ledger. For the report."
-- `PEG_LANTERN_02`: "Stable in transit. Good. That's good to know."
-- `PEG_LANTERN_03`: "Nobody needs to know what's in my pack. Least of all you."
+- `PEG_LANTERN_01`: "Mr. Hale will want to know about... the Ledger. For the report. [a pause] Only the Ledger."
+- `PEG_LANTERN_02`: "Stable in transit, he said. In lead, kept cold. [a pause] Good. That's... good to know."
+- `PEG_LANTERN_03`: "Nobody needs to know what's in my pack. [a pause] Least of all you. Least of all me."
 
 ---
 
@@ -507,15 +509,15 @@ Fine Print Fernet and Overclock Cordial reach every Gravelight map after The Fin
 
 | ID | Line |
 |---|---|
-| `gl.all.dutch.perk_fernet.01` | "Tastes like Babcia's cough syrup. Everything looks... louder." |
-| `gl.all.dutch.perk_fernet.02` | "Bitter. Now I can see the stuff this place is trying to hide. Swell. More stuff." |
-| `gl.all.dutch.perk_overclock.01` | "My fillings are buzzing. Nobody said nothing about fillings." |
-| `gl.all.dutch.perk_overclock.02` | "Run the gun dry and it bites back. My kind of gun." |
-| `gl.all.peg.perk_fernet.01` | "Bitter as a Whitehall memo. And just as revealing, for once." |
-| `gl.all.peg.perk_fernet.02` | "Everything has edges now. I can see where they've hidden things. How very useful." |
-| `gl.all.peg.perk_overclock.01` | "Oh, I *like* that. Every empty magazine a small detonation." |
-| `gl.all.peg.perk_overclock.02` | "Electrical. Cheerful. I don't trust it at all. Another, please." |
-| `gl.all.peg.perk_blastproof.01` (rare, 15%, after Peg's dossier level 5) | "The bock that started it all. London's kept a bottle in a safe since 'forty-three. ...Never mind how I know." |
+| `gl.all.dutch.perk_fernet.01` | "Tastes like Babcia's cough syrup. Everything looks... louder. Sharper. I can see every seam in this place." |
+| `gl.all.dutch.perk_fernet.02` | "Bitter. Now I can see what this place is hiding. [exhausted] Swell. I was doing fine not seeing it." |
+| `gl.all.dutch.perk_overclock.01` | "My fillings are buzzing. [a pause] Nobody said nothing about fillings. Nobody says nothing about anything down here." |
+| `gl.all.dutch.perk_overclock.02` | "Run her dry and she bites back. Good. Something else down here that fights when it's empty." |
+| `gl.all.peg.perk_fernet.01` | "Bitter as a Whitehall memo. [a pause] And for once, as revealing. I can see what they've hidden." |
+| `gl.all.peg.perk_fernet.02` | "Everything has edges now. I can see where they've hidden things. [quiet] I know rather a lot about hiding things." |
+| `gl.all.peg.perk_overclock.01` | "Oh. Every empty magazine a small detonation. [a pause] I'm sorry. I do like that. I've no business liking anything tonight." |
+| `gl.all.peg.perk_overclock.02` | "Electrical. Cheerful. I don't trust it at all. [a breath] Another, please." |
+| `gl.all.peg.perk_blastproof.01` (rare, 15%, after Peg's dossier level 5) | "The bock that started it all. London's kept a bottle in a safe since 'forty-three, beside a vial they don't talk about. [a pause] ...Never mind how I know." |
 | `gl.all.deacon.perk_fernet.01` | "Bitter herbs. Like Passover. Lord, I can see what this place is hiding." |
 | `gl.all.deacon.perk_fernet.02` | "Whoever made this one wanted folks to see straight. First honest drink in the building." |
 | `gl.all.deacon.perk_overclock.01` | "Feels like somebody wired a friend into my hands. Howdy, friend." |
@@ -529,18 +531,18 @@ Fine Print Fernet and Overclock Cordial reach every Gravelight map after The Fin
 
 | ID | Line |
 |---|---|
-| `gl.all.dutch.perk_skyhook.01` | "Fizzy. ...Hey. HEY. The floor got further away." |
-| `gl.all.dutch.perk_skyhook.02` | "Tastes like a wedding. A wedding where somebody jumped off something." |
-| `gl.all.peg.perk_skyhook.01` | "Sekt. Of course it's Sekt. One doesn't open champagne for a landing." |
-| `gl.all.peg.perk_skyhook.02` | "...I feel I ought to have a parachute. I feel I am a parachute." |
+| `gl.all.dutch.perk_skyhook.01` | "Fizzy. ...Hey. HEY. The floor got further away. [breathing heavily] Okay. Okay. Don't look down, Walter." |
+| `gl.all.dutch.perk_skyhook.02` | "Tastes like a wedding on Polish Hill. [a pause] The kind where somebody ends up on the roof and nobody remembers how." |
+| `gl.all.peg.perk_skyhook.01` | "Sekt. [a pause] We opened one in France once, the night before a drop. Two of us came back. ...It's quite good." |
+| `gl.all.peg.perk_skyhook.02` | "...I feel I ought to have a parachute. [a breath] I feel I am one. Land, the label says. Right." |
 | `gl.all.deacon.perk_skyhook.01` | "Light as a feather. Light as a bird. Lord, don't let me get used to it." |
 | `gl.all.deacon.perk_skyhook.02` | "Somebody made this so you'd land soft. That's a kind thing to make. I'd like to meet 'em." |
 | `gl.all.wren.perk_skyhook.01` | "Bubbles. ...I don't like my feet off the ground. I'll make an exception." |
 | `gl.all.wren.perk_skyhook.02` | "Jette. The label says Jette. ...She said no. Good." |
-| `gl.all.dutch.perk_magpie.01` | "Honey. And... metal? Like licking a pawn shop. ...I like it." |
-| `gl.all.dutch.perk_magpie.02` | "Pick it up, it's yours now. Lady after my own heart." |
-| `gl.all.peg.perk_magpie.01` | "Mead. A sergeant brewed mead on a bomb range. I'm going to write her a commendation and she's going to frame it in the cage." |
-| `gl.all.peg.perk_magpie.02` | "Everything the dead drop is ours. It always was. Now we're simply picking it up." |
+| `gl.all.dutch.perk_magpie.01` | "Honey. And metal. Like licking a pawn shop. [quiet] ...Somebody made this out here with nothing. I like her already." |
+| `gl.all.dutch.perk_magpie.02` | "Pick it up, it's yours now. [a pause] Everything they dropped. Their tags too. Somebody's gotta carry those." |
+| `gl.all.peg.perk_magpie.01` | "Mead. A sergeant brewed mead on a bomb range, alone, in a cage. [a pause] I'll write her a commendation. It's the least and the most I can do." |
+| `gl.all.peg.perk_magpie.02` | "Everything the dead drop is ours. It always was. [quiet] I used to call that retrieval. It was looting with a directive." |
 | `gl.all.deacon.perk_magpie.01` | "Mesquite honey. She made it with what was lying around. That's the best way anything's ever been made." |
 | `gl.all.deacon.perk_magpie.02` | "Nothing on this range goes to waste. Amen, sergeant." |
 | `gl.all.wren.perk_magpie.01` | "A thief's bird. ...The only one that comes back. I read the label. I read everything." |
@@ -637,32 +639,32 @@ The categories VO_SCRIPT §8 expected but nobody had written: spawn, round start
 
 | ID | Line |
 |---|---|
-| `DUT_SPAWN_01` | "Kaltenbrunn. Smells like the mill with the lights off. Let's get to work." |
-| `DUT_SPAWN_02` | "All right. Boots on, heads down. Nobody dies before payday." |
-| `DUT_ROUND_START_01` | "Here they come. Same shift, different faces." |
-| `DUT_ROUND_START_02` | "Punch in, fellas. Clock's running." |
-| `DUT_ROUND_END_01` | "Whistle. Breathe while you can." |
-| `DUT_ROUND_END_02` | "That's the round. Anybody hurt? Anybody care?" |
-| `DUT_BUY_AMMO_01` | "Topped off. Costs more than beer, hits about the same." |
-| `DUT_TEAM_DOWN_01` | "Man down! Hold on, I'm coming!" |
-| `DUT_TEAM_DOWN_02` | "Somebody's on the floor. Cover me, I'll get 'em." |
-| `DUT_INTEL_01` | "Paper. Somebody wrote this down for a reason. Hang onto it." |
-| `DUT_DENY_NO_POWER_01` | "Dead as a doornail. Needs juice." |
-| `DUT_DENY_CAP_01` | "I'm full up. Any more of this stuff and I'll float." |
-| `DUT_DENY_NO_SCRIP_01` | "Short again. Story of my paycheck." |
-| `PEG_SPAWN_01` | "Kaltenbrunn. Right. Weapons ready, manners optional." |
-| `PEG_SPAWN_02` | "Everyone stay close and try not to die. It's such a bother for the paperwork." |
-| `PEG_ROUND_START_01` | "Company. Do form a queue, there's good chaps." |
-| `PEG_ROUND_START_02` | "And we're on again. Splendid." |
-| `PEG_ROUND_END_01` | "Quiet. One does cherish these little intervals." |
-| `PEG_ROUND_END_02` | "That's the lot. Reload, regroup, and for heaven's sake someone find the tea." |
-| `PEG_BUY_AMMO_01` | "Restocked. The Crown will reimburse me. Eventually." |
-| `PEG_TEAM_DOWN_01` | "Someone's down. Keep them talking, I'm on my way." |
-| `PEG_TEAM_DOWN_02` | "Casualty. Do try not to bleed on anything important." |
-| `PEG_INTEL_01` | "A document. Mr. Hale will want this. Everyone wants everything." |
-| `PEG_DENY_NO_POWER_01` | "No power. Of course not. Nothing in this country works without a committee." |
-| `PEG_DENY_CAP_01` | "I think that's quite enough of the local spirits, thank you." |
-| `PEG_DENY_NO_SCRIP_01` | "Insufficient funds. How terribly common." |
+| `DUT_SPAWN_01` | "Kaltenbrunn. [a breath] Smells like the mill with the lights off. Babcia said don't go down the salt. ...Boots on." |
+| `DUT_SPAWN_02` | "All right. Heads down, hands warm, rosary where you can reach it. Nobody dies tonight. [quiet] Nobody who's gonna stay dead, anyway." |
+| `DUT_ROUND_START_01` | "Here they come. [a breath] Same shift. Different faces. Don't look at the faces." |
+| `DUT_ROUND_START_02` | "Punch in. Clock's running. [quiet] Jezus Maria, it's running." |
+| `DUT_ROUND_END_01` | "Whistle. [breathing heavily] Breathe. Breathe while you can. Check your fingers, check your feet." |
+| `DUT_ROUND_END_02` | "That's the round. Anybody hurt? [a pause] Anybody bit? Say so now. Say so now, I mean it." |
+| `DUT_BUY_AMMO_01` | "Topped off. Costs more than beer. [a breath] I'd trade it for beer. I'd trade it for sleep." |
+| `DUT_TEAM_DOWN_01` | "[shouting] Man down! Hold on, hold on, I'm coming!" |
+| `DUT_TEAM_DOWN_02` | "Somebody's on the floor! Cover me, I'm getting 'em. Nobody stays on the floor!" |
+| `DUT_INTEL_01` | "Paper. Somebody wrote this down scared. [a pause] Hang onto it. Scared men write true." |
+| `DUT_DENY_NO_POWER_01` | "Dead. Needs juice. [a pause] Only thing in here that stays dead." |
+| `DUT_DENY_CAP_01` | "I'm full up. Any more of this stuff and I'll stop being me." |
+| `DUT_DENY_NO_SCRIP_01` | "Short again. [exhausted] Story of my whole life. Payday's always one more shift." |
+| `PEG_SPAWN_01` | "Kaltenbrunn. [a pause] Right. This is where they made it. Weapons ready. Gloves on; touch nothing with bare hands." |
+| `PEG_SPAWN_02` | "Everyone stay close. [a breath] Nobody dies tonight. I have written enough letters to mothers for one war." |
+| `PEG_ROUND_START_01` | "Company. [a pause] Form up. Fire low and steady, there's good chaps." |
+| `PEG_ROUND_START_02` | "And we're on again. [a breath] Right. Splendid." |
+| `PEG_ROUND_END_01` | "Quiet. [exhausted] Reload. Breathe. One does cherish these little intervals; one rather lives for them." |
+| `PEG_ROUND_END_02` | "That's the lot. Reload, regroup, check your hands for bites. [a pause] And if anyone finds tea, I shall weep." |
+| `PEG_BUY_AMMO_01` | "Restocked. [a breath] The Crown will reimburse me. The Crown owes me rather more than ammunition." |
+| `PEG_TEAM_DOWN_01` | "Someone's down. Keep them talking. I'm on my way; keep them talking." |
+| `PEG_TEAM_DOWN_02` | "Casualty. Hold on. [a breath] You will hold on. That's an order." |
+| `PEG_INTEL_01` | "A document. [a pause] Mr. Hale will want this. Mr. Hale wants everything, and I've begun to wonder why." |
+| `PEG_DENY_NO_POWER_01` | "No power. [a pause] Of course not. Someone find the switch." |
+| `PEG_DENY_CAP_01` | "No more. I can feel what's already in me, and I don't like how much it likes me." |
+| `PEG_DENY_NO_SCRIP_01` | "Insufficient funds. [a breath] How terribly ordinary. One almost welcomes it." |
 | `DEA_SPAWN_01` | "Lord, look at this place. All right. Hands to work, hearts to You." |
 | `DEA_SPAWN_02` | "Kaltenbrunn. Something down here's humming, and it ain't a hymn." |
 | `DEA_ROUND_START_01` | "Here they come, children. Stay close now." |
@@ -733,30 +735,30 @@ Banter triggers between rounds (in the round transition break) when two characte
 
 ### Dutch & Peg
 **BNT_DUT_PEG_01**
-- DUT: "Lieutenant, how come the British always talk like they're ordering tea?"
-- PEG: "Because, Sergeant, we usually are."
-- DUT: "Even now?"
-- PEG: "*Especially* now."
+- DUT: "Lieutenant. How do you do it? Talk like you're ordering tea."
+- PEG: "Because if I stop, Sergeant, I shall start screaming, and then where would we be."
+- DUT: "...Fair enough."
+- PEG: "Quite."
 
 **BNT_DUT_PEG_02**
 - PEG: "Sergeant, you're bleeding."
-- DUT: "Yeah. Steady drip. Like a faucet back home."
-- PEG: "That is not reassuring."
-- DUT: "Wasn't trying to reassure you, ma'am."
+- DUT: "Yeah. [a breath] It's a scratch. It's a scratch, not a bite. I checked."
+- PEG: "Show me. ...Show me, Sergeant."
+- DUT: "...It's a scratch, ma'am."
 
 **BNT_DUT_PEG_03**
 - DUT: "What's in your pack, Lieutenant? You keep checking it."
-- PEG: "Charges. Detonators. Two sample jars with London's seal on them, still empty. Tea."
-- DUT: "Uh-huh."
+- PEG: "Charges. Detonators. [a pause] Tea."
+- DUT: "Uh-huh. Heavy tea."
 
 **BNT_DUT_PEG_04**
-- DUT: "Lieutenant, you ever miss anything? Ever once?"
-- PEG: "Breakfast, Sergeant. Every single day."
+- DUT: "Lieutenant. You ever scared? Ever once?"
+- PEG: "Constantly, Sergeant. I simply find it rude to mention."
 
 **BNT_DUT_PEG_05**
 - PEG: "You're humming, Sergeant."
-- DUT: "Yeah. Babcia's tune. Keeps my hands steady."
-- PEG: "Carry on, then. Quietly."
+- DUT: "Yeah. Babcia's hymn. [a pause] Keeps my hands from shaking. Mostly."
+- PEG: "Carry on, then. [quiet] Quietly. I rather like it."
 
 ### Dutch & Deacon
 **BNT_DUT_DEA_01**
@@ -769,7 +771,7 @@ Banter triggers between rounds (in the round transition break) when two characte
 - DEA: "You ever pray, Dutch?"
 - DUT: "Started again tonight. Right about when the first one got up off the floor."
 - DEA: "And?"
-- DUT: "Still here. Don't push it."
+- DUT: "Still here. ...Don't push it, Deacon. I don't know who's listening."
 
 **BNT_DUT_DEA_03**
 - DUT: "My old man worked the mill thirty years. Never said a word about it."
@@ -779,12 +781,12 @@ Banter triggers between rounds (in the round transition break) when two characte
 
 **BNT_DUT_DEA_04**
 - DEA: "You hear that hum, Sarge? Down in the floor?"
-- DUT: "I hear it. I'm choosing not to."
+- DUT: "I hear it. [quiet] It's in my teeth. I'm choosing not to."
 
 **BNT_DUT_DEA_05**
 - DUT: "Your gun got a name too?"
 - DEA: "Ruth. She's patient."
-- DUT: "Mine's called 'the gun.'"
+- DUT: "Mine's called 'the gun.' [a pause] ...Don't tell her, but I talk to it too."
 
 ### Dutch & Wren
 **BNT_DUT_WRN_01**
@@ -797,7 +799,7 @@ Banter triggers between rounds (in the round transition break) when two characte
 - WRN: "Your grandmother. Where was she from?"
 - DUT: "Wilcza Góra. You know it?"
 - WRN: "...Six kilometers from here."
-- DUT: "Yeah. She said that, too."
+- DUT: "Yeah. [a pause] She said that too. Then she said don't go down the salt, and went to sleep."
 
 **BNT_DUT_WRN_03**
 - DUT: "You write every kill in that book?"
@@ -813,15 +815,15 @@ Banter triggers between rounds (in the round transition break) when two characte
 
 **BNT_DUT_WRN_05**
 - WRN: "How many tonight?"
-- DUT: "I don't count."
+- DUT: "I don't count. [quiet] I stopped counting on a beach in June."
 - WRN: "Thirty-one. I count for you."
 
 ### Peg & Deacon
 **BNT_PEG_DEA_01**
 - DEA: "Lieutenant, that Crucible... you looked at it a little too long."
-- PEG: "Professional curiosity, Corporal."
+- PEG: "Professional curiosity, Corporal. [a pause] Nothing more."
 - DEA: "My daddy said curiosity's just temptation with a notebook."
-- PEG: "Your father sounds exhausting."
+- PEG: "Your father sounds like a wise man. Don't tell him I said so."
 
 **BNT_PEG_DEA_02**
 - PEG: "Can you fix the lift, Brooks?"
@@ -831,7 +833,7 @@ Banter triggers between rounds (in the round transition break) when two characte
 
 **BNT_PEG_DEA_03**
 - DEA: "You ever think about after, Lieutenant?"
-- PEG: "Constantly. It's the 'during' I try not to think about."
+- PEG: "There's a flat in Islington with my mother in it. I think about that. [a pause] Then I stop."
 
 **BNT_PEG_DEA_04**
 - PEG: "Corporal, must you talk to the machines?"
@@ -839,12 +841,12 @@ Banter triggers between rounds (in the round transition break) when two characte
 
 **BNT_PEG_DEA_05**
 - DEA: "You ever lose your temper, Lieutenant?"
-- PEG: "Once. In 1941. It was most inconvenient."
+- PEG: "Once. France, 'forty-three. Two of my people were dead and I was told why afterwards. [a pause] It was most inconvenient."
 
 ### Peg & Wren
 **BNT_PEG_WRN_01**
 - WRN: "You did not come for Fasbender."
-- PEG: "I came for exactly what I was ordered to come for."
+- PEG: "I came for exactly what I was ordered to come for. [a pause] Fasbender is on the list."
 - WRN: "That is not an answer."
 - PEG: "No. It's an order."
 
@@ -860,7 +862,7 @@ Banter triggers between rounds (in the round transition break) when two characte
 
 **BNT_PEG_WRN_04**
 - WRN: "Your orders. Do they say to bring us out?"
-- PEG: "They say to bring out the samples. And whoever can explain them."
+- PEG: "They say to bring the samples out. [a pause] And the asset."
 - WRN: "I asked about us."
 
 **BNT_PEG_WRN_05**
