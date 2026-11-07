@@ -41,7 +41,8 @@ Saturday**, the day before Palm Sunday, in memory of it, and gives him the epith
 bishop of Kition (Larnaca), and died there a second time. In **890** a marble tomb was found at Kition inscribed as his.
 The Emperor **Leo VI** had the relics brought to Constantinople; most accounts date the translation to **898** (some say
 890), and the Church keeps the feast of the translation on 17 October. In return Leo paid for the church of St Lazarus
-that still stands in Larnaca over the empty tomb. The Constantinople relics were lost after 1204.
+that still stands in Larnaca over the empty tomb. The Constantinople relics were carried off by the Crusaders in 1204
+(tradition says to Marseille).
 
 ### 1.2 What is ours (fiction, and never presented as history or as Church teaching)
 With the relics, in 898, went a second thing, kept apart from them and never shown: a **small sealed vessel**, a
@@ -97,7 +98,11 @@ as scrap for industrialisation; the ringing of bells was banned in Moscow in 193
 and turned into storehouses, clubs and granaries, or dynamited; the Cathedral of Christ the Saviour in Moscow was
 demolished on **5 December 1931**. Rural brigades, often local activists with a few police and a plenipotentiary of the
 OGPU (the state security service until July 1934), arrived with a decree and a truck. A central decree in March 1930
-reined in the worst local excesses, and did not end the campaign. All of that is history, told here without gloating:
+reined in the worst local excesses, and did not end the campaign. Our brigade is one of those excesses, and the story
+knows it: a district committee closing a village church on its own paper three weeks after the Central Committee's
+resolution of 14 March 1930 had condemned administrative closures (and when the April 1929 law reserved a closure to the
+regional executive committee) is exactly what the decree forbade, which is why the files afterwards treat the visit as
+a local overreach and why nobody above the district ever owned it. All of that is history, told here without gloating:
 the brigade are not monsters, and the believers are not saints. They are people in the same mud.
 
 ### 2.2 The calendar
@@ -136,8 +141,9 @@ fourth** (dead Friday, up Monday). Nothing hurries it and nothing stops it, unti
 - **Sunday 13 April** (Palm Sunday): three of the brigade, the men who handled the vessel, are feverish. The brigade
   leaves for Staryi Brod with the vessel in Volkov's satchel; the three sick ride in the truck bed.
 - **Tuesday 15 April**: the three die in the fever ward of the district hospital at Staryi Brod. Cause recorded: typhus.
-- **Friday 18 April** (Great and Holy Friday): **on the fourth day they get up.** In the ward, at night. They bite. The
-  ward's dead rise on *their* fourth day. The sickness is in the town.
+- **Friday 18 April** (Great and Holy Friday): **on the fourth day they get up.** In the hospital's mortuary room off
+  the ward, at night, where the three have lain since Tuesday awaiting the cart (Volkov's Report No. 1: "rose from the
+  mortuary"). They bite. The ward's dead rise on *their* fourth day. The sickness is in the town.
 - **In the village**, the brigade's first victims were not in the brigade: the feldsher **Matvei Grach** and the widow
   **Avdotya Pakhomova**, who had nursed the three sick men in the church-house on the Saturday night, took the fever from
   them and died on the 18th. The men of the village would not touch them. Father Serafim buried them himself, in the
@@ -175,7 +181,11 @@ and Volkov's career is written to fit: 1930–34 the vessel is an OGPU matter; f
 really did run a secret toxicological laboratory in those years, known in the literature as "Laboratory No. 1" or
 "the Kamera". **Ours is not it and is not modelled on it.** Laboratory No. 4 and its programme are fiction; the number
 was chosen for the fourth day and for no other reason, and nothing in our files resembles the real laboratory's work,
-staff or victims (§12).
+staff or victims (§12). One more date: state security left the NKVD in February 1941 as a commissariat of its own, the
+**NKGB**, went back in that July, and was split out again for good in **April 1943**; so the laboratory passed to the
+NKGB in 1943, and in October 1944 Volkov wears a state-security colonel's boards, not the NKVD's. No 1944 document or
+voice line names the agency (the front report says "the special officer from Moscow"); the 1937–39 papers say NKVD GUGB,
+which is right for their dates.
 
 ### 3.2 The programme (fiction)
 - **1930–34: "Object Lazar."** The vessel sits in a sealed store of the OGPU's operative-chemical section in Moscow
@@ -367,8 +377,11 @@ a Darkmatter site it takes seconds. The respawn rules do not change; Jakub never
 ## 6. The people
 
 ### 6.1 Father Serafim Lebedev (отец Серафим Лебедев), b. 1871
-Priest of Chetverodnevo since 1899, a widower, a reader of John and of the weather. The last keeper of the lamp. He
-knows what the vessel is said to be and does not pretend to know more. He is not brave in the way soldiers are; he is
+Keeper of the lamp from 1890, when he was a reader of nineteen and Father Ioann put him on the watch (so "I kept the
+lamp forty years" in his diary); priest of Chetverodnevo since 1899; a widower, a reader of John and of the weather. The
+last keeper of the lamp. He knows what the vessel is said to be and does not pretend to know more. His Russian is an
+old man's: he says *уезд* for the district, the word of his youth, although the state had abolished the uyezds in
+1929–30 and the brigade's paper says *район*; keep it, it is in character, and never put it in a Soviet mouth. He is not brave in the way soldiers are; he is
 brave in the way of a man who stays where he was put. His **diary** is the thread through the whole game: one Archive
 page per map, in order, written before and during the awakening, read aloud in Russian with English subtitles
 (`SER_DIARY_<MAP>_01`). He is never a zombie on screen; his fate is one line (§8). His voice: unhurried, plain, a
@@ -413,7 +426,7 @@ watches through binoculars and says very little. In 1953 his hand is on the case
 | "what death left behind when it gave him back" | Ch.Sl. | є́же сме́рть оста́ви, єгда̀ возвратѝ є҆го̀ | composed for the game (§1.2) |
 | Father Serafim Lebedev | Ru. | отец Серафим Лебедев | fictional |
 | Arkady Volkov | Ru. | Аркадий Волков | fictional |
-| OGPU / NKVD / GUGB | Ru. | ОГПУ / НКВД / ГУГБ | real agencies; the OGPU ended 10 July 1934 |
+| OGPU / NKVD / GUGB / NKGB | Ru. | ОГПУ / НКВД / ГУГБ / НКГБ | real agencies; the OGPU ended 10 July 1934; state security was the NKGB from April 1943 (and briefly Feb–Jul 1941), so the laboratory is NKGB in 1944 (§3.1) |
 | "Lazar" | Ru. | Лазарь (*Lazar'*) | the Soviet files' name for the sickness; fictional file |
 | Laboratory No. 4 | Ru. | Лаборатория № 4 | fictional; not the real NKVD poison laboratory (§12) |
 | FOURTH DAY | Ru. | ЧЕТВЁРТЫЙ ДЕНЬ (*Chetvyortyy den'*) | the programme codename; fictional |
@@ -462,8 +475,8 @@ report on Map 0 is in a dead officer's dispatch case, because he walked there wi
 ---
 
 ## 9. The cutscenes (T-191 writes the shot lists in `docs/CUTSCENES_LAZARUS.md`; this is the canon they follow)
-1. **LAZARUS SATURDAY** (prologue, ~3 min): §2.3 beat by beat, then the title card *"The fourth day."*, the fever ward
-   (a sheet over a face, then the sheet moving), the cordon in the snow and the village burning at night, a typhus sign
+1. **LAZARUS SATURDAY** (prologue, ~3 min): §2.3 beat by beat, then the title card *"The fourth day."*, the hospital
+   mortuary off the fever ward (a sheet over a face, then the sheet moving), the cordon in the snow and the village burning at night, a typhus sign
    nailed over the church door, the lead case in Volkov's arms on the Moscow train, and the last card: *"Chetverodnevo is
    not on any map."* No violence against clergy or villagers on screen.
 2. **FOURTH DAY** (Oct 1944, ~90 s): §5.2. Rain, mud, a German line; the shells that hit and do not explode properly;
@@ -502,7 +515,7 @@ report on Map 0 is in a dead officer's dispatch case, because he walked there wi
 | The fall of Constantinople, 29 May 1453 | Chetverodnevo, its church, Staryi Brod, every villager, Father Serafim |
 | The Soviet anti-religious campaign of 1929–32: the League of Militant Godless, bells melted for scrap, churches closed, dynamited or turned into storehouses; Christ the Saviour demolished 5 Dec 1931; the April 1929 law; the March 1930 central decree | the brigade's visit of 12 April 1930 and everything that followed; the typhus cordon; the erased village |
 | Orthodox Pascha 20 April 1930 (7 April O.S.); Lazarus Saturday 12 April (30 March O.S.) | — |
-| The OGPU (to 10 July 1934) and the NKVD's GUGB; the purges of 1936–38; the camps | Arkady Volkov; Object Lazar; Laboratory No. 4; FOURTH DAY; the order of last resort; every subject list |
+| The OGPU (to 10 July 1934), the NKVD's GUGB, the NKGB from April 1943; the purges of 1936–38; the camps | Arkady Volkov; Object Lazar; Laboratory No. 4; FOURTH DAY; the order of last resort; every subject list |
 | The real NKVD toxicological laboratory ("Laboratory No. 1" / the Kamera) existed | ours is not it, not modelled on it, and shares nothing with it but the word "laboratory" |
 | The Gumbinnen–Goldap operation, 16–30 Oct 1944; Gumbinnen taken 22 Oct, retaken 24 Oct; the offensive broken off | Point 112; the release of 26 Oct; the Returned; the broken line and the front come west |
 | Typhus as a feared epidemic disease, used as the cover | — |
@@ -540,9 +553,68 @@ report on Map 0 is in a dead officer's dispatch case, because he walked there wi
   Prussian heartland" (https://warfarehistorynetwork.com/article/goldap-operation-soviets-in-the-prussian-heartland/).
   We use 16–30 October, Gumbinnen taken 22 Oct and retaken 24 Oct, and name no real locality as a scene.
 - **Church Slavonic.** The two lines are composed for the game in a period-plausible register (§1.2, §1.3); they are not
-  quotations. Anyone with better Slavonic is welcome to correct the diacritics; the words stand.
+  quotations. Anyone with better Slavonic is welcome to correct the diacritics; the words stand. **One orthography
+  (T-202):** the two composed lines are written in Synodal orthography everywhere they appear, with wide *є* at the
+  start of a word (*є́же*, *єгда̀*, *є҆го̀*) and *е* inside one, the final *ъ*, and the stress marks: this file, the
+  lintel texture in `CUTSCENES_LAZARUS.md` set D, and the `speech` of `SER_LZS_05` carry the same letters. The real
+  liturgical texts that are *sung or said* in the lines (the Lazarus Saturday troparion `SER_LZS_08`, the Our Father in
+  `RTN_CLOSE_03`) stay in the plain civil-script transcription Russian singers use, because they are spoken text for the
+  bake, not inscriptions. Volkov's `VOL_LZS_04` paraphrases the crypt line in modern Russian on purpose.
 
 ---
 
 ## Respect review
-*(reserved for the T-202 reviewer: findings, what was changed, sign-off)*
+
+**Date:** 2026-11-07. **Reviewer:** a fresh Fable session (T-202) that wrote none of UPDATE 11. **Fixes:** branch
+`u11-8-respect-fixes`, the same day (DECISIONS T-202).
+
+**Scope read.** This file in full; `docs/CUTSCENES_LAZARUS.md` (the four shot lists, the Moscow 1953 card, §6 sets, §7
+cast and costumes, §8 build notes); `data/gravelight/archive_lazarus.json` (all seventeen entries); a sample of 200 new
+or rewritten lines from `lines.json` with their Russian, German, Polish and Church Slavonic `speech` and, where one
+existed, the line they replaced. The work order's §8 checklist was the brief; §1 was read first so that an intended
+choice could be told from a slip.
+
+**Method.** Each checklist item was tested against the text, not the intent: every scripture and liturgical quotation
+was compared with the KJV and the Slavonic service texts; every date was recomputed (weekday, Old/New Style, the
+fourth-day count in each file); every agency, uniform, vehicle and slogan was checked against the period; every
+Russian, German and Polish line was read for grammar, register and anachronism; every line with a replaced `before`
+was compared for what the rewrite added or removed; the Operator's lines were judged one by one for whether the
+intended cheer crosses into a joke at a real victim's expense.
+
+**Verdict.** The layer meets the work order's rules. The miracle is never mocked, faked or called a disease; the
+sickness is kept as the debt and the Operator never says "Lazarus". The clergy and the brotherhood are the most decent
+people in the saga; no real Church body, person or place is made to do anything it did not do, and the real-versus-
+invented table (§11) is honest. The brigade, the cordon, the Red Army and the German garrison are people; the
+Returned's last words and the front report's letter are among the best writing in the game. Camp prisoners and forced
+labourers appear only as paper and are never spectacle. No political or Nazi symbol is used, and the 1930 cutscene keeps
+every hand laid on a villager or the priest off camera. The horror is what men did. One sentence had to change before
+shipping: Father Serafim's last diary line could be read as the priest opening the church door to the dead on forty-one
+people, which would break the rule that the clergy are never villains; the fix was a few words. Five small should-fixes
+followed (the crypt-door line's two wordings, the fever-ward date, "NKVD" in 1944, the sick in the sanctuary, one
+Operator detail), then notes. All sixteen were fixed the same day; the table says how.
+
+**What is done well (keep).** The debt/gift distinction holds everywhere; the Operator never says "Lazarus"; Serafim's
+Pascha page and last page are the moral centre. Scripture and liturgy accurate (John 11:39, 1 Cor 15:26 KJV, Psalm
+23:4, the Lazarus Saturday troparion, Господи помилуй, Отче наш иже еси, Помяни Господи раба Твоего, Христос воскресе).
+Dates verified. Period detail right (AMO-F-15, OGPU cap colours, 1943 shoulder boards, ZiS-3, real League slogans). The
+brigade and cordon are tired people; the Returned's last words and Kolya's letter are dignified; the prisoners are
+paper, read with weight. No symbols anywhere.
+
+| # | Severity | Where | Problem | Fix | Status |
+|---|---|---|---|---|---|
+| R-01 | must-fix | `ARC_LZ_SER_DIARY_MAP04D` body; `SER_DIARY_MAP04D_01` text and speech (VO_SCRIPT §27) | "I will open the church door myself, so that none of them has to be the one" can be read as the priest opening the door to the dead on 41 people | he goes out himself and Pyotr Ilyich bars the door behind him, "so that none of them has to be the one who goes" (EN and RU) | fixed: body, text, speech; the fate stays one ambiguous line |
+| R-02 | should-fix | `SER_LZS_05` speech; CUTSCENES set D lintel | two wordings of the crypt-door line (word order; a second negative *не* that *никтоже* does not take) | the bible's text (§1.3) everywhere | fixed: speech and lintel now the §1.3 text |
+| R-03 | should-fix | CUTSCENES §1 shots 27–28, set F, header note | chart "16.IV" and a ward, but the three died 15.IV and rose 18.IV from the mortuary; the header's exclusive count contradicted John 11:17 | chart 18.IV; set F is the mortuary room off the ward; header sentence corrected | fixed: shots, set F, header; §2.4 and §9 here say mortuary |
+| R-04 | should-fix | CUTSCENES §2 intro and §7; LAZARUS §3.1, §7 | "NKVD" in 1944: state security was the NKGB from April 1943 | "state-security colonel (NKGB by 1944)"; one sentence in §3.1; the §7 and §11 rows | fixed: CUTSCENES, §3.1, §7, §11, VO_SCRIPT §26 note; no line names the agency |
+| R-05 | should-fix | `ARC_LZ_SER_DIARY_MAP04D` body | the bitten "in the sanctuary behind the screen": the altar is closed to laypeople | "in the side chapel, behind the inner doors" | fixed: body (the read-aloud never had the sentence) |
+| R-06 | should-fix (low) | `OPR_ROUND_START_14` | "Greatcoats, no boots" pins the Operator's joke to how real Red Army dead were stripped | "Greatcoats and frost, straight through the snow" | fixed: the row; the Wiegand survivor line that notices the missing boots is an eyewitness, not a joke, and stands |
+| R-07 | note | `ARC_LZ_FRONT_REPORT` letter; `SVR_M0_04` | "commissar" in 1944 (abolished Oct 1942; *zampolit* after) | the written letter says "the political officer"; the radio keeps the soldiers' word | fixed: letter; radio line unchanged on purpose |
+| R-08 | note | CUTSCENES §2 intro; `RTN_CLOSE_04` | "the fictional 118th": a 118th Rifle Division existed | "a number not meant to identify any real formation" | fixed: the doc; the number stays (every number to about 420 was a real rifle division at some date, and a dying man's unit number identifies nobody) |
+| R-09 | note | CUTSCENES card 1, header, shot 8, §7; LAZARUS §6.1 | drift against the bible: "two days' cart", "16–27 Oct", "I have the warrant", "mid-50s", "priest since 1899" vs "forty years at the lamp" | align to the bible; §6.1: keeper of the lamp from 1890 as a reader, priest from 1899 | fixed: all five |
+| R-10 | note | `ARC_LZ_STAUB_MEMO_1` §5 | the miracle and the sickness in one paragraph with no debt/gift distinction | "The Soviet file calls it Lazar. I did not know the name was already taken." | fixed: body |
+| R-11 | note | `VOL_LZS_08` | "Priests have done worse than this" reads as a general slur | "Priests have faked worse than this" (the 1919–20 relic-exposure claims); RU *Попы и не такое подделывали* | fixed: row and CUTSCENES shot 24 |
+| R-12 | note | `ARC_LZ_LAB_CULTURE_LOG` Rule 4 | "Subject 24's brother, brought in at Subject 24's own request" invites a gratuitous reading | "his brother, a prisoner of the same camp, brought over at Subject 24's own request" | fixed: body |
+| R-13 | note | `SER_DIARY_MAP04C_01` speech; `SER_DIARY_MAP04D_01` *уезд* | awkward *на колокол деревня знает, что идти*; *уезд* abolished 1929–30 | *деревня знает одно: колокол зовёт — иди*; keep *уезд* as the old priest's word and say so in §6.1 | fixed: speech; §6.1 says why *уезд* stays |
+| R-14 | note | LAZARUS §1.2–1.3, §7, §12; lines.json; CUTSCENES set D | wide *є* in the bible, *е* in lines.json and CUTSCENES; "lost after 1204" | one orthography (Synodal, *є* word-initially) everywhere; "carried off by the Crusaders in 1204 (tradition says to Marseille)" | fixed: §12 states the rule, every copy matches; §1.1 reworded |
+| R-15 | note | LAZARUS §2.1 | a district closure three weeks after the 14 March 1930 resolution is the excess it condemned; the doc did not say so | one sentence | fixed: §2.1 |
+| R-16 | note | CUTSCENES §2 card | "the Gumbinnen sector": a real place name heads a fictional event | "the East Prussian line" | fixed: card text (the builder was told) |
