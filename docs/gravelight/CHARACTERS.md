@@ -929,14 +929,14 @@ Banter triggers between rounds (in the round transition break) when two characte
 - `FAS_SAMPLE_01`: "Glasmacher calling Gravelight. Please, if anyone is alive on that aircraft... please answer."
 - `FAS_SAMPLE_02`: "Do not let the bell ring. When it rings, the dead remember they were hungry."
 - `FAS_SAMPLE_03`: "The Pylons are tuning forks. Three of them. Strike them together and the vault will... sing open. Forgive the poetry. I have been alone a long time."
-- `FAS_SAMPLE_04`: "Did I make the tonics? I... calculated the dilutions. That is not the same thing. It is not the same."
+- `FAS_SAMPLE_04`: "Did I make the dust? I... calculated a particle size. Twelve microns, so that it would float. That is not the same thing as making it. [quieter] It is not the same."
 - `FAS_SAMPLE_05`: "Augusta was my friend. I want you to know that before you hate her. And before you hate me."
 
 ### Dr. Augusta Reinholt
 - **Voice:** Early 50s, Berlin German, cultured and controlled. A beautiful lecturing voice, the voice of a woman who has given a hundred presentations to men who didn't listen. Grief shows only in the timing: pauses a fraction too long.
 - **Delivery:** Never shouts. Never cartoonish. She believes she is the only rational person in the facility. Her phonograph recordings are warm; her late PA hijacks are cold.
 - `REI_SAMPLE_01`: "Diary, the ninth of February, 1939. She asked me yesterday if the stars were cold. Today I couldn't answer anything at all."
-- `REI_SAMPLE_02`: "The material doesn't create hunger. It preserves the last impulse. If I can make the last impulse *love*... then they're not monsters. They're kept."
+- `REI_SAMPLE_02`: "The glass does not make the hunger. The hunger was in the blood before the glass ever came out of the salt. I have named it for a man who was four days dead and came home: *Lazarusblut*. If I can make the last impulse *love* instead... then they're not monsters. They're kept."
 - `REI_SAMPLE_03`: "You are standing in the heart of my work, soldiers. Please. Wipe your feet."
 - `REI_SAMPLE_04`: "Emil thinks he's betraying me. He's only betraying himself. He always did lack conviction."
 - `REI_SAMPLE_05`: "Liesl. Mama is coming. Mama is nearly finished."

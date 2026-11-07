@@ -897,7 +897,7 @@
   "FAS_M0_R12_01": {
     "speaker": "FAS",
     "category": "M0_R12",
-    "text": "If the signal is lost, you will still come. You must. I have everything they want. Everything.",
+    "text": "If the signal is lost, you will still come. You must. [quieter] In November the trains came in from the east. Sealed wagons. Russian soldiers, Gravelight. Their own dead. What was in them did not come out of this mountain. It came to us. [breath] I have everything they want. Everything.",
     "condition": "round 12 start"
   },
   "FAS_M0_R15_01": {
@@ -926,7 +926,7 @@
   "FAS_M0_FREQ2_01": {
     "speaker": "FAS",
     "category": "M0_FREQ2",
-    "text": "In the mine they found a stone. Black glass, veins like a bruise. It hums. The dead near it... remember. Only one thing. Hunger. Reinholt calls it a miracle. I call it a mistake we keep making."
+    "text": "In the mine they found a stone. Black glass, veins like a bruise. It hums. It does not raise the dead, Gravelight. I want to be exact; it is the last thing I can still be. Something was already in their blood. The Russians had it first, and lost it, and it walked west on its own feet. Near the glass it stops waiting. It stops waiting four days. Reinholt calls it Lazarusblut. She says it like a prayer. I say it like a confession."
   },
   "FAS_M0_FREQ3_01": {
     "speaker": "FAS",
@@ -961,7 +961,7 @@
   "FAS_M1_SWITCH_02": {
     "speaker": "FAS",
     "category": "M1_SWITCH",
-    "text": "I am below you, in a place the Ledger cannot hear, which is very few places. Listen. The heart in the vault, the great crystal. Everything here draws from it. The dead, the tonics, the crates, the voice. If it breaks, it all breaks."
+    "text": "I am below you, in a place the Ledger cannot hear, which is very few places. Listen. The heart in the vault, the great crystal. Everything here draws from it. The tonics, the crates, the voice. It did not make the dead; nothing here made them. But it makes them quick, and it makes them listen. If it breaks, it all breaks."
   },
   "FAS_M1_SWITCH_03": {
     "speaker": "FAS",
@@ -1084,12 +1084,12 @@
   "REI_CYL2_01": {
     "speaker": "REI",
     "category": "CYL2",
-    "text": "[hiss, voice flat] The fourteenth of February, nineteen thirty-nine. Liesl died at four in the morning. Diphtheria. A membrane across her throat. I am a doctor. I could do nothing. [long pause] The stone hummed all night. I listened to it, so I would not have to listen to the silence in her room."
+    "text": "[hiss, voice flat] The fourteenth of February, nineteen thirty-nine. Liesl died at four in the morning. Diphtheria. A membrane across her throat. I am a doctor. I could do nothing. [long pause] There is a man in the Gospel who was four days in his grave, and his sisters had only to ask. [pause] I have asked. The stone hummed all night. I listened to it, so I would not have to listen to the silence in her room."
   },
   "REI_CYL3_01": {
     "speaker": "REI",
     "category": "CYL3",
-    "text": "[hiss, clear, warm, certain] Subject seven-forty walked. Not hunger, not at first. For one minute it looked for something. It went to the window. They remember. The last impulse. Liesl's last impulse was to call for me. I was there when she died. I heard it. If the impulse remains, then she remains, somewhere in the glass. I only need it louder."
+    "text": "[hiss, clear, warm, certain] Subject seven-forty walked. Four days from the death, to the hour, as they all do; near the heart, less. Not hunger, not at first. For one minute it looked for something. It went to the window. They remember. It is in the blood, Emil, not in your glass. The glass only answers it, and keeps what answers. I have named it in the files for a man who was four days dead and came home. Lazarusblut. Liesl's last impulse was to call for me. I was there when she died. I heard it. If the impulse remains, then she remains, somewhere in the glass. I only need it louder."
   },
   "LSL_REC_CYL3_01": {
     "speaker": "LSL",
@@ -1116,7 +1116,7 @@
   "REI_S8_01": {
     "speaker": "REI",
     "category": "S8",
-    "text": "Emil has told you to kill the heart. Has he told you what is in it? Thousands. Every miner, every laborer, every one you've \"quieted.\" Their last moments, kept. You are not killing monsters. You are burning a library.",
+    "text": "Emil has told you to kill the heart. Has he told you what is in it? Thousands. Every miner, every soldier, every villager you have \"quieted\" tonight. Their last moments, kept. You are not killing monsters. You are burning a library.",
     "condition": "shard in Crucible"
   },
   "REI_HEART_00": {
@@ -1152,7 +1152,7 @@
   "REI_HEART_90": {
     "speaker": "REI",
     "category": "HEART",
-    "text": "[Foreman 2 spawns] Please. Please. She is nine years old. She has been nine years old for five years."
+    "text": "[Foreman 2 spawns] Please. Please. She is seven years old. She has been seven years old for five years."
   },
   "REI_HEART_105": {
     "speaker": "REI",
@@ -3097,7 +3097,7 @@
   "FAS_SAMPLE_04": {
     "speaker": "FAS",
     "category": "SAMPLE",
-    "text": "Did I make the tonics? I... calculated the dilutions. That is not the same thing. It is not the same."
+    "text": "Did I make the dust? I... calculated a particle size. Twelve microns, so that it would float. That is not the same thing as making it. [quieter] It is not the same."
   },
   "FAS_SAMPLE_05": {
     "speaker": "FAS",
@@ -3112,7 +3112,7 @@
   "REI_SAMPLE_02": {
     "speaker": "REI",
     "category": "SAMPLE",
-    "text": "The material doesn't create hunger. It preserves the last impulse. If I can make the last impulse love... then they're not monsters. They're kept."
+    "text": "The glass does not make the hunger. The hunger was in the blood before the glass ever came out of the salt. I have named it for a man who was four days dead and came home: Lazarusblut. If I can make the last impulse love instead... then they're not monsters. They're kept."
   },
   "REI_SAMPLE_03": {
     "speaker": "REI",
@@ -4988,7 +4988,7 @@
   "JAK_ZONE_B_RAILYARD_01": {
     "speaker": "JAK",
     "category": "ZONE_B_RAILYARD",
-    "text": "The rail yard. They brought us in through here. The wagon slats were nailed shut. You count the gaps of light to know the time."
+    "text": "The rail yard. They brought us in through here. The wagon slats were nailed shut. You count the gaps of light to know the time. ...In November other wagons came. Sealed ones. They unloaded them at night, and the men who did it never came down to us again."
   },
   "JAK_ZONE_C_ADMIN_01": {
     "speaker": "JAK",
@@ -7491,7 +7491,7 @@
   "WIE_SURV_SCARED_02": {
     "speaker": "WIE",
     "category": "SURV_SCARED",
-    "text": "I was at Verdun, you know. Nineteen sixteen. ...The dead stayed down at Verdun."
+    "text": "I was at Verdun, you know. Nineteen sixteen. ...There were Russians on the road tonight. Greatcoats, no boots, walking with our own. The dead stayed down at Verdun."
   },
   "WIE_SURV_FLINCH_01": {
     "speaker": "WIE",
@@ -9081,7 +9081,7 @@
   "WIV_M4D_INTRO_01": {
     "speaker": "WIV",
     "category": "M4D_INTRO",
-    "text": "There you are. We've been following your journey with such interest. You've come all this way. Let's get you set {up}."
+    "text": "There you are. We've been following your journey with such interest. We found you, you know. Years ago. Something on your little world that would not stay down, and a market that would not stay closed. You've come all this way. Let's get you set {up}."
   },
   "WIV_M4D_PHASE_01": {
     "speaker": "WIV",
@@ -9701,7 +9701,7 @@
   "HAL_M4C_GLASS_03": {
     "speaker": "HAL",
     "category": "M4C_GLASS",
-    "text": "That is why the program exists. It talks to the Moon, Lieutenant. Something on the Moon talks back. We would like to know what, before the Russians {do}."
+    "text": "That is why the program exists, Lieutenant. The sickness and the stone, in jars, with your name on the manifest. The Russians had the one for fourteen years and buried it; the Germans had the other and ground it to dust. It talks to the Moon. Something on the Moon talks back. We would like to know what, before the Russians {do}."
   },
   "HAL_M4C_CHOICE_01": {
     "speaker": "HAL",
@@ -10256,7 +10256,7 @@
   "PET_COMP_MEET_01": {
     "speaker": "PET",
     "category": "COMP_MEET",
-    "text": "They wanted me to take the cargo ship out, at night, no lights. I said no. So they put me up here with the lamp."
+    "text": "They wanted me to take the cargo ship out, at night, no lights, with the lead boxes aboard. The Kapitänleutnant would not. I would not. So they put me up here with the lamp."
   },
   "PET_COMP_JOIN_ARMED_01": {
     "speaker": "PET",
@@ -10561,12 +10561,12 @@
   "FAS_MARKE_RELAY_01": {
     "speaker": "FAS",
     "category": "MARKE_RELAY",
-    "text": "[radio, low] You have found the marks. Listen to me. The chip does nothing by itself. It listens. It listens for the Ledger's carrier, the hum, the thing you feel in your teeth. While the hum reaches it, the body remembers the last thing it wanted. Silence the carrier and they lie down. I have seen it once, for eleven seconds, when Opitz blew a fuse. Eleven seconds of quiet. Then it came back."
+    "text": "[radio, low] You have found the marks. Listen to me. The chip does nothing by itself. It is a grain of the glass under the skin, and it listens. It listens for the Ledger's carrier, the hum, the thing you feel in your teeth. While the hum reaches it, the body gets up when it is told and walks where it is pointed. The Russians could not make their dead obey. Abteilung III did it with a needle. Silence the carrier and they lie down. I have seen it once, for eleven seconds, when Opitz blew a fuse. Eleven seconds of quiet. Then it came back."
   },
   "FAS_MARKE_RELAY_02": {
     "speaker": "FAS",
     "category": "MARKE_RELAY",
-    "text": "They offered me one in forty-two. I refused, and Lenz wrote my name in a column. It is the only wise thing I did in that place."
+    "text": "They offered me one in forty-two. I refused, and Lenz wrote my name in a column. This winter the poster gained a second line: protection against the Lazarus sickness. It is not protection. It is a leash. ...Saying no is the only wise thing I did in that place."
   },
   "SQD_AK_ARRIVE_01": {
     "speaker": "SQD",
@@ -10606,7 +10606,7 @@
   "SQD_AK_HURT_02": {
     "speaker": "SQD",
     "category": "AK_HURT",
-    "text": "Psiakrew... they bit through the coat."
+    "text": "Psiakrew... they bit through the coat. ...Don't look at me like that. It is only the coat."
   },
   "SQD_AK_DOWN_01": {
     "speaker": "SQD",
@@ -10651,7 +10651,7 @@
   "SQD_SOV_ARRIVE_03": {
     "speaker": "SQD",
     "category": "SOV_ARRIVE",
-    "text": "Soviet patrol. We saw the dead walking on the road and came to see who is still alive."
+    "text": "Soviet patrol. We followed the dead west from the river. Our own, some of them. ...Do not ask. Who here is still alive?"
   },
   "SQD_SOV_CONTACT_01": {
     "speaker": "SQD",
@@ -10676,7 +10676,7 @@
   "SQD_SOV_HURT_02": {
     "speaker": "SQD",
     "category": "SOV_HURT",
-    "text": "Only a scratch. Keep shooting."
+    "text": "Only a scratch. ...Only a scratch. Keep shooting. Keep shooting."
   },
   "SQD_SOV_DOWN_01": {
     "speaker": "SQD",
@@ -10691,7 +10691,7 @@
   "SQD_SOV_LEAVE_01": {
     "speaker": "SQD",
     "category": "SOV_LEAVE",
-    "text": "Our orders are east. We go. Udachi, comrades."
+    "text": "Our orders are east. Back through them. We go. Udachi, comrades."
   },
   "SQD_SOV_LEAVE_02": {
     "speaker": "SQD",
@@ -10701,7 +10701,7 @@
   "SQD_SOV_SURVIVE_01": {
     "speaker": "SQD",
     "category": "SOV_SURVIVE",
-    "text": "I am the last one. I will report what we saw here."
+    "text": "I am the last one. I will report what we saw here. They will write 'epidemic'. They always write epidemic."
   },
   "SQD_SOV_SURVIVE_02": {
     "speaker": "SQD",
@@ -10736,7 +10736,7 @@
   "SQD_VS_CONTACT_03": {
     "speaker": "SQD",
     "category": "VS_CONTACT",
-    "text": "Mein Gott, so many. Shoot, shoot!"
+    "text": "Mein Gott, so many. Russians, and our own, together. Shoot, shoot!"
   },
   "SQD_VS_HURT_01": {
     "speaker": "SQD",
@@ -10851,7 +10851,7 @@
   "SQD_KM_ARRIVE_01": {
     "speaker": "SQD",
     "category": "KM_ARRIVE",
-    "text": "Nicht schießen! Navy. We left the pens. We are done with all of it."
+    "text": "Nicht schießen! Navy. We left the pens. We saw what Brecht found in the lead boxes. We are done with all of it."
   },
   "SQD_KM_ARRIVE_02": {
     "speaker": "SQD",
@@ -10946,7 +10946,7 @@
   "SQD_PARA_CONTACT_03": {
     "speaker": "SQD",
     "category": "PARA_CONTACT",
-    "text": "Holy smokes, there's a ton of 'em!"
+    "text": "Lord God. There's a ton of 'em. Fire!"
   },
   "SQD_PARA_HURT_01": {
     "speaker": "SQD",
@@ -11151,7 +11151,7 @@
   "MED_PEOPLE_TALK_02": {
     "speaker": "MED",
     "category": "PEOPLE_TALK",
-    "text": "Eleven came in with frostbite and three with worse. The ones who stopped breathing, I will not talk about."
+    "text": "Eleven came in with frostbite and three with worse. The three who stopped breathing got up again before I had the sheet over them. I will not talk about it."
   },
   "MED_PEOPLE_ASK_01": {
     "speaker": "MED",
@@ -11231,7 +11231,7 @@
   "DES_PEOPLE_TALK_01": {
     "speaker": "DES",
     "category": "PEOPLE_TALK",
-    "text": "Do not shout. I am not here. I was never here. I walked away from a column and a captain who wanted me to die tidily."
+    "text": "Do not shout. I am not here. I was never here. I walked away from a column and a captain who wanted me to die tidily. They gave the column the mark the week before. Protection, the poster said. I saw what the protection did on the road. I ran."
   },
   "DES_PEOPLE_TALK_02": {
     "speaker": "DES",
@@ -12985,7 +12985,7 @@
   "JES_PEOPLE_REACT_BALLAST_01": {
     "speaker": "JES",
     "category": "PEOPLE_REACT",
-    "text": "You put the Navy's cargo over the side. Three units. I have entered it as lost at sea. ...I did not enter who lost it."
+    "text": "You put the Navy's cargo over the side. Three units. The manifest says ore. I have entered it as lost at sea, as ore. ...I did not enter who lost it."
   },
   "JES_PEOPLE_REACT_KEY_01": {
     "speaker": "JES",
@@ -13718,5 +13718,10 @@
     "speaker": "OPR",
     "category": "ROUND_END",
     "text": "And down they go again, bless them. Don't fret over the ones you didn't finish. They'll be {back}. Everyone comes back. That's the whole {programme}."
+  },
+  "JAK_CHATTER_05": {
+    "speaker": "JAK",
+    "category": "CHATTER",
+    "text": "The ones in the greatcoats. Russians. ...They walked from their own graves to ours. Nobody should have to walk that far."
   }
 }
