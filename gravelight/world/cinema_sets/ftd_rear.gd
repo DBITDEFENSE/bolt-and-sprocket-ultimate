@@ -49,9 +49,10 @@ func _graves() -> void:
 			post = marker_post
 			ridge = ball(g, Vector3(0, 0.05, 0.15), Vector3(0.4, 0.2, 1.4), earth)
 			ridge.name = "Ridge"
-			var stain: MeshInstance3D = plane(g, Vector3(0, 0.37, 0.3), Vector2(0.5, 1.0), flat(Color(0.1, 0.02, 0.015, 0.8), 0.4), Vector3(0, 0, 0), "MoundStain")
+			var holder: Node3D = group(g, "MoundStain", Vector3.ZERO)
+			var stain: MeshInstance3D = plane(holder, Vector3(0, 0.37, 0.3), Vector2(0.5, 1.0), flat(Color(0.1, 0.02, 0.015, 0.8), 0.4), Vector3(0, 0, 0), "Stain")
 			stain.add_to_group(&"gore_full")
-			stain.visible = false
+			holder.visible = false   # (shown when the earth moves; the stain itself draws only on gore full)
 			m.name = "Earth"
 	ball(self, Vector3(11.5, 0.2, 0.5), Vector3(1.6, 0.6, 1.6), earth)   # the heap, the shovel in it
 	var sp: Node3D = prop(self, "spade_rusted", Vector3(11.5, 0.4, 0.5), 30.0)

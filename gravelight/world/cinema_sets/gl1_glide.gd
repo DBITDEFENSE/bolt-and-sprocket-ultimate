@@ -34,7 +34,7 @@ func _build() -> void:
 
 func _inn() -> void:
 	var inn: Node3D = group(self, "Inn", Vector3(0, 0, 0), 20.0)
-	box(inn, Vector3(0, 4.0, 0), Vector3(16.0, 8.0, 11.0), "plaster_worn")
+	box(inn, Vector3(0, 4.0, 0), Vector3(16.0, 8.0, 11.0), "plaster")
 	_roof(inn, Vector3(0, 8.0, 0), 16.4, 11.6, 4.0)
 	var warm: StandardMaterial3D = glow(Color(1.0, 0.72, 0.4), 2.2)
 	for row: int in 2:
