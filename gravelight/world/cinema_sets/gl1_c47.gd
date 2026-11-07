@@ -170,20 +170,20 @@ func _passengers() -> void:
 func _outside() -> void:
 	ground = group(self, "Ground", Vector3(0, GROUND_Y, -1500))
 	var snow: StandardMaterial3D = noisy(Color(0.2, 0.21, 0.26), Color(0.56, 0.58, 0.64), 0.012, 60.0, 0.9)
-	plane(ground, Vector3(0, 0, 0), Vector2(5000, 7000), snow)
+	plane(ground, Vector3(-800, 0, 0), Vector2(6500, 7600), snow)   # (the port windows look down-left: west of the track)
 	var woods: Array = []
 	for i: int in 160:
 		woods.append(xf(Vector3(rng.randf_range(-2400, 2400), 4.0, rng.randf_range(-3400, 3400)), Vector3(rng.randf_range(60, 260), 12.0, rng.randf_range(60, 300))))
 	multi(ground, Props.unit_sphere(), woods, flat(Color(0.03, 0.04, 0.04)), "Woods")
 	box(ground, Vector3(-300, 0.5, 0), Vector3(40, 1.0, 7000), flat(Color(0.03, 0.035, 0.05), 0.2), Vector3(0, 8, 0))   # the river
-	for f: int in 26:   # gun pits and burning vehicles
-		var fp: Vector3 = Vector3(rng.randf_range(-900, 900), 3.0, rng.randf_range(-3200, 3200))
+	for f: int in 70:   # gun pits and burning vehicles
+		var fp: Vector3 = Vector3(rng.randf_range(-2600, -300), 3.0, rng.randf_range(-3600, 3600))
 		glow_dot(ground, fp, rng.randf_range(16, 32), Color(1.0, 0.45, 0.15), 1.2)
 	# the columns walking west: dark figures in loose files
 	var figs: Array = []
-	for col: int in 6:
-		var cx: float = rng.randf_range(-700, 500)
-		var cz: float = rng.randf_range(-2600, 2600)
+	for col: int in 12:
+		var cx: float = rng.randf_range(-2300, -500)
+		var cz: float = rng.randf_range(-3400, 3400)
 		for k: int in 40:
 			figs.append(xf(Vector3(cx - float(k) * 9.0 + rng.randf_range(-3, 3), 3.0, cz + rng.randf_range(-8, 8)), Vector3(2.4, 6.5, 2.4)))
 	walkers_mm = multi(ground, Props.unit_box(), figs, flat(Color(0.05, 0.05, 0.06)), "Columns")
@@ -191,12 +191,12 @@ func _outside() -> void:
 	var vm: StandardMaterial3D = glow(Color(0.62, 0.35, 1.0), 3.0)
 	cyl(self, Vector3(1000, 600, -3600), 70.0, 3600.0, vm, Vector3.ZERO, "VioletColumn")
 	glow_dot(self, Vector3(1000, -400, -3500), 1100.0, Color(0.5, 0.25, 0.9), 0.6)
-	for k2: int in 4:
+	for k2: int in 7:
 		_new_flare(k2)
 
 
 func _new_flare(k: int) -> void:
-	var f: Node3D = group(ground, "Flare_%d" % k, Vector3(rng.randf_range(-700, -100), rng.randf_range(160, 260), rng.randf_range(400, 1600)))
+	var f: Node3D = group(ground, "Flare_%d" % k, Vector3(rng.randf_range(-2300, -700), rng.randf_range(140, 280), rng.randf_range(-1600, 600)))
 	glow_dot(f, Vector3.ZERO, 26.0, Color(1.0, 0.98, 0.9), 3.0)
 	var l: OmniLight3D = omni(f, Vector3.ZERO, [1.0, 0.97, 0.88], 6.0, 420.0)
 	l.omni_attenuation = 1.0
@@ -214,8 +214,8 @@ func _process(delta: float) -> void:
 			var f: Node3D = fl[0]
 			f.position.y -= float(fl[2]) * delta
 			f.position.x += sin(_t * 0.3 + f.position.z) * delta
-			if f.position.y < 20.0 or f.global_position.z > 900.0:
-				f.position = Vector3(rng.randf_range(-700, -100), rng.randf_range(200, 280), -f.get_parent().position.z - rng.randf_range(800, 1600))
+			if f.position.y < 20.0 or f.global_position.z > -300.0:
+				f.position = Vector3(rng.randf_range(-2300, -700), rng.randf_range(200, 280), -ground.position.z - rng.randf_range(1200, 3200))
 	if dome != null and dome.light_energy > 0.0 and dome.has_meta("flicker_on"):
 		dome.light_energy = 1.3 * (0.6 + 0.4 * absf(sin(_t * 17.0)))
 
