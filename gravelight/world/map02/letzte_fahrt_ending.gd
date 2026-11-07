@@ -90,7 +90,7 @@ func _show_card() -> void:
 	_card.layer = 40
 	add_child(_card)
 	var bg: ColorRect = ColorRect.new()
-	bg.color = Color(0.02, 0.02, 0.03, 0.0)
+	bg.color = Color(0.02, 0.02, 0.03, 0.94)   # the dive faded to black: the card's ground stays black, no HUD flash
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_card.add_child(bg)
