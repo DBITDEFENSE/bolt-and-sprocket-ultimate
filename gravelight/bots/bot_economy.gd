@@ -420,6 +420,7 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 			power_door = plan_p["door"]
 			saving_for = power_door.cost
 	# ---- perks
+	var tier_up_want: int = 0   # T-186: the next tier it would brew with nothing new to drink (the bank saves for it)
 	if bool(brain.options.get("perks", true)) and rnd >= int(eco.get("perk_min_round", 2)):
 		var avail: Dictionary = {}
 		var machines: Dictionary = {}
@@ -454,6 +455,9 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 					ups[k] = PerkManager.tier_price(StringName(k), PerkManager.tier_of(pid, StringName(k)) + 1)
 			var nothing_new: bool = cap_left <= 0 or perk_wanted(eco, plan, PerkManager.owned(pid), avail, main_cls, coop, cap_left, 1 << 30, 0) == &""
 			var up: StringName = upgrade_wanted(eco, PerkManager.tiers(pid), ups, main_cls, rnd, scrip, 0 if perks_only else reserve + egg_save, nothing_new)
+			var up_any: StringName = upgrade_wanted(eco, PerkManager.tiers(pid), ups, main_cls, rnd, 1 << 30, 0, nothing_new)
+			if up_any != &"":
+				tier_up_want = int(ups[String(up_any)]) + int((eco.get("perk_upgrades", {}) as Dictionary).get("extra_reserve", 500))   # the brew's own buffer
 			if up != &"":
 				var pm3: PerkMachine = machines[String(up)]
 				var nt: int = PerkManager.tier_of(pid, up) + 1
@@ -627,7 +631,7 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 	var bk: Dictionary = eco.get("bank", {})
 	if bool(bk.get("enabled", true)) and not brain.is_player_bot and (in_break or shop_brk) and bank_visits_round < int(bk.get("visits_per_round", 1)) \
 			and BankAccount.closed_reason() == "":
-		var want: int = next_want_cost(up_ok and _powered_crucible(), up_cost, bench_pick)
+		var want: int = next_want_cost(up_ok and _powered_crucible(), up_cost, bench_pick, tier_up_want)
 		var mv: int = BankAccount.bot_plan(scrip, BankAccount.bot_balance(pid), want, reserve + save_up, int(bk.get("min_move", 1000)))
 		if mv != 0:
 			var ctr: BankCounter = _bank_counter(anc, rng * float(bk.get("range_mult", 1.5)))
@@ -653,8 +657,10 @@ static func bench_rows_open(rows: Array) -> Array:
 
 
 ## T-177: the price of the next thing this bot wants (0 none), for the bank: its next tonic (the plan's first it
-## can buy now: owned, cap and power checked), else a Crucible teaching it is up for, else the bench's pick.
-func next_want_cost(crucible_up: bool, up_cost: int, bench_pick: Dictionary) -> int:
+## can buy now: owned, cap and power checked), else the next tier it would brew (`tier_up`, T-186: with every tonic
+## held, or the cap full, the bank swept everything above the reserve and no tier was ever saved for), else a
+## Crucible teaching it is up for, else the bench's pick.
+func next_want_cost(crucible_up: bool, up_cost: int, bench_pick: Dictionary, tier_up: int = 0) -> int:
 	var pid: int = player.player_id
 	if bool(brain.options.get("perks", true)):
 		var plan: Array = brain.personality_economy("perk_order", [])
@@ -669,6 +675,8 @@ func next_want_cost(crucible_up: bool, up_cost: int, bench_pick: Dictionary) -> 
 			var pk: String = str(pv)
 			if have.has(pk) and PerkManager.can_buy(pid, StringName(pk)) == &"ok":
 				return PerkManager.price(StringName(pk))
+	if tier_up > 0:
+		return tier_up
 	if crucible_up:
 		return up_cost
 	if not bench_pick.is_empty():

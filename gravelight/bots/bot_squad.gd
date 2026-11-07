@@ -125,6 +125,8 @@ func add_brain(p: Player, options: Dictionary = {}, i: int = -1) -> BotBrain:
 		mark_orders.attach(b)
 	if bool(b.options.get("kit", true)) and not Campaign.carried_player(p.player_id):
 		apply_kit(p, true)   # a campaign arrival keeps the carried kit instead
+	else:
+		apply_r30_kit(p)   # T-186: a campaign arrival (or a companion, when the data lets it) past round 30
 	if is_inside_tree():
 		_ensure_ui()   # a companion joining a squad that had no bots (solo): the plates, the wheel, the pings
 	return b
@@ -257,6 +259,7 @@ func apply_kit(p: Player, weapons: bool) -> void:
 			continue
 		PerkManager.grant(p.player_id, perk)
 	apply_late_kit(p)
+	apply_r30_kit(p, not weapons)   # T-186: on top of the late kit (a revive is `weapons` false)
 
 
 # ================================================================== U08 section 3 (T-130): the late-round kit
@@ -350,6 +353,144 @@ func _weakest_slot(p: Player) -> int:
 			worst_t = t
 			worst = i
 	return worst
+
+
+# ================================================================== T-186: the round-30 kit
+
+## The round-30 kit is due (bots.json r30_kit): enabled, `from_round` reached, the Bot Bonus Perk setting on and
+## Classic Rules off (the same "bot help" toggle as the late kit). Pure.
+static func r30_kit_due(round_number: int, rcfg: Dictionary, settings_values: Dictionary) -> bool:
+	if rcfg.is_empty() or not bool(rcfg.get("enabled", true)) or round_number < int(rcfg.get("from_round", 30)):
+		return false
+	return bool(settings_values.get("bot_bonus_perk", true)) and not bool(settings_values.get("classic_rules", false))
+
+
+## The tonics the round-30 kit hands out: `perks` "all" (every id in `all_ids`, perks.json's) or a list of ids, minus
+## `exclude`, never an id perks.json doesn't have. Sorted. Pure.
+static func r30_perk_ids(rcfg: Dictionary, all_ids: Array) -> Array:
+	var want: Variant = rcfg.get("perks", "all")
+	var src: Array = all_ids if (want is String and str(want) == "all") else (want as Array if want is Array else [])
+	var excl: Array = rcfg.get("exclude", [])
+	var out: Array = []
+	for v: Variant in src:
+		var s: String = str(v)
+		if s == "" or out.has(s) or excl.has(s) or not all_ids.has(s):
+			continue
+		out.append(s)
+	out.sort()
+	return out
+
+
+## What the round-30 kit does for the guns in `slots` (WeaponInstances): {"do": "ok" (the main gun is taught to
+## `tier` already), "teach" (teach slot `slot` to `tier`), "give" (no long gun can be taught: hand the fallback gun),
+## "slot": int}. The main gun is the best long gun by economy tier (a taught gun counts its teachings); pistols and
+## wonders are never it (T-163: a gun before a wonder). A best gun that can't be taught gives way to the next. Pure.
+static func r30_gun_plan(slots: Array, eco: Dictionary, tier: int) -> Dictionary:
+	var order: Array = []
+	for i: int in slots.size():
+		var w: WeaponInstance = slots[i]
+		if w == null or w.weapon_class() == &"pistol" or w.weapon_class() == &"wonder":
+			continue
+		order.append([BotEconomy.tier_of(String(w.base_id()), w.upgraded, eco, w.tier), i])
+	order.sort_custom(func(a: Array, b: Array) -> bool: return float(a[0]) > float(b[0]) or (float(a[0]) == float(b[0]) and int(a[1]) < int(b[1])))
+	for e: Variant in order:
+		var k: int = int((e as Array)[1])
+		var w2: WeaponInstance = slots[k]
+		if w2.upgraded and w2.tier >= tier:
+			return {"do": "ok", "slot": k}
+		if Crucible.action_for(w2) == &"upgrade":
+			return {"do": "teach", "slot": k}
+	return {"do": "give", "slot": -1}
+
+
+## Does this Player take the round-30 kit? A live squad bot that came with the spawn kit (not a dropped online
+## player's stand-in, whose own kit stays), a companion only with r30_kit.companions, never the bot-mode agent.
+func r30_takes(p: Player) -> bool:
+	if p == null or not is_instance_valid(p) or not p.is_bot or p.downed or p.spectating:
+		return false
+	var b: BotBrain = _brain_of(p.player_id)
+	if b == null or b.is_player_bot:
+		return false
+	if p.is_companion:
+		return bool((_cfg.get("r30_kit", {}) as Dictionary).get("companions", false))
+	return bool(b.options.get("kit", true))
+
+
+## Holds the whole round-30 kit: every kit tonic and a long gun taught to weapon_tier (smokes, the dev report).
+func r30_kit_held(p: Player) -> bool:
+	var rcfg: Dictionary = _cfg.get("r30_kit", {})
+	for pk: Variant in r30_perk_ids(rcfg, (GLData.table("perks")["perks"] as Dictionary).keys()):
+		if not PerkManager.has_perk(p.player_id, StringName(str(pk))):
+			return false
+	return p.weapons != null and str(r30_gun_plan(p.weapons.slots, BotAIData.table("economy"), int(rcfg.get("weapon_tier", 2))).get("do", "")) == "ok"
+
+
+## Gives a bot the round-30 kit when it is due (spawn, a bleed-out respawn, a join or arrival, every round start;
+## a revive only with on_revive): every kit tonic it lacks, quietly and outside the cap, and its main gun taught to
+## weapon_tier. Idempotent. True when it handed anything.
+func apply_r30_kit(p: Player, revive: bool = false) -> bool:
+	if not Net.is_authority() or not r30_takes(p):
+		return false
+	var rcfg: Dictionary = _cfg.get("r30_kit", {})
+	if not r30_kit_due(RoundManager.current_round, rcfg, GLSettings.values):
+		return false
+	if revive and not bool(rcfg.get("on_revive", false)):
+		return false   # a down costs its tonics for the rest of the round; the next round start brings them back
+	var pid: int = p.player_id
+	var gave: bool = false
+	for pk: Variant in r30_perk_ids(rcfg, (GLData.table("perks")["perks"] as Dictionary).keys()):
+		var id: StringName = StringName(str(pk))
+		if not PerkManager.has_perk(pid, id):
+			PerkManager.grant(pid, id, true)
+			gave = true
+	if p.weapons != null:
+		var tier: int = clampi(int(rcfg.get("weapon_tier", 2)), 1, WeaponInstance.max_tier())
+		var plan: Dictionary = r30_gun_plan(p.weapons.slots, BotAIData.table("economy"), tier)
+		match str(plan.get("do", "")):
+			"teach":
+				_r30_teach(p, int(plan["slot"]), tier)
+				gave = true
+			"give":
+				var fid: StringName = StringName(str(rcfg.get("fallback_weapon", "thompson_up")))
+				if (GLData.table("weapons").get("upgraded", {}) as Dictionary).has(String(fid)) \
+						or (GLData.table("weapons")["weapons"] as Dictionary).has(String(fid)):
+					if p.weapons.find_weapon(fid) == null and p.weapons.slots.size() >= p.weapons.max_slots():
+						p.weapons.current_index = _weakest_slot(p)   # the taught gun takes the weakest slot's place
+					p.weapons.give_weapon(fid)
+					var k: int = p.weapons.slots.find(p.weapons.find_weapon(fid))
+					if k >= 0:
+						_r30_teach(p, k, tier)
+					gave = true
+				else:
+					push_warning("bots.json r30_kit: no weapon '%s'" % fid)
+	if gave:
+		GLBus.perks_changed.emit(pid)
+	return gave
+
+
+## Teaches the gun in slot `k` to `tier` in place, the Crucible's way: an untaught gun becomes its taught form with
+## its attachments and finish; the gun comes back full and goes into the hands.
+func _r30_teach(p: Player, k: int, tier: int) -> void:
+	var w: WeaponInstance = p.weapons.slots[k]
+	if not w.upgraded:
+		var up: StringName = w.upgrade_id()
+		if up == &"":
+			return
+		var kit: Array = WeaponKit.encode(w.kit)
+		var fin: String = String(w.finish)
+		var nw: WeaponInstance = WeaponInstance.create(up)
+		p.weapons.slots[k] = nw
+		if not kit.is_empty() or fin != "":
+			p.weapons.set_kit(up, kit, fin)
+		w = nw
+	w.tier = maxi(w.tier, tier)
+	w.refill()
+	p.weapons.current_index = k
+	if p.weapons.has_method("_cancel_reload"):
+		p.weapons.call("_cancel_reload")
+	p.weapons.call("_rebuild_gun")
+	if p.remote_body != null:
+		p.remote_body.set_weapon(w.id)
 
 
 func _start_planner() -> void:
@@ -1269,6 +1410,8 @@ func _on_round_started(_round: int, _special: bool) -> void:
 		b.on_round_started()
 		if b.player != null and is_instance_valid(b.player) and not b.player.is_companion:
 			apply_late_kit(b.player)   # U08 (T-130): bots alive when round 25 starts gear up
+		if b.player != null and is_instance_valid(b.player):
+			apply_r30_kit(b.player)   # T-186: and from round 30 every tonic and a taught main gun (after a revive too)
 	if player_bot != null and is_instance_valid(player_bot):
 		player_bot.on_round_started()
 

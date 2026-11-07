@@ -42,6 +42,17 @@
     "crucible_tier": 2,
     "exclude": []
   },
+  "r30_kit": {
+    "_doc": "T-186 (the owner: \"all bots spawn with all perks now after round 30 and a pack a punch weapon\"): from `from_round` on, every squad bot that spawns, respawns (a bleed-out), joins or arrives, and every live squad bot when a round starts, holds every tonic in perks.json (`perks` \"all\", or a list; minus `exclude`), granted quietly and outside the cap, at the tier it has (new ones tier I), and its main gun (its best long gun, never a pistol or a wonder) taught at the Crucible to at least `weapon_tier`, in its slot with its attachments, full, in hand; with no long gun that can be taught it gets `fallback_weapon` at `weapon_tier` (a free slot, else the weakest). Stacks on late_kit (that runs first: its tier III tonic and the Chicago Lament II). A down loses the tonics like any other (not permanent): a respawn gives them back at once, a revive only at the next round start (`on_revive` false). Off with the 'Bot Bonus Perk' setting, Classic Rules or `enabled` false. `companions`: Jakub and the map companions too (false: they shop for themselves, T-177). Never the bot-mode agent (it plays the human) or a dropped online player's stand-in.",
+    "enabled": true,
+    "from_round": 30,
+    "perks": "all",
+    "exclude": [],
+    "weapon_tier": 2,
+    "fallback_weapon": "thompson_up",
+    "on_revive": false,
+    "companions": false
+  },
   "local_ai": {
     "_doc": "One bot (squad index bot_index) gets a planner that picks its objective: the map's easter egg steps, the power, doors, perks, guns, the Crucible, boards, or sticking with the team. In mode 'local' a local LLM served by Ollama (endpoint) makes the pick every decide_every_s from a short text summary of the match and a numbered option list (structured JSON output, the option ids as an enum); the first installed model in `models` is used and kept loaded for keep_alive. When Ollama is unreachable, slow (timeout_s) or answers nonsense, the scripted planner (each option's own score) decides instead, so the bot never stalls. autostart_ollama runs `ollama serve` (hidden) when the API is down and the exe is found. The bot then roams the whole map for its objectives (no leash) and fights from where it stands. speak: the LLM's short remark as a subtitle in the bot's voice, at most every speak_cooldown_s.",
     "bot_index": 0,
