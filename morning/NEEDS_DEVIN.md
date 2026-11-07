@@ -4,11 +4,11 @@ Short, phone-readable. Nothing here blocks the build.
 
 ## UPDATE 11: ElevenLabs
 <!-- eleven-plan:start (tools/voice.sh elevenlabs plan rewrites this block) -->
-- **Estimate 2026-11-07** (`tools/voice.sh elevenlabs plan`, model `eleven_v4`, 1 credit per character): **420,602 characters** still to bake, so **Pro (500,000 credits / month) in one month**.
-- Per group, in bake order: 1 the new cutscenes 11,123; 2 the squad 39,994; 3 the Operator 27,862; 4 the map NPCs 37,508; 5 the bosses 2,182; 6 barks 47,041; 7 The Fine Print 197,650; 8 Bolt & Sprocket 57,242.
-- Your account now: **creator** tier, 53 of 131,000 characters used this period, next reset 2026-12-07. Not enough for the whole bake in one period: upgrade for one month, or stay and bake over about 4 monthly periods (the bake stops cleanly at the quota and resumes after the reset).
-- 6,276 lines have no ElevenLabs voice yet (T-201 casts them): the estimate counts them anyway.
+- **Estimate 2026-11-07** (`tools/voice.sh elevenlabs plan`, model `eleven_v4`, 1 credit per character): **441,318 characters** still to bake, so **Pro (500,000 credits / month) in one month**.
+- Per group, in bake order: 1 the new cutscenes 10,740; 2 the squad 46,292; 3 the Operator 28,963; 4 the map NPCs 39,527; 5 the bosses 2,182; 6 barks 58,655; 7 The Fine Print 197,717; 8 Bolt & Sprocket 57,242.
+- Your account now: **creator** tier, 321 of 131,000 characters used this period, next reset 2026-12-07. Not enough for the whole bake in one period: upgrade for one month, or stay and bake over about 4 monthly periods (the bake stops cleanly at the quota and resumes after the reset).
 <!-- eleven-plan:end -->
+- **Optional, ElevenLabs key permission:** the key in `.env.local` has no `voices_write`, so nothing could be added to the account or Voice-Designed. The cast therefore uses Voice Library and premade voices by their ids directly (they speak fine without being added). If you want the cast pinned into your account (a library owner can withdraw a voice), make a key with `voices_write` and run `tools/voice.sh elevenlabs assign --char=.. --voice=.. --owner=..` per voice (30 slots on Creator). Nothing needs doing for the bake to run.
 
 ## UPDATE 10 (2026-11-02): the steps only you can do, one line each
 1. **Vercel and the site password:** unchanged from UPDATE 09 (items 1-2 below); the web build must be rebuilt from this master first: `sh tools/build_web.sh` then `sh tools/deploy_web.sh`.

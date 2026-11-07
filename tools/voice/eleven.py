@@ -382,6 +382,10 @@ def detect_lang(s: str) -> str:
 
 def line_lang(ln: V.Line, entry: dict, spoken: str) -> str:
     if ln.lang:
+        # The Fine Print tags a speaker [de] / [pl] when the character speaks that language in the story, but writes
+        # the line in English; English text is sent as English (the voice carries the accent), never as German.
+        if ln.game == "fp" and ln.lang in ("de", "pl") and not ln.speech and not detect_lang(spoken):
+            return "en"
         return ln.lang
     if ln.speech:
         return detect_lang(ln.speech) or str(entry.get("language") or "en")

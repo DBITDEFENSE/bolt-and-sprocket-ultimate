@@ -125,7 +125,8 @@ def test_untouched_lines_stay_tts(sandbox):
     gl = V.load_manifest("gl")
     bs = {}
     P.ensure_tts_rows(gl["files"], bs, V.collect_all())
-    assert all(r["source"] == "tts" for r in gl["files"].values())
+    # no recorded take is in the game; a baked ElevenLabs take (T-193 / T-201) is the only other source
+    assert all(r["source"] in ("tts", "ai_eleven") for r in gl["files"].values())
     assert bs["cs.lrSignal.01"]["source"] == "tts"
 
 

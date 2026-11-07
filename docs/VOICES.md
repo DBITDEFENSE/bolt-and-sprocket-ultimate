@@ -105,6 +105,48 @@ tools/voice.sh elevenlabs design --char=gl:SER --pick=2                creates p
 | Bolt, Sprocket and the B&S cast | comedy voices: Bolt the warm straight man; Sprocket dry, smug, very fast (the robot treatment is added afterwards); Grindstone booming; Blartz loud and too close to the mic; GLAMBOT showbiz | the comedy is the contrast with Gravelight |
 | The Fine Print (Vendelin, Res, Sable, the Underwriter, the Darkmatter PA ...) | from FINEPRINT_LORE §3.8: Vendelin low and slow with a hum under the vowels; Res warm, slow, Bernese; Sable a low unhurried alto | Darkmatter is played straight: soft, grateful, patient |
 
+### The cast (T-201, 2026-11-07)
+
+Every voice is a Voice Library voice or one of the account's premade voices, used **by id** (the bake key has no
+`voices_write`, so nothing was added to the account or Voice-Designed; a library voice works in text-to-speech without
+being added, checked with a 12-character call). Every voice is rate 1.0 (one credit per character). The full reasons
+are in `cast.json` (`eleven.why`, with the voice's labels); stability / similarity are set per role (lower stability for
+the frightened and the risen, 0.7 to 0.85 for the flat machine voices). Voices named twice are shared only by people
+who are never in one scene.
+
+| Speaker | Voice (library unless "premade") | Language | Stability |
+|---|---|---|---|
+| Dutch | Damian: Steady Grounded Baritone, Warm | en | 0.45 |
+| Peg | Sophia: British (young, RP) | en | 0.50 |
+| Deacon | Wesley: Southern, Warm, Conversational | en | 0.50 |
+| Wren | Marta: Calm and Sophisticated Narrator (Polish accent) | en | 0.55 |
+| Jakub | Andrew: Deep and Narrative (Polish accent) | en | 0.55 |
+| The Operator | Clyde: Vintage and Warm Radio Announcer | en | 0.40 |
+| Fasbender | Tobias: German accent | en | 0.40 |
+| Reinholt | Charlotte: Competent and Authoritative (German accent) | en / de | 0.55 |
+| Father Serafim | Alex: Calm Russian Analyst (native, 50-60) | ru | 0.60 |
+| Volkov | Aleksandr: Documentary Narrator (native, young Moscow baritone) | ru | 0.50 |
+| Soviet radio / the Returned / the brigade | BaMnyc (crisp) / Danik (calm, low stability) / Evgeniy Rybakov (expressive) | ru | 0.70 / 0.30 / 0.35 |
+| The PA, U-boat radio, Lenz | Hans: Clear and Soft / Carl: Normal and Calm / Tom: Bass-heavy | de | 0.70 / 0.75 / 0.60 |
+| The Cousins (Mara, Jo, Alix, together) | Scarlett / Clara / Lucy (Scarlett for "together") | de | 0.35 to 0.40 |
+| PAUL (PAU), THE SLENDER (SLN) | Harry: Fierce Warrior (premade) / Austin (premade): library voices, never clones | en | 0.30 / 0.60 |
+| Liesl | Jessica (premade): no child voice exists in the library | en | 0.40 |
+| The map people (WIE BRA KRO SOB ROT KUB TRU POH AMM PET JET TEL JES RUH HRM RDL MIN MED RAD OGP DES WID WDL BRK COU) | a pool of seven German-accent voices by age and sex: Potato (old man), Otto (calm man), Wogenburg (soft Austrian man), Simon (young man), Susanne (older woman), Lucy / Hannelore / Clara (young women); Andrew for the Silesian-Polish shift boss | en | 0.35 to 0.60 |
+| Americans and British on the maps (PRU DEE HAL RRK WIT SEL WIV) | Liam, Matilda, George, Chris, Simon, Daniel (premade); the Woman in Violet shares Sable's voice | en | 0.35 to 0.60 |
+| The seven relief squads | AK Amir (Polish accent), SOV Maxim (Russian accent), VS Potato, CDO George, KM Simon, PARA Liam, MP Brian | en | 0.30 to 0.55 |
+| Bolt / Sprocket / Blartz / Glambot / Grindstone | Will (premade) / Witty McGee (snarky and warm) / Goofy (nasal, fast) / Odom (game-show host) / Edward (loud, cocky) | en | 0.50 / 0.40 / 0.35 / 0.35 / 0.45 |
+| Vendelin | Albert Martin: Monotone and Smooth (Northern European accent; the hum is an effect afterwards) | en | 0.70 |
+| Sable, the Board, the Darkmatter PA | Karin Anne (alto) / Sarah (premade) / Sarah (premade) | en | 0.60 / 0.65 / 0.65 |
+| The Underwriter | River (premade), held at 0.85 | en | 0.85 |
+| Res, Grosi, Anni, Florian, Hadamik, Koschny, Pilch ... | Wogenburg, Susanne, Hannelore, Potato, Otto, Bill (premade), Andrew | en | 0.45 to 0.50 |
+| The B&S minor cast and the Fine Print robots | premade voices, one each per scene (Gasket Matilda, Gilda Alice, Cornelius George, Pa Bill, the Content Creator Laura ...) | en | 0.30 to 0.85 |
+
+Known limits: the library has no "light German accent" for a young man beyond Simon and Tobias, so Kubiak is a plain
+young American (Liam); a few minor Fine Print speakers share a voice across chapters; the German-accented speakers
+speak English with the accent the voice carries (the lines are English, `language_code: en`). A Fine Print line the
+script tags `[de]` or `[pl]` is English text for a character who is speaking that language in the fiction; it must not
+be sent with that `language_code` (see DECISIONS T-201 casting).
+
 Library voices are voices that people chose to share in the Voice Library. Voice Design makes a new voice from a
 prompt. Neither one copies a real person without their consent. `clone` (an Instant Voice Clone of a cast member's
 own takes) is refused unless their consent says so.
