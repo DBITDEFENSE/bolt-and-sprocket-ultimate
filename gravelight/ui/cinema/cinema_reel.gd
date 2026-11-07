@@ -46,6 +46,7 @@ var _beds: Array = []
 var _hidden_hud: Dictionary = {}
 var _root_3d_was: bool = false
 var _waiting_end: bool = false
+var _vo_held: bool = false
 
 
 ## A reel of `cut_ids` under `parent` (in a match: the MapRoot, whose HUD it hides).
@@ -69,6 +70,9 @@ func _ready() -> void:
 	_build_view()
 	if map != null:
 		_hide_hud()
+		GLVO.stop_all()   # T-203: the match's own lines wait for the reel (GLVO.cinema_hold)
+		GLVO.cinema_hold += 1
+		_vo_held = true
 	_root_3d_was = get_tree().root.disable_3d
 	get_tree().root.disable_3d = true
 	if ids.is_empty():
@@ -309,7 +313,15 @@ func _stop_beds(seconds: float) -> void:
 
 func _say(id: String) -> void:
 	if not done:
+		GLVO.cinema_pass = true
 		GLVO.play_local(StringName(id))
+		GLVO.cinema_pass = false
+
+
+func _release_vo() -> void:
+	if _vo_held:
+		_vo_held = false
+		GLVO.cinema_hold = maxi(0, GLVO.cinema_hold - 1)
 
 
 func _on_skip() -> void:
@@ -393,6 +405,7 @@ func _finish() -> void:
 	stage = null
 	get_tree().root.disable_3d = _root_3d_was
 	_restore_hud()
+	_release_vo()
 	finished.emit()
 	var tw: Tween = create_tween()
 	tw.tween_interval(0.15)
@@ -401,6 +414,7 @@ func _finish() -> void:
 
 
 func _exit_tree() -> void:
+	_release_vo()
 	if not done:
 		get_tree().root.disable_3d = _root_3d_was
 		_restore_hud()

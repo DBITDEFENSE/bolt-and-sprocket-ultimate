@@ -22,6 +22,9 @@ const NODE_NAME: String = "LazarusCinema"
 static var force: bool = false
 ## Tools: these ids instead of the plan on the next match start (the smokes, the clip tool).
 static var force_ids: Array = []
+## T-203: the next match start plays nothing (Play.bat's quick map buttons drop you straight in; the cutscenes have
+## their own buttons and play in a campaign). force_ids wins over it.
+static var skip_next: bool = false
 
 var reel: CinemaReel = null
 var playing: Array = []
@@ -100,7 +103,9 @@ static func on_rounds_started(map: MapRoot, ctx: Dictionary) -> void:
 	if CinemaTheatre.replay_id != "":
 		n._replay_exfil(map)
 		return
-	if not enabled():
+	var skip: bool = skip_next and force_ids.is_empty()
+	skip_next = false
+	if skip or not enabled():
 		return
 	var ids: Array[String] = []
 	if not force_ids.is_empty():

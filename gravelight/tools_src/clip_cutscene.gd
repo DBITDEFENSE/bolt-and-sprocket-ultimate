@@ -28,6 +28,7 @@ const MAPS: Dictionary = {
 	# T-194: the LAZARUS reels in a match, started the game's way (LazarusCinema at the match start, forced on)
 	"lazarus_campaign_start": ["map00_crossroads", 0],   # a new campaign: FOURTH DAY, GRAVELIGHT ONE, then the opening
 	"lazarus_map01_arrival": ["map01_kaltenbrunn", 0],   # STAUB on Kaltenbrunn's first match start
+	"lazarus_map00_standalone": ["map00_crossroads", 0],   # GRAVELIGHT ONE on a plain Map 0 start (Play.bat's button)
 }
 ## T-194: every id of cutscenes_lazarus.json also plays on its own (CinemaReel, as the Archive and the prologue do).
 
@@ -99,7 +100,7 @@ func _ready() -> void:
 			Campaign.begin()
 		else:
 			Campaign.reset()
-			LazarusCinema.force_ids = ["staub"]
+			LazarusCinema.force_ids = ["gravelight_one"] if cut == "lazarus_map00_standalone" else ["staub"]
 	elif cut == "inn_opening":
 		Campaign.reset()
 	else:

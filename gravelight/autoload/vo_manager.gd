@@ -40,6 +40,11 @@ const BOSS_TOKENS: Dictionary = {&"foreman": "FOREMAN", &"screamer": "SCREAMER"}
 
 ## Tests set this so chance rolls always pass.
 var always_pass_chance: bool = false
+## U11 (T-203): while a LAZARUS cutscene plays over a match only its own lines play (Map 0's opening, the Operator's
+## match start and the squad's chatter talked under GRAVELIGHT ONE). CinemaReel holds it (a count) and lets its own
+## lines through with `cinema_pass`.
+var cinema_hold: int = 0
+var cinema_pass: bool = false
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 var lines: Dictionary = {}
@@ -682,6 +687,8 @@ func _condition_ok(id: StringName) -> bool:
 func _submit(id: StringName, prio: int, pid: int = -1) -> bool:
 	var rec: Dictionary = lines.get(String(id), {})
 	if rec.is_empty():
+		return false
+	if cinema_hold > 0 and not cinema_pass:
 		return false
 	var speaker: StringName = StringName(rec["speaker"])
 	var group: StringName = _group_for(speaker)

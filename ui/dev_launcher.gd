@@ -476,6 +476,7 @@ func _start_gl(scene: String, start_round: int, boss: String = "", force_bots: i
 	GameState.bot_skill = str(GLSettings.values.get("bot_skill", "regular"))
 	GameState.bot_ai_mode = BotConfig.ai_mode_from_settings(GLSettings.values, GameState.bot_count)
 	Campaign.reset()
+	LazarusCinema.skip_next = true   # T-203: the quick map buttons drop you straight in (the crash intro has its own button)
 	_pending_round = start_round
 	_pending_god = _god.button_pressed
 	_pending_scrip = scrip_for_round(start_round)
