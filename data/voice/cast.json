@@ -1,5 +1,5 @@
 {
- "_doc": "The voice cast sheet (UPDATE 06 B1, T-101). characters.<game>.<code>.actor = the actor id voicing that character (a list for a group, e.g. the Cousins together); \"[ACTOR]\" / \"[COUSIN_1]\" are unfilled placeholders (each still gets its own script as slot_<code>). One actor can voice several characters: give them the same id. actors.<id>: name (shown on the script), contact (optional, never shown), notes. Actor ids are lowercase (voice_inbox/<id>/, voice_scripts/<id>/). Read by tools/voice/make_scripts.py and tools/voice/import.py. Edit this file, then run tools/voice.sh scripts.",
+ "_doc": "The voice cast sheet (UPDATE 06 B1, T-101). characters.<game>.<code>.actor = the actor id voicing that character (a list for a group, e.g. the Cousins together); \"[ACTOR]\" / \"[COUSIN_1]\" are unfilled placeholders (each still gets its own script as slot_<code>). One actor can voice several characters: give them the same id. actors.<id>: name (shown on the script), contact (optional, never shown), notes. Actor ids are lowercase (voice_inbox/<id>/, voice_scripts/<id>/). Read by tools/voice/make_scripts.py and tools/voice/import.py. Edit this file, then run tools/voice.sh scripts. UPDATE 11 (T-193): characters.<game>.<code>.eleven = the ElevenLabs voice: voice_id, voice_name, source (library | design; a clone only with the actor's consent), design_prompt (Voice Design), language (en de ru pl: the language_code sent), stability, similarity_boost (the only eleven_v4 settings), why (the casting reason), none (a reason the character has no voice), consent_actor (whose consent a clone would need); eleven_by_prefix: per line-id prefix overrides (the relief squads). characters.fp = The Fine Print's speakers (same_as = the Gravelight / B&S voice they share). tools/voice.sh elevenlabs voices / assign / design fill it; docs/VOICES.md.",
  "actors": {
   "devin": {
    "name": "Devin",
@@ -33,124 +33,602 @@
     "name": "Sgt. Walter \"Dutch\" Kowalczyk",
     "who": "Sgt. Dutch Kowalczyk, 34, Pittsburgh: low, gravelly baritone, unhurried, complains to keep going",
     "voice_notes": "Low, gravelly baritone. Pittsburgh vowels (\"dahntahn,\" \"yinz\" exactly once per map, never more). Unhurried, even in a crisis. / His default register is complaint. He complains the way other men pray: steadily, to keep going. He is never actually panicking. When he goes quiet, the squad worries. / His Polish is kitchen Polish learned from an old woman: wrong genders, wrong cases, a grandmother's accent. Read it confidently and wrong. Wren corrects him; he never learns. / Softens noticeably around Wren. Talks to the dead Gängers like disappointed relatives.",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "An American man of thirty-four from Pittsburgh, Pennsylvania, in the 1940s: a low, gravelly baritone with a working-class Western Pennsylvania accent, unhurried and dry, a tired army sergeant who grumbles to keep his men going. Close, natural, warm.",
+     "language": "en",
+     "stability": 0.45,
+     "similarity_boost": 0.8,
+     "why": "Pittsburgh: a Polish-American steelworker's son, 34. Low, gravelly baritone, Western Pennsylvania vowels, unhurried, grumbles to keep the men going; under U11 more tired and frightened, gallows humour thinning.",
+     "candidates": [
+      {
+       "voice_id": "3YzGaTGef0x5PLEK9yGq",
+       "owner": "1791e0bcb2d8e084264f178f4e128ab927a400e3f4ebbb32afc44e104e0e9c27",
+       "name": "Atlas - Deep, Gravelly Narrator",
+       "labels": "american, middle_aged, male, confident, narrative_story, en",
+       "query": "gender=male, accent=american, search=gravelly"
+      },
+      {
+       "voice_id": "cymHWdiF8WjUCg6vvFxx",
+       "owner": "64cbc624eb5aab4e95a968e1f41d75402277cca6e549036ed17e56ea33bbbc9e",
+       "name": "Vane - Rugged and gravelly",
+       "labels": "american, middle_aged, male, rough, characters_animation, en",
+       "query": "gender=male, accent=american, search=gravelly"
+      },
+      {
+       "voice_id": "odTaIOPU0JBNTD3hBLmJ",
+       "owner": "dff25bdc766e361f30dd633b88649e859f745fa38c028b3b011180377d54b4b0",
+       "name": "Sean - Gravelly Charmer",
+       "labels": "american, middle_aged, male, pleasant, narrative_story, en",
+       "query": "gender=male, accent=american, search=gravelly"
+      },
+      {
+       "voice_id": "ysswSXp8U9dFpzPJqFje",
+       "owner": "1f64d7cf85852186ab7b29aff471a3e99d2a88f1674a09f431134f9d18ce8652",
+       "name": "Azazel - Menacing and Gravelly Demon",
+       "labels": "american, middle_aged, male, intense, characters_animation, en",
+       "query": "gender=male, accent=american, search=gravelly"
+      },
+      {
+       "voice_id": "iB5aLrknrSagc00jivta",
+       "owner": "e9408ae4770d2ca33df75b43d3321c0481fe9df83c735e6c3d5f750f32c107a9",
+       "name": "Jon Peters - Confident, Gravely, Old",
+       "labels": "american, old, male, confident, entertainment_tv, en",
+       "query": "gender=male, accent=american, search=gravelly"
+      }
+     ]
+    }
    },
    "PEG": {
     "name": "Lt. Margaret \"Peg\" Ashworth",
     "who": "Lt. Peg Ashworth, 29, SOE: Received Pronunciation, clipped and precise, never raises her voice",
     "voice_notes": "Received Pronunciation, clipped, precise. Never raises her voice. The worse things get, the more politely she speaks. In a crisis she sounds bored. / Sardonic understatement is her armor: a horde is \"a spot of bother.\" She swears rarely, and when she does it's devastating. / When she's lying, she gets *more* precise, not less. The actor should play the LANTERN hints as tiny, nearly invisible pauses. / Professional fascination with explosives, said with unsettling warmth.",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A British woman of twenty-nine, a 1940s Special Operations officer: crisp upper-class Received Pronunciation, clipped and precise, cool, dry and controlled, never raising her voice.",
+     "language": "en",
+     "stability": 0.6,
+     "similarity_boost": 0.75,
+     "why": "Posh English: SOE lieutenant, 29, Received Pronunciation, clipped and precise, never raises her voice; the worse things get the more politely she speaks.",
+     "candidates": [
+      {
+       "voice_id": "pLbOPegmoa1zxRcFjAVP",
+       "owner": "2329a7f298c5f9bd264367c11f0c0b3a68a6be941b59a9642cb00592b4c18206",
+       "name": "Charlotte - Warm, Clear British RP",
+       "labels": "british, young, female, professional, narrative_story, en",
+       "query": "gender=female, accent=british, search=received pronunciation"
+      },
+      {
+       "voice_id": "byQMr3answnWiGKk0ZUm",
+       "owner": "2dec67123cc6211b9ec9d52e7931f5444d6434ee6f561fbec96b796f98aea58a",
+       "name": "Enid - Clear, Professional & Editorial",
+       "labels": "british, middle_aged, female, calm, narrative_story, en",
+       "query": "gender=female, accent=british, search=received pronunciation"
+      },
+      {
+       "voice_id": "m0MqfGOWTAfVVEaz4KxX",
+       "owner": "a937f4da3109e25e3b44d742d0216fc0938a0dff7cbeb850fdc4bc7e6a725927",
+       "name": "Alexandra",
+       "labels": "british, young, female, calm, conversational, en",
+       "query": "gender=female, accent=british, search=received pronunciation"
+      },
+      {
+       "voice_id": "jv41DhCf464zw0TI7I1w",
+       "owner": "c93052724e2cf4ab0ebd353cc7b03213d6f29474822369d076613bac8c0fe775",
+       "name": "Imogen - Warm & Professional British Storyteller ",
+       "labels": "british, middle_aged, female, professional, narrative_story, en",
+       "query": "gender=female, accent=british, search=received pronunciation"
+      },
+      {
+       "voice_id": "UjprAOteKt2kCnWActec",
+       "owner": "44d56e4da42cf8c0bec15b7aea43e63c2079fafc24977f126ed79f6f58ed180e",
+       "name": "Asha",
+       "labels": "british, middle_aged, female, classy, narrative_story, en",
+       "query": "gender=female, accent=british, search=received pronunciation"
+      }
+     ]
+    }
    },
    "DEA": {
     "name": "Cpl. Elijah \"Deacon\" Brooks",
     "who": "Cpl. Deacon Brooks, 26, Louisiana: warm tenor, soft-spoken, a preacher's rhythm",
     "voice_notes": "Warm Louisiana tenor, soft-spoken, with a preacher's sense of rhythm he inherited and resists. When he gets going, he can't help preaching a little and then catches himself. / Talks to machines like livestock: \"Easy now, girl,\" \"Come on, mule.\" Never condescending to people. / His blues lines are his own, half-sung, made up on the spot. They should sound like real field blues: AAB form, plain words, bent notes. / Quietly funny. His jokes land half a beat late and he enjoys them more than anyone.",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A young African-American man of twenty-six from rural Louisiana in the 1940s: a warm, soft-spoken tenor with a gentle Southern accent and the measured rhythm of a preacher's son; calm, kind, steady under fear.",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Soft Southern: a Louisiana preacher's son, 26, warm soft-spoken tenor with a preacher's rhythm he resists; the quiet theological voice, a line at a time, never a sermon.",
+     "candidates": [
+      {
+       "voice_id": "KuXMdv13akTyq5yqH15d",
+       "owner": "cf34ffb79ea1e9da2479a1216387c082a506889f9e29c5f0607affd813aa50ea",
+       "name": "Carey - Soft Male, slightly southern",
+       "labels": "american, young, male, soft, conversational, en",
+       "query": "gender=male, search=southern soft"
+      },
+      {
+       "voice_id": "FTYCiQT21H9XQvhRu0ch",
+       "owner": "d437b198df78445233a36b1d745f30a332207668cbd40d8da88b6e0fea3ef451",
+       "name": "Trung - Soft, Smooth and Narrative",
+       "labels": "southern, middle_aged, male, professional, informative_educational, vi",
+       "query": "gender=male, search=southern soft"
+      },
+      {
+       "voice_id": "Zm5fDdtChmOUe69OSYwx",
+       "owner": "19b17596ba4aff2a49cb3d989130937620b2050a0fbb125f2b255f3bb46f6ca2",
+       "name": "Sơn - Warm, Soft and Gentle",
+       "labels": "southern, young, male, narrative_story, vi",
+       "query": "gender=male, search=southern soft"
+      },
+      {
+       "voice_id": "dxdOayhnd0jLtELGeNtF",
+       "owner": "d479ddb1202dcee67d8fd89d8448816c768a1b4f1b79519de5fb94c500b4933e",
+       "name": "Mason - Friendly Southern Neighbor",
+       "labels": "us southern, middle_aged, male, casual, characters_animation, en",
+       "query": "gender=male, search=southern soft"
+      },
+      {
+       "voice_id": "D4xQvkd2SmpDZJ8sEwvA",
+       "owner": "d1c8334092b9279eed0a090857fc1c1ce135bae675e2cfb73c0989ffb4c0b816",
+       "name": "Rhett Sutton - Southern, Slow and Deep",
+       "labels": "us southern, middle_aged, male, casual, conversational, en",
+       "query": "gender=male, search=southern soft"
+      }
+     ]
+    }
    },
    "WRN": {
     "name": "Zofia \"Wren\" Nowak",
     "who": "Wren (Zofia Nowak), 24, Home Army: fluent English learned from British radio, a Polish accent, economical and deadpan",
     "voice_notes": "A Polish speaker with fluent but accented English (learned from British radio and an SOE liaison). Clipped, economical, never wasted words. / Dark humor delivered completely deadpan. She doesn't laugh at her own jokes. / Precise about numbers. She counts out loud under her breath: \"sześćdziesiąt dwa... sześćdziesiąt trzy.\" / Fury runs under everything. It surfaces rarely and frighteningly, mostly about the lab, the tanks, and the forced laborers. / Softens only with Dutch, whom she treats like an embarrassing uncle.",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A young Polish woman of twenty-four, a 1940s resistance fighter, speaking fluent English with a clear Polish accent learned from British radio: low, economical, deadpan, watchful and controlled.",
+     "language": "en",
+     "stability": 0.55,
+     "similarity_boost": 0.75,
+     "why": "Polish-accented English: Home Army, 24, English learned from British radio, economical and deadpan; she knows the NKVD. Polish words in Polish.",
+     "candidates": [
+      {
+       "voice_id": "8vdIucMc14HcML5KYpFx",
+       "owner": "d26c0493d54b8d0ed3f04f86944b296ff0143c48be4c9837f274d75195d79a30",
+       "name": "Marta",
+       "labels": "polish, young, female, cute, conversational, en",
+       "query": "gender=female, accent=polish"
+      },
+      {
+       "voice_id": "yOhXTwcNX7GiQq8AsROm",
+       "owner": "c89656de70680d60f3977b48dd81a857f8075d1adaea169711bef9c4039da2ca",
+       "name": "Marta - Calm and Sophisticated Narrator",
+       "labels": "polish, young, female, classy, narrative_story, en",
+       "query": "gender=female, accent=polish"
+      },
+      {
+       "voice_id": "xTv86awUs9qX4HxeRH2n",
+       "owner": "7d30717576f52d3d26f979f1b6e6cb93d850b556e69fd6606186bdb1b018c868",
+       "name": "Helena - The Transcultural Professor",
+       "labels": "polish, female, classy, informative_educational, en",
+       "query": "gender=female, accent=polish"
+      },
+      {
+       "voice_id": "wOUVV74bP8NMIPcU3pRi",
+       "owner": "39d7530d2b4e9f1ff3eebb2191418ddfa0624ce95f410d1315208150301c1b49",
+       "name": "Emilia - Soft Narrator",
+       "labels": "standard, young, female, gentle, narrative_story, pl",
+       "query": "gender=female, language=pl"
+      },
+      {
+       "voice_id": "KYGxyTzRBFFiKRbXfzzg",
+       "owner": "a2eea33dcf62f06eef7d8227309f8201cc3c4e27cb14f9ad6ead1b8d91a7b646",
+       "name": "Adrianna - Soft, Natural",
+       "labels": "standard, young, female, calm, narrative_story, pl",
+       "query": "gender=female, language=pl"
+      }
+     ]
+    }
    },
    "OPR": {
     "name": "The Operator",
     "who": "A sampled 1930s radio announcer on the mine's tannoy: bright, brassy, a little too quick and too cheerful; sometimes the cold corporate voice of the Ledger leaks through.",
     "voice_notes": "Play it like a vintage radio host who is slightly wrong. The radio effect is added afterwards: record it clean.",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A 1940s American radio announcer, a man in his forties with a bright, brassy mid-Atlantic voice and a warm salesman's charm: too cheerful, a little too quick, smiling through every word.",
+     "language": "en",
+     "stability": 0.4,
+     "similarity_boost": 0.75,
+     "why": "A 1940s radio announcer with a salesman's warmth: bright, brassy, a little too quick and too cheerful; U11: it talks about 'the returned' and 'the fourth day' with the same warmth (the horror is the warmth). The tannoy effect is added after (fx.json operator_tannoy).",
+     "candidates": [
+      {
+       "voice_id": "QMJTqaMXmGnG8TCm8WQG",
+       "owner": "5dde3271b3f8e68cc8618e67773db224acbb661e197e6312e07fd245fa79872c",
+       "name": "Clyde - Vintage and Warm Radio Announcer",
+       "labels": "american, middle_aged, male, confident, characters_animation, en",
+       "query": "gender=male, search=old time radio announcer"
+      },
+      {
+       "voice_id": "dqbqOZM4uhsyx1WtTAgT",
+       "owner": "3c54373dc6c7420969ac2748633e6d3643f4f31e60efcf4d9504b2b92740c734",
+       "name": "Max - 1940s RP British voice",
+       "labels": "british, middle_aged, male, crisp, entertainment_tv, en",
+       "query": "gender=male, search=1940s announcer"
+      }
+     ]
+    }
    },
    "JAK": {
     "name": "Jakub Ostrowski",
     "who": "Jakub Ostrowski, 44, Silesian salt hewer: English learned late and well enough, an older Polish voice, calm and wry",
     "voice_notes": "Calm, wry, polite. Slow, careful English learned from a German foreman and Polish newspapers; Polish when it matters (shouting, praying, his wife's name), always with the English beside it in the subtitle. / He has seen worse than zombies and isn't impressed by them. Dry humour about himself, never about the dead. / Never raises his voice except at the breakout. Under fire he stays steady.",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A Polish miner of forty-four from Silesia in the 1940s speaking careful, slow English with a Polish accent: a deep, warm, calm voice, wry and polite, dignified.",
+     "language": "en",
+     "stability": 0.55,
+     "similarity_boost": 0.75,
+     "why": "A person and a hero, never a joke: a Silesian salt hewer, 44, careful English learned late with a Polish accent, calm and wry, a deep warm voice.",
+     "candidates": [
+      {
+       "voice_id": "t8RFUTOiQY6h7eJbfDBp",
+       "owner": "fb5a84095f39106c1f0e5bbafca9a17597fcb3373a748c1240aea95f8c39eb1e",
+       "name": "Andrew - Deep & Narrative",
+       "labels": "polish, middle_aged, male, calm, narrative_story, en",
+       "query": "gender=male, accent=polish"
+      },
+      {
+       "voice_id": "6ETmeyp0auvyYlGqRmta",
+       "owner": "f481e45a9ae0d84470c4a05b7fb13ce920f09481a4bd00ae6b142f527669fced",
+       "name": "Blax - Social media",
+       "labels": "polish, middle_aged, male, casual, social_media, en",
+       "query": "gender=male, accent=polish"
+      },
+      {
+       "voice_id": "lh3DpiIvYKliryahXrpY",
+       "owner": "b455804b05d4431fe0682e191453c59eeb0ea89a58637ce0e49bd4fb2536c7c8",
+       "name": "Amir - Deep, Polish Accent",
+       "labels": "polish, young, male, casual, characters_animation, en",
+       "query": "gender=male, accent=polish"
+      },
+      {
+       "voice_id": "nuwpqeXdykQWOB3gY2BP",
+       "owner": "17d1f18fc8bfd5ab9817766ceae67176e7a46621857e65df7ba7c9bcdafeef3e",
+       "name": "Adam - Warm Storyteller",
+       "labels": "polish, middle_aged, male, calm, informative_educational, en",
+       "query": "gender=male, accent=polish"
+      },
+      {
+       "voice_id": "vTXE4HycltDRUu5VX8bb",
+       "owner": "d144bf505d0a57f3f1b6b417fda51b0803f1e1729741ff073295148f5faeed39",
+       "name": "Mateo - Calm & Curious narrator",
+       "labels": "polish, young, male, calm, narrative_story, en",
+       "query": "gender=male, accent=polish"
+      }
+     ]
+    }
    },
    "FAS": {
     "name": "Dr. Emil Fasbender",
     "who": "A scientist in his mid-40s, nervous and rapid, always speaking with his hand over the radio mic.",
     "voice_notes": "Fast, whispered urgency. The field-radio effect is added afterwards: record it clean.",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A German scientist in his mid-forties speaking English with a German accent: nervous, rapid, hushed, a haunted man who has seen terrible things, talking close to a radio microphone.",
+     "language": "en",
+     "stability": 0.4,
+     "similarity_boost": 0.75,
+     "why": "German scientist, mid-40s, nervous and rapid, hand over the radio mic; U11: haunted, he saw the Soviet dead come in on the trains. English with a German accent; the field-radio effect is added after.",
+     "candidates": [
+      {
+       "voice_id": "7uMairBnhF1FZVSGMkuq",
+       "owner": "9450a3d2e4c415752d7231819bba0c409964857d52b2caf8744a6e86b1ffc468",
+       "name": "Georgie - Trustworthy",
+       "labels": "german, middle_aged, male, pleasant, social_media, en",
+       "query": "gender=male, accent=german, age=middle_aged"
+      },
+      {
+       "voice_id": "G4t3322LqgEAU2HEgGCv",
+       "owner": "c6ab1ccb03696f0dacc366d37f0458b27f7f743f488a6f5c98c69ff244ff14e6",
+       "name": "Paul - English Barritone Narration",
+       "labels": "german, middle_aged, male, deep, narrative_story, en",
+       "query": "gender=male, accent=german, age=middle_aged"
+      },
+      {
+       "voice_id": "VmPkIaPdP997cjIfBWRB",
+       "owner": "2589e4783407384edce004cc76c659a977455cb72dd5e283b788e3856883b1ae",
+       "name": "Tobias - German accent",
+       "labels": "german, middle_aged, male, confident, conversational, en",
+       "query": "gender=male, accent=german, age=middle_aged"
+      },
+      {
+       "voice_id": "zOiHgIXvyjLWTu0bYz48",
+       "owner": "0f8a94fb7a98cfb122899ffebed3bfcdca1a6baa9749bc55e2afc08229b55bf3",
+       "name": "Flo - Warm & Fun European Narrator",
+       "labels": "german, middle_aged, male, pleasant, en",
+       "query": "gender=male, accent=german, age=middle_aged"
+      },
+      {
+       "voice_id": "PaS83tMpnknIjj0BWrbq",
+       "owner": "9a1cfe5af826148541d03e79d540f4a8dc41336f5693dcc89b42b08188f5a701",
+       "name": "Kevin - Podcast",
+       "labels": "german, middle_aged, male, classy, narrative_story, en",
+       "query": "gender=male, accent=german, age=middle_aged"
+      }
+     ]
+    }
    },
    "REI": {
     "name": "Dr. Augusta Reinholt",
     "who": "Early 50s, cultured, controlled and slow; heard on old wax-cylinder recordings and hijacking the PA.",
     "voice_notes": "Cold precision; warmer on the cylinders (her diary). The phonograph / PA effects are added afterwards.",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A cultured German woman in her early fifties, a 1930s scientist, speaking English with a refined German accent: controlled, slow, precise, cold, with grief underneath.",
+     "language": "en",
+     "stability": 0.65,
+     "similarity_boost": 0.75,
+     "why": "German: Dr. Augusta Reinholt, early 50s, cultured, controlled and slow; English with a refined German accent, German lines in German. Phonograph / PA effects added after.",
+     "candidates": [
+      {
+       "voice_id": "s7EySEcYvW3V9JHyna3h",
+       "owner": "84f6eae4f228a44c4431e0294928bf3176263a1f14566eaac8b8f12c33ff5ce2",
+       "name": "Elara Vale - Character",
+       "labels": "german, middle_aged, female, cute, characters_animation, en",
+       "query": "gender=female, accent=german"
+      },
+      {
+       "voice_id": "Z0r0nsdjMqaOiXkRUHRX",
+       "owner": "5a3b94b6a047f2a5c14f48d0d0d7580fc9196891384b921d0d1803a1df45e77b",
+       "name": "Susanne - Calm Storyteller",
+       "labels": "german, middle_aged, female, calm, narrative_story, en",
+       "query": "gender=female, accent=german"
+      },
+      {
+       "voice_id": "tiq5i5xgbt0ucBmI9CTU",
+       "owner": "dc2a0e216cef549cd45fb7ef354d7a79d1bc876e2fa1472ce525014b5b112764",
+       "name": "Viktoria - Business Excellence",
+       "labels": "german, young, female, confident, entertainment_tv, en",
+       "query": "gender=female, accent=german"
+      },
+      {
+       "voice_id": "L2VAaZdFwi5QvefZw36d",
+       "owner": "a659ad0cbea9f1fd9d10a977efa6344bcd87b5d1c2e90a053ee63db25cac68db",
+       "name": "Chrissy - Soft-spoken, Cute,",
+       "labels": "german, young, female, cute, conversational, en",
+       "query": "gender=female, accent=german"
+      },
+      {
+       "voice_id": "bIoCL0WawJqLkKp9VM8G",
+       "owner": "41e92e420edd6c70ea9903e105e3d3164c0eef93b679c36d3399a188aa128fc0",
+       "name": "Lucy - Warm, Swiss English, Conversational",
+       "labels": "german, young, female, pleasant, conversational, en",
+       "query": "gender=female, accent=german"
+      }
+     ]
+    }
    },
    "LSL": {
     "name": "Liesl",
     "who": "Reinholt's daughter, seven, heard on her mother's wax cylinders.",
     "voice_notes": "A child playing; innocent. If no child voices her, an adult can play it lightly. Phonograph effect added afterwards.",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A seven-year-old German girl playing and singing, innocent and light, on an old recording.",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Liesl, seven, on her mother's wax cylinders. Designed voice only (never a real child's voice cloned); if Voice Design refuses a child, a light young adult voice on the phonograph chain."
+    }
    },
    "WIE": {
     "name": "Konrad Wiesner",
     "who": "Konrad Wiesner, a railway signalman (50s) walking home to Hirschfelde, at Verdun in 1916: steady and weary, a deep roughened voice; English as a careful second language, a German accent (T-077)",
     "voice_notes": "A real person speaking English as a careful second language: a light German accent, played straight, never comic.",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Konrad Wiesner, a railway signalman (50s) walking home to Hirschfelde, at Verdun in 1916: steady and weary, a deep roughened voice; English as a careful second language, a German accent (T-077). a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
    },
    "BRA": {
     "name": "Fraeulein Hedwig Brandt",
     "who": "Fraeulein Hedwig Brandt, the schoolteacher at Hirschfelde (30s): brisk and frightened, a clear precise voice, a German accent (T-077)",
     "voice_notes": "A real person speaking English as a careful second language: a light German accent, played straight, never comic.",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Fraeulein Hedwig Brandt, the schoolteacher at Hirschfelde (30s): brisk and frightened, a clear precise voice, a German accent (T-077). a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
    },
    "KRO": {
     "name": "Ida Kroll",
     "who": "Ida Kroll, the postwoman from Sankt Anna (20s): quick and talkative when scared, a young bright voice, a light German accent (T-077)",
     "voice_notes": "A real person speaking English as a careful second language: a light German accent, played straight, never comic.",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Ida Kroll, the postwoman from Sankt Anna (20s): quick and talkative when scared, a young bright voice, a light German accent (T-077). a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
    },
    "SOB": {
     "name": "Gefreiter Willi Sobotta",
     "who": "Gefreiter Willi Sobotta, a lance-corporal on Christmas leave (20): a young soldier trying to sound steady, a light German accent",
     "voice_notes": "A real person speaking English as a careful second language: a light German accent, played straight, never comic.",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Gefreiter Willi Sobotta, a lance-corporal on Christmas leave (20): a young soldier trying to sound steady, a light German accent. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
    },
    "ROT": {
     "name": "Ewald Rother",
     "who": "Ewald Rother, an old Silesian salt carter (60s): gruff and kind, a deep worn voice, slow; English as a careful second language, a German accent",
     "voice_notes": "A real person speaking English as a careful second language: a light German accent, played straight, never comic.",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Ewald Rother, an old Silesian salt carter (60s): gruff and kind, a deep worn voice, slow; English as a careful second language, a German accent. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
    },
    "KUB": {
     "name": "Franz Kubiak",
     "who": "Franz Kubiak, Rother's younger mate (20s): quick and frightened, a lighter voice, a light German accent",
     "voice_notes": "A real person speaking English as a careful second language: a light German accent, played straight, never comic.",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Franz Kubiak, Rother's younger mate (20s): quick and frightened, a lighter voice, a light German accent. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
    },
    "TRU": {
     "name": "Trudi Hanke",
     "who": "Trudi Hanke, a farmer's daughter (20s) helping at the bar: practical and loud, a bright warm voice, a light German accent",
     "voice_notes": "A real person speaking English as a careful second language: a light German accent, played straight, never comic.",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Trudi Hanke, a farmer's daughter (20s) helping at the bar: practical and loud, a bright warm voice, a light German accent. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
    },
    "POH": {
     "name": "Frau Agnes Pohl",
     "who": "Frau Agnes Pohl, a widow (50s) walking to her sister's in Liegnitz: prim and proper, an older woman's voice, a German accent",
     "voice_notes": "A real person speaking English as a careful second language: a light German accent, played straight, never comic.",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Frau Agnes Pohl, a widow (50s) walking to her sister's in Liegnitz: prim and proper, an older woman's voice, a German accent. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
    },
    "HAM": {
     "name": "The Hammer (Mara)",
     "who": "young woman, about 22 (the eldest); Blonde hair; carries a mallet she throws. Throws the mallet like a boomerang and catches it",
     "voice_notes": "Creepy-doll horror, playful and sad, never sexualized. Lines are German with the English in brackets: say the German. A subtle eerie room reverb is added afterwards.",
     "actor": "cousin_1",
-    "voiced_by": "one of the owner's cousins"
+    "voiced_by": "one of the owner's cousins",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A young German woman of about twenty-two in a horror story: a playful, sing-song, eerily childlike voice with sadness underneath, speaking German softly.",
+     "language": "de",
+     "stability": 0.4,
+     "similarity_boost": 0.75,
+     "why": "The Hammer (Mara), about 22: German lines (say the German), creepy-doll horror, playful and sad, never sexualized. Designed, never a clone of the owner's cousin.",
+     "consent_actor": "cousin_1"
+    }
    },
    "RCH": {
     "name": "The Reach (Jo)",
     "who": "young woman, about 18 (the youngest); Brown hair; extremely long arms. Reaching: grabs things far away, through windows and floors",
     "voice_notes": "Creepy-doll horror, playful and sad, never sexualized. Lines are German with the English in brackets: say the German. A subtle eerie room reverb is added afterwards.",
     "actor": "cousin_2",
-    "voiced_by": "one of the owner's cousins"
+    "voiced_by": "one of the owner's cousins",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A young German woman of about eighteen in a horror story: light, breathy, eerily childlike and teasing, sad underneath, speaking German.",
+     "language": "de",
+     "stability": 0.4,
+     "similarity_boost": 0.75,
+     "why": "The Reach (Jo), about 18: German lines, creepy-doll horror, playful and sad, never sexualized. Designed, never a clone.",
+     "consent_actor": "cousin_2"
+    }
    },
    "ALX": {
     "name": "The Third Hand (Alix)",
     "who": "young woman, about 20; An arm that extends out of her torso; double damage. The arm is 'the hand she was always holding'",
     "voice_notes": "Creepy-doll horror, playful and sad, never sexualized. Lines are German with the English in brackets: say the German. A subtle eerie room reverb is added afterwards.",
     "actor": "cousin_3",
-    "voiced_by": "one of the owner's cousins"
+    "voiced_by": "one of the owner's cousins",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A young German woman of about twenty in a horror story: a low, gentle, dreamy voice, eerie and sad, speaking German.",
+     "language": "de",
+     "stability": 0.4,
+     "similarity_boost": 0.75,
+     "why": "The Third Hand (Alix), about 20: German lines, creepy-doll horror, playful and sad, never sexualized. Designed, never a clone.",
+     "consent_actor": "cousin_3"
+    }
    },
    "CSN": {
     "name": "The Cousins (together)",
@@ -161,7 +639,17 @@
      "cousin_2",
      "cousin_3"
     ],
-    "voiced_by": "all three cousins"
+    "voiced_by": "all three cousins",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "de",
+     "stability": 0.4,
+     "similarity_boost": 0.75,
+     "why": "The Cousins together: the importer layers the takes (fx.json cousins_trio); the AI bake uses Mara's voice doubled by the trio chain."
+    }
    },
    "PAUL": {
     "name": "PAUL (homage boss)",
@@ -169,7 +657,18 @@
     "voice_notes": "",
     "actor": "paul",
     "status": "not in the game yet",
-    "voiced_by": "Paul (the owner's friend)"
+    "voiced_by": "Paul (the owner's friend)",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Homage boss after the owner's friend Paul: a designed voice, never a clone, until voice_inbox/paul/consent.txt says ai_voice_cloning: yes. The game's lines are under PAU.",
+     "none": "no lines (see PAU)"
+    }
    },
    "SLENDER": {
     "name": "THE SLENDER (homage boss)",
@@ -177,13 +676,768 @@
     "voice_notes": "",
     "actor": "devin",
     "status": "not in the game yet",
-    "voiced_by": "Devin (the owner)"
+    "voiced_by": "Devin (the owner)",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Homage boss voiced by the owner: designed, never a clone, until voice_inbox/devin/consent.txt says ai_voice_cloning: yes. The game's lines are under SLN.",
+     "none": "no lines (see SLN)"
+    }
    },
    "SQD": {
     "name": "Relief squad soldiers (T-142)",
     "who": "Soldiers of seven relief squads who walk in from the map edge (UPDATE 09 section 4): Home Army partisans (SQD_AK), a Red Army scout (SQD_SOV), Volkssturm deserters, old men (SQD_VS), British commandos (SQD_CDO), a Kriegsmarine rating (SQD_KM), a US paratrooper (SQD_PARA), a Groom Lake MP (SQD_MP).",
     "voice_notes": "One voice per faction, each a real person under fire: English with the odd word of their own language, accents light and played straight, never comic; the Volkssturm old men with dignity.",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "One voice per faction (eleven_by_prefix); the generic block is the fallback."
+    },
+    "eleven_by_prefix": {
+     "SQD_AK": {
+      "why": "Home Army partisan sergeant, 30s, Polish accent.",
+      "design_prompt": "A Polish partisan sergeant in his thirties, 1944, English with a Polish accent, quick and steady."
+     },
+     "SQD_SOV": {
+      "why": "Red Army scout, 20s, Russian accent (U11: Russian words in Russian).",
+      "design_prompt": "A young Soviet army scout in 1944 speaking English with a Russian accent, tense and quick."
+     },
+     "SQD_VS": {
+      "why": "Volkssturm old man, 60s, German accent, tired and dignified.",
+      "design_prompt": "An old German villager in his sixties, 1944, English with a German accent, tired and dignified."
+     },
+     "SQD_CDO": {
+      "why": "British commando corporal, 20s, clipped and dry.",
+      "design_prompt": "A British commando corporal in his twenties, 1944, clipped, dry, working-class English accent."
+     },
+     "SQD_KM": {
+      "why": "Kriegsmarine rating from Hamburg, 20s, frightened and decent.",
+      "design_prompt": "A young German sailor from Hamburg, 1944, English with a German accent, frightened and decent."
+     },
+     "SQD_PARA": {
+      "why": "US paratrooper, 19, Midwestern, wired.",
+      "design_prompt": "A nineteen-year-old American paratrooper from the Midwest, 1944, fast, wired and scared."
+     },
+     "SQD_MP": {
+      "why": "Groom Lake MP, 30s, flat Western drawl.",
+      "design_prompt": "An American military policeman in his thirties, 1940s, a flat Western drawl."
+     }
+    }
+   },
+   "PAU": {
+    "name": "PAUL (homage boss, in game)",
+    "who": "PAUL's lines (HB2, T-159): a big American private, loud and rough; a roar with a man's voice inside it.",
+    "voice_notes": "",
+    "actor": "paul",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A big, loud American army private in his twenties, 1940s: a rough, chesty, booming voice, angry and grieving, roaring for his squad.",
+     "language": "en",
+     "stability": 0.35,
+     "similarity_boost": 0.75,
+     "why": "Designed, never cloned: Paul has not opted in (voice_inbox/paul/consent.txt ai_voice_cloning: yes is needed for a clone).",
+     "consent_actor": "paul"
+    }
+   },
+   "SLN": {
+    "name": "THE SLENDER (homage boss, in game)",
+    "who": "THE SLENDER's lines (HB3, T-160): a calm, tired, courteous night watchman.",
+    "voice_notes": "",
+    "actor": "devin",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A calm, tired, courteous night watchman, a man in his forties: slow, soft and polite, dry and close, unsettlingly patient.",
+     "language": "en",
+     "stability": 0.6,
+     "similarity_boost": 0.75,
+     "why": "Designed, never cloned: the owner has not opted in (voice_inbox/devin/consent.txt).",
+     "consent_actor": "devin"
+    }
+   },
+   "PA": {
+    "name": "The Fernflug works PA / Bordfunk",
+    "who": "A recorded German PA voice (Map 4): announcements in German.",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A calm, formal German male announcer of the 1940s reading flight announcements in German over a PA.",
+     "language": "de",
+     "stability": 0.6,
+     "similarity_boost": 0.75,
+     "why": "German for the PA: a calm German announcer on the works PA chain."
+    }
+   },
+   "WIT": {
+    "name": "Wittkamp",
+    "who": "The works' PA man (Map 4), a man, frightened and apologetic.",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "German accent, English lines. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
+   },
+   "WIV": {
+    "name": "The Woman in Violet",
+    "who": "Darkmatter's executive machine: velvet, 'we', corporate.",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A smooth, velvety woman's alto, an unhurried corporate executive who says 'we', warm and quietly menacing.",
+     "language": "en",
+     "stability": 0.6,
+     "similarity_boost": 0.75,
+     "why": "Velvet corporate alto, the Ledger's executive voice; never camp."
+    }
+   },
+   "DEE": {
+    "name": "Dee",
+    "who": "Dee, on a faded radio from Nevada (Map 4).",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A tired, dry American woman radio operator in the 1940s, Nevada, talking over a faint radio link.",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "American woman on the radio chain."
+    }
+   },
+   "HAL": {
+    "name": "Hale",
+    "who": "Hale (Map 4): Darkmatter's buyer; a cultured man.",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.6,
+     "similarity_boost": 0.75,
+     "why": "A cool, cultured man (U11: his sample order). Library voice: older male, British or mid-Atlantic, calm."
+    }
+   },
+   "BWT": {
+    "name": "Der Bordwart",
+    "who": "The Bordwart: crew over the intercom, German.",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "de",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "German, intercom."
+    }
+   },
+   "RRK": {
+    "name": "Rourke",
+    "who": "Rourke, the test pilot (Map 4), a man, on the radio.",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "American test pilot, laconic."
+    }
+   },
+   "BLT": {
+    "name": "Bolt (Gravelight cameo)",
+    "who": "Bolt's Map 4 cameo lines.",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Same voice as B&S Bolt.",
+     "same_as_voice": "bs:bolt"
+    }
+   },
+   "SPR": {
+    "name": "Sprocket (Gravelight cameo)",
+    "who": "Sprocket's Map 4 cameo lines.",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Same voice as B&S Sprocket.",
+     "same_as_voice": "bs:sprocket"
+    }
+   },
+   "VEN": {
+    "name": "Vendelin (Gravelight cameo)",
+    "who": "Vendelin's Map 4 lines.",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Same voice as The Fine Print's Vendelin.",
+     "same_as_voice": "fp:vendelin"
+    }
+   },
+   "KLH": {
+    "name": "Der Kielholer (Kptlt. Arvid Lenz)",
+    "who": "Kptlt. Arvid Lenz, drowned: slow and low, German, on the radio chain.",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A drowned German U-boat captain in his forties speaking German slowly: a low, cold, waterlogged voice, weary and final.",
+     "language": "de",
+     "stability": 0.45,
+     "similarity_boost": 0.75,
+     "why": "German for Lenz: a drowned U-boat captain, slow, low, German lines."
+    }
+   },
+   "UBR": {
+    "name": "U-boat radio",
+    "who": "A Kriegsmarine signaller on the U-boat net (30s, T-154): flat, practised, tired; the traffic is spoken in German (german_all) and comes through the radio chain",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "de",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "German traffic (speech field), radio chain."
+    }
+   },
+   "AMM": {
+    "name": "Fw. August \"Gustl\" Ammer",
+    "who": "Fw. August \"Gustl\" Ammer, Kaltenbrunn's quartermaster (50s, T-135): broad and gruff, kind under it, Bavarian; English as a careful second language, a German accent",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Fw. August \"Gustl\" Ammer, Kaltenbrunn's quartermaster (50s, T-135): broad and gruff, kind under it, Bavarian; English as a careful second language, a German accent. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
+   },
+   "PET": {
+    "name": "Hinnerk Petersen",
+    "who": "Hinnerk Petersen, Totenhafen's old harbour pilot (60s, T-135): slow and salty, North German, dry humour; a German accent",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Hinnerk Petersen, Totenhafen's old harbour pilot (60s, T-135): slow and salty, North German, dry humour; a German accent. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
+   },
+   "JET": {
+    "name": "Henriette \"Jette\" Maurer",
+    "who": "Henriette \"Jette\" Maurer, Fernflug's wind-tunnel technician and glider pilot (late 20s, T-135): quick, precise, stubborn; a light German accent",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Henriette \"Jette\" Maurer, Fernflug's wind-tunnel technician and glider pilot (late 20s, T-135): quick, precise, stubborn; a light German accent. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
+   },
+   "TEL": {
+    "name": "Erwin Lassmann",
+    "who": "Erwin Lassmann, the Darlehenskasse's junior clerk (early 20s, T-136): terrified, polite to the end, fast and breathy, voice cracking; a light German accent",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Erwin Lassmann, the Darlehenskasse's junior clerk (early 20s, T-136): terrified, polite to the end, fast and breathy, voice cracking; a light German accent. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
+   },
+   "JES": {
+    "name": "Zahlmeistersmaat Karl Jessen",
+    "who": "Zahlmeistersmaat Karl Jessen, the Marinekasse's paymaster's mate at Totenhafen (50s, T-141): stiff, formal, terrified; a precise, dry German voice",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Zahlmeistersmaat Karl Jessen, the Marinekasse's paymaster's mate at Totenhafen (50s, T-141): stiff, formal, terrified; a precise, dry German voice. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
+   },
+   "RUH": {
+    "name": "Ilse Ruhland",
+    "who": "Ilse Ruhland, wages clerk at Werk Thalbach (mid 20s, T-141): practical, frightened, polite; a quick light voice with a German accent",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Ilse Ruhland, wages clerk at Werk Thalbach (mid 20s, T-141): practical, frightened, polite; a quick light voice with a German accent. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
+   },
+   "HRM": {
+    "name": "Liese Harms",
+    "who": "Liese Harms, a gutting-line worker of the Totenhafen cannery's night shift (34, T-170): low, tired, careful, keeps her voice down under the desk; a German accent",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Liese Harms, a gutting-line worker of the Totenhafen cannery's night shift (34, T-170): low, tired, careful, keeps her voice down under the desk; a German accent. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
+   },
+   "RDL": {
+    "name": "Bordmechaniker Anselm Riedl on the engine-room intercom before he is the Bordwart (40s",
+    "who": "Bordmechaniker Anselm Riedl on the engine-room intercom before he is the Bordwart (40s, T-156): tired, polite, very sure this is a test flight; a low German voice through a speaking tube",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Bordmechaniker Anselm Riedl on the engine-room intercom before he is the Bordwart (40s, T-156): tired, polite, very sure this is a test flight; a low German voice through a speaking tube. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
+   },
+   "PRU": {
+    "name": "Pvt. Eugene Pruitt",
+    "who": "Pvt. Eugene Pruitt, Finance Department clerk at Groom Lake (early 20s, T-141): American, young, breathless, over-polite; fast with a crack in it",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Pvt. Eugene Pruitt, Finance Department clerk at Groom Lake (early 20s, T-141): American, young, breathless, over-polite; fast with a crack in it. Played straight."
+    }
+   },
+   "MIN": {
+    "name": "Alois Brzezina",
+    "who": "Alois Brzezina, a Silesian shift boss hiding with two hewers (50s, T-143): low, tired, careful, slow with his words; English as a careful second language, a Polish-German accent",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Alois Brzezina, a Silesian shift boss hiding with two hewers (50s, T-143): low, tired, careful, slow with his words; English as a careful second language, a Polish-German accent. Polish accent, played straight."
+    }
+   },
+   "MED": {
+    "name": "Matthias Roth",
+    "who": "Matthias Roth, the infirmary orderly (40s, T-143): level, kind, tired, a doctor's patience; a German accent",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Matthias Roth, the infirmary orderly (40s, T-143): level, kind, tired, a doctor's patience; a German accent. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
+   },
+   "RAD": {
+    "name": "Marta Seidl",
+    "who": "Marta Seidl, the switchboard operator (30, T-143): crisp, clipped telephonist's diction, frightened underneath; a light German accent",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Marta Seidl, the switchboard operator (30, T-143): crisp, clipped telephonist's diction, frightened underneath; a light German accent. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
+   },
+   "OGP": {
+    "name": "Obergefreiter Pohl",
+    "who": "Obergefreiter Pohl, the Kranich's wireless operator (22, T-158): a young man's quiet, careful voice, very tired, trying to be correct; a light German accent",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Obergefreiter Pohl, the Kranich's wireless operator (22, T-158): a young man's quiet, careful voice, very tired, trying to be correct; a light German accent. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
+   },
+   "DES": {
+    "name": "Gerd Lanz",
+    "who": "Gerd Lanz, a nineteen-year-old deserter (T-143): quick, whispering, a boy's voice trying to be steady; a light German accent",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Gerd Lanz, a nineteen-year-old deserter (T-143): quick, whispering, a boy's voice trying to be steady; a light German accent. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
+   },
+   "WID": {
+    "name": "Hanne Ebert",
+    "who": "Hanne Ebert, a carter's widow (60s, T-143): soft, old, unhurried, grief held very still; a German accent",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Hanne Ebert, a carter's widow (60s, T-143): soft, old, unhurried, grief held very still; a German accent. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
+   },
+   "WDL": {
+    "name": "Erich Wendel",
+    "who": "Erich Wendel, a fitter from the Siedlung (40s, T-155): low, worn, protective, speaks quietly so the family behind the blanket does not hear; a German accent",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Erich Wendel, a fitter from the Siedlung (40s, T-155): low, worn, protective, speaks quietly so the family behind the blanket does not hear; a German accent. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
+   },
+   "BRK": {
+    "name": "Otto Brack",
+    "who": "Otto Brack, the rail yard's signalman (60s, T-155): gravelly, dry, slow, an old railwayman's deliberateness; a German accent",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Otto Brack, the rail yard's signalman (60s, T-155): gravelly, dry, slow, an old railwayman's deliberateness; a German accent. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
+   },
+   "COU": {
+    "name": "Lotte Hager",
+    "who": "Lotte Hager, a district courier (25, T-143): brisk, practical, a little cheeky, out of breath from pushing a bicycle; a light German accent",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Lotte Hager, a district courier (25, T-143): brisk, practical, a little cheeky, out of breath from pushing a bicycle; a light German accent. a real person speaking English as a careful second language with a German accent, played straight; library voice with a German accent (accent=german), else Voice Design"
+    }
+   },
+   "SEL": {
+    "name": "Flt Lt Harry Selwyn",
+    "who": "Flt Lt Harry Selwyn, GRAVELIGHT ONE's pilot (T-126), RAF, early 30s: clipped and dry, pinned in his seat and in pain, holding it together with manners",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Flt Lt Harry Selwyn, GRAVELIGHT ONE's pilot (T-126), RAF, early 30s: clipped and dry, pinned in his seat and in pain, holding it together with manners. Played straight."
+    }
+   },
+   "SER": {
+    "name": "Father Serafim Lebedev",
+    "who": "The 1930 priest of the Church of St Lazarus at Chetverodnevo: Russian, subtitled; the diary read-alouds.",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A Russian Orthodox village priest in his late fifties in 1930, speaking Russian: a deep, gentle, tired bass-baritone with a slow liturgical cadence, warm and frightened.",
+     "language": "ru",
+     "stability": 0.55,
+     "similarity_boost": 0.75,
+     "why": "Russian for Serafim: an older village priest, deep, gentle, worn; frightened faith, never a villain, never a zombie on screen.",
+     "candidates": [
+      {
+       "voice_id": "9AjtU6o19uipv7QL8dLL",
+       "owner": "ace88408e1699e0c7fa8acacb1bba7be4e62b44d37f2e7e2e7689c0dd89b2395",
+       "name": "Alex - Calm Russian Analyst",
+       "labels": "standard, old, male, mature, narrative_story, ru",
+       "query": "gender=male, language=ru, age=old"
+      },
+      {
+       "voice_id": "LTkx8oHrUXaND7aaxdTA",
+       "owner": "460dabc9f96dd6cec09c54db9d5a484409dd3713222f3d0bdb12854bd8c837dd",
+       "name": "Alexrady",
+       "labels": "standard, old, male, casual, conversational, ru",
+       "query": "gender=male, language=ru, age=old"
+      },
+      {
+       "voice_id": "1KGG4Q8LqRdNII9xBurw",
+       "owner": "31fe6f8fc32365fd5c51e76f66e14132d5a95655936832847eb2755af6e37837",
+       "name": "M. Danisch - Narrator",
+       "labels": "standard, old, male, calm, narrative_story, de",
+       "query": "gender=male, language=ru, age=old"
+      },
+      {
+       "voice_id": "MuOq11XzQTthwLhmGZ2V",
+       "owner": "9e46ff55f2d9efaf1ab7b5acbc5f3415a7280d5a01ce1b2f69c05d327fdf36d4",
+       "name": "Nihat - The Timeless Narrator",
+       "labels": "black sea, old, male, deep, narrative_story, tr",
+       "query": "gender=male, language=ru, age=old"
+      },
+      {
+       "voice_id": "O4uxPTtvgxrA0QCLHI1J",
+       "owner": "e21da34db31d58704b7b2776dcf7db1c31b464e5bffd71727d5f1c4abafafa87",
+       "name": "Arkadius - Old Storyteller",
+       "labels": "scottish, old, male, raspy, narrative_story, en",
+       "query": "gender=male, language=ru, age=old"
+      }
+     ]
+    }
+   },
+   "VOL": {
+    "name": "Arkady Volkov",
+    "who": "The man who opened the vessel and ran FOURTH DAY: Russian, subtitled.",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A Soviet scientist and officer in his thirties speaking Russian: a precise, quick, controlled baritone, clever and ambitious, fear held under the surface.",
+     "language": "ru",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Russian for Volkov: frightened, clever, ambitious, never a cartoon; a precise, quick, controlled baritone.",
+     "candidates": [
+      {
+       "voice_id": "e7B77Frwc7sILEL37AT3",
+       "owner": "748bdab49b82811c04d4e860414fe5a42c8a4c7d2aa18f0e6fb936f4cb1a72ba",
+       "name": "BaMnyc - Narrative",
+       "labels": "standard, middle_aged, male, crisp, conversational, ru",
+       "query": "gender=male, language=ru, age=middle_aged"
+      },
+      {
+       "voice_id": "0gl1hEX5ilafvvSuw44p",
+       "owner": "cc66a8f0fda1d99d7272450ba6319b9c3dd0c9f84f1e7b114d3cef574ead79ed",
+       "name": "Ibrahim - Social media",
+       "labels": "standard, middle_aged, male, serious, social_media, ru",
+       "query": "gender=male, language=ru, age=middle_aged"
+      },
+      {
+       "voice_id": "vGuLaQjzuccOXQyD0H8e",
+       "owner": "67cbfe9d809621070b6125b71a9ced3a8aa47d057f06bb729c0d96974190403c",
+       "name": "Pavel Dumbrao - Conversational",
+       "labels": "standard, middle_aged, male, casual, conversational, ru",
+       "query": "gender=male, language=ru, age=middle_aged"
+      },
+      {
+       "voice_id": "9mzS0DU8EPXG0Pt2VkVF",
+       "owner": "b75e342bc80c52073be84c8f6f7ac00f64931b197271b91862f223fce66b8a82",
+       "name": "John - Calm gentleman",
+       "labels": "moscow, middle_aged, male, confident, conversational, ru",
+       "query": "gender=male, language=ru, age=middle_aged"
+      },
+      {
+       "voice_id": "lS2dOWEY3p813guFg8oB",
+       "owner": "041472d2b67932fdaec9d4bb6ad6a9f8e4f41ec29d0dabf0cc534cd5f7879035",
+       "name": "Ivan - Mature, Wise",
+       "labels": "standard, middle_aged, male, wise, characters_animation, ru",
+       "query": "gender=male, language=ru, age=middle_aged"
+      }
+     ]
+    }
+   },
+   "SVR": {
+    "name": "Soviet radio traffic",
+    "who": "Red Army signallers on Map 0 and at Kaltenbrunn: Russian, subtitled, field radio.",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A Red Army radio signaller in his twenties in 1944 speaking Russian: flat, practised, exhausted, clipped radio procedure.",
+     "language": "ru",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Russian: a flat, practised Red Army signaller (field radio chain)."
+    }
+   },
+   "RTN": {
+    "name": "The Returned",
+    "who": "The risen Red Army soldiers' last words, repeated: Russian, subtitled, only from close up.",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A young Russian soldier speaking Russian in a hoarse, broken whisper, repeating his last words, dazed and far away.",
+     "language": "ru",
+     "stability": 0.3,
+     "similarity_boost": 0.75,
+     "why": "Russian: young soldiers' voices, hoarse, broken, whispering; horror by restraint."
+    }
+   },
+   "BRG": {
+    "name": "The 1930 brigade's megaphone",
+    "who": "The anti-religious brigade's megaphone at Chetverodnevo, Lazarus Saturday 1930: Russian, subtitled.",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A young Soviet Komsomol activist in 1930 shouting slogans in Russian through a megaphone: loud, zealous, brash.",
+     "language": "ru",
+     "stability": 0.4,
+     "similarity_boost": 0.75,
+     "why": "Russian: a young Komsomol brigade leader, loud and zealous, through a megaphone."
+    }
+   },
+   "NAR": {
+    "name": "Title-card narrator",
+    "who": "Only if a cutscene needs one (prefer cards without a voice).",
+    "voice_notes": "",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Prefer silent cards.",
+     "none": "no lines (cards without a voice are preferred)"
+    }
    }
   },
   "bs": {
@@ -191,139 +1445,1235 @@
     "name": "Bolt",
     "who": "The mechanic, the hero. Down-to-earth.",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A warm, down-to-earth young adult man, a scrappy space mechanic, plain American voice, wry, the straight man in a comedy.",
+     "language": "en",
+     "stability": 0.45,
+     "similarity_boost": 0.75,
+     "why": "The hero mechanic: down-to-earth, warm, plain-spoken, the straight man with comic timing.",
+     "candidates": [
+      {
+       "voice_id": "4TfTGcPwoefWe878B0rm",
+       "owner": "83068c7c248bdb59c5fbf3acdee05ac58cf05dcf00decd9580f5dd140d0f6508",
+       "name": "Troy - Cartoon Hero",
+       "labels": "standard, middle_aged, male, excited, characters_animation, fr",
+       "query": "gender=male, search=cartoon hero"
+      },
+      {
+       "voice_id": "467tX2b9Bky3cD6jXpNa",
+       "owner": "94cac854a846c60ea2c64da65bfa1970ab5caa5f1c8df41afb18ef56093e7774",
+       "name": "Max - USA Energetic Animated Cartoon",
+       "labels": "american, young, male, excited, social_media, en",
+       "query": "gender=male, search=cartoon hero"
+      },
+      {
+       "voice_id": "IvUJKFyjVb5hItY9dJAT",
+       "owner": "b979c9ab9b836f7342de7db794468872e49e35a44c1f61cb6d4481d75c4215d7",
+       "name": "Stevie - The Living Cartoon",
+       "labels": "american, middle_aged, male, excited, characters_animation, en",
+       "query": "gender=male, search=cartoon hero"
+      },
+      {
+       "voice_id": "gA870ILGhb2a1FhxtmLH",
+       "owner": "18b6f038186ba974fe33d7f281cb40fd9146c95a452425bd6a582689ad9c585e",
+       "name": "Boses Cartoons - Animated Character",
+       "labels": "fil-standard, young, male, excited, characters_animation, fil",
+       "query": "gender=male, search=cartoon hero"
+      },
+      {
+       "voice_id": "Sth0oyItcRdvk3sFrPiq",
+       "owner": "9aaed1dd1f054f1c03f507bf3f0dd5c12e8735c34a4ad02474cb75fb5f10f667",
+       "name": "Noku - Heroic and Confident Protagonist",
+       "labels": "american, middle_aged, male, confident, characters_animation, en",
+       "query": "gender=male, search=cartoon hero"
+      }
+     ]
+    }
    },
    "sprocket": {
     "name": "Sprocket",
     "who": "Bolt's robot sidekick: dry, smug, very fast. A light robot treatment is added afterwards: record it clean, in your own voice.",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A dry, smug, very fast-talking sidekick with a sharp, slightly nasal voice, sarcastic, comic timing, endlessly self-satisfied.",
+     "language": "en",
+     "stability": 0.4,
+     "similarity_boost": 0.75,
+     "why": "Bolt's robot sidekick: dry, smug, very fast; the light robot effect (fx.json robot_light) is added after, so the voice is human.",
+     "candidates": [
+      {
+       "voice_id": "HwYMTNpEVtWEr6t0FDKA",
+       "owner": "e21da34db31d58704b7b2776dcf7db1c31b464e5bffd71727d5f1c4abafafa87",
+       "name": "Navi - The Sarcastic Spaceship AI",
+       "labels": "standard, middle_aged, female, robotic, characters_animation, de",
+       "query": "search=sarcastic robot"
+      },
+      {
+       "voice_id": "AEW6JTgnyoPaoB9zlK3S",
+       "owner": "64cbc624eb5aab4e95a968e1f41d75402277cca6e549036ed17e56ea33bbbc9e",
+       "name": "Sophie – Sparky and Social",
+       "labels": "american, young, female, upbeat, conversational, en",
+       "query": "search=snarky fast"
+      },
+      {
+       "voice_id": "c46FXHKyrgHrLKKtjiy2",
+       "owner": "49ac4513802773fb017039d10c69c496215ceffad69f68f651db976e0e0c59a2",
+       "name": "Jack - Snarky and Fun",
+       "labels": "standard, middle_aged, male, upbeat, characters_animation, de",
+       "query": "search=snarky fast"
+      }
+     ]
+    }
    },
    "grindstone": {
     "name": "Chairman Grindstone",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A booming, pompous corporate tycoon, deep and self-satisfied, a cartoon villain chairman.",
+     "language": "en",
+     "stability": 0.4,
+     "similarity_boost": 0.75,
+     "why": "Chairman Grindstone: the pompous tycoon villain, booming and pleased with himself."
+    }
    },
    "blartz": {
     "name": "Blartz",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "An excitable, fast, shifty salesman-inventor, nasal and loud, always mid-pitch.",
+     "language": "en",
+     "stability": 0.35,
+     "similarity_boost": 0.75,
+     "why": "Blartz: the excitable salesman-inventor, too loud, too close to the mic."
+    }
    },
    "cc": {
     "name": "The Content Creator",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A hyperactive online influencer, bright, loud and breathless with hype.",
+     "language": "en",
+     "stability": 0.35,
+     "similarity_boost": 0.75,
+     "why": "The Content Creator: a hyper influencer, all hype."
+    }
    },
    "pa": {
     "name": "Omniscrap Pa",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Omniscrap Pa: a homely junk-planet dad."
+    }
    },
    "glambot": {
     "name": "Glambot Prime",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A glamorous showbiz game-show host, smooth, theatrical, dazzling smile in the voice.",
+     "language": "en",
+     "stability": 0.4,
+     "similarity_boost": 0.75,
+     "why": "GLAMBOT Prime: showbiz host robot, game-show glamour."
+    }
    },
    "rusty": {
     "name": "Rusty",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.45,
+     "similarity_boost": 0.75,
+     "why": "B&S comedy cast: Rusty; cast from the Voice Library (comedy, character) in T-201."
+    }
    },
    "concierge": {
     "name": "Concierge-Tron",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.45,
+     "similarity_boost": 0.75,
+     "why": "B&S comedy cast: Concierge-Tron; cast from the Voice Library (comedy, character) in T-201."
+    }
    },
    "intern": {
     "name": "Intern #4401",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.45,
+     "similarity_boost": 0.75,
+     "why": "B&S comedy cast: Intern #4401; cast from the Voice Library (comedy, character) in T-201."
+    }
    },
    "darkmatter": {
     "name": "Darkmatter Subscriptions Llc",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A soft, grateful, endlessly patient corporate voice, calm and polite, quietly unsettling.",
+     "language": "en",
+     "stability": 0.6,
+     "similarity_boost": 0.75,
+     "why": "Darkmatter Subscriptions LLC (the Board): soft, grateful, patient corporate voice, played straight."
+    }
    },
    "retention": {
     "name": "The Retention Specialist",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.55,
+     "similarity_boost": 0.75,
+     "why": "The Retention Specialist: soothing customer-retention voice, never lets you go."
+    }
    },
    "squat": {
     "name": "The Squatter",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.45,
+     "similarity_boost": 0.75,
+     "why": "B&S comedy cast: The Squatter; cast from the Voice Library (comedy, character) in T-201."
+    }
    },
    "bathrobe": {
     "name": "Confused Customer",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.45,
+     "similarity_boost": 0.75,
+     "why": "B&S comedy cast: Confused Customer; cast from the Voice Library (comedy, character) in T-201."
+    }
    },
    "corn": {
     "name": "Steward Cornelius",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.45,
+     "similarity_boost": 0.75,
+     "why": "B&S comedy cast: Steward Cornelius; cast from the Voice Library (comedy, character) in T-201."
+    }
    },
    "clerk": {
     "name": "Gilda — Kiosk #7",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.45,
+     "similarity_boost": 0.75,
+     "why": "B&S comedy cast: Gilda — Kiosk #7; cast from the Voice Library (comedy, character) in T-201."
+    }
    },
    "dent": {
     "name": "Dent — Test Unit #001",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.45,
+     "similarity_boost": 0.75,
+     "why": "B&S comedy cast: Dent — Test Unit #001; cast from the Voice Library (comedy, character) in T-201."
+    }
    },
    "gasket": {
     "name": "Mama Gasket",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.45,
+     "similarity_boost": 0.75,
+     "why": "B&S comedy cast: Mama Gasket; cast from the Voice Library (comedy, character) in T-201."
+    }
    },
    "bellhop": {
     "name": "Bellhop-9",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.45,
+     "similarity_boost": 0.75,
+     "why": "B&S comedy cast: Bellhop-9; cast from the Voice Library (comedy, character) in T-201."
+    }
    },
    "tourist": {
     "name": "Tourist",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.45,
+     "similarity_boost": 0.75,
+     "why": "B&S comedy cast: Tourist; cast from the Voice Library (comedy, character) in T-201."
+    }
    },
    "middleman_a": {
     "name": "Middleman A",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.45,
+     "similarity_boost": 0.75,
+     "why": "B&S comedy cast: Middleman A; cast from the Voice Library (comedy, character) in T-201."
+    }
    },
    "middleman_b": {
     "name": "Middleman B",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.45,
+     "similarity_boost": 0.75,
+     "why": "B&S comedy cast: Middleman B; cast from the Voice Library (comedy, character) in T-201."
+    }
    },
    "statue": {
     "name": "Statue",
     "who": "",
     "voice_notes": "",
-    "actor": "[ACTOR]"
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.45,
+     "similarity_boost": 0.75,
+     "why": "B&S comedy cast: Statue; cast from the Voice Library (comedy, character) in T-201."
+    }
+   }
+  },
+  "fp": {
+   "agnieszka": {
+    "name": "Agnieszka",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (HUMAN); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "ammer": {
+    "name": "Ammer",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (HUMAN); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "anni": {
+    "name": "Anni",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (▶ PLAY: Drive 3 (out of the Reich)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "associate": {
+    "name": "Associate",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.7,
+     "similarity_boost": 0.75,
+     "why": "Flat, unison chorus."
+    }
+   },
+   "bandleader": {
+    "name": "Bandleader",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (11. STUDIO RHEINKLANG (`recording`)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "blartz": {
+    "name": "Blartz",
+    "same_as": "bs:blartz"
+   },
+   "bolt": {
+    "name": "Bolt",
+    "same_as": "bs:bolt"
+   },
+   "bruck": {
+    "name": "Bruck",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (HUMAN); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "churn_warden": {
+    "name": "Churn Warden",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.6,
+     "similarity_boost": 0.75,
+     "why": "Deep, calm, hold-music cadence."
+    }
+   },
+   "counsel_9": {
+    "name": "Counsel 9",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (14. HOLO-MEMO: ENGAGEMENT INCENTIVES (`memo`)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "courtesy": {
+    "name": "Courtesy Officer",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Apologetic, soft, slightly too quick."
+    }
+   },
+   "customs_man": {
+    "name": "Customs Man",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (▶ PLAY: Drive 1 (tutorial: lights, coasting, one checkpoint)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "darkmatter": {
+    "name": "Darkmatter",
+    "same_as": "bs:darkmatter"
+   },
+   "deacon": {
+    "name": "Deacon",
+    "same_as": "gl:DEA"
+   },
+   "dm_pa": {
+    "name": "Darkmatter PA",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A soft, grateful, gentle announcer's voice on a public address system, endlessly thankful.",
+     "language": "en",
+     "stability": 0.6,
+     "similarity_boost": 0.75,
+     "why": "Soft, grateful, radio."
+    }
+   },
+   "dutch": {
+    "name": "Dutch",
+    "same_as": "gl:DUT"
+   },
+   "endres": {
+    "name": "Endres",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (HUMAN); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "exit_survey": {
+    "name": "Exit Survey",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.6,
+     "similarity_boost": 0.75,
+     "why": "Bright, polite, synthetic."
+    }
+   },
+   "fasbender": {
+    "name": "Fasbender",
+    "same_as": "gl:FAS"
+   },
+   "florian": {
+    "name": "Florian",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (1. DELIVERY (`land`)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "freen": {
+    "name": "Freen",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (14. HOLO-MEMO: ENGAGEMENT INCENTIVES (`memo`)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "glambot": {
+    "name": "Glambot",
+    "same_as": "bs:glambot"
+   },
+   "grenz": {
+    "name": "Grenz",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (▶ PLAY: Drive 3 (out of the Reich)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "grosi": {
+    "name": "Grosi",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (HUMAN); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "guard": {
+    "name": "Guard",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (▶ PLAY: The dilution (a cooperative puzzle)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "hadamik": {
+    "name": "Hadamik",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (4. RECORDED AS GAS (`crew`)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "halina": {
+    "name": "Halina",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (HUMAN); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "hasse": {
+    "name": "Hasse",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (1. DELIVERY (`land`)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "ilse": {
+    "name": "Ilse",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (HUMAN); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "imhof": {
+    "name": "Imhof",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (▶ PLAY: The chocolate machine (tutorial)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "kask": {
+    "name": "Kask",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (14. HOLO-MEMO: ENGAGEMENT INCENTIVES (`memo`)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "kessler": {
+    "name": "Kessler",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (HUMAN); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "koschny": {
+    "name": "Koschny",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (▶ PLAY: The yard at night (stealth)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "leather_coat": {
+    "name": "Leather Coat",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (▶ PLAY: Drive 3 (out of the Reich)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "loader": {
+    "name": "Loader",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (HUMAN); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "marta": {
+    "name": "Marta",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (▶ PLAY: The chapel (social stealth, gentle)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "miner_1": {
+    "name": "Miner 1",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (4. RECORDED AS GAS (`crew`)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "miner_2": {
+    "name": "Miner 2",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (4. RECORDED AS GAS (`crew`)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "miner_3": {
+    "name": "Miner 3",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (4. RECORDED AS GAS (`crew`)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "nawrath": {
+    "name": "Nawrath",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (▶ PLAY: Collecting his first words); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "nextera": {
+    "name": "Next-Era Delivery Terminal",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.7,
+     "similarity_boost": 0.75,
+     "why": "Calm, procedural, a chime before every line."
+    }
+   },
+   "notary": {
+    "name": "Notary",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (▶ PLAY: The chocolate machine (tutorial)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "operator": {
+    "name": "Operator",
+    "same_as": "gl:OPR"
+   },
+   "opitz": {
+    "name": "Opitz",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (23. MARKET LOCALIZATION (`ledger`)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "peg": {
+    "name": "Peg",
+    "same_as": "gl:PEG"
+   },
+   "pfortner": {
+    "name": "Pfortner",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (12. MEN FROM BERLIN (`seizure`)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "pilch": {
+    "name": "Pilch",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (1. DELIVERY (`land`)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "piotr": {
+    "name": "Piotr",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (▶ PLAY: The dilution (a cooperative puzzle)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "radio": {
+    "name": "Radio",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (6b. THE WIRELESS (`shift`, continued)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "recruits": {
+    "name": "Recruits",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (HUMAN); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "reinholt": {
+    "name": "Reinholt",
+    "same_as": "gl:REI"
+   },
+   "repossessor": {
+    "name": "Repossessor",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.6,
+     "similarity_boost": 0.75,
+     "why": "Flat collection agent."
+    }
+   },
+   "res": {
+    "name": "Res Gähwiler",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A warm, slow, chatty Swiss man from Bern in the 1940s speaking English with a Swiss German accent.",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Warm, slow, Bernese: a Basel lorry driver; English with a Swiss German accent."
+    }
+   },
+   "saathoff": {
+    "name": "Saathoff",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (HUMAN); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "sable": {
+    "name": "Sable Vantage",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A low, unhurried woman's alto, elegant and corporate, calm and in control.",
+     "language": "en",
+     "stability": 0.6,
+     "similarity_boost": 0.75,
+     "why": "Low alto, unhurried, slight echo."
+    }
+   },
+   "singer": {
+    "name": "Singer",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (11. STUDIO RHEINKLANG (`recording`)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "soldier": {
+    "name": "Soldier",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (▶ PLAY: The chocolate machine (tutorial)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "soldier_1": {
+    "name": "Soldier 1",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (12. MEN FROM BERLIN (`seizure`)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "sprocket": {
+    "name": "Sprocket",
+    "same_as": "bs:sprocket"
+   },
+   "ss_guard": {
+    "name": "Ss Guard",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (▶ PLAY: Drive 4 (the checkpoint that changed)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "underwriter": {
+    "name": "The Underwriter",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A flat, clipped, emotionless voice that speeds up and slows down like an auctioneer, cold and precise.",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "Flat, fast-slow, an auctioneer's rhythm."
+    }
+   },
+   "upsell_drone": {
+    "name": "Upsell Drone",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.4,
+     "similarity_boost": 0.75,
+     "why": "High, fast, eager."
+    }
+   },
+   "vendelin": {
+    "name": "Vendelin",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "design",
+     "design_prompt": "A low, slow, gentle male voice with a faint mechanical hum under the vowels: polite, precise, lonely and curious.",
+     "language": "en",
+     "stability": 0.55,
+     "similarity_boost": 0.75,
+     "why": "Field merchandiser unit V-1: low, slow, a hum under the vowels; polite, precise, lonely, learning (FINEPRINT_LORE §3.8)."
+    }
+   },
+   "venner": {
+    "name": "Venner",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (HUMAN); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "widow": {
+    "name": "Widow",
+    "actor": "[ACTOR]",
+    "eleven": {
+     "voice_id": "",
+     "voice_name": "",
+     "source": "library",
+     "design_prompt": "",
+     "language": "en",
+     "stability": 0.5,
+     "similarity_boost": 0.75,
+     "why": "A Fine Print character (▶ PLAY: Fetching the organ (driving tutorial, daylight)); English lines, accent from the script's language tag; cast in T-201."
+    }
+   },
+   "wren": {
+    "name": "Wren",
+    "same_as": "gl:WRN"
    }
   }
  }

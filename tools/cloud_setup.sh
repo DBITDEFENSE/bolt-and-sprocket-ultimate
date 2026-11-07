@@ -119,6 +119,8 @@ if have python3; then
 	tools/venv/bin/python -m pip install -q --disable-pip-version-check pillow numpy
 	# UPDATE 06 Part B (voice pipeline): PDFs, loudness, audio IO, local Whisper
 	tools/venv/bin/python -m pip install -q --disable-pip-version-check reportlab soundfile scipy pyloudnorm pytest faster-whisper || say "WARNING: voice-pipeline packages failed to install"
+	# UPDATE 11 (T-193): the ElevenLabs bake (official SDK) and the .env.local key loader (tools/voice/eleven.py)
+	tools/venv/bin/python -m pip install -q --disable-pip-version-check elevenlabs python-dotenv || say "WARNING: elevenlabs / python-dotenv failed to install"
 	if [ "$TTS" = 1 ]; then PY=python3 sh tools/setup_tts.sh; fi
 fi
 

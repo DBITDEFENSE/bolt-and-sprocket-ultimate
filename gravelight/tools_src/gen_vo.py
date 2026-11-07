@@ -4,7 +4,11 @@
 Pipeline per line (per part for banter / tag exchanges):
   1. the subtitle text is cleaned for speech: [stage directions] become effect cues (static, whisper, distant...),
      (parentheticals) and *markers* are dropped, {splice} words become the Operator's pitch-jumped fragments
-  2. synthesis, two engines:
+  2. synthesis. UPDATE 11 (T-193): ElevenLabs is the default first pass. With an ELEVENLABS_API_KEY (environment or the
+     ignored .env.local) every line whose speaker has an ElevenLabs voice in data/voice/cast.json is baked by
+     tools/voice/eleven.py (eleven_v4, cached, quota-safe, priority order; docs/VOICES.md) into the same files,
+     marked source ai_eleven / "ai": true; this bake keeps those rows while the text is unchanged, like recorded takes.
+     Everything else (no key, a speaker not cast yet, the quota ran out) goes through the two local engines:
      * the squad and Jakub (DUT PEG DEA WRN JAK, data/gravelight/vo/voice_cast.json; T-073): Kokoro-82M, an offline
        neural TTS (Apache-2.0), through gen_vo_neural.py in the project-local venv (tools/venv, models in
        tools/tts/kokoro; one-time setup: tools/setup_tts.sh). One cast voice per character (a blend of Kokoro
@@ -37,6 +41,9 @@ Run from the repo root:
   python gravelight/tools_src/gen_vo.py --dry-run       list what would be built
   python gravelight/tools_src/gen_vo.py --engine=onecore   squad on the old OneCore voices (the fallback)
   python gravelight/tools_src/gen_vo.py --engine=neural    fail instead of falling back when Kokoro is missing
+  python gravelight/tools_src/gen_vo.py --engine=eleven    the ElevenLabs pass only (fails without the key)
+  python gravelight/tools_src/gen_vo.py --no-eleven        the local engines only (no ElevenLabs pass)
+  python gravelight/tools_src/gen_vo.py --eleven-limit-chars=N   spend at most N characters in the ElevenLabs pass
 Then reimport once so Godot sees the new files:  godot --headless --editor --quit-after 300 --path .
 Loudness / sanity report of what's baked: python gravelight/tools_src/vo_loudness.py
 Requires numpy + scipy and ffmpeg on PATH. Windows only (OneCore voices; the neural venv is Windows too).
@@ -169,9 +176,15 @@ def neural_env() -> tuple[str, str] | None:
 ONLY: list[str] = []
 FORCE: bool = False
 DRY: bool = False
-ENGINE: str = "auto"          # auto | neural | onecore
+ENGINE: str = "auto"          # auto (ElevenLabs first, then neural / onecore) | eleven | neural | onecore
+ELEVEN: bool = True           # --no-eleven: skip the ElevenLabs pass
+ELEVEN_LIMIT: str = ""
 for a in sys.argv[1:]:
-    if a.startswith("--only="):
+    if a == "--no-eleven":
+        ELEVEN = False
+    elif a.startswith("--eleven-limit-chars="):
+        ELEVEN_LIMIT = a.split("=", 1)[1]
+    elif a.startswith("--only="):
         ONLY = [x.strip() for x in a[len("--only="):].split(",") if x.strip()]
         if any(x.upper() == "SQUAD" for x in ONLY):
             ONLY = [x for x in ONLY if x.upper() != "SQUAD"] + list(SQUAD)
@@ -872,7 +885,37 @@ def _wants(only: list[str], line_id: str, rec_speaker: str, part_speaker: str) -
     return False
 
 
+def eleven_pass() -> int:
+    """UPDATE 11 (T-193): the ElevenLabs bake of the Gravelight lines (tools/voice/eleven.py, in the voice venv)
+    before the local engines. Returns its exit code (0 ok / nothing to do, 2 no key, 3 stopped on quota or a
+    limit: the local engines then cover the rest)."""
+    py = sys.executable
+    for r in _tts_roots():
+        cand = [os.path.join(r, "tools", "venv", "Scripts", "python.exe"), os.path.join(r, "tools", "venv", "bin", "python")]
+        hit = next((c for c in cand if os.path.exists(c)), "")
+        if hit:
+            py = hit
+            break
+    cmd = [py, "-I", os.path.join(ROOT, "tools", "voice", "eleven.py"), "bake", "--game=gl", "--require-key"]
+    if DRY:
+        cmd.append("--dry-run")
+    if ONLY:
+        cmd.append("--ids=" + ",".join(ONLY))
+    if ELEVEN_LIMIT:
+        cmd.append("--limit-chars=" + ELEVEN_LIMIT)
+    print("ElevenLabs pass (tools/voice/eleven.py bake, Gravelight lines)")
+    try:
+        return subprocess.run(cmd, cwd=ROOT, timeout=6 * 3600).returncode
+    except (OSError, subprocess.SubprocessError) as e:
+        print("ElevenLabs pass did not run (%s); the local engines bake everything" % type(e).__name__)
+        return 1
+
+
 def main() -> int:
+    if ELEVEN and ENGINE in ("auto", "eleven"):
+        rc = eleven_pass()
+        if ENGINE == "eleven":
+            return 0 if rc in (0, 3) else 1
     with open(LINES, encoding="utf-8") as f:
         lines: dict = json.load(f)
     manifest: dict = {"_doc": "", "tool_version": TOOL_VERSION, "files": {}, "missing": {}}

@@ -37,3 +37,5 @@ voice_review/
 /build/
 # Local secrets written by `elevenlabs onboard`
 /.env.local
+# UPDATE 11 (T-193): the ElevenLabs take cache (raw API audio by hash, shared by every worktree; never committed)
+.voice_cache/

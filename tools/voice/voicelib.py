@@ -274,6 +274,8 @@ def say_id(file_id: str) -> str:
             out.append(" ".join(_DIGIT_WORDS[int(c)] for c in p))
         elif re.fullmatch(r"p\d+", p) and i == len(parts) - 1:
             out.append("part " + " ".join(_DIGIT_WORDS[int(c)] for c in p[1:]))
+        elif p.isalpha() and p not in SPELLED_CODES and len(ID_WORD_ALIASES.get(p.lower(), "xx")) == 1:
+            out.append(p.lower())                # a code that is also a letter's name (DEE = "Dee" = d)
         elif (p.isupper() and len(p) <= 4 and (i == 0 or not p.isalpha() or p in SPELLED_CODES
                                                 or not re.search(r"[AEIOUY]", p))) or                 (p.isalpha() and len(p) <= 2 and not re.search(r"[AEIOUYaeiouy]", p)):
             out.append("-".join(p.upper()))
@@ -443,6 +445,8 @@ class Line:
     cues: list = field(default_factory=list)    # [[speaker, text, is_this_line], ...] for conversations
     order: int = 0
     vocal_only: bool = False     # a hum / giggle with no words
+    speech: str = ""             # T-154 / U11 C3: what is said when it differs from the subtitle (German, Russian...)
+    lang: str = ""               # a line's spoken language when the source names one (lines.json "lang", FP [de])
 
     @property
     def script_sha(self) -> str:
@@ -536,7 +540,8 @@ def collect_gl(vcast: dict | None = None) -> list[Line]:
             continue
         out.append(Line(lid, lid, "gl", spk, str(rec.get("text", "")), cat, gl_delivery(cat, str(rec.get("text", "")), vcast),
                         context_for(cat, cond), GL_AUDIO_RES + "%s/%s.ogg" % (spk.lower(), lid), cat.replace("_", " "),
-                        vocal_only=vocal))
+                        vocal_only=vocal, speech=str(rec.get("speech", "") or ""),
+                        lang=str(rec.get("lang", "") or rec.get("speech_lang", "") or "")))
     # Boss files: the Cousins (and the Operator's lines for their round)
     names = cousin_names()
     for fn in sorted(os.listdir(GL_BOSSES)) if os.path.isdir(GL_BOSSES) else []:
@@ -637,6 +642,129 @@ def collect_all() -> list[Line]:
     return collect_gl() + collect_bs()
 
 
+# ───────────────────────────────────────────────────────────── The Fine Print (script only, U11 T-193)
+# The Fine Print exists as a script (docs/fineprint/script_ch1..5.md, 2778 ids) and is not built yet. Its lines are
+# read from the script for the ElevenLabs plan / bake (tools/voice/eleven.py); they are not in collect_all(),
+# so the recording scripts, the importer and the review page are unchanged. Its speaker ids are B&S VOManager ids,
+# so a take goes where B&S plays recorded lines (res://audio/vo/<id>.ogg, the B&S manifest).
+FP_DIR = os.path.join(ROOT, "docs", "fineprint")
+# speaker labels in the script that are on-screen text, never voiced
+FP_NOT_SPOKEN = {"text", "sys"}
+# script labels -> speaker ids (the rest are slugged: "CUSTOMS MAN" -> customs_man)
+FP_LABELS = {"the board": "darkmatter", "operator": "operator", "wren": "wren", "dutch": "dutch", "peg": "peg",
+             "deacon": "deacon", "fasbender": "fasbender", "reinholt": "reinholt", "jakub": "jakub"}
+# a speaker-less table's speaker, from words in the heading above it (first hit wins)
+FP_HEADING_SPEAKERS = [("operator", "operator"), ("the pa", "dm_pa"), ("dm_pa", "dm_pa"), ("exit survey", "exit_survey"),
+                       ("exit_survey", "exit_survey"), ("glambot", "glambot"), ("blartz", "blartz"),
+                       ("underwriter", "underwriter"), ("repossessor", "repossessor"), ("sprocket", "sprocket"),
+                       ("bolt", "bolt"), ("vendelin", "vendelin"), ("sable", "sable"), ("warden", "churn_warden"),
+                       ("courtesy", "courtesy"), ("upsell", "upsell_drone"), ("associate", "associate")]
+# a speaker-less table's speaker from its pool (scene) name, before the heading is tried
+FP_SCENE_SPEAKERS = [("op_", "operator"), ("operator", "operator"), ("uw_", "underwriter"), ("fas_", "fasbender"),
+                     ("omega_blartz", "blartz"), ("board", "darkmatter"), ("repo", "repossessor")]
+# table columns that hold the spoken line (first match); tables with none of these are not voiced (rewards, titles)
+FP_TEXT_COLUMNS = ("line", "clause", "question")
+FP_LANG_TAGS = {"de": "de", "pl": "pl", "en": "en", "gsw": "en", "sil": "en"}   # the text is English (script_ch2 §0)
+
+
+def fp_speaker(label: str) -> str:
+    """A script label -> speaker id ("VENDELIN (V.O.)" -> vendelin, "BRÜCK" -> bruck). An Archive document label
+    ("FINAL REPORT (transcript).", "JOSEPHINE (equipment card).") -> "text" (on-screen, not voiced)."""
+    raw = label.strip()
+    if raw.endswith(".") or re.search(r"\((?!v\.o\.\))[^)]*\)", raw, re.I):
+        return "text"
+    s = re.sub(r"\(v\.o\.\)", "", raw.strip(":").strip(), flags=re.I).strip().strip(":").strip().lower()
+    import unicodedata
+    s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode("ascii")
+    return FP_LABELS.get(s, slug(s))
+
+
+def _fp_heading_speaker(heading: str, known: set[str]) -> str:
+    low = heading.lower()
+    for tok in re.findall(r"`([a-z_]+)`", low):
+        if tok in known:
+            return tok
+    for word, spk in FP_HEADING_SPEAKERS:
+        if word in low:
+            return spk
+    return ""
+
+
+def collect_fp(folder: str | None = None) -> list[Line]:
+    """Every voiced Fine Print line in the script: '- `fp.c1.x.01` **SPEAKER** `[de]`: text' bullets and the bark /
+    clause tables (`| ID | Speaker | Line |`, or `| ID | Trigger | Line |` under a heading naming the speaker)."""
+    folder = folder or FP_DIR
+    out: list[Line] = []
+    seen: set[str] = set()
+    bullet = re.compile(r"^- `((?:fp|gl)\.[a-z0-9_.]+\.\d+)` \*\*([^*]+?)\*\*\s*(?:`\[([a-z]+)\]`)?\s*:?\s*(.*)$")
+    files = sorted(glob_files(folder, "script_ch*.md"))
+    known: set[str] = set()
+    for p in files:
+        for ln in open(p, encoding="utf-8").read().splitlines():
+            m = bullet.match(ln)
+            if m:
+                known.add(fp_speaker(m.group(2)))
+    for p in files:
+        rows = open(p, encoding="utf-8").read().splitlines()
+        heading = ""
+        header: list[str] = []
+        for i, raw in enumerate(rows):
+            if raw.startswith("#"):
+                heading, header = raw, []
+                continue
+            m = bullet.match(raw)
+            if m:
+                fid, label, tag, text = m.group(1), m.group(2), m.group(3) or "", m.group(4)
+                spk = fp_speaker(label)
+                if spk in FP_NOT_SPOKEN or fid in seen:
+                    continue
+                if not re.search(r"[A-Za-z]", spoken_text(re.sub(r"\*\[[^\]]*\]\*", " ", text))):
+                    continue
+                seen.add(fid)
+                out.append(_fp_line(fid, spk, text, FP_LANG_TAGS.get(tag, ""), heading))
+                continue
+            if raw.startswith("|"):
+                cells = [c.strip() for c in raw.strip().strip("|").split("|")]
+                if i + 1 < len(rows) and re.match(r"^\|[\s:|-]+\|\s*$", rows[i + 1]):
+                    header = [c.lower() for c in cells]
+                    continue
+                if not header or not re.match(r"^`((?:fp|gl)\.[a-z0-9_.]+\.\d+)`$", cells[0] if cells else ""):
+                    continue
+                fid = cells[0].strip("`")
+                col = next((k for k, h in enumerate(header) for w in FP_TEXT_COLUMNS if h.startswith(w)), -1)
+                if col < 0 or col >= len(cells) or fid in seen:
+                    continue
+                spk = ""
+                if "speaker" in header and header.index("speaker") < len(cells):
+                    spk = fp_speaker(cells[header.index("speaker")].strip("`*"))
+                if not spk:
+                    scene = fid.split(".")[2] if fid.count(".") >= 3 else ""
+                    spk = "operator" if fid.startswith("gl.all.operator") else (next(
+                        (v for k, v in FP_SCENE_SPEAKERS if scene.startswith(k)), "")
+                        or next((seg for seg in fid.split(".")[1:-1] if seg in known), "")
+                        or _fp_heading_speaker(heading, known))
+                if not spk or spk in FP_NOT_SPOKEN:
+                    spk = "unassigned"
+                text = cells[col]
+                if "beam text" in heading.lower() or not re.search(r"[A-Za-z]", spoken_text(text)):
+                    continue
+                seen.add(fid)
+                out.append(_fp_line(fid, spk, text, "", heading))
+    return out
+
+
+def _fp_line(fid: str, spk: str, text: str, lang: str, heading: str) -> Line:
+    text = re.sub(r"\*\[([^\]]*)\]\*", r"[\1]", text).strip()     # *[italic direction]* -> [direction]
+    sec = re.sub(r"^#+\s*", "", heading).strip() or fid.split(".")[1]
+    return Line(fid, fid, "fp", spk, text, ".".join(fid.split(".")[:3]), bs_delivery(text), "", BS_AUDIO_RES + fid + ".ogg",
+                "The Fine Print: " + sec, lang=lang)
+
+
+def glob_files(folder: str, pattern: str) -> list[str]:
+    import glob as _g
+    return _g.glob(os.path.join(folder, pattern))
+
+
 def lines_by_actor(lines: list[Line], cast: dict) -> dict[str, list[Line]]:
     out: dict[str, list[Line]] = {}
     for ln in lines:
@@ -676,7 +804,7 @@ def save_manifest(game: str, m: dict) -> None:
         m["_doc"] = ("Bolt & Sprocket voice manifest (T-101, tools/voice/import.py): every voiced line id. source tts = "
                      "the game's runtime text-to-speech (core/vo_manager.gd, no file); human = a recorded take at path "
                      "(res://audio/vo/<id>.ogg) with the actor, the take id and the file hash; ai_* = ElevenLabs "
-                     "(tools/voice/elevenlabs.py, always marked).")
+                     "(tools/voice/eleven.py, always marked).")
         m["files"] = dict(sorted(m.get("files", {}).items()))
         save_json(BS_MANIFEST, m, sort=False)
 

@@ -54,10 +54,14 @@ subtitle, a cutscene beat and a `LinePlayer` line up for at least the recorded t
 `GLVO.voice_test = true` (the dev launcher's "Map 0 — voice test (round 1–3)") prints every line as it starts with
 its source (`human <actor>` / `tts` / `none`) and, after round 3, writes `logs/voice_test.txt`.
 
-## ElevenLabs (optional, off)
+## ElevenLabs (the default computer voice since UPDATE 11)
 
-`tools/voice.sh elevenlabs stock|sts|clone`. Off unless `ELEVENLABS_API_KEY` is set in the environment (never in a
-file). `stock`: a stock voice for a gap line nobody recorded (never over a human take) → `source: ai_stock`. `sts`:
+UPDATE 11 (T-193): ElevenLabs is now the default bake for every voice, with `eleven_v4`, a take cache, priority order
+and a quota stop. See `docs/VOICES.md` for the casting, the model, `tools/voice.sh plan` / `bake`, and how the key is
+loaded. A recorded take still wins over it, and an AI take is `source: ai_eleven`. The tool is `tools/voice/eleven.py`.
+
+The T-101 helpers are still there, now on the official SDK: `tools/voice.sh elevenlabs stock|sts|clone`. They are off
+without the key. `stock`: a stock voice for a gap line nobody recorded (never over a human take) → `source: ai_stock`. `sts`:
 the voice changer on a recorded take, only when `cast.json` gives that character a `voice_changer` voice id →
 `ai_sts`. `clone`: refused unless the actor's consent.txt says `ai_voice_cloning: yes`. Every AI line is marked
 (`source ai_*`, `"ai": true`) in the manifest and on the review page. Commercial use needs a paid plan.
