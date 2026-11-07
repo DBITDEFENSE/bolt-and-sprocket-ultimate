@@ -233,7 +233,9 @@ func buy_for(player_id: int, perk_id: StringName) -> StringName:
 	return &"ok"
 
 
-func grant(player: int, perk_id: StringName) -> void:
+## `quiet` (T-186, the bots' round-30 kit): no perk_bought, so no drink line, drink pose or machine flourish for a
+## tonic nobody drank; perks_changed still goes out (the HUD, the nameplates, the co-op snapshot).
+func grant(player: int, perk_id: StringName, quiet: bool = false) -> void:
 	if not Net.is_authority():
 		return
 	if has_perk(player, perk_id) or perk_data(perk_id).is_empty():
@@ -250,7 +252,8 @@ func grant(player: int, perk_id: StringName) -> void:
 	var free_tier: int = int(GameState.flags.get(StringName("perk_tier_free_" + String(perk_id)), 0))
 	if free_tier > tier_of(player, perk_id):
 		_tier_dict(player)[String(perk_id)] = free_tier
-	GLBus.perk_bought.emit(player, perk_id)
+	if not quiet:
+		GLBus.perk_bought.emit(player, perk_id)
 	GLBus.perks_changed.emit(player)
 
 
