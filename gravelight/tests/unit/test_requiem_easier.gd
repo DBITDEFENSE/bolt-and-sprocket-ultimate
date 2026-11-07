@@ -76,3 +76,15 @@ func test_use_from_arms_reach() -> void:
 	assert_false(BotTasks.use_reach_ok(1.0, 1.0, 3.5, true), "another floor: never")
 	for k: String in ["shoot_here_m", "shoot_here_near_vantage_m"]:
 		assert_true(ee.has(k), "ee.json %s" % k)
+
+
+
+func test_chapel_kill_counts_near_the_altar() -> void:
+	var p: Dictionary = (_step("s4_key").get("params", {}) as Dictionary)
+	assert_true(QuestManager.kill_zone_ok(p, &"F_CHAPEL", Vector3(500, 0, 500)), "in the Chapel zone: counts")
+	assert_true(QuestManager.kill_zone_ok(p, &"G_GENERATOR", Vector3(12, -12, 92)), "on the Chapel's steps, 12 m from the altar: counts")
+	assert_false(QuestManager.kill_zone_ok(p, &"G_GENERATOR", Vector3(60, -12, 80)), "far away: still fails")
+	assert_true(QuestManager.kill_zone_ok({}, &"", Vector3.ZERO), "no zone: anywhere")
+	assert_false(QuestManager.kill_zone_ok({"zone": "F_CHAPEL"}, &"G_GENERATOR", Vector3(12, -12, 80)), "a zone without near: the zone only")
+	assert_gt(float(req.get("bell_lit_solo", 0.0)), 90.0, "the Chapel bell stays lit longer than 90 s solo")
+	assert_gt(float(req.get("bell_lit_coop", 0.0)), 75.0, "and longer than 75 s in co-op")

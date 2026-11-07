@@ -211,6 +211,9 @@
       "params": {
         "enemy": "foreman",
         "zone": "F_CHAPEL",
+        "near": [12, -12, 80],
+        "near_m": 16.0,
+        "_near": "T-181: the Foreman's death counts in the Chapel or within near_m of its altar (its door, its steps)",
         "world_flag": "chapel_bell_lit"
       },
       "requires": [
