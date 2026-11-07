@@ -298,7 +298,7 @@ class SquadPanel extends Control:
 		var most: int = 0
 		for r: Dictionary in rows:
 			most = maxi(most, (r["caps"] as Array).size())
-		return 22.0 + name_w() + 12.0 + 80.0 + float(most) * (cd + 3.0)
+		return 22.0 + name_w() + 12.0 + 80.0 + float(most) * (cd + 3.0) + 3.0
 
 	func _draw() -> void:
 		var fs: int = MenuKit.size("coop_row")
@@ -317,7 +317,7 @@ class SquadPanel extends Control:
 			# a soft backing strip, so the row holds on bright snow
 			var tw: String = CoopHud.state_text(r)
 			var sw: float = font.get_string_size(tw, HORIZONTAL_ALIGNMENT_LEFT, -1, fs - 4).x + 10.0 if tw != "" and font != null else 0.0
-			var strip_w: float = 22.0 + nw + 10.0 + sw + float(caps.size()) * (cd + 3.0) + 6.0
+			var strip_w: float = 22.0 + nw + 10.0 + sw + float(caps.size()) * (cd + 3.0) + 9.0
 			draw_rect(Rect2(-6.0, y + 2.0, strip_w, rh - 4.0), Color(0.04, 0.03, 0.02, 0.36))
 			# the state mark: a colour chip while standing, a red cross while down (gold while being revived), a dash out
 			var mc: Vector2 = Vector2(6.0, mid)
@@ -353,7 +353,7 @@ class SquadPanel extends Control:
 				var cc2: Vector2 = Vector2(x + cd * 0.5, mid)
 				draw_circle(cc2 + Vector2(0.8, 1.5), cd * 0.5 + 0.5, Color(0, 0, 0, 0.45))
 				PerkCap.draw_cap(self, cc2, cd * 0.5, cap[0], bool(cap[2]), cap_font, 0.55 if out else 1.0, int(cap[1]))
-				x += cd + 3.0
+				x += cd + (6.0 if bool(cap[2]) else 3.0)   # the bonus perk's gold ring needs a little room
 
 
 ## The scoreboard (T-183, hold ui_scoreboard): a ruled ledger plate in the middle of the screen.
