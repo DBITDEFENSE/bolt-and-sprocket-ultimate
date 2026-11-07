@@ -38,6 +38,7 @@ var egg_round_t: float = 0.0
 var _egg_feed_t: float = 0.0
 var _egg_topup: bool = false     # to_spawn's 1 is an egg-mode top-up (a hold / the feed), not the round's queue
 var _egg_feed_on: bool = false   # EggMode.feed_wanted(), refreshed every 0.5 s
+var _egg_feed_pts: Array = []      # the open kill-count step's feed_points (EggMode.feed_points)
 var _egg_feed_check: float = 0.0
 
 
@@ -204,7 +205,9 @@ func _process(delta: float) -> void:
 		_egg_feed_check -= delta
 		if _egg_feed_check <= 0.0:
 			_egg_feed_check = 0.5
-			_egg_feed_on = EggMode.feed_wanted()
+			var fs: Dictionary = EggMode.feed_step()
+			_egg_feed_on = not fs.is_empty()
+			_egg_feed_pts = EggMode.feed_points(fs)
 		if EggMode.round_over(EggMode.current(), egg_round_t, 0 if _egg_topup else to_spawn, alive, not _holds.is_empty(), EggMode.cfg()):
 			to_spawn = 0
 			_egg_topup = false
@@ -328,6 +331,12 @@ func _egg_can_spawn() -> bool:
 			if _egg_feed_t > 0.0:
 				return false
 			_egg_feed_t = float(c.get("feed_interval_s", 2.5))
+			if not _egg_feed_pts.is_empty():
+				# a crawler rises at one of the step's own points (by the heart), not at the map's spawns
+				var dir: ZombieDirector = get_tree().get_first_node_in_group(&"director") as ZombieDirector
+				if dir != null:
+					dir.spawn_burst([_egg_feed_pts[rng.randi() % _egg_feed_pts.size()]], 1)
+				return false
 		to_spawn = 1
 		_egg_topup = true
 		return true

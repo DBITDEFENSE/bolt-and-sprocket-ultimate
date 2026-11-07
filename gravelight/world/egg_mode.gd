@@ -88,10 +88,27 @@ static func feeds(step_type: String, c: Dictionary) -> bool:
 
 ## Is a kill-count step of a loaded quest open now?
 static func feed_wanted() -> bool:
+	return not feed_step().is_empty()
+
+
+## The open kill-count step's params ({} when none). Its "feed_points" (optional) are where the feed's crawlers rise:
+## Requiem's 30 Totenglocke kills must be made within 15 m of the heart, and crawlers from the map's spawns never
+## crawled that far down (the bots held at the heart with nothing to kill).
+static func feed_step() -> Dictionary:
 	var c: Dictionary = cfg()
 	for qid: StringName in QuestManager.quest_ids():
 		for st: Variant in QuestManager.steps_of(qid):
 			var s: Dictionary = st
 			if feeds(str(s.get("type", "")), c) and QuestManager.is_active(qid, StringName(str(s.get("id", "")))):
-				return true
-	return false
+				return s.get("params", {})
+	return {}
+
+
+## The feed points of a kill-count step's params as Vector3s (pure).
+static func feed_points(params: Dictionary) -> Array:
+	var out: Array = []
+	for v: Variant in params.get("feed_points", []):
+		var a: Array = v
+		if a.size() >= 3:
+			out.append(Vector3(float(a[0]), float(a[1]), float(a[2])))
+	return out

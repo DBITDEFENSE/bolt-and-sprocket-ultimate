@@ -133,3 +133,15 @@ func test_bank_shut_in_practice() -> void:
 	GameState.egg_mode = "off"
 	assert_eq(BankAccount.closed_reason(), "")
 	GLSettings.values["classic_rules"] = classic
+
+
+
+func test_feed_points() -> void:
+	assert_eq(EggMode.feed_points({}).size(), 0, "no feed_points: the map's own spawns")
+	var pts: Array = EggMode.feed_points({"feed_points": [[1, 2, 3], [4, 5]]})
+	assert_eq(pts.size(), 1, "a short entry is skipped")
+	assert_eq(pts[0], Vector3(1, 2, 3))
+	var q: Dictionary = GLData.load_json("res://data/gravelight/quests/map01_requiem.json")
+	for s: Variant in q.get("steps", []):
+		if str((s as Dictionary).get("id", "")) == "s8b_charge":
+			assert_gte(EggMode.feed_points((s as Dictionary).get("params", {})).size(), 3, "Requiem s8b feeds crawlers by the heart")

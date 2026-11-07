@@ -394,7 +394,9 @@
         ],
         "radius": 15.0,
         "count": 30,
-        "per_extra_player": 10
+        "per_extra_player": 10,
+        "feed_points": [[21, -18, 110], [47, -18, 108], [21, -18, 122], [40, -18, 128], [28, -18, 104]],
+        "_feed_points": "T-181 Easter Egg Mode: where its crawlers rise while this step is open (the Heartstorm's own points, by the heart)"
       },
       "requires": [
         "s8a_place"
