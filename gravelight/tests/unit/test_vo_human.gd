@@ -44,7 +44,7 @@ func test_tts_fallback_for_lines_without_a_take() -> void:
 	# a line nobody recorded still resolves to its baked TTS file
 	assert_ne(GLVO.audio_path(&"DUT_RELOAD_01"), "", "DUT_RELOAD_01 has audio")
 	var row: Dictionary = (GLData.load_json(GL_MANIFEST).get("files", {}) as Dictionary).get("DUT_RELOAD_01", {})
-	assert_true(str(row.get("source", "")) in ["tts", "human"])
+	assert_true(str(row.get("source", "")) in ["tts", "human", "ai_eleven"])
 
 
 func test_play_external_without_a_file_is_silent() -> void:
@@ -56,7 +56,7 @@ func test_voice_test_logs_the_source() -> void:
 	GLVO.play_external("HAM_THROW_01_NOPE", "HAM")
 	assert_eq(GLVO.voice_log.size(), 1)
 	assert_eq(str(GLVO.voice_log[0]["source"]), "none")
-	assert_true(GLVO.source_of("DUT_RELOAD_01").begins_with("tts") or GLVO.source_of("DUT_RELOAD_01").begins_with("human"))
+	assert_true(GLVO.source_of("DUT_RELOAD_01").begins_with("tts") or GLVO.source_of("DUT_RELOAD_01").begins_with("human") or GLVO.source_of("DUT_RELOAD_01").begins_with("ai"))
 	assert_string_contains(GLVO.voice_test_report(), "Voice test: 1 lines")
 
 

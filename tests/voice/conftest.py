@@ -36,7 +36,14 @@ def sandbox(tmp_path, monkeypatch):
     gl_man = data / "gl_manifest.json"
     bs_man = data / "bs_manifest.json"
     shutil.copy(V.GL_MANIFEST, gl_man)
-    cast = V.load_json(V.CAST_PATH)
+    # T-201 bake: the real manifest now holds AI takes. The tests start from the TTS state, so swap each AI row
+    # back to the TTS row it keeps under "tts" (in the sandbox copy only).
+    _m = V.load_json(str(gl_man))
+    for _k, _row in list(_m["files"].items()):
+        if _row.get("source") == "ai_eleven" and isinstance(_row.get("tts"), dict):
+            _m["files"][_k] = _row["tts"]
+    gl_man.write_text(json.dumps(_m, ensure_ascii=False), encoding="utf-8")
+    cast =V.load_json(V.CAST_PATH)
     cast["actors"]["testactor"] = {"name": "Test Actor"}
     cast["characters"]["gl"]["DUT"]["actor"] = "testactor"
     cast_p = data / "cast.json"
