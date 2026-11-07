@@ -28,7 +28,8 @@
     "WRN",
     "JAK",
     "BNT",
-    "TAG"
+    "TAG",
+    "RTN"
   ],
   "speaker_default_priority": {
     "UBR": 1,
@@ -98,6 +99,10 @@
     "M4D_CONSOLE": 3
   },
   "category_cooldown": {
+    "RTN_CLOSE": [
+      10,
+      1.0
+    ],
     "ROUND_START": [
       0,
       0.35

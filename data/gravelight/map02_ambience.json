@@ -81,5 +81,7 @@
   "sweep": {"zone": "D_PENHALL", "from": [48, 0, 70], "speed_mps": 14.0, "max_s": 4.5},
   "perk_stings": {"start_s": 3.0, "gap_s": 0.6, "seconds": 2.6, "db": -4.0},
   "uboat_box": [[4, -2.6, 38], [10, 1.5, 86]], "uboat_red_to": 0.15, "uboat_delay": 3.2
- }
+ },
+ "horror": {"_doc": "UPDATE 11 section 6 (T-192): grit and dread on this map (HorrorLayer, gravelight/world/horror_layer.gd; presentation only, every block off when absent). The chant bed is our own synthesis (gen_audio_horror.py), not a recording; the levels keep docs/AUDIO_MIX.md's rule (the bed at its loudest sits 8 dB under a footstep with the map bed under it).", "chant": {"bed": "horror_chant_bed", "from_round": 1, "full_round": 25, "db": [-40.0, -29.0], "frag": {"sound": "horror_chant_frag", "first_after": [70, 140], "interval": [120, 220], "interval_late": [40, 80], "db": [-30.0, -20.0]}}, "bells": {"sound": "horror_bell_far", "first_after": [40, 90], "interval": [100, 220], "interval_late": [50, 120], "db": -12.0, "radius": 280.0, "from_round": 1, "full_round": 25, "bearings": [180, 330]}, "breath": {"sound": "player_breath_hurt", "below": 0.5, "every": [3.2, 1.6], "db": -2.0, "near_m": 6.0, "mate_db": -6.0}, "frost_edges": {"strength": [0.2, 0.45], "from_round": 1, "full_round": 20, "warm_zones": ["C_WORKSHOP", "E_UBOAT", "F_LOWERPENS"], "fade_per_s": 0.25}, "decals": {"pool": {"low": 6, "medium": 14, "high": 24}, "mud": true, "mud_chance": 0.6, "fade_begin_m": 35.0}, "grade": {"brightness_mult": 0.92, "contrast_add": 0.04}, "lamps": {"gutter_threshold": 0.55, "gutter_depth": 0.75, "snuff_every": [9.0, 22.0]}},
+ "breath": {"interval": [2.8, 4.4], "warm_zones": ["C_WORKSHOP", "E_UBOAT", "F_LOWERPENS"]}
 }

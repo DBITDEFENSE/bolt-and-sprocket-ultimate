@@ -4922,3 +4922,55 @@ func _ev_a1_power_on() -> void:
 		_after(start + float(maxi(0, idx)) * gap + 0.3, func() -> void:
 			AudioDirector.play_3d(str(po.get("perk_sting", "perk_tier4_sting")), at2, -2.0, 0.05))
 	print("[ambience] act1: the power-on spectacle")
+
+
+# ---- U11 horror (T-192) ----
+
+var risen_column: RisenColumn = null
+
+
+## UPDATE 11 section 6 (T-192): the Soviet risen walking west in the distance on Map 0's landscape (the war of the
+## work order's section 1.6: the front where the Red Army's own dead walk), a RisenColumn: presentation only, never
+## targetable, never colliding. Key "risen_column": from / to as [bearing deg, radius m] round the landscape centre,
+## count (count_web on the browser / Compatibility profile), speed [min, max] m/s, width (lane half width m),
+## visible_m (the bodies' visibility range end), min_round (shown from that round on). Off without the key.
+func _kinds_setup_u11_risen_column() -> void:
+	var c: Dictionary = cfg.get("risen_column", {})
+	if c.is_empty() or land == null:
+		return
+	var a: Array = c.get("from", [78.0, 235.0])
+	var b: Array = c.get("to", [12.0, 240.0])
+	var web_on: bool = GLSettings.is_web() or GLSettings.is_compat()
+	var kits: Dictionary = ((GLData.table("enemies") as Dictionary).get("soviet_risen", {}) as Dictionary).get("kits", RisenColumn.DEFAULT_KITS)
+	risen_column = RisenColumn.make({"from": LandscapeTerrain.at_bearing(float(a[0]), float(a[1])),
+		"to": LandscapeTerrain.at_bearing(float(b[0]), float(b[1])), "count": int(c.get("count_web" if web_on else "count", 12)),
+		"speed": c.get("speed", [0.55, 0.8]), "width": float(c.get("width", 6.0)), "ground": "terrain", "seed": int(c.get("seed", 1944)),
+		"visible_m": float(c.get("visible_m", 0.0)), "kits": kits, "fade": float(c.get("fade", 0.08))})
+	add_child(risen_column)
+	risen_column.global_position = Vector3.ZERO   # from / to are map points
+	var min_r: int = int(c.get("min_round", 1))
+	risen_column.visible = round_now >= min_r
+	risen_column.paused = not risen_column.visible
+	_round_fns.append(func(r: int) -> void:
+		risen_column.visible = r >= min_r
+		risen_column.paused = not risen_column.visible)
+	debug_kinds["risen_column"] = func() -> void:
+		risen_column.visible = true
+		risen_column.paused = false
+
+
+var horror: HorrorLayer = null
+
+
+## UPDATE 11 section 6 (T-192): grit and dread on every map (HorrorLayer): the chant bed rising with the round, far
+## bells, the Returned's whispers up close, the squad's breathing when hurt, frost on the screen edges in the cold,
+## flies over the dead in warm zones, blood and mud decals (the Gore setting), a darker night grade, guttering lamps.
+## Key "horror" (see horror_layer.gd for its blocks). Presentation only. Off without the key.
+func _kinds_setup_u11_horror() -> void:
+	var c: Dictionary = cfg.get("horror", {})
+	if c.is_empty():
+		return
+	horror = HorrorLayer.new()
+	horror.name = "Horror"
+	add_child(horror)
+	horror.setup(c, self)
