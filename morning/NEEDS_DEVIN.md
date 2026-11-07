@@ -4,11 +4,10 @@ Short, phone-readable. Nothing here blocks the build.
 
 ## UPDATE 11: ElevenLabs
 <!-- eleven-plan:start (tools/voice.sh elevenlabs plan rewrites this block) -->
-- **Estimate 2026-11-07** (`tools/voice.sh elevenlabs plan`, model `eleven_v4`, 1 credit per character): **409,479 characters** still to bake, so **Pro (500,000 credits / month) in one month**.
-- Per group, in bake order: 2 the squad 39,994; 3 the Operator 27,862; 4 the map NPCs 37,508; 5 the bosses 2,182; 6 barks 47,041; 7 The Fine Print 197,650; 8 Bolt & Sprocket 57,242.
-- Your account now: **creator** tier, 0 of 131,000 characters used this period, next reset 2026-12-07. Not enough for the whole bake in one period: upgrade for one month, or stay and bake over about 4 monthly periods (the bake stops cleanly at the quota and resumes after the reset).
-- Not counted yet: the new cutscene lines (group 1; T-191 adds them to lines.json) and the rewritten lines (T-195..T-199). Rerun `tools/voice.sh plan` after they merge.
-- 6,163 lines have no ElevenLabs voice yet (T-201 casts them): the estimate counts them anyway.
+- **Estimate 2026-11-07** (`tools/voice.sh elevenlabs plan`, model `eleven_v4`, 1 credit per character): **420,602 characters** still to bake, so **Pro (500,000 credits / month) in one month**.
+- Per group, in bake order: 1 the new cutscenes 11,123; 2 the squad 39,994; 3 the Operator 27,862; 4 the map NPCs 37,508; 5 the bosses 2,182; 6 barks 47,041; 7 The Fine Print 197,650; 8 Bolt & Sprocket 57,242.
+- Your account now: **creator** tier, 53 of 131,000 characters used this period, next reset 2026-12-07. Not enough for the whole bake in one period: upgrade for one month, or stay and bake over about 4 monthly periods (the bake stops cleanly at the quota and resumes after the reset).
+- 6,276 lines have no ElevenLabs voice yet (T-201 casts them): the estimate counts them anyway.
 <!-- eleven-plan:end -->
 
 ## UPDATE 10 (2026-11-02): the steps only you can do, one line each

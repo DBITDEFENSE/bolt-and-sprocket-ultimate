@@ -143,9 +143,10 @@ python gravelight/tools_src/gen_vo.py      the Gravelight bake: the ElevenLabs p
 - **The live check:** `tools/voice.sh elevenlabs check` makes at most 3 calls under 300 characters into a scratch
   folder, never the game.
 
-### The estimate (2026-11-07, before the U11 rewrite)
+### The estimate (2026-11-07, with T-191's cutscene lines, before the VO rewrite)
 
-409,479 characters still to bake: squad 39,994, Operator 27,862, NPCs 37,508, bosses 2,182, barks 47,041,
-The Fine Print 197,650, Bolt & Sprocket 57,242. The new cutscene lines and the rewritten lines are not counted yet.
-The account is on Creator (131,000 characters a month, reset on the 7th), so the whole bake takes one month on Pro,
-or about four monthly periods on Creator. Rerun `tools/voice.sh plan` after T-191 and T-195..T-199 merge.
+420,602 characters still to bake: cutscenes 11,123, squad 39,994, Operator 27,862, NPCs 37,508, bosses 2,182,
+barks 47,041, The Fine Print 197,650, Bolt & Sprocket 57,242. The account is on Creator (131,000 characters a month,
+reset on the 7th), so the whole bake takes one month on Pro, or about four monthly periods on Creator. The estimate
+counts one credit per character. That is the conservative figure: the live check's 121 characters billed (from the
+header) moved the account's counter by only 53. Rerun `tools/voice.sh plan` after T-195..T-199 merge.
