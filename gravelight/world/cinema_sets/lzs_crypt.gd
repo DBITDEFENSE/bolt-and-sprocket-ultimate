@@ -147,14 +147,16 @@ func _people() -> void:
 
 ## Shot 18: down the steps behind two lanterns.
 func fx_descend(secs: float) -> void:
+	# the two lanterns already at the foot of the steps, either side of the door; Volkov going down ahead of the lens,
+	# to one side (the camera follows them down and must see the lamp and the line between them)
 	for k: int in bearers.size():
 		var b: CinemaPerson = bearers[k]
-		b.position = Vector3(-0.42 + 0.84 * float(k), -0.9 - 0.4 * float(k), -1.6 - 0.6 * float(k))   # ahead, either side of the lens
+		b.position = Vector3(-0.62 + 1.24 * float(k), -2.2 - 0.2 * float(k), -3.25 - 0.4 * float(k))
 		b.reset_motion()
-		tween_to(b, "position", Vector3(-0.3 + 0.6 * float(k), -2.4, -3.6 - 0.3 * float(k)), secs * 0.95, Tween.TRANS_LINEAR)
-	volkov.position = Vector3(0.1, -0.2, -0.2)
+		tween_to(b, "position", Vector3(-0.62 + 1.24 * float(k), -2.4, -3.75 - 0.2 * float(k)), secs * 0.5, Tween.TRANS_SINE)
+	volkov.position = Vector3(0.6, -1.3, -2.2)
 	volkov.reset_motion()
-	tween_to(volkov, "position", Vector3(0.1, -1.8, -2.7), secs, Tween.TRANS_LINEAR)
+	tween_to(volkov, "position", Vector3(0.6, -2.4, -3.4), secs, Tween.TRANS_LINEAR)
 
 
 ## Shot 19: Volkov's lantern up to the letters; Serafim on the stair behind him.

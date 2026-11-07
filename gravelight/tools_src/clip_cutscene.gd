@@ -112,6 +112,10 @@ func _ready() -> void:
 func _reel_alone() -> void:
 	var reel: CinemaReel = CinemaReel.play(self, [cut], {"speed": 1.0, "roster": ["dutch", "peg", "deacon", "wren"]})
 	_runner = reel
+	for a: String in OS.get_cmdline_user_args():
+		if a.begins_with("--from="):   # T-194: start at this second of the cutscene (a look at one shot)
+			await get_tree().process_frame
+			reel.fast_forward(float(a.substr(7)))
 	_started = true
 	_start_frame = Engine.get_process_frames()
 	print("[clip] START frame=%d cut=%s map=(stage)" % [_start_frame, cut])

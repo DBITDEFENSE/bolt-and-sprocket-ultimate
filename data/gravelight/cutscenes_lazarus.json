@@ -150,7 +150,7 @@
           "from": [0.55, -1.72, -7.4], "to": [0.3, -1.92, -7.85], "look": [0.0, -2.05, -8.4], "fov": 32, "ease": "in_sine", "blur": 0.6, "handheld": 0.15, "fx": "vessel_open",
           "lines": [[0.5, "VOL_LZS_06"]]},
         {"t": 166.0, "_set": "crypt", "_what": "Close on the vessel's mouth in the lantern's light, held: the blood is still wet. It moves when the lantern shakes, catching the light the way only something wet does. [gore: full, red and a drop runs down the lip; low, red; off, only dark and wet]",
-          "from": [0.1, -1.72, -8.18], "look": [0.0, -1.93, -8.4], "fov": 30, "move": "static", "blur": 0.7, "handheld": 0.1, "fx": "drop_run",
+          "from": [-0.1, -1.74, -8.64], "look": [0.0, -1.93, -8.4], "fov": 34, "move": "static", "blur": 0.7, "handheld": 0.1, "fx": "drop_run",
           "lines": [[2.5, "VOL_LZS_07"]]},
         {"t": 172.0, "_set": "crypt", "_what": "The room, Volkov standing up too fast. He recovers in front of the brigade. The clever answer. His voice is wrong.",
           "from": [-1.25, -1.1, -5.7], "look": [0.1, -1.35, -7.6], "fov": 50, "move": "static", "handheld": 0.15, "fx": "stand_up",
@@ -203,7 +203,7 @@
           "from": [0.45, 1.75, 251.4], "look": [0.0, 1.5, 238.0], "fov": 50, "move": "static", "handheld": 0.12, "cut": "dip", "blend": 0.8,
           "lines": [[1.5, "SVR_FTD_01"], [6.2, "VOL_FTD_01"]]},
         {"t": 26.0, "_set": "front", "_what": "The handset in Volkov's hand, his face in the slit's light behind. He gives it to the colonel without a word. The colonel's order is HQ's.",
-          "from": [0.35, 1.5, 248.15], "look": [0.0, 1.62, 248.75], "fov": 35, "move": "static", "blur": 0.4, "handheld": 0.12, "fx": "handset",
+          "from": [1.2, 1.6, 248.2], "look": [0.0, 1.58, 248.7], "fov": 38, "move": "static", "blur": 0.4, "handheld": 0.12, "fx": "handset",
           "lines": [[0.4, "SVR_FTD_02"]]},
         {"t": 32.0, "_set": "front", "_what": "The long lens from the Soviet side onto the German trench. The salvo. The shells hit and don't explode properly: no fireball, no splinters. Each opens like a seed pod in a low, dirty brown puff that lies down in the rain instead of rising.",
           "from": [0.0, 1.5, 248.2], "look": [0.0, -0.4, 0.0], "fov": 24, "move": "static", "handheld": 0.1, "shake": [[2.0, 0.3], [2.7, 0.3], [3.3, 0.25]], "fx": "shells_soft",
@@ -228,11 +228,11 @@
           "from": [5.0, 1.6, 10.3], "look": [7.5, 1.2, 13.0], "fov": 45, "move": "static", "handheld": 0.12,
           "lines": [[0.4, "SVR_FTD_05"]]},
         {"t": 87.0, "_set": "rear", "_what": "The last shot: a long line of the risen walking west in greatcoats past their own guns. Dozens, in the road and beside it, greatcoats stiff and white with frost, some bareheaded, boots missing, walking the way men walk who are very tired. The crews stand off and let them pass. Nobody shoots.",
-          "from": [-2.0, 1.6, -160.0], "to": [-9.0, 1.6, -160.0], "look": [-2.0, 1.3, -201.0], "look_to": [-9.0, 1.3, -201.0], "fov": 24, "ease": "linear", "handheld": 0.08, "cut": "dip", "blend": 1.2, "fx": "walk",
+          "from": [-2.0, 1.5, -177.0], "to": [-9.0, 1.5, -177.0], "look": [-2.0, 1.3, -201.0], "look_to": [-9.0, 1.3, -201.0], "fov": 28, "ease": "linear", "handheld": 0.08, "cut": "dip", "blend": 1.2, "fx": "walk",
           "grade": {"exposure": 1.0, "contrast": 1.1, "saturation": 0.45, "tint": [0.9, 0.96, 1.08], "lift": [0.0, 0.004, 0.016], "vignette": 0.36}, "grade_s": 0.0,
           "sfx_opt": [[0.5, "horror_whisper", -18.0]],
           "lines": [[2.0, "VOL_FTD_04"], [8.0, "VOL_FTD_05"]]},
-        {"t": 100.0, "_set": "rear", "black": true, "black_in": 0.8, "_what": "Black. The chant's held note.", "from": [-9.0, 1.6, -160.0], "look": [-9.0, 1.3, -201.0], "fov": 24, "move": "static"}
+        {"t": 100.0, "_set": "rear", "black": true, "black_in": 0.8, "_what": "Black. The chant's held note.", "from": [-9.0, 1.5, -177.0], "look": [-9.0, 1.3, -201.0], "fov": 28, "move": "static"}
       ]
     },
     "staub": {

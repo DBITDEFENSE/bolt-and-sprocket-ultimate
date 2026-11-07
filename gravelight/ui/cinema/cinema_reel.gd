@@ -240,6 +240,15 @@ func _pre_dip(dt: float) -> void:
 		director.overlay.fade(1.0, half)
 
 
+## Tools: run the current cut's clock forward to `t` seconds (stage swaps and effects fire on the way; the clip tool's
+## --from= looks at one shot without filming the whole cutscene).
+func fast_forward(to_t: float) -> void:
+	var guard: int = 0
+	while director != null and not done and director.t < to_t and guard < 20000:
+		_process(0.05 / speed)
+		guard += 1
+
+
 func _on_shot(_i: int, s: CinemaShot) -> void:
 	var f: Variant = s.raw.get("fx", null)
 	var secs: float = s.dur / speed
