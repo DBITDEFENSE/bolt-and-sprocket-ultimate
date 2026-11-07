@@ -42,7 +42,44 @@
      "language": "en",
      "stability": 0.45,
      "similarity_boost": 0.8,
-     "why": "Pittsburgh: a Polish-American steelworker's son, 34. Low, gravelly baritone, Western Pennsylvania vowels, unhurried, grumbles to keep the men going; under U11 more tired and frightened, gallows humour thinning."
+     "why": "Pittsburgh: a Polish-American steelworker's son, 34. Low, gravelly baritone, Western Pennsylvania vowels, unhurried, grumbles to keep the men going; under U11 more tired and frightened, gallows humour thinning.",
+     "candidates": [
+      {
+       "voice_id": "3YzGaTGef0x5PLEK9yGq",
+       "owner": "1791e0bcb2d8e084264f178f4e128ab927a400e3f4ebbb32afc44e104e0e9c27",
+       "name": "Atlas - Deep, Gravelly Narrator",
+       "labels": "american, middle_aged, male, confident, narrative_story, en",
+       "query": "gender=male, accent=american, search=gravelly"
+      },
+      {
+       "voice_id": "cymHWdiF8WjUCg6vvFxx",
+       "owner": "64cbc624eb5aab4e95a968e1f41d75402277cca6e549036ed17e56ea33bbbc9e",
+       "name": "Vane - Rugged and gravelly",
+       "labels": "american, middle_aged, male, rough, characters_animation, en",
+       "query": "gender=male, accent=american, search=gravelly"
+      },
+      {
+       "voice_id": "odTaIOPU0JBNTD3hBLmJ",
+       "owner": "dff25bdc766e361f30dd633b88649e859f745fa38c028b3b011180377d54b4b0",
+       "name": "Sean - Gravelly Charmer",
+       "labels": "american, middle_aged, male, pleasant, narrative_story, en",
+       "query": "gender=male, accent=american, search=gravelly"
+      },
+      {
+       "voice_id": "ysswSXp8U9dFpzPJqFje",
+       "owner": "1f64d7cf85852186ab7b29aff471a3e99d2a88f1674a09f431134f9d18ce8652",
+       "name": "Azazel - Menacing and Gravelly Demon",
+       "labels": "american, middle_aged, male, intense, characters_animation, en",
+       "query": "gender=male, accent=american, search=gravelly"
+      },
+      {
+       "voice_id": "iB5aLrknrSagc00jivta",
+       "owner": "e9408ae4770d2ca33df75b43d3321c0481fe9df83c735e6c3d5f750f32c107a9",
+       "name": "Jon Peters - Confident, Gravely, Old",
+       "labels": "american, old, male, confident, entertainment_tv, en",
+       "query": "gender=male, accent=american, search=gravelly"
+      }
+     ]
     }
    },
    "PEG": {
@@ -58,7 +95,44 @@
      "language": "en",
      "stability": 0.6,
      "similarity_boost": 0.75,
-     "why": "Posh English: SOE lieutenant, 29, Received Pronunciation, clipped and precise, never raises her voice; the worse things get the more politely she speaks."
+     "why": "Posh English: SOE lieutenant, 29, Received Pronunciation, clipped and precise, never raises her voice; the worse things get the more politely she speaks.",
+     "candidates": [
+      {
+       "voice_id": "pLbOPegmoa1zxRcFjAVP",
+       "owner": "2329a7f298c5f9bd264367c11f0c0b3a68a6be941b59a9642cb00592b4c18206",
+       "name": "Charlotte - Warm, Clear British RP",
+       "labels": "british, young, female, professional, narrative_story, en",
+       "query": "gender=female, accent=british, search=received pronunciation"
+      },
+      {
+       "voice_id": "byQMr3answnWiGKk0ZUm",
+       "owner": "2dec67123cc6211b9ec9d52e7931f5444d6434ee6f561fbec96b796f98aea58a",
+       "name": "Enid - Clear, Professional & Editorial",
+       "labels": "british, middle_aged, female, calm, narrative_story, en",
+       "query": "gender=female, accent=british, search=received pronunciation"
+      },
+      {
+       "voice_id": "m0MqfGOWTAfVVEaz4KxX",
+       "owner": "a937f4da3109e25e3b44d742d0216fc0938a0dff7cbeb850fdc4bc7e6a725927",
+       "name": "Alexandra",
+       "labels": "british, young, female, calm, conversational, en",
+       "query": "gender=female, accent=british, search=received pronunciation"
+      },
+      {
+       "voice_id": "jv41DhCf464zw0TI7I1w",
+       "owner": "c93052724e2cf4ab0ebd353cc7b03213d6f29474822369d076613bac8c0fe775",
+       "name": "Imogen - Warm & Professional British Storyteller ",
+       "labels": "british, middle_aged, female, professional, narrative_story, en",
+       "query": "gender=female, accent=british, search=received pronunciation"
+      },
+      {
+       "voice_id": "UjprAOteKt2kCnWActec",
+       "owner": "44d56e4da42cf8c0bec15b7aea43e63c2079fafc24977f126ed79f6f58ed180e",
+       "name": "Asha",
+       "labels": "british, middle_aged, female, classy, narrative_story, en",
+       "query": "gender=female, accent=british, search=received pronunciation"
+      }
+     ]
     }
    },
    "DEA": {
@@ -74,7 +148,44 @@
      "language": "en",
      "stability": 0.5,
      "similarity_boost": 0.75,
-     "why": "Soft Southern: a Louisiana preacher's son, 26, warm soft-spoken tenor with a preacher's rhythm he resists; the quiet theological voice, a line at a time, never a sermon."
+     "why": "Soft Southern: a Louisiana preacher's son, 26, warm soft-spoken tenor with a preacher's rhythm he resists; the quiet theological voice, a line at a time, never a sermon.",
+     "candidates": [
+      {
+       "voice_id": "KuXMdv13akTyq5yqH15d",
+       "owner": "cf34ffb79ea1e9da2479a1216387c082a506889f9e29c5f0607affd813aa50ea",
+       "name": "Carey - Soft Male, slightly southern",
+       "labels": "american, young, male, soft, conversational, en",
+       "query": "gender=male, search=southern soft"
+      },
+      {
+       "voice_id": "FTYCiQT21H9XQvhRu0ch",
+       "owner": "d437b198df78445233a36b1d745f30a332207668cbd40d8da88b6e0fea3ef451",
+       "name": "Trung - Soft, Smooth and Narrative",
+       "labels": "southern, middle_aged, male, professional, informative_educational, vi",
+       "query": "gender=male, search=southern soft"
+      },
+      {
+       "voice_id": "Zm5fDdtChmOUe69OSYwx",
+       "owner": "19b17596ba4aff2a49cb3d989130937620b2050a0fbb125f2b255f3bb46f6ca2",
+       "name": "Sơn - Warm, Soft and Gentle",
+       "labels": "southern, young, male, narrative_story, vi",
+       "query": "gender=male, search=southern soft"
+      },
+      {
+       "voice_id": "dxdOayhnd0jLtELGeNtF",
+       "owner": "d479ddb1202dcee67d8fd89d8448816c768a1b4f1b79519de5fb94c500b4933e",
+       "name": "Mason - Friendly Southern Neighbor",
+       "labels": "us southern, middle_aged, male, casual, characters_animation, en",
+       "query": "gender=male, search=southern soft"
+      },
+      {
+       "voice_id": "D4xQvkd2SmpDZJ8sEwvA",
+       "owner": "d1c8334092b9279eed0a090857fc1c1ce135bae675e2cfb73c0989ffb4c0b816",
+       "name": "Rhett Sutton - Southern, Slow and Deep",
+       "labels": "us southern, middle_aged, male, casual, conversational, en",
+       "query": "gender=male, search=southern soft"
+      }
+     ]
     }
    },
    "WRN": {
@@ -90,7 +201,44 @@
      "language": "en",
      "stability": 0.55,
      "similarity_boost": 0.75,
-     "why": "Polish-accented English: Home Army, 24, English learned from British radio, economical and deadpan; she knows the NKVD. Polish words in Polish."
+     "why": "Polish-accented English: Home Army, 24, English learned from British radio, economical and deadpan; she knows the NKVD. Polish words in Polish.",
+     "candidates": [
+      {
+       "voice_id": "8vdIucMc14HcML5KYpFx",
+       "owner": "d26c0493d54b8d0ed3f04f86944b296ff0143c48be4c9837f274d75195d79a30",
+       "name": "Marta",
+       "labels": "polish, young, female, cute, conversational, en",
+       "query": "gender=female, accent=polish"
+      },
+      {
+       "voice_id": "yOhXTwcNX7GiQq8AsROm",
+       "owner": "c89656de70680d60f3977b48dd81a857f8075d1adaea169711bef9c4039da2ca",
+       "name": "Marta - Calm and Sophisticated Narrator",
+       "labels": "polish, young, female, classy, narrative_story, en",
+       "query": "gender=female, accent=polish"
+      },
+      {
+       "voice_id": "xTv86awUs9qX4HxeRH2n",
+       "owner": "7d30717576f52d3d26f979f1b6e6cb93d850b556e69fd6606186bdb1b018c868",
+       "name": "Helena - The Transcultural Professor",
+       "labels": "polish, female, classy, informative_educational, en",
+       "query": "gender=female, accent=polish"
+      },
+      {
+       "voice_id": "wOUVV74bP8NMIPcU3pRi",
+       "owner": "39d7530d2b4e9f1ff3eebb2191418ddfa0624ce95f410d1315208150301c1b49",
+       "name": "Emilia - Soft Narrator",
+       "labels": "standard, young, female, gentle, narrative_story, pl",
+       "query": "gender=female, language=pl"
+      },
+      {
+       "voice_id": "KYGxyTzRBFFiKRbXfzzg",
+       "owner": "a2eea33dcf62f06eef7d8227309f8201cc3c4e27cb14f9ad6ead1b8d91a7b646",
+       "name": "Adrianna - Soft, Natural",
+       "labels": "standard, young, female, calm, narrative_story, pl",
+       "query": "gender=female, language=pl"
+      }
+     ]
     }
    },
    "OPR": {
@@ -106,7 +254,23 @@
      "language": "en",
      "stability": 0.4,
      "similarity_boost": 0.75,
-     "why": "A 1940s radio announcer with a salesman's warmth: bright, brassy, a little too quick and too cheerful; U11: it talks about 'the returned' and 'the fourth day' with the same warmth (the horror is the warmth). The tannoy effect is added after (fx.json operator_tannoy)."
+     "why": "A 1940s radio announcer with a salesman's warmth: bright, brassy, a little too quick and too cheerful; U11: it talks about 'the returned' and 'the fourth day' with the same warmth (the horror is the warmth). The tannoy effect is added after (fx.json operator_tannoy).",
+     "candidates": [
+      {
+       "voice_id": "QMJTqaMXmGnG8TCm8WQG",
+       "owner": "5dde3271b3f8e68cc8618e67773db224acbb661e197e6312e07fd245fa79872c",
+       "name": "Clyde - Vintage and Warm Radio Announcer",
+       "labels": "american, middle_aged, male, confident, characters_animation, en",
+       "query": "gender=male, search=old time radio announcer"
+      },
+      {
+       "voice_id": "dqbqOZM4uhsyx1WtTAgT",
+       "owner": "3c54373dc6c7420969ac2748633e6d3643f4f31e60efcf4d9504b2b92740c734",
+       "name": "Max - 1940s RP British voice",
+       "labels": "british, middle_aged, male, crisp, entertainment_tv, en",
+       "query": "gender=male, search=1940s announcer"
+      }
+     ]
     }
    },
    "JAK": {
@@ -122,7 +286,44 @@
      "language": "en",
      "stability": 0.55,
      "similarity_boost": 0.75,
-     "why": "A person and a hero, never a joke: a Silesian salt hewer, 44, careful English learned late with a Polish accent, calm and wry, a deep warm voice."
+     "why": "A person and a hero, never a joke: a Silesian salt hewer, 44, careful English learned late with a Polish accent, calm and wry, a deep warm voice.",
+     "candidates": [
+      {
+       "voice_id": "t8RFUTOiQY6h7eJbfDBp",
+       "owner": "fb5a84095f39106c1f0e5bbafca9a17597fcb3373a748c1240aea95f8c39eb1e",
+       "name": "Andrew - Deep & Narrative",
+       "labels": "polish, middle_aged, male, calm, narrative_story, en",
+       "query": "gender=male, accent=polish"
+      },
+      {
+       "voice_id": "6ETmeyp0auvyYlGqRmta",
+       "owner": "f481e45a9ae0d84470c4a05b7fb13ce920f09481a4bd00ae6b142f527669fced",
+       "name": "Blax - Social media",
+       "labels": "polish, middle_aged, male, casual, social_media, en",
+       "query": "gender=male, accent=polish"
+      },
+      {
+       "voice_id": "lh3DpiIvYKliryahXrpY",
+       "owner": "b455804b05d4431fe0682e191453c59eeb0ea89a58637ce0e49bd4fb2536c7c8",
+       "name": "Amir - Deep, Polish Accent",
+       "labels": "polish, young, male, casual, characters_animation, en",
+       "query": "gender=male, accent=polish"
+      },
+      {
+       "voice_id": "nuwpqeXdykQWOB3gY2BP",
+       "owner": "17d1f18fc8bfd5ab9817766ceae67176e7a46621857e65df7ba7c9bcdafeef3e",
+       "name": "Adam - Warm Storyteller",
+       "labels": "polish, middle_aged, male, calm, informative_educational, en",
+       "query": "gender=male, accent=polish"
+      },
+      {
+       "voice_id": "vTXE4HycltDRUu5VX8bb",
+       "owner": "d144bf505d0a57f3f1b6b417fda51b0803f1e1729741ff073295148f5faeed39",
+       "name": "Mateo - Calm & Curious narrator",
+       "labels": "polish, young, male, calm, narrative_story, en",
+       "query": "gender=male, accent=polish"
+      }
+     ]
     }
    },
    "FAS": {
@@ -138,7 +339,44 @@
      "language": "en",
      "stability": 0.4,
      "similarity_boost": 0.75,
-     "why": "German scientist, mid-40s, nervous and rapid, hand over the radio mic; U11: haunted, he saw the Soviet dead come in on the trains. English with a German accent; the field-radio effect is added after."
+     "why": "German scientist, mid-40s, nervous and rapid, hand over the radio mic; U11: haunted, he saw the Soviet dead come in on the trains. English with a German accent; the field-radio effect is added after.",
+     "candidates": [
+      {
+       "voice_id": "7uMairBnhF1FZVSGMkuq",
+       "owner": "9450a3d2e4c415752d7231819bba0c409964857d52b2caf8744a6e86b1ffc468",
+       "name": "Georgie - Trustworthy",
+       "labels": "german, middle_aged, male, pleasant, social_media, en",
+       "query": "gender=male, accent=german, age=middle_aged"
+      },
+      {
+       "voice_id": "G4t3322LqgEAU2HEgGCv",
+       "owner": "c6ab1ccb03696f0dacc366d37f0458b27f7f743f488a6f5c98c69ff244ff14e6",
+       "name": "Paul - English Barritone Narration",
+       "labels": "german, middle_aged, male, deep, narrative_story, en",
+       "query": "gender=male, accent=german, age=middle_aged"
+      },
+      {
+       "voice_id": "VmPkIaPdP997cjIfBWRB",
+       "owner": "2589e4783407384edce004cc76c659a977455cb72dd5e283b788e3856883b1ae",
+       "name": "Tobias - German accent",
+       "labels": "german, middle_aged, male, confident, conversational, en",
+       "query": "gender=male, accent=german, age=middle_aged"
+      },
+      {
+       "voice_id": "zOiHgIXvyjLWTu0bYz48",
+       "owner": "0f8a94fb7a98cfb122899ffebed3bfcdca1a6baa9749bc55e2afc08229b55bf3",
+       "name": "Flo - Warm & Fun European Narrator",
+       "labels": "german, middle_aged, male, pleasant, en",
+       "query": "gender=male, accent=german, age=middle_aged"
+      },
+      {
+       "voice_id": "PaS83tMpnknIjj0BWrbq",
+       "owner": "9a1cfe5af826148541d03e79d540f4a8dc41336f5693dcc89b42b08188f5a701",
+       "name": "Kevin - Podcast",
+       "labels": "german, middle_aged, male, classy, narrative_story, en",
+       "query": "gender=male, accent=german, age=middle_aged"
+      }
+     ]
     }
    },
    "REI": {
@@ -154,7 +392,44 @@
      "language": "en",
      "stability": 0.65,
      "similarity_boost": 0.75,
-     "why": "German: Dr. Augusta Reinholt, early 50s, cultured, controlled and slow; English with a refined German accent, German lines in German. Phonograph / PA effects added after."
+     "why": "German: Dr. Augusta Reinholt, early 50s, cultured, controlled and slow; English with a refined German accent, German lines in German. Phonograph / PA effects added after.",
+     "candidates": [
+      {
+       "voice_id": "s7EySEcYvW3V9JHyna3h",
+       "owner": "84f6eae4f228a44c4431e0294928bf3176263a1f14566eaac8b8f12c33ff5ce2",
+       "name": "Elara Vale - Character",
+       "labels": "german, middle_aged, female, cute, characters_animation, en",
+       "query": "gender=female, accent=german"
+      },
+      {
+       "voice_id": "Z0r0nsdjMqaOiXkRUHRX",
+       "owner": "5a3b94b6a047f2a5c14f48d0d0d7580fc9196891384b921d0d1803a1df45e77b",
+       "name": "Susanne - Calm Storyteller",
+       "labels": "german, middle_aged, female, calm, narrative_story, en",
+       "query": "gender=female, accent=german"
+      },
+      {
+       "voice_id": "tiq5i5xgbt0ucBmI9CTU",
+       "owner": "dc2a0e216cef549cd45fb7ef354d7a79d1bc876e2fa1472ce525014b5b112764",
+       "name": "Viktoria - Business Excellence",
+       "labels": "german, young, female, confident, entertainment_tv, en",
+       "query": "gender=female, accent=german"
+      },
+      {
+       "voice_id": "L2VAaZdFwi5QvefZw36d",
+       "owner": "a659ad0cbea9f1fd9d10a977efa6344bcd87b5d1c2e90a053ee63db25cac68db",
+       "name": "Chrissy - Soft-spoken, Cute,",
+       "labels": "german, young, female, cute, conversational, en",
+       "query": "gender=female, accent=german"
+      },
+      {
+       "voice_id": "bIoCL0WawJqLkKp9VM8G",
+       "owner": "41e92e420edd6c70ea9903e105e3d3164c0eef93b679c36d3399a188aa128fc0",
+       "name": "Lucy - Warm, Swiss English, Conversational",
+       "labels": "german, young, female, pleasant, conversational, en",
+       "query": "gender=female, accent=german"
+      }
+     ]
     }
    },
    "LSL": {
@@ -1006,7 +1281,44 @@
      "language": "ru",
      "stability": 0.55,
      "similarity_boost": 0.75,
-     "why": "Russian for Serafim: an older village priest, deep, gentle, worn; frightened faith, never a villain, never a zombie on screen."
+     "why": "Russian for Serafim: an older village priest, deep, gentle, worn; frightened faith, never a villain, never a zombie on screen.",
+     "candidates": [
+      {
+       "voice_id": "9AjtU6o19uipv7QL8dLL",
+       "owner": "ace88408e1699e0c7fa8acacb1bba7be4e62b44d37f2e7e2e7689c0dd89b2395",
+       "name": "Alex - Calm Russian Analyst",
+       "labels": "standard, old, male, mature, narrative_story, ru",
+       "query": "gender=male, language=ru, age=old"
+      },
+      {
+       "voice_id": "LTkx8oHrUXaND7aaxdTA",
+       "owner": "460dabc9f96dd6cec09c54db9d5a484409dd3713222f3d0bdb12854bd8c837dd",
+       "name": "Alexrady",
+       "labels": "standard, old, male, casual, conversational, ru",
+       "query": "gender=male, language=ru, age=old"
+      },
+      {
+       "voice_id": "1KGG4Q8LqRdNII9xBurw",
+       "owner": "31fe6f8fc32365fd5c51e76f66e14132d5a95655936832847eb2755af6e37837",
+       "name": "M. Danisch - Narrator",
+       "labels": "standard, old, male, calm, narrative_story, de",
+       "query": "gender=male, language=ru, age=old"
+      },
+      {
+       "voice_id": "MuOq11XzQTthwLhmGZ2V",
+       "owner": "9e46ff55f2d9efaf1ab7b5acbc5f3415a7280d5a01ce1b2f69c05d327fdf36d4",
+       "name": "Nihat - The Timeless Narrator",
+       "labels": "black sea, old, male, deep, narrative_story, tr",
+       "query": "gender=male, language=ru, age=old"
+      },
+      {
+       "voice_id": "O4uxPTtvgxrA0QCLHI1J",
+       "owner": "e21da34db31d58704b7b2776dcf7db1c31b464e5bffd71727d5f1c4abafafa87",
+       "name": "Arkadius - Old Storyteller",
+       "labels": "scottish, old, male, raspy, narrative_story, en",
+       "query": "gender=male, language=ru, age=old"
+      }
+     ]
     }
    },
    "VOL": {
@@ -1022,7 +1334,44 @@
      "language": "ru",
      "stability": 0.5,
      "similarity_boost": 0.75,
-     "why": "Russian for Volkov: frightened, clever, ambitious, never a cartoon; a precise, quick, controlled baritone."
+     "why": "Russian for Volkov: frightened, clever, ambitious, never a cartoon; a precise, quick, controlled baritone.",
+     "candidates": [
+      {
+       "voice_id": "e7B77Frwc7sILEL37AT3",
+       "owner": "748bdab49b82811c04d4e860414fe5a42c8a4c7d2aa18f0e6fb936f4cb1a72ba",
+       "name": "BaMnyc - Narrative",
+       "labels": "standard, middle_aged, male, crisp, conversational, ru",
+       "query": "gender=male, language=ru, age=middle_aged"
+      },
+      {
+       "voice_id": "0gl1hEX5ilafvvSuw44p",
+       "owner": "cc66a8f0fda1d99d7272450ba6319b9c3dd0c9f84f1e7b114d3cef574ead79ed",
+       "name": "Ibrahim - Social media",
+       "labels": "standard, middle_aged, male, serious, social_media, ru",
+       "query": "gender=male, language=ru, age=middle_aged"
+      },
+      {
+       "voice_id": "vGuLaQjzuccOXQyD0H8e",
+       "owner": "67cbfe9d809621070b6125b71a9ced3a8aa47d057f06bb729c0d96974190403c",
+       "name": "Pavel Dumbrao - Conversational",
+       "labels": "standard, middle_aged, male, casual, conversational, ru",
+       "query": "gender=male, language=ru, age=middle_aged"
+      },
+      {
+       "voice_id": "9mzS0DU8EPXG0Pt2VkVF",
+       "owner": "b75e342bc80c52073be84c8f6f7ac00f64931b197271b91862f223fce66b8a82",
+       "name": "John - Calm gentleman",
+       "labels": "moscow, middle_aged, male, confident, conversational, ru",
+       "query": "gender=male, language=ru, age=middle_aged"
+      },
+      {
+       "voice_id": "lS2dOWEY3p813guFg8oB",
+       "owner": "041472d2b67932fdaec9d4bb6ad6a9f8e4f41ec29d0dabf0cc534cd5f7879035",
+       "name": "Ivan - Mature, Wise",
+       "labels": "standard, middle_aged, male, wise, characters_animation, ru",
+       "query": "gender=male, language=ru, age=middle_aged"
+      }
+     ]
     }
    },
    "SVR": {
@@ -1105,7 +1454,44 @@
      "language": "en",
      "stability": 0.45,
      "similarity_boost": 0.75,
-     "why": "The hero mechanic: down-to-earth, warm, plain-spoken, the straight man with comic timing."
+     "why": "The hero mechanic: down-to-earth, warm, plain-spoken, the straight man with comic timing.",
+     "candidates": [
+      {
+       "voice_id": "4TfTGcPwoefWe878B0rm",
+       "owner": "83068c7c248bdb59c5fbf3acdee05ac58cf05dcf00decd9580f5dd140d0f6508",
+       "name": "Troy - Cartoon Hero",
+       "labels": "standard, middle_aged, male, excited, characters_animation, fr",
+       "query": "gender=male, search=cartoon hero"
+      },
+      {
+       "voice_id": "467tX2b9Bky3cD6jXpNa",
+       "owner": "94cac854a846c60ea2c64da65bfa1970ab5caa5f1c8df41afb18ef56093e7774",
+       "name": "Max - USA Energetic Animated Cartoon",
+       "labels": "american, young, male, excited, social_media, en",
+       "query": "gender=male, search=cartoon hero"
+      },
+      {
+       "voice_id": "IvUJKFyjVb5hItY9dJAT",
+       "owner": "b979c9ab9b836f7342de7db794468872e49e35a44c1f61cb6d4481d75c4215d7",
+       "name": "Stevie - The Living Cartoon",
+       "labels": "american, middle_aged, male, excited, characters_animation, en",
+       "query": "gender=male, search=cartoon hero"
+      },
+      {
+       "voice_id": "gA870ILGhb2a1FhxtmLH",
+       "owner": "18b6f038186ba974fe33d7f281cb40fd9146c95a452425bd6a582689ad9c585e",
+       "name": "Boses Cartoons - Animated Character",
+       "labels": "fil-standard, young, male, excited, characters_animation, fil",
+       "query": "gender=male, search=cartoon hero"
+      },
+      {
+       "voice_id": "Sth0oyItcRdvk3sFrPiq",
+       "owner": "9aaed1dd1f054f1c03f507bf3f0dd5c12e8735c34a4ad02474cb75fb5f10f667",
+       "name": "Noku - Heroic and Confident Protagonist",
+       "labels": "american, middle_aged, male, confident, characters_animation, en",
+       "query": "gender=male, search=cartoon hero"
+      }
+     ]
     }
    },
    "sprocket": {
@@ -1121,7 +1507,30 @@
      "language": "en",
      "stability": 0.4,
      "similarity_boost": 0.75,
-     "why": "Bolt's robot sidekick: dry, smug, very fast; the light robot effect (fx.json robot_light) is added after, so the voice is human."
+     "why": "Bolt's robot sidekick: dry, smug, very fast; the light robot effect (fx.json robot_light) is added after, so the voice is human.",
+     "candidates": [
+      {
+       "voice_id": "HwYMTNpEVtWEr6t0FDKA",
+       "owner": "e21da34db31d58704b7b2776dcf7db1c31b464e5bffd71727d5f1c4abafafa87",
+       "name": "Navi - The Sarcastic Spaceship AI",
+       "labels": "standard, middle_aged, female, robotic, characters_animation, de",
+       "query": "search=sarcastic robot"
+      },
+      {
+       "voice_id": "AEW6JTgnyoPaoB9zlK3S",
+       "owner": "64cbc624eb5aab4e95a968e1f41d75402277cca6e549036ed17e56ea33bbbc9e",
+       "name": "Sophie – Sparky and Social",
+       "labels": "american, young, female, upbeat, conversational, en",
+       "query": "search=snarky fast"
+      },
+      {
+       "voice_id": "c46FXHKyrgHrLKKtjiy2",
+       "owner": "49ac4513802773fb017039d10c69c496215ceffad69f68f651db976e0e0c59a2",
+       "name": "Jack - Snarky and Fun",
+       "labels": "standard, middle_aged, male, upbeat, characters_animation, de",
+       "query": "search=snarky fast"
+      }
+     ]
     }
    },
    "grindstone": {
