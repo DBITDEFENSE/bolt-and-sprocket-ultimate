@@ -118,7 +118,7 @@ Babcia knew about the "black glass in the salt" decades before the Reich found i
 - `DUT_GLASSHIDE_01`: "Glass in the gut on this one! Aim high, the head!"
 
 **Combat state**
-- `DUT_AMMO_LOW_01`: "Running light. Running light here!"
+- `DUT_AMMO_LOW_01`: "Running light here."
 - `DUT_AMMO_NONE_01`: "Empty. [a breath] Swell. Swell."
 - `DUT_DOWN_01`: "[pained] Ah, hell. I'm down. Down! Somebody... somebody grab me."
 - `DUT_DOWN_02`: "[breathing heavily] Not here. Babcia, not in the salt. Not in the... [a breath] get me up."
