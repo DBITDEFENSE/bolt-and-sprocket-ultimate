@@ -143,6 +143,97 @@
     }
   },
   "sounds": {
+    "horror_whisper": {
+      "files": [
+        "res://gravelight/audio/sfx/horror/whisper_01.ogg",
+        "res://gravelight/audio/sfx/horror/whisper_02.ogg",
+        "res://gravelight/audio/sfx/horror/whisper_03.ogg",
+        "res://gravelight/audio/sfx/horror/whisper_04.ogg",
+        "res://gravelight/audio/sfx/horror/whisper_05.ogg",
+        "res://gravelight/audio/sfx/horror/whisper_06.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -6.0,
+      "pitch": [
+        0.9,
+        1.05
+      ],
+      "max_voices": 2,
+      "attenuation": "quiet"
+    },
+    "horror_bell_far": {
+      "files": [
+        "res://gravelight/audio/sfx/horror/bell_far_01.ogg",
+        "res://gravelight/audio/sfx/horror/bell_far_02.ogg",
+        "res://gravelight/audio/sfx/horror/bell_far_03.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": 0.0,
+      "pitch": [
+        0.98,
+        1.02
+      ],
+      "max_voices": 2,
+      "attenuation": "loud"
+    },
+    "horror_chant_bed": {
+      "files": [
+        "res://gravelight/audio/sfx/horror/chant_bed.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "loop": true
+    },
+    "horror_chant_frag": {
+      "files": [
+        "res://gravelight/audio/sfx/horror/chant_frag_01.ogg",
+        "res://gravelight/audio/sfx/horror/chant_frag_02.ogg",
+        "res://gravelight/audio/sfx/horror/chant_frag_03.ogg",
+        "res://gravelight/audio/sfx/horror/chant_frag_04.ogg",
+        "res://gravelight/audio/sfx/horror/chant_frag_05.ogg"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        0.98,
+        1.02
+      ],
+      "max_voices": 1
+    },
+    "horror_flies_loop": {
+      "files": [
+        "res://gravelight/audio/sfx/horror/flies_loop.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -8.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 4,
+      "attenuation": "quiet",
+      "loop": true
+    },
+    "player_breath_hurt": {
+      "files": [
+        "res://gravelight/audio/sfx/player/breath_hurt_01.ogg",
+        "res://gravelight/audio/sfx/player/breath_hurt_02.ogg",
+        "res://gravelight/audio/sfx/player/breath_hurt_03.ogg",
+        "res://gravelight/audio/sfx/player/breath_hurt_04.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -9.0,
+      "pitch": [
+        0.95,
+        1.05
+      ],
+      "max_voices": 1
+    },
     "amb_church_bell_far": {
       "files": [
         "res://gravelight/audio/sfx/ambience/church_bell_far.wav"

@@ -7,6 +7,9 @@ extends Node
 ##   4. the client goes down again and bleeds out (clock shortened), spectates
 ##   5. the round advances: round 2 reaches the client, which respawns with the starting loadout, and a
 ##      24-zombie horde shows up on the client
+##   T-192 (UPDATE 11, Hard Truth, on by default): the bled-out client's body lies on the host as a dormant zombie in
+##   Peg's risen body, the client's puppet of it lies still too (net sub state 1), it gets up at 4 s, the host puts it
+##   down while clearing the round and the death crate (a NetMatch dynamic node) appears on the client.
 ## Each side checks what it sees and reports RESULT PASS/FAIL; the host prints both and exits 0 only if both
 ## passed. The child is killed on every exit path; both sides have hard timeouts.
 ## Usage: godot --headless --path . res://gravelight/tools_src/smoke_coop.tscn        (the host spawns the client itself)
@@ -40,6 +43,10 @@ var _zbytes0: int = 0
 var _horde_t: float = 0.0
 var _horde_seen: int = 0
 var _respawn_checked: bool = false
+var _ht_body_ok: bool = false      # T-192: host: the body lay there
+var _saw_body: bool = false        # T-192: client: a puppet in Peg's risen body
+var _saw_dormant: bool = false
+var _saw_crate: bool = false
 
 
 func _ready() -> void:
@@ -176,6 +183,9 @@ func _host_tick(_delta: float) -> void:
 					(s2.coop.players[2] as Dictionary)["bleed"] = 1.0
 			if s2.coop.is_dead(2):
 				_log("player 2 bled out")
+				var body: Zombie = s2.hard_truth.body_of(2) if s2.hard_truth != null else null
+				_ht_body_ok = body != null and body.is_dormant()
+				_log("Hard Truth: body %s (dormant %s, person %s)" % [str(body != null), str(_ht_body_ok), str(body.get_meta("person", "")) if body != null else "-"])
 				_goto("advance")
 			elif _step_t > 30.0:
 				_fail("player 2 never bled out")
@@ -215,6 +225,13 @@ func _host_report(map: MapRoot) -> void:
 		_fail("host credited the client with %d kills (need 2)" % _kills_by_client)
 	if not _downs_seen.has(2):
 		_fail("host never got player_downed(2)")
+	var ht: HardTruth = s.hard_truth
+	if not _ht_body_ok:
+		_fail("Hard Truth: no dormant body on the host when player 2 bled out")
+	elif ht == null or int(ht.stats["rises"]) < 1 or int(ht.stats["crates"]) < 1:
+		_fail("Hard Truth: the body never rose / was put down with a crate (%s)" % (str(ht.stats) if ht != null else "no rule"))
+	else:
+		_log("Hard Truth on the host: %s" % str(ht.stats))
 	var c_pass: bool = bool(_client_result.get("pass", false))
 	for f: Variant in _client_result.get("fails", []):
 		_fails.append("client: " + str(f))
@@ -247,6 +264,15 @@ func _client_tick(delta: float) -> void:
 		_finish()
 		return
 	var me: Player = map.player if map != null else null
+	if map != null and map.director != null and _step != "lobby":
+		for zz: Zombie in map.director.active_zombies():
+			if str(zz.get_meta("person", "")) == "peg":
+				_saw_body = true
+				if zz.is_dormant():
+					_saw_dormant = true
+		if not _saw_crate and not get_tree().get_nodes_in_group(&"fallen_crates").is_empty():
+			_saw_crate = true
+			_notes.append("Hard Truth: the death crate reached the client (%s)" % str((get_tree().get_nodes_in_group(&"fallen_crates")[0] as FallenCrate).owner_name))
 	match _step:
 		"lobby":
 			if map != null and map.session != null and map.session.begun and me != null:
@@ -349,6 +375,10 @@ func _client_tick(delta: float) -> void:
 				_horde_seen = maxi(_horde_seen, n)
 				if _horde_seen >= 20 or _step_t > 60.0:
 					_notes.append("round 2 reached the client (rounds seen %s); up to %d zombie puppets at once" % [str(_rounds_seen), _horde_seen])
+					if not (_saw_body and _saw_dormant):
+						_fail("Hard Truth: the client never saw Peg's body lying (body %s, dormant %s)" % [str(_saw_body), str(_saw_dormant)])
+					if not _saw_crate:
+						_fail("Hard Truth: the death crate never reached the client")
 					if _horde_seen < 20:
 						_fail("the 24-zombie horde didn't show up on the client (saw %d)" % _horde_seen)
 					_client_finish()

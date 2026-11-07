@@ -48,7 +48,12 @@ def out_dir(living):
 
 def kit_object(name, kit):
     v, f, keys, bi, bw = kit.arrays()
-    ob = MB.object_from(name, v, f, bi, bw, MB.part_colors(keys))
+    ao = None
+    if any(getattr(p, "ao", None) is not None for p in kit.pieces):
+        # T-192: a kit whose pieces carry per-vertex grime / mottling (the people's finishing helpers) keeps it in
+        # COLOR_0.g, as the people builder does; the older kits carry none and stay 1.0
+        ao = np.concatenate([p.ao if getattr(p, "ao", None) is not None else np.ones(len(p.v)) for p in kit.pieces])
+    ob = MB.object_from(name, v, f, bi, bw, MB.part_colors(keys, ao))
     return ob
 
 
@@ -208,6 +213,8 @@ def build_one(sex, build, living, canonical_uv, a):
         ob = kit_object("Kit_" + name, kits[name])
         stats["Kit_" + name + "_raw"] = C.tri_count(ob)
         MB.decimate_to(ob, int(MB.CFG["budget"]["kit_tris"]))
+        if name.startswith("soviet"):
+            ob.data.validate(clean_customdata=False)   # T-192: the collapse leaves a few degenerate faces on these
         objs["Kit_" + name] = ob
     path = os.path.join(out_dir(living), (MB.CFG["living_file"] if living else MB.CFG["zombie_file"]) % (sex, build))
     s2 = MB.finish_and_export(P, objs, path)

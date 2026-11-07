@@ -91,8 +91,11 @@ fabric or leather detail class. Keep a piece single-key (decimation interpolates
 Kits are decimated to `budget.kit_tris` (3 000).
 
 Coverage: a kit's hidden body vertices (inside its shells, eroded two rings from the edge) become bit *i*
-(`kit_order`) of the body vertex's mask in `COLOR_0.b` (bits 0-7) and `.a` (bit 8, alpha < 0.5). The merge drops a
-skin triangle only when all three vertices carry the kit's bit, so edges never open a gap.
+(`kit_order`) of the body vertex's mask in `COLOR_0.b` (bits 0-7) and `.a` (bit 8, alpha < 0.5), and since T-192
+bits 9-16 in `.r` (the body's own part key is `skin`, index 0, so a body built before reads 0 there). The merge drops a
+skin triangle only when all three vertices carry the kit's bit, so edges never open a gap. The Soviet risen kits
+(T-192: `soviet`, `soviet_tunic`, `soviet_burial`) are bits 9-11; they also show how a zombie kit uses the people's
+finishing helpers (`pstud`, `pocket`, `buckle`, `welt`, `grime`: build_all keeps a piece's AO in `COLOR_0.g`).
 
 To add a kit: write `kit_<name>`, register it in `KITS` (make_kits) and `kit_order` (characters.json, append only:
 the bit order is baked into the GLBs), add its colours to `ZombieBody.KIT_CLOTH` and its spawn data to anim.json

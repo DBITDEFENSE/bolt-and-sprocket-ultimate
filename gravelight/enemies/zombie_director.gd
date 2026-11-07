@@ -842,6 +842,8 @@ func _spawn_one() -> bool:
 		want_glass = false
 	elif want_glass:
 		spec = _spec_for(&"glasshide", spec)
+	else:
+		spec["variant"] = _maybe_soviet(str(spec["variant"]), sp.global_position)   # T-192: the Returned
 	var z: Zombie = _free.pop_back()
 	z.activate(spec, sp, _any_player())
 	if sp.kind == &"ground":
@@ -948,11 +950,52 @@ static func variant_table() -> Dictionary:
 	return g["variants"]
 
 
+## UPDATE 11 (T-192): the share of plain Gänger spawns that are Soviet risen on `map_id` at `round_number` for a spawn
+## at height `y` (enemies.json soviet_risen.maps; 0 off the listed maps, before from_round, below min_y). Pure.
+static func soviet_share(map_id: String, round_number: int, y: float, cfg: Dictionary = {}) -> float:
+	var c: Dictionary = cfg if not cfg.is_empty() else (GLData.table("enemies") as Dictionary).get("soviet_risen", {})
+	var m: Dictionary = (c.get("maps", {}) as Dictionary).get(map_id, {})
+	if m.is_empty() or round_number < int(m.get("from_round", 1)) or y < float(m.get("min_y", -INF)):
+		return 0.0
+	return clampf(float(m.get("share", 0.0)), 0.0, 1.0)
+
+
+## T-192: `variant` swapped for a Soviet kit with this map's share (the director's own rng, so a seed replays).
+func _maybe_soviet(variant: String, at: Vector3) -> String:
+	var sh: float = soviet_share(String(GameState.map_id), RoundManager.current_round, at.y)
+	if sh <= 0.0 or _rng.randf() >= sh:
+		return variant
+	var kits: Dictionary = ((GLData.table("enemies") as Dictionary).get("soviet_risen", {}) as Dictionary).get("kits", RisenColumn.DEFAULT_KITS)
+	return RisenColumn.pick_kit(kits, _rng.randf())
+
+
+## UPDATE 11 (T-192, Hard Truth): a bled-out teammate's body as a zombie lying still at `at` (facing `yaw`), outside the
+## round queue like rise_at (it must die before the round can end) and in the pool like any zombie. It stays dormant
+## until the caller wakes it (Zombie.wake_from_dormant). null on a client or with the pool empty.
+func rise_dormant(at: Vector3, variant: String, yaw: float = 0.0) -> Zombie:
+	if puppet_mode or _free.is_empty():
+		return null
+	var spec: Dictionary = RoundManager.take_extra_spawn()
+	spec["variant"] = variant
+	spec["tier"] = &"shamble"
+	var z: Zombie = _activate_at(spec, _snap(at))
+	if z == null:
+		RoundManager.alive = maxi(0, RoundManager.alive - 1)
+		return null
+	z.rotation.y = yaw
+	z.lie_dormant()
+	return z
+
+
 ## Kits to build up front: the map's Gänger kits plus the specials that share the body.
 static func map_kits() -> PackedStringArray:
 	var out: PackedStringArray = []
 	for k: Variant in variant_table().keys():
 		out.append(str(k))
+	if soviet_share(String(GameState.map_id), 99, 0.0) > 0.0:
+		for sk: String in ZombieBody.SOVIET_KITS:   # T-192: the Returned on this map
+			if not out.has(sk):
+				out.append(sk)
 	for extra: String in ["bellringer", "nurse"]:
 		if not out.has(extra):
 			out.append(extra)
@@ -1139,7 +1182,7 @@ func spawn_burst(points: Array, count: int) -> int:
 		sp.global_position = points[i % points.size()] as Vector3
 		sp.global_position = _scatter(sp.global_position, i)
 		var spec: Dictionary = RoundManager.take_extra_spawn()
-		spec["variant"] = _pick_variant()
+		spec["variant"] = _maybe_soviet(_pick_variant(), sp.global_position)   # T-192
 		_free.pop_back().activate(spec, sp, _any_player())
 		sp.queue_free()
 		made += 1

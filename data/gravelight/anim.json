@@ -204,7 +204,10 @@
     "drowned_diver": {"_doc": "T-153: the Kielholer diver: the harbour salvage crew's diving dress and brass helmet (gear diver_helmet; its glass is the helmet_glass hitbox).", "faction": "kriegsmarine", "builds": ["medium", "heavy"], "female": 0.0, "gear": {"diver_helmet": 1.0, "weed": 0.6}, "skin": [0.42, 0.5, 0.5]},
     "dockworker": {"faction": "totenhafen", "builds": ["medium", "heavy"], "female": 0.2, "gear": {"hood": 0.5, "oilskin": 0.7}, "skin": [0.52, 0.55, 0.57]},
     "bellringer": {"faction": "kaltenbrunn", "builds": ["thin"], "female": 0.0, "gear": {}, "skin": [0.66, 0.64, 0.6]},
-    "nurse": {"faction": "wiederkehr", "builds": ["thin"], "female": 1.0, "gear": {"wimple": 1.0}, "skin": [0.7, 0.68, 0.72]}
+    "nurse": {"faction": "wiederkehr", "builds": ["thin"], "female": 1.0, "gear": {"wimple": 1.0}, "skin": [0.7, 0.68, 0.72]},
+    "soviet": {"_doc": "T-192 (UPDATE 11 section 6): the Soviet risen, the Returned: a Red Army rifleman of the October 1944 front in the shinel greatcoat, frozen stiff (frost: this kit's inst_frost range over the map's), boots taken, the foot wraps left. gear_one_of: at most one headgear piece, rolled in order (pilotka and ushanka carry the small cap star). wound_sites: the weak point (ZombieBody.WOUND_SITES), never a Marke. Spawned from enemies.json soviet_risen.", "faction": "red_army", "builds": ["thin", "medium", "heavy"], "female": 0.0, "gear": {}, "gear_one_of": {"ushanka": 0.45, "pilotka": 0.25, "ssh40": 0.2}, "skin": [0.74, 0.77, 0.8], "frost": [0.5, 0.85], "wound_sites": ["chest", "belly", "temple"]},
+    "soviet_tunic": {"_doc": "T-192: the Returned in the M1935 gymnastyorka, breeches, obmotki and ankle boots (the summer kit they were buried in or fell in before the snow).", "faction": "red_army", "builds": ["thin", "medium"], "female": 0.12, "gear": {}, "gear_one_of": {"pilotka": 0.55, "ssh40": 0.25}, "skin": [0.72, 0.75, 0.78], "frost": [0.35, 0.7], "wound_sites": ["chest", "throat", "temple"]},
+    "soviet_burial": {"_doc": "T-192: the Returned from a field grave, wound in the canvas cape-tent and tied with cord, bare feet; no headgear.", "faction": "red_army", "builds": ["thin", "medium"], "female": 0.0, "gear": {}, "skin": [0.7, 0.72, 0.74], "frost": [0.4, 0.75], "wound_sites": ["chest", "belly", "throat"]}
   },
   "variation": {
     "tint": 0.08,
@@ -218,6 +221,7 @@
     "crack_energy": 2.6,
     "crack_energy_glass": 4.2,
     "eye_energy": 3.2,
-    "hum_hz": 0.42
+    "hum_hz": 0.42,
+    "frost_look": {"_doc": "T-192: the Soviet risen's skin (ZombieBody skin_material look frost): frost-white, cold blue-grey veins that barely pulse with the hum, faint pale cracks; no violet (never marked, never near the crystal when they rose).", "skin_mul": [0.96, 1.0, 1.07], "vein_energy": 0.12, "crack_energy": 0.3, "hum_pulse": 0.1, "roughness": 0.5}
   }
 }

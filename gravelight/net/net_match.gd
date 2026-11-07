@@ -64,6 +64,8 @@ var players: Dictionary = {}       # pid -> Player
 ## but their downs, revives and bleed-outs run through the same co-op rules (CoopState.companions).
 var companions: Dictionary = {}
 var coop: CoopState = CoopState.new()
+## UPDATE 11 (T-192): the fourth-day rule (a bled-out squad member's body rises; HardTruth), run by the authority.
+var hard_truth: HardTruth = null
 var begun: bool = false
 var _cfg: Dictionary = {}
 var _delay_ms: float = 100.0
@@ -103,6 +105,10 @@ func setup(map_root: MapRoot) -> void:
 	players = map.players
 	for pid: Variant in players.keys():
 		coop.add(int(pid))
+	hard_truth = HardTruth.new()
+	hard_truth.name = "HardTruth"
+	hard_truth.session = self
+	add_child(hard_truth)
 	if Net.is_host():
 		_connect_relays()
 	if Net.is_authority():
@@ -770,6 +776,8 @@ func _bleed_out(pid: int) -> void:
 	else:
 		t.spectating = true
 		send_player_op(pid, &"bleed", [])
+	if hard_truth != null:
+		hard_truth.on_bled_out(pid)   # T-192: their body lies there, and gets up on the fourth second
 	if coop.everyone_down() and GameState.phase == GameState.Phase.PLAYING:
 		map._game_over()
 
@@ -1350,6 +1358,8 @@ func on_zombie_event(net_id: int, ev: StringName, args: Array) -> void:
 						SoldierKits.dress_risen(z, str(args[9]))   # T-142: a risen relief-squad soldier
 					else:
 						PeopleBodies.dress_risen(z, str(args[9]))   # T-099: the client's puppet wears the same person
+						if HardTruth.is_squad_person(str(args[9])):
+							z.clear_marke()   # T-192: a squad member's risen body (Hard Truth) is unmarked
 		&"die":
 			var zd: Zombie = zombie_by_net_id(net_id)
 			if zd != null and zd.puppet:

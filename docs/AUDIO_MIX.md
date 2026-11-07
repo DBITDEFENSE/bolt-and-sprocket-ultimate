@@ -149,3 +149,24 @@ rule: every bed (alone and with the map bed under it) <= footsteps -8.0 dB, and 
   F_CORE         ambient_map04d_account      -50.2 LUFS (-17.2 vs steps)  with map bed  -42.3  VO over it +25.1  ok
 RESULT: PASS (0 beds over)
 ```
+
+## UPDATE 11: the horror layer (DECISIONS T-192)
+
+The horror pass adds one bed and a few events on every map (HorrorLayer, each map's `<map>_ambience.json` "horror"
+block; the sounds are our own synthesis, `gravelight/tools_src/gen_audio_horror.py`). Measured with the same tool's
+`key_lufs` (integrated, the key's own volume_db included):
+
+| Key | Bus | File | Played at | Heard at | Kind |
+|---|---|---|---|---|---|
+| `horror_chant_bed` | Ambience | -20.0 LUFS | -40 dB (round 1) .. -29 dB (round 25) | -60 .. -49 LUFS | bed |
+| `horror_chant_frag` | Ambience | -16.9 LUFS | -30 .. -20 dB | -47 .. -37 LUFS | event (one-shot) |
+| `horror_bell_far` | SFX (far_sound) | -18.7 LUFS | -12 dB (-15 on Groom Lake) | about -31 LUFS | event |
+| `horror_whisper` (fallback for RTN_CLOSE) | SFX, 3D quiet | -28.5 LUFS | -4 dB | about -32 LUFS at 1 m | event |
+| `player_breath_hurt` | SFX | -27.8 LUFS | -2 dB (teammates -6 dB, 3D) | about -30 LUFS | event |
+| `horror_flies_loop` | SFX, 3D quiet | -32.4 LUFS | -2 dB | about -34 LUFS at 1 m | short loop at a body |
+
+The rule holds for the bed: at its loudest (-49 LUFS) it sits 16 dB under a footstep alone and, with the loudest map
+bed under it (-42 LUFS), the pair is -41.2 LUFS, inside the 8 dB margin; the VO stays 24 dB over it. One-shots are
+events, as before. The Jingles bus (the Operator) is untouched: the contrast is the point. The bed's volume eases to
+the new round's level over 6 s at each round start. test_horror_layer checks the bed's top against the rule on every
+map.

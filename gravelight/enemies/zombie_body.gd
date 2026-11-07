@@ -10,10 +10,15 @@ extends RefCounted
 ## Gear pieces (helmets, caps, armbands...) are small meshes hung on bone attachments and rolled per instance.
 ## The old per-bone StandardMaterial3D path (`material()`, `build_mesh()`, `_cyl()`...) stays for the Foreman's
 ## own body, the kind parts (crystal plates, lantern) and the Screamer's throat.
-## Kits: soldier, villager, miner, labstaff, technician, sailor, dockworker, bellringer, nurse. `laborer` is
-## retired (forced laborers are never zombies, v2 §0.1).
+## Kits: soldier, villager, miner, labstaff, technician, sailor, dockworker, bellringer, nurse, and (UPDATE 11,
+## T-192) the Soviet risen: soviet (the shinel greatcoat), soviet_tunic (the M1935 gymnastyorka), soviet_burial (from
+## a field grave). `laborer` is retired (forced laborers are never zombies, v2 §0.1).
 
-const KITS: PackedStringArray = ["soldier", "villager", "miner", "labstaff", "technician", "sailor", "dockworker", "bellringer", "nurse"]
+const KITS: PackedStringArray = ["soldier", "villager", "miner", "labstaff", "technician", "sailor", "dockworker", "bellringer", "nurse",
+	"soviet", "soviet_tunic", "soviet_burial"]
+## T-192: the Soviet risen ("the Returned"): never marked (CANON 2.2), so no Marke; their weak point is the wound that
+## killed them (WOUND_SITES), their skin the frost look, their eyes milky (KIT_PALETTE).
+const SOVIET_KITS: PackedStringArray = ["soviet", "soviet_tunic", "soviet_burial"]
 const BUILDS: PackedStringArray = ["thin", "medium", "heavy"]
 const LIMB_BONES: PackedStringArray = ["LeftUpperLeg", "RightUpperLeg", "LeftLowerLeg", "RightLowerLeg", "LeftFoot", "RightFoot",
 	"LeftUpperArm", "RightUpperArm", "LeftLowerArm", "RightLowerArm", "LeftHand", "RightHand", "Neck", "Head"]
@@ -52,7 +57,43 @@ static func marke_site_for(net_id: int, hand_chance: float) -> StringName:
 
 ## The limb a hit on the Marke continues as (armour, wounds, death clips, the headshot path).
 static func marke_host_limb(site: StringName) -> StringName:
-	return StringName((MARKE_SITES.get(site, MARKE_SITES[&"hand"]) as Array)[2])
+	return StringName(weak_site(site)[2])
+
+
+## UPDATE 11 (T-192): the wound that killed a Soviet risen, their weak point instead of a Marke (the same hitbox
+## cube, the same enemies.json marke.damage_mult and scrip_bonus, a different place, no glint). site -> [bone, offset,
+## host limb]; a kit's anim.json "wound_sites" lists which it can carry (picked from net_id like the Marke's).
+## Local -Z is the front of each bone.
+const WOUND_SITES: Dictionary = {
+	&"chest": ["Chest", Vector3(-0.075, 0.17, -0.128), &"torso"],     # a rifle round on the heart side
+	&"belly": ["Spine", Vector3(0.06, 0.07, -0.118), &"torso"],       # a shell splinter in the belly
+	&"throat": ["Neck", Vector3(0.025, 0.05, -0.056), &"neck"],       # a splinter in the throat
+	&"temple": ["Head", Vector3(0.088, 0.13, -0.03), &"head"],        # a round at the temple
+}
+const WOUND_COLOR: Color = Color(0.16, 0.025, 0.03)   # frozen blood, never emissive
+
+
+## The site's [bone, offset, host limb] from the Marke table or the wound table (the hand when unknown).
+static func weak_site(site: StringName) -> Array:
+	if MARKE_SITES.has(site):
+		return MARKE_SITES[site]
+	if WOUND_SITES.has(site):
+		return WOUND_SITES[site]
+	return MARKE_SITES[&"hand"]
+
+
+static func is_wound_site(site: StringName) -> bool:
+	return WOUND_SITES.has(site)
+
+
+## The wound a body of `kit` carries, from its net_id (deterministic, like marke_site_for, so a co-op puppet shows the
+## host's): one of the kit's anim.json "wound_sites", &"" for a kit without them.
+static func wound_site_for(net_id: int, kit: String) -> StringName:
+	var sites: Array = ((GLData.table("anim")["kits"] as Dictionary).get(kit, {}) as Dictionary).get("wound_sites", [])
+	if sites.is_empty():
+		return &""
+	var h: int = posmod(net_id * 40503 + 211, 997)
+	return StringName(str(sites[h % sites.size()]))
 
 
 ## Colour / roughness / metallic / emission per material key (vertex-baked into the kit surface).
@@ -104,6 +145,17 @@ const KIT_CLOTH: Dictionary = {
 	"nurse": [Color(0.37, 0.41, 0.52), Color(0.15, 0.17, 0.28)],
 	"drowned": [Color(0.11, 0.15, 0.15), Color(0.13, 0.15, 0.14)],
 	"drowned_diver": [Color(0.27, 0.25, 0.2), Color(0.2, 0.19, 0.16)],
+	# T-192: the shinel's grey-brown wool, the gymnastyorka's faded khaki, the breeches a shade darker
+	"soviet": [Color(0.29, 0.265, 0.225), Color(0.25, 0.235, 0.17)],
+	"soviet_tunic": [Color(0.4, 0.365, 0.235), Color(0.27, 0.255, 0.18)],
+	"soviet_burial": [Color(0.37, 0.34, 0.23), Color(0.25, 0.235, 0.17)],
+}
+## T-192: per-kit part-key looks over KEY_LOOK ([colour, roughness, metallic, emission]): the Soviet risen's eyes are
+## milky, not the Nachtglas violet (they rose from FOURTH DAY, not from the crystal; CANON 2.2: never marked).
+const KIT_PALETTE: Dictionary = {
+	"soviet": {"eye": [Color(0.6, 0.64, 0.68), 0.35, 0.0, 0.25]},
+	"soviet_tunic": {"eye": [Color(0.6, 0.64, 0.68), 0.35, 0.0, 0.25]},
+	"soviet_burial": {"eye": [Color(0.55, 0.58, 0.6), 0.35, 0.0, 0.15]},
 }
 ## T-153 (Totenhafen): kits drawn with another kit's geometry (no GLB Kit_ object of their own). The drowned are
 ## U-1047's ratings and the harbour's divers: the sailor's cut, waterlogged (DROWNED_PALETTE recolours the part keys).
@@ -587,6 +639,19 @@ static func skin_material(look: String = "base") -> ShaderMaterial:
 			m.set_shader_parameter("metallic", 0.25)
 			m.set_shader_parameter("roughness", 0.35)
 			m.set_shader_parameter("crack_energy", float(inf.get("crack_energy_glass", 4.2)))
+		"frost":
+			# T-192: the Soviet risen, frost-white: cold blue-grey veins that barely pulse, faint pale cracks, no violet
+			# (anim.json infection.frost_look)
+			var fr: Dictionary = inf.get("frost_look", {})
+			var sm: Array = fr.get("skin_mul", [0.96, 1.0, 1.07])
+			m.set_shader_parameter("skin_mul", Vector3(float(sm[0]), float(sm[1]), float(sm[2])))
+			m.set_shader_parameter("vein_color", Color(0.24, 0.3, 0.42))
+			m.set_shader_parameter("crack_color", Color(0.62, 0.74, 0.88))
+			m.set_shader_parameter("crack_edge", Color(0.5, 0.58, 0.72))
+			m.set_shader_parameter("vein_energy", float(fr.get("vein_energy", 0.12)))
+			m.set_shader_parameter("crack_energy", float(fr.get("crack_energy", 0.3)))
+			m.set_shader_parameter("hum_pulse", float(fr.get("hum_pulse", 0.1)))
+			m.set_shader_parameter("roughness", float(fr.get("roughness", 0.5)))
 		"living":
 			# the people builder's living humans (no Nachtglas: no cracks, no veins)
 			m.set_shader_parameter("crack_energy", 0.0)
@@ -781,9 +846,10 @@ static func kit_bit(kit: String) -> int:
 	return 0 if i < 0 else 1 << i
 
 
-## The coverage mask a body vertex carries in its colour (bits 0-7 in blue, bit 8 = alpha below one half).
+## The coverage mask a body vertex carries in its colour (bits 0-7 in blue, bit 8 = alpha below one half, bits 9-16
+## in red: T-192, the skin key's index is 0, so the older GLBs read 0 there).
 static func mask_of(c: Color) -> int:
-	return int(round(c.b * 255.0)) | (0x100 if c.a < 0.5 else 0)
+	return int(round(c.b * 255.0)) | (0x100 if c.a < 0.5 else 0) | (int(round(c.r * 255.0)) << 9)
 
 
 ## Which hair object a kit wears (characters.json "hair"; "" = bald).
@@ -857,9 +923,12 @@ static func _merge_glb(base: Dictionary, kit: String, female: bool, living: bool
 			if not looks.has(kname):
 				looks[kname] = _look(kit, kname)
 				if palette.has(kname):
-					var lk: Array = (looks[kname] as Array).duplicate()
-					lk[0] = palette[kname]
-					looks[kname] = lk
+					if palette[kname] is Array:
+						looks[kname] = (palette[kname] as Array).duplicate()   # T-192: a whole look (the milky eyes)
+					else:
+						var lk: Array = (looks[kname] as Array).duplicate()
+						lk[0] = palette[kname]
+						looks[kname] = lk
 			var look: Array = looks[kname]
 			var ao: float = c[i].g
 			var col: Color = look[0]
@@ -1000,6 +1069,83 @@ static func _box(size: Vector3, pos: Vector3, mat: String, rot: Vector3 = Vector
 	return [b, Transform3D(Basis.from_euler(rot), pos), mat]
 
 
+## T-192: a flat five-pointed star of outer radius r facing -Z (a cap star), 2.5 mm proud.
+static func _star(r: float, pos: Vector3, mat: String) -> Array:
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var pts: PackedVector2Array = []
+	for i: int in 10:
+		var a: float = PI * 0.5 + TAU * float(i) / 10.0
+		var rr: float = r if i % 2 == 0 else r * 0.42
+		pts.append(Vector2(cos(a), sin(a)) * rr)
+	var d: float = 0.0025
+	for i: int in 10:
+		var p0: Vector2 = pts[i]
+		var p1: Vector2 = pts[(i + 1) % 10]
+		st.set_normal(Vector3(0, 0, -1))
+		st.add_vertex(Vector3(0, 0, -d))
+		st.add_vertex(Vector3(p1.x, p1.y, -d * 0.4))
+		st.add_vertex(Vector3(p0.x, p0.y, -d * 0.4))
+		var n: Vector3 = Vector3(p0.y - p1.y, p1.x - p0.x, 0).normalized()
+		st.set_normal(-n)
+		st.add_vertex(Vector3(p0.x, p0.y, -d * 0.4))
+		st.add_vertex(Vector3(p1.x, p1.y, -d * 0.4))
+		st.add_vertex(Vector3(p1.x, p1.y, 0))
+		st.add_vertex(Vector3(p0.x, p0.y, -d * 0.4))
+		st.add_vertex(Vector3(p1.x, p1.y, 0))
+		st.add_vertex(Vector3(p0.x, p0.y, 0))
+	return [st.commit(), Transform3D(Basis.IDENTITY, pos), mat]
+
+
+static var _wound_mesh: ArrayMesh
+
+## T-192: the wound a Soviet risen died of (one shared mesh): a dark frozen hole in a ragged, frost-rimmed tear, a
+## little proud of the cloth so it reads at range. Vertex-coloured, one lit surface, never emissive (no glint).
+static func wound_mesh() -> ArrayMesh:
+	if _wound_mesh != null:
+		return _wound_mesh
+	var mk: Dictionary = (GLData.table("enemies") as Dictionary).get("marke", {})
+	var r: float = float(mk.get("hitbox_m", 0.07)) * 0.5
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 1944
+	var n: int = 14
+	var rim: Array[Vector3] = []
+	var outer: Array[Vector3] = []
+	for i: int in n:
+		var a: float = TAU * float(i) / float(n)
+		var k: float = rng.randf_range(0.7, 1.15)
+		rim.append(Vector3(cos(a) * r * 0.45 * k, sin(a) * r * 0.45 * k, -0.004))
+		outer.append(Vector3(cos(a) * r * k * rng.randf_range(0.9, 1.35), sin(a) * r * k * rng.randf_range(0.9, 1.35), -0.002))
+	var hole: Color = Color(0.03, 0.005, 0.008)
+	var frost: Color = Color(0.7, 0.74, 0.8)
+	st.set_normal(Vector3(0, 0, -1))
+	for i: int in n:
+		var j: int = (i + 1) % n
+		st.set_color(hole)
+		st.add_vertex(Vector3(0, 0, 0.002))
+		st.set_color(WOUND_COLOR)
+		st.add_vertex(rim[j])
+		st.add_vertex(rim[i])
+		st.add_vertex(rim[i])
+		st.add_vertex(rim[j])
+		st.set_color(frost)
+		st.add_vertex(outer[j])
+		st.set_color(WOUND_COLOR)
+		st.add_vertex(rim[i])
+		st.set_color(frost)
+		st.add_vertex(outer[j])
+		st.add_vertex(outer[i])
+	_wound_mesh = st.commit()
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.vertex_color_use_as_albedo = true
+	m.roughness = 0.35
+	m.cull_mode = BaseMaterial3D.CULL_DISABLED
+	_wound_mesh.surface_set_material(0, m)
+	return _wound_mesh
+
+
 ## Legacy: an ArrayMesh from [primitive, transform, material key] parts, one StandardMaterial3D surface per key.
 static func build_mesh(variant: String, parts: Array) -> ArrayMesh:
 	var groups: Dictionary = {}
@@ -1052,7 +1198,7 @@ static func build_skinned(kit: String, build: String = "medium", female: bool = 
 			# T-153: an alias kit (the drowned) wears its base kit's clothes in its own palette and skin tone
 			mesh = _merge_glb(base, geo, female, false, _look(kit, "skin")[0], DROWNED_PALETTE)
 		else:
-			mesh = _merge_glb(base, kit, female)
+			mesh = _merge_glb(base, kit, female, false, Color(0, 0, 0, 0), KIT_PALETTE.get(kit, {}))
 	else:
 		mesh = _skin_parts(body_parts(geo, build, female), kit)
 	_meshes[key] = mesh
@@ -1120,6 +1266,8 @@ static func _skin_parts(parts_by_bone: Dictionary, kit: String, root_bone: Strin
 
 
 static func _skin_look(kit: String) -> String:
+	if SOVIET_KITS.has(kit):
+		return "frost"   # T-192
 	return "bell" if kit == "bellringer" else "base"
 
 
@@ -1255,6 +1403,25 @@ static func gear_mesh(piece: String, female: bool = false) -> Array:
 				_cyl(0.05, 0.05, 0.03, Vector3(-0.19, 0.13, -0.05), "brass", Vector3(0, 0, PI * 0.5), Vector3.ONE, 10),
 				_cyl(0.05, 0.05, 0.03, Vector3(0.19, 0.13, -0.05), "brass", Vector3(0, 0, PI * 0.5), Vector3.ONE, 10),
 				_box(Vector3(0.05, 0.05, 0.06), Vector3(0, 0.28, 0.06), "metal")]
+		"pilotka":
+			# T-192: the Red Army side cap (pilotka) with the small enamel cap star at the front (period issue; dull,
+			# never emissive). Local -Z is the face.
+			parts = [_box(Vector3(0.11, 0.065, 0.25), Vector3(0, 0.215, 0.005), "hat"),
+				_box(Vector3(0.128, 0.028, 0.258), Vector3(0, 0.186, 0.005), "hat"),
+				_star(0.0075, Vector3(0, 0.205, -0.124), "accent")]
+		"ushanka":
+			# T-192: the fur cap with its ear flaps tied up over the crown, the cap star on the front flap
+			parts = [_sph(0.14, Vector3(0, 0.155, 0.006), "knit", Vector3(1.04, 0.82, 1.08), true, 12),
+				_cyl(0.15, 0.155, 0.07, Vector3(0, 0.16, 0.006), "knit", Vector3.ZERO, Vector3(1.0, 1.0, 1.06), 12, false),
+				_box(Vector3(0.15, 0.06, 0.03), Vector3(0, 0.205, -0.14), "knit", Vector3(-0.35, 0, 0)),
+				_box(Vector3(0.05, 0.08, 0.13), Vector3(-0.135, 0.215, 0.01), "knit", Vector3(0, 0, 0.45)),
+				_box(Vector3(0.05, 0.08, 0.13), Vector3(0.135, 0.215, 0.01), "knit", Vector3(0, 0, -0.45)),
+				_star(0.009, Vector3(0, 0.205, -0.158), "accent")]
+		"ssh40":
+			# T-192: the SSh-40 steel helmet: a round bowl with a short even rim all the way round (no flared skirt)
+			parts = [_sph(0.148, Vector3(0, 0.145, 0.006), "helmet", Vector3(1.0, 0.86, 1.06), true, 12),
+				_cyl(0.155, 0.168, 0.018, Vector3(0, 0.15, 0.006), "helmet", Vector3.ZERO, Vector3(1.0, 1.0, 1.06), 12, false),
+				_box(Vector3(0.012, 0.1, 0.012), Vector3(-0.11, 0.08, -0.01), "leather")]
 		"weed":
 			# T-153: kelp hanging off a drowned man's shoulders (dark green strips)
 			bone = "Chest"

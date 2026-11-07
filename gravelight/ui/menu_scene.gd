@@ -780,9 +780,47 @@ func _build_ambience() -> void:
 		"altitude": [110, 140], "headings": [190, 230], "offset": [-60, 40]})
 	for off: String in ["fighters", "cookoff", "dog"]:
 		_patch(c, off, {"first_after": [99999, 99999], "interval": [99999, 99999], "interval_late": [99999, 99999]})
-	_patch(c, "flares", {"min_round": 1, "first_after": [30, 50], "interval": [60, 90], "interval_late": [60, 90]})
+	# T-192 (UPDATE 11 section 6): the far front's flares on the eastern horizon, often
+	_patch(c, "flares", {"min_round": 1, "first_after": [5, 10], "interval": [18, 32], "interval_late": [18, 32], "bearings": [55, 150], "radius": [150, 230]})
 	_patch(c, "plane_down", {"min_round": 9999})
 	_patch(c, "intensity", {"start_round": 1, "full_round": 99})
+	c.erase("risen_column")   # Map 0's far column is the game's; the menu has its own lane at the treeline
+	c.erase("horror")         # the match's grit (frost, breathing, flies) is not the menu's; it keeps only the chant
+	_build_risen()
+	_build_chant()
+
+
+## T-192: the chant bed under the menu theme (our own synthesis, the Ambience bus), low and steady.
+const CHANT_DB: float = -31.0
+var chant: AudioStreamPlayer = null
+
+
+func _build_chant() -> void:
+	if not AudioDirector.has_sound("horror_chant_bed"):
+		return
+	chant = AudioDirector.make_loop_2d("horror_chant_bed", self, CHANT_DB)
+	if chant != null:
+		chant.play(_rng.randf_range(0.0, 30.0))
+
+
+## T-192: the Soviet risen (the Returned) walking past the fence at the treeline, behind the Marke-lit walkers: a
+## RisenColumn (presentation only) on its own lane in camera A's frame (RISEN_FROM / RISEN_TO: depth, lateral m).
+const RISEN_FROM: Vector2 = Vector2(31.0, -30.0)
+const RISEN_TO: Vector2 = Vector2(19.0, -8.5)
+const RISEN_COUNT: int = 5
+var risen: RisenColumn = null
+
+
+static func risen_count(is_web: bool) -> int:
+	return maxi(2, RISEN_COUNT / 2) if is_web else RISEN_COUNT
+
+
+func _build_risen() -> void:
+	var kits: Dictionary = ((GLData.table("enemies") as Dictionary).get("soviet_risen", {}) as Dictionary).get("kits", RisenColumn.DEFAULT_KITS)
+	risen = RisenColumn.make({"from": at(RISEN_FROM.x, RISEN_FROM.y), "to": at(RISEN_TO.x, RISEN_TO.y), "count": risen_count(web),
+		"speed": [0.5, 0.7], "width": 1.6, "ground": "flat", "seed": 1930, "fade": 0.12, "kits": kits})
+	add_child(risen)
+	risen.position = Vector3.ZERO
 
 
 static func _patch(c: Dictionary, key: String, over: Dictionary) -> void:
@@ -831,6 +869,7 @@ func shadowed_lights() -> int:
 func census() -> Dictionary:
 	var lights: int = find_children("*", "Light3D", true, false).size()
 	return {"web": web, "walkers": walkers.size(), "tearers": tearers.size(), "zombies": walkers.size() + tearers.size(),
+		"risen": risen.bodies.size() if risen != null else 0, "chant": chant != null and chant.playing,
 		"squad": squad.size(), "lights": lights, "shadowed_lights": shadowed_lights(),
 		"meshes": find_children("*", "MeshInstance3D", true, false).size(),
 		"multimeshes": find_children("*", "MultiMeshInstance3D", true, false).size(),

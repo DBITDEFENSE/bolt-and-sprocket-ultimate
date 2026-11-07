@@ -198,7 +198,7 @@ static func is_boss(z: Zombie) -> bool:
 
 
 static func targetable(z: Zombie) -> bool:
-	return z != null and is_instance_valid(z) and z.is_active() and z.state != Zombie.State.DEAD and z.state != Zombie.State.EMERGE \
+	return z != null and is_instance_valid(z) and z.is_active() and z.state != Zombie.State.DEAD and z.state != Zombie.State.EMERGE and not z.is_dormant() \
 		and z.state != Zombie.State.INACTIVE and not (z is HomageBoss and ((z as HomageBoss).gone or (z as HomageBoss).retreating))
 
 

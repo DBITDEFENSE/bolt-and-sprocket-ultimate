@@ -17,6 +17,9 @@ extends Node
 ## host-owned events through the session; the client checks it saw each one mirrored. map04b (T-156):
 ## --through=turbulence (a tilt: the client's FlightController banks and its camera rolls), wingwalk (the wing walk
 ## opens on the client, and the host's bot goes out on the deck: its CLIPPED state arrives on the client).
+## T-192 (UPDATE 11): --through=hard_truth: the host's bot (pid 3) bleeds out; its body lies as a dormant zombie in its
+## survivor's risen body (the client's puppet lies still too), gets up at 4 s, the host puts it down and the death crate
+## reaches the client over WebRTC (a NetMatch dynamic node).
 
 const MAP_ID: String = "map00_crossroads"
 ## UPDATE 10 (C8, T-153): --map=map02 plays Totenhafen; --through=flood,sail runs those host-owned events after the
@@ -57,6 +60,11 @@ var _act2_sent: bool = false
 var _flood_ok: bool = false       # T-153: map02 flood,sail
 var _sail_ok: bool = false
 var _scen_started: bool = false
+var _ht_ok: bool = false          # T-192: host: the bot's body lay, rose and dropped its crate
+var _ht_person: String = ""
+var _saw_body: bool = false       # T-192: client
+var _saw_dormant: bool = false
+var _saw_crate: bool = false
 
 
 func _ready() -> void:
@@ -216,6 +224,18 @@ func _host_tick(delta: float) -> void:
 					else:
 						tide.force_stage(&"spring", 120.0)
 						_log("host: spring flood forced")
+				if _through.has("hard_truth"):
+					var hb: Player = map.players.get(3) as Player
+					if hb == null:
+						_fail("--through=hard_truth: no bot pid 3")
+					else:
+						GameState.god_mode = false
+						hb.take_hit(99999.0, null)
+						GameState.god_mode = true
+						if map.session.coop.is_downed(3):
+							(map.session.coop.players[3] as Dictionary)["bleed"] = 0.05
+							(map.session.coop.players[3] as Dictionary)["reviver"] = 0
+						_log("host: the bot (pid 3) is down and bleeding out")
 				if _through.has("sail"):
 					GameState.set_flag(&"curtain_open", true)
 					var sail: Node = get_tree().get_first_node_in_group(&"uboat_sail")
@@ -224,7 +244,14 @@ func _host_tick(delta: float) -> void:
 					else:
 						sail.call("cast_off")
 						_log("host: cast off")
+			if _through.has("hard_truth") and not _ht_ok and map.session.hard_truth != null:
+				var ht: HardTruth = map.session.hard_truth
+				if int(ht.stats["bodies"]) >= 1 and int(ht.stats["rises"]) >= 1 and int(ht.stats["crates"]) >= 1:
+					_ht_ok = true
+					_log("host: Hard Truth %s" % str(ht.stats))
 			if _step_t > 35.0:
+				if _through.has("hard_truth") and not _ht_ok:
+					_fail("--through=hard_truth: the bot's body never lay / rose / dropped its crate on the host (%s)" % (str(map.session.hard_truth.stats) if map.session.hard_truth != null else "no rule"))
 				_p2_pos = (map.players[2] as Player).global_position
 				_qa_send("drop", {})
 				_goto("wait_drop")
@@ -422,6 +449,17 @@ func _client_tick(delta: float) -> void:
 				if ct != null and ct.stage == &"spring" and ct.level > -1.3:
 					_flood_ok = true
 					_notes.append("the host's spring flood reached the client (level %.2f)" % ct.level)
+			if _through.has("hard_truth") and map != null and map.director != null:
+				if _ht_person == "":
+					_ht_person = String(Net.character_of(3))
+				for zz: Zombie in map.director.active_zombies():
+					if str(zz.get_meta("person", "")) == _ht_person:
+						_saw_body = true
+						if zz.is_dormant():
+							_saw_dormant = true
+				if not _saw_crate and not get_tree().get_nodes_in_group(&"fallen_crates").is_empty():
+					_saw_crate = true
+					_notes.append("Hard Truth: the bot's death crate reached the client over WebRTC")
 			if _through.has("sail") and not _sail_ok:
 				var cs: UboatSail = get_tree().get_first_node_in_group(&"uboat_sail") as UboatSail
 				if cs != null and cs.state == UboatSail.State.SAILING and cs.sail_t > 0.04:
@@ -482,6 +520,11 @@ func _client_finish() -> void:
 		_fails.append("the spring flood never reached the client")
 	if _through.has("sail") and not _sail_ok:
 		_fails.append("the boat never sailed on the client")
+	if _through.has("hard_truth"):
+		if not (_saw_body and _saw_dormant):
+			_fails.append("Hard Truth: never saw the bot's body lying (%s: body %s, dormant %s)" % [_ht_person, str(_saw_body), str(_saw_dormant)])
+		if not _saw_crate:
+			_fails.append("Hard Truth: the death crate never reached the client")
 	if not _bank_ok:
 		_fails.append("the client's bank deposit never round-tripped (balance %d)" % BankAccount.balance())
 	var res: Dictionary = {"pass": _fails.is_empty(), "fails": Array(_fails), "notes": Array(_notes)}
