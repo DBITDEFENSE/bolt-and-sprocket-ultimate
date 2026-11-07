@@ -1,0 +1,13 @@
+# Python packages for the repo's tools (tools/venv). tools/cloud_setup.sh installs the same list.
+# Voice pipeline (tools/voice/*, gravelight/tools_src/gen_vo.py):
+elevenlabs
+python-dotenv
+reportlab
+soundfile
+numpy
+scipy
+pyloudnorm
+pytest
+faster-whisper
+# Assets and captures:
+pillow
