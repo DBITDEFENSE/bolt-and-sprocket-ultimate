@@ -49,6 +49,12 @@ def sandbox(tmp_path, monkeypatch):
     monkeypatch.setattr(V, "SELECTIONS_PATH", str(data / "selections.json"))
     monkeypatch.setattr(V, "SESSIONS_PATH", str(data / "sessions.json"))
     monkeypatch.setattr(V, "OUT_ROOT", str(out))
+    # U11: the synthetic session was recorded from older script text; pin those ids to it (fixtures/recorded_lines.json)
+    lines = V.load_json(V.GL_LINES)
+    lines.update(V.load_json(os.path.join(FIX, "recorded_lines.json"))["lines"])
+    gl_lines = data / "lines.json"
+    gl_lines.write_text(json.dumps(lines, ensure_ascii=False), encoding="utf-8")
+    monkeypatch.setattr(V, "GL_LINES", str(gl_lines))
     inbox = tmp_path / "inbox"
     (inbox / "testactor").mkdir(parents=True)
     work = tmp_path / "work"

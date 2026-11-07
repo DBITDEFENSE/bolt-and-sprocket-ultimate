@@ -1,0 +1,58 @@
+{
+ "_doc": "The script records the synthetic session (testactor_*.ogg) was recorded from (lines.json before UPDATE 11's rewrite). conftest's sandbox pins these ids to them, so rewriting a live line never breaks the end-to-end test.",
+ "lines": {
+  "DUT_RELOAD_01": {
+   "speaker": "DUT",
+   "category": "RELOAD",
+   "text": "Reloading!"
+  },
+  "DUT_AMMO_LOW_01": {
+   "speaker": "DUT",
+   "category": "AMMO_LOW",
+   "text": "Running light here."
+  },
+  "BNT_DUT_PEG_01": {
+   "speaker": "BNT",
+   "category": "DUT_PEG",
+   "text": "Lieutenant, how come the British always talk like they're ordering tea?",
+   "exchange": [
+    [
+     "DUT",
+     "Lieutenant, how come the British always talk like they're ordering tea?"
+    ],
+    [
+     "PEG",
+     "Because, Sergeant, we usually are."
+    ],
+    [
+     "DUT",
+     "Even now?"
+    ],
+    [
+     "PEG",
+     "Especially now."
+    ]
+   ]
+  },
+  "DUT_BOARD_02": {
+   "speaker": "DUT",
+   "category": "BOARD",
+   "text": "Window's shut. For now."
+  },
+  "DUT_SPAWN_01": {
+   "speaker": "DUT",
+   "category": "SPAWN",
+   "text": "Kaltenbrunn. Smells like the mill with the lights off. Let's get to work."
+  },
+  "DUT_ROUND_END_01": {
+   "speaker": "DUT",
+   "category": "ROUND_END",
+   "text": "Whistle. Breathe while you can."
+  },
+  "DUT_BUY_SHOTGUN_01": {
+   "speaker": "DUT",
+   "category": "BUY_SHOTGUN",
+   "text": "Trench gun. Now we're talking the same language."
+  }
+ }
+}

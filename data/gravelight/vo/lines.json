@@ -2012,7 +2012,7 @@
   "DUT_AMMO_LOW_01": {
     "speaker": "DUT",
     "category": "AMMO_LOW",
-    "text": "Running light here."
+    "text": "Running light. Running light here!"
   },
   "DUT_AMMO_NONE_01": {
     "speaker": "DUT",
