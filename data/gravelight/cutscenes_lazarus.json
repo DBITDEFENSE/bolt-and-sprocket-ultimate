@@ -134,7 +134,7 @@
           "from": [-7.5, 1.6, 33.5], "look": [2.0, 1.5, 20.0], "fov": 60, "move": "static", "handheld": 0.15, "fx": "dust_settle",
           "lines": [[2.5, "SER_LZS_03"]]},
         {"t": 125.0, "_set": "crypt", "_what": "Inside, under the floor: a stone undercroft older than the church over it, down the steps behind two lanterns. A low door at the bottom and over it a lamp still lit on its chain, a small flame in red glass; over the door, cut in the stone, the line in Church Slavonic.",
-          "from": [0.0, -0.05, 0.6], "to": [0.0, -1.45, -2.1], "look": [0.0, -1.2, -4.5], "look_to": [0.0, -1.0, -4.5], "fov": 55, "handheld": 0.35, "cut": "dip", "blend": 0.9, "fx": "descend",
+          "from": [0.0, 0.6, 0.7], "to": [0.0, -0.8, -1.9], "look": [0.0, -1.1, -4.5], "look_to": [0.0, -0.9, -4.5], "fov": 55, "handheld": 0.35, "cut": "dip", "blend": 0.9, "fx": "descend",
           "grade": {"exposure": 0.9, "contrast": 1.04, "saturation": 0.7, "tint": [1.08, 0.96, 0.84], "lift": [0.01, 0.005, 0.0], "vignette": 0.5}, "grade_s": 0.0,
           "lines": [[0.5, "VOL_LZS_03"]]},
         {"t": 132.0, "_set": "crypt", "_what": "The letters, close. Volkov's lantern comes up to read them. Behind him on the stair, allowed down to see what they do, Serafim reads it first, from memory, in the old tongue.",
