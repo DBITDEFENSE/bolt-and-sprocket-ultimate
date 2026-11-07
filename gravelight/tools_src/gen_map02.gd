@@ -1467,7 +1467,8 @@ func _dress_quay() -> void:
 	Props.shelves(dress, Vector3(17.85, 0, 11.5), -90.0, 2.4, 2.2, 0.3, 3, 3)
 	Props.picture(dress, Vector3(10.17, 1.8, 12.0), -90.0, 0.9, 0.6)
 	Props.coat_rack(dress, Vector3(17.5, 0, 16.6))
-	B(Vector3(9.6, 0.0, 12.4), Vector3(9.84, 2.2, 14.6), "black_paint")
+	# T-180: the old flat-black chalk slab behind this wall-buy is gone (2.2 m of untextured black that read as a
+	# texture that never loaded; the wall-buy carries its own painted board since T-094)
 	# nets, crates, drums and a hand cart along the cannery side
 	Props.net_pile(dress, Vector3(3.5, 0, 6.0), Vector3(3.2, 0.9, 2.6), 11)
 	Props.net_pile(dress, Vector3(6.5, 0, 22.5), Vector3(2.4, 0.7, 2.0), 12)
@@ -1480,8 +1481,9 @@ func _dress_quay() -> void:
 	Props.cart(dress, Vector3(23.5, 0, 24.5), 20.0)
 	Props.sandbags(dress, Vector3(19.5, 0, 29.2), Vector3(24.5, 0, 29.2), 2)
 	# the beached cutter is DetailMap02.cutter (_dress_u09_quay); the snow along it and the M1 Carbine's chalk board
-	_noshadow(B(Vector3(20.6, 0, 1.9), Vector3(21.2, 0.12, 8.2), "snow", false))
-	B(Vector3(20.8, 0.0, 3.8), Vector3(20.86, 2.2, 6.2), "black_paint")
+	_noshadow(B(Vector3(20.6, 0, 1.9), Vector3(21.2, 0.08, 8.2), "snow_trodden", false))   # T-180: grey slush, not a white plank
+	# T-180: the old flat-black chalk slab behind this wall-buy is gone (2.2 m of untextured black that read as a
+	# texture that never loaded; the wall-buy carries its own painted board since T-094)
 	# the bunker face from the quay: the name, pen-passage lamps, a flood over each passage, pilasters
 	B(Vector3(-5.0, 6.6, 29.6), Vector3(5.0, 7.5, 29.98), "concrete")
 	_label("KRIEGSMARINE · U-BUNKER TOTENHAFEN", Vector3(0, 7.05, 29.59), 180.0, 44, Color(0.9, 0.86, 0.74, 0.9))
@@ -1562,7 +1564,8 @@ func _dress_cannery() -> void:
 	_label("KRANKENSTUBE", Vector3(-19.83, 2.7, 5.0), 90.0, 26)
 	Props.picture(dress, Vector3(-29.83, 2.0, 8.0), -90.0, 0.4, 0.5)
 	# wall-buys' chalk and the perk stands
-	B(Vector3(-0.3, 0.0, 20.8), Vector3(-0.17, 2.2, 27.2), "black_paint")
+	# T-180: the old flat-black chalk slab behind this wall-buy is gone (2.2 m of untextured black that read as a
+	# texture that never loaded; the wall-buy carries its own painted board since T-094)
 	# emergency lamps and a hurricane lantern on the line
 	emergency(Vector3(-15.0, 3.2, 0.17), 0.0, 0.8, 9.0)
 	emergency(Vector3(-29.83, 3.2, 18.0), -90.0, 0.8, 9.0)
@@ -1607,7 +1610,8 @@ func _dress_workshop() -> void:
 	B(Vector3(51.9, 2.5, 15.9), Vector3(62.0, 2.6, 24.0), "iron")
 	Props.coffin(dress, Vector3(60.5, 0, 23.0), 0.0, "BLST-11")
 	_noshadow(Props.ball(dress, Vector3(60.5, 1.1, 23.0), Vector3(2.6, 0.7, 1.4), "tarp"))
-	B(Vector3(61.6, 0.0, 18.8), Vector3(61.84, 2.2, 21.2), "black_paint")
+	# T-180: the old flat-black chalk slab behind this wall-buy is gone (2.2 m of untextured black that read as a
+	# texture that never loaded; the wall-buy carries its own painted board since T-094)
 	_label("SPRENGKÖPFE · ZUTRITT VERBOTEN", Vector3(51.97, 2.8, 20.0), -90.0, 22, Color(0.85, 0.3, 0.2, 0.9))
 	# the trolley track along the south wall
 	for k: int in 44:
