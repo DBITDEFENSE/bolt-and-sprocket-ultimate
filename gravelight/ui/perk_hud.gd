@@ -4,12 +4,14 @@ extends CanvasLayer
 ## Upgraded tonics (T-075) carry their tier on a brass band under the glyph (II / III; the crimp turns gold at III),
 ## and a cap pops when one of its tier effects fires (PerkManager.perk_proc). T-096: the row sits on the HUD grid
 ## (ui.json hud: margin, perk_cap, perk_gap, perk_row_gap over the stamp) with a soft shadow under each cap.
+## T-183 (the owner: "the perk circles on the screen are a little bit too big"): perk_cap 54 -> 40 px at 1080p, the
+## gap 10 -> 8 (six caps: 364 -> 280 px wide); the tier band's numeral still shows (it needs a 30 px cap).
 
 var player_id: int = 1
 var _row: Control
 var _font: Font
-var _cap_size: float = 54.0
-var _gap: float = 10.0
+var _cap_size: float = 40.0
+var _gap: float = 8.0
 
 
 func _init() -> void:
@@ -18,8 +20,8 @@ func _init() -> void:
 
 func _ready() -> void:
 	_font = MenuKit.stamp_font()
-	_cap_size = float(MenuKit.hud("perk_cap", 54.0))
-	_gap = float(MenuKit.hud("perk_gap", 10.0))
+	_cap_size = float(MenuKit.hud("perk_cap", 40.0))
+	_gap = float(MenuKit.hud("perk_gap", 8.0))
 	_row = Control.new()
 	_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	MenuKit.apply_theme(_row)

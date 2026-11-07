@@ -230,6 +230,8 @@ func ensure_companion_session() -> BotSquad:
 		squad.name = "BotSquad"
 		add_child(squad)
 		squad.setup(self)
+	if get_tree().get_first_node_in_group(&"coop_hud") == null:   # T-183: a companion gets a row on the squad panel in solo too
+		add_child((load("res://gravelight/ui/coop_hud.gd") as GDScript).new() as CanvasLayer)
 	return squad
 
 

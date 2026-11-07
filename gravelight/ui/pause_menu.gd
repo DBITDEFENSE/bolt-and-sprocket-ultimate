@@ -487,8 +487,11 @@ func _refresh_loadout() -> void:
 					gun = bp.weapons.current().display_name()
 			var sq: HBoxContainer = HBoxContainer.new()
 			sq.add_theme_constant_override("separation", 6)
-			sq.add_child(MenuKit.label("   %s: %s Scrip%s   " % [str(GameState.character_of(bid)).capitalize(), _thousands(Economy.get_scrip(bid)),
-				("  ·  " + gun) if gun != "" else ""], 17, MenuKit.DIM))
+			# T-183: the squad panel shows no numbers any more; the kills live here and on the scoreboard (hold Ctrl)
+			var bsq: BotSquad = get_tree().get_first_node_in_group(&"bot_squad") as BotSquad
+			var kills: String = ("  ·  %d kills" % int(bsq.kills.get(bid, 0))) if bsq != null else ""
+			sq.add_child(MenuKit.label("   %s: %s Scrip%s%s   " % [str(GameState.character_of(bid)).capitalize(), _thousands(Economy.get_scrip(bid)),
+				kills, ("  ·  " + gun) if gun != "" else ""], 17, MenuKit.DIM))
 			var bonus: StringName = PerkManager.bonus_perk(bid)
 			var order: Array = PerkManager.owned(bid).duplicate()
 			if bonus != &"" and order.has(bonus):
