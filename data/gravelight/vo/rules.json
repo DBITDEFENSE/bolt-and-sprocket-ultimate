@@ -1,841 +1,842 @@
 {
-  "_doc": "VO playback rules (docs/VO_SCRIPT.md §1). priority: 4 CRITICAL, 3 ANNOUNCE, 2 EVENT, 1 CHATTER, 0 AMBIENT.",
-  "story_speakers": [
-    "OPR",
-    "FAS",
-    "REI",
-    "LSL",
-    "CUT",
-    "NPC",
-    "WIT",
-    "PA",
-    "BWT",
-    "DEE",
-    "HAL",
-    "RRK",
-    "WIV"
+ "_doc": "VO playback rules (docs/VO_SCRIPT.md §1). priority: 4 CRITICAL, 3 ANNOUNCE, 2 EVENT, 1 CHATTER, 0 AMBIENT.",
+ "story_speakers": [
+  "OPR",
+  "FAS",
+  "REI",
+  "LSL",
+  "CUT",
+  "NPC",
+  "WIT",
+  "PA",
+  "BWT",
+  "DEE",
+  "HAL",
+  "RRK",
+  "WIV"
+ ],
+ "player_speakers": [
+  "DUT",
+  "PEG",
+  "DEA",
+  "WRN",
+  "JAK",
+  "BNT",
+  "TAG"
+ ],
+ "speaker_default_priority": {
+  "UBR": 1,
+  "OPR": 2,
+  "FAS": 4,
+  "REI": 4,
+  "LSL": 4,
+  "CUT": 4,
+  "NPC": 2,
+  "DUT": 1,
+  "PEG": 1,
+  "DEA": 1,
+  "WRN": 1,
+  "BNT": 0,
+  "TAG": 4,
+  "JAK": 1,
+  "WIT": 4,
+  "PA": 3,
+  "BWT": 2,
+  "DEE": 4,
+  "HAL": 4,
+  "RRK": 2,
+  "WIV": 4
+ },
+ "category_priority": {
+  "PWR_EXPIRE": 2,
+  "PWR_GRAB": 1,
+  "PWR": 3,
+  "POWER_ON": 3,
+  "PYLON": 3,
+  "VAULT": 3,
+  "SPECIAL": 3,
+  "GAME_OVER": 3,
+  "BOSS": 3,
+  "MATCH_START": 2,
+  "ROUND_START": 2,
+  "ROUND_END": 2,
+  "CRATE_MOVE": 2,
+  "CRUCIBLE": 2,
+  "TRAP": 2,
+  "SECOND_WIND": 3,
+  "QUEST": 4,
+  "M0": 4,
+  "M1": 4,
+  "IDLE_SELFAWARE": 0,
+  "SELFAWARE": 0,
+  "EXHAUST": 1,
+  "EXFIL": 3,
+  "CUT_EXFIL": 4,
+  "TIDE": 3,
+  "BALLAST": 3,
+  "M2_LF_HINT": 3,
+  "M4D_TERM": 3,
+  "M4D_GLARE": 3,
+  "M4D_HEATERS": 3,
+  "M4D_METEOR": 3,
+  "M4D_EARTH": 3,
+  "M4D_ORBIT": 3,
+  "M4D_PAD": 3,
+  "M4D_SHAFT": 3,
+  "M4D_CONSOLE": 3
+ },
+ "category_cooldown": {
+  "ROUND_START": [
+   0,
+   0.35
   ],
-  "player_speakers": [
-    "DUT",
-    "PEG",
-    "DEA",
-    "WRN",
-    "JAK",
-    "BNT",
-    "TAG"
+  "ROUND_END": [
+   0,
+   0.35
   ],
-  "speaker_default_priority": {"UBR": 1, 
-    "OPR": 2,
-    "FAS": 4,
-    "REI": 4,
-    "LSL": 4,
-    "CUT": 4,
-    "NPC": 2,
-    "DUT": 1,
-    "PEG": 1,
-    "DEA": 1,
-    "WRN": 1,
-    "BNT": 0,
-    "TAG": 4,
-    "JAK": 1,
-    "WIT": 4,
-    "PA": 3,
-    "BWT": 2,
-    "DEE": 4,
-    "HAL": 4,
-    "RRK": 2,
-    "WIV": 4
-  },
-  "category_priority": {
-    "PWR_EXPIRE": 2,
-    "PWR_GRAB": 1,
-    "PWR": 3,
-    "POWER_ON": 3,
-    "PYLON": 3,
-    "VAULT": 3,
-    "SPECIAL": 3,
-    "GAME_OVER": 3,
-    "BOSS": 3,
-    "MATCH_START": 2,
-    "ROUND_START": 2,
-    "ROUND_END": 2,
-    "CRATE_MOVE": 2,
-    "CRUCIBLE": 2,
-    "TRAP": 2,
-    "SECOND_WIND": 3,
-    "QUEST": 4,
-    "M0": 4,
-    "M1": 4,
-    "IDLE_SELFAWARE": 0,
-    "SELFAWARE": 0,
-    "EXHAUST": 1,
-    "EXFIL": 3,
-    "CUT_EXFIL": 4,
-    "TIDE": 3,
-    "BALLAST": 3,
-    "M2_LF_HINT": 3,
-    "M4D_TERM": 3,
-    "M4D_GLARE": 3,
-    "M4D_HEATERS": 3,
-    "M4D_METEOR": 3,
-    "M4D_EARTH": 3,
-    "M4D_ORBIT": 3,
-    "M4D_PAD": 3,
-    "M4D_SHAFT": 3,
-    "M4D_CONSOLE": 3
-  },
-  "category_cooldown": {
-    "ROUND_START": [
-      0,
-      0.35
-    ],
-    "ROUND_END": [
-      0,
-      0.35
-    ],
-    "PWR_GRAB": [
-      6,
-      0.6
-    ],
-    "PWR_EXPIRE": [
-      0,
-      0.3
-    ],
-    "PWR": [
-      0,
-      1.0
-    ],
-    "CRATE_GOOD": [
-      20,
-      0.7
-    ],
-    "CRATE_BAD": [
-      20,
-      0.7
-    ],
-    "CRATE_WONDER": [
-      20,
-      1.0
-    ],
-    "CRATE_MOVE": [
-      0,
-      1.0
-    ],
-    "CRATE_DRUMMER": [
-      20,
-      0.7
-    ],
-    "HEADSHOT": [
-      25,
-      0.2
-    ],
-    "STREAK": [
-      40,
-      0.5
-    ],
-    "LOW_AMMO": [
-      30,
-      0.7
-    ],
-    "NO_AMMO": [
-      30,
-      0.7
-    ],
-    "KILL": [
-      15,
-      0.1
-    ],
-    "BUY": [
-      10,
-      0.8
-    ],
-    "PERK": [
-      0,
-      1.0
-    ],
-    "IDLE_SELFAWARE": [
-      240,
-      0.5
-    ],
-    "SELFAWARE": [
-      240,
-      1.0
-    ],
-    "HINT": [
-      120,
-      0.4
-    ],
-    "BNT": [
-      180,
-      0.3
-    ],
-    "DOWNED": [
-      0,
-      1.0
-    ],
-    "REVIVE": [
-      5,
-      0.8
-    ],
-    "REVIVED": [
-      5,
-      0.8
-    ],
-    "DENY": [
-      8,
-      0.8
-    ],
-    "DOOR": [
-      20,
-      0.4
-    ],
-    "MATCH_START": [
-      0,
-      1.0
-    ],
-    "SPAWN": [
-      0,
-      0.6
-    ],
-    "GAME_OVER": [
-      0,
-      1.0
-    ],
-    "POWER_ON": [
-      0,
-      1.0
-    ],
-    "INTEL": [
-      10,
-      1.0
-    ],
-    "EXFIL": [
-      0,
-      1.0
-    ],
-    "CUT_EXFIL": [
-      0,
-      1.0
-    ],
-    "TEAM_DOWN": [
-      8,
-      0.8
-    ],
-    "BOSS": [
-      0,
-      0.6
-    ],
-    "FOREMAN": [
-      0,
-      0.6
-    ],
-    "SCREAMER": [
-      0,
-      0.6
-    ],
-    "GLASSHIDE": [
-      30,
-      0.3
-    ],
-    "CRAWLER": [
-      30,
-      0.15
-    ],
-    "TRAP": [
-      12,
-      0.3
-    ],
-    "POWER": [
-      0,
-      1.0
-    ],
-    "BELL": [
-      0,
-      0.4
-    ],
-    "CRUCIBLE": [
-      10,
-      0.8
-    ],
-    "BUILD": [
-      0,
-      1.0
-    ],
-    "EE": [
-      0,
-      1.0
-    ],
-    "MARK": [
-      0,
-      1.0
-    ],
-    "CRUCIBLE_FIRST": [
-      0,
-      1.0
-    ],
-    "CRUCIBLE_START": [
-      0,
-      0.7
-    ],
-    "CRUCIBLE_READY": [
-      0,
-      0.7
-    ],
-    "CRUCIBLE_EXPIRE": [
-      0,
-      1.0
-    ],
-    "SPECIAL_END": [
-      0,
-      1.0
-    ],
-    "PYLON": [
-      0,
-      1.0
-    ],
-    "VAULT": [
-      0,
-      1.0
-    ],
-    "AMMO_LOW": [
-      30,
-      0.7
-    ],
-    "AMMO_NONE": [
-      30,
-      0.7
-    ],
-    "TIDE": [
-      0,
-      1.0
-    ],
-    "BALLAST": [
-      0,
-      1.0
-    ],
-    "RELOAD": [
-      0,
-      1.0
-    ],
-    "BOARD": [
-      0,
-      1.0
-    ],
-    "CMD": [
-      0,
-      1.0
-    ],
-    "BONUS": [
-      0,
-      1.0
-    ],
-    "POWERUP_SEEN": [
-      0,
-      1.0
-    ],
-    "MARKE_FIRST": [
-      0,
-      1.0
-    ],
-    "MARKE_KILL": [
-      45,
-      0.2
-    ],
-    "MARKE_OPR": [
-      120,
-      0.35
-    ],
-    "MARKE_RELAY": [
-      0,
-      1.0
-    ],
-    "AK_ARRIVE": [
-      0,
-      1.0
-    ],
-    "AK_CONTACT": [
-      20,
-      1.0
-    ],
-    "AK_HURT": [
-      8,
-      0.7
-    ],
-    "AK_DOWN": [
-      4,
-      1.0
-    ],
-    "AK_LEAVE": [
-      0,
-      1.0
-    ],
-    "AK_SURVIVE": [
-      0,
-      1.0
-    ],
-    "SOV_ARRIVE": [
-      0,
-      1.0
-    ],
-    "SOV_CONTACT": [
-      20,
-      1.0
-    ],
-    "SOV_HURT": [
-      8,
-      0.7
-    ],
-    "SOV_DOWN": [
-      4,
-      1.0
-    ],
-    "SOV_LEAVE": [
-      0,
-      1.0
-    ],
-    "SOV_SURVIVE": [
-      0,
-      1.0
-    ],
-    "VS_ARRIVE": [
-      0,
-      1.0
-    ],
-    "VS_CONTACT": [
-      20,
-      1.0
-    ],
-    "VS_HURT": [
-      8,
-      0.7
-    ],
-    "VS_DOWN": [
-      4,
-      1.0
-    ],
-    "VS_LEAVE": [
-      0,
-      1.0
-    ],
-    "VS_SURVIVE": [
-      0,
-      1.0
-    ],
-    "CDO_ARRIVE": [
-      0,
-      1.0
-    ],
-    "CDO_CONTACT": [
-      20,
-      1.0
-    ],
-    "CDO_HURT": [
-      8,
-      0.7
-    ],
-    "CDO_DOWN": [
-      4,
-      1.0
-    ],
-    "CDO_LEAVE": [
-      0,
-      1.0
-    ],
-    "CDO_SURVIVE": [
-      0,
-      1.0
-    ],
-    "KM_ARRIVE": [
-      0,
-      1.0
-    ],
-    "KM_CONTACT": [
-      20,
-      1.0
-    ],
-    "KM_HURT": [
-      8,
-      0.7
-    ],
-    "KM_DOWN": [
-      4,
-      1.0
-    ],
-    "KM_LEAVE": [
-      0,
-      1.0
-    ],
-    "KM_SURVIVE": [
-      0,
-      1.0
-    ],
-    "PARA_ARRIVE": [
-      0,
-      1.0
-    ],
-    "PARA_CONTACT": [
-      20,
-      1.0
-    ],
-    "PARA_HURT": [
-      8,
-      0.7
-    ],
-    "PARA_DOWN": [
-      4,
-      1.0
-    ],
-    "PARA_LEAVE": [
-      0,
-      1.0
-    ],
-    "PARA_SURVIVE": [
-      0,
-      1.0
-    ],
-    "MP_ARRIVE": [
-      0,
-      1.0
-    ],
-    "MP_CONTACT": [
-      20,
-      1.0
-    ],
-    "MP_HURT": [
-      8,
-      0.7
-    ],
-    "MP_DOWN": [
-      4,
-      1.0
-    ],
-    "MP_LEAVE": [
-      0,
-      1.0
-    ],
-    "MP_SURVIVE": [
-      0,
-      1.0
-    ],
-    "SQD_RISE": [
-      0,
-      1.0
-    ]
-  },
-  "round_start_always": [
-    1,
-    5,
-    10,
-    15,
-    20,
-    25,
-    30,
-    50
+  "PWR_GRAB": [
+   6,
+   0.6
   ],
-  "queue_expiry": {
-    "0": 4.0,
-    "1": 4.0,
-    "2": 4.0,
-    "3": 20.0,
-    "4": -1.0
-  },
-  "player_chatter_gap": 3.5,
-  "ambient_gap": 45.0,
-  "chars_per_second_inv": 0.065,
-  "min_duration": 1.5,
-  "exchange_gap": 0.4,
-  "slip_base": 0.01,
-  "slip_per_round": 0.0022,
-  "slip_cap": 0.12,
-  "slip_map_cap": 0.2,
-  "slip_map_mult": {
-    "map00": 0.5,
-    "map01": 1.0,
-    "map_hw_helvetia": 2.0,
-    "map02": 1.5,
-    "map03": 2.0
-  },
-  "slip_map00_min_round": 15,
-  "map_lines_doc": "Lines that only play on one map (T-057): ones that name a place. Lines with an M0/M1/M2 token in their category, or a 'Map N' condition, are map lines without being listed here.",
-  "map_lines": {
-    "map01": [
-      "DUT_SPAWN_01",
-      "PEG_SPAWN_01",
-      "DEA_SPAWN_02",
-      "WRN_SPAWN_01",
-      "OPR_MATCH_START_01",
-      "OPR_MATCH_START_03",
-      "OPR_ROUND_START_09",
-      "OPR_ROUND_END_03",
-      "OPR_POWER_ON_01",
-      "OPR_VAULT_01",
-      "OPR_EXFIL_GO_01",
-      "BNT_PEG_DEA_02",
-      "REI_CYL1_01"
-    ],
-    "map02": [
-      "OPR_EXFIL_ROAD_01",
-      "OPR_TIDE_WARN_01",
-      "OPR_TIDE_RISING_01"
-    ],
-    "map04a": [],
-    "map04b": [],
-    "map04d": [],
-    "map04c": []
-  },
-  "slip_cooldown_s": 300.0,
-  "slip_cooldown_hw_map03_s": 240.0,
-  "slip_tail_delay_s": 0.6,
-  "slip_after_down_s": 10.0,
-  "player_category_cooldown": {
-    "_doc": "Overrides of category_cooldown for the squad (DUT/PEG/DEA/WRN) only: [cooldown s, chance].",
-    "ROUND_START": [
-      0,
-      0.2
-    ],
-    "ROUND_END": [
-      0,
-      0.2
-    ],
-    "TRAP": [
-      20,
-      0.3
-    ],
-    "DOWNED": [
-      0,
-      1.0
-    ],
-    "SPAWN": [
-      0,
-      0.6
-    ]
-  },
-  "story_category_cooldown": {
-    "_doc": "Overrides for the Operator: TRAP 20%, DOWNED 50%.",
-    "TRAP": [
-      10,
-      0.2
-    ],
-    "DOWNED": [
-      0,
-      0.5
-    ]
-  },
-  "banter": {
-    "_doc": "Round-break banter (CHARACTERS.md Banter): rolled once per round end after delay_s, between two standing survivors within max_distance_m (0 = any); cooldown_s between exchanges; each exchange once per match.",
-    "chance": 0.3,
-    "cooldown_s": 180.0,
-    "delay_s": 2.5,
-    "max_distance_m": 15.0,
-    "min_round": 2
-  },
-  "audio": {
-    "_doc": "Playback: squad lines from other players/bots are positional (unit_size/max_distance in metres); local player and story voices are 2D. duck_db applies to Music/Jingles/ambience while a story line plays.",
-    "squad_unit_size": 5.0,
-    "squad_max_distance": 40.0,
-    "squad_volume_db": 0.0,
-    "story_volume_db": 0.0,
-    "duck_music_db": -6.0,
-    "duck_jingles_db": -9.0,
-    "duck_ambience_db": -5.0,
-    "occlusion_doc": "T-073: a positional voice behind world geometry or a door (occlusion_mask: physics layers 1 + 9) slides its low-pass from occlusion_open_hz down to occlusion_cutoff_hz and drops occlusion_db; one camera-to-head ray every occlusion_interval_s, smoothed by occlusion_smooth (0..1 per check).",
-    "occlusion_mask": 257,
-    "occlusion_interval_s": 0.12,
-    "occlusion_smooth": 0.5,
-    "occlusion_open_hz": 5000.0,
-    "occlusion_cutoff_hz": 1100.0,
-    "occlusion_db": -5.0
-  },
-  "player_category_priority": {
-    "_doc": "Squad categories above tier 1 (CHATTER): they skip the chatter gap and queue behind a story line instead of being dropped. Jakub's story lines (VO_SCRIPT section 16) are tier 2 too.",
-    "DOWN": 2,
-    "TEAM_DOWN": 2,
-    "REVIVE": 2,
-    "REVIVED": 2,
-    "SKY_PLANE_DOWN": 2,
-    "WRECK_PILOT": 2,
-    "MIDNIGHT": 2,
-    "SPRINTER_BEHIND": 2,
-    "BOSS_INCOMING": 2,
-    "COVER": 2,
-    "WINDOW_OPEN": 2,
-    "EE_ACK": 2,
-    "EE_ACK_COLLECT": 2,
-    "EE_ACK_SHOOT_TARGET": 2,
-    "EE_ACK_HOLD_ZONE": 2,
-    "EE_ACK_CARRY": 2,
-    "EE_ACK_INTERACT_SEQUENCE": 2,
-    "EE_ACK_KILL_WITH_WEAPON": 2,
-    "EE_ACK_TURN_KEY": 2,
-    "EE_PLAYER_ONLY": 2,
-    "EE_HANDOFF": 2,
-    "EE_CANT": 2,
-    "EE_CANT_INFO": 2,
-    "EE_CANT_FIND": 2,
-    "EE_CANT_RISKY": 2,
-    "EE_WAIT_PLAYER": 2,
-    "EE_COMMIT_SELF": 2,
-    "EE_REFUSE_CRUCIBLE": 2,
-    "EE_REFUSE_PERK": 2,
-    "EE_REFUSE_TYPE": 2,
-    "MARK_ACK": 2,
-    "MARK_ACK_BUY": 2,
-    "MARK_ACK_FOR_YOU": 2,
-    "MARK_ACK_GO": 2,
-    "MARK_ACK_DEFEND": 2,
-    "MARK_ACK_REGROUP": 2,
-    "MARK_DANGER": 2,
-    "MARK_AFFORD": 2,
-    "MARK_EXPIRED": 2,
-    "MARK_FOR_YOU_HOLD": 2,
-    "MARK_FOR_YOU_DROP": 2,
-    "MARK_RESUME": 2,
-    "MARK_REFUSE_BUY": 2,
-    "MARK_CANT": 2,
-    "MARK_SHORT": 2,
-    "MARK_SHORT_LOTS": 2,
-    "MARK_SHORT_100": 2,
-    "MARK_SHORT_200": 2,
-    "MARK_SHORT_300": 2,
-    "MARK_SHORT_400": 2,
-    "MARK_SHORT_500": 2,
-    "MARK_SHORT_600": 2,
-    "MARK_SHORT_700": 2,
-    "MARK_SHORT_800": 2,
-    "MARK_SHORT_900": 2,
-    "MARK_SHORT_1000": 2,
-    "MARK_SHORT_1250": 2,
-    "MARK_SHORT_1500": 2,
-    "MARK_SHORT_2000": 2,
-    "MARK_SHORT_2500": 2,
-    "MARK_SHORT_3000": 2,
-    "MARK_SHORT_4000": 2,
-    "MARK_SHORT_5000": 2,
-    "MARK_BOUGHT": 2,
-    "MARK_BOUGHT_IRONHIDE": 2,
-    "MARK_BOUGHT_SECONDWIND": 2,
-    "MARK_BOUGHT_TRIGGER": 2,
-    "MARK_BOUGHT_TWINBARREL": 2,
-    "MARK_BOUGHT_MARATHON": 2,
-    "MARK_BOUGHT_HAWKEYE": 2,
-    "MARK_BOUGHT_PACKMULE": 2,
-    "MARK_BOUGHT_BLASTPROOF": 2,
-    "MARK_BOUGHT_OVERCLOCK": 2,
-    "MARK_BOUGHT_GUN": 2,
-    "MARK_BOUGHT_DOOR": 2,
-    "MARK_BOUGHT_AMMO": 2,
-    "MARK_BOUGHT_CRATE": 2,
-    "MARK_BOUGHT_CRUCIBLE": 2,
-    "MARK_BOUGHT_TRAP": 2,
-    "MARK_BOUGHT_BENCH": 2,
-    "MARK_DONE_POWER": 2,
-    "MARK_CANT_OWNED": 2,
-    "MARK_CANT_POWER": 2,
-    "MARK_CANT_CAP": 2,
-    "MARK_CANT_REACH": 2,
-    "MARK_CANT_FULL": 2,
-    "CAGE_HELLO": 2,
-    "CAGE_TALK": 2,
-    "ALARM": 2,
-    "BREAKOUT": 2,
-    "BREAKOUT_SELF": 2,
-    "FIGHT_KILL": 2,
-    "FREED": 2,
-    "CALL": 2,
-    "TALK_ASK": 2,
-    "JOIN_UNARMED": 2,
-    "GUN_BOLT": 2,
-    "GUN_RIFLE": 2,
-    "GUN_AUTO": 2,
-    "GUN_PISTOL": 2,
-    "GUN_SHOTGUN": 2,
-    "GUN_OTHER": 2,
-    "GUN_SWAP": 2,
-    "PERK_REFUSE": 2,
-    "COUSINS": 2,
-    "COUSINS_AFTER": 2,
-    "RETURN_WOUNDED": 2,
-    "M1_ARRIVE": 2,
-    "M1_SHORTCUT": 2,
-    "M1_POWER": 2,
-    "M1_FOREMAN": 2,
-    "M2_ARRIVE": 2,
-    "JAKUB_MEET": 2,
-    "JAKUB_FALLEN": 2,
-    "ZONE_B_RAILYARD": 2,
-    "ZONE_C_ADMIN": 2,
-    "ZONE_D_BARRACKS": 2,
-    "ZONE_E_LIFT": 2,
-    "ZONE_M_STAIRS": 2,
-    "ZONE_F_CHAPEL": 2,
-    "ZONE_G_GENERATOR": 2,
-    "ZONE_H_LAB": 2,
-    "ZONE_D_PENHALL": 2,
-    "ZONE_E_UBOAT": 2,
-    "M0_EGG_HEARD": 2,
-    "M0_EGG_LOOK": 2,
-    "M0_EGG_NOTE": 2,
-    "M0_EGG_NOTE_FIRST": 2,
-    "M0_EGG_NOTE_TWO": 2,
-    "M0_EGG_NOTES_DONE": 2,
-    "M0_EGG_LOCK1": 2,
-    "M0_EGG_LOCK2": 2,
-    "M0_EGG_WRONG": 2,
-    "M0_EGG_DONE": 2,
-    "M0_EGG_TONICS": 2,
-    "MARKE_FIRST": 2,
-    "SQD_RISE": 2,
-    "M4D_EARTH": 2
-  },
-  "squad_second_channel": [
-    "TEAM_DOWN",
-    "REVIVE"
+  "PWR_EXPIRE": [
+   0,
+   0.3
   ],
-  "down_sequence": {
-    "_doc": "DOWN at once (player channel); TEAM_DOWN on the second squad channel team_down_delay_s later, speaker chosen when it starts (never the downed one or the reviver), dropped after team_down_window_s; the reviver's REVIVE queues behind it; REVIVE is said at revive completion instead if the reviver's line is older than revive_fallback_s; REVIVED on the player channel when the revive lands.",
-    "team_down_delay_s": 1.0,
-    "team_down_window_s": 8.0,
-    "revive_fallback_s": 12.0
-  },
-  "squad_echo": {
-    "_doc": "Squad anti-echo (T-073): once one survivor (or Jakub) has said a category, nobody else in the squad says it again for this many seconds (two bots both calling 'Reloading!', three 'Behind you!' for one runner). Category prefix -> seconds; the longest prefix wins. The speaker's own repeats are the cooldown's job. Downs, revives, map-mark and order acknowledgements are not listed: every bot answers for itself.",
-    "categories": {
-      "RELOAD": 5.0,
-      "AMMO_LOW": 10.0,
-      "AMMO_NONE": 8.0,
-      "SPRINTER_BEHIND": 4.0,
-      "SCREAMER": 10.0,
-      "CRAWLER": 12.0,
-      "GLASSHIDE": 12.0,
-      "BOSS_INCOMING": 12.0,
-      "FOREMAN": 12.0,
-      "POWERUP_SEEN": 8.0,
-      "CRATE_MOVED": 12.0,
-      "WINDOW_OPEN": 6.0,
-      "HEADSHOT": 4.0,
-      "STREAK": 12.0,
-      "BOARD": 4.0,
-      "COVER": 4.0,
-      "BELL": 12.0,
-      "CHATTER": 20.0,
-      "GRUMBLE": 10.0,
-      "BUY_AMMO": 6.0,
-      "MARKE_KILL": 12.0
-    }
-  },
-  "companion_speakers": [
-    "JAK",
-    "AMM",
-    "PET",
-    "JET"
+  "PWR": [
+   0,
+   1.0
   ],
-  "any_map_lines": {
-    "_doc": "Lines that name a place as the past or a destination, not as where the squad stands (T-059: Jakub escaped from Kaltenbrunn): test_vo_maps lets them play on any map.",
-    "ids": [
-      "JAK_CAGE_TALK_04",
-      "JAK_PERK_REFUSE_02",
-      "JAK_PERK_NEAR_01",
-      "BNT_PEG_JAK_01"
-    ]
+  "CRATE_GOOD": [
+   20,
+   0.7
+  ],
+  "CRATE_BAD": [
+   20,
+   0.7
+  ],
+  "CRATE_WONDER": [
+   20,
+   1.0
+  ],
+  "CRATE_MOVE": [
+   0,
+   1.0
+  ],
+  "CRATE_DRUMMER": [
+   20,
+   0.7
+  ],
+  "HEADSHOT": [
+   25,
+   0.2
+  ],
+  "STREAK": [
+   40,
+   0.5
+  ],
+  "LOW_AMMO": [
+   30,
+   0.7
+  ],
+  "NO_AMMO": [
+   30,
+   0.7
+  ],
+  "KILL": [
+   15,
+   0.1
+  ],
+  "BUY": [
+   10,
+   0.8
+  ],
+  "PERK": [
+   0,
+   1.0
+  ],
+  "IDLE_SELFAWARE": [
+   240,
+   0.5
+  ],
+  "SELFAWARE": [
+   240,
+   1.0
+  ],
+  "HINT": [
+   120,
+   0.4
+  ],
+  "BNT": [
+   180,
+   0.3
+  ],
+  "DOWNED": [
+   0,
+   1.0
+  ],
+  "REVIVE": [
+   5,
+   0.8
+  ],
+  "REVIVED": [
+   5,
+   0.8
+  ],
+  "DENY": [
+   8,
+   0.8
+  ],
+  "DOOR": [
+   20,
+   0.4
+  ],
+  "MATCH_START": [
+   0,
+   1.0
+  ],
+  "SPAWN": [
+   0,
+   0.6
+  ],
+  "GAME_OVER": [
+   0,
+   1.0
+  ],
+  "POWER_ON": [
+   0,
+   1.0
+  ],
+  "INTEL": [
+   10,
+   1.0
+  ],
+  "EXFIL": [
+   0,
+   1.0
+  ],
+  "CUT_EXFIL": [
+   0,
+   1.0
+  ],
+  "TEAM_DOWN": [
+   8,
+   0.8
+  ],
+  "BOSS": [
+   0,
+   0.6
+  ],
+  "FOREMAN": [
+   0,
+   0.6
+  ],
+  "SCREAMER": [
+   0,
+   0.6
+  ],
+  "GLASSHIDE": [
+   30,
+   0.3
+  ],
+  "CRAWLER": [
+   30,
+   0.15
+  ],
+  "TRAP": [
+   12,
+   0.3
+  ],
+  "POWER": [
+   0,
+   1.0
+  ],
+  "BELL": [
+   0,
+   0.4
+  ],
+  "CRUCIBLE": [
+   10,
+   0.8
+  ],
+  "BUILD": [
+   0,
+   1.0
+  ],
+  "EE": [
+   0,
+   1.0
+  ],
+  "MARK": [
+   0,
+   1.0
+  ],
+  "CRUCIBLE_FIRST": [
+   0,
+   1.0
+  ],
+  "CRUCIBLE_START": [
+   0,
+   0.7
+  ],
+  "CRUCIBLE_READY": [
+   0,
+   0.7
+  ],
+  "CRUCIBLE_EXPIRE": [
+   0,
+   1.0
+  ],
+  "SPECIAL_END": [
+   0,
+   1.0
+  ],
+  "PYLON": [
+   0,
+   1.0
+  ],
+  "VAULT": [
+   0,
+   1.0
+  ],
+  "AMMO_LOW": [
+   30,
+   0.7
+  ],
+  "AMMO_NONE": [
+   30,
+   0.7
+  ],
+  "TIDE": [
+   0,
+   1.0
+  ],
+  "BALLAST": [
+   0,
+   1.0
+  ],
+  "RELOAD": [
+   0,
+   1.0
+  ],
+  "BOARD": [
+   0,
+   1.0
+  ],
+  "CMD": [
+   0,
+   1.0
+  ],
+  "BONUS": [
+   0,
+   1.0
+  ],
+  "POWERUP_SEEN": [
+   0,
+   1.0
+  ],
+  "MARKE_FIRST": [
+   0,
+   1.0
+  ],
+  "MARKE_KILL": [
+   45,
+   0.2
+  ],
+  "MARKE_OPR": [
+   120,
+   0.35
+  ],
+  "MARKE_RELAY": [
+   0,
+   1.0
+  ],
+  "AK_ARRIVE": [
+   0,
+   1.0
+  ],
+  "AK_CONTACT": [
+   20,
+   1.0
+  ],
+  "AK_HURT": [
+   8,
+   0.7
+  ],
+  "AK_DOWN": [
+   4,
+   1.0
+  ],
+  "AK_LEAVE": [
+   0,
+   1.0
+  ],
+  "AK_SURVIVE": [
+   0,
+   1.0
+  ],
+  "SOV_ARRIVE": [
+   0,
+   1.0
+  ],
+  "SOV_CONTACT": [
+   20,
+   1.0
+  ],
+  "SOV_HURT": [
+   8,
+   0.7
+  ],
+  "SOV_DOWN": [
+   4,
+   1.0
+  ],
+  "SOV_LEAVE": [
+   0,
+   1.0
+  ],
+  "SOV_SURVIVE": [
+   0,
+   1.0
+  ],
+  "VS_ARRIVE": [
+   0,
+   1.0
+  ],
+  "VS_CONTACT": [
+   20,
+   1.0
+  ],
+  "VS_HURT": [
+   8,
+   0.7
+  ],
+  "VS_DOWN": [
+   4,
+   1.0
+  ],
+  "VS_LEAVE": [
+   0,
+   1.0
+  ],
+  "VS_SURVIVE": [
+   0,
+   1.0
+  ],
+  "CDO_ARRIVE": [
+   0,
+   1.0
+  ],
+  "CDO_CONTACT": [
+   20,
+   1.0
+  ],
+  "CDO_HURT": [
+   8,
+   0.7
+  ],
+  "CDO_DOWN": [
+   4,
+   1.0
+  ],
+  "CDO_LEAVE": [
+   0,
+   1.0
+  ],
+  "CDO_SURVIVE": [
+   0,
+   1.0
+  ],
+  "KM_ARRIVE": [
+   0,
+   1.0
+  ],
+  "KM_CONTACT": [
+   20,
+   1.0
+  ],
+  "KM_HURT": [
+   8,
+   0.7
+  ],
+  "KM_DOWN": [
+   4,
+   1.0
+  ],
+  "KM_LEAVE": [
+   0,
+   1.0
+  ],
+  "KM_SURVIVE": [
+   0,
+   1.0
+  ],
+  "PARA_ARRIVE": [
+   0,
+   1.0
+  ],
+  "PARA_CONTACT": [
+   20,
+   1.0
+  ],
+  "PARA_HURT": [
+   8,
+   0.7
+  ],
+  "PARA_DOWN": [
+   4,
+   1.0
+  ],
+  "PARA_LEAVE": [
+   0,
+   1.0
+  ],
+  "PARA_SURVIVE": [
+   0,
+   1.0
+  ],
+  "MP_ARRIVE": [
+   0,
+   1.0
+  ],
+  "MP_CONTACT": [
+   20,
+   1.0
+  ],
+  "MP_HURT": [
+   8,
+   0.7
+  ],
+  "MP_DOWN": [
+   4,
+   1.0
+  ],
+  "MP_LEAVE": [
+   0,
+   1.0
+  ],
+  "MP_SURVIVE": [
+   0,
+   1.0
+  ],
+  "SQD_RISE": [
+   0,
+   1.0
+  ]
+ },
+ "round_start_always": [
+  1,
+  5,
+  10,
+  15,
+  20,
+  25,
+  30,
+  50
+ ],
+ "queue_expiry": {
+  "0": 4.0,
+  "1": 4.0,
+  "2": 4.0,
+  "3": 20.0,
+  "4": -1.0
+ },
+ "player_chatter_gap": 3.5,
+ "ambient_gap": 45.0,
+ "chars_per_second_inv": 0.065,
+ "min_duration": 1.5,
+ "exchange_gap": 0.4,
+ "slip_base": 0.01,
+ "slip_per_round": 0.0022,
+ "slip_cap": 0.12,
+ "slip_map_cap": 0.2,
+ "slip_map_mult": {
+  "map00": 0.5,
+  "map01": 1.0,
+  "map_hw_helvetia": 2.0,
+  "map02": 1.5,
+  "map03": 2.0
+ },
+ "slip_map00_min_round": 15,
+ "map_lines_doc": "Lines that only play on one map (T-057): ones that name a place. Lines with an M0/M1/M2 token in their category, or a 'Map N' condition, are map lines without being listed here.",
+ "map_lines": {
+  "map01": [
+   "DUT_SPAWN_01",
+   "PEG_SPAWN_01",
+   "DEA_SPAWN_02",
+   "WRN_SPAWN_01",
+   "OPR_MATCH_START_01",
+   "OPR_MATCH_START_03",
+   "OPR_ROUND_START_09",
+   "OPR_ROUND_END_03",
+   "OPR_POWER_ON_01",
+   "OPR_VAULT_01",
+   "OPR_EXFIL_GO_01",
+   "BNT_PEG_DEA_02",
+   "REI_CYL1_01"
+  ],
+  "map02": [
+   "OPR_EXFIL_ROAD_01",
+   "OPR_TIDE_WARN_01",
+   "OPR_TIDE_RISING_01"
+  ],
+  "map04a": [],
+  "map04b": [],
+  "map04d": [],
+  "map04c": []
+ },
+ "slip_cooldown_s": 300.0,
+ "slip_cooldown_hw_map03_s": 240.0,
+ "slip_tail_delay_s": 0.6,
+ "slip_after_down_s": 10.0,
+ "player_category_cooldown": {
+  "_doc": "Overrides of category_cooldown for the squad (DUT/PEG/DEA/WRN) only: [cooldown s, chance].",
+  "ROUND_START": [
+   0,
+   0.2
+  ],
+  "ROUND_END": [
+   0,
+   0.2
+  ],
+  "TRAP": [
+   20,
+   0.3
+  ],
+  "DOWNED": [
+   0,
+   1.0
+  ],
+  "SPAWN": [
+   0,
+   0.6
+  ]
+ },
+ "story_category_cooldown": {
+  "_doc": "Overrides for the Operator: TRAP 20%, DOWNED 50%.",
+  "TRAP": [
+   10,
+   0.2
+  ],
+  "DOWNED": [
+   0,
+   0.5
+  ]
+ },
+ "banter": {
+  "_doc": "Round-break banter (CHARACTERS.md Banter): rolled once per round end after delay_s, between two standing survivors within max_distance_m (0 = any); cooldown_s between exchanges; each exchange once per match.",
+  "chance": 0.3,
+  "cooldown_s": 180.0,
+  "delay_s": 2.5,
+  "max_distance_m": 15.0,
+  "min_round": 2
+ },
+ "audio": {
+  "_doc": "Playback: squad lines from other players/bots are positional (unit_size/max_distance in metres); local player and story voices are 2D. duck_db applies to Music/Jingles/ambience while a story line plays.",
+  "squad_unit_size": 5.0,
+  "squad_max_distance": 40.0,
+  "squad_volume_db": 0.0,
+  "story_volume_db": 0.0,
+  "duck_music_db": -6.0,
+  "duck_jingles_db": -9.0,
+  "duck_ambience_db": -5.0,
+  "occlusion_doc": "T-073: a positional voice behind world geometry or a door (occlusion_mask: physics layers 1 + 9) slides its low-pass from occlusion_open_hz down to occlusion_cutoff_hz and drops occlusion_db; one camera-to-head ray every occlusion_interval_s, smoothed by occlusion_smooth (0..1 per check).",
+  "occlusion_mask": 257,
+  "occlusion_interval_s": 0.12,
+  "occlusion_smooth": 0.5,
+  "occlusion_open_hz": 5000.0,
+  "occlusion_cutoff_hz": 1100.0,
+  "occlusion_db": -5.0
+ },
+ "player_category_priority": {
+  "_doc": "Squad categories above tier 1 (CHATTER): they skip the chatter gap and queue behind a story line instead of being dropped. Jakub's story lines (VO_SCRIPT section 16) are tier 2 too.",
+  "DOWN": 2,
+  "TEAM_DOWN": 2,
+  "REVIVE": 2,
+  "REVIVED": 2,
+  "SKY_PLANE_DOWN": 2,
+  "WRECK_PILOT": 2,
+  "MIDNIGHT": 2,
+  "SPRINTER_BEHIND": 2,
+  "BOSS_INCOMING": 2,
+  "COVER": 2,
+  "WINDOW_OPEN": 2,
+  "EE_ACK": 2,
+  "EE_ACK_COLLECT": 2,
+  "EE_ACK_SHOOT_TARGET": 2,
+  "EE_ACK_HOLD_ZONE": 2,
+  "EE_ACK_CARRY": 2,
+  "EE_ACK_INTERACT_SEQUENCE": 2,
+  "EE_ACK_KILL_WITH_WEAPON": 2,
+  "EE_ACK_TURN_KEY": 2,
+  "EE_PLAYER_ONLY": 2,
+  "EE_HANDOFF": 2,
+  "EE_CANT": 2,
+  "EE_CANT_INFO": 2,
+  "EE_CANT_FIND": 2,
+  "EE_CANT_RISKY": 2,
+  "EE_WAIT_PLAYER": 2,
+  "EE_COMMIT_SELF": 2,
+  "EE_REFUSE_CRUCIBLE": 2,
+  "EE_REFUSE_PERK": 2,
+  "EE_REFUSE_TYPE": 2,
+  "MARK_ACK": 2,
+  "MARK_ACK_BUY": 2,
+  "MARK_ACK_FOR_YOU": 2,
+  "MARK_ACK_GO": 2,
+  "MARK_ACK_DEFEND": 2,
+  "MARK_ACK_REGROUP": 2,
+  "MARK_DANGER": 2,
+  "MARK_AFFORD": 2,
+  "MARK_EXPIRED": 2,
+  "MARK_FOR_YOU_HOLD": 2,
+  "MARK_FOR_YOU_DROP": 2,
+  "MARK_RESUME": 2,
+  "MARK_REFUSE_BUY": 2,
+  "MARK_CANT": 2,
+  "MARK_SHORT": 2,
+  "MARK_SHORT_LOTS": 2,
+  "MARK_SHORT_100": 2,
+  "MARK_SHORT_200": 2,
+  "MARK_SHORT_300": 2,
+  "MARK_SHORT_400": 2,
+  "MARK_SHORT_500": 2,
+  "MARK_SHORT_600": 2,
+  "MARK_SHORT_700": 2,
+  "MARK_SHORT_800": 2,
+  "MARK_SHORT_900": 2,
+  "MARK_SHORT_1000": 2,
+  "MARK_SHORT_1250": 2,
+  "MARK_SHORT_1500": 2,
+  "MARK_SHORT_2000": 2,
+  "MARK_SHORT_2500": 2,
+  "MARK_SHORT_3000": 2,
+  "MARK_SHORT_4000": 2,
+  "MARK_SHORT_5000": 2,
+  "MARK_BOUGHT": 2,
+  "MARK_BOUGHT_IRONHIDE": 2,
+  "MARK_BOUGHT_SECONDWIND": 2,
+  "MARK_BOUGHT_TRIGGER": 2,
+  "MARK_BOUGHT_TWINBARREL": 2,
+  "MARK_BOUGHT_MARATHON": 2,
+  "MARK_BOUGHT_HAWKEYE": 2,
+  "MARK_BOUGHT_PACKMULE": 2,
+  "MARK_BOUGHT_BLASTPROOF": 2,
+  "MARK_BOUGHT_OVERCLOCK": 2,
+  "MARK_BOUGHT_GUN": 2,
+  "MARK_BOUGHT_DOOR": 2,
+  "MARK_BOUGHT_AMMO": 2,
+  "MARK_BOUGHT_CRATE": 2,
+  "MARK_BOUGHT_CRUCIBLE": 2,
+  "MARK_BOUGHT_TRAP": 2,
+  "MARK_BOUGHT_BENCH": 2,
+  "MARK_DONE_POWER": 2,
+  "MARK_CANT_OWNED": 2,
+  "MARK_CANT_POWER": 2,
+  "MARK_CANT_CAP": 2,
+  "MARK_CANT_REACH": 2,
+  "MARK_CANT_FULL": 2,
+  "CAGE_HELLO": 2,
+  "CAGE_TALK": 2,
+  "ALARM": 2,
+  "BREAKOUT": 2,
+  "BREAKOUT_SELF": 2,
+  "FIGHT_KILL": 2,
+  "FREED": 2,
+  "CALL": 2,
+  "TALK_ASK": 2,
+  "JOIN_UNARMED": 2,
+  "GUN_BOLT": 2,
+  "GUN_RIFLE": 2,
+  "GUN_AUTO": 2,
+  "GUN_PISTOL": 2,
+  "GUN_SHOTGUN": 2,
+  "GUN_OTHER": 2,
+  "GUN_SWAP": 2,
+  "PERK_REFUSE": 2,
+  "COUSINS": 2,
+  "COUSINS_AFTER": 2,
+  "RETURN_WOUNDED": 2,
+  "M1_ARRIVE": 2,
+  "M1_SHORTCUT": 2,
+  "M1_POWER": 2,
+  "M1_FOREMAN": 2,
+  "M2_ARRIVE": 2,
+  "JAKUB_MEET": 2,
+  "JAKUB_FALLEN": 2,
+  "ZONE_B_RAILYARD": 2,
+  "ZONE_C_ADMIN": 2,
+  "ZONE_D_BARRACKS": 2,
+  "ZONE_E_LIFT": 2,
+  "ZONE_M_STAIRS": 2,
+  "ZONE_F_CHAPEL": 2,
+  "ZONE_G_GENERATOR": 2,
+  "ZONE_H_LAB": 2,
+  "ZONE_D_PENHALL": 2,
+  "ZONE_E_UBOAT": 2,
+  "M0_EGG_HEARD": 2,
+  "M0_EGG_LOOK": 2,
+  "M0_EGG_NOTE": 2,
+  "M0_EGG_NOTE_FIRST": 2,
+  "M0_EGG_NOTE_TWO": 2,
+  "M0_EGG_NOTES_DONE": 2,
+  "M0_EGG_LOCK1": 2,
+  "M0_EGG_LOCK2": 2,
+  "M0_EGG_WRONG": 2,
+  "M0_EGG_DONE": 2,
+  "M0_EGG_TONICS": 2,
+  "MARKE_FIRST": 2,
+  "SQD_RISE": 2,
+  "M4D_EARTH": 2
+ },
+ "squad_second_channel": [
+  "TEAM_DOWN",
+  "REVIVE"
+ ],
+ "down_sequence": {
+  "_doc": "DOWN at once (player channel); TEAM_DOWN on the second squad channel team_down_delay_s later, speaker chosen when it starts (never the downed one or the reviver), dropped after team_down_window_s; the reviver's REVIVE queues behind it; REVIVE is said at revive completion instead if the reviver's line is older than revive_fallback_s; REVIVED on the player channel when the revive lands.",
+  "team_down_delay_s": 1.0,
+  "team_down_window_s": 8.0,
+  "revive_fallback_s": 12.0
+ },
+ "squad_echo": {
+  "_doc": "Squad anti-echo (T-073): once one survivor (or Jakub) has said a category, nobody else in the squad says it again for this many seconds (two bots both calling 'Reloading!', three 'Behind you!' for one runner). Category prefix -> seconds; the longest prefix wins. The speaker's own repeats are the cooldown's job. Downs, revives, map-mark and order acknowledgements are not listed: every bot answers for itself.",
+  "categories": {
+   "RELOAD": 5.0,
+   "AMMO_LOW": 10.0,
+   "AMMO_NONE": 8.0,
+   "SPRINTER_BEHIND": 4.0,
+   "SCREAMER": 10.0,
+   "CRAWLER": 12.0,
+   "GLASSHIDE": 12.0,
+   "BOSS_INCOMING": 12.0,
+   "FOREMAN": 12.0,
+   "POWERUP_SEEN": 8.0,
+   "CRATE_MOVED": 12.0,
+   "WINDOW_OPEN": 6.0,
+   "HEADSHOT": 4.0,
+   "STREAK": 12.0,
+   "BOARD": 4.0,
+   "COVER": 4.0,
+   "BELL": 12.0,
+   "CHATTER": 20.0,
+   "GRUMBLE": 10.0,
+   "BUY_AMMO": 6.0,
+   "MARKE_KILL": 12.0
   }
+ },
+ "companion_speakers": [
+  "JAK",
+  "AMM",
+  "PET",
+  "JET"
+ ],
+ "any_map_lines": {
+  "_doc": "Lines that name a place as the past or a destination, not as where the squad stands (T-059: Jakub escaped from Kaltenbrunn): test_vo_maps lets them play on any map.",
+  "ids": [
+   "JAK_CAGE_TALK_04",
+   "JAK_PERK_REFUSE_02",
+   "JAK_PERK_NEAR_01",
+   "BNT_PEG_JAK_01"
+  ]
+ }
 }

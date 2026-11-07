@@ -216,7 +216,8 @@ were told typhus.
 
 ### 3.5 The rule of last resort
 By 1939 the laboratory's conclusion is written in one sentence on the cover of the file: **"It cannot be aimed. It can
-only be released."** The programme is frozen. The vessel and six sealed cultures stay in the vault. A standing order,
+only be released."** The programme is frozen. The vessel and the five sealed cultures that remain (the sixth, LZR-04, and
+the priest's notebook went missing from a sealed box in 1938; §4) stay in the vault. A standing order,
 signed by a man whose signature was later cut out of the page, makes FOURTH DAY **a weapon of last resort**, to be used
 only on the direct order of the highest authority and only when the alternative is the loss of the state. Volkov keeps
 the keys. He expects to grow old with them. He very nearly does.
