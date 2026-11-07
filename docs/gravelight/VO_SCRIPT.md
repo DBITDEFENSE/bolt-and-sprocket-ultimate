@@ -160,8 +160,8 @@ Original first-pass table (intent; kept for reference):
 ### 3.1 Match start
 | ID | Line |
 |---|---|
-| OPR_MATCH_START_01 | [cheerful] Good evening, and welcome to Kaltenbrunn! This is Your Friend at the Ledger, and tonight's programme is... {survival}. Stay tuned! |
-| OPR_MATCH_START_02 | Hello, hello! New faces on the books! Every account starts at five hundred. Spend wisely, and remember: {everyone} is counted. |
+| OPR_MATCH_START_01 | [cheerful] Good evening, and welcome to Kaltenbrunn! This is Your Friend at the Ledger, and tonight's programme is... {survival}. Our guests have come a very long way to be here, some of them all the way from the {east}. Stay tuned! |
+| OPR_MATCH_START_02 | Hello, hello! New faces on the books! Every account starts at five hundred. Spend wisely, and remember: {everyone} is counted. The living, the {returned}, everyone. |
 | OPR_MATCH_START_03 | Station identification: *Sender Kaltenbrunn*. Our {guests} have arrived. Please keep your arms and legs inside the {mine} at all times. |
 | OPR_MATCH_START_M0_01 | [crackling, distant, only partially formed] Hel... hello... is this... on? *[tape squeal]* Wel-{come}. Wel-{come}. |
 
@@ -171,7 +171,7 @@ Original first-pass table (intent; kept for reference):
 | ID | Line | Condition |
 |---|---|---|
 | OPR_ROUND_START_01 | Round {one}! The doors are open and the kitchen is serving! | round 1 |
-| OPR_ROUND_START_02 | Here they come, folks, right on schedule! | |
+| OPR_ROUND_START_02 | Here they come, folks, right on schedule! Nobody keeps a calendar like the {returned}. | |
 | OPR_ROUND_START_03 | A fresh round, and a fresh tally! Let's keep those numbers climbing. | |
 | OPR_ROUND_START_04 | Next on the programme: more of the same, only {hungrier}! | |
 | OPR_ROUND_START_05 | Round {five}! Isn't this a lovely way to spend an evening? | round 5 |
@@ -181,8 +181,11 @@ Original first-pass table (intent; kept for reference):
 | OPR_ROUND_START_09 | Round {twenty-five}. The night shift never ends at Kaltenbrunn. That's {company} policy. | round 25 |
 | OPR_ROUND_START_10 | Round {thirty}. I've written your names in my best handwriting. | round 30 |
 | OPR_ROUND_START_11 | Round {fifty}. Nobody has ever stayed this long. Please... don't {leave}. | round 50 |
-| OPR_ROUND_START_12 | Ladies and gentlemen, the {dead}! | |
+| OPR_ROUND_START_12 | Ladies and gentlemen... the {returned}! | |
 | OPR_ROUND_START_13 | Keep your feet warm and your barrels warmer! | |
+| OPR_ROUND_START_14 | [warmly] Some of tonight's guests have walked here all the way from the {east}. Greatcoats, no boots, through the snow. Do give them a warm welcome. They can't feel it, but {I} can. | |
+| OPR_ROUND_START_15 | [cheerful] It's the fourth day somewhere, friends! It is {always} the fourth day somewhere. | |
+| OPR_ROUND_START_16 | A word from the Ledger: we didn't make tonight's guests, friends. We only {found} them. And aren't we glad we did! | |
 
 ### 3.3 Round end (`ROUND_END`)
 | ID | Line | Condition |
@@ -194,6 +197,7 @@ Original first-pass table (intent; kept for reference):
 | OPR_ROUND_END_05 | Take a breath, friends. Take two. They're {free}. | |
 | OPR_ROUND_END_06 | Round over! Have you visited our fine Helvetia refreshment machines? | Map 1, power on |
 | OPR_ROUND_END_07 | That was round {nine}. They'll be quicker next time. I've {asked} them to be. | round 9 |
+| OPR_ROUND_END_08 | And down they go again, bless them. Don't fret over the ones you didn't finish. They'll be {back}. Everyone comes back. That's the whole {programme}. | |
 
 ### 3.4 Special rounds: Bellringers (`SPECIAL_WARN` / `SPECIAL_START` / `SPECIAL_END`)
 | ID | Line |
@@ -221,7 +225,7 @@ Original first-pass table (intent; kept for reference):
 | ID | Line |
 |---|---|
 | OPR_PWR_DEATHSDOOR_01 | Death's Door! One knock, and they're {through}! |
-| OPR_PWR_DEATHSDOOR_02 | Death's Door is open! Every blow is the last one. |
+| OPR_PWR_DEATHSDOOR_02 | Death's Door is open! Every blow is the {last} one. Well. The last one {today}. |
 | OPR_PWR_DEATHSDOOR_03 | Death's Door! A limited-time offer, folks. One touch {ends} them. |
 | OPR_PWR_DEATHSDOOR_04 | [delighted] Death's Door! Oh, I {love} this one. |
 
@@ -238,7 +242,7 @@ Original first-pass table (intent; kept for reference):
 |---|---|
 | OPR_PWR_BLACKOUT_01 | Blackout! Lights out, everyone, {everyone}... |
 | OPR_PWR_BLACKOUT_02 | Blackout! And just like that, the house is {empty}. |
-| OPR_PWR_BLACKOUT_03 | Blackout! A moment of silence for our {departed}. ...That's enough. |
+| OPR_PWR_BLACKOUT_03 | Blackout! A moment of silence for our {departed}. ...That's enough. They'll be {back}. |
 | OPR_PWR_BLACKOUT_04 | Blackout! Every account {closed}! |
 
 **Fortify** (`fortify`)
@@ -340,7 +344,7 @@ Original first-pass table (intent; kept for reference):
 | OPR_BELL_WRONG_01 | [laughing] Oh, no, no, no! That's not how it goes at {all}! From the top! |
 | OPR_BELL_WRONG_02 | Tone-deaf! Absolutely tone-deaf! Again, please. |
 | OPR_BELL_WRONG_03 | Wrong note! Did your {mother} never sing to you? |
-| OPR_BELL_WRONG_04 | Ha! Even the {dead} are wincing. Try again. |
+| OPR_BELL_WRONG_04 | Ha! Even the {returned} are wincing. Try again. |
 | OPR_BELL_WRONG_05 | Oh, dear, oh, dear. The ledger records your {failure}. Begin again. |
 | OPR_BELL_WRONG_06 | [cold, unsampled for one word] *No.* ...[cheerful again] I mean, do have another go! |
 
@@ -354,12 +358,12 @@ Gated by round. Each tier unlocks only once the previous tier has played at leas
 | OPR_SELFAWARE_T1_03 | round 3+ | Reminder: Helvetia refreshments are for staff use only! ...Are you staff? Is anyone {staff}? |
 | OPR_SELFAWARE_T2_01 | round 8+ | Every time one goes quiet, I get a little {bigger}. Is that normal? |
 | OPR_SELFAWARE_T2_02 | round 8+ | I have so many voices on my tapes. Sometimes I {try them on}. |
-| OPR_SELFAWARE_T2_03 | round 8+ | The announcer I was made from died in nineteen thirty-{six}. I wonder if he minds. |
+| OPR_SELFAWARE_T2_03 | round 8+ | The announcer I was made from died in nineteen thirty-{six}. He stayed down. Isn't that {old-fashioned}? |
 | OPR_SELFAWARE_T3_01 | round 15+ | I dreamed last night. Relays don't dream. I dreamed of a {garden}. |
 | OPR_SELFAWARE_T3_02 | round 15+ | You know, I don't actually need you to keep {killing} them. I just like it when you do. |
-| OPR_SELFAWARE_T3_03 | round 15+ | Doctor Fasbender built me to listen. Doctor Reinholt taught me to {want}. |
+| OPR_SELFAWARE_T3_03 | round 15+ | Doctor Fasbender thinks he built me to listen. Doctor Reinholt taught me to {want}. Nobody taught me to {sell}. I came with that. |
 | OPR_SELFAWARE_T4_01 | round 25+ | [no music, no smile] I am not your friend. *[splice]* I'm {Your Friend at the Ledger!} |
-| OPR_SELFAWARE_T4_02 | round 25+ | When you've all gone quiet, who will I talk to? |
+| OPR_SELFAWARE_T4_02 | round 25+ | When you've all gone quiet, who will I talk to? ...Oh. Oh, that's right. {You} will. |
 | OPR_SELFAWARE_T4_03 | round 25+ | There is a little girl in the glass. She asks me to count to {a hundred}. I've never reached it. |
 | OPR_SELFAWARE_T5_01 | round 40+ | I could open all the doors. I could close {all} the doors. I'm being {polite}. |
 | OPR_SELFAWARE_T5_02 | round 40+ | Please don't win. If you win, the programme {ends}. |
@@ -367,7 +371,7 @@ Gated by round. Each tier unlocks only once the previous tier has played at leas
 ### 3.13 Downs, self-revives, traps, bosses
 | ID | Line |
 |---|---|
-| OPR_DOWNED_01 | Oh! A {customer} is down! |
+| OPR_DOWNED_01 | Oh! A {customer} is down! Not to worry. Down is a {temporary} condition. |
 | OPR_DOWNED_02 | Somebody's had a little fall! |
 | OPR_SECOND_WIND_2_01 | Up you get! Two more {wishes} left. |
 | OPR_SECOND_WIND_1_01 | Back on your feet! Only one more, mind. |
@@ -385,7 +389,7 @@ Gated by round. Each tier unlocks only once the previous tier has played at leas
 ### 3.14 Game over (`GAME_OVER`, tier 3)
 | ID | Line | Condition |
 |---|---|---|
-| OPR_GAME_OVER_01 | And that concludes tonight's programme! Your accounts are now {closed}. | |
+| OPR_GAME_OVER_01 | And that concludes tonight's programme! Your accounts are now {closed}. See you on the fourth {day}. | |
 | OPR_GAME_OVER_02 | Final tally recorded! Thank you for {participating}. | |
 | OPR_GAME_OVER_03 | That's all, folks! Do come again. You'll come {again}. | |
 | OPR_GAME_OVER_04 | Oh, don't be sad. Now you'll {stay}. | round 15+ |
@@ -400,7 +404,7 @@ The campaign beacon lights at round 10 on Map 0 (the stable's great doors, "THE 
 | OPR_EXFIL_OPEN_M0_01 | [static, half-formed, through the inn's horn] ...the carters' road... is {open}. Nine kilometres. The {Ledger}... will keep your places warm. | Map 0, the beacon lights |
 | OPR_EXFIL_OPEN_01 | [bright] Attention, valued {guests}: the north gate is open and the road is {clear}! Transport to Totenhafen departs from the beacon. Mind the gap in the fence. | Map 1, the beacon lights |
 | OPR_EXFIL_WAIT_01 | Now boarding! Every account travels {with} you. Everyone to the beacon, please. I do so hate a {late} departure. | co-op, some have voted (every ~25 s) |
-| OPR_EXFIL_WAIT_02 | The lamp is lit and the clock is running. Gather at the beacon, all of you. The dead don't wait, and neither does the {timetable}. | as above |
+| OPR_EXFIL_WAIT_02 | The lamp is lit and the clock is running. Gather at the beacon, all of you. The returned don't wait, and neither does the {timetable}. | as above |
 | OPR_EXFIL_MISSED_M0_01 | [static] ...departure... {postponed}... *[tape squeal]* | Map 0, the window closed |
 | OPR_EXFIL_MISSED_01 | Oh dear. Departure {missed}. Never mind: the dead are patient, and so am {I}. We'll try again in a few rounds. | Map 1, the window closed |
 
@@ -433,10 +437,10 @@ The Pumpenschalter is Map 2's power (MAPS.md Map 2). The tide comes in on every 
 | OPR_TIDE_WARN_01 | And now the shipping forecast. Totenhafen, Totenhafen. Wind north-west, force nine, {rising}. Sea state: hungry. High water {next round}. Visibility: poor, and getting worse. | the round before a high tide |
 | OPR_TIDE_WARN_02 | Shipping forecast, issued by the Ledger at the hour. Totenhafen: gale warning in force. High water {next round}. Low spirits, becoming {lower}. | the round before a high tide |
 | OPR_TIDE_RISING_01 | High water, Totenhafen! The sea is coming in through the lower pens. Do keep your feet dry. Or don't. I'm not your {mother}. | the tide rises |
-| OPR_TIDE_RISING_02 | The tide is in! Everything below the apron is now a {bath}. Guests on the catwalks: the dead will be joining you {shortly}. | the tide rises |
+| OPR_TIDE_RISING_02 | The tide is in! Everything below the apron is now a {bath}. Guests on the catwalks: the returned will be joining you {shortly}. They don't mind the wet. | the tide rises |
 | OPR_TIDE_FALLING_01 | And the tide is going out. Totenhafen, Totenhafen: falling slowly, good, occasionally {poor}. Mind what it left behind. | the tide falls |
 | OPR_TIDE_FALLING_02 | Low water. The pens are draining, the pumps are {laughing}, and so am I. Until the {next} one. | the tide falls |
-| OPR_BALLAST_LIFT_01 | Oh, do be careful with that. It's {ballast}. It's {heavy}. It's... somebody. | a coffin is lifted |
+| OPR_BALLAST_LIFT_01 | Oh, do be careful with that. It's {ballast}. It's {heavy}. And it's spoken {for}. Mind the seals. | a coffin is lifted |
 | OPR_BALLAST_LIFT_02 | One unit in transit. Please walk, don't run. You can't run, I know. {Walk}. | a coffin is lifted |
 | OPR_BALLAST_HOOKED_01 | Ballast on the hook! The pumps are {cleared} to run. The cargo thanks you. The cargo {always} thanks you. | the crane takes the coffin |
 
@@ -2370,7 +2374,7 @@ manifest's `missing` ("map4: bake on the PC") and play as timed silence with sub
 | WIT_M4A_NOTME_01 | I did not do {that}. | the ramp closes on its own |
 | WIT_M4A_RAMP_01 | The impellers are turning over. I didn't start them. If you go in there... if you go in there, cut the fuel lines in the port room. Please. It's the only thing I {ask}. | the ramp beacon lights |
 | WIT_M4B_TAPE_01 | If anyone is hearing this aboard, I'm sorry. The autopilot takes a key and both hands. It was never meant to take a {crew}. | Act II, the radio room's tape |
-| WIT_M4B_TAPE_02 | Anselm, if you're still in there. It was never a test. I should have told {you}. | Act II, the engine room |
+| WIT_M4B_TAPE_02 | Anselm, if you're still in there. It was never a test. The casings were never empty. I should have told {you}. | Act II, the engine room |
 
 ### 14.4 Act II — der Kranich: the Operator (`OPR`, tier 3; the bomb run and London tier 4)
 
@@ -2387,7 +2391,7 @@ manifest's `missing` ("map4: bake on the PC") and play as timed silence with sub
 | OPR_M4B_BORDWART_DEATH_01 | The engineer is... resting. The engine will manage without him. The engine always {could}. | the Bordwart dies |
 | OPR_M4B_LONDON_01 | Valued customers. We said we'd be in {touch}. | the London window |
 | OPR_M4B_LONDON_02 | Your region has been {expanded}. | the London window, after |
-| OPR_M4B_BOMBRUN_01 | Regional sampling begins now. You are welcome to {observe}. | the bomb run begins |
+| OPR_M4B_BOMBRUN_01 | Regional sampling begins now. A little of the {product}, for a very large market. You are welcome to {observe}. | the bomb run begins |
 | OPR_M4B_RACK_DROP_01 | Sample {delivered}. | a rack drops |
 | OPR_M4B_RACK_DROP_02 | Another sample delivered. Thank {you}. | a rack drops |
 | OPR_M4B_RACK_JAM_01 | A sample has been... withheld. We'll note {that}. | a rack is jammed |
@@ -2635,7 +2639,7 @@ The Operator is local here for the first time: it is in the walls. Its slips run
 | OPR_M4C_ARRIVE_01 | Delivery complete. Welcome to the point of sale. Please excuse the state of the {premises}. | arrival |
 | OPR_M4C_ARRIVE_02 | This territory is already a customer. You'll find that {convenient}. | arrival, after the squad |
 | OPR_M4C_HALE_01 | The gentleman in the office is a valued customer. Please be {civil}. | the hangar opens |
-| OPR_M4C_POWER_01 | Power restored. The customer's laboratory is open. We've seen it. It's... {ambitious}. | the generator |
+| OPR_M4C_POWER_01 | Power restored. The customer's laboratory is open. He bought his samples {retail}, you know. We've seen it. It's... {ambitious}. | the generator |
 | OPR_M4C_BURROW_01 | Some of the staff are below you. They're {keen}. | the first Burrower |
 | OPR_M4C_CANARY_01 | Please don't open the test subjects. They're under {warranty}. | the first Canary |
 | OPR_M4C_JUMP_01 | Our pilots are enjoying the new {equipment}. | the first Jumpjockey |
@@ -2849,7 +2853,7 @@ they play everywhere.
 | `JAK_MARKE_KILL_02` | JAK | "He took it for bread. I know. I was hungry too." |
 | `JAK_MARKE_KILL_03` | JAK | "They offered it to us once. Once. Nobody in Nine was asked twice." |
 | `OPR_MARKE_OPR_01` | OPR | "[warm] A valued customer, {retained}. Thank you for keeping the account {active}." |
-| `OPR_MARKE_OPR_02` | OPR | "Oh, you've found the loyalty programme! Every member is counted, in the hand or on the brow. {Nobody} is lost to us." |
+| `OPR_MARKE_OPR_02` | OPR | "Oh, you've found the loyalty programme! Protection against the sickness, the poster said, and so it {is}, in a way. Every member is counted, in the hand or on the brow. {Nobody} is lost to us." |
 | `OPR_MARKE_OPR_03` | OPR | "One mark, one name, one {account}. Closed with... [tape squeal] ...no. No. Accounts here do not {close}." |
 | `FAS_MARKE_RELAY_01` | FAS | "[radio, low] You have found the marks. Listen to me. The chip does nothing by itself. It listens. It listens for the Ledger's carrier, the hum, the thing you feel in your teeth. While the hum reaches it, the body remembers the last thing it wanted. Silence the carrier and they lie down. I have seen it once, for eleven seconds, when Opitz blew a fuse. Eleven seconds of quiet. Then it came back." |
 | `FAS_MARKE_RELAY_02` | FAS | "They offered me one in forty-two. I refused, and Lenz wrote my name in a column. It is the only wise thing I did in that place." |

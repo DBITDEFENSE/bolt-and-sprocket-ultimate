@@ -34029,7 +34029,11 @@
   "SER_DIARY_MAP04A_01": "UPDATE 11 (T-190): Father Serafim, Russian; no Kokoro voice, ElevenLabs bake pending (T-201)",
   "SER_DIARY_MAP04B_01": "UPDATE 11 (T-190): Father Serafim, Russian; no Kokoro voice, ElevenLabs bake pending (T-201)",
   "SER_DIARY_MAP04C_01": "UPDATE 11 (T-190): Father Serafim, Russian; no Kokoro voice, ElevenLabs bake pending (T-201)",
-  "SER_DIARY_MAP04D_01": "UPDATE 11 (T-190): Father Serafim, Russian; no Kokoro voice, ElevenLabs bake pending (T-201)"
+  "SER_DIARY_MAP04D_01": "UPDATE 11 (T-190): Father Serafim, Russian; no Kokoro voice, ElevenLabs bake pending (T-201)",
+  "OPR_ROUND_START_14": "awaits the ElevenLabs bake (T-193 / T-201)",
+  "OPR_ROUND_START_15": "awaits the ElevenLabs bake (T-193 / T-201)",
+  "OPR_ROUND_START_16": "awaits the ElevenLabs bake (T-193 / T-201)",
+  "OPR_ROUND_END_08": "awaits the ElevenLabs bake (T-193 / T-201)"
  },
  "neural_tool_version": "1"
 }
