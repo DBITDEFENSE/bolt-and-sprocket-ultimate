@@ -642,7 +642,7 @@
   "OPR_SELFAWARE_T4_02": {
     "speaker": "OPR",
     "category": "SELFAWARE_T4",
-    "text": "When you've all gone quiet, who will I talk to?",
+    "text": "When you've all gone quiet, who will I talk to? ...Oh. Oh, that's right. {You} will.",
     "condition": "round 25+"
   },
   "OPR_SELFAWARE_T4_03": {

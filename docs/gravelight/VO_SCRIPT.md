@@ -363,7 +363,7 @@ Gated by round. Each tier unlocks only once the previous tier has played at leas
 | OPR_SELFAWARE_T3_02 | round 15+ | You know, I don't actually need you to keep {killing} them. I just like it when you do. |
 | OPR_SELFAWARE_T3_03 | round 15+ | Doctor Fasbender thinks he built me to listen. Doctor Reinholt taught me to {want}. Nobody taught me to {sell}. I came with that. |
 | OPR_SELFAWARE_T4_01 | round 25+ | [no music, no smile] I am not your friend. *[splice]* I'm {Your Friend at the Ledger!} |
-| OPR_SELFAWARE_T4_02 | round 25+ | When you've all gone quiet, who will I talk to? |
+| OPR_SELFAWARE_T4_02 | round 25+ | When you've all gone quiet, who will I talk to? ...Oh. Oh, that's right. {You} will. |
 | OPR_SELFAWARE_T4_03 | round 25+ | There is a little girl in the glass. She asks me to count to {a hundred}. I've never reached it. |
 | OPR_SELFAWARE_T5_01 | round 40+ | I could open all the doors. I could close {all} the doors. I'm being {polite}. |
 | OPR_SELFAWARE_T5_02 | round 40+ | Please don't win. If you win, the programme {ends}. |
