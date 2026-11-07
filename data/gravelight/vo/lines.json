@@ -1387,7 +1387,7 @@
   "DEA_RELOAD_02": {
     "speaker": "DEA",
     "category": "RELOAD",
-    "text": "Feeding her. Give me a second."
+    "text": "Feeding her. Give me a second. One second."
   },
   "DEA_BOARD_01": {
     "speaker": "DEA",
@@ -1397,12 +1397,12 @@
   "DEA_BOARD_02": {
     "speaker": "DEA",
     "category": "BOARD",
-    "text": "Window's fixed. Good as new. Well. Good."
+    "text": "Window's fixed. Good as new. [a breath] Well. Good enough."
   },
   "DEA_REVIVE_10": {
     "speaker": "DEA",
     "category": "REVIVE",
-    "text": "I've got you, hold on. Breathe with me."
+    "text": "I've got you, hold on. Breathe with me. In. Out. Breathe."
   },
   "DEA_POWERUP_SEEN_01": {
     "speaker": "DEA",
@@ -1417,27 +1417,27 @@
   "DEA_CMD_HOLD_01": {
     "speaker": "DEA",
     "category": "CMD_HOLD",
-    "text": "Planting my feet. They come to us."
+    "text": "Planting my feet. They come to us. [quietly] Lord, let 'em come slow."
   },
   "DEA_CMD_REPAIR_01": {
     "speaker": "DEA",
     "category": "CMD_REPAIR",
-    "text": "Repairs. Now you're speaking my language."
+    "text": "Repairs. [a breath] All right. Something I can mend."
   },
   "DEA_CMD_REVIVE_01": {
     "speaker": "DEA",
     "category": "CMD_REVIVE",
-    "text": "Anybody falls, I'm the one picking them up."
+    "text": "Anybody falls, I'm picking them up. Before anything else does."
   },
   "DEA_BONUS_IRONHIDE_01": {
     "speaker": "DEA",
     "category": "BONUS_IRONHIDE",
-    "text": "Stout's still in me. I'm built like a Sherman today."
+    "text": "Stout's still in me. Built like a Sherman tonight. [quietly] Shermans burn, Lord. I know."
   },
   "DEA_BONUS_SECONDWIND_01": {
     "speaker": "DEA",
     "category": "BONUS_SECONDWIND",
-    "text": "Schnapps working. I'll have you back on your feet before the Lord notices."
+    "text": "Schnapps working. I'll have you up before anything else gets a look at you."
   },
   "DEA_BONUS_TRIGGER_01": {
     "speaker": "DEA",
@@ -1452,12 +1452,12 @@
   "DEA_BONUS_MARATHON_01": {
     "speaker": "DEA",
     "category": "BONUS_MARATHON",
-    "text": "Engine's tuned. I could run all night."
+    "text": "Engine's tuned. I could run all night. [a breath] Might have to."
   },
   "DEA_BONUS_HAWKEYE_01": {
     "speaker": "DEA",
     "category": "BONUS_HAWKEYE",
-    "text": "Eyes are clear as Sunday morning."
+    "text": "Eyes clear as Sunday morning. [quietly] Wish I was looking at Sunday morning."
   },
   "DEA_BONUS_PACKMULE_01": {
     "speaker": "DEA",
@@ -1482,7 +1482,7 @@
   "WRN_RELOAD_02": {
     "speaker": "WRN",
     "category": "RELOAD",
-    "text": "Empty. One moment."
+    "text": "Empty. One moment. [a breath] One."
   },
   "WRN_BOARD_01": {
     "speaker": "WRN",
@@ -1497,7 +1497,7 @@
   "WRN_REVIVE_10": {
     "speaker": "WRN",
     "category": "REVIVE",
-    "text": "I've got you. Hold on. Hold on."
+    "text": "I've got you. Hold on. Hold on. Look at me, not at them."
   },
   "WRN_POWERUP_SEEN_01": {
     "speaker": "WRN",
@@ -1522,7 +1522,7 @@
   "WRN_CMD_REVIVE_01": {
     "speaker": "WRN",
     "category": "CMD_REVIVE",
-    "text": "Nobody stays on the floor. Not here."
+    "text": "Nobody stays on the floor. Not here. [quietly] Not in this place."
   },
   "WRN_BONUS_IRONHIDE_01": {
     "speaker": "WRN",
@@ -1542,12 +1542,12 @@
   "WRN_BONUS_TWINBARREL_01": {
     "speaker": "WRN",
     "category": "BONUS_TWINBARREL",
-    "text": "Faster. The gun is hungry tonight."
+    "text": "Faster. [a breath] The gun is hungry tonight. So are they."
   },
   "WRN_BONUS_MARATHON_01": {
     "speaker": "WRN",
     "category": "BONUS_MARATHON",
-    "text": "I can run forever. I ran here from Kraków, almost."
+    "text": "I can run forever. [quietly] I have been running since thirty-nine."
   },
   "WRN_BONUS_HAWKEYE_01": {
     "speaker": "WRN",
@@ -1707,52 +1707,52 @@
   "DEA_SPAWN_01": {
     "speaker": "DEA",
     "category": "SPAWN",
-    "text": "Lord, look at this place. All right. Hands to work, hearts to You."
+    "text": "Lord, look at this place. ...All right. Hands to the work. Heart to You. [a breath] Best I can do tonight."
   },
   "DEA_SPAWN_02": {
     "speaker": "DEA",
     "category": "SPAWN",
-    "text": "Kaltenbrunn. Something down here's humming, and it ain't a hymn."
+    "text": "Kaltenbrunn. Something down here is humming, and it ain't a hymn. [quietly] It ain't a hymn."
   },
   "DEA_ROUND_START_01": {
     "speaker": "DEA",
     "category": "ROUND_START",
-    "text": "Here they come, children. Stay close now."
+    "text": "Here they come. Stay close now. Stay close."
   },
   "DEA_ROUND_START_02": {
     "speaker": "DEA",
     "category": "ROUND_START",
-    "text": "Round's on. Steady hands, steady hearts."
+    "text": "Round's on. [a breath] Steady hands. Steady hearts. Lord, I'm asking."
   },
   "DEA_ROUND_END_01": {
     "speaker": "DEA",
     "category": "ROUND_END",
-    "text": "That's a round. Amen, and I mean it."
+    "text": "That's a round. [exhausted] Amen. And I mean it."
   },
   "DEA_ROUND_END_02": {
     "speaker": "DEA",
     "category": "ROUND_END",
-    "text": "Quiet spell. Check your guns, check your friends."
+    "text": "Quiet spell. Check your guns. Check your friends. Check 'em twice."
   },
   "DEA_BUY_AMMO_01": {
     "speaker": "DEA",
     "category": "BUY_AMMO",
-    "text": "There you go, girl. Fed and ready."
+    "text": "There you go, girl. Fed. [quietly] Somebody here ought to be."
   },
   "DEA_TEAM_DOWN_01": {
     "speaker": "DEA",
     "category": "TEAM_DOWN",
-    "text": "Hold on, now! Don't you go nowhere, I'm coming!"
+    "text": "Hold on, now! Don't you go nowhere. [shouting] I'm coming!"
   },
   "DEA_TEAM_DOWN_02": {
     "speaker": "DEA",
     "category": "TEAM_DOWN",
-    "text": "Somebody's hurt. Lord, give me quick feet."
+    "text": "Somebody's hurt. Lord, give me quick feet. Give me quick feet."
   },
   "DEA_INTEL_01": {
     "speaker": "DEA",
     "category": "INTEL",
-    "text": "Somebody wrote this in a hurry. Folks only write in a hurry when it matters."
+    "text": "Somebody wrote this in a hurry. [a breath] Folks only write in a hurry when it matters. Or when they're scared."
   },
   "DEA_DENY_NO_POWER_01": {
     "speaker": "DEA",
@@ -1762,22 +1762,22 @@
   "DEA_DENY_CAP_01": {
     "speaker": "DEA",
     "category": "DENY_CAP",
-    "text": "No, ma'am. Any more and I'll be preaching to the zombies."
+    "text": "No, ma'am. One more and I'll be seeing two of everything out there. That's too many."
   },
   "DEA_DENY_NO_SCRIP_01": {
     "speaker": "DEA",
     "category": "DENY_NO_SCRIP",
-    "text": "Not enough. Machine don't take promises."
+    "text": "Not enough. Machine don't take promises. [quietly] Nothing here takes promises."
   },
   "WRN_SPAWN_01": {
     "speaker": "WRN",
     "category": "SPAWN",
-    "text": "Kaltenbrunn. Six kilometers from home. Good. Then I know the way out."
+    "text": "Kaltenbrunn. Six kilometres from home. [a breath] Good. Then I know the way out. If there is one."
   },
   "WRN_SPAWN_02": {
     "speaker": "WRN",
     "category": "SPAWN",
-    "text": "Rifle, book, pencil. I am ready."
+    "text": "Rifle, book, pencil. [quietly] I am ready. I have been ready for two years."
   },
   "WRN_ROUND_START_01": {
     "speaker": "WRN",
@@ -1787,17 +1787,17 @@
   "WRN_ROUND_START_02": {
     "speaker": "WRN",
     "category": "ROUND_START",
-    "text": "Again. Good. I have pages left."
+    "text": "Again. [exhausted] Good. I have pages left. I have pages left."
   },
   "WRN_ROUND_END_01": {
     "speaker": "WRN",
     "category": "ROUND_END",
-    "text": "Finished. Reload. Do not relax."
+    "text": "Finished. Reload. Do not relax. They do not."
   },
   "WRN_ROUND_END_02": {
     "speaker": "WRN",
     "category": "ROUND_END",
-    "text": "Quiet. It will not last. It never does."
+    "text": "Quiet. It will not last. [a breath] It never does. Nothing does."
   },
   "WRN_BUY_AMMO_01": {
     "speaker": "WRN",
@@ -1807,32 +1807,32 @@
   "WRN_TEAM_DOWN_01": {
     "speaker": "WRN",
     "category": "TEAM_DOWN",
-    "text": "You are down. Stay down, shoot low. I come."
+    "text": "You are down. Stay down, shoot low. I come. [shouting] I come!"
   },
   "WRN_TEAM_DOWN_02": {
     "speaker": "WRN",
     "category": "TEAM_DOWN",
-    "text": "One of us is on the floor. Cover me."
+    "text": "One of us is on the floor. Cover me. Nobody stays on the floor here."
   },
   "WRN_INTEL_01": {
     "speaker": "WRN",
     "category": "INTEL",
-    "text": "Papers. Their papers. I keep everything they write."
+    "text": "Papers. Their papers. [a breath] I keep everything they write. Someone has to read it, after."
   },
   "WRN_DENY_NO_POWER_01": {
     "speaker": "WRN",
     "category": "DENY_NO_POWER",
-    "text": "No current. The machine sleeps."
+    "text": "No current. The machine sleeps. Let it."
   },
   "WRN_DENY_CAP_01": {
     "speaker": "WRN",
     "category": "DENY_CAP",
-    "text": "Enough. A sniper does not drink four bottles."
+    "text": "Enough. A sniper does not drink four bottles. [quietly] A sniper wants to."
   },
   "WRN_DENY_NO_SCRIP_01": {
     "speaker": "WRN",
     "category": "DENY_NO_SCRIP",
-    "text": "Too little Scrip. Later."
+    "text": "Too little Scrip. Later. If there is a later."
   },
   "DUT_BUY_PISTOL_01": {
     "speaker": "DUT",
@@ -2442,192 +2442,192 @@
   "DEA_BUY_PISTOL_01": {
     "speaker": "DEA",
     "category": "BUY_PISTOL",
-    "text": "Little forty-five. Small, but she'll pull her weight."
+    "text": "Forty-five. Little thing. ...She'll do what's asked of her. We all do."
   },
   "DEA_BUY_RIFLE_01": {
     "speaker": "DEA",
     "category": "BUY_RIFLE",
-    "text": "Bolt rifle. One shot, one prayer."
+    "text": "Bolt rifle. One round, one breath. Lord, make them count."
   },
   "DEA_BUY_RIFLE_02": {
     "speaker": "DEA",
     "category": "BUY_RIFLE",
-    "text": "Garand. Eight rounds and a song when she's empty."
+    "text": "Garand. Eight rounds, then she sings out empty. [quietly] Don't let me hear that song tonight."
   },
   "DEA_BUY_SMG_01": {
     "speaker": "DEA",
     "category": "BUY_SMG",
-    "text": "Chatterbox. All right, sister, let's sing."
+    "text": "Chatterbox. All right, sister. Keep 'em off us."
   },
   "DEA_BUY_SHOTGUN_01": {
     "speaker": "DEA",
     "category": "BUY_SHOTGUN",
-    "text": "Pump gun. My uncle's old friend. Hello, old friend."
+    "text": "Pump gun. My uncle kept one behind the garage door. [a breath] Never thought I'd need it like this."
   },
   "DEA_BUY_LMG_01": {
     "speaker": "DEA",
     "category": "BUY_LMG",
-    "text": "Heavy mule. She'll haul the load."
+    "text": "Heavy mule. She hauls, I carry her. We'll both be tired."
   },
   "DEA_BUY_LAUNCHER_01": {
     "speaker": "DEA",
     "category": "BUY_LAUNCHER",
-    "text": "Lord, forgive me for what I'm about to do with this."
+    "text": "Lord, forgive me. I know what this does to a body."
   },
   "DEA_BUY_WONDER_01": {
     "speaker": "DEA",
     "category": "BUY_WONDER",
-    "text": "Whoever built this was a genius, and I'm sorry for 'em."
+    "text": "Somebody poured real genius into this. [a breath] For what it's for. God help him."
   },
   "DEA_BUY_MELEE_01": {
     "speaker": "DEA",
     "category": "BUY_MELEE",
-    "text": "Shovel. A good tool. Dig a trench or dig a grave."
+    "text": "Shovel. Dig a trench or dig a grave. [quietly] Tonight it's graves."
   },
   "DEA_CRATE_GOOD_01": {
     "speaker": "DEA",
     "category": "CRATE_GOOD",
-    "text": "The Lord provides. Sometimes in a busted crate."
+    "text": "The Lord provides. [a breath] Didn't expect Him to use this crate."
   },
   "DEA_CRATE_GOOD_02": {
     "speaker": "DEA",
     "category": "CRATE_GOOD",
-    "text": "Now that's a blessing with a trigger."
+    "text": "Thank you. Thank you, that'll keep us breathing a while."
   },
   "DEA_CRATE_BAD_01": {
     "speaker": "DEA",
     "category": "CRATE_BAD",
-    "text": "Well. Blessed are the poor, I suppose."
+    "text": "Blessed are the poor. ...I'd have settled for a rifle."
   },
   "DEA_CRATE_BAD_02": {
     "speaker": "DEA",
     "category": "CRATE_BAD",
-    "text": "Crate's got a sense of humor. I don't like it."
+    "text": "Crate took my money and gave me a toy. Fine. Fine. Nobody died of it yet."
   },
   "DEA_CRATE_DRUMMER_01": {
     "speaker": "DEA",
     "category": "CRATE_DRUMMER",
-    "text": "The little drummer boy. Somebody's baby girl wound you up, didn't she?"
+    "text": "Little drummer boy. Somebody's girl wound you up once, didn't she. [quietly] Go on."
   },
   "DEA_CRATE_DRUMMER_02": {
     "speaker": "DEA",
     "category": "CRATE_DRUMMER",
-    "text": "Go on, little fella. March home."
+    "text": "Go on, little fella. March on home. Wish I could."
   },
   "DEA_PERK_IRONHIDE_01": {
     "speaker": "DEA",
     "category": "PERK_IRONHIDE",
-    "text": "Thick as molasses. Settles in your bones."
+    "text": "Thick as molasses. Settles in the bones. [a breath] Lord knows they need settling."
   },
   "DEA_PERK_SECONDWIND_01": {
     "speaker": "DEA",
     "category": "PERK_SECONDWIND",
-    "text": "Sister Agnieszka. Whoever you were, thank you."
+    "text": "Sister Agnieszka. Whoever you were, you're keeping us standing. Thank you."
   },
   "DEA_PERK_TRIGGER_01": {
     "speaker": "DEA",
     "category": "PERK_TRIGGER",
-    "text": "Fizzy. Hands moving faster than my thoughts."
+    "text": "Fizzy. Hands running ahead of my head. [a breath] Don't let 'em run too far."
   },
   "DEA_PERK_TWINBARREL_01": {
     "speaker": "DEA",
     "category": "PERK_TWINBARREL",
-    "text": "Bitter, like a sermon on a hot Sunday."
+    "text": "Bitter. Like a sermon on a hot Sunday. Daddy'd say that's how you know it's working."
   },
   "DEA_PERK_MARATHON_01": {
     "speaker": "DEA",
     "category": "PERK_MARATHON",
-    "text": "Feel like I could outrun the Devil. Let's not test that."
+    "text": "Feel like I could run and not be weary. [quietly] Isaiah said that. He never saw this place."
   },
   "DEA_PERK_HAWKEYE_01": {
     "speaker": "DEA",
     "category": "PERK_HAWKEYE",
-    "text": "Brandy. Daddy'd have a fit. Eyes feel sharp, though."
+    "text": "Brandy. Daddy never let a drop in the house. ...Eyes are sharp. I'll confess it later."
   },
   "DEA_PERK_PACKMULE_01": {
     "speaker": "DEA",
     "category": "PERK_PACKMULE",
-    "text": "Make me a mule, I'll carry the load."
+    "text": "One more on my back. Make me a mule, Lord, I'll carry it."
   },
   "DEA_PERK_BLASTPROOF_01": {
     "speaker": "DEA",
     "category": "PERK_BLASTPROOF",
-    "text": "Can't blow myself up? Well, praise be."
+    "text": "Can't blow myself up. [a breath] Well. One less way to die in here."
   },
   "DEA_PWR_RESUPPLY_01": {
     "speaker": "DEA",
     "category": "PWR_RESUPPLY",
-    "text": "Loaves and fishes. Bullets and grenades."
+    "text": "Loaves and fishes. Bullets and grenades. Take what you need, there's enough."
   },
   "DEA_PWR_DEATHSDOOR_01": {
     "speaker": "DEA",
     "category": "PWR_DEATHSDOOR",
-    "text": "Every shot's the last one for 'em. Mercy, quick."
+    "text": "One shot and they lie down. Mercy. Quick mercy, that's all I'm asking."
   },
   "DEA_PWR_DOUBLESCRIP_01": {
     "speaker": "DEA",
     "category": "PWR_DOUBLESCRIP",
-    "text": "Double wages. Don't spend it all at once."
+    "text": "Double wages. [quietly] Blood money, doubled. Spend it on living."
   },
   "DEA_PWR_BLACKOUT_01": {
     "speaker": "DEA",
     "category": "PWR_BLACKOUT",
-    "text": "Rest now. All of you. Go on home."
+    "text": "Rest now. All of you. Lie down and rest."
   },
   "DEA_PWR_FORTIFY_01": {
     "speaker": "DEA",
     "category": "PWR_FORTIFY",
-    "text": "Boards back in place. Didn't even need my hammer."
+    "text": "Boards back on every window. Didn't lift a hammer. [a breath] Don't ask me how. I'm not asking."
   },
   "DEA_PWR_CLEARANCE_01": {
     "speaker": "DEA",
     "category": "PWR_CLEARANCE",
-    "text": "The crate's taking pennies. Go, go, go."
+    "text": "Crate's taking pennies. Go, go. Before it changes its mind."
   },
   "DEA_BELL_01": {
     "speaker": "DEA",
     "category": "BELL",
-    "text": "Hear that bell? Ain't nobody being called to worship."
+    "text": "Hear that bell? Ain't a call to worship. Not that one."
   },
   "DEA_BELL_02": {
     "speaker": "DEA",
     "category": "BELL",
-    "text": "Fog's coming. Stand together. Backs to each other."
+    "text": "Fog's coming in. Stand together. Backs to each other and hold."
   },
   "DEA_FOREMAN_01": {
     "speaker": "DEA",
     "category": "FOREMAN",
-    "text": "Somebody bolted a drill onto that man. God help whoever did it."
+    "text": "Somebody bolted a drill onto that man. [quietly] Lord. He was a man."
   },
   "DEA_FOREMAN_02": {
     "speaker": "DEA",
     "category": "FOREMAN",
-    "text": "That drill core's glowing. That's his heart. Hit it."
+    "text": "Drill core's glowing. That's his heart. Hit the heart."
   },
   "DEA_SCREAMER_01": {
     "speaker": "DEA",
     "category": "SCREAMER",
-    "text": "That poor woman. Make it quick."
+    "text": "That poor woman. Make it quick. Don't let her scream like that."
   },
   "DEA_GLASSHIDE_01": {
     "speaker": "DEA",
     "category": "GLASSHIDE",
-    "text": "That one's wearing glass like armor. Go for the head."
+    "text": "He's wearing glass like armor. Go for the head. Head's all that's open."
   },
   "DEA_AMMO_LOW_01": {
     "speaker": "DEA",
     "category": "AMMO_LOW",
-    "text": "Getting light. Real light."
+    "text": "Getting light. Real light. [a breath] Lord."
   },
   "DEA_AMMO_NONE_01": {
     "speaker": "DEA",
     "category": "AMMO_NONE",
-    "text": "Empty. Lord, give me a bullet or give me a running start."
+    "text": "Empty. Lord, a bullet or a running start. I'll take either."
   },
   "DEA_DOWN_01": {
     "speaker": "DEA",
     "category": "DOWN",
-    "text": "I'm down. Somebody... come on now."
+    "text": "I'm down. Somebody... [breathing heavily] somebody come on now. Come on."
   },
   "DEA_DOWN_02": {
     "speaker": "DEA",
@@ -2637,27 +2637,27 @@
   "DEA_REVIVE_01": {
     "speaker": "DEA",
     "category": "REVIVE",
-    "text": "Got you. Up we go. Easy now."
+    "text": "Got you. Up. Easy now, easy. I've got you."
   },
   "DEA_REVIVE_02": {
     "speaker": "DEA",
     "category": "REVIVE",
-    "text": "Not today. You hear me? Not today."
+    "text": "Not today. You hear me? Not today, not here."
   },
   "DEA_REVIVED_01": {
     "speaker": "DEA",
     "category": "REVIVED",
-    "text": "Thank you. Lazarus owes you one."
+    "text": "Thank you. [a breath] Didn't want to find out what gets up when I don't."
   },
   "DEA_STREAK_01": {
     "speaker": "DEA",
     "category": "STREAK",
-    "text": "Keep the rhythm. Keep the rhythm."
+    "text": "Keep the rhythm. Keep the rhythm. Don't think, just keep it."
   },
   "DEA_STREAK_02": {
     "speaker": "DEA",
     "category": "STREAK",
-    "text": "One more verse. And another."
+    "text": "One more verse. [exhausted] And another. Lord, how many verses."
   },
   "DEA_HEADSHOT_01": {
     "speaker": "DEA",
@@ -2667,37 +2667,37 @@
   "DEA_HEADSHOT_02": {
     "speaker": "DEA",
     "category": "HEADSHOT",
-    "text": "Sleep easy, brother."
+    "text": "Sleep now, brother."
   },
   "DEA_CRAWLER_01": {
     "speaker": "DEA",
     "category": "CRAWLER",
-    "text": "This one's crawling. Lord, have mercy on him."
+    "text": "This one's crawling. Lord have mercy on him. ...I will."
   },
   "DEA_DOOR_01": {
     "speaker": "DEA",
     "category": "DOOR",
-    "text": "Door's open. Watch your step."
+    "text": "Door's open. Watch your step, and watch the dark."
   },
   "DEA_POWER_01": {
     "speaker": "DEA",
     "category": "POWER",
-    "text": "Hear that? Turbines singing. Whole place just woke up."
+    "text": "Hear that? Turbines. Whole place just drew breath. [quietly] Didn't ask whether I wanted it to."
   },
   "DEA_POWER_02": {
     "speaker": "DEA",
     "category": "POWER",
-    "text": "Easy, girl. Easy. Good girl. Hum for me."
+    "text": "Easy, girl. Easy. I know. I know. Hum for me."
   },
   "DEA_CRUCIBLE_01": {
     "speaker": "DEA",
     "category": "CRUCIBLE",
-    "text": "That furnace is talking to my gun. And my gun's listening."
+    "text": "That furnace is talking to my gun. And my gun's listening. I don't like what it's learning."
   },
   "DEA_CRUCIBLE_02": {
     "speaker": "DEA",
     "category": "CRUCIBLE",
-    "text": "Beautiful work, used for ugly reasons. Same as everything here."
+    "text": "Beautiful work. Used for this. Same as everything here."
   },
   "DEA_TRAP_01": {
     "speaker": "DEA",
@@ -2707,17 +2707,17 @@
   "DEA_BUILD_01": {
     "speaker": "DEA",
     "category": "BUILD",
-    "text": "Bell, frame, crank. All right, little lady, let's put you together."
+    "text": "Bell, frame, crank. All right, little lady. Let's put you together and see what you call down."
   },
   "DEA_EE_01": {
     "speaker": "DEA",
     "category": "EE",
-    "text": "That music box... somebody's lullaby."
+    "text": "That music box. ...Somebody's lullaby. Somebody sang that to a child, once."
   },
   "DEA_EE_02": {
     "speaker": "DEA",
     "category": "EE",
-    "text": "Ring 'em in order, like the old hymn."
+    "text": "Ring 'em in order. Like the old hymn, line by line."
   },
   "DEA_EE_03": {
     "speaker": "DEA",
@@ -2727,32 +2727,32 @@
   "DEA_EXHAUST_01": {
     "speaker": "DEA",
     "category": "EXHAUST",
-    "text": "Fifty rounds. Even Job got a break."
+    "text": "Fifty rounds. [exhausted] Even Job got to sit down."
   },
   "DEA_EXHAUST_02": {
     "speaker": "DEA",
     "category": "EXHAUST",
-    "text": "I'm tired, Lord. But I'm still here."
+    "text": "I'm tired, Lord. [a breath] I'm still here. I don't know which of those is the prayer."
   },
   "DEA_MACH_01": {
     "speaker": "DEA",
     "category": "MACH",
-    "text": "Come on, mule. Don't you quit on me."
+    "text": "Come on, mule. Don't you quit on me. Not tonight."
   },
   "DEA_MACH_02": {
     "speaker": "DEA",
     "category": "MACH",
-    "text": "Shh. Easy now. Nobody's gonna hurt you anymore."
+    "text": "Shh. Easy now. Nobody's gonna make you do that anymore."
   },
   "DEA_MACH_03": {
     "speaker": "DEA",
     "category": "MACH",
-    "text": "Pretty thing. Who taught you to eat people?"
+    "text": "Pretty thing. Who taught you to eat people? [quietly] Who taught them?"
   },
   "DEA_BLUES_01": {
     "speaker": "DEA",
     "category": "BLUES",
-    "text": "♪ Buried in the salt, Lord, buried way down deep... buried in the salt, can't nobody here sleep. ♪"
+    "text": "♪ Buried in the salt, Lord, buried way down deep... buried in the salt, and can't nobody here sleep. ♪"
   },
   "DEA_BLUES_02": {
     "speaker": "DEA",
@@ -2762,112 +2762,112 @@
   "DEA_BLUES_03": {
     "speaker": "DEA",
     "category": "BLUES",
-    "text": "♪ Got a ledger keeps a-counting every man I lay down... yes, a ledger keeps a-counting, gonna burn that ledger down. ♪"
+    "text": "♪ Four days in the ground, Lord, four days in the cold... four days in the ground, then they get up and they don't get old. ♪"
   },
   "WRN_BUY_PISTOL_01": {
     "speaker": "WRN",
     "category": "BUY_PISTOL",
-    "text": "A pistol. For when I want to be close. I never want to be close."
+    "text": "A pistol. For when they are close. [a breath] They are always close now."
   },
   "WRN_BUY_RIFLE_01": {
     "speaker": "WRN",
     "category": "BUY_RIFLE",
-    "text": "Mauser. Their rifle. Their bullets. Their heads. Fair."
+    "text": "Mauser. Their rifle, their bullets. [quietly] Tonight it does not matter whose heads."
   },
   "WRN_BUY_RIFLE_02": {
     "speaker": "WRN",
     "category": "BUY_RIFLE",
-    "text": "Gewehr. Semi-automatic. I can be efficient."
+    "text": "Gewehr. Semi-automatic. Good. I am tired of working the bolt."
   },
   "WRN_BUY_SMG_01": {
     "speaker": "WRN",
     "category": "BUY_SMG",
-    "text": "A machine pistol. Inelegant. Useful."
+    "text": "Machine pistol. Ugly. It does not have to be pretty. It has to be close."
   },
   "WRN_BUY_SHOTGUN_01": {
     "speaker": "WRN",
     "category": "BUY_SHOTGUN",
-    "text": "Shotgun. For people who cannot aim. Today, that is me."
+    "text": "Shotgun. For people who cannot aim. [exhausted] My hands are shaking. So. Today, me."
   },
   "WRN_BUY_LMG_01": {
     "speaker": "WRN",
     "category": "BUY_LMG",
-    "text": "Heavy. Loud. Everything I am not."
+    "text": "Heavy. Loud. Everything I am not. Everything I need to be tonight."
   },
   "WRN_BUY_LAUNCHER_01": {
     "speaker": "WRN",
     "category": "BUY_LAUNCHER",
-    "text": "This is Peg's kind of gun. I will borrow her taste."
+    "text": "Peg's kind of gun. I will borrow her taste. And her nerve."
   },
   "WRN_BUY_WONDER_01": {
     "speaker": "WRN",
     "category": "BUY_WONDER",
-    "text": "Fasbender's toy. Built in the same place as my brother's grave."
+    "text": "Fasbender's toy. Built in the same mine as my brother's grave. [a breath] I will use it anyway."
   },
   "WRN_BUY_MELEE_01": {
     "speaker": "WRN",
     "category": "BUY_MELEE",
-    "text": "A shovel. Good. I will dig them a proper place."
+    "text": "A shovel. Good. Someone should dig them a proper place. [quietly] Not tonight. Tonight it is for the other thing."
   },
   "WRN_CRATE_GOOD_01": {
     "speaker": "WRN",
     "category": "CRATE_GOOD",
-    "text": "Good. Finally, something here is on our side."
+    "text": "Good. Finally something in this place is on our side."
   },
   "WRN_CRATE_GOOD_02": {
     "speaker": "WRN",
     "category": "CRATE_GOOD",
-    "text": "This will do. This will do very well."
+    "text": "This will do. [quietly] This will do."
   },
   "WRN_CRATE_BAD_01": {
     "speaker": "WRN",
     "category": "CRATE_BAD",
-    "text": "A crate that robs the poor. How German."
+    "text": "A box that robs the poor. [a breath] I have met that box before. It wore a uniform."
   },
   "WRN_CRATE_BAD_02": {
     "speaker": "WRN",
     "category": "CRATE_BAD",
-    "text": "I could kill more with a sharpened spoon."
+    "text": "I could do more with a sharpened spoon. I have."
   },
   "WRN_CRATE_DRUMMER_01": {
     "speaker": "WRN",
     "category": "CRATE_DRUMMER",
-    "text": "The drummer. Reinholt's girl's toy. It is following us."
+    "text": "The drummer. The child's toy. It follows us. Everything here follows us."
   },
   "WRN_CRATE_DRUMMER_02": {
     "speaker": "WRN",
     "category": "CRATE_DRUMMER",
-    "text": "Run, little soldier. One day I will catch you."
+    "text": "Run, little soldier. [quietly] Run while you can."
   },
   "WRN_PERK_IRONHIDE_01": {
     "speaker": "WRN",
     "category": "PERK_IRONHIDE",
-    "text": "Bavarian beer. Thick as their heads."
+    "text": "Bavarian beer. Thick. [a breath] Good. I need to be thick tonight."
   },
   "WRN_PERK_SECONDWIND_01": {
     "speaker": "WRN",
     "category": "PERK_SECONDWIND",
-    "text": "Siostra Agnieszka. She was real. She nursed the laborers. Thank you, sister. (Sister Agnieszka.)"
+    "text": "Siostra Agnieszka. She was real. She nursed the laborers until they would not let her. [quietly] Thank you, sister. (Sister Agnieszka.)"
   },
   "WRN_PERK_SECONDWIND_02": {
     "speaker": "WRN",
     "category": "PERK_SECONDWIND",
-    "text": "She made this to keep them alive. They used it to keep them working."
+    "text": "She made this to keep them alive. They used it to keep them working. [a breath] I drink it to keep us alive. That is the only difference I have."
   },
   "WRN_PERK_TRIGGER_01": {
     "speaker": "WRN",
     "category": "PERK_TRIGGER",
-    "text": "Fizz. My hands are fast now. Faster than theirs."
+    "text": "Fizz. Fast hands. Faster than theirs. That is all I ask for."
   },
   "WRN_PERK_TWINBARREL_01": {
     "speaker": "WRN",
     "category": "PERK_TWINBARREL",
-    "text": "Bitter. Appropriate."
+    "text": "Bitter. [a breath] Yes."
   },
   "WRN_PERK_MARATHON_01": {
     "speaker": "WRN",
     "category": "PERK_MARATHON",
-    "text": "I could run to Kraków. I would, if this were done."
+    "text": "I could run to Kraków. [quietly] There is nothing to run to in Kraków."
   },
   "WRN_PERK_HAWKEYE_01": {
     "speaker": "WRN",
@@ -2877,42 +2877,42 @@
   "WRN_PERK_HAWKEYE_02": {
     "speaker": "WRN",
     "category": "PERK_HAWKEYE",
-    "text": "Sniper brandy, made by the men who hunted us. My hands are steadier. Damn them."
+    "text": "Sniper brandy, from the men who hunted us. My hands are steadier. [a breath] Damn them. Damn them for being right about my hands."
   },
   "WRN_PERK_PACKMULE_01": {
     "speaker": "WRN",
     "category": "PERK_PACKMULE",
-    "text": "One more weapon. One more chance."
+    "text": "One more weapon. One more chance. [quietly] I keep running out of chances."
   },
   "WRN_PERK_BLASTPROOF_01": {
     "speaker": "WRN",
     "category": "PERK_BLASTPROOF",
-    "text": "Peg will be jealous. Or she already drank three."
+    "text": "Peg will be jealous. Or she already drank three. [a breath] Good for her."
   },
   "WRN_PWR_RESUPPLY_01": {
     "speaker": "WRN",
     "category": "PWR_RESUPPLY",
-    "text": "Ammunition. Count it later."
+    "text": "Ammunition. Count it later. Shoot now."
   },
   "WRN_PWR_DEATHSDOOR_01": {
     "speaker": "WRN",
     "category": "PWR_DEATHSDOOR",
-    "text": "Everything dies in one shot. Like a good shot should."
+    "text": "Everything falls in one shot. Like it should. [quietly] Like it never does."
   },
   "WRN_PWR_DOUBLESCRIP_01": {
     "speaker": "WRN",
     "category": "PWR_DOUBLESCRIP",
-    "text": "Double. My notebook will need more pages."
+    "text": "Double. [a breath] My notebook will need more pages. I did not bring more pages."
   },
   "WRN_PWR_BLACKOUT_01": {
     "speaker": "WRN",
     "category": "PWR_BLACKOUT",
-    "text": "All of them. At once. If only it were so easy outside."
+    "text": "All of them. At once. [quietly] If it were only so easy out there. In the east."
   },
   "WRN_PWR_FORTIFY_01": {
     "speaker": "WRN",
     "category": "PWR_FORTIFY",
-    "text": "Windows closed. Do not waste it."
+    "text": "Windows closed. Do not waste it. Breathe."
   },
   "WRN_PWR_CLEARANCE_01": {
     "speaker": "WRN",
@@ -2922,37 +2922,37 @@
   "WRN_BELL_01": {
     "speaker": "WRN",
     "category": "BELL",
-    "text": "The bell. My brother wrote that the walls hum. This is louder."
+    "text": "The bell. My brother wrote that the walls hum. [a breath] This is louder than a wall."
   },
   "WRN_BELL_02": {
     "speaker": "WRN",
     "category": "BELL",
-    "text": "Fog. Lanterns. Those were miners. Shoot them anyway."
+    "text": "Fog. Lanterns. Those were miners. [quietly] Shoot them anyway. Shoot them anyway."
   },
   "WRN_FOREMAN_01": {
     "speaker": "WRN",
     "category": "FOREMAN",
-    "text": "The overseer. Obersteiger. My brother worked under him. Let me."
+    "text": "The overseer. Obersteiger. My brother worked under him. Let me. [a breath] Let me."
   },
   "WRN_FOREMAN_02": {
     "speaker": "WRN",
     "category": "FOREMAN",
-    "text": "The drill core. Aim there. I want him to know who killed him."
+    "text": "The drill core. Aim there. I want him to know whose sister did it."
   },
   "WRN_SCREAMER_01": {
     "speaker": "WRN",
     "category": "SCREAMER",
-    "text": "The nurse. Kill her. Kill her now."
+    "text": "The nurse. Kill her. [shouting] Kill her now, before she calls them!"
   },
   "WRN_GLASSHIDE_01": {
     "speaker": "WRN",
     "category": "GLASSHIDE",
-    "text": "Glass body. Head only. That is all I aim for anyway."
+    "text": "Glass body. Head only. [quietly] It is all I aim for anyway."
   },
   "WRN_AMMO_LOW_01": {
     "speaker": "WRN",
     "category": "AMMO_LOW",
-    "text": "Few rounds left."
+    "text": "Few rounds left. [a breath] Few."
   },
   "WRN_AMMO_NONE_01": {
     "speaker": "WRN",
@@ -2962,7 +2962,7 @@
   "WRN_DOWN_01": {
     "speaker": "WRN",
     "category": "DOWN",
-    "text": "I'm down. Quickly. Quickly!"
+    "text": "I'm down. Quickly. [breathing heavily] Quickly, or I get up wrong."
   },
   "WRN_DOWN_02": {
     "speaker": "WRN",
@@ -2972,27 +2972,27 @@
   "WRN_REVIVE_01": {
     "speaker": "WRN",
     "category": "REVIVE",
-    "text": "Get up. I am not losing anyone else here."
+    "text": "Get up. I am not losing anyone else here. Get up."
   },
   "WRN_REVIVE_02": {
     "speaker": "WRN",
     "category": "REVIVE",
-    "text": "Up. Shoot. Complain later."
+    "text": "Up. Shoot. Cry later. I will too."
   },
   "WRN_REVIVED_01": {
     "speaker": "WRN",
     "category": "REVIVED",
-    "text": "Thank you. I will write you in the notebook. The good page."
+    "text": "Thank you. [a breath] You go in the notebook. The good page. It is a short page."
   },
   "WRN_STREAK_01": {
     "speaker": "WRN",
     "category": "STREAK",
-    "text": "Sześćdziesiąt... I am losing count. Good. (Sixty.)"
+    "text": "Sześćdziesiąt... I am losing count. [quietly] Good. (Sixty.)"
   },
   "WRN_STREAK_02": {
     "speaker": "WRN",
     "category": "STREAK",
-    "text": "Keep them coming. The notebook is hungry."
+    "text": "Keep them coming. [exhausted] The notebook is never full. That is the trouble with it."
   },
   "WRN_HEADSHOT_01": {
     "speaker": "WRN",
@@ -3012,42 +3012,42 @@
   "WRN_CRAWLER_01": {
     "speaker": "WRN",
     "category": "CRAWLER",
-    "text": "Crawling. Like they made my brother crawl."
+    "text": "Crawling. [quietly] Like they made my brother crawl. ...Finish it."
   },
   "WRN_DOOR_01": {
     "speaker": "WRN",
     "category": "DOOR",
-    "text": "Open. I know what's behind this one. I wish I didn't."
+    "text": "Open. I know what is behind this one. [a breath] I wish I did not."
   },
   "WRN_POWER_01": {
     "speaker": "WRN",
     "category": "POWER",
-    "text": "Power. The laborers built that switch. Now we use it."
+    "text": "Power. The laborers built that switch. [quietly] Now we use it. I am sorry. We use it."
   },
   "WRN_CRUCIBLE_01": {
     "speaker": "WRN",
     "category": "CRUCIBLE",
-    "text": "Their furnace. Their glass. Our gun now."
+    "text": "Their furnace. Their glass. Our gun now. [a breath] It is still their furnace."
   },
   "WRN_CRUCIBLE_02": {
     "speaker": "WRN",
     "category": "CRUCIBLE",
-    "text": "It changed the rifle. I don't want to know how."
+    "text": "It changed the rifle. I do not want to know how. I will not write it down."
   },
   "WRN_TRAP_01": {
     "speaker": "WRN",
     "category": "TRAP",
-    "text": "The lever. Stand back, or join them."
+    "text": "The lever. Stand back, or lie down with them."
   },
   "WRN_EE_01": {
     "speaker": "WRN",
     "category": "EE",
-    "text": "Reinholt's daughter's music box. She had a child. I had a brother."
+    "text": "The music box. Reinholt's daughter's. She had a child. I had a brother. [quietly] One of us is still looking."
   },
   "WRN_EE_02": {
     "speaker": "WRN",
     "category": "EE",
-    "text": "Four bells. Shoot them in order. Like counting."
+    "text": "Four bells. Shoot them in order. Like counting. I can count."
   },
   "WRN_EE_03": {
     "speaker": "WRN",
@@ -3057,27 +3057,27 @@
   "WRN_EXHAUST_01": {
     "speaker": "WRN",
     "category": "EXHAUST",
-    "text": "Round fifty. I have run out of pages."
+    "text": "Round fifty. [exhausted] I have run out of pages. I am writing on my hand."
   },
   "WRN_EXHAUST_02": {
     "speaker": "WRN",
     "category": "EXHAUST",
-    "text": "My eyes hurt. My hands do not care."
+    "text": "My eyes hurt. [a breath] My hands do not care. Good hands."
   },
   "WRN_POL_01": {
     "speaker": "WRN",
     "category": "POL",
-    "text": "Głodny, Dutch. You just told me you are a hungry woman."
+    "text": "Głodny, Dutch. You just told me you are a hungry woman. [a breath] ...Tonight, fine. We are all hungry women."
   },
   "WRN_POL_02": {
     "speaker": "WRN",
     "category": "POL",
-    "text": "Dziękuję. Not jen-koo-yeh. Your grandmother must have wept."
+    "text": "Dziękuję. Not jen-koo-yeh. Your grandmother is weeping somewhere."
   },
   "WRN_POL_03": {
     "speaker": "WRN",
     "category": "POL",
-    "text": "That is not a swear. You just said 'bright plague.' Fine. It works."
+    "text": "That is not a swear. You just said 'bright plague.' ...Fine. Tonight it is a swear."
   },
   "FAS_SAMPLE_01": {
     "speaker": "FAS",
@@ -3297,7 +3297,7 @@
       ],
       [
         "DEA",
-        "Because she's loud and she don't quit. Like you, Sarge."
+        "Because she's loud and she don't quit. [a breath] Like you, Sarge. Don't quit."
       ]
     ]
   },
@@ -3446,7 +3446,7 @@
       ],
       [
         "WRN",
-        "Tonight it is Germans, and villagers, and Russians in greatcoats. The ink does not care. I am starting to."
+        "It was Germans. Now it is Germans, and villagers, and Russians in greatcoats. [a breath] The ink does not care. I am starting to."
       ]
     ]
   },
@@ -3640,7 +3640,7 @@
       ],
       [
         "WRN",
-        "When this is done, I will still be Polish. London will not fix that."
+        "When this is done, I will still be Polish, and the Russians will be in Warsaw. London will not fix either."
       ]
     ]
   },
@@ -3701,7 +3701,7 @@
       ],
       [
         "WRN",
-        "He would have liked you. He liked everyone. It was his only flaw."
+        "He would have liked you. He liked everyone. [a breath] It was his only flaw."
       ]
     ]
   },
@@ -3724,7 +3724,7 @@
       ],
       [
         "DEA",
-        "Here? Lord help me, yes."
+        "Here? [quietly] Lord help me, yes."
       ]
     ]
   },
@@ -3766,7 +3766,7 @@
       ],
       [
         "DEA",
-        "Then you'll sing again. After."
+        "Then you'll sing again. After. [quietly] I'll hold you to it."
       ]
     ]
   },
@@ -3883,7 +3883,7 @@
   "DEA_PERK_FERNET_01": {
     "speaker": "DEA",
     "category": "PERK_FERNET",
-    "text": "Bitter herbs. Like Passover. Lord, I can see what this place is hiding."
+    "text": "Bitter herbs. Like Passover. [a breath] Lord, I can see what this place is hiding, and I'd give it back."
   },
   "DEA_PERK_FERNET_02": {
     "speaker": "DEA",
@@ -3893,7 +3893,7 @@
   "DEA_PERK_OVERCLOCK_01": {
     "speaker": "DEA",
     "category": "PERK_OVERCLOCK",
-    "text": "Feels like somebody wired a friend into my hands. Howdy, friend."
+    "text": "Feels like somebody wired a stranger into my hands. [quietly] Howdy, stranger. Don't stay."
   },
   "DEA_PERK_OVERCLOCK_02": {
     "speaker": "DEA",
@@ -3903,22 +3903,22 @@
   "WRN_PERK_FERNET_01": {
     "speaker": "WRN",
     "category": "PERK_FERNET",
-    "text": "Bitter. Good. Now I see where they hide things."
+    "text": "Bitter. Good. Now I see where they hide things. [a breath] They hide everything."
   },
   "WRN_PERK_FERNET_02": {
     "speaker": "WRN",
     "category": "PERK_FERNET",
-    "text": "It shows me the clock on every gift. Nothing here is free. I knew that."
+    "text": "It shows me the clock on every gift. Nothing here is free. I knew that. I have always known that."
   },
   "WRN_PERK_OVERCLOCK_01": {
     "speaker": "WRN",
     "category": "PERK_OVERCLOCK",
-    "text": "My rifle hums when it is empty. Fine. Let it sing."
+    "text": "My rifle hums when it is empty. [quietly] Everything here hums. Fine. Let it."
   },
   "WRN_PERK_OVERCLOCK_02": {
     "speaker": "WRN",
     "category": "PERK_OVERCLOCK",
-    "text": "Static in the blood. My brother would have laughed at this."
+    "text": "Static in the blood. [a breath] My brother would have laughed at this. Then he would have been frightened. Then he would have laughed again."
   },
   "OPR_CRUCIBLE_STEAL_01": {
     "speaker": "OPR",
@@ -4207,22 +4207,22 @@
   "DEA_SKY_PLANE_DOWN_01": {
     "speaker": "DEA",
     "category": "SKY_PLANE_DOWN",
-    "text": "Engine's on fire. Lord, let that pilot glide it in like ours did."
+    "text": "Engine's on fire. Lord, let that pilot glide it in like ours did. [quietly] Let somebody be alive at the end of it."
   },
   "DEA_SKY_PLANE_DOWN_02": {
     "speaker": "DEA",
     "category": "SKY_PLANE_DOWN",
-    "text": "That's ten men in that thing. ...Somebody say a word for them."
+    "text": "That's ten men in that thing. ...Somebody say a word for them. [a breath] 'Yea, though I walk through the valley.' ...That's all I've got."
   },
   "WRN_SKY_PLANE_DOWN_01": {
     "speaker": "WRN",
     "category": "SKY_PLANE_DOWN",
-    "text": "Burning, losing height, same bearing we came in on. I'm writing down the time."
+    "text": "Burning, losing height, same bearing we came in on. I'm writing down the time. [quietly] Somebody will want the time."
   },
   "WRN_SKY_PLANE_DOWN_02": {
     "speaker": "WRN",
     "category": "SKY_PLANE_DOWN",
-    "text": "No violet light this time. Only flak. ...That is almost a comfort."
+    "text": "No violet light this time. Only flak. ...That is almost a comfort. [a breath] Almost."
   },
   "DUT_WRECK_PILOT_01": {
     "speaker": "DUT",
@@ -4237,7 +4237,7 @@
   "DEA_WRECK_PILOT_01": {
     "speaker": "DEA",
     "category": "WRECK_PILOT",
-    "text": "Lord, Selwyn's moving. He's pinned under the panel. We can't lift that, but we can put a rifle in his hands."
+    "text": "Lord, Selwyn's moving. He's pinned under the panel. We can't lift that. [a breath] But we can put a rifle in his hands."
   },
   "WRN_WRECK_PILOT_01": {
     "speaker": "WRN",
@@ -4257,12 +4257,12 @@
   "DEA_MIDNIGHT_01": {
     "speaker": "DEA",
     "category": "MIDNIGHT",
-    "text": "Christmas Eve. Ruthie's asleep by now. ...Good. That's good."
+    "text": "Christmas Eve. Ruthie's asleep by now. ...Good. That's good. [quietly] 'Unto you is born this day.' ...Sleep on, honey."
   },
   "WRN_MIDNIGHT_01": {
     "speaker": "WRN",
     "category": "MIDNIGHT",
-    "text": "Twelve. It's the twenty-fourth. Wigilia. Somewhere my mother is looking at the first star."
+    "text": "Twelve. It is the twenty-fourth. Wigilia. [a breath] Somewhere my mother is looking at the first star. She sets a plate for the one who is missing. [quietly] Two plates, this year."
   },
   "DUT_SQ3_SPRINTER_BEHIND_01": {
     "speaker": "DUT",
@@ -4472,12 +4472,12 @@
   "DEA_SQ3_BOSS_INCOMING_01": {
     "speaker": "DEA",
     "category": "BOSS_INCOMING",
-    "text": "Lord, here comes a big one."
+    "text": "Lord, here comes a big one. Here he comes."
   },
   "DEA_SQ3_CRATE_MOVED_01": {
     "speaker": "DEA",
     "category": "CRATE_MOVED",
-    "text": "Crate's gone and moved itself."
+    "text": "Crate's gone and moved itself. [quietly] Nothing stays put here."
   },
   "DEA_SQ3_WINDOW_OPEN_01": {
     "speaker": "DEA",
@@ -4512,7 +4512,7 @@
   "DEA_SQ3_PING_FORTIFY_01": {
     "speaker": "DEA",
     "category": "PING_FORTIFY",
-    "text": "Fortify! Every board at once. My kind of miracle."
+    "text": "Fortify! Every board at once. [a breath] Take the miracle. Don't ask."
   },
   "DEA_SQ3_PING_CLEARANCE_01": {
     "speaker": "DEA",
@@ -4537,22 +4537,22 @@
   "DEA_SQ3_CMD_OPEN_DOOR_01": {
     "speaker": "DEA",
     "category": "CMD_OPEN_DOOR",
-    "text": "I'll open her up."
+    "text": "I'll open her up. Lord, let it be empty behind."
   },
   "DEA_SQ3_CMD_FETCH_PART_01": {
     "speaker": "DEA",
     "category": "CMD_FETCH_PART",
-    "text": "Parts? Now you're talking."
+    "text": "Parts? [a breath] All right. Something I can hold onto."
   },
   "DEA_SQ3_CHATTER_01": {
     "speaker": "DEA",
     "category": "CHATTER",
-    "text": "This machine's got a rattle. Hush now, sweetheart."
+    "text": "This machine's got a rattle. Hush now, sweetheart. Hush."
   },
   "DEA_SQ3_CHATTER_02": {
     "speaker": "DEA",
     "category": "CHATTER",
-    "text": "Pass me the wrench when we're done. Something in there's loose."
+    "text": "Pass me the wrench when we're done. Something in there's loose. I'd like one thing in this house fixed."
   },
   "WRN_SQ3_SPRINTER_BEHIND_01": {
     "speaker": "WRN",
@@ -4652,7 +4652,7 @@
   "WRN_SQ3_TALLY_150_01": {
     "speaker": "WRN",
     "category": "TALLY_150",
-    "text": "One hundred fifty."
+    "text": "One hundred fifty. [a breath]"
   },
   "WRN_SQ3_TALLY_200_01": {
     "speaker": "WRN",
@@ -4662,17 +4662,17 @@
   "WRN_SQ3_TALLY_300_01": {
     "speaker": "WRN",
     "category": "TALLY_300",
-    "text": "Three hundred. Still counting."
+    "text": "Three hundred. [exhausted] Still counting. Somebody has to."
   },
   "WRN_SQ3_CHATTER_01": {
     "speaker": "WRN",
     "category": "CHATTER",
-    "text": "I write down their number. Someone should."
+    "text": "I write down their number. Someone should. [quietly] Nobody wrote down his."
   },
   "WRN_SQ3_CHATTER_02": {
     "speaker": "WRN",
     "category": "CHATTER",
-    "text": "My brother would like this inn. He liked any place with a fire."
+    "text": "My brother would like this inn. He liked any place with a fire. [a breath] He would not like the windows."
   },
   "JAK_CAGE_HELLO_01": {
     "speaker": "JAK",
@@ -5281,12 +5281,12 @@
   "DEA_JAKUB_MEET_01": {
     "speaker": "DEA",
     "category": "JAKUB_MEET",
-    "text": "Elijah Brooks. Folks call me Deacon. You've been through it, haven't you. Well. You're with us now."
+    "text": "Elijah Brooks. Folks call me Deacon. You've been through it, haven't you. [a breath] Well. You're with us now. Nobody leaves you."
   },
   "WRN_JAKUB_MEET_01": {
     "speaker": "WRN",
     "category": "JAKUB_MEET",
-    "text": "Ostrowski. From Wilcza Góra. ...I know your face. I was a girl."
+    "text": "Ostrowski. From Wilcza Góra. ...I know your face. I was a girl. [quietly] You had a dog."
   },
   "DUT_JAKUB_FALLEN_01": {
     "speaker": "DUT",
@@ -5301,12 +5301,12 @@
   "DEA_JAKUB_FALLEN_01": {
     "speaker": "DEA",
     "category": "JAKUB_FALLEN",
-    "text": "Lord, keep that man breathing. He's out. We'll come back for him, you hear me?"
+    "text": "Lord, keep that man breathing. He's out. We'll come back for him, you hear me? [quietly] Keep him. Please."
   },
   "WRN_JAKUB_FALLEN_01": {
     "speaker": "WRN",
     "category": "JAKUB_FALLEN",
-    "text": "Jakub. ...He breathes. Leave him. He has walked out of worse places than this."
+    "text": "Jakub. ...He breathes. Leave him. He has walked out of worse places than this. [a breath] He will walk out of this."
   },
   "BNT_DUT_JAK_01": {
     "speaker": "BNT",
@@ -5439,7 +5439,7 @@
   "DEA_GUNSMITH_01": {
     "speaker": "DEA",
     "category": "GUNSMITH",
-    "text": "Every engine wants a little love. Guns too. Mostly guns."
+    "text": "Every engine wants a little love. Guns too. [a breath] Mostly guns, tonight."
   },
   "DEA_GUNSMITH_02": {
     "speaker": "DEA",
@@ -5449,12 +5449,12 @@
   "WRN_GUNSMITH_01": {
     "speaker": "WRN",
     "category": "GUNSMITH",
-    "text": "Not my rifle. But it's learning."
+    "text": "Not my rifle. But it is learning."
   },
   "WRN_GUNSMITH_02": {
     "speaker": "WRN",
     "category": "GUNSMITH",
-    "text": "Sights right, grip right. Now it only has to be honest."
+    "text": "Sights right, grip right. Now it only has to be honest. [quietly] Nothing else here is."
   },
   "JAK_GUNSMITH_01": {
     "speaker": "JAK",
@@ -5744,7 +5744,7 @@
   "DEA_SQ4_EE_PROGRESS_01": {
     "speaker": "DEA",
     "category": "EE_PROGRESS",
-    "text": "There's one. Praise be."
+    "text": "There's one. [a breath] Thank You."
   },
   "DEA_SQ4_EE_PROGRESS_02": {
     "speaker": "DEA",
@@ -5779,7 +5779,7 @@
   "DEA_SQ4_EE_CANT_RISKY_01": {
     "speaker": "DEA",
     "category": "EE_CANT_RISKY",
-    "text": "That could bring the roof down on us. You say the word."
+    "text": "That could bring the roof down on us. [quietly] You say the word. I'll do it."
   },
   "DEA_SQ4_EE_WAIT_PLAYER_01": {
     "speaker": "DEA",
@@ -5799,7 +5799,7 @@
   "DEA_SQ4_EE_RESUME_02": {
     "speaker": "DEA",
     "category": "EE_RESUME",
-    "text": "Alright. Back to the Lord's work."
+    "text": "All right. Back to it. Lord willing."
   },
   "WRN_SQ4_EE_ACK_01": {
     "speaker": "WRN",
@@ -5879,7 +5879,7 @@
   "WRN_SQ4_EE_CANT_INFO_01": {
     "speaker": "WRN",
     "category": "EE_CANT_INFO",
-    "text": "We do not know it yet. I don't guess."
+    "text": "We do not know it yet. I do not guess. Guessing is how you die here."
   },
   "WRN_SQ4_EE_CANT_FIND_01": {
     "speaker": "WRN",
@@ -6641,7 +6641,7 @@
   "DEA_SQ5_MARK_DANGER_01": {
     "speaker": "DEA",
     "category": "MARK_DANGER",
-    "text": "Lord, stay away from that spot."
+    "text": "Lord, stay away from that spot. Stay away."
   },
   "DEA_SQ5_MARK_DANGER_02": {
     "speaker": "DEA",
@@ -6721,7 +6721,7 @@
   "DEA_SQ5_MARK_BOUGHT_CRATE_01": {
     "speaker": "DEA",
     "category": "MARK_BOUGHT_CRATE",
-    "text": "Crate's turning. Let's pray on it."
+    "text": "Crate's turning. [quietly] Let's pray on it."
   },
   "DEA_SQ5_MARK_BOUGHT_CRUCIBLE_01": {
     "speaker": "DEA",
@@ -6831,7 +6831,7 @@
   "DEA_SQ5_MARK_SHORT_LOTS_01": {
     "speaker": "DEA",
     "category": "MARK_SHORT_LOTS",
-    "text": "That's more Scrip than I've seen all week. I'll work on it."
+    "text": "That's more Scrip than I've seen all week. [a breath] I'll work on it."
   },
   "DEA_SQ5_MARK_SHORT_01": {
     "speaker": "DEA",
@@ -6841,7 +6841,7 @@
   "DEA_SQ5_MARK_EXPIRED_01": {
     "speaker": "DEA",
     "category": "MARK_EXPIRED",
-    "text": "Couldn't come up with it. Letting that one go."
+    "text": "Couldn't come up with it. Letting that one go. [quietly] Letting it go."
   },
   "DEA_SQ5_MARK_FOR_YOU_HOLD_01": {
     "speaker": "DEA",
@@ -6936,7 +6936,7 @@
   "WRN_SQ5_MARK_DANGER_01": {
     "speaker": "WRN",
     "category": "MARK_DANGER",
-    "text": "Bad place. Stay away."
+    "text": "Bad place. Stay away. [quietly] I have seen what is there."
   },
   "WRN_SQ5_MARK_DANGER_02": {
     "speaker": "WRN",
@@ -7136,7 +7136,7 @@
   "WRN_SQ5_MARK_EXPIRED_01": {
     "speaker": "WRN",
     "category": "MARK_EXPIRED",
-    "text": "Not enough. I stop."
+    "text": "Not enough. I stop. [a breath] I stop."
   },
   "WRN_SQ5_MARK_FOR_YOU_HOLD_01": {
     "speaker": "WRN",
@@ -7326,32 +7326,32 @@
   "DEA_SQ6_PERK_TIER_01": {
     "speaker": "DEA",
     "category": "PERK_TIER",
-    "text": "Second chamber behind the first. Clever plumbing. Hate it."
+    "text": "Second chamber behind the first. Clever plumbing. [quietly] Hate it. Hate how much I like it."
   },
   "DEA_SQ6_PERK_TIER_02": {
     "speaker": "DEA",
     "category": "PERK_TIER",
-    "text": "It read my hand before it poured. Machine shouldn't do that."
+    "text": "It read my hand before it poured. [a breath] A machine shouldn't know a man's hand. Nothing here should."
   },
   "DEA_SQ6_PERK_PROC_01": {
     "speaker": "DEA",
     "category": "PERK_PROC",
-    "text": "Lord. Something in me just held."
+    "text": "Lord. [a breath] Something in me just held. Thank You."
   },
   "DEA_SQ6_PLAQUE_01": {
     "speaker": "DEA",
     "category": "PLAQUE",
-    "text": "Swiss rivets. Good work on a bad job."
+    "text": "Swiss rivets. Good work on a bad job. [quietly] Most of the work here is."
   },
   "DEA_SQ6_PLAQUE_CRUCIBLE_01": {
     "speaker": "DEA",
     "category": "PLAQUE_CRUCIBLE",
-    "text": "Mod. R-E. Pat. pend. Somebody's waiting on a patent for this thing. Hope they never get it."
+    "text": "Mod. R-E. Pat. pend. Somebody's waiting on a patent for this thing. [a breath] Lord, let 'em wait forever."
   },
   "WRN_SQ6_PERK_TIER_01": {
     "speaker": "WRN",
     "category": "PERK_TIER",
-    "text": "More. It always wants you to have more."
+    "text": "More. It always wants you to have more. [quietly] That is how they got the laborers too. More."
   },
   "WRN_SQ6_PERK_TIER_02": {
     "speaker": "WRN",
@@ -7361,7 +7361,7 @@
   "WRN_SQ6_PERK_PROC_01": {
     "speaker": "WRN",
     "category": "PERK_PROC",
-    "text": "Not yet. Not today."
+    "text": "Not yet. [a breath] Not today. Not here."
   },
   "WRN_SQ6_PLAQUE_01": {
     "speaker": "WRN",
@@ -7371,7 +7371,7 @@
   "WRN_SQ6_PLAQUE_CRUCIBLE_01": {
     "speaker": "WRN",
     "category": "PLAQUE_CRUCIBLE",
-    "text": "A furnace that teaches guns. Of course they built that before bread."
+    "text": "A furnace that teaches guns. [quietly] Of course they built it before bread. They always build it before bread."
   },
   "JAK_SQ6_PLAQUE_01": {
     "speaker": "JAK",
@@ -7456,12 +7456,12 @@
   "DEA_INN_RISE_01": {
     "speaker": "DEA",
     "category": "INN_RISE",
-    "text": "Lord have mercy, the boy's standing up. That isn't him. That isn't him!"
+    "text": "Lord have mercy, the boy's standing up. That isn't him. [shouting] That isn't him!"
   },
   "WRN_INN_RISE_01": {
     "speaker": "WRN",
     "category": "INN_RISE",
-    "text": "The soldier. He is standing. Do not look at his face. Shoot."
+    "text": "The soldier. He is standing. Do not look at his face. [a breath] Shoot. Shoot."
   },
   "KUB_INN_CHAT_01": {
     "speaker": "KUB",
@@ -7626,12 +7626,12 @@
   "DEA_INN_SURV_TURN_01": {
     "speaker": "DEA",
     "category": "INN_SURV_TURN",
-    "text": "Lord, one of the folks upstairs is rising. Don't let them suffer it. Put them to rest."
+    "text": "Lord, one of the folks upstairs is rising. Don't let them suffer it. [quietly] Put them to rest. Please."
   },
   "WRN_INN_SURV_TURN_01": {
     "speaker": "WRN",
     "category": "INN_SURV_TURN",
-    "text": "Upstairs. The civilian is turning. Do not wait for them to look at you."
+    "text": "Upstairs. The civilian is turning. Do not wait for them to look at you. [quietly] You will not shoot if they look at you."
   },
   "OPR_ECO_MILESTONE_01": {
     "speaker": "OPR",
@@ -7706,12 +7706,12 @@
   "DEA_ECO_PWR_TONIC_01": {
     "speaker": "DEA",
     "category": "ECO_PWR_TONIC",
-    "text": "Bottle for everybody. Drink it slow, it's all we get."
+    "text": "Bottle for everybody. Drink it slow. [a breath] It's all we get, and we didn't earn it."
   },
   "WRN_ECO_PWR_TONIC_01": {
     "speaker": "WRN",
     "category": "ECO_PWR_TONIC",
-    "text": "A gift. Nothing here is a gift. Drink anyway."
+    "text": "A gift. Nothing here is a gift. [a breath] Drink anyway. Drink."
   },
   "DUT_ECO_PING_TONIC_01": {
     "speaker": "DUT",
@@ -7751,12 +7751,12 @@
   "DEA_ECO_SALVAGE_01": {
     "speaker": "DEA",
     "category": "ECO_SALVAGE",
-    "text": "Tags. Rest easy, son. I've got your name."
+    "text": "Tags. [quietly] Rest easy, son. I've got your name. Somebody'll know where you are."
   },
   "WRN_ECO_SALVAGE_01": {
     "speaker": "WRN",
     "category": "ECO_SALVAGE",
-    "text": "A name. They had names, once."
+    "text": "A name. [quietly] They had names, once. I keep them. Somebody should keep them."
   },
   "DUT_SQ7_M0_EGG_HEARD_01": {
     "speaker": "DUT",
@@ -8286,22 +8286,22 @@
   "DEA_PERK_SKYHOOK_01": {
     "speaker": "DEA",
     "category": "PERK_SKYHOOK",
-    "text": "Light as a feather. Light as a bird. Lord, don't let me get used to it."
+    "text": "Light as a feather. [a breath] Lord, don't let me get used to it. Don't let me get used to any of this."
   },
   "DEA_PERK_SKYHOOK_02": {
     "speaker": "DEA",
     "category": "PERK_SKYHOOK",
-    "text": "Somebody made this so you'd land soft. That's a kind thing to make. I'd like to meet 'em."
+    "text": "Somebody made this so you'd land soft. That's a kind thing to make. [quietly] I'd like to shake her hand."
   },
   "WRN_PERK_SKYHOOK_01": {
     "speaker": "WRN",
     "category": "PERK_SKYHOOK",
-    "text": "Bubbles. ...I don't like my feet off the ground. I'll make an exception."
+    "text": "Bubbles. ...I do not like my feet off the ground. [a breath] I will make an exception. One."
   },
   "WRN_PERK_SKYHOOK_02": {
     "speaker": "WRN",
     "category": "PERK_SKYHOOK",
-    "text": "Jette. The label says Jette. ...She said no. Good."
+    "text": "Jette. The label says Jette. ...She said no. [quietly] Good. Somebody said no."
   },
   "DUT_PERK_MAGPIE_01": {
     "speaker": "DUT",
@@ -8326,22 +8326,22 @@
   "DEA_PERK_MAGPIE_01": {
     "speaker": "DEA",
     "category": "PERK_MAGPIE",
-    "text": "Mesquite honey. She made it with what was lying around. That's the best way anything's ever been made."
+    "text": "Mesquite honey. She made it with what was lying around. [a breath] That's the best way anything was ever made. That, and prayer."
   },
   "DEA_PERK_MAGPIE_02": {
     "speaker": "DEA",
     "category": "PERK_MAGPIE",
-    "text": "Nothing on this range goes to waste. Amen, sergeant."
+    "text": "Nothing on this range goes to waste. Amen, sergeant. [quietly] Amen."
   },
   "WRN_PERK_MAGPIE_01": {
     "speaker": "WRN",
     "category": "PERK_MAGPIE",
-    "text": "A thief's bird. ...The only one that comes back. I read the label. I read everything."
+    "text": "A thief's bird. ...The only one that comes back. [a breath] I read the label. I read everything. It is how I am still alive."
   },
   "WRN_PERK_MAGPIE_02": {
     "speaker": "WRN",
     "category": "PERK_MAGPIE",
-    "text": "Sixty-two kills and now they pay me twice. Good."
+    "text": "Sixty-two, and now they pay me twice. [quietly] Nobody ever paid me once."
   },
   "OPR_EXFIL_OPEN_M2_01": {
     "speaker": "OPR",
@@ -8611,12 +8611,12 @@
   "DEA_M4B_CRUCIBLE_01": {
     "speaker": "DEA",
     "category": "M4B_CRUCIBLE",
-    "text": "They bolted a forge to the galley floor. For the crew. The crew they didn't {have}."
+    "text": "They bolted a forge to the galley floor. For the crew. [quietly] The crew they didn't {have}."
   },
   "DEA_M4B_BORDWART_01": {
     "speaker": "DEA",
     "category": "M4B_BORDWART",
-    "text": "He's part of the engine. He's PART of it. Anselm... I'm sorry, brother. I'm gonna shut her {down}."
+    "text": "He's part of the engine. He's PART of it. Anselm... [a breath] I'm sorry, brother. I'm gonna shut her {down}."
   },
   "DEA_M4B_LONDON_01": {
     "speaker": "DEA",
@@ -8636,7 +8636,7 @@
   "DEA_M4B_AUTOPILOT_01": {
     "speaker": "DEA",
     "category": "M4B_AUTOPILOT",
-    "text": "Okay. Okay, girl. Key's in. Now I need you to let {go}."
+    "text": "Okay. Okay, girl. Key's in. [quietly] Now I need you to let {go}."
   },
   "DEA_M4B_AUTOPILOT_02": {
     "speaker": "DEA",
@@ -8646,12 +8646,12 @@
   "DEA_M4B_HEADING_01": {
     "speaker": "DEA",
     "category": "M4B_HEADING",
-    "text": "That's not home. Where's it taking {us}?"
+    "text": "That's not home. [a breath] Where's it taking {us}?"
   },
   "WRN_M4B_ARRIVE_01": {
     "speaker": "WRN",
     "category": "M4B_ARRIVE",
-    "text": "No crew. Buckled harnesses. ...They were taken OUT. Like Tomek. Like all of {them}."
+    "text": "No crew. Buckled harnesses. ...They were taken OUT. Like Tomek. [a breath] Like all of {them}."
   },
   "WRN_M4B_TAGS_01": {
     "speaker": "WRN",
@@ -8901,7 +8901,7 @@
   "DEA_M4A_FILE_01": {
     "speaker": "DEA",
     "category": "M4A_FILE",
-    "text": "That engine's not burning anything. It's just... turning. Nothing turns for free. {Nothing}."
+    "text": "That engine's not burning anything. It's just... turning. [quietly] Nothing turns for free. {Nothing}."
   },
   "DEA_M4A_FILE_02": {
     "speaker": "DEA",
@@ -8931,7 +8931,7 @@
   "WRN_M4A_ARRIVE_01": {
     "speaker": "WRN",
     "category": "M4A_ARRIVE",
-    "text": "The transfer lists said Thalbach. Two hundred names. I'm going to find where they put {them}."
+    "text": "The transfer lists said Thalbach. Two hundred names. [a breath] I am going to find where they put {them}."
   },
   "WRN_M4A_FILE_01": {
     "speaker": "WRN",
@@ -9231,7 +9231,7 @@
   "DEA_M4D_ARRIVE_01": {
     "speaker": "DEA",
     "category": "M4D_ARRIVE",
-    "text": "It's a store. The whole place is a {store}."
+    "text": "It's a store. [quietly] The whole place is a {store}."
   },
   "DEA_M4D_CRUCIBLE_01": {
     "speaker": "DEA",
@@ -9241,12 +9241,12 @@
   "DEA_M4D_HUM_01": {
     "speaker": "DEA",
     "category": "M4D_HUM",
-    "text": "That hum. That's the same hum as the lantern. That's the same hum as the inn. It's all one machine. It was always one {machine}."
+    "text": "That hum. Same hum as the lantern. Same hum as the inn. It's all one machine. [a breath] It was always one {machine}."
   },
   "DEA_M4D_PILCH_01": {
     "speaker": "DEA",
     "category": "M4D_PILCH",
-    "text": "That's not a machine with a man in it. That's a man with a machine on him. ...You can't fix that. You can only stop {it}."
+    "text": "That's not a machine with a man in it. That's a man with a machine on him. ...You can't fix that. [quietly] You can only stop {it}."
   },
   "DEA_M4D_MANAGER_01": {
     "speaker": "DEA",
@@ -9261,7 +9261,7 @@
   "DEA_M4D_CANCEL_01": {
     "speaker": "DEA",
     "category": "M4D_CANCEL",
-    "text": "Go on and rest now, all of you. We're done {here}."
+    "text": "Go on and rest now, all of you. [a breath] 'The last enemy that shall be destroyed is death.' ...We're done {here}."
   },
   "WRN_M4D_ARRIVE_01": {
     "speaker": "WRN",
@@ -9296,7 +9296,7 @@
   "WRN_M4D_MANAGER_01": {
     "speaker": "WRN",
     "category": "M4D_MANAGER",
-    "text": "She sold them the engines. She sold the inn its coffins. ...Sixty-two. I'm counting {you}."
+    "text": "She sold them the engines. She sold the inn its coffins. She sold the sickness its glass. ...Sixty-two. I'm counting {you}."
   },
   "WRN_M4D_RENEW_01": {
     "speaker": "WRN",
@@ -9876,7 +9876,7 @@
   "DEA_M4C_HALE_01": {
     "speaker": "DEA",
     "category": "M4C_HALE",
-    "text": "Sir. With respect. You put men in glass boxes. I've got nothing else to say to {you}."
+    "text": "Sir. With respect. You put men in glass boxes. [quietly] I've got nothing else to say to {you}."
   },
   "DEA_M4C_MOON_01": {
     "speaker": "DEA",
@@ -10076,12 +10076,12 @@
   "DEA_SQ8_PERK_TIER4_01": {
     "speaker": "DEA",
     "category": "PERK_TIER4",
-    "text": "This one's mine for good. Lord, keep it that way."
+    "text": "This one's mine for good. [quietly] Lord, keep it that way. Keep something that way."
   },
   "DEA_SQ8_PERK_TIER4_02": {
     "speaker": "DEA",
     "category": "PERK_TIER4",
-    "text": "Fourth glass. That one went all the way down. I can feel it in my bones."
+    "text": "Fourth glass. Went all the way down. I feel it in my bones. [a breath] Fourth. Of course it's the fourth."
   },
   "WRN_SQ8_PERK_TIER4_01": {
     "speaker": "WRN",
@@ -10091,7 +10091,7 @@
   "WRN_SQ8_PERK_TIER4_02": {
     "speaker": "WRN",
     "category": "PERK_TIER4",
-    "text": "Four measures. It doesn't wear off. One fewer thing to count."
+    "text": "Four measures. It does not wear off. [quietly] One fewer thing to count."
   },
   "JAK_SQ8_PERK_TIER4_01": {
     "speaker": "JAK",
@@ -10121,22 +10121,22 @@
   "DEA_SQ8_LATE_KIT_01": {
     "speaker": "DEA",
     "category": "LATE_KIT",
-    "text": "Lord, it's a long night. All right. I'm loaded for the rest of it."
+    "text": "Lord, it's a long night. [exhausted] All right. I'm loaded for the rest of it. Whatever the rest is."
   },
   "DEA_SQ8_LATE_KIT_02": {
     "speaker": "DEA",
     "category": "LATE_KIT",
-    "text": "Fresh tonic, fresh drum. Come on then."
+    "text": "Fresh tonic, fresh drum. [a breath] Come on, then. Come on."
   },
   "WRN_SQ8_LATE_KIT_01": {
     "speaker": "WRN",
     "category": "LATE_KIT",
-    "text": "Round twenty-five. New gun, new measure. I'm counting from here."
+    "text": "Round twenty-five. New gun, new measure. I am counting from here. [quietly] Again."
   },
   "WRN_SQ8_LATE_KIT_02": {
     "speaker": "WRN",
     "category": "LATE_KIT",
-    "text": "Chicago Lament, twice taught. Thirty rounds. I'll make them count."
+    "text": "Chicago Lament, twice taught. Thirty rounds. I will make them count. [a breath] I always do."
   },
   "TRU_COMP_CALL_01": {
     "speaker": "TRU",
@@ -10446,12 +10446,12 @@
   "DEA_MARKE_FIRST_01": {
     "speaker": "DEA",
     "category": "MARKE_FIRST",
-    "text": "[quiet] Hold on. Look at the hand. ...Right hand. There's a light in it, under the skin. [a breath] 'The mark in the right hand, or in the forehead.' My daddy read that one slow, every time. Lord. I did not come all this way to find it true."
+    "text": "[quiet] Hold on. Look at the hand. ...Right hand. There's a light in it, under the skin. [a breath] 'And he causeth all... to receive a mark in their right hand, or in their foreheads.' My daddy read that one slow, every time. [quietly] Lord. I did not come all this way to find it true."
   },
   "DEA_MARKE_KILL_01": {
     "speaker": "DEA",
     "category": "MARKE_KILL",
-    "text": "Right in the mark. Went out like a lamp."
+    "text": "Right in the mark. Went out like a lamp. [quietly] Like a lamp."
   },
   "DEA_MARKE_KILL_02": {
     "speaker": "DEA",
@@ -10461,7 +10461,7 @@
   "DEA_MARKE_KILL_03": {
     "speaker": "DEA",
     "category": "MARKE_KILL",
-    "text": "I keep hitting that spot, and I keep not liking how easy they go."
+    "text": "I keep hitting that spot, and I keep not liking how easy they go. [a breath] Somebody made 'em easy."
   },
   "PEG_MARKE_FIRST_01": {
     "speaker": "PEG",
@@ -10486,7 +10486,7 @@
   "WRN_MARKE_FIRST_01": {
     "speaker": "WRN",
     "category": "MARKE_FIRST",
-    "text": "I have seen it before tonight. On the dead by the road. A glass splinter in the right hand, and it was still warm. Same hand, every time. I thought it was a wound. It is not a wound."
+    "text": "I have seen it before tonight. On the dead by the road. A glass splinter in the right hand, and it was still warm. Same hand, every time. I thought it was a wound. [a breath] It is not a wound. The Russian dead do not have it. Only theirs. [quietly] Somebody gave it to them."
   },
   "WRN_MARKE_KILL_01": {
     "speaker": "WRN",
@@ -11061,7 +11061,7 @@
   "DEA_SQD_RISE_01": {
     "speaker": "DEA",
     "category": "SQD_RISE",
-    "text": "They came to help us, and now they're getting up. Lord, have mercy."
+    "text": "They came to help us, and now they're getting up. [a breath] Don't anybody call it a judgment. It ain't. It's a debt. ...Lord, have mercy."
   },
   "DEA_SQD_RISE_02": {
     "speaker": "DEA",
@@ -11071,12 +11071,12 @@
   "WRN_SQD_RISE_01": {
     "speaker": "WRN",
     "category": "SQD_RISE",
-    "text": "Those were the men who came for us. Now they come for us again."
+    "text": "Those were the men who came for us. [quietly] Now they come for us again. They do not know the difference."
   },
   "WRN_SQD_RISE_02": {
     "speaker": "WRN",
     "category": "SQD_RISE",
-    "text": "Shoot them. They would want it. I would want it."
+    "text": "Shoot them. They would want it. [a breath] I would want it. Promise me you would."
   },
   "DUT_SQD_RISE_01": {
     "speaker": "DUT",
@@ -11396,22 +11396,22 @@
   "DEA_PERK_LEDGER_01": {
     "speaker": "DEA",
     "category": "PERK_LEDGER",
-    "text": "Ka-ching. Lord forgive me, that's a beautiful sound."
+    "text": "Ka-ching. [a breath] Lord forgive me, that's a beautiful sound in an ugly place."
   },
   "DEA_PERK_LEDGER_02": {
     "speaker": "DEA",
     "category": "PERK_LEDGER",
-    "text": "Machine says I'm solvent. Machine's the first one ever did."
+    "text": "Machine says I'm solvent. [quietly] Machine's the first one ever did. Don't trust it."
   },
   "WRN_PERK_LEDGER_01": {
     "speaker": "WRN",
     "category": "PERK_LEDGER",
-    "text": "Cold, cheap, and it counts. Like the man who made it, probably."
+    "text": "Cold, cheap, and it counts. [a breath] Like the man who made it. Like me."
   },
   "WRN_PERK_LEDGER_02": {
     "speaker": "WRN",
     "category": "PERK_LEDGER",
-    "text": "A bell every time I earn. I will shoot the bell."
+    "text": "A bell every time I earn. [quietly] I will shoot the bell."
   },
   "JAK_PERK_LEDGER_01": {
     "speaker": "JAK",
@@ -11611,12 +11611,12 @@
   "DEA_BONUS_LEDGER_01": {
     "speaker": "DEA",
     "category": "BONUS_LEDGER",
-    "text": "A little extra in the tin every time. The Lord provides, and so does the lager."
+    "text": "A little extra in the tin every time. [quietly] The Lord provides. So does the lager. One of 'em wants it back."
   },
   "WRN_BONUS_LEDGER_01": {
     "speaker": "WRN",
     "category": "BONUS_LEDGER",
-    "text": "It's counting for me. Fine. I count too."
+    "text": "It is counting for me. Fine. [a breath] I count too. I count better."
   },
   "OPR_BOSS_PAUL_01": {
     "speaker": "OPR",
@@ -12005,13 +12005,13 @@
   "DEA_PAUL_01": {
     "speaker": "DEA",
     "category": "PAUL",
-    "text": "That's a soldier. That's a GI. Lord have mercy, what'd they pump into him?",
+    "text": "That's a soldier. That's a GI. [a breath] Lord have mercy. What did they put in him. What did they put in him.",
     "condition": "first sight"
   },
   "DEA_PAUL_02": {
     "speaker": "DEA",
     "category": "PAUL",
-    "text": "Easy, big man. Easy. Nobody's leaving you.",
+    "text": "Easy, big man. Easy. Nobody's leaving you. [quietly] Nobody's leaving you here.",
     "condition": "Calm, after a bottle breaks"
   },
   "DEA_PAUL_PRAYER_01": {
@@ -12029,7 +12029,7 @@
   "WRN_PAUL_01": {
     "speaker": "WRN",
     "category": "PAUL",
-    "text": "They dosed him to see when he would die. He would not die. ...I know this file. I know this kind of file.",
+    "text": "They dosed him to see when he would die. He would not die. [a breath] ...I know this file. I have seen this kind of file. In two languages.",
     "condition": "first sight"
   },
   "WRN_PAUL_02": {
@@ -12101,7 +12101,7 @@
   "DEA_SLENDER_01": {
     "speaker": "DEA",
     "category": "SLENDER",
-    "text": "He's just doing his rounds. Lord, he's been doing his rounds this whole time.",
+    "text": "He's just doing his rounds. [quietly] Lord, he's been doing his rounds this whole time. Nobody told him.",
     "condition": "first sight"
   },
   "DEA_SLENDER_02": {
@@ -12113,13 +12113,13 @@
   "DEA_QUARANTINE_01": {
     "speaker": "DEA",
     "category": "QUARANTINE",
-    "text": "Clock stopped at three. Mama always said nothing good happens after three.",
+    "text": "Clock stopped at three. [a breath] Mama said nothing good happens after three. She never said what happens if it stays three.",
     "condition": "returned"
   },
   "DEA_SLENDER_DEAD_01": {
     "speaker": "DEA",
     "category": "SLENDER_DEAD",
-    "text": "Rest easy, watchman. We'll keep the lights on.",
+    "text": "Rest easy, watchman. [quietly] 'Watchman, what of the night?' ...It's over for you. We'll keep the lights.",
     "condition": "his death"
   },
   "WRN_SLENDER_01": {
@@ -12137,13 +12137,13 @@
   "WRN_QUARANTINE_01": {
     "speaker": "WRN",
     "category": "QUARANTINE",
-    "text": "My page was neat. He has better handwriting than me.",
+    "text": "My page was neat. He has better handwriting than me. [quietly] He had more time.",
     "condition": "returned"
   },
   "WRN_SLENDER_DEAD_01": {
     "speaker": "WRN",
     "category": "SLENDER_DEAD",
-    "text": "He wrote everything down. Every hour. ...I understand him.",
+    "text": "He wrote everything down. Every hour. ...I understand him. [a breath] I do not want to understand him.",
     "condition": "his death"
   },
   "RADIO_UBOAT_01": {
@@ -12280,17 +12280,17 @@
   "WRN_M4D_EARTH_DIM_01": {
     "speaker": "WRN",
     "category": "M4D_EARTH",
-    "text": "Look at the Earth. The violet. It's pulling back."
+    "text": "Look at the Earth. The violet. [a breath] It is pulling back."
   },
   "WRN_M4D_EARTH_DIM_02": {
     "speaker": "WRN",
     "category": "M4D_EARTH",
-    "text": "London is dark again. Good. Dark is good."
+    "text": "London is dark again. [quietly] Good. Dark is good. Dark means they are lying down."
   },
   "WRN_M4D_EARTH_SPREAD_01": {
     "speaker": "WRN",
     "category": "M4D_EARTH",
-    "text": "It's spreading over the Earth. Every round, a little more."
+    "text": "It is spreading over the Earth. Every round, a little more. [a breath] Every round, more of them get up."
   },
   "JAK_M4D_CONSOLE_01": {
     "speaker": "JAK",
@@ -12385,7 +12385,7 @@
   "DEA_M4B_WING_FALL_01": {
     "speaker": "DEA",
     "category": "M4B_WING_FALL",
-    "text": "Lord, I saw the sea. Haul me in, I'm {done}."
+    "text": "Lord, I saw the sea. [breathing heavily] Haul me in, I'm {done}."
   },
   "WRN_M4B_WING_FALL_01": {
     "speaker": "WRN",
@@ -12415,7 +12415,7 @@
   "WRN_M4B_LASTCALL_REPLY_01": {
     "speaker": "WRN",
     "category": "M4B_LASTCALL_REPLY",
-    "text": "Collected. Like my brother. They knew, at the end. They {knew}."
+    "text": "Collected. Like my brother. They knew, at the end. [quietly] They {knew}."
   },
   "RUH_PEOPLE_TALK_01": {
     "speaker": "RUH",
@@ -12460,7 +12460,7 @@
   "DEA_M4B_FORMATION_DOWN_01": {
     "speaker": "DEA",
     "category": "M4B_FORMATION_DOWN",
-    "text": "Lord keep them. Whoever's in it. If anybody {is}."
+    "text": "Lord keep them. Whoever's in it. [a breath] If anybody {is}."
   },
   "WRN_M4B_FORMATION_DOWN_01": {
     "speaker": "WRN",
@@ -12620,7 +12620,7 @@
   "DEA_M4A_RAID_01": {
     "speaker": "DEA",
     "category": "M4A_RAID",
-    "text": "Lord, that was close. Nobody under it. Good."
+    "text": "Lord, that was close. Nobody under it. [a breath] Good."
   },
   "WRN_M4A_RAID_01": {
     "speaker": "WRN",
@@ -12685,7 +12685,7 @@
   "DEA_BALLAST_LOAD_01": {
     "speaker": "DEA",
     "category": "BALLAST_LOAD",
-    "text": "Lord, keep him. Wherever they're taking him."
+    "text": "Lord, keep him. Wherever they're sending him. [quietly] Wherever they're sending what's in him."
   },
   "WRN_BALLAST_LOAD_01": {
     "speaker": "WRN",
@@ -12705,12 +12705,12 @@
   "DEA_BALLAST_DUMP_01": {
     "speaker": "DEA",
     "category": "BALLAST_DUMP",
-    "text": "Lord, forgive me, that's the only burial they get."
+    "text": "Lord, forgive me. That's the only burial they get. [quietly] Let the sea keep them. Let it keep them down."
   },
   "WRN_BALLAST_DUMP_01": {
     "speaker": "WRN",
     "category": "BALLAST_DUMP",
-    "text": "Rest easy. Nobody's selling you now."
+    "text": "Rest easy. Nobody is selling you now. [a breath] Nobody."
   },
   "PEG_BALLAST_DUMP_THIRD_01": {
     "speaker": "PEG",
@@ -12730,7 +12730,7 @@
   "DEA_WONDER_UNDERTOW_01": {
     "speaker": "DEA",
     "category": "WONDER_UNDERTOW",
-    "text": "Lord, it's humming. They all hum."
+    "text": "Lord, it's humming. They all hum. [quietly] Everything they build hums the same note."
   },
   "WRN_WONDER_UNDERTOW_01": {
     "speaker": "WRN",
@@ -12805,12 +12805,12 @@
   "DEA_BOSS_KIELHOLER_01": {
     "speaker": "DEA",
     "category": "BOSS_KIELHOLER",
-    "text": "Lord, he's still guarding that boat. Let's give the man his rest."
+    "text": "Lord, he's still guarding that boat. [a breath] Let's give the man his rest. He's earned it twice."
   },
   "DEA_BOSS_KIELHOLER_02": {
     "speaker": "DEA",
     "category": "BOSS_KIELHOLER",
-    "text": "Go on home, Captain. Your watch is over."
+    "text": "Go on home, Captain. Your watch is over. [quietly] It's over."
   },
   "WRN_BOSS_KIELHOLER_01": {
     "speaker": "WRN",
@@ -12820,7 +12820,7 @@
   "WRN_BOSS_KIELHOLER_02": {
     "speaker": "WRN",
     "category": "BOSS_KIELHOLER",
-    "text": "He let go at the end. Didn't fight it."
+    "text": "He let go at the end. Did not fight it. [a breath] I will write that he did not fight it."
   },
   "RAD_M2_CODE_01": {
     "speaker": "RAD",
@@ -12900,12 +12900,12 @@
   "DEA_LF_DIESELS_01": {
     "speaker": "DEA",
     "category": "LF_DIESELS",
-    "text": "There she is. Listen to that. Somebody built that to be quiet. Now she's loud."
+    "text": "There she is. Listen to that. Somebody built her to be quiet. [a breath] Now she's loud. Lord, let her stay loud long enough."
   },
   "DEA_LF_LOG_01": {
     "speaker": "DEA",
     "category": "LF_LOG",
-    "text": "Somebody built that boat to be quiet. I'd like to hear it loud, once. Brecht wrote down how."
+    "text": "Somebody built that boat to be quiet. I'd like to hear it loud, once. [quietly] Brecht wrote down how."
   },
   "OPR_LF_KEY_01": {
     "speaker": "OPR",
