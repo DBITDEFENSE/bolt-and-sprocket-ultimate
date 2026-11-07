@@ -17,6 +17,13 @@ extends Node3D
 ## the pure ADS math through the real viewmodel rig: it needs no GPU.
 ## The viewmodel is posed with WeaponHolder.steady (no sway / bob / breathing / kick), so the check is exact.
 ## Uses a Player that is never added to the tree, so the mouse is untouched.
+## T-182: the markers on the aim point are not enough (the T-047 check passed 324/324 while 11 guns' real sights sat
+## 3-11 px off it or hid the front post: a marker on a hood top, a rear marker under the notch). Every build is also
+## measured from its triangles (SightPicture: the front post's tip and the rear opening round the aim point, the
+## survivor's hands included) and fails past --geo-tol px (default 2; --no-geometry skips it). --geometry prints
+## every row, --geometry-map adds the class map, --autofit fits the markers to the geometry (a fitting aid: prints
+## model_fit.json values), --live measures the sight drift the game's sway / kick adds, --arms=<survivor> picks the
+## hands.
 
 const W: int = 1280
 const H: int = 720
@@ -51,6 +58,58 @@ var _ascii: bool = false
 ## (sight_rear / sight_front) and how many metres a pixel is at that marker's depth.
 var _fit: Vector2 = Vector2.INF
 var _fit_front: bool = false
+## --live (T-182): the sight picture as the game animates it (sway, bob, breathing, kick on), not the bare pose.
+var _live: bool = false
+var _live_rows: Array[String] = []
+## --geometry (T-182): where the real sight geometry sits round the aim point (SightPicture.measure); --geometry-map
+## also prints its class map (R rear sight, F front sight, o other).
+var _geometry: bool = false      # print every geometry row (failures always print)
+var _geo_check: bool = true      # the geometry counts toward PASS / FAIL (--no-geometry: markers only, as before T-182)
+var _geo_tol: float = 2.0
+var _geom_map: bool = false
+var _autofit_on: bool = false
+var _arms: String = ""   # --arms=<survivor>: whose arms hold the gun (default: the profile's survivor, Dutch's as the fallback)
+
+
+## T-182: the drawn (live) sight marks through the game's own viewmodel animation, fully aimed, standing still:
+## idle = the worst offset of either mark from the aim point over 4 s; misalign = the worst rear-to-front gap (the
+## sights not lined up with each other); turn = the offset 0.6 s after a quick 0.2 s turn; shot = 0.6 s after a
+## shot's viewmodel kick. Pixels at 720 p with the camera's FOV. Leaves the holder steady as it found it.
+static func live_probe(h: WeaponHolder, fov: float) -> Dictionary:
+	var was: bool = h.steady
+	h.steady = false
+	var dt: float = 1.0 / 60.0
+	var worst: float = 0.0
+	var mis: float = 0.0
+	var measure: Callable = func() -> Array:
+		var m: Array = h.sight_marks_camera(true)
+		var eye: Vector3 = Vector3.ZERO
+		if h.player != null and h.player.camera != null:
+			eye = Vector3(h.player.camera.h_offset, h.player.camera.v_offset, 0.0)
+		var r: Vector2 = WeaponHolder.project_offset_px((m[0] as Vector3) - eye, fov, 720.0)
+		var f: Vector2 = WeaponHolder.project_offset_px((m[1] as Vector3) - eye, fov, 720.0)
+		return [r, f]
+	for i: int in 240:
+		h.call("_animate", dt, false)
+		var rf: Array = measure.call()
+		worst = maxf(worst, maxf((rf[0] as Vector2).length(), (rf[1] as Vector2).length()))
+		mis = maxf(mis, ((rf[0] as Vector2) - (rf[1] as Vector2)).length())
+	# a quick turn (about 90 deg/s for 0.2 s), then 0.6 s still
+	for j: int in 12:
+		h.set("_look_in", Vector2(0.026, 0.0))
+		h.call("_animate", dt, false)
+	for k: int in 36:
+		h.call("_animate", dt, false)
+	var t: Array = measure.call()
+	var turn: float = maxf((t[0] as Vector2).length(), (t[1] as Vector2).length())
+	h.call("_vm_kick", 1.0)
+	for k2: int in 36:
+		h.call("_animate", dt, false)
+	var s: Array = measure.call()
+	var shot: float = maxf((s[0] as Vector2).length(), (s[1] as Vector2).length())
+	h.steady = was
+	h.call("_animate", dt, false)
+	return {"idle": worst, "misalign": mis, "turn": turn, "shot": shot}
 
 
 func _ready() -> void:
@@ -59,7 +118,8 @@ func _ready() -> void:
 		if a.begins_with("--out="):
 			_out = a.substr(6)
 		elif a.begins_with("--only="):
-			_ids = PackedStringArray(a.substr(7).split(","))
+			# ';' separates ids when a build string has its own commas ("bar:sights=aa_sight,grip=bipod;mg42")
+			_ids = PackedStringArray(a.substr(7).split(";" if a.contains(";") else ","))
 		elif a.begins_with("--tol="):
 			_tol = float(a.substr(6))
 		elif a == "--no-shots":
@@ -70,6 +130,21 @@ func _ready() -> void:
 			_kits_only = true
 		elif a == "--picture":
 			_picture = true
+		elif a == "--live":
+			_live = true
+		elif a == "--geometry":
+			_geometry = true
+		elif a == "--geometry-map":
+			_geometry = true
+			_geom_map = true
+		elif a == "--autofit":
+			_autofit_on = true
+		elif a == "--no-geometry":
+			_geo_check = false
+		elif a.begins_with("--geo-tol="):
+			_geo_tol = float(a.substr(10))
+		elif a.begins_with("--arms="):
+			_arms = a.substr(7)
 		elif a == "--ascii":
 			_picture = true
 			_ascii = true
@@ -98,6 +173,8 @@ func _ready() -> void:
 	_fake.camera = _cam
 	_holder = WeaponHolder.new()
 	_cam.add_child(_holder)
+	if _arms != "":
+		GameState.character_id = StringName(_arms)   # T-182: that survivor's arms (hands differ in size)
 	_holder.setup(_fake)
 	_holder.steady = true
 	_build_overlay()
@@ -246,15 +323,43 @@ func _measure_and_shoot() -> void:
 	for v: Vector2 in live + pure:
 		worst = maxf(worst, v.length())
 	var ok: bool = worst <= _tol
-	if not ok:
+	var gm: Dictionary = SightPicture.measure(_holder, _cam.fov) if (_geo_check or _geometry) else {}
+	var geo_ok: bool = not _geo_check or float(gm.get("err", 0.0)) <= _geo_tol
+	if not (ok and geo_ok):
 		_fails += 1
 	var rear: Vector2 = live[0]
 	var front: Vector2 = live[1]
-	var row: String = "%-18s %8.2f %8.2f %8.2f %8.2f  %s" % [id, rear.x, rear.y, front.x, front.y, "PASS" if ok else "FAIL (%.2f px)" % worst]
+	var verdict: String = "PASS"
+	if not ok:
+		verdict = "FAIL (%.2f px)" % worst
+	elif not geo_ok:
+		verdict = "FAIL (no front sight shows at the aim point)" if float(gm["err"]) >= SightPicture.BLOCKED_ERR else "FAIL (sights %.1f px off the aim point)" % float(gm["err"])
+	var row: String = "%-18s %8.2f %8.2f %8.2f %8.2f  %s" % [id, rear.x, rear.y, front.x, front.y, verdict]
 	_rows.append(row)
 	print("[ads_check] " + row)
+	if _live:
+		var lv: Dictionary = live_probe(_holder, _cam.fov)
+		var lrow: String = "%-34s idle %6.2f px  misalign %6.2f px  turn-settled %6.2f px  shot-settled %6.2f px" % [id,
+			float(lv["idle"]), float(lv["misalign"]), float(lv["turn"]), float(lv["shot"])]
+		_live_rows.append(lrow)
+		print("[live] " + lrow)
+	if _geometry or not geo_ok:
+		var grow: String = "%-34s %s" % [id, "SCOPED" if bool(gm["scoped"]) else ("BLOCKED " if bool(gm["blocked"]) else "") + "post x %+5.1f w %4.1f tip %+5.1f%s  rear x %+5.1f open %4.1f hole_y %+5.1f%s  err %4.1f px" % [
+			float(gm["post_x"]), float(gm["post_w"]), float(gm["post_tip"]), "" if bool(gm["found_post"]) else " (no post)",
+			float(gm["rear_x"]), float(gm["rear_open"]), float(gm["hole_y"]), "" if bool(gm["found_rear"]) else " (no rear)", float(gm["err"])]]
+		print("[geom] " + grow)
+		if _geom_map:
+			for ln: String in SightPicture.ascii(_holder, _cam.fov, 30, 20, 1):
+				print("[gmap] " + ln)
+			var who: Dictionary = SightPicture.classify(_holder, _cam.fov).get("who", {})
+			var ws: PackedStringArray = []
+			for p: Vector2i in [Vector2i(0, 0), Vector2i(0, -3), Vector2i(0, 3), Vector2i(0, 8), Vector2i(-8, 0), Vector2i(8, 0)]:
+				ws.append("%s=%s" % [str(p), str(who.get(p, "-"))])
+			print("[gwho] " + "  ".join(ws))
 	if _fit.is_finite():
 		_apply_fit()
+	if _autofit_on:
+		_autofit()
 	if _picture:
 		var pic: Dictionary = _sight_picture()
 		var prow: String = "%-34s disc %4.0f%%  above %4.0f%%  over_post %4.0f%%  post gap %4.0f h %4.0f w %5.1f px%s %s" % [id,
@@ -398,6 +503,45 @@ func _sight_picture() -> Dictionary:
 		"post_h": post_h, "post_w": post_w, "post_gap": post_gap, "parts_over": parts_over, "scoped": _holder.scoped()}
 
 
+## T-182 --autofit: puts SightPoint where the rear sight's opening is (SightPicture.rear_target: an aperture's hole
+## centre, a notch a quarter of its depth under its shoulders) and FrontSight on the front post's tip
+## (SightPicture.front_target), re-aiming between steps (each move turns the gun), and prints the model_fit.json
+## values (rig space) with the sight picture after. Fitting aid only: the game reads model_fit.json.
+func _autofit() -> void:
+	var id: String = _ids[_i]
+	var model: Node3D = _holder.get("_model") as Node3D
+	if model == null or model.has_meta("scope"):
+		print("[autofit] %s: scoped or no model, skipped" % id)
+		return
+	var log: PackedStringArray = []
+	for it: int in 4:
+		var c: Dictionary = SightPicture.classify(_holder, _cam.fov)
+		var rt: Dictionary = SightPicture.rear_target(c["grid"])
+		if not rt.is_empty() and (rt["at"] as Vector2).length() > 0.4:
+			_fit = rt["at"]
+			_fit_front = false
+			_apply_fit()
+			log.append("rear %s %s" % [rt["kind"], str((rt["at"] as Vector2).snapped(Vector2.ONE * 0.1))])
+		c = SightPicture.classify(_holder, _cam.fov)
+		var ft: Dictionary = SightPicture.front_target(c["far"])
+		if not ft.is_empty() and (ft["at"] as Vector2).length() > 0.6:
+			_fit = ft["at"]
+			_fit_front = true
+			_apply_fit()
+			log.append("front %s" % str((ft["at"] as Vector2).snapped(Vector2.ONE * 0.1)))
+	_fit = Vector2.INF
+	var sp: Node3D = model.find_child("SightPoint", true, false) as Node3D
+	var fs: Node3D = model.find_child("FrontSight", true, false) as Node3D
+	var r: Vector3 = _model_pos(model, sp).snapped(Vector3.ONE * 0.0001)
+	var fr: Vector3 = _model_pos(model, fs).snapped(Vector3.ONE * 0.0001)
+	var gm: Dictionary = SightPicture.measure(_holder, _cam.fov)
+	print("[autofit] %s  \"sight_rear\": [%s, %s, %s], \"sight_front\": [%s, %s, %s]  -> err %.1f px%s  (%s)" % [id, r.x, r.y, r.z, fr.x, fr.y, fr.z,
+		float(gm["err"]), " BLOCKED" if bool(gm["blocked"]) else "", ", ".join(log)])
+	if _geom_map:
+		for ln: String in SightPicture.ascii(_holder, _cam.fov, 30, 20, 1):
+			print("[amap] " + ln)
+
+
 func _apply_fit() -> void:
 	var model: Node3D = _holder.get("_model") as Node3D
 	var mk: Node3D = model.find_child("FrontSight" if _fit_front else "SightPoint", true, false) as Node3D
@@ -440,7 +584,8 @@ static func _visible_under(n: Node, top: Node) -> bool:
 
 
 func _finish() -> void:
-	print("[ads_check] RESULT %d/%d aligned, %d failed (tolerance %.1f px)" % [_ids.size() - _fails, _ids.size(), _fails, _tol])
+	print("[ads_check] RESULT %d/%d aligned, %d failed (tolerance %.1f px markers%s)" % [_ids.size() - _fails, _ids.size(), _fails, _tol,
+		", %.1f px sight geometry" % _geo_tol if _geo_check else ""])
 	if _picture:
 		var pf: FileAccess = FileAccess.open(ProjectSettings.globalize_path("res://.smoke_logs").path_join("sight_picture.txt"), FileAccess.WRITE)
 		if pf != null:
