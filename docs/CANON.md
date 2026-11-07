@@ -2,9 +2,92 @@
 
 This is the single source of story truth for all three stories. When another document disagrees with this one, this one wins. If this one is wrong, fix it here first, then everywhere else. Quick-reference facts (IDs, dates, numbers) live in `M0_SHARED_FACTS.md`. The dated chronology lives in `TIMELINE.md`.
 
-**The theme:** nobody reads the fine print. In Bolt & Sprocket, a megacorp conquers a galaxy one free trial at a time. In Gravelight, the perk machines, points and undead of 1944 Silesia turn out to be an alien company's test market. The Fine Print shows the player both sides.
+**The theme:** nobody reads the fine print. In Bolt & Sprocket, a megacorp conquers a galaxy one free trial at a time. In Gravelight, the dead of 1944 come from a sickness a thousand years sealed that men broke open in 1930, and the perk machines, the points and the cheerful voice over them turn out to be an alien company that came to sell to it. The Fine Print shows the player both sides.
 
 **The working title** is TERMS & CONDITIONS, stored in `Game.GAME_TITLE` (`core/game.gd`).
+
+---
+
+## 0. The Lazarus origin (UPDATE 11, DECISIONS T-190; the full bible is `docs/LAZARUS.md`)
+
+**Where the dead come from.** Not from an alien company. From **a sickness kept for a thousand years in a sealed vessel**
+that travelled with the relics of Lazarus of Bethany, the man four days dead who was called out of the tomb (John 11).
+Orthodox tradition calls him Lazarus the Four-Days-Dead; his relics went from Kition on Cyprus to Constantinople under
+Leo VI (898, some say 890). **Our invention, never presented as history or Church teaching:** a small lead-and-glass
+vessel went with the relics and was kept apart from them. The monks who guarded it wrote that it held *"what death left
+behind when it gave him back"*: the debt death was owed and never collected. When Constantinople fell in 1453 three of
+them carried it north to Rus. For almost five hundred years it sat sealed in the crypt of the **Church of St Lazarus the
+Four-Days-Dead** in the village of **Chetverodnevo** (fictional), under a lamp a brotherhood of watchers never let go
+out, behind one line cut in Church Slavonic over the crypt door: **"What was closed on the fourth day, let no one open."**
+
+**The miracle is the gift. The vessel is the debt. They are never the same thing.** Faith is never the villain; the
+miracle is never mocked, faked or called a disease; the monks and Father Serafim are the most decent people in the saga.
+The horror is entirely what men did when they broke the seal.
+
+**Lazarus Saturday, 12 April 1930 (30 March Old Style).** In the anti-religious campaign a district brigade comes to close
+the church: the bell roped down and cracked, the tower dynamited, the crypt broken open for silver. The priest, **Father
+Serafim Lebedev**, refuses the keys and is set aside. A young OGPU officer, **Arkady Volkov**, opens the vessel on the
+altar step to prove there is nothing in it. **The blood inside is still wet.** The sickness keeps its own calendar: **the
+dead rise on the fourth day.** Three of the brigade fall ill and die in the district fever ward; on the fourth day they
+get up, and so does everyone they bit, and so does the village, because Father Serafim buried the brigade's first
+victims himself. The OGPU seals the district as a typhus quarantine. Chetverodnevo is erased from the map. Volkov, never
+bitten, carries the vessel to Moscow in a lead case.
+
+**Laboratory No. 4, "FOURTH DAY" (ЧЕТВЁРТЫЙ ДЕНЬ).** From July 1934 (the NKVD exists from then) the vessel is a secret
+NKVD programme under Volkov, who rises through the purges by being useful. Its files call the sickness **"Lazar"**. What
+they learn: it lives in blood; the dead rise on the fourth day; the risen spread it by bite; **it cannot be made to
+obey.** Its test subjects were camp prisoners, handled in the game only as documents, empty bunks and a list of names,
+never as zombies and never as spectacle. By 1939 it is a weapon of last resort in a vault.
+
+**Darkmatter's smaller job.** The 1930 awakening was visible across the galaxy as a *"natural retention phenomenon"*:
+for a company that sells retention, the most valuable thing a market can have. **That is why Darkmatter comes to Earth.**
+Its 1938 probe lands in the Kaltenbrunn salt as before, but its crystal, **Nachtglas**, does not make the dead rise:
+it *answers the sickness*, so that near it the sickness wakes faster and runs further. The probe carried a **culture of
+the sickness** with the crystal, "returned inventory" taken from Laboratory No. 4 through a fold and backdated (§2,
+Next-Era Delivery™). That is why Jan Pilch rose in the mine in November 1938, and why Vendelin saw it (The Fine Print
+Ch. 2, kept). **Darkmatter found the dead, packaged the sickness with its crystal, and sells to it.** It explains only
+the technology: the perk machines (§4), the Crucible (§5), the Ledger and Scrip, the Operator, the crate and Nachtglas.
+Everything in §2–§5 stands with that one change of verb.
+
+**Kaltenbrunn.** Projekt Wiederkehr (1939 →) studies the crystal and the miners it raised; Reinholt wants Liesl back;
+**Lazarus** is the name her grief hangs on, and her programme's name for the sickness is **Lazarusblut**. The perks, the
+Ledger and the Crucible come in through Helvetia Automaten AG as built.
+
+**October 1944: the Soviets unleash it.** The Red Army's first attack into East Prussia (the Gumbinnen–Goldap operation,
+16–30 October, real) stalls; in our history Moscow sends Volkov and the last-resort order. FOURTH DAY is released by shell
+and by infected volunteers' blood. The German line breaks. Four days later **the Red Army's own dead get up**, thousands,
+from field graves, aid stations and the snow; they do not know whose side they were on and **they walk west**. The
+soldiers call them **the Returned** (вернувшиеся). Moscow calls it *"an epidemic among the enemy"*. The line broke and
+kept breaking: **the distant war seen from the Crossroads Inn is the front where the Soviet dead are walking**, and the
+Red Army is fighting both.
+
+**The Germans make it airborne.** Infected Soviet dead go by train to Kaltenbrunn (Fasbender saw them come in). Reinholt's
+laboratory finds that near Nachtglas the sickness takes **minutes**, not days, and that ground fine with the crystal into
+a violet dust **it carries on the air**: **STAUB** ("dust"). From November 1944 Abteilung III sells the troops the Marke
+(§2.2, unchanged) as *protection against the Lazarus sickness*; it is not protection, it is a Nachtglas tag that makes the
+marked rise on command and walk where the relay points them. **20 December 1944, the Erwachen, was the first STAUB
+release**, aimed east; the wind turned and blew the dust back over Kaltenbrunn, the villages and the road garrison, the
+same night Reinholt drove the Heart to full resonance to reach Liesl. Both are true at once: every body for thirty
+kilometres rose, Soviet and German alike. Three nights later the same Heart brought down GRAVELIGHT ONE (unchanged).
+
+**Through the maps.** Map 0's dead are villagers, the marked road garrison and Soviet risen in greatcoats out of the
+east; Kaltenbrunn holds the STAUB plant and Reinholt's records; Totenhafen's lead coffins hold Lazarusblut and STAUB
+consigned to "Hale, L."; Helvetia Works is unchanged (the technology crossover); Morgenrot's dawn salvo carries STAUB to
+London, Antwerp and Paris (cities and egg unchanged); the Kranich's bombs carry STAUB across the Atlantic, Groom Lake's
+programme is built on samples Peg's orders bought, and the Moon relay is what keeps the sickness awake worldwide and the
+marked obedient. **CANCEL makes the dead lie down, as built.** After the canon ending, one more card: **Moscow, 1953**, a
+lead case in a vault under Laboratory No. 4, an old man's hand on it, the vessel still wet.
+
+**The people.** Father Serafim's diary is the thread: one Archive page per map, in order; he is never a zombie, his fate
+is one line. Volkov is in the documents on every map and in the October 1944 cutscene, never a cartoon. The squad keep
+their secrets and arcs (§6.2): Deacon is the saga's quiet theological voice, a line at a time, no sermons; Wren knows the
+NKVD; Dutch's grandmother's letter is about the glass in the salt, as now; **Peg's orders now say retrieve samples of
+the sickness and the crystal**; Jakub is unchanged; Fasbender is more haunted.
+
+**Names:** Lazarusblut (German, the sickness) · STAUB (the airborne programme) · ЧЕТВЁРТЫЙ ДЕНЬ / FOURTH DAY (the Soviet
+programme) · "Lazar" (the Soviet files' word) · Gänger, from Wiedergänger (stays the German word for the risen) · the
+Returned, вернувшиеся (the Red Army's own risen). The full table, the real/invented table and the sources are in
+`docs/LAZARUS.md` §7, §11, §12. No real person is a villain or a victim by name.
 
 ---
 
@@ -26,7 +109,7 @@ Together they take OmniScrap down, planet by planet. The whole story is told thr
 ### 1.2 Earth, 1938–1945
 Grim pulp horror with gallows humor: a lost war film that slowly becomes a ghost story.
 
-**Nachtglas** is a black, glassy mineral with violet-amber veins, recovered in 1938 from a "meteorite" strike in the Kaltenbrunn salt mine in occupied Silesia. Dead tissue near it keeps running its last impulse, and in the end that impulse is hunger. Living tissue dosed with diluted Nachtglas gains temporary traits.
+**Nachtglas** is a black, glassy mineral with violet-amber veins, recovered in 1938 from a "meteorite" strike in the Kaltenbrunn salt mine in occupied Silesia. It does not raise the dead by itself: it *answers the sickness* (§0). A body that carries the sickness and dies near it keeps running its last impulse, in minutes instead of days, and in the end that impulse is hunger. Living tissue dosed with diluted Nachtglas gains temporary traits.
 
 **Projekt Wiederkehr** ("Project Return") is the Reich program built on the mineral. Its lead scientist, **Dr. Augusta Reinholt**, privately wants her daughter **Liesl** back; Liesl died of diphtheria in 1939. Her colleague **Dr. Emil Fasbender** understood what the material really does and offered to defect.
 
@@ -43,16 +126,17 @@ The original game ends with Darkmatter as sequel bait (`cs.postCredits.01–03`)
 - It orders an acquisition, and wants whoever has been reading the internal memos "on OUR payroll."
 - Sprocket then gets a calendar invite for a "synergy screening" in another galaxy, sent *yesterday*.
 
-**Darkmatter is the hidden source of everything in Gravelight.**
+**Darkmatter is the hidden source of every machine in Gravelight, and of none of its dead** (§0). It found the dead,
+packaged the sickness with its crystal, and sells to it.
 
 - **Who they are:** a megacorp from the neighboring **Umbral Galaxy**. Their motto is **"NOBODY CANCELS."** OmniScrap sold subscriptions; Darkmatter sells **retention**. Grindstone was "just the invoice." Darkmatter is the collections department.
 - **Brand:** deep violet `#c07dff` with amber cracks. The original game already gave the Darkmatter speaker this violet.
 - **Next-Era Delivery™:** Darkmatter ships product through folds in space *and time*, using a resonant crystal it sells as **DARK-GLASS™**. Delivery ignores chronology, so Darkmatter can sell things to 1944 that it acquired "later" in the B&S timeline. Sprocket: *"They shipped it to the PAST. They BACKDATED THE INVOICE. That is the most Darkmatter sentence I have ever said."*
 - **DARK-GLASS™ = Nachtglas.** On Earth, the Germans named the crystal Nachtglas.
-- **The Sol-3 Test Market:** Darkmatter's Emerging Markets Division wanted to know whether a "pre-subscription species" could be retained.
+- **The Sol-3 Test Market:** Darkmatter's Emerging Markets Division saw the awakening of April 1930 from across the galaxy as a *"natural retention phenomenon"* on an unlisted world, and wanted to know whether a "pre-subscription species" on which death was already not a cancellation event could be sold to.
   - On **9 November 1938** it fired test-market probe **TM-SOL3-001** through a fold. The probe landed in the Kaltenbrunn salt mine, and everyone took it for a meteorite.
-  - The payload was DARK-GLASS™ **retention substrate**. Its product function is *churn prevention*: a retained user cannot cancel.
-  - Dead tissue near it keeps running its last impulse. **The zombies are the ultimate retained customers.** That is the horror's origin.
+  - The payload was DARK-GLASS™ **retention substrate**, and with it a **culture of the sickness** as "returned inventory" (lot LZR-04, origin Laboratory No. 4, Moscow, acquired by fold and backdated). The substrate's product function is *churn prevention*: it answers the sickness, so a body carrying both can be reached, counted and kept. A retained user cannot cancel.
+  - A body with the sickness in it that dies near the substrate keeps running its last impulse. **The zombies are, to Darkmatter, the ultimate retained customers.** Darkmatter did not make them. It came for them. That is the horror of The Fine Print; the horror's *origin* is §0.
   - The probe's internal results line reads: **"EXCEPTIONAL RETENTION."**
 
 ### 2.1 Darkmatter's people
@@ -70,13 +154,18 @@ The original game ends with Darkmatter as sequel bait (`cs.postCredits.01–03`)
   - His recall clause is **Clause 0: "Field units are inventory."**
 
 ### 2.2 The Marke (UPDATE 09 §1, DECISIONS T-137; binding text in `docs/U09_CONTRACTS.md` C1)
-**What it is.** Raw Nachtglas retains whatever dies near it (Pilch in 1938, the Erwachen in the mine). From 1942
+**What it is.** Raw Nachtglas retains whatever dies near it with the sickness in it (Pilch in 1938, the Erwachen in the mine; §0). From 1942
 **Projekt Wiederkehr's Abteilung III** (Venner's formulation department, the same people as the tonics) cut the substrate
 into chips the size of a grain of rice, the **Marken** (singular *Marke*; player-facing "the mark"), and implanted them
 under the skin of the **right hand**, between thumb and forefinger, or the **forehead**, above the right brow. It was sold
 to soldiers, guards, staff and volunteers as a loyalty and identity tag: **"die Marke, die dich hält"** (the mark that
 keeps you). Pay, rations and facility Scrip were tallied against it; the Ledger counts the marked; Vendelin's cabinets
 read it; the Operator calls a marked person "a valued customer". It is Darkmatter's subscription token in the flesh.
+**(UPDATE 11, T-190) From November 1944 it was sold with a second reason:** the poster gained the line *Schutz gegen die
+Lazaruskrankheit*, protection against the Lazarus sickness the Soviet dead had brought west (§0). It is not protection.
+A marked body carries a grain of the crystal that answers the sickness, so when it dies it rises in minutes, **on
+command**, and walks where the relay points it: the one thing Laboratory No. 4 said could not be done. Everything else
+in this section stands.
 
 **Who got it.** Major Anselm Brück took the first one in front of the garrison in August 1942 ("for morale"); the guard
 roster was a list of the marked by that Christmas (Lenz's duty roster, `INT_M1_19`, is that list). Abteilung staff,
@@ -117,7 +206,8 @@ The Gravelight squad never learns any of this. The player learns it through The 
 
 | Gravelight thing | What Earth thinks it is | What it really is |
 |---|---|---|
-| Nachtglas | A meteorite mineral | DARK-GLASS™ retention substrate from probe TM-SOL3-001; from 1942 cut into the Marken (§2.2) |
+| Nachtglas | A meteorite mineral | DARK-GLASS™ retention substrate from probe TM-SOL3-001, shipped with a culture of the sickness (§0); it answers the sickness (minutes, not days; dust that carries) and does not raise the dead by itself; from 1942 cut into the Marken (§2.2) |
+| The sickness (Lazarusblut, "Lazar", the Lazarus sickness) | A plague the Russians brought west; the Germans' Lazarusblut | Not Darkmatter's at all (§0): what death left behind when it gave Lazarus back, opened in 1930. Darkmatter found it and sells to it |
 | The Marke | A loyalty and identity tag under the skin of the right hand or the forehead ("die Marke, die dich hält"): pay, rations and Scrip tallied against it | Darkmatter's subscription token in the flesh (retention substrate, chip-sized; the Ledger counts the marked, and the marks run only while the relay's carrier reaches them). A marked person who dies gets up: NOBODY CANCELS |
 | Perk Tonics / Helvetia Automaten AG | A Swiss vending company and its tonic formulas | Darkmatter **Vitality Plans** (plan IDs stenciled under the paint, listed in `M0_SHARED_FACTS.md`). Cabinets and jingles by Vendelin; each formula made drinkable by a human (§4) |
 | The Crucible | A Nachtglas forge that "re-teaches" weapons | Blartz's patented **Omega Forge** (BLZ-40417). It was confiscated by OmniScrap when Blartz was arrested, sold to Darkmatter in OmniScrap's fire sale, rebuilt as **Crucible Mod. R-E (Re-Education)**, and shipped to 1944. Its brass plaque reads **"MOD. R-E · PAT. PEND. BLZ-40417"** |
@@ -189,10 +279,10 @@ The two new perks never break Gravelight's perk cap (6 since T-081; it was 4). E
 
 ### 6.2 Gravelight cast (`docs/gravelight/CHARACTERS.md`)
 - **Sgt. Walter "Dutch" Kowalczyk** is a US Ranger. He is blunt and deadpan, and his family is from near Kaltenbrunn.
-- **Lt. Margaret "Peg" Ashworth** is SOE demolitions and mission commander. She carries sealed orders to retrieve Nachtglas, which trace back to Res's 1943 sample.
+- **Lt. Margaret "Peg" Ashworth** is SOE demolitions and mission commander. She carries sealed orders to retrieve **samples of the sickness and the crystal** (UPDATE 11; the Nachtglas line traces back to Res's 1943 sample, the sickness line to the Soviet "epidemic" reports of November 1944), and the tokens.
 - **Cpl. Elijah "Deacon" Brooks** is a 761st Tank Battalion mechanic and the moral center. He talks to machines like livestock.
 - **Zofia "Wren" Nowak** is a Home Army sniper. Her brother vanished at Kaltenbrunn. Her mentor was Halina "Sowa" Kurek, the source of Hawkeye Brandy.
-- **Dr. Emil Fasbender** knows the Allied frequency and understands the substrate **because Vendelin wrote to him** (Ch. 3).
+- **Dr. Emil Fasbender** knows the Allied frequency and understands the substrate **because Vendelin wrote to him** (Ch. 3). He saw the Soviet dead come in on the trains in November 1944, and is more haunted for it (UPDATE 11).
 - **Dr. Augusta Reinholt** is a Darkmatter *customer*, which is why she is tragic rather than evil. The Woman in Violet offered Liesl back as a service, and Map 3's moral choice includes refusing that offer for her.
 - **The Operator** is the Ledger's voice. It slips into corporate language rarely and unsettlingly, more often at high rounds: "Thank you for your continued engagement." The slip lines are `op.slip.*`.
 - **Liesl's tin drummer** is the one true mystery.
@@ -283,6 +373,7 @@ chalk alphabet with them: the **Witnesses' Marks** (v2 §4.2 step 3) are written
 - **The Fine Print** is where the tones meet. Corporate horror is played straight, with Bolt & Sprocket comedy on one side and a quiet, sad robot in 1940s Basel on the other.
 - **Real history** (occupation, forced labor) is handled with respect: no jokes at victims' expense, and fictional places and companies wherever a real one could be implicated.
 - **The Marke** (§2.2) is handled with the same respect: never a camp tattoo, never a number, never on a forced labourer. The labourers were never marked and the few who were offered it refused. It was *sold*, to people who had a choice, and the horror is that they took it. In text it is "the mark" or "die Marke", a violet glint under the skin, and nothing else.
+- **The Lazarus layer** (§0, `docs/LAZARUS.md` §10): faith is never the villain; the miracle is never mocked, faked or called a disease (the sickness is the debt, not the gift); the clergy and the monks are the most decent people in the saga; real history is accurate where used and labelled fiction where not; no real person is a villain or a victim by name; Soviet and German soldiers are people; camp prisoners and forced labourers are never zombies and never spectacle; no real Nazi symbols, and no political imagery for shock. The horror comes from what people did.
 
 ---
 
