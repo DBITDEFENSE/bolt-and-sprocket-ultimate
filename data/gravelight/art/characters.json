@@ -46,7 +46,10 @@
     "sailor",
     "dockworker",
     "bellringer",
-    "nurse"
+    "nurse",
+    "soviet",
+    "soviet_tunic",
+    "soviet_burial"
   ],
   "zombie_dir": "res://assets/ours/characters/zombie_base",
   "zombie_file": "char_zombie_base_%s_%s.glb",

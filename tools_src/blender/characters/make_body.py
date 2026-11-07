@@ -697,9 +697,11 @@ def part_colors(keys, ao=None):
 
 def body_colors(n, ao=None, mask=None):
     col = np.zeros((n, 4))
-    col[:, 0] = key("skin") / 255.0
-    col[:, 1] = 1.0 if ao is None else ao
     m = np.zeros(n, dtype=np.int64) if mask is None else mask.astype(np.int64)
+    # T-192: the skin key is index 0, so the red channel of a body vertex carries the kit coverage bits 9-16 (the
+    # Soviet kits are kit_order 9-11); 0 for every older kit, so the older GLBs read the same (ZombieBody.mask_of)
+    col[:, 0] = key("skin") / 255.0 + ((m >> 9) & 0xFF) / 255.0
+    col[:, 1] = 1.0 if ao is None else ao
     col[:, 2] = (m & 0xFF) / 255.0
     col[:, 3] = np.where((m & 0x100) != 0, 0.0, 1.0)
     return col

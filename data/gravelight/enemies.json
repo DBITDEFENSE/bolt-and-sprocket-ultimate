@@ -363,6 +363,22 @@
       ]
     }
   },
+  "soviet_risen": {
+    "_doc": "UPDATE 11 section 6 (T-192): the Soviet risen, the Returned (the Red Army's own dead from the October 1944 FOURTH DAY release, walking west): a set of Ganger skins on the existing rig and AI (anim.json kits soviet / soviet_tunic / soviet_burial), no new behaviour, no Marke (never marked, CANON 2.2): their weak point is the wound that killed them (ZombieBody.WOUND_SITES, the same hitbox, damage_mult and scrip_bonus as the Marke). ZombieDirector swaps a plain Ganger spawn's kit for one of `kits` with probability `share` on the maps listed, from `from_round`, only at spawns at or above `min_y` (Kaltenbrunn: the surface at y 0, never the depths at -12 / -18). Map 0's background column on the landscape is map00_ambience.json risen_column (presentation only).",
+    "kits": {"soviet": 0.55, "soviet_tunic": 0.25, "soviet_burial": 0.2},
+    "maps": {
+      "map00_crossroads": {"share": 0.22, "from_round": 2, "min_y": -50.0},
+      "map01_kaltenbrunn": {"share": 0.15, "from_round": 1, "min_y": -4.0}
+    }
+  },
+  "hard_truth": {
+    "_doc": "UPDATE 11 section 6 (T-192): the fourth-day rule, Hard Truth (gravelight/world/hard_truth.gd). Settings > Gameplay hard_truth: auto (on unless Classic Rules), on, off; online the host's setting decides. When a squad member (a human or a bot, never a companion: Jakub and the map companions are out cold, not dead) bleeds out, their body lies where they fell as a dormant zombie (no hitboxes, no damage, no collision) and gets up after rise_delay_s of round time (a body that bled out in the break waits for the round), over getup_s. It is a normal pooled, networked zombie outside the round queue (RoundManager.take_extra_spawn: the round cannot end while it stands), in that survivor's own risen body (PeopleBodies), unmarked. Putting it down drops their death crate where it falls: a free ammunition crate (FallenCrate, the relief squads' SquadCrate) good for crate_uses refills, gone after crate_seconds. The respawn rules do not change.",
+    "rise_delay_s": 4.0,
+    "getup_s": 2.2,
+    "crate_uses": 4,
+    "crate_seconds": 90.0,
+    "fallback_kit": "soldier"
+  },
   "marke": {
     "_doc": "UPDATE 09 section 1 (T-137, docs/U09_CONTRACTS.md C1): the Marke, Darkmatter's chip under the skin, the weak point every Ganger shows (never a boss, never the Backorder construct; the Suited keep it on the hand). Site picked per zombie from its net_id (hand_chance of a right-hand mark, else the forehead) so co-op puppets match the host. hitbox_m: the cube on bone RightHand / the front of Head, limb \"marke\". A Marke hit does damage_mult x the damage and then counts as a hit on the host limb (arms / head). A kill from a Marke hit pays scrip_bonus through Economy.award (Double Scrip applies; nothing in Classic Rules) and emits GLBus.marke_kill. glow_min..glow_max: the glint's emission with the map hum (gl_hum), brighter with gl_round_k.",
     "damage_mult": 1.5,

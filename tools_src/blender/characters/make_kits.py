@@ -583,6 +583,91 @@ def kit_nurse(body, P):
     return k
 
 
+# ---- UPDATE 11 (T-192): the Soviet risen, "the Returned". Red Army riflemen of the October 1944 front, period kit
+# (the M1935 gymnastyorka, the shinel greatcoat, sharovary breeches, obmotki puttees over ankle boots), plain:
+# collar tabs without badges, a plain frame buckle, no slogans, no banners. The headgear (pilotka, ushanka, SSh-40)
+# is rolled per spawn as gear (ZombieBody.gear_mesh, one of them at most). Their boots were taken off the dead in the
+# snow: the greatcoat kit shows the portyanki foot wraps, the burial kit bare feet. They were never marked: no Marke
+# (CANON 2.2); the weak point is the wound that killed them (ZombieBody.WOUND_SITES, a Godot-side piece).
+
+def kit_soviet(body, P):
+    """The shinel: a heavy grey-brown wool greatcoat to mid-calf, the collar turned up, the belt over it, frozen
+    stiff (the ice is the kit shader's frost); breeches under it; the boots gone, the foot wraps left."""
+    k = Kit("soviet")
+    coat = add_shell(k, body, P_or(P_coat(0.84), P_arms(0.9)), thick_by_y(0.03, 0.023), "cloth", push=shoulders_push(0.01))
+    with_ao(coat, mottle(coat.v, 7.0, 0.24, 11.0))                                         # frozen mud and ice
+    sk = skirt(body, trunk(coat), 0.88, 0.27, "cloth", flare=0.32, ease=0.012, ragged=0.025)
+    k.add(grime(sk, 0.27, 0.3, 0.45, 12.0))
+    k.add(band(body, neck_pts(body), 1.525, 0.1, "cloth", pad=0.03, thick=0.016))        # the collar turned up
+    for sx in (-1.0, 1.0):
+        k.add(pstud(coat, "cloth2", sx * 0.05, 1.47, (0.032, 0.046, 0.007), tilt=sx * 0.35))   # plain collar tabs
+        k.add(pstud(coat, "cloth", sx * 0.16, 1.465, (0.05, 0.028, 0.008), tilt=sx * 0.2))     # plain shoulder straps
+        k.add(pstud(coat, "leather", sx * 0.115, 1.0, (0.075, 0.07, 0.04)))                   # ammunition pouches
+    welt(k, coat, (0.018, 1.45), (0.018, 0.86), "cloth")                                     # the hooked front edge
+    back_seams(k, coat, "cloth", y_hem=0.9)
+    k.add(band(body, trunk(coat), 0.99, 0.05, "leather", pad=0.004, thick=0.008))
+    buckle(k, coat, 0.0, 0.99, 0.05, 0.044, "metal", 0.018, tongue="")                    # a plain frame buckle
+    cuffs(k, body, 0.915, "cloth", 0.032, 0.05, 0.006)                                      # the deep turned cuffs
+    legs = add_shell(k, body, P_legs(0.16, 0.98), 0.012, "cloth2")
+    trousers_finish(k, legs, 0.2, 0.4)
+    wraps = add_shell(k, body, P_boots(0.2), 0.008, "patch", rim=0.004, push=boot_push(0.004))   # the portyanki
+    grime(wraps, 0.0, 0.16, 0.55, 13.0)
+    for side in ("Left", "Right"):
+        k.add(cuff_band(body, side, 0.175, 0.03, "patch", pad=0.011, thick=0.004, bones=("LowerLeg", "Foot")))
+    return k
+
+
+def kit_soviet_tunic(body, P):
+    """The M1935 gymnastyorka: a pullover tunic with a turn-down collar, a short buttoned placket, two chest pockets,
+    the belt; sharovary breeches, obmotki puttees wound from the ankle to below the knee over laced ankle boots."""
+    k = Kit("soviet_tunic")
+    tunic = add_shell(k, body, P_or(P_coat(0.86), P_arms(0.9)), thick_by_y(0.016, 0.012), "cloth")
+    with_ao(tunic, mottle(tunic.v, 9.0, 0.18, 21.0))
+    k.add(skirt(body, trunk(tunic), 0.93, 0.79, "cloth", flare=0.08, ease=0.003, rings=4))
+    k.add(band(body, neck_pts(body), 1.515, 0.05, "cloth", pad=0.014, thick=0.009))       # the turn-down collar
+    welt(k, tunic, (0.0, 1.46), (0.0, 1.3), "cloth")                                         # the placket
+    buttons(k, tunic, 0.0, 1.44, 3, 0.055, "metal", 0.012)
+    for sx in (-1.0, 1.0):
+        k.add(pstud(tunic, "cloth2", sx * 0.045, 1.475, (0.028, 0.04, 0.007), tilt=sx * 0.3))   # plain collar tabs
+        pocket(k, tunic, sx * 0.095, 1.3, 0.085, 0.09, "cloth", "metal")                     # the chest pockets
+        k.add(pstud(tunic, "cloth", sx * 0.155, 1.47, (0.05, 0.028, 0.008), tilt=sx * 0.2))     # plain shoulder straps
+    cuffs(k, body, 0.915, "cloth", 0.018, 0.034, 0.005)
+    back_seams(k, tunic, "cloth", y_hem=0.92)
+    k.add(band(body, trunk(tunic), 0.99, 0.046, "leather", pad=0.002, thick=0.008))
+    buckle(k, tunic, 0.0, 0.99, 0.046, 0.04, "metal", 0.016, tongue="")                    # a plain frame buckle
+    k.add(pstud(tunic, "leather", -0.12, 0.98, (0.07, 0.07, 0.04)))                          # a cartridge pouch
+    legs = add_shell(k, body, P_legs(0.36, 0.98), 0.013, "cloth2", push=flare_push(0.5, 0.75, 0.014))   # the breeches' fullness at the thigh
+    trousers_finish(k, legs, 0.38, 0.3)
+    putt = add_shell(k, body, P_legs(0.12, 0.4), 0.011, "canvas")                            # the obmotki
+    grime(putt, 0.12, 0.2, 0.4, 22.0)
+    for side in ("Left", "Right"):
+        for i, y in enumerate((0.15, 0.2, 0.25, 0.3, 0.35)):
+            k.add(cuff_band(body, side, y, 0.012, "canvas", pad=0.013 + 0.001 * (i % 2), thick=0.003, bones=("LowerLeg",)))
+    boots = add_shell(k, body, P_boots(0.13), 0.014, "leather", rim=0.008, push=boot_push())
+    boots_finish(k, body, boots, 0.13, laced=True)
+    return k
+
+
+def kit_soviet_burial(body, P):
+    """From a field grave: the body wound in its own plashch-palatka (the canvas cape-tent) and tied with cord over
+    the tunic and breeches, the hem torn by the frozen ground; bare feet."""
+    k = Kit("soviet_burial")
+    wrap = add_shell(k, body, P_or(P_coat(0.84), P_arms(1.0)), thick_by_y(0.032, 0.026), "canvas", push=shoulders_push(0.008))
+    with_ao(wrap, mottle(wrap.v, 6.0, 0.32, 31.0))                                          # earth and frost
+    sk = skirt(body, trunk(wrap), 0.9, 0.36, "canvas", flare=0.16, ease=0.016, ragged=0.06)
+    k.add(grime(sk, 0.36, 0.34, 0.5, 32.0))
+    k.add(band(body, neck_pts(body), 1.52, 0.08, "canvas", pad=0.034, thick=0.02))          # the cape folded at the neck
+    for y in (1.34, 1.12):
+        k.add(band(body, trunk(wrap), y, 0.016, "rope", pad=0.004, thick=0.007))             # the cords
+    under = add_shell(k, body, lambda b: P_arms(0.6)(b) & (b.v[:, 1] < 1.02), 0.012, "cloth", cover=True)                      # the tunic's forearms
+    with_ao(under, mottle(under.v, 11.0, 0.3, 33.0))
+    legs = add_shell(k, body, P_legs(0.11, 0.98), 0.011, "cloth2")
+    trousers_finish(k, legs, 0.13, 0.5)
+    for side in ("Left", "Right"):
+        k.add(cuff_band(body, side, 0.125, 0.025, "cloth2", pad=0.013, thick=0.005, bones=("LowerLeg",)))   # the rolled hems
+    return k
+
+
 class BodyLike:
     """Wraps a Piece so shell() can overlay it (aprons over the dress)."""
 
@@ -606,6 +691,9 @@ KITS = {
     "dockworker": kit_dockworker,
     "bellringer": kit_bellringer,
     "nurse": kit_nurse,
+    "soviet": kit_soviet,                 # T-192
+    "soviet_tunic": kit_soviet_tunic,     # T-192
+    "soviet_burial": kit_soviet_burial,   # T-192
 }
 
 

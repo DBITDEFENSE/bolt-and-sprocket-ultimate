@@ -79,6 +79,11 @@ var _marke_hit: bool = false
 var _marke_lost: bool = false
 var _marke_hb: Dictionary = {}       # site -> Hitbox
 var _marke_glint: Dictionary = {}    # site -> MeshInstance3D
+## UPDATE 11 (T-192): the Soviet risen carry no Marke; their weak point is the wound that killed them. The wound sites
+## (ZombieBody.WOUND_SITES) get their own boxes (_wound_hb: the same limb "marke" and multiplier, so every hit path
+## and the co-op report work unchanged) and a wound mesh; marke_site then names a wound site (is_wound()).
+var _wound_hb: Dictionary = {}       # wound site -> Hitbox
+var _wound_nodes: Dictionary = {}    # wound site -> MeshInstance3D
 var _collision: CollisionShape3D
 var _state_t: float = 0.0
 var _repath_t: float = 0.0
@@ -152,6 +157,10 @@ var hops_done: int = 0
 var _hop_cd: float = 0.0
 var _hop_tele: float = -1.0           # > 0: crouched, about to leap
 var _hop_v: Vector3 = Vector3.ZERO
+## UPDATE 11 (T-192, Hard Truth): a bled-out teammate's body lies here as a zombie that has not got up yet: face
+## down, still, no hitboxes, no body collision, ignoring damage, until HardTruth wakes it (wake_from_dormant). The
+## host sends it as net_sub_state 1 so a co-op client's puppet lies still too.
+var _dormant: bool = false
 
 
 func _init() -> void:
@@ -314,6 +323,8 @@ func hitbox_rids() -> Array[RID]:
 		out.append(hb.get_rid())
 	for mhb: Hitbox in _marke_hb.values():
 		out.append(mhb.get_rid())
+	for whb: Hitbox in _wound_hb.values():
+		out.append(whb.get_rid())
 	return out
 
 
@@ -330,9 +341,15 @@ func _apply_marke() -> void:
 	if has_marke():
 		var mk: Dictionary = (GLData.table("enemies") as Dictionary).get("marke", {})
 		var id: int = net_id if net_id >= 0 else int(get_instance_id() % 1000003)
-		marke_site = ZombieBody.marke_site_for(id, float(mk.get("hand_chance", 0.6)))
+		var ws: StringName = ZombieBody.wound_site_for(id, _variant)   # T-192: a Soviet risen: the wound, never a Marke
+		if ws != &"" and _wound_hb.has(ws):
+			marke_site = ws
+		else:
+			marke_site = ZombieBody.marke_site_for(id, float(mk.get("hand_chance", 0.6)))
 	for site: StringName in _marke_glint.keys():
 		(_marke_glint[site] as MeshInstance3D).visible = site == marke_site
+	for ws2: StringName in _wound_nodes.keys():
+		(_wound_nodes[ws2] as MeshInstance3D).visible = ws2 == marke_site
 
 
 ## T-142: a risen relief-squad soldier of an unmarked faction (CANON 2.2: risen near raw substrate, not by a Marke):
@@ -341,7 +358,15 @@ func clear_marke() -> void:
 	marke_site = &""
 	for site: StringName in _marke_glint.keys():
 		(_marke_glint[site] as MeshInstance3D).visible = false
+	for ws: StringName in _wound_nodes.keys():
+		(_wound_nodes[ws] as MeshInstance3D).visible = false
 	_marke_layers(false)
+
+
+## T-192: the weak point is the wound that killed this body (a Soviet risen), not a Marke: no glint, no Marke signals
+## (the HUD's violet tint, the MARKE stat, the Marke VO), the same multiplier and bonus.
+func is_wound() -> bool:
+	return ZombieBody.is_wound_site(marke_site)
 
 
 ## T-142: a risen soldier's headgear on this body's bones (SoldierKits.add_gear); freed on pool reuse.
@@ -365,7 +390,7 @@ func marke_host_limb() -> StringName:
 
 ## The Marke hitbox of this zombie (null without one); tools and tests.
 func marke_hitbox() -> Hitbox:
-	return _marke_hb.get(marke_site) as Hitbox
+	return (_marke_hb.get(marke_site) if _marke_hb.has(marke_site) else _wound_hb.get(marke_site)) as Hitbox
 
 
 ## Turns the site's Marke box on or off with the limb boxes; the other site's box, a lost hand's and a body
@@ -374,6 +399,8 @@ func _marke_layers(on: bool) -> void:
 	for site: StringName in _marke_hb.keys():
 		var live: bool = on and site == marke_site and not _marke_lost
 		(_marke_hb[site] as Hitbox).collision_layer = Hitbox.LAYER_HITBOX if live else 0
+	for ws: StringName in _wound_hb.keys():   # T-192
+		(_wound_hb[ws] as Hitbox).collision_layer = Hitbox.LAYER_HITBOX if on and ws == marke_site else 0
 
 
 ## The marked hand is gone with the arm: no weak point left, the glint goes with the piece.
@@ -402,12 +429,14 @@ static func marke_bonus_for(by_player: int) -> int:
 ## A kill from a Marke hit: the signal (always: the stat counts in every mode), then the bonus through
 ## Economy.award (Double Scrip and the earn multiplier apply) with its slip on the HUD; none in Classic Rules.
 func _pay_marke_bonus(by_player: int) -> void:
-	GLBus.marke_kill.emit(by_player, enemy_id)
+	var wound: bool = is_wound()   # T-192: a Soviet risen's wound pays the same, under its own name, and is no Marke kill
+	if not wound:
+		GLBus.marke_kill.emit(by_player, enemy_id)
 	var bonus: int = marke_bonus_for(by_player)
 	if bonus <= 0:
 		return
 	Economy.award(by_player, bonus)
-	GLBus.bonus_awarded.emit(by_player, &"marke", bonus * Economy.multiplier, "THE MARK")
+	GLBus.bonus_awarded.emit(by_player, &"wound" if wound else &"marke", bonus * Economy.multiplier, "THE WOUND" if wound else "THE MARK")
 
 
 func _enter(s: State) -> void:
@@ -516,7 +545,9 @@ func _physics_process(delta: float) -> void:
 				_enter(State.GETUP)
 		State.GETUP:
 			_halt(delta)
-			if _state_t >= (_getup_len if _getup_len > 0.0 else float(_anim["knockdown"]["getup_seconds"])):
+			if _dormant:
+				pass   # T-192: lying where the teammate bled out until HardTruth wakes it
+			elif _state_t >= (_getup_len if _getup_len > 0.0 else float(_anim["knockdown"]["getup_seconds"])):
 				_getup_len = -1.0
 				var to_window: bool = _getup_window and window != null
 				_getup_window = false
@@ -1147,6 +1178,34 @@ func _update_prey_attack(delta: float) -> void:
 
 ## Rises from the floor where a patron fell (InnOpening, after activate): the get-up from lying on the back over
 ## `seconds`, then off to `after_window` if one is given (outside the inn), else the chase.
+## UPDATE 11 (T-192, Hard Truth): the body lies face down and still where a teammate bled out: the first frame of
+## the face-down get-up held, no hitboxes, no body collision, no damage, no attacks, until wake_from_dormant. Host
+## and puppet alike (a puppet follows net_sub_state).
+func lie_dormant() -> void:
+	_dormant = true
+	_down_front = true
+	_getup_window = false
+	_getup_len = 1e6
+	_enter(State.GETUP)
+	_tree.set("parameters/SM/React/TimeScale/scale", 0.0)
+	_set_emerge_hitboxes(false)
+	collision_layer = 0
+	velocity = Vector3.ZERO
+
+
+## The body gets up over `getup_s` (the normal get-up from the floor), its hitboxes and collision back.
+func wake_from_dormant(getup_s: float) -> void:
+	if not _dormant:
+		return
+	_dormant = false
+	collision_layer = LAYER_ZBODY
+	rise_from_floor(getup_s)
+
+
+func is_dormant() -> bool:
+	return _dormant
+
+
 func rise_from_floor(seconds: float, after_window: Barricade = null) -> void:
 	_down_front = false
 	if after_window != null:
@@ -1738,15 +1797,20 @@ func _nearest_player() -> Player:
 func take_damage(amount: float, limb: StringName, weapon_id: StringName, by_player: int, kind: StringName = &"bullet", armor_piercing: bool = false) -> bool:
 	if puppet:
 		return _puppet_damage(amount, limb, weapon_id, by_player, kind, armor_piercing)
+	if _dormant:
+		last_hit_bone = ""
+		return false   # T-192: a bled-out teammate's body that has not got up yet takes nothing
 	# the Marke (T-137): damage_mult x, then the hit goes on as one on the host limb (armour, wounds, the death
-	# clips, the headshot path); _marke_hit is read by _die for the bonus and cleared by any other hit
+	# clips, the headshot path); _marke_hit is read by _die for the bonus and cleared by any other hit. T-192: a Soviet
+	# risen's wound is the same box with the same numbers in another place, without the Marke's signal.
 	_marke_hit = limb == &"marke"
 	if _marke_hit:
 		limb = marke_host_limb()
 		if marke_site != &"":
-			last_hit_bone = str((ZombieBody.MARKE_SITES[marke_site] as Array)[0])
+			last_hit_bone = str(ZombieBody.weak_site(marke_site)[0])
 		amount *= float(((GLData.table("enemies") as Dictionary).get("marke", {}) as Dictionary).get("damage_mult", 1.5))
-		GLBus.marke_hit.emit(by_player)
+		if not is_wound():
+			GLBus.marke_hit.emit(by_player)
 	# the caller's hitbox bone belongs to this hit only: consumed before any early return so it can never leak
 	# into a later boneless hit (explosions, fire) as the wrong wound side
 	var side: String = _hit_side(limb)
@@ -2159,6 +2223,28 @@ func _build_body() -> void:
 		gl.visible = false
 		at.add_child(gl)
 		_marke_glint[site] = gl
+	# T-192: the Soviet risen's wound sites: a box like the Marke's and the wound mesh (one shown per body, or none)
+	for ws: StringName in ZombieBody.WOUND_SITES.keys():
+		var wsd: Array = ZombieBody.WOUND_SITES[ws]
+		var wat: BoneAttachment3D = bone_attachment(str(wsd[0]))
+		if wat == null:
+			continue
+		var whb: Hitbox = Hitbox.new()
+		whb.name = "wound"
+		whb.setup(self, &"marke", Vector3(cube, cube, cube))
+		whb.bone = str(wsd[0])
+		whb.position = wsd[1]
+		whb.collision_layer = 0
+		wat.add_child(whb)
+		_wound_hb[ws] = whb
+		var wm: MeshInstance3D = MeshInstance3D.new()
+		wm.name = "Wound"
+		wm.mesh = ZombieBody.wound_mesh()
+		wm.position = wsd[1]
+		wm.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		wm.visible = false
+		wat.add_child(wm)
+		_wound_nodes[ws] = wm
 	# the animation tree
 	_ap = AnimationPlayer.new()
 	_ap.name = "AP"
@@ -2336,6 +2422,9 @@ func _reset_presentation() -> void:
 	_spawn_surface = ""
 	_set_inst("inst_dissolve", 0.0)
 	_set_inst("inst_char", 0.0)
+	_dormant = false
+	if has_meta(&"hard_truth_pid"):
+		remove_meta(&"hard_truth_pid")   # T-192: a pooled zombie that was a risen teammate is a plain one again
 	_tree_state = ""
 	_skel.reset_bone_poses()
 	for g: MeshInstance3D in _gear:
@@ -2363,9 +2452,19 @@ func _apply_variant(variant: String) -> void:
 		g.hide()
 	var gi: int = 0
 	var gear: Dictionary = kit.get("gear", {})
-	for piece: String in gear.keys():
-		if randf() >= float(gear[piece]):
-			continue
+	var pieces: Array = []
+	for piece0: String in gear.keys():
+		if randf() < float(gear[piece0]):
+			pieces.append(piece0)
+	# T-192: "gear_one_of": at most one of these (a head wears one hat), rolled in order
+	var one_of: Dictionary = kit.get("gear_one_of", {})
+	var roll: float = randf()
+	for piece1: String in one_of.keys():
+		roll -= float(one_of[piece1])
+		if roll < 0.0:
+			pieces.append(piece1)
+			break
+	for piece: String in pieces:
 		var spec: Array = ZombieBody.gear_mesh(piece, _female)
 		var at: BoneAttachment3D = bone_attachment(str(spec[0]))
 		if at == null:
@@ -2391,7 +2490,7 @@ func _apply_variant(variant: String) -> void:
 	var dirt: Array = va.get("dirt", [0.1, 0.8])
 	_set_inst("inst_dirt", randf_range(float(dirt[0]), float(dirt[1])))
 	var fbm: Dictionary = va.get("frost_by_map", {})
-	var fr: Array = fbm.get(String(GameState.map_id), fbm.get("default", [0.0, 0.2]))
+	var fr: Array = kit.get("frost", fbm.get(String(GameState.map_id), fbm.get("default", [0.0, 0.2])))   # T-192: a kit's own (the Returned's ice)
 	_frost_base = randf_range(float(fr[0]), float(fr[1]))
 	_set_inst("inst_frost", _frost_base)
 	_set_inst("inst_fuel", 0.0)
@@ -3280,7 +3379,7 @@ func variant_name() -> String:
 
 ## Sub-state for the snapshot (the bosses' own state machines); 0 for the shared one.
 func net_sub_state() -> int:
-	return 0
+	return 1 if _dormant else 0   # T-192: 1 = a Hard Truth body still lying (the puppet lies still too)
 
 
 ## The host spawned this zombie: dress it the same way and start following the snapshots.
@@ -3334,6 +3433,12 @@ func _puppet_show(pos: Vector3, yaw: float) -> void:
 ## Follows the host's state machine (sounds and poses tied to entering a state play here too).
 func _puppet_enter(st: int, _sub: int) -> void:
 	var s: State = st as State
+	if s == State.GETUP and _sub == 1 and not _dormant and enemy_id == &"ganger":
+		lie_dormant()   # T-192: the host's body is still lying
+		return
+	if _dormant and _sub != 1:
+		wake_from_dormant(float(_anim["knockdown"]["getup_seconds"]))   # it got up on the host
+		return
 	if s == State.INACTIVE or s == State.DEAD or s == state:
 		return
 	if s == State.CLIMB:
@@ -3389,15 +3494,16 @@ func _puppet_damage(amount: float, limb: StringName, weapon_id: StringName, by_p
 	if marke:
 		limb = marke_host_limb()
 		if marke_site != &"":
-			last_hit_bone = str((ZombieBody.MARKE_SITES[marke_site] as Array)[0])
+			last_hit_bone = str(ZombieBody.weak_site(marke_site)[0])
 	var side: String = _hit_side(limb)
 	last_hit_bone = ""   # consumed by this hit even when it is not predicted here (see take_damage)
-	if not is_active() or Net.session == null or by_player != Net.local_player_id() or Net.applying:
+	if not is_active() or _dormant or Net.session == null or by_player != Net.local_player_id() or Net.applying:
 		return false
 	Net.session.send_hit(self, amount, &"marke" if marke else limb, weapon_id, kind, armor_piercing)
 	var eff: float = amount
 	if marke:   # the host multiplies the report itself; the prediction matches it
-		GLBus.marke_hit.emit(by_player)
+		if not is_wound():
+			GLBus.marke_hit.emit(by_player)
 		eff *= float(((GLData.table("enemies") as Dictionary).get("marke", {}) as Dictionary).get("damage_mult", 1.5))
 	if (limb == &"torso" or limb == &"arms") and kind == &"bullet" and not armor_piercing:
 		eff *= armor_torso_mult

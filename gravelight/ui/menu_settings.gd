@@ -66,6 +66,10 @@ func _gameplay() -> void:
 	content.add_child(MenuKit.check("Invert look (Y)", bool(v["invert_y"]), _setter("invert_y")))
 	content.add_child(MenuKit.check("Lean (Z / E)", bool(v.get("lean_enabled", true)), _setter("lean_enabled")))
 	content.add_child(MenuKit.check("Classic Rules (no character traits)", bool(v["classic_rules"]), _setter("classic_rules")))
+	var ht_cur: int = maxi(0, HardTruth.MODES.find(HardTruth.mode_of(v)))
+	content.add_child(MenuKit.row("Hard Truth (the fourth-day rule)", MenuKit.options(HardTruth.MODE_LABELS, ht_cur,
+		func(i: int) -> void: GLSettings.set_value(HardTruth.SETTING, HardTruth.MODES[i]))))
+	content.add_child(MenuKit.para("A teammate who bleeds out rises as one of them four seconds later. Put them down: their kit drops where they fall. They still come back next round. In co-op the host's setting decides.", 16, MenuKit.DIM))
 	var egg_cur: int = maxi(0, EggMode.MODES.find(EggMode.mode_of(v)))
 	content.add_child(MenuKit.row("Easter Egg Mode (practice)", MenuKit.options(EggMode.MODE_LABELS, egg_cur,
 		func(i: int) -> void: GLSettings.set_value(EggMode.SETTING, EggMode.MODES[i]))))
