@@ -13,5 +13,15 @@
     "player": 14.0,
     "zombie": 18.0,
     "jump_velocity_exponent": 0.0
+  },
+  "play_bounds": {
+    "_doc": "The safety net on every map (BoundsGuard, T-185): a body far outside the playable space is brought back down to its last safe floor (else the nearest navmesh point in its zone, else its spawn), still, unhurt. Checked every check_s on the host / solo. The bounds come from the map's navmesh: below = lowest point - below_m; above = highest point + a jump at the map's gravity (or a launch plate's arc) + ceiling_m; outside = the footprint (x, z) grown by edge_m; falling = longer than the fall from the ceiling to the kill height at the map's gravity + fall_extra_s; off_nav = on a still floor off_nav_m from the navmesh, outside every zone volume, for off_nav_s. A map's json \"play_bounds\" overrides any of these, and also takes kill_y, ceiling_y, max_fall_s, rect [x0, z0, x1, z1] or enabled false.",
+    "check_s": 0.25,
+    "below_m": 8.0,
+    "ceiling_m": 8.0,
+    "edge_m": 15.0,
+    "fall_extra_s": 1.5,
+    "off_nav_m": 5.0,
+    "off_nav_s": 2.0
   }
 }

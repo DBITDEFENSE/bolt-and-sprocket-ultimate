@@ -1456,6 +1456,8 @@ var fall_rescues: int = 0
 
 
 func _fell_out(delta: float) -> bool:
+	if BoundsGuard.active(player.get_tree()):
+		return false   # T-185: the map's BoundsGuard brings every body back (bots included); this stays for guard-less scenes
 	if player.is_on_floor() or player.velocity.y > -12.0:
 		_fall_t = 0.0
 		_fall_from = player.global_position

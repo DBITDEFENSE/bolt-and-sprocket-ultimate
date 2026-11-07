@@ -720,14 +720,13 @@ func _move(delta: float) -> void:
 	player.velocity.x = horizontal.x
 	player.velocity.z = horizontal.z
 	player.velocity.y = -0.5 if on_floor and player.velocity.y < 0.0 else player.velocity.y - GameState.g_player() * delta
-	player.velocity += player.push_velocity()   # turbulence, suction, pulls (T-105)
 	player.sprinting = sprinting
 	_sprint_t = _sprint_t + delta if sprinting else 0.0
 	sprinted_s = _sprint_t
 	player.crouching = false
 	player._set_crouch_shape(false)
 	player.head.position.y = player._eye
-	player.move_and_slide()
+	player.move_with_push()   # turbulence, suction, pulls (T-105): added for the move, taken out after it (T-185)
 	_watch_stuck(delta, path_wish, on_floor)
 	_last_pos = player.global_position
 	if player.global_position.y < -20.0:

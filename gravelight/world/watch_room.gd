@@ -50,11 +50,17 @@ static func outcome(t_now: float, limit: float, bar: float) -> String:
 
 func _ready() -> void:
 	name = "WatchRoom"
+	add_to_group(&"play_space")   # T-185: the room is off the map on purpose; BoundsGuard leaves its occupant here
 	_build()
 
 
 func busy() -> bool:
 	return occupant != null and is_instance_valid(occupant)
+
+
+## BoundsGuard (T-185): the player taken in for review is where he should be.
+func play_space_has(p: Player) -> bool:
+	return busy() and occupant == p
 
 
 func _build() -> void:

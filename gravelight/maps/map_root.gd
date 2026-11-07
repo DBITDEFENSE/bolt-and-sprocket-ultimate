@@ -114,6 +114,7 @@ func _ready() -> void:
 	ExtraPeople.attach(self)   # T-143: the extra people (miners, a medic, a switchboard operator, a deserter, a widow, a courier)
 	Totenhafen.attach(self)   # T-153: Totenhafen's UPDATE 10 systems (tide v2, ballast v2, the drowned, the searchlight, Letzte Fahrt)
 	FirstHints.attach(self)   # T-162: first-time hints (once per profile) and the citations' watcher
+	BoundsGuard.attach(self)   # T-185: anyone far outside the playable space is brought back down
 	for q: String in quest_files:
 		QuestManager.load_quest(q)
 	Campaign.restore_quests(self)   # UPDATE 07 (T-114): the egg's progress from the act before

@@ -241,9 +241,10 @@ func _physics_process(delta: float) -> void:
 	var stagger: bool = _stagger_t <= 0.0
 	if stagger:
 		_stagger_t = stagger_every
-	# players drift at a true player_push_mps: Player.external_push ADDS its vector to the velocity every frame (a
-	# shove, not a speed), so the wind moves the body itself, through move_and_collide (walls still stop it). Only the
-	# bodies this peer simulates: the local human, and the bots on the host. Skyhook's push_resist applies.
+	# players drift at a true player_push_mps: the wind moves the body itself, through move_and_collide (walls still
+	# stop it); written when Player.external_push still added its vector every frame (fixed in T-185: a push is a speed
+	# now), kept as it is. Only the bodies this peer simulates: the local human, and the bots on the host. Skyhook's
+	# push_resist applies.
 	for n: Node in get_tree().get_nodes_in_group(&"players"):
 		var p: Player = n as Player
 		if p == null or p.downed or not inside(p.global_position, lo, hi):
