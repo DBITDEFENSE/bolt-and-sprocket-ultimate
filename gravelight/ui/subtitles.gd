@@ -129,3 +129,19 @@ func _process(delta: float) -> void:
 			if int(row["i"]) < times.size():
 				row["t"] = times[int(row["i"])]
 			_show(row)
+
+
+## T-184: during a cutscene the lines sit in the bottom letterbox bar (`bar_px` high), over the frame's black, and
+## come back to the HUD strip when it ends. CinemaOverlay calls it with the bars.
+func cinema(on: bool, bar_px: float) -> void:
+	if _box == null:
+		return
+	var sb: float = float(MenuKit.hud("subtitle_bottom", 200.0))
+	var sh: float = float(MenuKit.hud("subtitle_height", 130.0))
+	layer = 31 if on else 15
+	if on:
+		_box.offset_bottom = -maxf(6.0, bar_px * 0.5 - MenuKit.px(30))
+		_box.offset_top = _box.offset_bottom - sh
+	else:
+		_box.offset_top = -(sb + sh)
+		_box.offset_bottom = -sb

@@ -21,6 +21,11 @@ extends Node3D
 ## has had `look.min_seconds` of settled view (look_ready), is facing the front door (or `look.max_seconds` passed)
 ## and no patron is mid-line; then the cue (a pounding at the window and the door, Kubiak's "What was that?") plays
 ## on every peer and round 1 starts `look.cue_lead` seconds later. The patrons chat at the tables meanwhile.
+##
+## The title card (T-184): while that settled view runs, the opening is framed like a film's first shot without taking
+## anything from the player: the letterbox slides in, the HUD steps aside, the place / where / when card is typed in
+## (data `title_card`), and all of it slides away at `until` or at the cue, whichever is first. The player keeps their
+## hands, the camera and every timing; nothing here touches the patrons, the door or round 1.
 
 const DATA_PATH: String = "res://data/gravelight/map00_opening.json"
 
@@ -57,6 +62,10 @@ var _cue_sfx_left: Array = []
 var _line_start: float = -1.0
 var _line_voice: AudioStreamPlayer3D = null
 var _last_voice: AudioStreamPlayer3D = null
+## T-184: the opening's title card (a CinemaOverlay while it shows) and its clock (-1 = none / over).
+var _card: CinemaOverlay = null
+var _card_t: float = -1.0
+var _card_titled: bool = false
 
 
 static func load_cfg() -> Dictionary:
@@ -185,6 +194,8 @@ func _ready() -> void:
 		patrons[str(row["id"])] = pb
 		_st[str(row["id"])] = {"row": row, "stage": "idle", "pts": [], "i": 0, "exit": float(exits.get(str(row["id"]), 0.0)), "t0": 0.0}
 	GLBus.round_started.connect(_on_round_started)
+	if not (cfg.get("title_card", {}) as Dictionary).is_empty():
+		_card_t = 0.0
 
 
 func _map() -> MapRoot:
@@ -292,6 +303,8 @@ func _physics_process(delta: float) -> void:
 ## Before round 1 (T-076): the settled-view clock, the patrons' chatter, and on the host the hold on the round's intro
 ## timer until the cue.
 func _process(delta: float) -> void:
+	if _card_t >= 0.0:
+		_tick_card(delta)
 	if phase != Phase.IDLE or RoundManager.current_round != 0:
 		return
 	var lk: Dictionary = cfg.get("look", {})
@@ -309,6 +322,38 @@ func _process(delta: float) -> void:
 		RoundManager.break_left = float(lk.get("cue_lead", 1.6))
 	else:
 		RoundManager.break_left = maxf(RoundManager.break_left, 0.5)
+
+
+## T-184: the opening card: the bars and the card in, then out at `until`, the cue, or round 1 (whichever is first).
+func _tick_card(delta: float) -> void:
+	var tc: Dictionary = cfg.get("title_card", {})
+	_card_t += delta
+	var over: bool = _card_t >= float(tc.get("until", 8.0)) or cued or phase != Phase.IDLE or RoundManager.current_round != 0
+	if _card == null:
+		if over:
+			_card_t = -1.0
+			return
+		if _card_t < float(tc.get("bars_at", 0.4)):
+			return
+		_card = CinemaOverlay.new()
+		_card.name = "OpeningCard"
+		_card.skip_enabled = false
+		add_child(_card)
+		_card.hide_hud(_map())
+		_card.bars(true, 1.2)
+		return
+	if not _card_titled and not over and _card_t >= float(tc.get("at", 1.2)):
+		_card_titled = true
+		_card.title_card(str(tc.get("title", "")), str(tc.get("subtitle", "")), str(tc.get("time", "")), float(tc.get("hold", 5.5)))
+	if over:
+		_card_t = -1.0
+		var c: CinemaOverlay = _card
+		_card = null
+		c.restore_hud()
+		c.bars(false, 0.8)
+		get_tree().create_timer(1.0).timeout.connect(func() -> void:
+			if is_instance_valid(c):
+				c.queue_free())
 
 
 ## Is the local camera facing the front door? (No camera, e.g. a dedicated tool: yes.)

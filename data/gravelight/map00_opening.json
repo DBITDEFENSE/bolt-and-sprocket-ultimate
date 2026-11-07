@@ -817,5 +817,15 @@
    "id": "KUB_INN_WINDOW_01",
    "who": "kubiak"
   }
+ },
+ "title_card": {
+  "_doc": "T-184: the opening's title card over the settled view before round 1 (inn_opening.gd _tick_card): the letterbox at bars_at, the card typed in at at (hold s), everything away at until or at the cue, whichever is first. The same words as the map's intro_text (gen_map00), which the card's HUD hiding covers. The player keeps control; nothing else waits on it.",
+  "title": "GASTHAUS ZUM KREUZWEG",
+  "subtitle": "the Crossroads Inn  ·  9 km northwest of Kaltenbrunn",
+  "time": "23 December 1944  ·  night",
+  "bars_at": 0.0,
+  "at": 1.0,
+  "hold": 5.8,
+  "until": 8.2
  }
 }
