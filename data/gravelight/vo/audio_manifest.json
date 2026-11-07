@@ -34022,7 +34022,14 @@
   "DEA_GL1_01": "U11 T-191: new LAZARUS line, awaits the ElevenLabs bake (T-193 / T-201); no OneCore voice for Russian or German",
   "DEA_GL1_02": "U11 T-191: new LAZARUS line, awaits the ElevenLabs bake (T-193 / T-201); no OneCore voice for Russian or German",
   "WRN_GL1_01": "U11 T-191: new LAZARUS line, awaits the ElevenLabs bake (T-193 / T-201); no OneCore voice for Russian or German",
-  "WRN_GL1_02": "U11 T-191: new LAZARUS line, awaits the ElevenLabs bake (T-193 / T-201); no OneCore voice for Russian or German"
+  "WRN_GL1_02": "U11 T-191: new LAZARUS line, awaits the ElevenLabs bake (T-193 / T-201); no OneCore voice for Russian or German",
+  "SER_DIARY_MAP00_01": "UPDATE 11 (T-190): Father Serafim, Russian; no Kokoro voice, ElevenLabs bake pending (T-201)",
+  "SER_DIARY_MAP01_01": "UPDATE 11 (T-190): Father Serafim, Russian; no Kokoro voice, ElevenLabs bake pending (T-201)",
+  "SER_DIARY_MAP02_01": "UPDATE 11 (T-190): Father Serafim, Russian; no Kokoro voice, ElevenLabs bake pending (T-201)",
+  "SER_DIARY_MAP04A_01": "UPDATE 11 (T-190): Father Serafim, Russian; no Kokoro voice, ElevenLabs bake pending (T-201)",
+  "SER_DIARY_MAP04B_01": "UPDATE 11 (T-190): Father Serafim, Russian; no Kokoro voice, ElevenLabs bake pending (T-201)",
+  "SER_DIARY_MAP04C_01": "UPDATE 11 (T-190): Father Serafim, Russian; no Kokoro voice, ElevenLabs bake pending (T-201)",
+  "SER_DIARY_MAP04D_01": "UPDATE 11 (T-190): Father Serafim, Russian; no Kokoro voice, ElevenLabs bake pending (T-201)"
  },
  "neural_tool_version": "1"
 }

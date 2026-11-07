@@ -58,7 +58,7 @@ He was attached to Operation Gravelight because he speaks Polish, and because hi
 The forced laborers and miners here are Silesian and Polish. Some of the Gängers could be from Wilcza Góra, which means some of them could be his distant kin. The closer he gets to the village, the harder that is to joke about.
 
 ### Secret
-Babcia knew about the "black glass in the salt" decades before the Reich found it. Her family's village had a word for it, *czarna sól* ("black salt"), and a rule: you don't bring it up. Dutch has her letter in his breast pocket. He hasn't read it in years, and he's afraid to read it here.
+Babcia knew about the "black glass in the salt" decades before the Reich found it. Her family's village had a word for it, *czarna sól* ("black salt"), and a rule: you don't bring it up. Dutch has her letter in his breast pocket. He hasn't read it in years, and he's afraid to read it here. **(UPDATE 11, T-190)** The letter is unchanged: it is about the glass in the salt, as now. What changes is what he hears in it when he finally reads it: *he would not stay down.* He has seen the Soviet dead in greatcoats walking out of the east, and he knows now that the glass was never the whole of it.
 
 ### Arc
 - **Map 0 (Crossroads Inn):** Pure survival. Dutch is the rock, grumbling and dependable. He recognizes a Polish hymn on the radio static and goes quiet.
@@ -169,7 +169,7 @@ She is the commander of Operation Gravelight. Officially, her mission is to extr
 She lost two teams in France following orders she didn't fully understand. LANTERN is the same kind of order, and she has started to suspect it's worse.
 
 ### Secret: Directive LANTERN
-Retrieve a viable Nachtglas sample at any cost, secure it, and report to Mr. Hale. Destroy the facility and all records. Fasbender is "desirable but not essential." The squad is "expendable in pursuit of the primary objective." Peg pockets a shard at the end of Map 1. **(T-137)** The directive also says *"retrieve the tokens"*: the small implanted pieces reported in enemy personnel, from the dead, "do not ask the bearer." Peg does not know what they are for; London does not know either, only that Res's 1943 sample came with a note about "the mark that keeps you." She has a lead-lined tin for them and never shows it. Wren, who keeps finding them on the dead ("same hand, every time"), is the one who works out that Peg wants them.
+**(UPDATE 11, T-190)** Retrieve **samples of the sickness and the crystal** at any cost: the material designated NACHTGLAS, and the agent London's file calls LAZARUS since the Soviet "epidemic" reports of November 1944 reached it through Moscow's own front traffic. Secure them, and report to Mr. Hale. Destroy the facility and all records. Fasbender is "desirable but not essential." The squad is "expendable in pursuit of the primary objective." Peg pockets a shard at the end of Map 1. **(T-137)** The directive also says *"retrieve the tokens"*: the small implanted pieces reported in enemy personnel, from the dead, "do not ask the bearer." Peg does not know what they are for; London does not know either, only that Res's 1943 sample came with a note about "the mark that keeps you." She has a lead-lined tin for them and never shows it. Wren, who keeps finding them on the dead ("same hand, every time"), is the one who works out that Peg wants them.
 
 ### Arc
 - **Map 0:** Calm command. She plans the escape and the route to Kaltenbrunn. She asks Fasbender one odd question over the radio: "Is the material stable in transit?"
@@ -274,9 +274,10 @@ He writes to his younger sister **Ruthie** every week. She's twelve and wants to
 - Talks to machines like livestock: "Easy now, girl," "Come on, mule." Never condescending to people.
 - His blues lines are his own, half-sung, made up on the spot. They should sound like real field blues: AAB form, plain words, bent notes.
 - Quietly funny. His jokes land half a beat late and he enjoys them more than anyone.
+- **(UPDATE 11, T-190) The saga's quiet theological voice.** He is the one who knows what a man four days dead means, and what the mark in the right hand means, and "the last enemy that shall be destroyed is death" (1 Cor. 15:26). **No sermons.** A line at a time, usually to a machine, usually when nobody asked, and then he stops himself. When the Soviet dead walk past the inn's fence he says grace under his breath and nothing else.
 
 ### Personal stake
-The Helvetia machines, the Crucible, the Ledger, and the turbines are beautifully made, and they're being used to grind people up. To Deacon that's blasphemy against good work. He means to set every machine here free, even if that means breaking it.
+The Helvetia machines, the Crucible, the Ledger, and the turbines are beautifully made, and they're being used to grind people up. To Deacon that's blasphemy against good work. He means to set every machine here free, even if that means breaking it. *(UPDATE 11)* The sickness is a different matter: he will not call it a judgment and he will not call it a disease. He calls it "the debt", once, and does not explain.
 
 ### Secret
 He isn't writing to Ruthie about the weather anymore. His last letter, unsent, is a goodbye. (Dossier 10.)
@@ -385,6 +386,8 @@ Zofia Nowak was born in 1920 in a village near Kaltenbrunn (now Germanized), the
 In 1942 the occupation authorities rounded up young men from the valley for "labor service" at the reopened salt mine. Tomasz was taken. His forced-laborer ID tag read **KB-4471**. He wrote one letter. It said the work was cold, the food was thin, and "the walls hum at night." Then nothing.
 
 Zofia joined the Home Army that autumn. She earned the name *Strzyżyk*, "Wren," because she's small, she's loud when she wants to be, and you never see where she's perched. She has 61 confirmed kills in a stained notebook, and she adds one with every mark. She is the squad's guide because she has mapped the mine from the outside for two years, waiting for a way in.
+
+**(UPDATE 11, T-190) She knows the NKVD.** Her cell ran couriers who had come west through the Soviet zone in 1940–41, and she has heard what a Soviet "typhus cordon" could mean, and what a transfer list with a camp's stamp means. She recognises the tone of the Laboratory No. 4 files before she can read a word of them, and she is the one who reads the Soviet dead's shoulder boards and says which army they were. Her brother's story is unchanged.
 
 ### Voice notes (for VO actor)
 - A Polish speaker with fluent but accented English (learned from British radio and an SOE liaison). Clipped, economical, never wasted words.
@@ -920,6 +923,7 @@ Banter triggers between rounds (in the round transition break) when two characte
 ### Dr. Emil Fasbender
 - **Voice:** Mid-40s, German, soft Rhineland accent, speaks English carefully with occasional wrong idioms. Nervous, rapid, then suddenly very quiet when guilty. Always sounds like he's talking with his hand over the mic.
 - **Delivery:** Brilliant and apologetic. Gives hints wrapped in physics. Leaves some doubt: he never answers a direct question about what he did.
+- **(UPDATE 11, T-190) More haunted.** In November 1944 he stood at the rail siding at night and watched the sealed wagons of Soviet dead come in from the east, and he knows which of them are still closed. He says what Kaltenbrunn did, and now also what the Russians did first, and he cannot decide which frightens him more: that the dust was made here, or that it did not need to be. When he speaks of the trains his voice drops to almost nothing.
 - `FAS_SAMPLE_01`: "Glasmacher calling Gravelight. Please, if anyone is alive on that aircraft... please answer."
 - `FAS_SAMPLE_02`: "Do not let the bell ring. When it rings, the dead remember they were hungry."
 - `FAS_SAMPLE_03`: "The Pylons are tuning forks. Three of them. Strike them together and the vault will... sing open. Forgive the poetry. I have been alone a long time."
@@ -952,6 +956,15 @@ Banter triggers between rounds (in the round transition break) when two characte
 - `LSL_SAMPLE_03`: "♪ Komm mit, kleiner Soldat... ♪ I forget the rest. Mama, what comes next?"
 - `LSL_SAMPLE_04`: "(*cough*) I'm not tired. I'm only resting my eyes. Like Papa used to."
 - `LSL_SAMPLE_05`: "Mama, when you go down in the salt, does it hum for you too?"
+
+### Father Serafim Lebedev (UPDATE 11, T-190; speaker `SER`, Russian, subtitled; `docs/LAZARUS.md` §6.1)
+- **Voice:** fifty-nine in 1930, a village priest's Russian, unhurried and plain, with no church-Slavonic ornament except when he quotes the line over the crypt door. A low, worn tenor. He notices things (the thaw, the cracked bell's note, the colour of the blood) and says them simply.
+- **Delivery:** never preaches at the listener, never raises his voice, never theorises about the miracle. He is not brave the way soldiers are; he is brave the way a man is who stays where he was put. Grief and fear are in the pauses, not the words. The diary read-alouds (`SER_DIARY_<MAP>_01`, VO_SCRIPT §27) are read as a man reads his own handwriting back to himself at night, by a lamp.
+- **Never a zombie, never shown dying.** His fate is one line in the last page and nothing else.
+
+### Arkady Volkov (UPDATE 11, T-190; speaker `VOL`, Russian, subtitled; `docs/LAZARUS.md` §6.2)
+- **Voice:** twenty-six in 1930, forty in October 1944. A Tula factory boy's Russian smoothed by Moscow; precise, dry, quiet. He speaks less the more frightened he is.
+- **Delivery:** frightened, clever, ambitious, never a cartoon and never cruel for its own sake. His reports are the only place he is honest, and he reads them as if the paper might report him. In the October 1944 cutscene he watches through binoculars and says almost nothing; what he says is an order, and his hand is not steady on the glasses.
 
 ### The extra people (T-143, UPDATE 09 section 4)
 
@@ -1014,7 +1027,7 @@ Dossier XP comes from playing as that character (any map). Each level unlocks it
 10. **The secret: Directive LANTERN, in full.**
     > MOST SECRET — EYES ONLY — LT. M. ASHWORTH
     > DIRECTIVE LANTERN (supersedes GRAVELIGHT operational orders where in conflict)
-    > 1. Primary objective: recover a viable sample of the material designated NACHTGLAS. Secure in the lead-lined container provided. Do not expose to living tissue. Retrieve the tokens: the small implanted pieces reported in enemy personnel (right hand or brow), as many as practicable, from the dead. Same container. Do not ask the bearer.
+    > 1. Primary objective: recover viable samples of (a) the material designated NACHTGLAS and (b) the agent designated LAZARUS (the sickness reported in Soviet front traffic from October 1944 as "an epidemic among the enemy", and in enemy documents as "Lazarusblut"): blood or tissue of the risen, sealed. Secure both in the lead-lined containers provided, separately. Do not expose to living tissue. Retrieve the tokens: the small implanted pieces reported in enemy personnel (right hand or brow), as many as practicable, from the dead. Same container as (a). Do not ask the bearer. (Amendment of 16 Nov 1944, initialled H.)
     > 2. Dr. E. Fasbender is desirable but not essential. If extraction endangers the primary objective, he is to be abandoned.
     > 3. On recovery, destroy the facility and all records. No third party (Allied or otherwise) is to receive any sample, document, or witness account.
     > 4. Team members are expendable in pursuit of the primary objective. They are not to be informed of this directive.

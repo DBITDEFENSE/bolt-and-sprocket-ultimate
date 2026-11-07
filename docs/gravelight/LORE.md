@@ -16,10 +16,22 @@ Rules for writers:
 - **No one explains everything.** Fasbender knows a lot and lies a little. Reinholt is right about some things. The Operator is never fully reliable.
 - **Real history is the backdrop, not the subject.** Forced labor and the occupation of Poland are depicted with weight. No real atrocity is used as spectacle, and no real person appears.
 - **Nachtglas is the only saturated thing in the world,** in art and in story. Wherever there is color, there is something wrong.
+- **(UPDATE 11, T-190) Where the dead come from is `docs/CANON.md` §0 and `docs/LAZARUS.md`.** The dead come from the
+  Lazarus sickness, opened in 1930; Nachtglas answers it, the Marke steers it, Darkmatter sells to it. Faith is never the
+  villain; the miracle is never mocked, faked or called a disease; Soviet and German soldiers are people; camp prisoners
+  and forced labourers are never zombies. Period voice, restraint, dread over gore.
 
 ---
 
 ## 2. Nachtglas
+
+**(UPDATE 11, T-190) What Nachtglas is not.** It is not the reason the dead walk. The dead walk because of the sickness
+(`docs/LAZARUS.md`): a body with the sickness in it rises on the fourth day, wherever it is, crystal or no crystal. What
+Nachtglas does is *answer* the sickness: near the crystal the fourth day shrinks to minutes; ground with the crystal into
+dust (STAUB) the sickness carries on the air; a grain of it under the skin (the Marke) lets the risen be reached and
+steered. Everything below that the scientists of 1938–44 believed about the stone is true of the stone *in the presence
+of the sickness*, which is the only way any of them ever met it. Writers: keep the two apart. The Soviet files are about
+the sickness; the German files are about the crystal; Reinholt is the first to hold both and say so (her STAUB memos).
 
 ### 2.1 What it is (as the characters understand it)
 Nachtglas ("night-glass") is a black, glassy mineral shot through with violet veins that turn amber at the edges, like embers seen through smoked glass. It was found on the night of **9 November 1938**, 340 m below the surface in the Kaltenbrunn salt mine. *(§11 amendment: the date was "March 1938," moved to match the locked probe-landing date.)* A tremor shook Gallery 7, and the crew cutting there broke into a sealed void the salt had grown around. The geologists found no entry channel and concluded it was the remains of a meteorite strike, sunk and buried in the Zechstein salt beds roughly 250 million years ago.
@@ -49,7 +61,7 @@ This is the **unspoken threat over the playable squad.** Every tonic they drink 
 - **The "meteorite"** was Darkmatter test-market probe **TM-SOL3-001**, fired by the Emerging Markets Division to learn whether a "pre-subscription species" could be retained.
   - It arrived by fold on **9 November 1938**. A fold delivers a package *into* its coordinates and displaces whatever is there, which is why the salt seemed to have "grown around" a void with no way in, and why it read as 250 million years old.
   - Field Merchandiser Unit **V-1** (serial **DMS-FMU-V1-0001**, directive **"DISTRIBUTE. RETAIN. REPORT."**) survived the arrival, damaged and out of contact. The squad never learns of it. It is Vendelin (The Fine Print Ch. 2).
-- **The hum, the Nachhall, the hunger** are the product working as designed. A "retained" user cannot cancel. Dead tissue near the substrate keeps running its last impulse. The Gängers are the ultimate retained customers.
+- **(UPDATE 11, T-190) The dead are not the product.** Darkmatter came to Earth because the awakening of April 1930 (CANON §0) showed on its instruments as a *"natural retention phenomenon"*: a species on which death was already not a cancellation event. The probe carried a **culture of the sickness** with the substrate as "returned inventory" (lot LZR-04, taken from Laboratory No. 4 through a fold and backdated), so the market arrived with its product already in it. **The hum, the Nachhall, the hunger** are the substrate *answering* the sickness: a body carrying both keeps running its last impulse, in minutes, and can be reached and counted. To Darkmatter the Gängers are the ultimate retained customers; Darkmatter did not make them. It found them, packaged the sickness with its crystal, and sells to them.
 - **Everything else follows from it:**
   - The Ledger's engagement metrics: Scrip are localized loyalty points.
   - The Operator: Darkmatter's Customer Retention Interface.
@@ -61,7 +73,10 @@ This is the **unspoken threat over the playable squad.** Every tonic they drink 
 **Writer rule (hard):** no Gravelight character ever learns any of this, says the word "subscription," or connects Nachtglas to Darkmatter. Fasbender's *Nachhall-Hypothese* stays the in-world truth. The corporate truth reaches the player only through the Operator's rare slips (`op.slip.*`, `docs/gravelight/VO_SCRIPT.md` §10), the plan-ID stencils and fine-print panels (`docs/JINGLES.md`), Reinholt's Woman in Violet recordings (§5.4), and The Fine Print itself.
 
 ### 2.5 The Marke: "die Marke, die dich hält" (UPDATE 09 §1, DECISIONS T-137; canon in CANON §2.2)
-The dead do not come from a sickness. They come from a chip.
+**(UPDATE 11, T-190)** The dead come from the sickness (CANON §0). The chip is what makes a marked body rise *on command*
+and walk where the relay points it: a grain of the crystal that answers the sickness, under the skin. From **November
+1944** Abteilung III sold it with a second line on the poster, *Schutz gegen die Lazaruskrankheit*, protection against
+the Lazarus sickness the Soviet dead had brought west. It was never protection. Everything below stands.
 
 From June 1942 **Abteilung III** (Venner's formulation department, the people who made the tonics drinkable) cut
 Nachtglas offcuts from the Heart into chips the size of a grain of rice, the **Marken**, and implanted them under the
@@ -113,14 +128,20 @@ bosses and Darkmatter's own constructs carry none. `docs/gravelight/ENEMIES.md` 
 | Date | Event |
 |---|---|
 | ~250 million years ago | A meteorite strikes the Zechstein Sea. Evaporating salt beds bury the impact site. |
+| **c. AD 33** *(UPDATE 11, T-190; `docs/LAZARUS.md` §1)* | Lazarus of Bethany, four days dead, is called out of the tomb (John 11). **Our fiction begins after the Gospel ends:** what death left behind when it gave him back is kept in a small sealed vessel, apart from his relics. |
+| **890 / 898** | The tomb at Kition (Cyprus) is found (890); Leo VI has the relics brought to Constantinople (898, some say 890). The vessel goes with them, kept apart, under a lamp. |
+| **29 May 1453** | Constantinople falls. Three watchers carry the vessel north to Rus. By the end of the century it rests in the crypt of the village church of **Chetverodnevo** (fictional), the Church of St Lazarus the Four-Days-Dead, behind the line *"What was closed on the fourth day, let no one open."* |
+| **12 Apr 1930 (30 Mar O.S.), Lazarus Saturday** | The anti-religious brigade closes the church: the bell cracked, the tower dynamited, the crypt broken open. **Arkady Volkov** (OGPU) opens the vessel on the altar step. The blood is still wet. **Father Serafim Lebedev** writes the first page of his diary. |
+| 15–21 Apr 1930 | Three of the brigade die in the Staryi Brod fever ward (15th) and get up **on the fourth day** (the 18th). The village's first dead, buried by Father Serafim himself on Holy Saturday, come up on Bright Monday (the 21st). The OGPU seals the district as typhus. Chetverodnevo is burned (25th) and erased from the map. Volkov carries the vessel to Moscow in a lead case. |
+| Oct 1934 | **Laboratory No. 4**, codename **FOURTH DAY** (ЧЕТВЁРТЫЙ ДЕНЬ), constituted under the NKVD's GUGB with Volkov as chief; the sickness is "Lazar" in its files. 1935–39: it lives in blood, the dead rise on the fourth day, the risen bite, **it cannot be made to obey**. Its subjects were camp prisoners (documents, empty bunks, a list of names; never zombies). 1939: a weapon of last resort, in a vault. |
 | 1890s | Kaltenbrunn salt mine opens. The nearby village of **Wilcza Góra** supplies miners. **Halina Kowalczyk** (Dutch's grandmother) emigrates to Pittsburgh in 1891. |
 | 1912 | The miners carve the **Salt Chapel** at level −2 and hang a bronze bell, cast in Breslau, to call the shifts. |
 | 1936 | The mine expands its deep galleries (Galleries 5–7). |
-| **9–11 Nov 1938** *(§11 amendment, was "Mar 1938")* | **9 Nov:** a tremor in Gallery 7, and the crew breaks into the "glass room." *(Truth: the Sol-3 probe TM-SOL3-001 arrived by fold that night; see §2.4.)* **11 Nov:** two miners, Jan Pilch and Bruno Hasse, die of what's recorded as gas. That night both bodies leave the mortuary shed. **Pilch is the first retained miner**, and Vendelin witnesses him rise (The Fine Print Ch. 2). Local police record it as theft. |
+| **9–13 Nov 1938** *(§11 amendment, was "Mar 1938"; UPDATE 11 adds the culture and the night)* | **9 Nov:** a tremor in Gallery 7, and the crew breaks into the "glass room." *(Truth: the Sol-3 probe TM-SOL3-001 arrived by fold that night with the substrate **and a culture of the sickness**, lot LZR-04; see §2.4, CANON §0.)* **11 Nov:** two miners, Jan Pilch and Bruno Hasse, die of what's recorded as gas. **01:12, 13 Nov:** both bodies leave the mortuary shed: the fourth day from the glass room, two days early from the death, the first sign that near the crystal the sickness does not wait. **Pilch is the first retained miner**, and Vendelin witnesses him rise (The Fine Print Ch. 2, "the night of 12–13 Nov"). Local police record it as theft. |
 | Early 1939 *(§11 amendment, new row)* | A tall, thin "Swiss engineer" in a long coat, hat, scarf and gloves walks out of the mine district in a borrowed coat and is not seen in Silesia again until 1941. *(Vendelin, Ch. 2. No in-world document names him here.)* |
 | **Feb 1939** | **Liesl Reinholt**, aged 7, dies of diphtheria in Berlin. |
 | **2 Mar 1939** *(§11 amendment, was "Sep 1938")* | The **Amt für Sonderforschung** (Office of Special Research, a fictional Reich agency) seizes the mine. Civilian mining continues on the upper levels as cover. |
-| Jun 1939 | **Dr. Augusta Reinholt** (physiologist, Kaiser Wilhelm-trained) is appointed lead of the new program at Kaltenbrunn. She names it **Projekt Wiederkehr** ("Return"). |
+| Jun 1939 | **Dr. Augusta Reinholt** (physiologist, Kaiser Wilhelm-trained) is appointed lead of the new program at Kaltenbrunn. She names it **Projekt Wiederkehr** ("Return"). *(UPDATE 11)* Her first culture from the raised miners' blood she names **Lazarusblut**, after the man four days dead who came home; she does not know where it came from. |
 | Sep 1939 | Germany invades Poland. Kaltenbrunn sits in annexed Silesia. |
 | Jan 1940 | **Dr. Emil Fasbender** (resonance physicist, formerly acoustics at Göttingen) joins as head of the Resonance Department. His first paper proposes the *Nachhall-Hypothese*. |
 | Feb 1940 *(§11 amendment, new row)* | **"Herr Viktor Vendelin, Ingenieur, Basel"** re-founds the bankrupt Basel vending firm **Imhof & Cie.** (est. 1921) as **Helvetia Automaten AG**, with **Konrad Imhof** as nominal Swiss President. The "since 1921" on the brass plates is bought heritage. |
@@ -146,8 +167,10 @@ bosses and Darkmatter's own constructs carry none. `docs/gravelight/ENEMIES.md` 
 | May 1944 *(§11 amendment, new row)* | The Woman in Violet returns with "terms": Liesl back, as a service, renewed. **Reinholt refuses to sign.** She decides to reach Liesl herself (Cylinder #14). |
 | **14 Sep 1944** *(§11 amendment, new row)* | Vendelin installs the probe's Customer Retention Interface into the Ledger. It keeps **Lionel Marchbank's** voice as its localization, and its first words as itself are *"Market localization complete. Welcome, valued customers."* (Before this, from Mar 1942, the "Operator" was Opitz's mechanical splice-reader.) |
 | **Oct 1944** | Fasbender makes radio contact with a Home Army cell, which passes him to SOE. His codename is **"Glasmacher"** (Glassmaker). He offers his research and his defection in exchange for extraction. |
-| Nov 1944 | SOE/OSS form **Operation Gravelight**. **Lt. Margaret "Peg" Ashworth** is given command, plus sealed orders: **Directive LANTERN**. |
-| 20 Dec 1944 | Reinholt's "great attempt": she drives the Heart to full resonance to reach Liesl. The **Erwachen** (Awakening). Every dead body within 30 km begins to move. Most of the garrison dies within hours and rises. |
+| **16–30 Oct 1944** *(UPDATE 11, T-190; `docs/LAZARUS.md` §5.2)* | The Red Army's first attack into East Prussia (the Gumbinnen–Goldap operation, real) stalls. **Our history:** Moscow sends Volkov and the last-resort order. **26 Oct:** FOURTH DAY is released on the German line by shell and by infected volunteers' blood. The line breaks (29th–30th) when its dead get up. **Four days later the Red Army's own dead rise**, thousands, from field graves, aid stations and the first snow; they walk west. The soldiers call them **the Returned** (вернувшиеся). Moscow calls it "an epidemic among the enemy". The line broke and kept breaking: by December the front is far west of where it was in life, and the war on Map 0's eastern horizon is the Red Army fighting the Germans and its own risen. |
+| Nov 1944 | SOE/OSS form **Operation Gravelight**. **Lt. Margaret "Peg" Ashworth** is given command, plus sealed orders: **Directive LANTERN**, amended on 16 Nov *(UPDATE 11)* to **retrieve samples of the sickness and the crystal**. |
+| **Nov 1944** *(UPDATE 11)* | Infected Soviet dead come to Kaltenbrunn in sealed wagons; **Fasbender sees them come in on the trains.** Reinholt's laboratory finds that Lazarusblut and the Soviet "Lazar" are the same sickness, that near Nachtglas it takes **minutes**, and that ground with the crystal into a violet dust **it carries on the air**: **STAUB**. Abteilung III's mills are retooled; the Marke is re-sold as *protection against the Lazarus sickness* (§2.5). |
+| 20 Dec 1944 | **(UPDATE 11)** **The first STAUB release**, from the pad above Kaltenbrunn, aimed at the Soviet front; the weather report is wrong, the wind turns at 22:40 and the dust comes back over Kaltenbrunn, the villages and the road garrison. **The same night**, Reinholt's "great attempt": she drives the Heart to full resonance to reach Liesl. The **Erwachen** (Awakening). Both are true at once. Every dead body within 30 km begins to move, Soviet and German alike. Most of the garrison dies within hours and rises. |
 | 20 Dec 1944, the same night *(U09 §1, T-137, new row)* | **The Erwachen is two things at once:** the mine's raw substrate driven to full resonance (the sealed galleries, the Laboratory Wing's dosed subjects, Pilch's kind), *and* every marked guard who dies that night getting up, Lenz among them, wherever he falls. Away from the mine, from the inn's road garrison to the Baltic pens and Thalbach's works guard, everything that rises was marked. §2.5. |
 | 21–22 Dec | The Ledger begins tallying with no operator present. The PA keeps announcing. |
 | 20–22 Dec *(U02 §6.2, new row)* | On the night of the Erwachen eleven forced labourers go up the Maintenance Stairs; the guards on the third landing are still shooting, and only **Jakub Ostrowski** (KB-2210, of Wilcza Góra; Tomasz Nowak's gang leader in Gallery Nine in 1942–43) reaches the snow (21 Dec). On the 22nd a retreating road patrol catches him and locks him in the Kreuzweg's coal cage, then flees with the key. He writes to his wife Marta on the back of a coal bill (`INT_JAK_01`). CANON §6.4. |
@@ -159,7 +182,9 @@ bosses and Darkmatter's own constructs carry none. `docs/gravelight/ENEMIES.md` 
 | **Night of 17–18 Mar 1945** *(§11 amendment, new row)* | **HELVETIA WORKS** (The Fine Print Ch. 5; standalone map once unlocked). The squad steps out of the fold in **Basel**, at Helvetia Automaten AG's factory on the Rhine, under Darkmatter's fulfillment barge. Bolt & Sprocket arrive from the far future through Blartz's misfired delivery pad (Ch. 4 ending). The Underwriter arrives to recall Vendelin under **Clause 0** ("Field units are inventory"). **03:12, 18 March:** Vendelin's last transmission, the one Sprocket finds in Ch. 1. Vendelin overrides Clause 0 and cuts Darkmatter's fold. |
 | Late Dec 1944 *(§11 amendment, new row)* | **"Returned to sender."** Cutting the fold sends the squad back to the Kaltenbrunn rail siding at dawn, minutes after they stepped into it, where Fasbender is waiting as promised (`FAS_M1_ENDING_01`). To all four it is one impossible night, remembered afterward as a shared fever dream that none of them will describe aloud. Peg's pocket is heavier than it should be: she has Vendelin's serial tag. |
 | Jan 1945 | **MAP 2: Totenhafen** (outline). A Baltic U-boat pen. |
-| Mar 1945 | **MAP 3: Morgenrot** (outline). An Alpine observatory-fortress. **(§11 amendment)** The Woman in Violet's offer to Reinholt **comes due** here (§5.4, §9.3). |
+| Mar 1945 | **MAP 3: Morgenrot** (outline). An Alpine observatory-fortress. **(§11 amendment)** The Woman in Violet's offer to Reinholt **comes due** here (§5.4, §9.3). *(UPDATE 11)* The dawn salvo carries STAUB. |
+| May 1945 | **MAP 4: Fernflug** (`docs/MAP4_FERNFLUG.md`). *(UPDATE 11)* The Kranich's bombs carry STAUB; Groom Lake's programme is built on samples Peg's orders bought; the Moon relay keeps the sickness awake worldwide and the marked obedient. CANCEL: the dust goes dark and the dead lie down, as built. |
+| **1953** *(UPDATE 11)* | **Moscow.** The epilogue card after the Fernflug canon ending: a lead case in a vault under Laboratory No. 4, an old man's hand (Volkov's) resting on it. The vessel is still there, and it is still wet. |
 
 ---
 
@@ -375,7 +400,7 @@ In October 1944, SOE receives Fasbender's offer via the Home Army. London sees t
 - **Zofia "Wren" Nowak** (Home Army): the guide. She knows the mine, the rail line, and the villages. She volunteered because her brother went in and never came out.
 
 ### 9.2 The crash
-GRAVELIGHT ONE flew out of Brindisi on 23 December 1944. At 23:41, near the Kaltenbrunn hills, the crew saw a violet column of light rise from the ground. Both engines stopped at the same instant, along with the instruments, the radio, and the crew's watches. The pilot, Flight Lieutenant Harry Selwyn, glided the plane into a frozen field beside a crossroads inn. The co-pilot died; Selwyn lived, pinned in his seat by the instrument panel (T-126: he fights from the cockpit with whatever gun the squad hands him). The squad crawled out and saw the inn's windows lit and figures moving inside.
+GRAVELIGHT ONE flew out of Brindisi on 23 December 1944. *(UPDATE 11)* The last hour of the flight crossed a front where the dead were walking west under flares; the squad saw them from the windows, long lines in the snow, and nobody said what they were. At 23:41, near the Kaltenbrunn hills, the crew saw a violet column of light rise from the ground. Both engines stopped at the same instant, along with the instruments, the radio, and the crew's watches. The pilot, Flight Lieutenant Harry Selwyn, glided the plane into a frozen field beside a crossroads inn. The co-pilot died; Selwyn lived, pinned in his seat by the instrument panel (T-126: he fights from the cockpit with whatever gun the squad hands him). The squad crawled out and saw the inn's windows lit and figures moving inside.
 
 ### 9.3 Map story questions
 Each map **answers one question and raises a new one.**
@@ -394,7 +419,7 @@ Helvetia Works is deliberately unnumbered. It is the crossover map and sits outs
 
 #### Map 0: "Crossroads Inn" (23–24 Dec 1944)
 - **Opening question:** *What brought us down, and is anyone out there?*
-- **Story:** the squad holds the inn against the dead from the village and the road garrison. A crackling radio behind the bar picks up a voice: "*Glasmacher calling Gravelight. Glasmacher calling Gravelight. If you can hear me, you are alive, and I am very sorry.*" Over the rounds, Fasbender tells them the light was Kaltenbrunn, the dead are walking because of what he and his colleagues did, and they must reach the mine: "*Follow the rail line. Do not let the bell ring.*"
+- **Story:** the squad holds the inn against the dead from the village and the road garrison, and *(UPDATE 11)* against **Soviet risen in greatcoats coming out of the east**, unmarked, the wound that killed them their weak point; the guns and flares on the eastern horizon are the front where their comrades are walking. A crackling radio behind the bar picks up a voice: "*Glasmacher calling Gravelight. Glasmacher calling Gravelight. If you can hear me, you are alive, and I am very sorry.*" Over the rounds, Fasbender tells them the light was Kaltenbrunn, the dead are walking because of what he and his colleagues did, **and what the Russians did first** (the trains, the dust), and they must reach the mine: "*Follow the rail line. Do not let the bell ring.*"
 - **Radio mini-quest:** three notes in the inn (left by the innkeeper, who had been listening to the facility's channels) give frequencies **3.120, 5.785, 7.440**. Tuning them in order patches the squad directly through to Fasbender, who gives them the code phrase for the gatehouse. It also lets the squad hear, faintly, a child's voice singing behind the static. Fasbender cuts the channel.
 - **Answered:** something at Kaltenbrunn brought us down, and a scientist inside wants out.
 - **Raised:** *Who is Glasmacher, why does he sound so guilty, and whose voice was that?*
@@ -426,7 +451,7 @@ Helvetia Works is deliberately unnumbered. It is the crossover map and sits outs
 - **Setting:** a snowbound Baltic U-boat pen carved into a cliff, with a shipping hall, torpedo workshops, a flooded drydock, and a lighthouse.
 - **Opening question:** *Where is the Nachtglas going?*
 - **Story beats:**
-  - The ore train's trail leads to Totenhafen, where Nachtglas is being crated for U-boat transport. The manifests show **Helvetia Automaten AG** shipping marks: the stone is being moved out of the Reich to buyers abroad.
+  - The ore train's trail leads to Totenhafen, where Nachtglas is being crated for U-boat transport. The manifests show **Helvetia Automaten AG** shipping marks: the stone is being moved out of the Reich to buyers abroad. *(UPDATE 11)* The fourteen lead coffins hold **Lazarusblut and STAUB**, consigned to "Hale, L."; Kapitänleutnant Lenz refused to sail with them (`docs/U10_TOTENHAFEN_DESIGN.md` §1).
   - **Fasbender is met in person for the first time.** He's held prisoner by the Kriegsmarine officers running the shipments (he says). The squad frees him. He's thinner, sicker, and more evasive than his voice suggested. He knows what Peg carries.
   - **Sister Agnieszka is alive.** She's a prisoner in the pen's infirmary, and she recognizes Wren's surname. She tells Wren that Tomasz didn't die in the Gallery Seven Flood: she pulled him out, and he was "taken down to the doctor" afterward. **[OPEN]**
   - The Ledger has spread into the port's radio and teletype network. The Operator now speaks partly in Liesl's voice.
@@ -607,6 +632,11 @@ Types: **DOC** (document), **PHOTO**, **CYL** (phonograph cylinder or audio reco
 
 Fine-print panels (`panel.*`) and plan stencils have their own Archive sections ("Conditions of Use," "Vitality Plans"). They are not part of the random intel spawn.
 
+**(UPDATE 11, T-190) The Lazarus Archive** lives in its own file, `data/gravelight/archive_lazarus.json` (contract C7;
+the index is `docs/LAZARUS.md` §8): Father Serafim's diary, one page per map (map00, map01, map02, map04a–d, the last
+page on the Moon), the Laboratory No. 4 files, the October 1944 front report, Reinholt's STAUB memos and Hale's sample
+order. Each is a world prop through the story-props system (T-200 places them), never an Easter egg step.
+
 ### 13.1 Map 0 fixed story items (hand-placed)
 
 These six are **not** in the random spawn. Each is a physical prop that is always in the same place on Map 0 and always there, even after it has been filed. Hold Use to read it in a full-screen reader. The first read files it in the Archive. The table below is the source for `data/gravelight/intel.json`: `extract_intel.py` marks every row in this subsection `"placement": "fixed"`, and `MapRoot._spawn_intel` skips fixed rows. Placements (position, yaw, prop style) are in `data/gravelight/story_props.json`, spawned at runtime by `StoryProp.spawn_all`. In a text cell, `<br>` is a line break. The first paragraph of each text describes the object, and the reader shows it as a caption.
@@ -780,6 +810,12 @@ Five more at Totenhafen, same rules as §13.1 (`extract_intel.py` marks them `"p
 | *(HB, v3)* *dran sein* | "To be it" in a children's game; the Cousins' rhyme ends *"...ist DRAN"* |
 | *(HB, v3)* Belastungsreihe EISEN | The IRON tolerance series: Abteilung III's escalating Ironhide doses on Pvt. Paul |
 | *(HB, v3)* Wachbuch | The Hohe Wacht night watchman's watch-book, "every hour of every night" |
+| *(UPDATE 11)* the sickness / Lazarusblut / "Lazar" / die Lazaruskrankheit | What the dead rise from: what death left behind when it gave Lazarus back, opened in 1930 (`docs/LAZARUS.md`). German, Soviet-file and poster names for the same thing |
+| *(UPDATE 11)* the fourth day | The sickness's calendar: the dead rise on the fourth day after death; near Nachtglas, in minutes |
+| *(UPDATE 11)* STAUB | "Dust": the sickness ground with Nachtglas so that it carries on the air; the airborne programme, Nov 1944 → |
+| *(UPDATE 11)* FOURTH DAY / ЧЕТВЁРТЫЙ ДЕНЬ, Laboratory No. 4 | The Soviet programme that kept the sickness (fictional) |
+| *(UPDATE 11)* the Returned / вернувшиеся | The Red Army's own risen, October 1944, walking west; no Marke, no glint |
+| *(UPDATE 11)* Chetverodnevo, Staryi Brod | The erased village and its district town (fictional) |
 
 ---
 

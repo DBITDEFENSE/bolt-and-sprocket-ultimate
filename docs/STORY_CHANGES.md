@@ -129,3 +129,80 @@ offered it, and nobody in Gallery Nine was asked twice.
 **Respect rule (CANON section 8):** the Marke is never a camp tattoo or a number, never on a forced labourer; it was
 sold, to people who had a choice.
 
+## UPDATE 11 "LAZARUS": a grittier origin rooted in history and faith (2026-11-07, T-190; work order §1–§3)
+
+**What changed, in one sentence.** The dead no longer come from an alien company. They come from a sickness kept for a
+thousand years in a sealed vessel that travelled with the relics of Lazarus of Bethany (*what death left behind when it
+gave him back*), opened on Lazarus Saturday 1930 by a Soviet anti-religious brigade, kept by the NKVD's Laboratory No. 4
+("FOURTH DAY"), released by the Red Army in East Prussia in October 1944, and made fast and airborne (STAUB) at
+Kaltenbrunn. Darkmatter, Vendelin and the Bolt & Sprocket crossover stay with a smaller job: they explain **only the
+technology** (perk machines, the Crucible, the Ledger and Scrip, the Operator, the crate, Nachtglas). Darkmatter did not
+make the dead; it **found** them, **packaged** the sickness with its crystal, and **sells** to them. Full bible:
+`docs/LAZARUS.md`; summary: `docs/CANON.md` §0.
+
+**Why.** The owner's work order (`docs/work_orders/UPDATE_11_LAZARUS.md` §1): a harder, sadder origin rooted in real
+history and real faith, in which the horror is what men did when they broke a seal, and the comedy of a company that
+thinks it discovered a market when it walked into a graveyard stands in contrast to it rather than explaining it away.
+
+**Canon text changed (old -> new, why):**
+- `docs/CANON.md`: a new **§0 "The Lazarus origin"** ahead of everything. The theme line ("the undead of 1944 Silesia turn
+  out to be an alien company's test market") -> the dead come from the sickness; the company came to sell to it. §1.2
+  Nachtglas: "dead tissue near it keeps running its last impulse" -> it answers the sickness; a body carrying it rises in
+  minutes near the crystal. §2: "Darkmatter is the hidden source of everything in Gravelight" -> of every machine, and
+  none of its dead; the Sol-3 bullets gain the 1930 awakening as the reason for the market, the culture (lot LZR-04) in the
+  probe, and "The zombies are the ultimate retained customers. That is the horror's origin" -> to Darkmatter they are; it
+  did not make them; the origin is §0. §2.2 the Marke gains its November 1944 second reason (protection against the
+  Lazarus sickness; actually a tag that makes the marked rise on command). §3 table: the Nachtglas row and a new row for
+  the sickness. §6.2: Peg's orders retrieve samples of the sickness and the crystal; Fasbender saw the trains. §8: the
+  Lazarus respect rules.
+- `docs/gravelight/LORE.md`: §1 a tone bullet; §2 a new opening ("What Nachtglas is not"); §2.4 "the hum, the Nachhall,
+  the hunger are the product working as designed ... the Gängers are the ultimate retained customers" -> the substrate
+  answering the sickness; Darkmatter found, packaged, sells. §2.5 "The dead do not come from a sickness. They come from a
+  chip." -> the dead come from the sickness; the chip makes the marked rise on command; the poster's second line. §3
+  timeline: new rows for AD 33, 890/898, 1453, 12 Apr 1930, Apr 1930, Oct 1934, 16–30 Oct 1944, Nov 1944, 1953; the 1938
+  row now carries the culture and the rising at 01:12 on 13 Nov (the Fine Print Ch. 2's own night; it said "that night
+  [the 11th]"); Reinholt's Lazarusblut (Jun 1939); the Erwachen row gains the STAUB release. §9.2 the crash crosses the
+  front; Map 0's dead include the Soviet risen; Fasbender says what the Russians did first; Totenhafen's coffins hold
+  Lazarusblut and STAUB. §13 a pointer to the Lazarus Archive. §14 glossary rows.
+- `docs/TIMELINE.md`: rewritten with the Lazarus rows (AD 33, 890/898, 1453, 1930, 1934, 1938 (the culture; the 13 Nov
+  rising), 1939, Oct 1944, Nov 1944, 20 Dec 1944, 23 Dec 1944, 1953); existing rows kept, three amended (9 Nov 1938, 11 Nov
+  1938 -> 11–13 Nov, Jan 1945, May 1945).
+- `docs/gravelight/CHARACTERS.md` (prose only): Peg's secret and dossier 10 item 1 (samples of the sickness and the
+  crystal; amendment of 16 Nov 1944); Dutch's secret (the letter unchanged, what he hears in it); Deacon's voice notes and
+  stake (the quiet theological voice, no sermons, "the debt"); Wren's bio (she knows the NKVD); Fasbender's profile (the
+  trains); new voice profiles for Father Serafim (`SER`) and Volkov (`VOL`). No ID table changed.
+- `docs/FINEPRINT_LORE.md`: §1.5 property 2 gains the sickness; §2.1 a reason 0 (the 1930 awakening as "a natural
+  retention phenomenon", why Darkmatter came at all); §2.3 the returned-inventory culture, lot LZR-04; §2.5 the results
+  line stands, with what it does not say; §4.2 "The dead walk because the product works" -> because of the sickness; the
+  product answers it. The Fine Print keeps its chapters; its lines change only where they say Darkmatter created the dead
+  (T-199).
+- `docs/MAP3_MORGENROT.md` §1: the warheads carry STAUB; cities and egg unchanged; aimed east first, now at everyone.
+- `docs/MAP4_FERNFLUG.md` §0, §1.1, §1.2, §6.8, §11.5, §12.11: the Kranich's casings carry STAUB; Groom Lake's programme on
+  the samples Peg's orders bought; the relay keeps the sickness awake worldwide and the marked obedient; CANCEL makes the
+  dust go dark and the dead lie down (mechanics unchanged); the **Moscow, 1953** epilogue card (`cards.m4.moscow53`,
+  three cards, last, canon ending only).
+- `docs/U10_TOTENHAFEN_DESIGN.md` §1: the coffins hold Lazarusblut and STAUB; Brecht saw the wagons; Lenz's refusal.
+
+**New canon, not changes** (`docs/LAZARUS.md`): the vessel and the brotherhood of the lamp; Chetverodnevo, Staryi Brod,
+Father Serafim Lebedev, Arkady Volkov, Matvei Grach, Avdotya Pakhomova; Lazarus Saturday 12 April 1930 (30 March O.S.)
+beat by beat; the fourth-day calendar; the typhus cordon; Laboratory No. 4 and its six rules; the order of last resort;
+Darkmatter's "natural retention phenomenon" and lot LZR-04; Pilch's fourth day counted from the glass room; Lazarusblut;
+the Returned; STAUB; the Marke's second poster line; the Erwachen as the first STAUB release; the trains; the Lazarus
+Archive (`data/gravelight/archive_lazarus.json`: Serafim's diary, one page per map, the last on the Moon; the Laboratory
+No. 4 files; the front report; the STAUB memos; Hale's order) and the diary read-alouds `SER_DIARY_<MAP>_01` (VO_SCRIPT
+§27).
+
+**Checked and left alone.** `data/gravelight/intel.json`, `dossiers.json` (regenerated from the docs above),
+`machine_lore.json`, `perk_lore.json`, `citations.json`, `story_props.json`: searched for the dead's origin (Darkmatter,
+retention, retained, origin, rise, substrate). Every hit is Darkmatter's own product language on its own documents (the
+relay's plate, the cabinets' plates, the fine-print panels, the Terms of the Mark), which is still true in the company's
+mouth; nothing in them says Darkmatter made the dead, so no id, count or gameplay fact moved. Quest files untouched (the
+egg guard). `docs/BRIEF.md` is the original brief and is left as history; `docs/gravelight/ENEMIES.md` (the Helvetia
+Works dead "retained by substrate leaking from the barge") is T-192's and reads correctly under the new canon (the dust
+was already in Basel's air). Not changed: every voice line (T-191, T-195–T-199 rewrite them from these docs).
+
+**Respect rules (CANON §8, LAZARUS §10):** faith is never the villain; the miracle is never mocked, faked or called a
+disease (the sickness is the debt, not the gift); no real person is a villain or a victim by name; no real atrocity site
+or real secret laboratory is ours; Soviet and German soldiers are people; camp prisoners and forced labourers are never
+zombies and never spectacle; Jakub unchanged.
+

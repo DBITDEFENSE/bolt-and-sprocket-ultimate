@@ -9,15 +9,19 @@ is *where is the Nachtglas going*; the egg's answer is *we take the boat ourselv
 Deacon has wanted to hear U-1047's diesels since the squad walked into the pen hall ("Somebody built that to be quiet.
 I'd like to hear it loud, once."). The boat's log (four pages, hidden in the boat and the crane office) tells the rest:
 her captain, **Kapitänleutnant Arvid Lenz**, refused to sail with fourteen lead coffins as ballast after his chief
-engineer, **Obermaschinist Rolf Brecht**, opened one. Lenz locked the coffins in the warhead cage and wired Basel for
-orders; Basel ("Hale, L., per Helvetia Automaten AG") wired back *sail on the next tide or the detachment is retained*.
+engineer, **Obermaschinist Rolf Brecht**, opened one. **(UPDATE 11, T-190; `docs/CANON.md` §0)** What Brecht found was
+not ore: the coffins hold **Lazarusblut and STAUB**, sealed cultures of the Lazarus sickness and the violet dust
+Kaltenbrunn ground from it, shipped out of the Reich to the highest bidder, consigned to "Hale, L." Brecht had seen the
+sealed wagons at the Kaltenbrunn siding in November and knew what the dust was for. Lenz's refusal reads harder for it:
+a captain who would carry anything the Reich gave him to carry, and would not carry that. Lenz locked the coffins in
+the warhead cage and wired Basel for orders; Basel ("Hale, L., per Helvetia Automaten AG") wired back *sail on the next tide or the detachment is retained*.
 The detachment was marked that week (CANON §2.2: U-1047's ratings took the Marke). Lenz scuttled the diesels' injectors
 and threw the battery cells into the lower pens so nobody could take her out; the Erwachen reached the harbour on the
 night of the 20th; Lenz went down to the pump deck with a lamp and did not come up (he is DER KIELHOLER). Brecht's hand
 wrote the start sequence on the last page of the log "for whoever is not them". The egg is Brecht's instruction
 followed to the letter: find the injector, raise a battery, run the sequence, flood the dock, open the curtain, take her
 out, and sink her with the cargo where the chart says it is deepest. The Operator wants the cargo delivered; the squad
-wants it gone. Peg's orders said "retrieve the tokens": she chooses the sea. That is the moment the campaign's Basel
+wants it gone. *(UPDATE 11)* **Letzte Fahrt sinks it**: the one consignment of the sickness that never reached a buyer. Peg's orders said "retrieve the tokens": she chooses the sea. That is the moment the campaign's Basel
 thread turns (the Hale telegram is the proof Peg carries to the Return Trip).
 
 ## 2. "LETZTE FAHRT" (The Last Voyage): the step graph (EASTER_EGGS.md §10; quest `map02_letzte_fahrt`)
