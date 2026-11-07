@@ -39,6 +39,10 @@ pages stay clean; the HUD labels add theirs.
 `perk_row_gap`). Bottom-right: Scrip, the gun, ammo, grenades. Bottom-centre: subtitles (`subtitle_width`,
 `subtitle_bottom`) over the prompt (`prompt_y`) and the hold bar; the power-up countdown right of centre
 (`powerup_x`). Top-left: the minimap (its bezel's outer edge on the margin), the zone stamp and floor under it.
+Left, under the minimap: the squad panel (T-183, `coop_hud.gd`): one row per teammate, name, state (DOWN with the
+bleed-out clock, REVIVING, BLED OUT, OUT COLD) and small caps (`squad_cap` 16 px, `squad_row_h` 24, the name at
+`coop_row`); no numbers. Hold `ui_scoreboard` (Ctrl / Back) for the scoreboard with Scrip and kills. The HUD's own
+perk caps are `perk_cap` 40 px (54 before T-183).
 Top-centre: the boss bars (`boss_top`, `boss_width`). The window stretch is `canvas_items` with the aspect kept,
 so a 21:9 monitor letterboxes the 16:9 canvas (the user's own 3440x1440 does); the safe-area margin is ready for
 an `expand` aspect if that ever changes.

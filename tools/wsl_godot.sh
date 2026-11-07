@@ -4,7 +4,8 @@
 # Example: tools/wsl_godot.sh --path . res://tools_src/capture.tscn -- --milestone=u09_before
 #          tools/wsl_godot.sh --headless --path . -s res://some_census.gd      (any flags, e.g. --breakdown)
 # Windows only (Git Bash). Never runs the Windows binary with a window (CLAUDE.md, contract C8).
-# Env: WSL_GODOT (Linux binary; default this repo's tools/dl_godot, else the main checkout's), WSL_TIMEOUT (s, 1800).
+# Env: WSL_GODOT (Linux binary; default this repo's tools/dl_godot, else the main checkout's), WSL_TIMEOUT (s, 1800),
+#      XVFB_SCREEN (the virtual screen, default 1920x1080x24; a bigger --res needs a bigger screen, e.g. 2560x1440x24).
 RES="1280x720"
 case "$1" in --res=*) RES="${1#--res=}"; shift ;; esac
 HERE="$(pwd)"
@@ -27,6 +28,6 @@ QARGS=""
 for a in "$@"; do
 	QARGS="$QARGS '$(printf '%s' "$a" | sed "s/'/'\\\\''/g")'"
 done
-CMD="cd '$WDIR' && timeout ${WSL_TIMEOUT:-1800} xvfb-run -a -s '-screen 0 1920x1080x24' '$BIN' --rendering-driver opengl3 --audio-driver Dummy --resolution $RES$QARGS"
+CMD="cd '$WDIR' && timeout ${WSL_TIMEOUT:-1800} xvfb-run -a -s '-screen 0 ${XVFB_SCREEN:-1920x1080x24}' '$BIN' --rendering-driver opengl3 --audio-driver Dummy --resolution $RES$QARGS"
 echo "tools/wsl_godot.sh runs: wsl.exe -e bash -lc \"$CMD\""
 wsl.exe -e bash -lc "$CMD"

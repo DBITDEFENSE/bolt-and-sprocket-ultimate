@@ -119,6 +119,14 @@ cream on the dark ones, whichever the bible said. The tier band (II / III) sits 
 does not hold is drawn greyed. A future cabinet (Fine Print Fernet) without a glyph case falls back to its two letters
 until one is drawn.
 
+T-183 (the owner: "make those icons just a little bit better"; they also show at 16 px on the squad panel now): each
+cap has its own enamel in `PerkCap.ENAMEL` (the cabinets keep perks.json "color"): Marathon cobalt, Skyhook rosé (a
+Sekt), Magpie charcoal, Ledger the ledger's paper with red ink, Twin Barrel a yellower amber, Blastproof a redder
+orange, so no two caps share a colour at a glance. The glyphs were redrawn bolder: the swallow seen from below (a V and
+a forked tail), the crane in side flight, the magpie in profile with a gold coin in its beak, the mule facing you with
+long upright ears, a boot with a heel and toe, the moustache in ink. Small caps (under 22 px) draw fewer, deeper crimp
+teeth, a bigger glyph and show the tier as a brass badge at the rim with one stroke per tier.
+
 ### 1.4 Why a cabinet can pour a stronger measure (in-world)
 
 Every Helvetia cabinet holds **three chambers**, not one. Abteilung III's formula cards list each tonic in three
