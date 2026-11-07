@@ -35,3 +35,5 @@ voice_review/
 
 # UPDATE 09 (T-139): export output (tools/build_web.sh, tools/build_windows.sh)
 /build/
+# Local secrets written by `elevenlabs onboard`
+/.env.local
