@@ -5,9 +5,9 @@ The history cutscenes play as archive film. GRAVELIGHT ONE is now a real crashed
 speak English with a Russian accent.** Everything is merged on `master` and pushed.
 
 ## Start here
-- **Play:** double-click `Play.bat` or `build\windows\ClaudeZombies_0.0.1-m0\ClaudeZombies.exe` (the exe is from
-  before Update 12: rebuild it with `sh tools/build_windows.sh`). Both open the CLAUDE ZOMBIES menu, with no
-  cutscene first.
+- **Play:** double-click `Play.bat` or `build\windows\ClaudeZombies_0.0.1-m0\ClaudeZombies.exe` (rebuilt with
+  everything below; also zipped as `build\ClaudeZombies_0.0.1-m0.zip`). Both open the CLAUDE ZOMBIES menu, with no
+  cutscene first. The exe reached the menu in 5.4 s on your GPU.
 - **Cutscenes:** they play only in Campaign. Solo and online go straight into the match. Rewatch any of them from
   Extras > Cutscenes.
 - **Dev buttons:** `DevLauncher.bat` has the Update 12 buttons:
@@ -71,6 +71,14 @@ red the second.
   real dimensions.
 - **ElevenLabs:** about 1,400 characters left until 7 December. After the reset, the bake picks up The Fine Print
   and then Bolt & Sprocket.
+
+## Tests
+- **Unit tests:** 2,074 of 2,075 pass; the other one is a placeholder that makes no checks. 853 scripts check
+  clean.
+- **Smokes:** 95 of 97 pass. Three more failed once under load and passed when rerun alone (bot_loco, lf_start,
+  milestone_r5). The two still failing did so before this update: smoke_letzte_fahrt hits the runner's 20-minute
+  cap, and smoke_marks has a pause-map check.
+- **Egg guard:** green (the quest files are unchanged).
 
 ## What's not working / not checked
 - **FPS targets not confirmed.** Every frame-rate run was made with other jobs loading the CPU. The post pass
