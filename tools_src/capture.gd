@@ -262,6 +262,24 @@ func _cam_set_maps(set_d: Dictionary) -> void:
 		var cname: String = str(cam.get("name", "cam%02d" % i))
 		if not _only.is_empty() and not _only.has(cname):
 			continue
+		if cam.has("scene"):
+			# UPDATE 12 (T-207, the u12_look set): a plain scene (the main menu's live backdrop) as it opens, its
+			# CanvasLayers hidden, shot from its own camera after it settles
+			if not ResourceLoader.exists(str(cam["scene"])):
+				print("[capture] missing scene for %s" % cname)
+				continue
+			Campaign.reset()
+			_load(str(cam["scene"]))
+			await _secs(float(cam.get("settle_s", set_d.get("settle_s", 6.0))))
+			for cl: Node in get_tree().root.find_children("*", "CanvasLayer", true, false):
+				if not (cl.get_script() != null and str((cl.get_script() as Script).resource_path).ends_with("postfx.gd")):
+					(cl as CanvasLayer).visible = false
+			await _secs(1.0)
+			await _shot(cname)
+			_scene.queue_free()
+			_scene = null
+			await _secs(1.5)
+			continue
 		if not ResourceLoader.exists(str(cam.get("map", ""))):
 			print("[capture] missing map for %s" % cname)
 			continue

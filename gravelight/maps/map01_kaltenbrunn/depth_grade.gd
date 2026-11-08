@@ -50,6 +50,31 @@ var _cur: Dictionary = {}
 var _last_cam: Vector3 = Vector3.INF
 
 
+## UPDATE 12 (T-207): the look file's zones (`surface`, `depths`, `core` in data/look/map01_kaltenbrunn.json) set the
+## three levels' fill, far-fog colour, fog glow, exposure and saturation; a key a zone leaves out keeps the export.
+func look_zones(zones: Dictionary) -> void:
+	for pair: Array in [["surface", "surface_"], ["depths", "depth_"], ["core", "core_"]]:
+		var z: Dictionary = zones.get(pair[0], {})
+		if z.is_empty():
+			continue
+		var p: String = pair[1]
+		var amb: Dictionary = z.get("ambient", {})
+		if amb.has("color"):
+			set(p + "ambient", LookGrade.color(amb["color"], get(p + "ambient")))
+		if amb.has("energy"):
+			set(p + "ambient_energy", float(amb["energy"]))
+		var fog: Dictionary = z.get("fog", {})
+		if fog.has("color"):
+			set(p + "fog", LookGrade.color(fog["color"], get(p + "fog")))
+		if fog.has("emission"):
+			set(p + "fog_glow", LookGrade.color(fog["emission"], get(p + "fog_glow")))
+		if z.has("exposure"):
+			set(p + "exposure", float(z["exposure"]))
+		if (z.get("adjust", {}) as Dictionary).has("saturation"):
+			set(p + "saturation", float(z["adjust"]["saturation"]))
+	_cur.clear()   # snap to the new values on the next frame
+
+
 func _process(delta: float) -> void:
 	var cam: Camera3D = get_viewport().get_camera_3d()
 	if cam == null or environment == null:

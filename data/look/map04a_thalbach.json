@@ -1,0 +1,54 @@
+{
+ "_doc": "Fernflug I, Werk Thalbach: industrial ochre and soot; brown shadows, not blue. T-207.",
+ "map": "map04a_thalbach",
+ "tonemap": "filmic",
+ "exposure": 1.7,
+ "white": 6.0,
+ "adjust": {
+  "brightness": 1.0,
+  "contrast": 1.1,
+  "saturation": 0.95
+ },
+ "mono": 0.5,
+ "keep": [
+  {
+   "hue": 268,
+   "width": 20,
+   "amount": 1.0
+  },
+  {
+   "hue": 0,
+   "width": 18,
+   "amount": 0.85
+  }
+ ],
+ "tint": {
+  "shadows": "#1f1a14",
+  "highlights": "#cfa865",
+  "amount": 0.45
+ },
+ "ambient": {
+  "energy_scale": 0.85
+ },
+ "fog": {
+  "density": 0.011,
+  "color": "#3a2f26",
+  "volumetric": 0.015,
+  "albedo": "#c9b89a"
+ },
+ "post": {
+  "grain": 0.07,
+  "vignette": 0.38,
+  "edge_soft": 0.2,
+  "ca": 0.0015
+ },
+ "accents": {
+  "violet": "#8a4dff",
+  "red": "#8f1d1d"
+ },
+ "web": {
+  "adjust": {
+   "saturation": 0.72
+  }
+ }
+}

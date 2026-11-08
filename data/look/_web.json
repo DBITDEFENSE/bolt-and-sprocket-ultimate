@@ -1,0 +1,9 @@
+{
+ "_doc": "Merged over every grade on the web / Compatibility profile (C2): no colour-correction LUT there, so the selective desaturation and the split tone go, and a map's own `web` block (a plain saturation) stands in.",
+ "lut": null,
+ "tint": {
+  "amount": 0.0
+ },
+ "mono": 0.0,
+ "lift": 0.0
+}

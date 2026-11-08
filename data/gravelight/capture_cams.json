@@ -1057,6 +1057,21 @@
         {"name": "map04c_groomlake", "map": "res://gravelight/maps/map04_fernflug/map04c.tscn", "pos": [0.0, 3.0, -32.0], "yaw": 180.0, "pitch": -2.0, "note": "across the salt north to the buildings (+Z north)"},
         {"name": "map04d_mondlicht", "map": "res://gravelight/maps/map04_fernflug/map04d.tscn", "pos": [0.0, 2.4, 3.0], "yaw": 180.0, "pitch": 8.0, "note": "north over the yard, the Earth up in the sky (+Z north)"}
       ]
+    },
+    "u12_look": {
+      "_doc": "UPDATE 12 section 1 (T-207): the style frames, one establishing frame per map plus the menu, the same cameras as u09_menu_previews. tools/look/style_frames.sh renders the set twice (--look=off for the before) into docs/look/frames/<map>_before|after.png. A cam with `scene` loads that plain scene (the menu) instead of a map.",
+      "mode": "maps",
+      "settle_s": 7.0,
+      "cams": [
+        {"name": "map00_crossroads", "map": "res://gravelight/maps/map00_crossroads/map00.tscn", "pos": [-17.0, 1.7, -10.5], "yaw": -122.6, "pitch": 4.0, "fov": 62.0, "note": "the inn from the west road at night, as the main menu sees it"},
+        {"name": "map01_kaltenbrunn", "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn", "player": true, "back": 1.5, "up": 0.5, "pitch": -4.0},
+        {"name": "map02_totenhafen", "map": "res://gravelight/maps/map02_totenhafen/map02.tscn", "player": true, "back": 1.5, "up": 0.5, "pitch": -4.0},
+        {"name": "map04a_thalbach", "map": "res://gravelight/maps/map04_fernflug/map04a.tscn", "pos": [20.0, 3.0, 2.0], "yaw": 180.0, "pitch": 0.0, "note": "the Siedlung street north toward the station and the works (the act frame: +Z north)"},
+        {"name": "map04b_kranich", "map": "res://gravelight/maps/map04_fernflug/map04b.tscn", "pos": [0.0, 1.7, 63.4], "yaw": 180.0, "pitch": 7.0, "note": "the cockpit: the cradle, the seats, the glass and the dawn sky over the cloud deck (the unpowered bomb bay is black in any grade)"},
+        {"name": "map04c_groomlake", "map": "res://gravelight/maps/map04_fernflug/map04c.tscn", "pos": [-30.0, 1.7, -45.0], "yaw": -142.0, "pitch": -0.2, "note": "the torn port wing and the hull from the salt, the fuel fire (u09_map04c A_outside; the old lakebed cam now looks into a hangar)"},
+        {"name": "map04d_mondlicht", "map": "res://gravelight/maps/map04_fernflug/map04d.tscn", "pos": [0.0, 2.4, 3.0], "yaw": 180.0, "pitch": 8.0, "note": "north over the yard, the Earth up in the sky (+Z north)"},
+        {"name": "menu", "scene": "res://gravelight/ui/main_menu.tscn", "settle_s": 9.0, "note": "the main menu's live backdrop (MenuScene) as it opens: the archive-reel black-and-white (data/look/menu.json)"}
+      ]
     }
   }
 }

@@ -1,0 +1,54 @@
+{
+ "_doc": "Crossroads Inn: a frozen night. Blue-grey air, warm windows, the orange fire glow of GRAVELIGHT ONE in the field. T-207 (pass 2: Filmic at exposure 1.0, the night darker and the fog heavier than the AGX 1.3 it replaces).",
+ "map": "map00_crossroads",
+ "tonemap": "filmic",
+ "exposure": 1.0,
+ "white": 6.0,
+ "adjust": {
+  "brightness": 1.0,
+  "contrast": 1.16,
+  "saturation": 0.92
+ },
+ "mono": 0.5,
+ "keep": [
+  {
+   "hue": 268,
+   "width": 20,
+   "amount": 1.0
+  },
+  {
+   "hue": 0,
+   "width": 18,
+   "amount": 0.85
+  }
+ ],
+ "tint": {
+  "shadows": "#203238",
+  "highlights": "#d9c9a8",
+  "amount": 0.3
+ },
+ "ambient": {
+  "energy_scale": 0.7
+ },
+ "fog": {
+  "density": 0.022,
+  "color": "#10161f",
+  "volumetric": 0.03,
+  "sky_affect": 1.0
+ },
+ "post": {
+  "grain": 0.06,
+  "vignette": 0.38,
+  "edge_soft": 0.2,
+  "ca": 0.0015
+ },
+ "accents": {
+  "violet": "#8a4dff",
+  "red": "#8f1d1d"
+ },
+ "web": {
+  "adjust": {
+   "saturation": 0.72
+  }
+ }
+}
