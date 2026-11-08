@@ -4197,7 +4197,7 @@
   "PEG_SKY_PLANE_DOWN_01": {
     "speaker": "PEG",
     "category": "SKY_PLANE_DOWN",
-    "text": "One of ours is burning. ...Count the chutes. Come on. Count the chutes."
+    "text": "Red star on that wing, and it's burning. ...Count the chutes. Come on. Count the chutes."
   },
   "PEG_SKY_PLANE_DOWN_02": {
     "speaker": "PEG",
@@ -4207,17 +4207,17 @@
   "DEA_SKY_PLANE_DOWN_01": {
     "speaker": "DEA",
     "category": "SKY_PLANE_DOWN",
-    "text": "Engine's on fire. Lord, let that pilot glide it in like ours did. [quietly] Let somebody be alive at the end of it."
+    "text": "Engine's on fire. Lord, let that pilot glide it in. [quietly] Whoever he is, let somebody be alive at the end of it."
   },
   "DEA_SKY_PLANE_DOWN_02": {
     "speaker": "DEA",
     "category": "SKY_PLANE_DOWN",
-    "text": "That's ten men in that thing. ...Somebody say a word for them. [a breath] 'Yea, though I walk through the valley.' ...That's all I've got."
+    "text": "That's a crew of three in that thing, maybe four. ...Somebody say a word for them. [a breath] 'Yea, though I walk through the valley.' ...That's all I've got."
   },
   "WRN_SKY_PLANE_DOWN_01": {
     "speaker": "WRN",
     "category": "SKY_PLANE_DOWN",
-    "text": "Burning, losing height, same bearing we came in on. I'm writing down the time. [quietly] Somebody will want the time."
+    "text": "Burning, losing height, short of their own lines. I'm writing down the time. [quietly] Somebody will want the time."
   },
   "WRN_SKY_PLANE_DOWN_02": {
     "speaker": "WRN",

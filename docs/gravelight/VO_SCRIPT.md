@@ -1148,15 +1148,15 @@ VO (each co-op peer's sky is its own). Tier 2 squad lines (rules.json player_cat
 instead of being dropped), chance 100%, once per event.
 
 **`SKY_PLANE_DOWN`**: once per match from round 6, a plane is hit over the inn and goes down trailing smoke behind the
-hills (it mirrors GRAVELIGHT ONE's own fall). One random standing survivor.
+hills (a Soviet aircraft over the front since T-212; the squad speaks of its crew with respect, as of any crew's fall). One random standing survivor.
 
 - `DUT_SKY_PLANE_DOWN_01`: "One's hit. He's going down behind the hills. ...Come on, pull up. Pull up."
 - `DUT_SKY_PLANE_DOWN_02`: "There goes another one. [quiet] If they walk out of that, they're walking into what we're looking at. God help 'em."
-- `PEG_SKY_PLANE_DOWN_01`: "One of ours is burning. ...Count the chutes. Come on. Count the chutes."
+- `PEG_SKY_PLANE_DOWN_01`: "Red star on that wing, and it's burning. ...Count the chutes. Come on. Count the chutes."
 - `PEG_SKY_PLANE_DOWN_02`: "Down behind the ridge. [a pause] I'd tell you they'll be fine. I've stopped telling people that."
-- `DEA_SKY_PLANE_DOWN_01`: "Engine's on fire. Lord, let that pilot glide it in like ours did. [quietly] Let somebody be alive at the end of it."
-- `DEA_SKY_PLANE_DOWN_02`: "That's ten men in that thing. ...Somebody say a word for them. [a breath] 'Yea, though I walk through the valley.' ...That's all I've got."
-- `WRN_SKY_PLANE_DOWN_01`: "Burning, losing height, same bearing we came in on. I'm writing down the time. [quietly] Somebody will want the time."
+- `DEA_SKY_PLANE_DOWN_01`: "Engine's on fire. Lord, let that pilot glide it in. [quietly] Whoever he is, let somebody be alive at the end of it."
+- `DEA_SKY_PLANE_DOWN_02`: "That's a crew of three in that thing, maybe four. ...Somebody say a word for them. [a breath] 'Yea, though I walk through the valley.' ...That's all I've got."
+- `WRN_SKY_PLANE_DOWN_01`: "Burning, losing height, short of their own lines. I'm writing down the time. [quietly] Somebody will want the time."
 - `WRN_SKY_PLANE_DOWN_02`: "No violet light this time. Only flak. ...That is almost a comfort. [a breath] Almost."
 
 **`WRECK_PILOT`**: the first time a survivor gets a clear look at GRAVELIGHT ONE's open cockpit (within ~27 m, looking at
