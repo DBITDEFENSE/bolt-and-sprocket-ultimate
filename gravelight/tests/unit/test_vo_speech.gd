@@ -43,11 +43,38 @@ func test_speech_lines_have_an_english_subtitle() -> void:
 		assert_ne(str(rec["speech"]).strip_edges(), "", id + " says something")
 		assert_ne(str(rec["text"]).strip_edges(), "", id + " has a subtitle")
 		assert_false(str(rec["text"]).contains("<speech>"), id + ": the tag was extracted")
-	assert_gte(n, 90, "the Russian, Church Slavonic and German lines of UPDATE 11 carry a spoken form")
-	for id: String in ["SER_LZS_01", "VOL_LZS_07", "BRG_LZS_03", "SVR_FTD_01", "SVR_M0_01", "SVR_M1_01", "RTN_CLOSE_01", "REI_STB_01", "PA_STB_04"]:
+	assert_gte(n, 18, "the German lines of UPDATE 11 carry a spoken form")
+	for id: String in ["REI_STB_01", "PA_STB_04", "RADIO_UBOAT_01"]:
 		assert_true(lines.has(id) and (lines[id] as Dictionary).has("speech"), id + " is a speech line")
-	for id: String in ["SEL_GL1_01", "DUT_GL1_01", "PEG_GL1_01", "DEA_GL1_01", "WRN_GL1_01"]:
+	# T-204: the Russian-speaking cast speaks English (with a Russian accent); the Russian lives in the language store
+	for id: String in ["SEL_GL1_01", "DUT_GL1_01", "PEG_GL1_01", "DEA_GL1_01", "WRN_GL1_01",
+			"SER_LZS_01", "VOL_LZS_07", "BRG_LZS_03", "SVR_FTD_01", "SVR_M0_01", "SVR_M1_01", "RTN_CLOSE_01"]:
 		assert_true(lines.has(id) and not (lines[id] as Dictionary).has("speech"), id + " is English")
+
+
+## T-204: every line of the Russian store keeps its Russian text and its baked Russian take, and the game plays the
+## English take unless VOManager.voice_language asks for the Russian one.
+func test_russian_store_keeps_the_russian_and_the_english_plays() -> void:
+	var lines: Dictionary = GLData.load_json(LINES)
+	var store: Dictionary = GLData.load_json("res://data/gravelight/vo/lang/ru.json")
+	assert_eq(str(store.get("language", "")), "ru")
+	var rows: Dictionary = store.get("lines", {})
+	assert_gte(rows.size(), 85, "every Russian line is kept")
+	var bad: PackedStringArray = []
+	for id: String in rows.keys():
+		var row: Dictionary = rows[id]
+		var path: String = str((row.get("audio", {}) as Dictionary).get("path", ""))
+		if not has_cyrillic(str(row.get("speech", ""))) or not path.begins_with("res://gravelight/audio/vo_lang/ru/") \
+				or not ResourceLoader.exists(path) or not lines.has(id) or (lines[id] as Dictionary).has("speech"):
+			bad.append(id)
+	assert_eq(bad.size(), 0, "Russian store rows without their Russian text, take or English line: " + ", ".join(bad))
+	var keep: String = GLVO.voice_language
+	GLVO.voice_language = ""
+	assert_eq(GLVO.audio_path(&"SER_LZS_01"), "res://gravelight/audio/vo/ser/SER_LZS_01.ogg", "the English take plays")
+	GLVO.voice_language = "ru"
+	assert_eq(GLVO.audio_path(&"SER_LZS_01"), "res://gravelight/audio/vo_lang/ru/ser/SER_LZS_01.ogg", "the Russian take on request")
+	assert_eq(GLVO.audio_path(&"DUT_GL1_01"), "res://gravelight/audio/vo/dut/DUT_GL1_01.ogg", "a line with no Russian keeps its take")
+	GLVO.voice_language = keep
 
 
 func test_subtitle_strips_tags_and_keeps_the_english() -> void:

@@ -383,7 +383,8 @@ last keeper of the lamp. He knows what the vessel is said to be and does not pre
 old man's: he says *уезд* for the district, the word of his youth, although the state had abolished the uyezds in
 1929–30 and the brigade's paper says *район*; keep it, it is in character, and never put it in a Soviet mouth. He is not brave in the way soldiers are; he is
 brave in the way of a man who stays where he was put. His **diary** is the thread through the whole game: one Archive
-page per map, in order, written before and during the awakening, read aloud in Russian with English subtitles
+page per map, in order, written before and during the awakening, read aloud in English with a Russian accent (T-204;
+the Russian reading is kept in data/gravelight/vo/lang/ru.json)
 (`SER_DIARY_<MAP>_01`). He is never a zombie on screen; his fate is one line (§8). His voice: unhurried, plain, a
 village priest's Russian with no church-Slavonic ornament except when he quotes. He never preaches at the reader. He
 notices things: the thaw, the cracked bell's note, the colour of the blood.

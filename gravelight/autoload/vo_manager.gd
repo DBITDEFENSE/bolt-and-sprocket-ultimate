@@ -25,6 +25,7 @@ const GROUP_COMPANION: StringName = &"companion"
 const LINES_PATH: String = "res://data/gravelight/vo/lines.json"
 const RULES_PATH: String = "res://data/gravelight/vo/rules.json"
 const AUDIO_DIR: String = "res://gravelight/audio/vo/"
+const AUDIO_LANG_DIR: String = "res://gravelight/audio/vo_lang/"   # T-204: other-language takes (voice_language)
 const CHARACTER_SPEAKERS: Dictionary = {&"dutch": &"DUT", &"peg": &"PEG", &"deacon": &"DEA", &"wren": &"WRN", &"jakub": &"JAK",
 	&"trudi": &"TRU", &"ammer": &"AMM", &"petersen": &"PET", &"jette": &"JET"}   # T-135: the map companions
 const POWERUP_TOKENS: Dictionary = {&"resupply": "RESUPPLY", &"deaths_door": "DEATHSDOOR", &"double_scrip": "DOUBLESCRIP",
@@ -109,6 +110,10 @@ var voice_test: bool = false:
 		if v and not GLBus.round_ended.is_connected(_voice_test_round_end):
 			GLBus.round_ended.connect(_voice_test_round_end)
 var voice_log: Array[Dictionary] = []
+## T-204: the spoken language of the lines that have another version ("" = the game's own, English). "ru" plays the
+## Russian takes kept in gravelight/audio/vo_lang/ru/<speaker>/<id>.ogg (listed in data/gravelight/vo/lang/ru.json)
+## where one exists and the English take otherwise; subtitles stay English. No menu sets it yet.
+var voice_language: String = ""
 var _ext_2d: AudioStreamPlayer = null
 var _vt_manifest: Dictionary = {}
 
@@ -447,6 +452,10 @@ func audio_path(line_id: StringName, part: int = -1) -> String:
 			return ""
 		speaker = str((ex[part] as Array)[0])
 		file_id = "%s_p%d" % [line_id, part]
+	if voice_language != "":
+		var alt: String = "%s%s/%s/%s.ogg" % [AUDIO_LANG_DIR, voice_language, speaker.to_lower(), file_id]
+		if ResourceLoader.exists(alt) or FileAccess.file_exists(alt):
+			return alt
 	for ext: String in ["ogg", "wav"]:
 		var path: String = "%s%s/%s.%s" % [AUDIO_DIR, speaker.to_lower(), file_id, ext]
 		if ResourceLoader.exists(path) or FileAccess.file_exists(path):
