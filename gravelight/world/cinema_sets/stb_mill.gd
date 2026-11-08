@@ -8,6 +8,7 @@ extends CinemaSet
 
 var drum: Node3D
 var needles: Array[Node3D] = []
+var reinholt: CinemaPerson
 var _t: float = 0.0
 var _res: float = 0.6
 
@@ -114,19 +115,29 @@ func _gauges(at: Vector3) -> void:
 
 
 func _crew() -> void:
-	var r: CinemaPerson = person(self, "reinholt", look_of("reinholt"), Vector3(5.0, 0, -3.1), 150.0, "writing")
+	# T-206: yaw 0 faces -z; Reinholt faces her gauges (she stood with her back to them) and the crew face the hopper
+	var r: CinemaPerson = person(self, "reinholt", look_of("reinholt"), Vector3(5.0, 0, -3.1), -12.0, "writing")
 	r.name = "Reinholt"
+	r.head_down = 0.1
+	reinholt = r
 	for k: int in 3:
-		var p: CinemaPerson = person(self, "mill_%d" % k, look_of("mill_worker"), Vector3(0.6 + 0.9 * float(k), 0, -4.9 + 0.3 * float(k % 2)), 180.0 + rng.randf_range(-30, 30), "hold")
+		var p: CinemaPerson = person(self, "mill_%d" % k, look_of("mill_worker"), Vector3(0.6 + 0.9 * float(k), 0, -4.9 + 0.3 * float(k % 2)), rng.randf_range(-20, 20), "hold")
 		p.hold_lift = 0.5
 	for k2: int in 2:
 		person(self, "mill_far_%d" % k2, look_of("mill_worker"), Vector3(-6.0 + 2.5 * float(k2), 0, -7.6), rng.randf_range(0, 360), "stand")
 
 
-## Shot 3: the resonance needle climbs; she writes it down.
+## Shot 3: the resonance needle climbs; she writes it down (T-206: she watches the dials, then bows to the board on
+## her second line and looks back up).
 func fx_resonance_up(secs: float) -> void:
 	var tw: Tween = create_tween()
 	tw.tween_property(self, "_res", 1.3, secs * 0.8).set_trans(Tween.TRANS_SINE)
+	if reinholt != null:
+		reinholt.look_toward(Vector3(5.2, 1.75, -4.0))
+		later(5.8, func() -> void:
+			reinholt.head_yaw = 0.0
+			reinholt.head_down = 0.5)
+		later(8.6, func() -> void: reinholt.look_toward(Vector3(5.2, 1.75, -4.0)))
 
 
 func _process(delta: float) -> void:

@@ -89,14 +89,17 @@ func _op() -> void:
 		box(op, Vector3(bx, -0.9, 0), Vector3(2.0, 1.2, 6.0), "dirt", Vector3(0, 0, -30.0 * signf(bx)))
 	box(op, Vector3(0, -1.0, -3.3), Vector3(7.0, 1.0, 2.4), "dirt", Vector3(-22, 0, 0))
 	box(op, Vector3(0, -1.25, 0), Vector3(5.0, 0.1, 4.0), "planks")                 # the floor, a metre down
-	box(op, Vector3(0, 0.62, -0.2), Vector3(5.6, 0.36, 5.0), logs)                 # the log roof with earth on it
-	box(op, Vector3(0, 0.9, -0.2), Vector3(6.2, 0.22, 5.6), "dirt")
-	box(op, Vector3(-2.55, -0.3, 0), Vector3(0.3, 1.9, 4.2), logs)
-	box(op, Vector3(2.55, -0.3, 0), Vector3(0.3, 1.9, 4.2), logs)
-	box(op, Vector3(0, -0.3, 2.05), Vector3(5.4, 1.9, 0.3), logs)
+	# T-206: the roof 23 cm higher (the officers' caps were inside the logs and so was the lens of shot 2), the slit
+	# kept at 1.35-1.69 m by a lintel log over it
+	box(op, Vector3(0, 0.85, -0.2), Vector3(5.6, 0.36, 5.0), logs)                 # the log roof with earth on it
+	box(op, Vector3(0, 1.13, -0.2), Vector3(6.2, 0.22, 5.6), "dirt")
+	box(op, Vector3(-2.55, -0.185, 0), Vector3(0.3, 2.13, 4.2), logs)
+	box(op, Vector3(2.55, -0.185, 0), Vector3(0.3, 2.13, 4.2), logs)
+	box(op, Vector3(0, -0.185, 2.05), Vector3(5.4, 2.13, 0.3), logs)
 	box(op, Vector3(0, -0.55, -2.05), Vector3(5.4, 1.3, 0.3), logs)                 # the front wall under the slit
-	box(op, Vector3(-1.9, 0.27, -2.05), Vector3(1.6, 0.34, 0.3), logs)              # the slit: 2.2 m wide, 0.3 m high
-	box(op, Vector3(1.9, 0.27, -2.05), Vector3(1.6, 0.34, 0.3), logs)
+	box(op, Vector3(-1.9, 0.385, -2.05), Vector3(1.6, 0.57, 0.3), logs)             # the slit: 2.2 m wide, 0.34 m high
+	box(op, Vector3(1.9, 0.385, -2.05), Vector3(1.6, 0.57, 0.3), logs)
+	box(op, Vector3(0, 0.555, -2.05), Vector3(2.2, 0.23, 0.3), logs)                # the lintel over it
 	marker("OPSlit", Vector3(0, 1.5, 248.0))
 	box(op, Vector3(1.6, -0.6, 1.0), Vector3(1.2, 0.06, 0.8), "planks")            # the table, the map under oilcloth
 	box(op, Vector3(1.6, -0.56, 1.0), Vector3(0.9, 0.01, 0.6), flat(Color(0.32, 0.36, 0.3), 0.3))
@@ -111,27 +114,71 @@ func _op() -> void:
 	box(phone, Vector3(0, 0.15, 0), Vector3(0.22, 0.05, 0.06), "bakelite")
 	cyl(op, Vector3(0.8, -0.1, -1.85), 0.05, 1.3, "olive_steel")                     # the trench periscope
 	box(op, Vector3(0.8, 0.55, -1.95), Vector3(0.08, 0.14, 0.18), "olive_steel")
-	omni(op, Vector3(0, 0.0, -1.0), [0.6, 0.65, 0.72], 0.6, 6.0)                      # the grey day through the slit
+	omni(op, Vector3(0, 0.15, -2.45), [0.6, 0.65, 0.72], 0.6, 6.0)                   # the grey day through the slit (T-206: in the slit, so it lights the faces that look out)
+	# T-206: the officers at 0.85 m either side of Volkov (the lens of shot 3 sat inside the colonel's raised hands at
+	# 1.0), binoculars at their eyes (a prop in the right hand), the colonel (Officer B, on the lens's side) the one the
+	# handset goes to
 	var cap: Array = ["rkka_officer_a", "volkov_1944", "rkka_officer_b"]
 	for k: int in 3:
-		var p: CinemaPerson = person(op, ["Officer_A", "Volkov", "Officer_B"][k], look_of(cap[k]), Vector3(-1.0 + 1.0 * float(k), -1.2, -1.35), 0.0,
-			"hold" if k != 1 else "stand")
+		var p: CinemaPerson = person(op, ["Officer_A", "Volkov", "Officer_B"][k], look_of(cap[k]), Vector3(-0.85 + 0.85 * float(k), -1.2, -1.35), 0.0,
+			"binoculars" if k != 1 else "stand")
 		p.name = ["OfficerA", "Volkov", "OfficerB"][k]
 		if k != 1:
-			p.hold_lift = 1.0
+			var bn: Node3D = Node3D.new()
+			bn.name = "Binoculars"
+			box(bn, Vector3(-0.035, 0, 0), Vector3(0.04, 0.045, 0.11), "bakelite")
+			box(bn, Vector3(0.035, 0, 0), Vector3(0.04, 0.045, 0.11), "bakelite")
+			p.in_hand(bn, true, Vector3(-0.03, -0.03, -0.04))
 
 
-## Shot 4: the handset in Volkov's hand (he gives it to the colonel without a word).
+## Shot 4: the handset in Volkov's hand; he gives it to the colonel without a word. T-206: the colonel lowers his
+## binoculars, Volkov's right hand carries the handset across, the colonel's left takes it and brings it to his ear;
+## the line (SVR_FTD_02) follows at 2.0 s.
 func fx_handset(_secs: float) -> void:
 	var v: CinemaPerson = find_child("Volkov", true, false) as CinemaPerson
-	if v == null or v.has_meta("handset"):
+	var col: CinemaPerson = find_child("OfficerB", true, false) as CinemaPerson
+	if v == null or col == null or v.has_meta("handset"):
 		return
 	v.set_meta("handset", true)
 	v.set_pose(&"hold")
 	v.hold_lift = 0.9
 	var hs: Node3D = Node3D.new()
+	hs.name = "Handset"
 	box(hs, Vector3(0, 0, 0), Vector3(0.05, 0.2, 0.05), "bakelite")
 	v.in_hand(hs, true, Vector3(0, -0.04, -0.03))
+	v.hand_r = Vector3(0.11, 0.22, -0.32)
+	later(0.3, func() -> void:
+		col.set_pose(&"hold")
+		col.hold_lift = 0.25
+		col.look_toward(Vector3(0.0, 1.55, 248.65)))
+	later(0.5, func() -> void: tween_to(v, "hand_r", Vector3(0.46, 0.2, -0.22), 0.9, Tween.TRANS_SINE, Tween.EASE_IN_OUT))
+	later(0.9, func() -> void:
+		col.hand_l = Vector3(-0.1, 0.1, -0.3)
+		tween_to(col, "hand_l", Vector3(-0.46, 0.2, -0.22), 0.6, Tween.TRANS_SINE, Tween.EASE_IN_OUT))
+	later(1.55, func() -> void:
+		hs.get_parent().remove_child(hs)
+		col.in_hand(hs, false, Vector3(0, -0.04, -0.03))
+		v.hand_r = null
+		v.set_pose(&"stand")
+		tween_to(col, "hand_l", Vector3(-0.12, 0.5, -0.12), 0.7, Tween.TRANS_SINE, Tween.EASE_IN_OUT))   # to his ear
+	later(2.2, func() -> void: col.look_ahead())
+
+
+## Shot 6: the colonel lowers the binoculars and asks with his face; Volkov answers without taking his eyes off the
+## trench, then gives him one look on the last line (T-206).
+func fx_colonel_asks(_secs: float) -> void:
+	var v: CinemaPerson = find_child("Volkov", true, false) as CinemaPerson
+	var col: CinemaPerson = find_child("OfficerB", true, false) as CinemaPerson
+	if v == null or col == null:
+		return
+	v.look_ahead()
+	later(0.4, func() -> void:
+		col.set_pose(&"hold")
+		col.hold_lift = 0.2
+		col.hand_l = null)
+	later(1.0, func() -> void: col.look_toward(Vector3(0.0, 1.55, 248.65)))
+	later(4.3, func() -> void: v.look_toward(Vector3(0.85, 1.55, 248.65)))
+	later(7.6, func() -> void: v.look_ahead())
 
 
 ## Shot 5: three salvoes land in the line and do not explode properly: a thud and a low dirty brown puff that lies

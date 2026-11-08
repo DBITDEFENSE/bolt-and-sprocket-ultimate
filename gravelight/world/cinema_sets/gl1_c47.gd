@@ -25,7 +25,11 @@ var panel_lamps: Array[MeshInstance3D] = []
 var needles: Array[Node3D] = []
 var cargo: Array[Node3D] = []
 var passengers: Array[CinemaPerson] = []
+var selwyn: CinemaPerson
 var whiteout: MeshInstance3D
+## T-206: the pilots' hands on the yoke (chest-local; the seated chest is at y 0.92, the yoke at 1.12, 0.54 ahead)
+const YOKE_L: Vector3 = Vector3(-0.18, 0.2, -0.54)
+const YOKE_R: Vector3 = Vector3(0.18, 0.2, -0.54)
 var _t: float = 0.0
 var _flare_clock: float = 0.0
 
@@ -131,11 +135,16 @@ func _cockpit() -> void:
 		needles.append(n)
 	marker("Panel", Vector3(-0.3, 1.1, -6.35))
 	cockpit_red = omni(self, Vector3(0, 1.3, -6.1), [1.0, 0.2, 0.12], 0.9, 3.0)
-	for sx2: float in [-0.45, 0.45]:   # the seats, the columns and yokes
+	for sx2: float in [-0.45, 0.45]:   # the seats, the columns and yokes (T-206: the yokes 12 cm nearer, within a seated reach)
 		box(self, Vector3(sx2, 0.72, -5.45), Vector3(0.52, 0.08, 0.5), "rust")
 		box(self, Vector3(sx2, 1.1, -5.18), Vector3(0.52, 0.75, 0.07), "#3b3a2c", Vector3(-10, 0, 0))
-		cyl(self, Vector3(sx2, 0.75, -6.0), 0.03, 0.75, "iron", Vector3(-12, 0, 0))
-		box(self, Vector3(sx2, 1.12, -6.08), Vector3(0.36, 0.05, 0.05), "iron")
+		cyl(self, Vector3(sx2, 0.75, -5.88), 0.03, 0.75, "iron", Vector3(-12, 0, 0))
+		box(self, Vector3(sx2, 1.12, -5.96), Vector3(0.36, 0.05, 0.05), "iron")
+	box(self, Vector3(0, 0.78, -5.9), Vector3(0.3, 0.5, 0.5), "#1f201d")   # the pedestal between the seats: the throttles
+	for lx: float in [-0.05, 0.05]:
+		box(self, Vector3(lx, 1.1, -5.95), Vector3(0.02, 0.16, 0.02), "iron", Vector3(-20, 0, 0))
+		ball(self, Vector3(lx, 1.18, -5.98), Vector3(0.03, 0.03, 0.03), "#2a2a28")
+	box(self, Vector3(-0.3, 1.95, -6.05), Vector3(0.5, 0.06, 0.3), "#1f201d")   # the overhead panel over the left seat
 	var glass: StandardMaterial3D = flat(Color(0.6, 0.66, 0.72, 0.1), 0.02)
 	for wx: float in [-0.5, 0.5]:   # the windscreen
 		var w: MeshInstance3D = card(self, Vector3(wx, 1.65, -6.7), Vector2(0.9, 0.5), glass, 0.0)
@@ -147,9 +156,16 @@ func _cockpit() -> void:
 	var sel: CinemaPerson = person(self, "selwyn", {"person": "selwyn"}, Vector3(-0.45, 0.3, -5.5), 0.0, "sit_hold")
 	sel.name = "Selwyn"
 	sel.hold_lift = 0.4
+	sel.hold_width = 0.18
+	sel.hand_l = YOKE_L
+	sel.hand_r = YOKE_R
+	selwyn = sel
 	var co: CinemaPerson = person(self, "copilot", look_of("copilot"), Vector3(0.45, 0.3, -5.5), 0.0, "sit_hold")
 	co.name = "CoPilot"
 	co.hold_lift = 0.4
+	co.hold_width = 0.18
+	co.hand_l = YOKE_L
+	co.hand_r = YOKE_R
 
 
 func _passengers() -> void:
@@ -222,17 +238,42 @@ func _process(delta: float) -> void:
 
 # ---------------------------------------------------------------- the effects
 
-## Shot 3-4: the window seat's passenger is up at the glass, looking out.
+## Shot 3-4: the window seat's passenger is up at the glass, looking out, a hand on the frame (T-206: the data now
+## calls it; the camera of shot 3 looks past his shoulder through that window).
 func fx_lean_window(_secs: float) -> void:
 	if passengers.is_empty():
 		return
-	var p: CinemaPerson = passengers[1] if passengers.size() > 1 else passengers[0]
-	p = passengers[0]
-	p.position = Vector3(-0.95, 0.0, 0.42)
+	var p: CinemaPerson = passengers[0]
+	p.position = Vector3(-0.9, 0.0, 0.85)   # half a metre aft of the window, so the lens beside him sees past his shoulder
 	p.rotation.y = deg_to_rad(90.0)
 	p.set_pose(&"stand")
-	p.head_down = 0.25
+	p.hand_l = Vector3(-0.22, 0.3, -0.25)
 	p.reset_motion()
+	p.look_toward(Vector3(-1.3, 1.3, 0.35))
+	p.head_down = 0.45   # down through the glass at the ground 600 m below
+
+
+## Shot 6: one checks a watch: the left wrist up, a look down at it, and down again (T-206).
+func fx_watch(_secs: float) -> void:
+	if passengers.size() < 2:
+		return
+	var p: CinemaPerson = passengers[1]
+	later(1.0, func() -> void:
+		p.hand_l = Vector3(-0.12, 0.3, -0.28)
+		p.head_down = 0.45
+		p.head_yaw = 0.3)
+	later(3.2, func() -> void:
+		p.hand_l = null
+		p.head_down = 0.0
+		p.head_yaw = 0.0)
+
+
+## Shot 9: heads down, hands on the seat frames (T-206: the shot list's brace, before the crash).
+func fx_brace(_secs: float) -> void:
+	for p: CinemaPerson in passengers:
+		p.set_pose(&"sit_brace")
+		p.hand_l = null
+		p.head_down = 0.55
 
 
 ## Shot 4: a flare lights the cabin white for a second.
@@ -252,12 +293,14 @@ func fx_violet_in(secs: float) -> void:
 		p.rotation.y = deg_to_rad(-90.0)
 		p.set_pose(&"sit")
 		p.head_down = 0.0
+		p.hand_l = null
 		p.reset_motion()
 	tween_to(violet, "light_energy", 2.6, minf(3.0, secs * 0.6), Tween.TRANS_SINE)
 	tween_to(dome, "light_energy", 0.35, minf(3.0, secs * 0.6), Tween.TRANS_SINE)
 
 
-## Shot 7: both engines at once: the needles fall, the panel's lamps go out.
+## Shot 7: both engines at once: the needles fall, the panel's lamps go out. T-206: Selwyn's hands do everything
+## right in the dark: the right to the throttles and back to the yoke, the left up to the overhead switches and back.
 func fx_engines_die(secs: float) -> void:
 	for k: int in panel_lamps.size():
 		var lamp: MeshInstance3D = panel_lamps[k]
@@ -268,6 +311,15 @@ func fx_engines_die(secs: float) -> void:
 	violet.position = Vector3(0, 1.6, -6.0)
 	violet.light_energy = 2.0
 	violet.omni_range = 4.0
+	if selwyn != null:
+		selwyn.hand_r = YOKE_R
+		selwyn.hand_l = YOKE_L
+		tween_to(selwyn, "hand_r", Vector3(0.45, 0.12, -0.45), 0.5, Tween.TRANS_SINE, Tween.EASE_IN_OUT, 1.0)   # the throttles
+		tween_to(selwyn, "hand_r", YOKE_R, 0.5, Tween.TRANS_SINE, Tween.EASE_IN_OUT, 2.6)
+		tween_to(selwyn, "hand_l", Vector3(-0.05, 0.95, -0.5), 0.6, Tween.TRANS_SINE, Tween.EASE_IN_OUT, 3.2)   # the overhead switches
+		tween_to(selwyn, "hand_l", YOKE_L, 0.6, Tween.TRANS_SINE, Tween.EASE_IN_OUT, 4.6)
+		later(3.0, func() -> void: selwyn.head_down = -0.35)
+		later(4.8, func() -> void: selwyn.head_down = 0.0)
 
 
 ## Shot 9: the crash from the floor: the first touch, the second, the lamp goes, the cargo breaks loose, white.
@@ -276,10 +328,10 @@ func fx_crash(secs: float) -> void:
 	violet.position = Vector3(1.0, 1.4, 0.3)
 	violet.omni_range = 5.0
 	dome.set_meta("flicker_on", true)
-	for c: int in cargo.size():
+	for c: int in cargo.size():   # (T-206: the crates go forward down the starboard side, past the lens, not through it)
 		var cg: Node3D = cargo[c]
 		later(secs * 0.62, func() -> void:
-			tween_to(cg, "position", cg.position + Vector3(-1.0 + 0.4 * float(c), 0.25, -2.4 - 0.5 * float(c)), 0.5, Tween.TRANS_QUAD, Tween.EASE_OUT)
+			tween_to(cg, "position", Vector3(0.95 + 0.12 * float(c), 0.3, 1.3 - 0.6 * float(c)), 0.5, Tween.TRANS_QUAD, Tween.EASE_OUT)
 			tween_to(cg, "rotation", Vector3(rng.randf_range(-0.8, 0.8), rng.randf_range(-1.5, 1.5), rng.randf_range(-0.8, 0.8)), 0.5))
 	later(secs * 0.7, func() -> void:
 		dome.remove_meta("flicker_on")

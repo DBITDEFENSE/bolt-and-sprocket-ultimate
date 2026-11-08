@@ -21,7 +21,7 @@ var serafim: CinemaPerson
 var volkov: CinemaPerson
 var head: CinemaPerson
 var takers: Array[CinemaPerson] = []
-var rope: MeshInstance3D
+var rope: Node3D
 var belfry_men: Array[CinemaPerson] = []
 var _wheels: Array[Node3D] = []
 var _truck_moving: bool = false
@@ -164,7 +164,10 @@ func _tower() -> void:
 	bell_crack_n = box(bell, Vector3(0.0, -0.08, 0.31), Vector3(0.025, 0.5, 0.03), flat(Color(0.03, 0.02, 0.01), 1.0), Vector3(0, 0, 12), "Crack")
 	bell_crack_n.visible = false
 	marker("BellGround", Vector3(8.0, 0.3, 4.8))
-	rope = cyl(self, Vector3(8.5, 4.6, 0.5), 0.02, 9.8, "rope", Vector3(-9, 0, 0), "Rope")
+	# T-206: the rope runs from the bell down to the first hauler's hands (8.2, 1.2, 8.1), then along the line of men
+	rope = group(self, "Rope", Vector3.ZERO)
+	cyl(rope, Vector3(8.35, 5.35, 3.65), 0.02, 12.2, "rope", Vector3(-47, 0, 0))
+	cyl(rope, Vector3(8.17, 1.2, 9.25), 0.02, 2.4, "rope", Vector3(-90, 0, 0))
 	rope.visible = false
 	stump = group(self, "TowerStump", Vector3(8.5, 0, -1.0))
 	box(stump, Vector3(0, 0.8, 0), Vector3(3.4, 1.6, 3.4), "char")
@@ -298,42 +301,61 @@ func fx_truck_arrive(secs: float) -> void:
 
 
 ## Shot 5: the truck stands; the brigade is down in the road, Volkov from the cab.
-func fx_brigade_down(secs: float) -> void:
+## T-206: they come down the truck's far side and walk round its nose at a brisk 1.5 m/s (a waypoint clear of the
+## bonnet and the wheels, which the old straight paths walked through), Volkov from the cab's near door at a walk,
+## looking at the kneeling road and then, quickly, away from it.
+const BRIGADE_SPOTS: Array = [[-3.2, 34.0], [-2.3, 33.4], [-1.5, 34.6], [-0.6, 33.2], [0.3, 34.4], [1.1, 33.6], [1.9, 34.8], [-1.0, 35.6]]
+
+
+func fx_brigade_down(_secs: float) -> void:
 	truck.position = Vector3(0, 0, 40.0)
 	truck.rotation.y = 0.0
 	_truck_moving = false
-	for p: CinemaPerson in on_truck:
-		p.visible = false
+	for k: int in on_truck.size():
+		var op: CinemaPerson = on_truck[k]
+		later(0.25 * float(k), func() -> void: op.visible = false)
 	for b: int in brigade.size():
 		var bp: CinemaPerson = brigade[b]
+		var spot: Array = BRIGADE_SPOTS[b]
 		bp.visible = true
-		bp.position = Vector3(-2.8 + 0.32 * float(b), 0, 38.5 + float(b % 3) * 0.8)   # down on the truck's far side
+		bp.position = Vector3(-1.75 - 0.3 * float(b % 2), 0, 39.6 + 0.4 * float(b % 5))   # down on the truck's far side
 		bp.rotation.y = 0.0
+		bp.set_pose(&"stand")
+		bp.look_ahead()
 		bp.reset_motion()
-		tween_to(bp, "position", Vector3(-3.2 + 0.85 * float(b), 0, 34.0 - float(b % 3)), secs * 0.6, Tween.TRANS_SINE, Tween.EASE_IN_OUT, 0.3 * float(b % 4))
+		var wp: Vector3 = Vector3(-2.0 - 0.15 * float(b % 3), 0, 36.3 - 0.2 * float(b % 2))
+		var leg1: Tween = bp.walk_to(wp, 1.5, 0.35 * float(b % 4))
+		if leg1 != null:
+			leg1.finished.connect(func() -> void: bp.walk_to(Vector3(float(spot[0]), 0, float(spot[1])), 1.4))
 	volkov.visible = true
-	volkov.position = Vector3(1.0, 0, 37.2)
+	volkov.position = Vector3(1.55, 0, 38.6)
 	volkov.rotation.y = 0.0
+	volkov.set_pose(&"stand")
 	volkov.reset_motion()
-	tween_to(volkov, "position", Vector3(0.9, 0, 34.0), secs * 0.5, Tween.TRANS_SINE, Tween.EASE_IN_OUT, secs * 0.3)
+	volkov.walk_to(Vector3(1.45, 0, 34.8), 0.95, 1.2)
+	later(1.5, func() -> void: volkov.look_toward(Vector3(0.0, 0.9, 22.0)))   # the kneeling road
+	later(3.4, func() -> void: volkov.look_toward(Vector3(-1.5, 1.5, 34.0)))   # and quickly away from it, to the men
 	head.visible = true
-	head.position = Vector3(-1.4, 0, 36.0)
+	head.position = Vector3(-1.5, 0, 38.6)
 	head.rotation.y = 0.0
 	head.reset_motion()
+	head.walk_to(Vector3(-1.3, 0, 35.2), 1.1, 0.3)
 
 
 ## Shot 6: out of focus behind Serafim, the people in the road get up and are walked to its edge (no one is struck).
-func fx_clear_road(secs: float) -> void:
+## T-206: each stands (the rise blends), turns to the roadside and walks there at about a metre a second instead of
+## sliding sideways across the ruts.
+func fx_clear_road(_secs: float) -> void:
 	for k: int in kneelers.size():
 		var p: CinemaPerson = kneelers[k]
 		var side: float = -1.0 if p.position.x < 0.0 else 1.0
+		var goal: Vector3 = Vector3(side * (5.4 + 0.6 * float(k % 3)), 0, p.position.z + 0.3 * float(k % 3) - 0.3)
 		later(0.4 + 0.25 * float(k % 6), func() -> void:
 			p.set_pose(&"stand")
-			p.reset_motion()
-			tween_to(p, "position:x", side * (5.4 + 0.6 * float(k % 3)), maxf(1.5, secs * 0.55), Tween.TRANS_SINE, Tween.EASE_IN_OUT))
+			p.walk_to(goal, 0.9 + 0.1 * float(k % 3), 0.5))
 	for b: int in brigade.size():
 		var bp: CinemaPerson = brigade[b]
-		tween_to(bp, "position:z", 29.5 + float(b % 3), secs * 0.5, Tween.TRANS_SINE)
+		bp.walk_to(Vector3(bp.position.x, 0, 29.5 + float(b % 3)), 1.0, 0.2 * float(b % 3))
 
 
 ## Shot 7-10: the road is empty; Volkov and the brigade head at the porch steps.
@@ -343,18 +365,25 @@ func fx_at_the_door(_secs: float) -> void:
 		p.set_pose(&"stand")
 		p.position = Vector3((-1.0 if k % 2 == 0 else 1.0) * (5.6 + 0.5 * float(k % 4)), 0, 18.0 + float(k % 5) * 1.2)
 		p.rotation.y = PI * 0.5 * (1.0 if k % 2 == 0 else -1.0)
+		p.look_ahead()
 		p.reset_motion()
 	volkov.position = Vector3(0.45, 0, 5.9)
 	volkov.rotation.y = 0.0
 	volkov.set_pose(&"writing")
+	volkov.head_yaw = 0.0
+	volkov.head_down = 0.32   # reading his paper
 	volkov.reset_motion()
 	head.position = Vector3(-1.1, 0, 6.6)
-	head.rotation.y = deg_to_rad(20.0)
+	head.rotation.y = CinemaPerson.yaw_to(Vector3(0, 0, 1.6) - head.position)   # facing the door
+	head.look_ahead()
 	head.reset_motion()
 	for b: int in brigade.size():
 		brigade[b].position = Vector3(-3.0 + 0.9 * float(b), 0, 9.5 + float(b % 2))
 		brigade[b].rotation.y = 0.0
+		brigade[b].set_pose(&"stand")
+		brigade[b].look_ahead()
 		brigade[b].reset_motion()
+	serafim.look_ahead()   # to the road, over the lens
 
 
 ## Shot 7: Serafim raises his free hand, palm down, toward the road: get up, go home.
@@ -362,15 +391,29 @@ func fx_serafim_palm(_secs: float) -> void:
 	serafim.set_pose(&"palm")
 
 
-## Shot 8-11: the keys again, held, not a fist.
+## Shot 8-11: the keys again, held, not a fist. T-206: Serafim looks down at the young man on the step; Volkov reads
+## his paper, then looks up at him for the formal part.
 func fx_serafim_hold(_secs: float) -> void:
 	serafim.set_pose(&"hold")
+	serafim.look_toward(Vector3(0.45, 1.6, 5.9))
+	later(0.9, func() -> void: volkov.look_toward(Vector3(0.0, 2.55, 2.4)))
+
+
+## Shot 9 (the reverse): the brigade head's line at 4.6 s; Volkov glances at him and back.
+func fx_reverse(_secs: float) -> void:
+	serafim.look_toward(Vector3(0.45, 1.6, 5.9))
+	head.look_toward(Vector3(0.0, 2.55, 2.4))
+	later(4.4, func() -> void: volkov.look_toward(Vector3(-1.1, 1.6, 6.6)))
+	later(7.0, func() -> void: volkov.look_toward(Vector3(0.0, 2.55, 2.4)))
 
 
 ## Shot 10: Volkov turns to the brigade head and keeps his voice down.
 func fx_volkov_turns(secs: float) -> void:
 	volkov.set_pose(&"stand")
-	tween_to(volkov, "rotation:y", deg_to_rad(55.0), minf(1.2, secs * 0.2), Tween.TRANS_SINE)
+	volkov.look_ahead()
+	volkov.turn_to(CinemaPerson.yaw_to(head.position - volkov.position), minf(1.0, secs * 0.15))
+	head.look_toward(Vector3(0.45, 1.6, 5.9))
+	serafim.look_toward(Vector3(0.45, 1.6, 5.9))
 
 
 ## Shot 11: two of them step in from either side. The cut comes on the first movement.
@@ -381,37 +424,52 @@ func fx_arms(secs: float) -> void:
 		tp.position = Vector3(-1.5 if t == 0 else 1.5, 1.0, 3.3)
 		tp.rotation.y = deg_to_rad(-50.0 if t == 0 else 50.0)
 		tp.reset_motion()
-		tween_to(tp, "position", Vector3(-0.55 if t == 0 else 0.55, 1.0, 2.75), secs * 0.4, Tween.TRANS_SINE, Tween.EASE_IN_OUT, secs * 0.55)
+		tp.walk_to(Vector3(-0.55 if t == 0 else 0.55, 1.0, 2.75), 0.8, secs * 0.55, false)
 
 
 ## Shot 12: daylight again; the rope up to the bell, two men at the yoke, Serafim on his knees in the road between two
-## of the brigade, praying (his sleeve torn at the cuff, nobody holding him now).
+## of the brigade, praying (his sleeve torn at the cuff, nobody holding him now). T-206: the camera starts on Serafim
+## and tilts up the rope; three of the brigade haul it, facing the tower, their hands on it.
 func fx_bell_rope(_secs: float) -> void:
 	for tp: CinemaPerson in takers:
 		tp.visible = false
 	rope.visible = true
 	for bm: CinemaPerson in belfry_men:
 		bm.visible = true
-	serafim.position = Vector3(3.2, 0, 7.4)
+	serafim.position = Vector3(3.3, 0, 7.2)
 	serafim.rotation.y = deg_to_rad(-20.0)
 	serafim.set_pose(&"pray")
+	serafim.look_ahead()
 	serafim.reset_motion()
-	for b: int in 2:
-		brigade[b].position = Vector3(2.2 + 2.0 * float(b), 0, 8.4)
-		brigade[b].rotation.y = deg_to_rad(-160.0 if b == 0 else 160.0)
+	for b: int in 2:   # the two who keep him there, either side, facing him
+		brigade[b].position = Vector3(2.3 if b == 0 else 4.3, 0, 7.6)
+		brigade[b].rotation.y = deg_to_rad(-90.0 if b == 0 else 90.0)
+		brigade[b].set_pose(&"stand")
+		brigade[b].look_toward(Vector3(3.3, 1.1, 7.2))
 		brigade[b].reset_motion()
-	for b2: int in range(2, brigade.size()):
-		brigade[b2].position = Vector3(1.0 + 1.1 * float(b2 % 3), 0, 11.0 + 0.9 * float(b2))   # (clear of where the bell comes down)
-		brigade[b2].rotation.y = deg_to_rad(180.0)
+	for b2: int in range(2, 5):   # the haulers on the rope, facing the tower
+		brigade[b2].position = Vector3(8.2, 0, 8.4 + float(b2 - 2))
+		brigade[b2].rotation.y = 0.0
 		brigade[b2].set_pose(&"hold")
+		brigade[b2].hold_lift = 0.5
+		brigade[b2].hold_width = 0.06
+		brigade[b2].look_toward(Vector3(8.5, 9.5, -1.0))
 		brigade[b2].reset_motion()
+	for b3: int in range(5, brigade.size()):   # the rest watching from the road (clear of where the bell comes down)
+		brigade[b3].position = Vector3(1.0 + 1.1 * float(b3 % 3), 0, 11.0 + 0.9 * float(b3))
+		brigade[b3].rotation.y = 0.0
+		brigade[b3].set_pose(&"stand")
+		brigade[b3].look_toward(Vector3(8.5, 9.5, -1.0))
+		brigade[b3].reset_motion()
 	volkov.position = Vector3(-1.5, 0, 12.0)
 	volkov.set_pose(&"writing")
 	volkov.rotation.y = deg_to_rad(-30.0)
+	volkov.head_down = 0.3
 	volkov.reset_motion()
 
 
-## Shot 13: the bell swings out over the rail on the rope and drops.
+## Shot 13: the bell swings out over the rail on the rope and drops. T-206: the rope goes with the bell (the haulers
+## let it run and step back), not left hanging in the air.
 func fx_bell_drop(secs: float) -> void:
 	bell.position = Vector3(8.5, 9.55, -1.0)
 	bell.rotation = Vector3.ZERO
@@ -419,10 +477,14 @@ func fx_bell_drop(secs: float) -> void:
 	tw.tween_property(bell, "position", Vector3(8.4, 9.75, 1.0), secs * 0.35).set_trans(Tween.TRANS_SINE)
 	tw.parallel().tween_property(bell, "rotation:x", deg_to_rad(22.0), secs * 0.35)
 	tw.tween_interval(secs * 0.12)
+	tw.tween_callback(func() -> void:
+		rope.visible = false
+		for b2: int in range(2, 5):
+			brigade[b2].set_pose(&"stand")
+			brigade[b2].walk_to(brigade[b2].position + Vector3(0.3, 0, 1.6), 1.6, 0.0, false))
 	tw.tween_property(bell, "position", Vector3(8.0, 0.32, 4.8), secs * 0.24).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	tw.parallel().tween_property(bell, "rotation", Vector3(deg_to_rad(8.0), 0.3, deg_to_rad(-14.0)), secs * 0.24)
 	tw.tween_callback(func() -> void:
-		rope.visible = false
 		dust(self, Vector3(8.0, 0.2, 4.8), Color(0.3, 0.25, 0.18, 0.8), 1.2, 1.2, 1.6, 18, 0.6).emitting = true)
 
 
@@ -436,21 +498,38 @@ func fx_bell_crack(_secs: float) -> void:
 		dust(self, Vector3(8.0, 0.25, 4.8), Color(0.25, 0.2, 0.14, 0.9), 0.6, 1.8, 1.2, 14, 0.3).emitting = true)
 
 
-## Shot 15: the box has gone in; the men come running out of the porch and the road is cleared back.
-func fx_run_out(secs: float) -> void:
+## Shot 15: the box has gone in; the men come running out of the porch and the road is cleared back. T-206: they run
+## (the run pose, 3 m/s), Volkov walks back fast with his board, nobody is left standing under the tower.
+func fx_run_out(_secs: float) -> void:
 	bell_crack_n.visible = true
 	bell.position = Vector3(8.0, 0.32, 4.8)
+	rope.visible = false
 	for bm: CinemaPerson in belfry_men:
 		bm.visible = false
 	for b: int in brigade.size():
 		var bp: CinemaPerson = brigade[b]
 		bp.position = Vector3(-1.0 + 0.5 * float(b % 4), 0, 4.0 + 0.4 * float(b))
 		bp.rotation.y = PI
-		bp.set_pose(&"stand")
+		bp.set_pose(&"run")
+		bp.look_ahead()
 		bp.reset_motion()
-		tween_to(bp, "position:z", 24.0 + float(b), secs * 0.9, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT, 0.12 * float(b))
+		var tw: Tween = bp.walk_to(Vector3(bp.position.x + 0.3 * float(b % 3) - 0.3, 0, 24.0 + float(b)), 3.0, 0.12 * float(b), false)
+		if tw != null:
+			tw.finished.connect(func() -> void:
+				bp.set_pose(&"stand")
+				bp.turn_to(0.0, 0.5))
+	volkov.position = Vector3(-1.5, 0, 12.0)
+	volkov.rotation.y = PI
+	volkov.set_pose(&"writing")
+	volkov.head_down = 0.0
+	volkov.reset_motion()
+	var vt: Tween = volkov.walk_to(Vector3(-1.8, 0, 27.0), 2.2, 0.4, false)
+	if vt != null:
+		vt.finished.connect(func() -> void: volkov.turn_to(0.0, 0.5))
 	serafim.position = Vector3(3.2, 0, 14.0)
+	serafim.rotation.y = 0.0
 	serafim.set_pose(&"kneel")
+	serafim.look_toward(Vector3(8.5, 8.0, -1.0))
 	serafim.reset_motion()
 
 
@@ -482,19 +561,40 @@ func _roll_plume(secs: float) -> void:
 	tween_to(plume, "position:z", 70.0, maxf(1.0, secs * 2.5), Tween.TRANS_LINEAR)
 
 
-## Shot 17: through the thinning dust: the stump, Serafim on his knees in the road coughing, Volkov by the truck.
+## Shot 17: through the thinning dust: the stump, Serafim on his knees in the road coughing, Volkov writing on his
+## board. T-206: Volkov stands in the road a few metres from him (the old spot by the truck was 80 degrees out of
+## frame), writing, looks up at Serafim on his line and, after a moment, back down at the board.
 func fx_dust_settle(_secs: float) -> void:
 	tower.visible = false
 	stump.visible = true
 	dust(self, Vector3(6.0, 1.5, 16.0), Color(0.62, 0.6, 0.57, 0.55), 10.0, 0.5, 9.0, 24, 9.0).emitting = true
 	serafim.position = Vector3(1.6, 0, 18.0)
-	serafim.rotation.y = deg_to_rad(160.0)
+	serafim.rotation.y = deg_to_rad(140.0)
 	serafim.set_pose(&"kneel")
+	serafim.head_down = 0.35
+	serafim.head_yaw = 0.0
 	serafim.reset_motion()
-	volkov.position = Vector3(1.8, 0, 37.5)
-	volkov.rotation.y = deg_to_rad(200.0)
+	later(2.4, func() -> void: serafim.look_toward(Vector3(3.6, 1.6, 24.5)))   # his line is to Volkov
+	volkov.position = Vector3(3.6, 0, 24.5)
+	volkov.rotation.y = CinemaPerson.yaw_to(serafim.position - Vector3(3.6, 0, 24.5))
 	volkov.set_pose(&"writing")
+	volkov.head_yaw = 0.0
+	volkov.head_down = 0.35
 	volkov.reset_motion()
+	later(3.0, func() -> void: volkov.look_toward(Vector3(1.6, 1.1, 18.0)))
+	later(6.4, func() -> void:
+		volkov.head_yaw = 0.0
+		volkov.head_down = 0.35)
+	head.position = Vector3(5.4, 0, 26.5)
+	head.rotation.y = deg_to_rad(200.0)
+	head.set_pose(&"stand")
+	head.look_ahead()
+	head.reset_motion()
+	for b: int in brigade.size():
+		brigade[b].position = Vector3(-4.0 + 1.0 * float(b), 0, 28.0 + float(b % 3))
+		brigade[b].rotation.y = 0.0
+		brigade[b].set_pose(&"stand")
+		brigade[b].reset_motion()
 
 
 # ---------------------------------------------------------------- spring (shot 32): nothing stands
