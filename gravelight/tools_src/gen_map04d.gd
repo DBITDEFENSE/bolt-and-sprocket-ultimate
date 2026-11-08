@@ -65,8 +65,9 @@ func setup_tables() -> void:
 		[Vector3(28, 0, -15.6), Vector3(28, 0, -16.4), "F_CORE"],
 	]
 	buys = [
-		["kar98k", Vector3(-11.83, 1.5, 16.0), 90.0], ["thompson", Vector3(11.83, 1.5, 32.0), -90.0],
-		["springfield", Vector3(-39.6, 1.5, 80.0), 90.0], ["bar", Vector3(43.83, 1.5, 42.0), -90.0],
+		# T-219: every yaw turned 180 (they faced their wall: the act was authored with the yaw sign flipped)
+		["kar98k", Vector3(-11.83, 1.5, 16.0), -90.0], ["thompson", Vector3(11.83, 1.5, 32.0), 90.0],
+		["springfield", Vector3(-39.6, 1.5, 80.0), -90.0], ["bar", Vector3(43.83, 1.5, 42.0), 90.0],
 	]
 	doors = [
 		["Door_Concourse", "door_concourse", "B_CONCOURSE", [], "", 750, "the concourse", Vector3(0, 0, 24), 0.0, 2.4, false],
@@ -77,8 +78,9 @@ func setup_tables() -> void:
 		["Door_Account", "door_account", "F_CORE", [], "", 2000, "the Account", Vector3(28, 0, -16), 0.0, 2.4, false],
 	]
 	ammo_boxes = [
-		["Reception", Vector3(11.48, 0, 4.0), -90.0], ["Concourse", Vector3(-11.48, 0, 56.0), 90.0],
-		["Store", Vector3(43.48, 0, 56.0), -90.0], ["Hall", Vector3(12.52, 0, -12.0), 90.0],
+		# T-219: turned 180 (they faced their wall; the nav blocks are the same either way)
+		["Reception", Vector3(11.48, 0, 4.0), 90.0], ["Concourse", Vector3(-11.48, 0, 56.0), -90.0],
+		["Store", Vector3(43.48, 0, 56.0), 90.0], ["Hall", Vector3(12.52, 0, -12.0), -90.0],
 	]
 	grounds = [
 		["A_RECEPTION", Vector3(0, 0, 18), 1],
@@ -93,13 +95,14 @@ func setup_tables() -> void:
 	for hc: Array in (_u10_table().get("low_g", {}) as Dictionary).get("hall_catwalks", []):
 		catwalks.append(["E_HALL", Vector3(float(hc[0]), float(hc[1]), float(hc[2])), true])
 	perks = [
-		["second_wind", Vector3(8.0, 0, 22.6), 180.0],
-		["skyhook_sekt", Vector3(-11.3, 0, 30.0), 90.0], ["magpie_mead", Vector3(11.3, 0, 30.0), -90.0],
-		["ironhide_stout", Vector3(12.7, 0, 50.0), 90.0], ["trigger_tonic", Vector3(43.3, 0, 28.0), -90.0],
-		["hawkeye_brandy", Vector3(12.7, 0, 16.0), 90.0], ["blastproof_bock", Vector3(43.3, 0, -8.0), -90.0],
-		["packmule_porter", Vector3(14.7, 0, -24.0), 90.0],
+		# T-219: every machine turned 180 (they showed the room their backs)
+		["second_wind", Vector3(8.0, 0, 22.6), 0.0],
+		["skyhook_sekt", Vector3(-11.3, 0, 30.0), -90.0], ["magpie_mead", Vector3(11.3, 0, 30.0), 90.0],
+		["ironhide_stout", Vector3(12.7, 0, 50.0), -90.0], ["trigger_tonic", Vector3(43.3, 0, 28.0), 90.0],
+		["hawkeye_brandy", Vector3(12.7, 0, 16.0), -90.0], ["blastproof_bock", Vector3(43.3, 0, -8.0), 90.0],
+		["packmule_porter", Vector3(14.7, 0, -24.0), -90.0],
 		# Ledger Lager (T-141): on the concourse's east wall between the Thompson and the store door; Accounts is opposite (bank.json)
-		["ledger_lager", Vector3(11.45, 0, 36.6), -90.0],
+		["ledger_lager", Vector3(11.45, 0, 36.6), 90.0],
 	]
 	crates = [
 		["Reception", Vector3(-7.0, 0, 18.0), 90.0, true, [Vector3(-7, 0, 14), Vector3(-4, 0, 12), Vector3(0, 0, 12)]],

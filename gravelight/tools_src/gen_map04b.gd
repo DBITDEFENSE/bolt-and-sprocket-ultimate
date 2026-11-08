@@ -83,9 +83,11 @@ func setup_tables() -> void:
 		[Vector3(22.4, 0, 56), Vector3(21.6, 0, 56), "F_COCKPIT"],
 	]
 	buys = [
-		["kar98k", Vector3(-8.83, 1.5, 6.0), 90.0], ["mp40", Vector3(8.83, 1.5, 30.0), -90.0],
-		["thompson", Vector3(-30.0, 1.5, 45.83), 180.0], ["stg44", Vector3(30.0, 1.5, 45.83), 180.0],
-		["bar", Vector3(66.0, 1.5, 57.83), 180.0],
+		# T-219: every yaw here turned 180 (they faced the wall they hang on: the act was authored with the yaw sign
+		# flipped; local -Z is the front, yaw 90 faces -X)
+		["kar98k", Vector3(-8.83, 1.5, 6.0), -90.0], ["mp40", Vector3(8.83, 1.5, 30.0), 90.0],
+		["thompson", Vector3(-30.0, 1.5, 45.83), 0.0], ["stg44", Vector3(30.0, 1.5, 45.83), 0.0],
+		["bar", Vector3(66.0, 1.5, 57.83), 0.0],
 	]
 	doors = [
 		["Door_Mittelrumpf", "door_mittelrumpf", "B_MITTELRUMPF", [], "", 750, "the centre body", Vector3(0, 0, 24), 0.0, 2.0, false],
@@ -97,8 +99,9 @@ func setup_tables() -> void:
 		["Door_CockpitR", "door_cockpit", "F_COCKPIT", [], "cockpit", 1500, "the flight deck", Vector3(22, 0, 56), 90.0, 2.0, true],
 	]
 	ammo_boxes = [
-		["Bay", Vector3(-8.48, 0, 20.0), 90.0], ["Galley", Vector3(8.48, 0, 50.0), -90.0],
-		["Triebwerk", Vector3(-77.48, 0, 44.0), 90.0], ["Kanzel", Vector3(77.48, 0, 44.0), -90.0],
+		# T-219: turned 180 (they faced their wall; the nav blocks are the same for +-90)
+		["Bay", Vector3(-8.48, 0, 20.0), -90.0], ["Galley", Vector3(8.48, 0, 50.0), 90.0],
+		["Triebwerk", Vector3(-77.48, 0, 44.0), -90.0], ["Kanzel", Vector3(77.48, 0, 44.0), 90.0],
 	]
 	grounds = [
 		["A_BOMBENSCHACHT", Vector3(0, 0, 2), 1],
@@ -108,17 +111,19 @@ func setup_tables() -> void:
 	# the blister rims: the climbers' way in (E_KANZEL has no windows; its spawns are these)
 	catwalks = [["E_KANZEL", Vector3(56, 0, 26), true], ["E_KANZEL", Vector3(62, 0, 26), true], ["E_KANZEL", Vector3(68, 0, 26), true], ["E_KANZEL", Vector3(74, 0, 26), true]]
 	perks = [
-		["second_wind", Vector3(6.0, 0, 22.8), 180.0],
-		["skyhook_sekt", Vector3(-7.8, 0, 30.0), 90.0], ["trigger_tonic", Vector3(7.8, 0, 33.6), -90.0],
-		["ironhide_stout", Vector3(-24.0, 0, 44.6), 180.0], ["marathon_malt", Vector3(24.0, 0, 44.6), 180.0],
-		["blastproof_bock", Vector3(-60.0, 0, 25.4), 0.0], ["hawkeye_brandy", Vector3(56.0, 0, 56.6), 180.0],
-		["packmule_porter", Vector3(6.0, 0, 72.6), 180.0],
+		# T-219: every machine but Ledger Lager turned 180 (they showed the room their backs)
+		["second_wind", Vector3(6.0, 0, 22.8), 0.0],
+		["skyhook_sekt", Vector3(-7.8, 0, 30.0), -90.0], ["trigger_tonic", Vector3(7.8, 0, 33.6), 90.0],
+		["ironhide_stout", Vector3(-24.0, 0, 44.6), 0.0], ["marathon_malt", Vector3(24.0, 0, 44.6), 0.0],
+		["blastproof_bock", Vector3(-60.0, 0, 25.4), 180.0], ["hawkeye_brandy", Vector3(56.0, 0, 56.6), 0.0],
+		["packmule_porter", Vector3(6.0, 0, 72.6), 0.0],
 		# Ledger Lager (T-141): on the forward bulkhead of the centre body, 5 m port of the Bordkasse (bank.json)
 		["ledger_lager", Vector3(-5.0, 0, 53.45), 0.0],
 	]
 	crates = [["Galley", Vector3(-6.0, 0, 50.0), 90.0, true, [Vector3(-6, 0, 47), Vector3(-6, 0, 44), Vector3(0, 0, 44)]],
 		# T-156 (THE_BAR row 25): a second spot, the gun blisters' east wall: the drummer walks the crate across the wing
-		["Kanzel", Vector3(76.9, 0, 33.0), -90.0, false, [Vector3(74, 0, 33), Vector3(70, 0, 33), Vector3(66, 0, 36)]]]
+		# T-219: yaw 90 (was -90: it faced the blister wall)
+		["Kanzel", Vector3(76.9, 0, 33.0), 90.0, false, [Vector3(74, 0, 33), Vector3(70, 0, 33), Vector3(66, 0, 36)]]]
 	player_spawns = [[Vector3(-2, 0, 8), 0.0], [Vector3(2, 0, 8), 0.0], [Vector3(-2, 0, 11), 0.0], [Vector3(2, 0, 11), 0.0]]
 	power_switch = {"name": "AuxBus", "label": "the auxiliary bus", "pos": Vector3(8.7, 0, 42.0), "yaw": -90.0,
 		"zone_order": ["B_MITTELRUMPF", "A_BOMBENSCHACHT", "C_FLUEGEL_L", "C_FLUEGEL_R", "D_TRIEBWERK", "E_KANZEL", "F_COCKPIT"]}
@@ -305,15 +310,8 @@ func build_dressing() -> void:
 	extra_root_nodes.append(sky)
 	Detail.dress_all(self)
 	power("F_COCKPIT", Vector3(0, 1.4, 72.7), 12.0, 1.3, Color(0.5, 0.9, 0.6))   # the instrument glow
-	# the wall guns' labels sit a centimetre behind the wall face (the hidden flat walls used to cover them): a painted
-	# backing plate just behind each one keeps them covered, as before (the buys table is untouched)
-	for b: Array in buys:
-		var away: Vector3 = Basis(Vector3.UP, deg_to_rad(float(b[2]))) * Vector3(0, 0, -1)
-		var c: Vector3 = (b[1] as Vector3) + away * 0.026
-		var half: Vector3 = Vector3(0.002, 0.65, 0.85) if absf(away.x) > 0.5 else Vector3(0.85, 0.65, 0.002)
-		var bp: MeshInstance3D = Props.block(dress, c - half, c + half, "steel")
-		if bp != null:
-			bp.material_override = KranichShell.frame_material()
+	# (T-219: the painted backing plates that hid the wall guns' labels behind the wall face are gone: the buys faced
+	# the wall then; turned round, their labels face the cabin and a plate in front of them would cover them)
 	_wing_walk_dressing()
 	fog("CoreHeat", Vector3(-70, 2.0, 40), Vector3(16, 4.0, 30), 0.05, Color(0.5, 0.35, 0.7), Color(0.08, 0.02, 0.12))
 	# the wing diorama for the crash: a flat wing, kept so the fx can slide it (FlightSky hides it until the crash)
