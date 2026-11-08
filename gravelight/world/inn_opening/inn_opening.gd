@@ -171,6 +171,7 @@ static func exit_times(c: Dictionary) -> Dictionary:
 # ================================================================== setup
 
 func _ready() -> void:
+	add_to_group(&"inn_opening")   # (VOManager holds the squad's SPAWN lines until the opening is over)
 	cfg = load_cfg()
 	var map: MapRoot = _map()
 	var map_id: StringName = map.map_id if map != null else &""
