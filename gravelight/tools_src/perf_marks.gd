@@ -70,6 +70,9 @@ func _ready() -> void:
 				GLSettings.values[str(k)] = GLSettings.PRESETS[a.substr(9)][k]
 		elif a.begins_with("--map="):
 			_map_path = Campaign.scene_for(StringName(a.substr(6)))
+		elif a == "--no-plane":   # T-220: the A/B of der Kranich's plane pass (KranichExterior / KranichAir never build)
+			KranichExterior.disabled = true
+			KranichAir.disabled = true
 		elif a.begins_with("--pos="):
 			for v: String in a.substr(6).split(","):
 				_pos.append(float(v))

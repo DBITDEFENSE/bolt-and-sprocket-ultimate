@@ -28,6 +28,8 @@ var flight_t: float = 0.0
 var next_event_t: float = 60.0
 var banks_seen: int = 0
 var dawn_override: float = -1.0   # preview_dawn (captures)
+## the perf A/B (perf_marks --no-plane): no audio, no events, no bank
+static var disabled: bool = false
 var _wait_t: float = 0.0
 var _wind: AudioStreamPlayer = null
 var _engine: AudioStreamPlayer = null
@@ -134,6 +136,9 @@ static func light_basis(toward: Vector3) -> Basis:
 
 func _ready() -> void:
 	add_to_group(&"kranich_air")
+	if disabled:
+		set_process(false)
+		return
 	process_priority = 50   # after MapAmbience (flight_sun) so preview_dawn holds
 	_rng.randomize()
 	var d: Dictionary = GLData.load_json(DATA)

@@ -10,7 +10,7 @@ uniform float dawn : hint_range(0.0, 1.0) = 0.0;
 uniform vec4 lit : source_color = vec4(0.5, 0.55, 0.66, 1.0);
 uniform vec4 dark : source_color = vec4(0.13, 0.15, 0.2, 1.0);
 uniform vec4 dawn_color : source_color = vec4(0.9, 0.6, 0.45, 1.0);
-uniform float opacity = 0.55;
+uniform float opacity = 0.75;
 uniform float soft_m = 6.0;
 uniform float near_m = 9.0;
 

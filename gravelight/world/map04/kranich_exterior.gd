@@ -26,6 +26,8 @@ const SPAN: float = 134.0
 const CHUNK_COLS: int = 18
 
 @export var build_on_ready: bool = true
+## the perf A/B (perf_marks --no-plane): never builds, never ticks
+static var disabled: bool = false
 
 var hull: Dictionary = {}
 var built: bool = false
@@ -218,6 +220,9 @@ static func grid_rows(n: int) -> PackedFloat32Array:
 
 func _ready() -> void:
 	add_to_group(&"kranich_exterior")
+	if disabled:
+		set_process(false)
+		return
 	_rng.randomize()
 	if build_on_ready:
 		build()

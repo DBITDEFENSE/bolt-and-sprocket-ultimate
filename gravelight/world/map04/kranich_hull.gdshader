@@ -173,7 +173,7 @@ void fragment() {
 			vec2 l = vec2(d.x * mk_cell[i].y + d.y * mk_cell[i].z, -d.x * mk_cell[i].z + d.y * mk_cell[i].y);
 			vec2 u = l / r.zw * 0.5 + 0.5;
 			if (u.x > 0.0 && u.x < 1.0 && u.y > 0.0 && u.y < 1.0) {
-				float a = texture(marks_tex, vec2(u.x, (mk_cell[i].x + 1.0 - u.y) / 8.0)).a;
+				float a = texture(marks_tex, vec2(1.0 - u.x, (mk_cell[i].x + 1.0 - u.y) / 8.0)).a;   // u runs right-to-left in the map frame (x is starboard, seen from above)
 				a *= 1.0 - smoothstep(0.45, 0.8, fbm3(wpos.xz * 2.3)) * 0.7;
 				col = mix(col, mk_col[i].rgb * grain, a * 0.85);
 			}
