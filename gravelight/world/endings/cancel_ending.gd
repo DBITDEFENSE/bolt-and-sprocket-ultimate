@@ -108,7 +108,7 @@ func _ready() -> void:
 	ProfileSave.profile["seen_kuendigung"] = true
 	_k = 1.0 / maxf(0.01, Campaign.cutscene_speed)
 	var map: Node = get_tree().current_scene
-	_dir = CinemaDirector.make(self, {"grade": "space", "skip_after": 3.0, "far": 2000.0, "fade_in_s": 1.2,
+	_dir = CinemaDirector.make(self, {"grade": "space", "skip_after": 3.0, "far": 2000.0, "fade_in_s": 1.2, "mocap_scene": "cancel_ending",
 		"music": {"stop": false, "bed": "amb_m4d_swell", "bed_db": -10.0}}, map, {"speed": Campaign.cutscene_speed, "vo": _vo})
 	_dir.skip_requested.connect(_finish)
 	_cam = _dir.cam
@@ -226,12 +226,12 @@ func _beat_key() -> void:
 	var code: String = speaker_code(c)
 	var at: Vector3 = _console_pos()
 	_shot({"from": _a(at + Vector3(-1.1, 1.3, 1.25)), "to": _a(at + Vector3(-0.85, 1.22, 0.95)), "look": _a(at + Vector3(0.2, 1.05, 0.1)),
-		"fov": 40, "fov_to": 34, "handheld": 0.3, "blur": 0.7, "grade": "space",
+		"fov": 40, "fov_to": 34, "handheld": 0.3, "blur": 0.7, "grade": "space", "mocap": "key", "mocap_only": [String(c), "jakub"],
 		"squad": {"place": _a(at + Vector3(0.0, 0.0, 1.15)), "face": _a(at + Vector3(0, 1.2, 0)), "spread": 0.75},
 		"light": {"pos": _a(at + Vector3(0.0, 1.6, 0.6)), "color": [1.0, 0.85, 0.65], "energy": 0.9, "range": 3.0}}, 4.5)
 	get_tree().create_timer(4.5 * _k).timeout.connect(func() -> void:
 		_shot({"from": _a(at + Vector3(1.7, 1.55, -1.6)), "to": _a(at + Vector3(1.45, 1.5, -1.35)), "look": _a(at + Vector3(-0.2, 1.45, 1.1)),
-			"target": "@squad", "fov": 44, "fov_to": 40, "handheld": 0.25, "blur": 0.5}, 5.5))
+			"target": "@squad", "fov": 44, "fov_to": 40, "handheld": 0.25, "blur": 0.5, "mocap": "key", "mocap_only": [String(c), "jakub"]}, 5.5))
 	if code == "BLT":
 		_vo("BLT_M4D_CANCEL_01")
 		get_tree().create_timer(3.0 * _k).timeout.connect(func() -> void: _vo("SPR_M4D_CANCEL_01"))
@@ -298,7 +298,7 @@ func _beat_earth() -> void:
 	var flat: Vector3 = Vector3(up.x, 0, up.z).normalized() if Vector2(up.x, up.z).length() > 0.05 else Vector3.FORWARD
 	_shot({"from": _a(y - flat * 3.2 + Vector3(0.6, -0.4, 0)), "to": _a(y - flat * 3.6 + Vector3(0.3, -0.7, 0)),
 		"look": _a(y + flat * 6.0 + Vector3(0, 0.2, 0)), "look_to": _a(sky), "look_ease": "quint",
-		"fov": 50, "fov_to": 60, "handheld": 0.12, "grade": "violet", "cut": "dip", "blend": 0.8,
+		"fov": 50, "fov_to": 60, "handheld": 0.12, "grade": "violet", "cut": "dip", "blend": 0.8, "mocap": "earth",
 		"squad": {"place": _a(y + flat * 1.2 + Vector3(0, -2.0, 0)), "face": _a(sky)}}, 10.0)
 	var sk: Node = get_tree().get_first_node_in_group(&"earth_sky")
 	if sk != null and sk.has_method("cut"):
@@ -376,7 +376,7 @@ func _beat_last() -> void:
 	var place: Vector3 = y + flat * 1.2 + Vector3(0, -2.0, 0)
 	_shot({"from": _a(place + flat * 4.2 + Vector3(0.4, 0.5, 0)), "to": _a(place + flat * 3.6 + Vector3(0.3, 0.45, 0)),
 		"look": _a(place + Vector3(0, 1.5, 0)), "look_to": _a(place + Vector3(0, 1.9, 0)), "target": "@squad", "target_offset": [0, 0.4, 0],
-		"fov": 44, "fov_to": 40, "handheld": 0.16, "grade": "violet", "blur": 0.4,
+		"fov": 44, "fov_to": 40, "handheld": 0.16, "grade": "violet", "blur": 0.4, "mocap": "last",
 		"squad": {"place": _a(place), "face": _a(place + flat * 6.0)}}, 12.0)
 	var present: Array = _present_characters()
 	if present.has("wren"):
@@ -391,7 +391,7 @@ func _beat_credits() -> void:
 	var y: Vector3 = _yard_pos()
 	var sky: Vector3 = _sky_pos(y)
 	_shot({"move": "static", "from": _a(y + Vector3(0, -0.6, 0)), "look": _a(y + (sky - y).normalized() * 8.0 + Vector3(0, -2.0, 0)), "look_to": _a(sky),
-		"look_ease": "sine", "fov": 58, "fov_to": 52, "handheld": 0.08, "grade": "space", "cut": "dip", "blend": 1.0}, 24.0)
+		"look_ease": "sine", "fov": 58, "fov_to": 52, "handheld": 0.08, "grade": "space", "cut": "dip", "blend": 1.0, "mocap": "credits"}, 24.0)
 	var lines: Array = data.get("credits", [])
 	var text: String = ""
 	for l: Variant in lines:

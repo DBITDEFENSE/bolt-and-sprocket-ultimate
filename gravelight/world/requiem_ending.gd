@@ -43,7 +43,7 @@ func _ready() -> void:
 	if heart != null:
 		_h = heart.global_position
 	var map: Node = get_tree().current_scene
-	_dir = CinemaDirector.make(map if map != null else self, {"grade": "salt", "skip_after": 2.0,
+	_dir = CinemaDirector.make(map if map != null else self, {"grade": "salt", "skip_after": 2.0, "mocap_scene": "requiem_ending",
 		"music": {"stop": true, "stinger": "stinger_special", "stinger_db": -8.0}}, map, {"speed": 1.0, "vo": func(id: String) -> void: _vo(StringName(id))})
 	_dir.skip_requested.connect(_skip)
 	_at(0.0, _shot_heart)
@@ -101,7 +101,7 @@ func _shot_heart() -> void:
 	if not _once("heart"):
 		return
 	_shot({"from": _p(2.6, -5.3, 10.2), "to": _p(1.9, -5.5, 8.6), "look": _p(0, -0.6, 0), "look_to": _p(0, 0.2, 0),
-		"fov": 50, "fov_to": 42, "handheld": 0.3, "grade": "violet", "blur": 0.5,
+		"fov": 50, "fov_to": 42, "handheld": 0.3, "grade": "violet", "blur": 0.5, "mocap": "heart",
 		"squad": {"place": _p(0, -7.0, 8.6), "face": _p(0, -6.0, 0)},
 		"light": {"pos": _p(0, -1.0, 2.0), "color": [0.72, 0.5, 1.0], "energy": 1.2, "range": 9.0}}, 6.0)
 	_vo(&"LSL_REC_HIDE_01")
@@ -145,7 +145,7 @@ func _shot_faces() -> void:
 	if not _once("faces"):
 		return
 	_shot({"from": _p(0.6, -5.4, 4.2), "to": _p(0.4, -5.3, 4.8), "look": _p(0, -5.6, 8.6), "target": "@squad",
-		"fov": 40, "fov_to": 36, "handheld": 0.35, "grade": "night", "blur": 0.6,
+		"fov": 40, "fov_to": 36, "handheld": 0.35, "grade": "night", "blur": 0.6, "mocap": "faces",
 		"light": {"pos": _p(0, -4.5, 5.0), "color": [0.6, 0.45, 1.0], "energy": 0.9, "range": 6.0}}, 3.5)
 
 
@@ -154,7 +154,7 @@ func _shot_montage() -> void:
 	if not _once("montage"):
 		return
 	_shot({"move": "orbit", "from": _p(-3.4, -5.4, 12.6), "look": _p(0, -5.8, 8.6), "sweep": -38.0,
-		"fov": 48, "handheld": 0.2, "grade": "night", "cut": "dip", "blend": 0.6,
+		"fov": 48, "handheld": 0.2, "grade": "night", "cut": "dip", "blend": 0.6, "mocap": "montage",
 		"light": {"pos": _p(-1.2, -5.2, 9.6), "color": [1.0, 0.7, 0.42], "energy": 1.3, "range": 6.0}}, 8.0)
 	var dir: ZombieDirector = get_tree().get_first_node_in_group(&"director") as ZombieDirector
 	if dir != null:
@@ -198,7 +198,7 @@ func _shot_peg() -> void:
 	if not _once("peg"):
 		return
 	_shot({"from": _p(0.4, -5.3, 12.6), "to": _p(0.0, -1.8, 14.4), "arc": 0.6, "look": _p(0, -5.6, 8.6), "look_to": _p(0, -6.0, 6.0),
-		"fov": 46, "fov_to": 52, "handheld": 0.14, "grade": "salt", "cut": "dip", "blend": 0.6,
+		"fov": 46, "fov_to": 52, "handheld": 0.14, "grade": "salt", "cut": "dip", "blend": 0.6, "mocap": "peg",
 		"squad": {"place": _p(0, -7.0, 8.6), "face": _p(0, -6.0, 0)}}, 6.0)
 	_vo(&"REI_END_02")
 	_vo(&"FAS_M1_ENDING_01")

@@ -39,3 +39,7 @@ voice_review/
 /.env.local
 # UPDATE 11 (T-193): the ElevenLabs take cache (raw API audio by hash, shared by every worktree; never committed)
 .voice_cache/
+
+# UPDATE 12 (T-210): the mocap pipeline's working files and the Rhubarb Lip Sync release (fetched at run time)
+.mocap_work/
+/tools/dl_rhubarb/
