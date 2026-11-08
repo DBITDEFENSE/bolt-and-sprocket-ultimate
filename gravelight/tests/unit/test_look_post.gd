@@ -203,13 +203,23 @@ func test_material_fix_brings_it_inside_once() -> void:
 	assert_false(snow.detail_enabled, "snow takes frost, not dirt")
 
 
-func test_tint_for_desaturates_and_keeps_value() -> void:
+func test_texture_fix_desaturates_and_caps_the_multiply() -> void:
 	var wood: Color = Color(0.42, 0.24, 0.1)
-	var k: Color = LookMaterials.tint_for(wood)
-	var out: Color = Color(wood.r * k.r, wood.g * k.g, wood.b * k.b)
-	assert_lt(out.s, 0.3, "the tinted average is inside the palette")
-	assert_almost_eq(out.v, wood.v, 0.02, "and keeps its brightness")
-	assert_almost_eq(out.h, wood.h, 0.02, "and its hue")
+	var fx: Dictionary = LookMaterials.tex_fix_for(wood)
+	var out: Color = LookMaterials.desat(wood, float(fx["sat"]))
+	assert_lt(out.s, 0.3, "the desaturated average is inside the palette (the surface shader's albedo_saturation)")
+	assert_almost_eq(out.h, wood.h, 0.02, "and keeps its hue")
+	assert_almost_eq(float(fx["val"]), 1.0, 0.0001, "a dark wood keeps its value")
+	var k: Color = LookMaterials.base_tint(wood, fx)
+	for ch: float in [k.r, k.g, k.b]:
+		assert_lte(ch, 1.6 + 0.0001, "a StandardMaterial3D's multiply is capped (no amplified texture noise)")
+	var bright: Dictionary = LookMaterials.tex_fix_for(Color(0.97, 0.96, 0.95))
+	assert_lt(float(bright["val"]), 0.95, "too bright: the value comes down")
+	var sm: ShaderMaterial = ShaderMaterial.new()
+	sm.shader = load(LookMaterials.SURFACE_SHADER) as Shader
+	sm.set_shader_parameter("albedo_tint", Color(0.42, 0.24, 0.1))
+	sm.set_shader_parameter("albedo_saturation", float(fx["sat"]))
+	assert_lt(LookMaterials.effective_albedo(sm).s, 0.3, "the surface shader's saturation counts in the audit")
 
 
 func test_audit_tool_collects_skips_and_counts() -> void:

@@ -28,7 +28,7 @@ def stats(img: Image.Image) -> str:
     small = img.resize((320, round(img.height * 320 / img.width)))
     luma = ImageStat.Stat(small.convert("L")).mean[0]
     hsv = small.convert("HSV")
-    px = list(hsv.getdata())
+    px = list(hsv.get_flattened_data() if hasattr(hsv, 'get_flattened_data') else hsv.getdata())
     sat = sum(1 for h, s, v in px if s > 128 and v > 40) / max(1, len(px))
     violet = sum(1 for h, s, v in px if s > 128 and v > 40 and 175 <= h <= 205) / max(1, len(px))
     return f"mean luma {luma:5.1f}, saturated {sat * 100:4.1f}%, violet {violet * 100:4.1f}%"
@@ -41,6 +41,7 @@ def main() -> int:
     ap.add_argument("--keep-raw", action="store_true")
     a = ap.parse_args()
     pairs = {}
+    open(os.path.join(a.dir, ".gdignore"), "a").close()   # documentation images: never imported by Godot
     for label in ("before", "after"):
         src = os.path.join(a.dir, "_" + label)
         if not os.path.isdir(src):

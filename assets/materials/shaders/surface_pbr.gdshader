@@ -11,6 +11,7 @@ uniform sampler2D albedo_tex : source_color, filter_linear_mipmap_anisotropic, r
 uniform sampler2D normal_tex : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D orm_tex : hint_default_white, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform vec4 albedo_tint : source_color = vec4(1.0);
+uniform float albedo_saturation : hint_range(0.0, 1.0) = 1.0;   // U12 T-208: the material pass desaturates a texture that fights the palette
 uniform float normal_strength : hint_range(0.0, 2.0) = 1.0;
 uniform float rough_min : hint_range(0.0, 1.0) = 0.0;
 uniform float rough_max : hint_range(0.0, 1.0) = 1.0;
@@ -107,6 +108,7 @@ void fragment() {
 		orm = texture(orm_tex, UV).rgb;
 	}
 	vec3 albedo = alb.rgb * albedo_tint.rgb;
+	albedo = mix(vec3(dot(albedo, vec3(0.299, 0.587, 0.114))), albedo, albedo_saturation);
 	float ao = mix(1.0, orm.r, ao_strength);
 	float rough = clamp(orm.g, rough_min, rough_max);
 	float metal = orm.b * metallic_mul;

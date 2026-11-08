@@ -6,7 +6,7 @@ This merges them:
   --report docs/look/material_audit.md   the per-map table (materials, checked, exempt, skipped; every issue before
                                          and after the pass), the exempt and skipped materials by reason, and every
                                          remaining outlier with why it stays;
-  --write-fixes data/look/_materials.json  merges the texture fixes the run found (`tex_tint`, `tex_rough`) into the
+  --write-fixes data/look/_materials.json  merges the texture fixes the run found (`tex_fix`, `tex_rough`) into the
                                          pass's data (existing entries kept unless the run found a different value).
 Pure file work: no Godot here.
 
@@ -21,7 +21,13 @@ ISSUES = ["rough_low", "clean_plastic", "albedo_sat", "albedo_value", "no_wear"]
 ORDER = ["map00_crossroads", "map01_kaltenbrunn", "map02_totenhafen", "map04a_thalbach", "map04b_kranich",
          "map04c_groomlake", "map04d_mondlicht"]
 # Why an outlier that the pass leaves is allowed to stay (keyed by a word in its texture / node / material name).
-REASONS = {}
+REASONS = {
+    "round_wooden_table_01": "kept: the varnished table top. Its ARM roughness map averages ~0.4 and the material's roughness "
+                             "scalar is already 1.0 (StandardMaterial3D multiplies, it cannot lift a map past its own values); "
+                             "a polished inn table under a lamp is a wanted highlight, its legs and edges are rough",
+    "propane_tank": "kept: the enamel-painted steel bottle. Its ARM roughness map averages ~0.35 at scalar 1.0 (painted "
+                    "metal, the bible's 'enamel' end of no-clean-plastic); albedo desaturated and worn by the pass",
+}
 
 
 def load(d: str) -> list:
@@ -38,7 +44,7 @@ def write_fixes(reports: list, data_path: str) -> None:
     with open(data_path, encoding="utf-8") as f:
         data = json.load(f)
     n = 0
-    for k in ("tex_tint", "tex_rough"):
+    for k in ("tex_fix", "tex_rough"):
         cur = data.get(k, {})
         for r in reports:
             for key, val in sorted(r.get("fixes", {}).get(k, {}).items()):
@@ -51,7 +57,7 @@ def write_fixes(reports: list, data_path: str) -> None:
     with open(data_path, "w", encoding="utf-8", newline="\n") as f:
         json.dump(data, f, indent=1, ensure_ascii=False)
         f.write("\n")
-    print(f"{data_path}: {n} texture fixes written ({len(data['tex_tint'])} tints, {len(data['tex_rough'])} roughness)")
+    print(f"{data_path}: {n} texture fixes written ({len(data['tex_fix'])} albedo, {len(data['tex_rough'])} roughness)")
 
 
 def reason_for(item: dict) -> str:
@@ -59,6 +65,10 @@ def reason_for(item: dict) -> str:
     for w, why in REASONS.items():
         if w in s:
             return why
+    if item.get("issues") == ["albedo_sat"] and item.get("class") == "StandardMaterial3D" and item.get("texture"):
+        return ("kept partly saturated: the texture could not be copied at load (a NoiseTexture2D still generating), so "
+                "it gets the fallback multiply capped at x1.6 per channel (tint_gain_max, T-208); the map's grade (mono "
+                "0.4-1.0) greys the rest on screen")
     return "(open)"
 
 

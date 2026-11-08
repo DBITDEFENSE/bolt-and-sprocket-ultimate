@@ -7,7 +7,7 @@ extends Node
 ##      real average (albedo colour, the roughness channel) read from the imported image: "before";
 ##   2. runs the pass (LookMaterials.apply_tree) and lists them again: "after";
 ##   3. writes <out>/<map_id>.json: the counts, every remaining outlier with its material, user node and texture, the
-##      exempt / skipped materials by reason, and the texture fixes a re-run needs (`tex_tint`, `tex_rough`) for
+##      exempt / skipped materials by reason, and the texture fixes a re-run needs (`tex_fix`, `tex_rough`) for
 ##      tools/look/material_audit.py --write-fixes to merge into data/look/_materials.json.
 ##   godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/material_audit.tscn -- --map=<id> --out=<dir>
 
@@ -89,12 +89,13 @@ func audit(root: Node) -> Dictionary:
 	# the texture fixes this map needs (merged into the data by material_audit.py --write-fixes)
 	var fixes: Dictionary = _texture_fixes(checked, r)
 	var r2: Dictionary = r.duplicate(true)
-	for k: String in ["tex_tint", "tex_rough"]:
+	for k: String in ["tex_fix", "tex_rough"]:
 		var merged: Dictionary = (r2.get(k, {}) as Dictionary).duplicate()
 		merged.merge(fixes[k], false)
 		r2[k] = merged
 	for e: Dictionary in checked:
 		LookMaterials.fix(e["mat"], e["node"], r2)
+		_read_textures(e["mat"])   # a swapped (desaturated) texture is read again
 	var after: Dictionary = _count(checked, r2)
 	var remaining: Array = []
 	for e: Dictionary in checked:
@@ -189,8 +190,8 @@ func _avg_channel(t: Texture2D, ch: int) -> void:
 	_rough_avg[p] = s / float(img.get_width() * img.get_height())
 
 
-## tex_tint: an albedo texture whose average is too saturated or too bright gets the multiply that brings its average
-## to the palette (saturation sat_max, value val_max), never brighter; tex_rough: a roughness texture that averages
+## tex_fix: an albedo texture whose average is too saturated or too bright gets its desaturation (sat) and value scale (val)
+## (LookMaterials.tex_fix_for; a StandardMaterial3D also gets its average, eff, for the capped multiply); tex_rough: a roughness texture that averages
 ## under the floor gets the scalar that lifts its average to it.
 func _texture_fixes(checked: Array[Dictionary], r: Dictionary) -> Dictionary:
 	var tint: Dictionary = {}
@@ -207,8 +208,10 @@ func _texture_fixes(checked: Array[Dictionary], r: Dictionary) -> Dictionary:
 			var accent: bool = LookMaterials.is_accent(eff, r) and LookMaterials.has_word(words, r.get("accent_words", []))
 			smax = LookMaterials.sat_cap(eff, accent, r)
 			if not accent and (eff.s > smax + 0.005 or eff.v > vmax + 0.005) and not tint.has(p) and not p.begins_with("id:"):
-				var k: Color = LookMaterials.tint_for(eff, r)
-				tint[p] = [k.r, k.g, k.b]
+				var fx: Dictionary = LookMaterials.tex_fix_for(eff, r)
+				if m is BaseMaterial3D:
+					fx["eff"] = eff.to_html(false)   # the capped multiply is computed from the material's average at load
+				tint[p] = fx
 		if not (m is BaseMaterial3D):
 			continue
 		var b: BaseMaterial3D = m
@@ -218,4 +221,4 @@ func _texture_fixes(checked: Array[Dictionary], r: Dictionary) -> Dictionary:
 			var avg: float = float(_rough_avg[rp])
 			if avg * b.roughness < floor_ - 0.001 and not rp.begins_with("id:"):
 				rough[rp] = maxf(float(rough.get(rp, 0.0)), snappedf(minf(1.0, floor_ / maxf(avg, 0.05) + 0.005), 0.001))
-	return {"tex_tint": tint, "tex_rough": rough}
+	return {"tex_fix": tint, "tex_rough": rough}

@@ -8,7 +8,7 @@ extends RefCounted
 ##   - no clean plastic (glossy, not metal, a saturated flat colour): the roughness lift, the wear layer and the
 ##     desaturation below take it to painted metal / enamel;
 ##   - albedo saturation under 0.30 and value 0.04..0.90: a flat colour is clamped in HSV; a texture whose average
-##     fights the palette gets a desaturating multiply (`tex_tint`, written by the audit); Nachtglas violet and blood
+##     fights the palette is desaturated (`tex_fix`, written by the audit: the surface shader's albedo_saturation; a StandardMaterial3D gets a desaturated copy of its texture); Nachtglas violet and blood
 ##     red (the accent hues on a material named for an accent) keep theirs;
 ##   - wear and dirt on everything: a StandardMaterial3D without a detail layer gets the shared grime map
 ##     (assets/materials/textures/look_grime.png, multiply; world-triplanar on an untextured material, so a box and a
@@ -24,6 +24,7 @@ const ISSUES: PackedStringArray = ["rough_low", "clean_plastic", "albedo_sat", "
 
 static var _rules: Dictionary = {}
 static var _detail: Texture2D = null
+static var _desat: Dictionary = {}   # "<tex key>|sat|val" -> the desaturated copy (one per texture and fix)
 
 
 static func rules() -> Dictionary:
@@ -35,6 +36,7 @@ static func rules() -> Dictionary:
 static func reset_cache() -> void:
 	_rules = {}
 	_detail = null
+	_desat.clear()
 
 
 static func detail_texture(r: Dictionary = rules()) -> Texture2D:
@@ -155,7 +157,7 @@ static func is_accent(c: Color, r: Dictionary = rules()) -> bool:
 	return false
 
 
-## A texture's key in the data (`tex_tint`, `tex_rough`, the audit's averages): its resource path, or its instance
+## A texture's key in the data (`tex_fix`, `tex_rough`, the audit's averages): its resource path, or its instance
 ## for a texture with none (one built in code; the data can't name it).
 static func tex_key(t: Texture) -> String:
 	if t == null:
@@ -163,7 +165,7 @@ static func tex_key(t: Texture) -> String:
 	return t.resource_path if t.resource_path != "" else "id:%d" % t.get_instance_id()
 
 
-## The `tex_tint` key of a material: its albedo texture and its own colour ("<path>|<rrggbb>"; one texture under two
+## The `tex_fix` key of a material: its albedo texture and its own colour ("<path>|<rrggbb>"; one texture under two
 ## library tints needs two multiplies). "" without a texture.
 static func tint_key(m: Material) -> String:
 	var t: Texture2D = albedo_texture(m)
@@ -201,20 +203,74 @@ static func sat_cap(c: Color, accent_word: bool, r: Dictionary = rules()) -> flo
 		return smax
 	for a: Variant in r.get("accent_hues", []):
 		var ad: Dictionary = a
-		if absf(wrapf(c.h * 360.0 - float(ad.get("hue", 0.0)), -180.0, 180.0)) <= float(ad.get("width", 20.0)) + 6.0:
+		if absf(wrapf(c.h * 360.0 - float(ad.get("hue", 0.0)), -180.0, 180.0)) <= float(ad.get("width", 20.0)):
 			return minf(smax, float(r.get("accent_hue_sat_max", 0.15)))
 	return smax
 
 
-## The multiply that takes an average colour `eff` to the palette: the same hue at sat_max (less a margin) and its
-## value capped at val_max; the strongest channel stays, the weaker ones rise toward it (a texture keeps its
-## brightness), each at most x12 (a near-black channel). Pure.
-static func tint_for(eff: Color, r: Dictionary = rules(), accent_word: bool = false) -> Color:
+## The fix for a textured material whose average `eff` fights the palette: {"sat": f, "val": g} where f takes its
+## saturation to the cap (less a margin) and g its value under val_max. Pure.
+static func tex_fix_for(eff: Color, r: Dictionary = rules(), accent_word: bool = false) -> Dictionary:
 	var smax: float = sat_cap(eff, accent_word, r) - 0.03
 	var vmax: float = float(r.get("val_max", 0.9)) - 0.02
-	var target: Color = Color.from_hsv(eff.h, minf(eff.s, smax), minf(eff.v, vmax))
-	var k: Vector3 = Vector3(target.r / maxf(eff.r, 0.004), target.g / maxf(eff.g, 0.004), target.b / maxf(eff.b, 0.004))
-	k = k.clamp(Vector3.ZERO, Vector3.ONE * 12.0)
+	var f: float = 1.0
+	if eff.s > smax:
+		# mixing toward the luma l by f: s' = f (max - min) / (l + f (max - l)); solved for s' = smax
+		var mx: float = maxf(eff.r, maxf(eff.g, eff.b))
+		var mn: float = minf(eff.r, minf(eff.g, eff.b))
+		var l: float = eff.r * 0.299 + eff.g * 0.587 + eff.b * 0.114
+		var den: float = (mx - mn) - smax * (mx - l)
+		f = clampf(smax * l / den, 0.0, 1.0) if den > 0.0001 else 0.0
+	var g: float = clampf(vmax / maxf(eff.v, 0.001), 0.0, 1.0) if eff.v > vmax else 1.0
+	return {"sat": snappedf(f, 0.001), "val": snappedf(g, 0.001)}
+
+
+## `c` desaturated by `f` around its luma (the surface shader's albedo_saturation, the same rule). Pure.
+static func desat(c: Color, f: float) -> Color:
+	var l: float = c.r * 0.299 + c.g * 0.587 + c.b * 0.114
+	return Color(lerpf(l, c.r, f), lerpf(l, c.g, f), lerpf(l, c.b, f), c.a)
+
+
+## A StandardMaterial3D has no saturation control: its albedo texture is swapped for a desaturated copy made once at
+## load (Image.adjust_bcs: saturation `sat`, brightness `val`; at most 1024 px, mipmapped), shared by every material
+## that uses the same texture and fix. null when the texture can't be read (a NoiseTexture2D still generating).
+static func desat_texture(t: Texture2D, fx: Dictionary) -> Texture2D:
+	if t == null:
+		return null
+	var f: float = float(fx.get("sat", 1.0))
+	var g: float = float(fx.get("val", 1.0))
+	var key: String = "%s|%.3f|%.3f" % [tex_key(t), f, g]
+	if _desat.has(key):
+		return _desat[key]
+	var img: Image = t.get_image()
+	if img == null or img.is_empty():
+		return null
+	img = img.duplicate() as Image
+	if img.is_compressed() and img.decompress() != OK:
+		return null
+	if img.has_mipmaps():
+		img.clear_mipmaps()
+	img.convert(Image.FORMAT_RGBA8)
+	var big: int = maxi(img.get_width(), img.get_height())
+	if big > 1024:
+		img.resize(maxi(1, img.get_width() * 1024 / big), maxi(1, img.get_height() * 1024 / big), Image.INTERPOLATE_LANCZOS)
+	img.adjust_bcs(g, 1.0, f)
+	img.generate_mipmaps()
+	var nt: ImageTexture = ImageTexture.create_from_image(img)
+	nt.resource_name = t.resource_name + "_look"
+	_desat[key] = nt
+	return nt
+
+
+## The fallback when a texture can't be copied: a multiply on its albedo colour toward the
+## desaturated average, each channel at most x`tint_gain_max` (1.6: more amplifies the texture's own noise in the
+## weak channel; a rusty barrel came out speckled blue at x8). Pure.
+static func base_tint(eff: Color, fixd: Dictionary, r: Dictionary = rules()) -> Color:
+	var t: Color = desat(eff, float(fixd.get("sat", 1.0)))
+	var g: float = float(fixd.get("val", 1.0))
+	var gm: float = float(r.get("tint_gain_max", 1.6))
+	var k: Vector3 = Vector3(t.r * g / maxf(eff.r, 0.004), t.g * g / maxf(eff.g, 0.004), t.b * g / maxf(eff.b, 0.004))
+	k = k.clamp(Vector3.ZERO, Vector3.ONE * gm)
 	return Color(snappedf(k.x, 0.001), snappedf(k.y, 0.001), snappedf(k.z, 0.001))
 
 
@@ -254,23 +310,20 @@ static func small_image(t: Texture2D) -> Image:
 	return img
 
 
-## The tint for a texture the data can't name (built in code, no resource path): read once at load, small ones only.
-static func runtime_tint(m: Material, t: Texture2D, r: Dictionary) -> Color:
+## The fix for a texture the data can't name (built in code, no resource path): read once at load, small ones only.
+static func runtime_fix(m: Material, t: Texture2D, r: Dictionary) -> Dictionary:
 	if t == null or t.resource_path != "" or t.get_width() * t.get_height() > 512 * 512:
-		return Color.WHITE
+		return {}
 	var a: Color = texture_average(t)
 	if a.r < 0.0:
-		return Color.WHITE
-	var c: Color = Color.WHITE
-	if m is BaseMaterial3D:
-		c = (m as BaseMaterial3D).albedo_color
-	else:
-		var tv: Variant = _param(m as ShaderMaterial, "albedo_tint", Color.WHITE)
-		c = tv if tv is Color else Color.WHITE
+		return {}
+	var c: Color = own_color(m)
 	var eff: Color = Color(a.r * c.r, a.g * c.g, a.b * c.b)
 	if eff.s <= sat_cap(eff, false, r) + 0.005 and eff.v <= float(r.get("val_max", 0.9)) + 0.005:
-		return Color.WHITE
-	return tint_for(eff, r)
+		return {}
+	var fx: Dictionary = tex_fix_for(eff, r)
+	fx["eff"] = eff.to_html(false)
+	return fx
 
 
 # ================================================================== the rules
@@ -316,6 +369,8 @@ static func effective_albedo(m: Material, tex_avg: Dictionary = {}) -> Color:
 	if t != null and tex_avg.has(tex_key(t)):
 		var a: Color = tex_avg[tex_key(t)]
 		c = Color(c.r * a.r, c.g * a.g, c.b * a.b)
+	if m is ShaderMaterial:
+		c = desat(c, float(_param(m as ShaderMaterial, "albedo_saturation", 1.0)))
 	return c
 
 
@@ -382,7 +437,9 @@ static func fix(m: Material, node: Node = null, r: Dictionary = rules()) -> Arra
 		var b: BaseMaterial3D = m
 		var floor_: float = float(r.get("rough_floor_metal", 0.35)) if b.metallic >= float(r.get("metal_threshold", 0.5)) else float(r.get("rough_floor", 0.45))
 		var pl: Dictionary = r.get("plastic", {})
-		if b.albedo_texture == null and b.roughness_texture == null and b.metallic < float(pl.get("metal_below", 0.3)) 				and b.roughness < float(pl.get("rough_below", 0.5)) and b.albedo_color.s > float(pl.get("sat_above", 0.3)) 				and not (is_accent(b.albedo_color, r) and accent_word):
+		if b.albedo_texture == null and b.roughness_texture == null and b.metallic < float(pl.get("metal_below", 0.3)) \
+				and b.roughness < float(pl.get("rough_below", 0.5)) and b.albedo_color.s > float(pl.get("sat_above", 0.3)) \
+				and not (is_accent(b.albedo_color, r) and accent_word):
 			floor_ = maxf(floor_, float(pl.get("rough_below", 0.5)) + 0.05)   # clean plastic: past the plastic line, to enamel
 		if not low_ok:
 			if b.roughness_texture == null:
@@ -398,12 +455,19 @@ static func fix(m: Material, node: Node = null, r: Dictionary = rules()) -> Arra
 		# the albedo: a flat colour clamped in HSV, a texture through the audit's tint
 		var c: Color = b.albedo_color
 		if b.albedo_texture != null:
-			var tt: Dictionary = r.get("tex_tint", {})
+			var tt: Dictionary = r.get("tex_fix", {})
 			var tp: String = tint_key(b)
-			var t: Color = LookGrade.color(tt[tp], Color.WHITE) if tt.has(tp) else runtime_tint(m, b.albedo_texture, r)
-			if not accent_word and not t.is_equal_approx(Color.WHITE):
-				b.albedo_color = Color(c.r * t.r, c.g * t.g, c.b * t.b, c.a)
-				changed.append("tint")
+			var fx: Dictionary = tt[tp] if tt.has(tp) else runtime_fix(m, b.albedo_texture, r)
+			if not accent_word and not fx.is_empty():
+				var nt: Texture2D = desat_texture(b.albedo_texture, fx)
+				if nt != null:
+					b.albedo_texture = nt
+					changed.append("tint")
+				elif fx.has("eff"):
+					var t: Color = base_tint(LookGrade.color(fx["eff"], Color.WHITE), fx, r)
+					if not t.is_equal_approx(Color.WHITE):
+						b.albedo_color = Color(c.r * t.r, c.g * t.g, c.b * t.b, c.a)
+						changed.append("tint")
 		else:
 			var nc: Color = clamp_albedo(c, r, is_accent(c, r) and accent_word, low_ok)
 			if not nc.is_equal_approx(c):
@@ -430,13 +494,16 @@ static func fix(m: Material, node: Node = null, r: Dictionary = rules()) -> Arra
 			changed.append("wear")
 		var tint: Variant = _param(sm, "albedo_tint", Color.WHITE)
 		var stex: Texture2D = albedo_texture(sm)
-		var stt: Dictionary = r.get("tex_tint", {})
-		var k: Color = Color.WHITE
+		var stt: Dictionary = r.get("tex_fix", {})
+		var fx: Dictionary = {}
 		if tint is Color and stex != null and not accent_word:
-			k = LookGrade.color(stt[tint_key(sm)], Color.WHITE) if stt.has(tint_key(sm)) else runtime_tint(sm, stex, r)
-		if not k.is_equal_approx(Color.WHITE):
-			var tc: Color = tint
-			sm.set_shader_parameter("albedo_tint", Color(tc.r * k.r, tc.g * k.g, tc.b * k.b, tc.a))
+			fx = stt[tint_key(sm)] if stt.has(tint_key(sm)) else runtime_fix(sm, stex, r)
+		if not fx.is_empty():
+			sm.set_shader_parameter("albedo_saturation", float(fx.get("sat", 1.0)))
+			var g: float = float(fx.get("val", 1.0))
+			if g < 0.999:
+				var tc: Color = tint
+				sm.set_shader_parameter("albedo_tint", Color(tc.r * g, tc.g * g, tc.b * g, tc.a))
 			changed.append("tint")
 		elif tint is Color and stex == null:
 			var nt: Color = clamp_albedo(tint, r, is_accent(tint, r) and accent_word, low_ok)
