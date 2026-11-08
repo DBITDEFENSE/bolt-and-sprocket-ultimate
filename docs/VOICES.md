@@ -192,3 +192,25 @@ barks 47,041, The Fine Print 197,650, Bolt & Sprocket 57,242. The account is on 
 reset on the 7th), so the whole bake takes one month on Pro, or about four monthly periods on Creator. The estimate
 counts one credit per character. That is the conservative figure: the live check's 121 characters billed (from the
 header) moved the account's counter by only 53. Rerun `tools/voice.sh plan` after T-195..T-199 merge.
+
+## In the game: the room (T-205)
+
+A take is baked dry: only the character's channel from `fx.json` (tannoy, radio, PA, phonograph, the Cousins' room)
+and the line's effect cues go into the file. The game puts the voice in its space at runtime, so every take, old or
+new, recorded, ElevenLabs or TTS, sits in the room it is spoken in without a re-bake. Do not add a room or reverb to
+a bake for this.
+
+- `gravelight/world/vo_room_acoustics.gd` (`GLVO.rooms`), data `data/gravelight/vo_rooms.json`. The VO bus has a
+  gentle EQ and a low-wet reverb (wet 0.04 outdoors to 0.15 in the Salt Chapel). The preset comes from the playing
+  cutscene's set (`cinema_sets`, or a shot's own `vo_room` field), else from the map zone the player stands in
+  (`maps.<map_id>.zones`), else from the map's default, else dry. It crossfades over 0.8 s.
+- Presets: `room_wood` (the inn, barracks, the canteen, the train), `room_plaster`, `barn_wood` (the stable),
+  `cellar_stone` (cellars, the crypt), `church_stone` (the Salt Chapel), `mine_tunnel`, `hall_large`,
+  `bunker_concrete`, `dugout`, `outdoor`, `plane_cabin` (the C-47, the Kranich: tight, metallic, the lows and the top
+  under the engines), `sub_hull`, `suit_radio` (Mondlicht's vacuum yard: band-limited, no room), and `dry` / `radio`.
+- Lines that already carry a channel play on the **VODry** bus (same Voices volume, no room): the fx.json speakers with
+  a chain other than `clean` (`dry_speakers`, kept in sync by `test_vo_rooms`), PAUL's PA lines, and any line cued
+  `[radio]`, `[intercom]`, `[telephone]`, `[static]`, `[tannoy]`, `[megaphone]`, `[phonograph]`, `[pa]` ... A new
+  speaker with a channel in fx.json must be added to `dry_speakers`.
+- Positional lines keep their 3D attenuation; the room is added on the bus after it.
+- Settings > Audio > Room acoustics (`vo_room_acoustics`, on by default) turns it off: every voice dry.

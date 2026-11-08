@@ -684,7 +684,7 @@ func _say(line_id: String, who: String) -> float:
 		var stream: AudioStream = GLVO.load_stream(path)
 		if stream != null:
 			var p: AudioStreamPlayer3D = AudioStreamPlayer3D.new()
-			p.bus = &"VO"
+			p.bus = GLVO.bus_for_line(StringName(line_id))   # T-205: the room (or VODry for a line with its own channel)
 			p.stream = stream
 			p.unit_size = 5.0
 			p.max_distance = 45.0

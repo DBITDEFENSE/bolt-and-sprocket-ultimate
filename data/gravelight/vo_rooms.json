@@ -1,0 +1,52 @@
+{
+	"_doc": "T-205 room acoustics for the spoken lines (VORoomAcoustics, gravelight/world/vo_room_acoustics.gd). The VO bus carries a gentle EQ (AudioEffectEQ6, bands 32/100/320/1000/3200/10000 Hz, dB) and a reverb whose settings come from one preset at a time: the playing cutscene's set (cinema_sets, or a shot's own `vo_room` field), else the map zone the local player stands in (maps.<map_id>.zones), else the map's default, else dry. Lines that already carry their channel from the bake (data/voice/fx.json: the Operator's tannoy, the radios, PA, phonograph, the Cousins' room) and lines cued [radio] / [intercom] / [static] ... play on the VODry bus (same volume, no room). Settings > Audio > Room acoustics (vo_room_acoustics) turns the room off. Keep wet low: you should notice it when it is gone, not when it is on.",
+	"fade_s": 0.8,
+	"presets": {
+		"dry": {"_what": "outside the world: menus, the Archive's black, anything without a space", "wet": 0.0},
+		"radio": {"_what": "the line's own channel is the space (the bake band-limits radio / tannoy / PA); same as dry", "wet": 0.0},
+		"room_wood": {"_what": "small wooden room: the inn's taproom and rooms upstairs, barracks, a canteen, a train compartment", "wet": 0.09, "room_size": 0.22, "damping": 0.75, "spread": 0.5, "hipass": 0.3, "predelay_ms": 20.0, "predelay_feedback": 0.05},
+		"room_plaster": {"_what": "small plastered / tiled room: an office, a ward, a signal room, the reception", "wet": 0.1, "room_size": 0.25, "damping": 0.5, "spread": 0.6, "hipass": 0.3, "predelay_ms": 20.0, "predelay_feedback": 0.08},
+		"barn_wood": {"_what": "a bigger wooden space: the stable", "wet": 0.1, "room_size": 0.38, "damping": 0.7, "spread": 0.7, "hipass": 0.3, "predelay_ms": 28.0, "predelay_feedback": 0.06},
+		"cellar_stone": {"_what": "a stone cellar or crypt: low vault, hard walls", "wet": 0.14, "room_size": 0.42, "damping": 0.3, "spread": 0.6, "hipass": 0.25, "predelay_ms": 22.0, "predelay_feedback": 0.12, "eq": [0.0, 1.0, 0.0, 0.0, 0.0, -1.5]},
+		"church_stone": {"_what": "a large stone room: the Salt Chapel", "wet": 0.15, "room_size": 0.65, "damping": 0.35, "spread": 0.9, "hipass": 0.3, "predelay_ms": 40.0, "predelay_feedback": 0.08},
+		"mine_tunnel": {"_what": "a mine tunnel, a shaft, a stairwell in rock, the wind tunnel", "wet": 0.14, "room_size": 0.5, "damping": 0.45, "spread": 0.4, "hipass": 0.25, "predelay_ms": 30.0, "predelay_feedback": 0.2, "eq": [0.0, 1.0, 0.0, 0.0, -1.0, -2.5]},
+		"hall_large": {"_what": "a big hard hall: hangar, pen hall, turbine hall, assembly hall, warehouse, silo", "wet": 0.13, "room_size": 0.7, "damping": 0.4, "spread": 1.0, "hipass": 0.35, "predelay_ms": 45.0, "predelay_feedback": 0.1},
+		"bunker_concrete": {"_what": "concrete rooms and corridors: the lab, the lower pens, the vaults", "wet": 0.12, "room_size": 0.45, "damping": 0.25, "spread": 0.6, "hipass": 0.3, "predelay_ms": 24.0, "predelay_feedback": 0.12},
+		"dugout": {"_what": "a log-roofed dugout: tight, earthy, dead", "wet": 0.07, "room_size": 0.15, "damping": 0.85, "spread": 0.4, "hipass": 0.3, "predelay_ms": 20.0, "predelay_feedback": 0.04, "eq": [0.0, 1.0, 0.0, 0.0, -0.5, -2.0]},
+		"outdoor": {"_what": "outdoors (night, snow, forest, the quay): almost dry, a faint ground reflection, a little air on the top", "wet": 0.04, "room_size": 0.12, "damping": 0.9, "spread": 1.0, "hipass": 0.5, "predelay_ms": 60.0, "predelay_feedback": 0.0, "eq": [0.0, 0.0, 0.0, 0.0, 0.0, -1.5]},
+		"plane_cabin": {"_what": "an aircraft fuselage: tight, metallic, the engines masking the lows and the top", "wet": 0.08, "room_size": 0.12, "damping": 0.2, "spread": 0.3, "hipass": 0.4, "predelay_ms": 20.0, "predelay_feedback": 0.1, "eq": [-2.0, -3.0, 1.0, 1.0, -1.0, -4.0]},
+		"sub_hull": {"_what": "inside the U-boat: a steel tube", "wet": 0.09, "room_size": 0.16, "damping": 0.15, "spread": 0.3, "hipass": 0.35, "predelay_ms": 20.0, "predelay_feedback": 0.15, "eq": [0.0, -1.0, 1.5, 0.5, 0.0, -2.5]},
+		"suit_radio": {"_what": "the vacuum yard: no air, so the squad is heard through the suits (band-limited, no room)", "wet": 0.0, "eq": [-9.0, -6.0, 0.0, 1.5, 0.0, -6.0]}
+	},
+	"maps": {
+		"map00_crossroads": {"default": "outdoor", "zones": {"TAPROOM": "room_wood", "UPSTAIRS": "room_wood", "CELLAR": "cellar_stone", "OLD_CELLAR": "cellar_stone", "STABLE": "barn_wood", "YARD": "outdoor", "GROUNDS": "outdoor"}},
+		"map01_kaltenbrunn": {"default": "outdoor", "zones": {"A_MINEHEAD": "outdoor", "B_RAILYARD": "outdoor", "C_ADMIN": "room_plaster", "D_BARRACKS": "room_wood", "E_LIFT": "mine_tunnel", "M_STAIRS": "mine_tunnel", "F_CHAPEL": "church_stone", "G_GENERATOR": "hall_large", "H_LAB": "bunker_concrete", "I_CORE": "mine_tunnel"}},
+		"map02_totenhafen": {"default": "outdoor", "zones": {"A_QUAY": "outdoor", "B_CANNERY": "hall_large", "C_WORKSHOP": "room_plaster", "D_PENHALL": "hall_large", "E_UBOAT": "sub_hull", "F_LOWERPENS": "bunker_concrete", "G_SIGNAL": "room_plaster"}},
+		"map04a_thalbach": {"default": "outdoor", "zones": {"A_SIEDLUNG": "outdoor", "B_BAHNHOF": "outdoor", "C_KANTINE": "room_wood", "D_KIRCHPLATZ": "outdoor", "E_MONTAGE": "hall_large", "F_WINDKANAL": "mine_tunnel", "G_PRUEFSTAND": "outdoor", "H_HALLE": "hall_large"}},
+		"map04b_kranich": {"default": "plane_cabin", "zones": {}},
+		"map04c_groomlake": {"default": "outdoor", "zones": {"A_WRECK": "outdoor", "B_LAKEBED": "outdoor", "C_HANGAR": "hall_large", "D_MOTORPOOL": "outdoor", "E_RADAR": "room_plaster", "F_LAB": "bunker_concrete", "G_SILO": "hall_large"}},
+		"map04d_mondlicht": {"default": "room_plaster", "zones": {"A_RECEPTION": "room_plaster", "B_CONCOURSE": "hall_large", "C_YARD": "suit_radio", "D_FULFILLMENT": "hall_large", "E_HALL": "hall_large", "F_CORE": "bunker_concrete"}},
+		"test_range": {"default": "dry", "zones": {}}
+	},
+	"cinema_sets": {
+		"black": "dry",
+		"village": "outdoor",
+		"village_spring": "outdoor",
+		"crypt": "cellar_stone",
+		"ward": "room_plaster",
+		"cordon": "outdoor",
+		"train": "room_wood",
+		"front": "dugout",
+		"rear": "outdoor",
+		"mill": "hall_large",
+		"hill": "outdoor",
+		"heart": "bunker_concrete",
+		"c47": "plane_cabin",
+		"glide": "outdoor",
+		"vault": "bunker_concrete"
+	},
+	"dry_speakers": ["OPR", "FAS", "REI", "LSL", "HAM", "RCH", "ALX", "CSN", "PA", "WIT", "HAL", "BWT", "DEE", "RRK", "BLT", "SPR", "VEN", "KLH", "UBR", "SVR", "BRG"],
+	"dry_categories": {"PAU": ["PA"]},
+	"dry_cues": ["radio", "intercom", "telephone", "phone", "static", "crackl", "tannoy", "megaphone", "phonograph", "cylinder", "horn", "tape", "hiss", "recorded"],
+	"dry_cue_words": ["pa"]
+}
