@@ -2,7 +2,7 @@
 # UPDATE 12 section 2 (T-208): before / after captures of the post stack and the material pass on every map and act.
 # Renders, off-screen and silent, the u12_look set (one establishing frame per map + the menu), the u12_post set (one
 # more camera per map: an interior under the practicals, Groom Lake's crater) and the readability frames (u05
-# close_zombie: a risen Ganger at 3.4 m; u05_objects crate and wall_buy_kar98k: a buyable and a wall gun), once with
+# close_zombie: a risen Ganger at 3.4 m; u05_objects perk_dark (shot first: the opening card), ammo_box, wall_buy_close), once with
 # --look=off (the U11 game: no grade, no post block, no material pass, no night lights) and once as shipped, then
 # files them as docs/look/post/<name>_before|after.jpg + sheet.jpg (tools/look/post_frames.py).
 # One GPU run at a time across the workers (U12 contract C3): the .claude/gpu.lock mkdir lock.
@@ -21,7 +21,7 @@ shoot() {   # $1 label, $2 extra arg
 	D="$OUT/_$1"
 	rm -rf "$D"
 	mkdir -p "$D"
-	for spec in "u12_look:" "u12_post:" "u05:close_zombie" "u05_objects:crate,wall_buy_kar98k"; do
+	for spec in "u12_look:" "u12_post:" "u05:close_zombie" "u05_objects:perk_dark,ammo_box,wall_buy_close"; do
 		set_name="${spec%%:*}"
 		only="${spec#*:}"
 		[ -n "$only" ] && only="--only=$only"
