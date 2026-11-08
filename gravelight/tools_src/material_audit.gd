@@ -205,10 +205,17 @@ func _texture_fixes(checked: Array[Dictionary], r: Dictionary) -> Dictionary:
 			var p: String = LookMaterials.tint_key(m)
 			var eff: Color = LookMaterials.effective_albedo(m, _tex_avg)
 			var accent: bool = LookMaterials.is_accent(eff, r) and LookMaterials.has_word(words, r.get("accent_words", []))
+			smax = LookMaterials.sat_cap(eff, accent, r)
 			if not accent and (eff.s > smax + 0.005 or eff.v > vmax + 0.005) and not tint.has(p) and not p.begins_with("id:"):
 				var k: Color = LookMaterials.tint_for(eff, r)
 				tint[p] = [k.r, k.g, k.b]
 		if not (m is BaseMaterial3D):
 			continue
 		var b: BaseMaterial3D = m
+		if b.roughness_texture != null and _rough_avg.has(LookMaterials.tex_key(b.roughness_texture)) 				and not LookMaterials.has_word(words, r.get("low_rough_words", [])):
+			var rp: String = LookMaterials.tex_key(b.roughness_texture)
+			var floor_: float = float(r.get("rough_floor_metal", 0.35)) if b.metallic >= float(r.get("metal_threshold", 0.5)) else float(r.get("rough_floor", 0.45))
+			var avg: float = float(_rough_avg[rp])
+			if avg * b.roughness < floor_ - 0.001 and not rp.begins_with("id:"):
+				rough[rp] = maxf(float(rough.get(rp, 0.0)), snappedf(minf(1.0, floor_ / maxf(avg, 0.05) + 0.005), 0.001))
 	return {"tex_tint": tint, "tex_rough": rough}

@@ -192,11 +192,25 @@ static func albedo_texture(m: Material) -> Texture2D:
 	return null
 
 
+## The saturation a colour may keep: sat_max, or `accent_hue_sat_max` when its hue sits in an accent window (violet,
+## red) on a material that is not an accent ("a new asset in those hues that isn't Nachtglas or blood will read as
+## one": a red curtain under a warm lamp came out of the grade's red keep as a red halo). Pure.
+static func sat_cap(c: Color, accent_word: bool, r: Dictionary = rules()) -> float:
+	var smax: float = float(r.get("sat_max", 0.3))
+	if accent_word:
+		return smax
+	for a: Variant in r.get("accent_hues", []):
+		var ad: Dictionary = a
+		if absf(wrapf(c.h * 360.0 - float(ad.get("hue", 0.0)), -180.0, 180.0)) <= float(ad.get("width", 20.0)) + 6.0:
+			return minf(smax, float(r.get("accent_hue_sat_max", 0.15)))
+	return smax
+
+
 ## The multiply that takes an average colour `eff` to the palette: the same hue at sat_max (less a margin) and its
 ## value capped at val_max; the strongest channel stays, the weaker ones rise toward it (a texture keeps its
 ## brightness), each at most x12 (a near-black channel). Pure.
-static func tint_for(eff: Color, r: Dictionary = rules()) -> Color:
-	var smax: float = float(r.get("sat_max", 0.3)) - 0.03
+static func tint_for(eff: Color, r: Dictionary = rules(), accent_word: bool = false) -> Color:
+	var smax: float = sat_cap(eff, accent_word, r) - 0.03
 	var vmax: float = float(r.get("val_max", 0.9)) - 0.02
 	var target: Color = Color.from_hsv(eff.h, minf(eff.s, smax), minf(eff.v, vmax))
 	var k: Vector3 = Vector3(target.r / maxf(eff.r, 0.004), target.g / maxf(eff.g, 0.004), target.b / maxf(eff.b, 0.004))
@@ -254,7 +268,7 @@ static func runtime_tint(m: Material, t: Texture2D, r: Dictionary) -> Color:
 		var tv: Variant = _param(m as ShaderMaterial, "albedo_tint", Color.WHITE)
 		c = tv if tv is Color else Color.WHITE
 	var eff: Color = Color(a.r * c.r, a.g * c.g, a.b * c.b)
-	if eff.s <= float(r.get("sat_max", 0.3)) + 0.005 and eff.v <= float(r.get("val_max", 0.9)) + 0.005:
+	if eff.s <= sat_cap(eff, false, r) + 0.005 and eff.v <= float(r.get("val_max", 0.9)) + 0.005:
 		return Color.WHITE
 	return tint_for(eff, r)
 
@@ -346,7 +360,7 @@ static func evaluate(m: Material, node: Node = null, tex_avg: Dictionary = {}, t
 		if float(_param(sm, "rough_max", 1.0)) < float(r.get("rough_floor", 0.45)) - 0.001 and not low_ok:
 			issues.append("rough_low")
 	if albedo_known(m, tex_avg):
-		if alb.s > float(r.get("sat_max", 0.3)) + 0.005 and alb.v > 0.08 and not accent:
+		if alb.s > sat_cap(alb, accent, r) + 0.005 and alb.v > 0.08 and not accent:
 			issues.append("albedo_sat")
 		if (alb.v > float(r.get("val_max", 0.9)) + 0.005 or alb.v < float(r.get("val_min", 0.04)) - 0.005) and not low_ok:
 			issues.append("albedo_value")
@@ -442,7 +456,7 @@ static func clamp_albedo(c: Color, r: Dictionary = rules(), accent: bool = false
 	var s: float = c.s
 	var v: float = c.v
 	if not accent:
-		s = minf(s, float(r.get("sat_max", 0.3)) - 0.005)
+		s = minf(s, sat_cap(c, false, r) - 0.005)
 	if not low_ok:
 		v = clampf(v, float(r.get("val_min", 0.04)), float(r.get("val_max", 0.9)))
 	if is_equal_approx(s, c.s) and is_equal_approx(v, c.v):
