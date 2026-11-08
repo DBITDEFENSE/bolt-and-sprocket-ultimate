@@ -284,16 +284,15 @@ func test_staub_reel_plays_with_a_clip_and_stand_ins() -> void:
 	assert_eq(r.director.overlay._black.self_modulate.a, 0.0, "the film draws the black (grain on leader)")
 	var film: CinemaFilm = r.director.film
 	var vid: CinemaVideo = r.director.video
-	var waited: float = 0.0
 	var played: PackedStringArray = []
 	var cards: Array = []
-	while not r.done and waited < 40.0:
+	var t0: int = Time.get_ticks_msec()
+	while not r.done and Time.get_ticks_msec() - t0 < 60000:   # (wall clock: never spins past a minute)
 		if is_instance_valid(vid):
 			played = vid.played.duplicate()
 		if is_instance_valid(film):
 			cards = film.cards_shown.duplicate()
 		await wait_frames(1)
-		waited += get_process_delta_time()
 	assert_true(r.done, "STAUB as a reel plays to its end")
 	assert_eq(ends, [["staub", false]], "the signals carry the plain id")
 	assert_eq(played, PackedStringArray(["staub/shot_02"]), "the clip covered its span")

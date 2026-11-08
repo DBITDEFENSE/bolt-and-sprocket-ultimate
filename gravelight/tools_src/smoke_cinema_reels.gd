@@ -60,10 +60,9 @@ func _check(cond: bool, what: String) -> void:
 
 
 func _wait(cond: Callable, limit: float) -> bool:
-	var w: float = 0.0
-	while not bool(cond.call()) and w < limit:
+	var t0: int = Time.get_ticks_msec()
+	while not bool(cond.call()) and Time.get_ticks_msec() - t0 < int(limit * 1000.0):
 		await get_tree().process_frame
-		w += get_process_delta_time()
 	return bool(cond.call())
 
 
@@ -103,8 +102,8 @@ func _play(ids: Array, speed: float) -> Dictionary:
 	var limit: float = 0.0
 	for id: Variant in ids:
 		limit += float(CinemaArchive.resolved(str(id)).get("seconds", 60.0)) / speed + 8.0
-	var w: float = 0.0
-	while not r.done and w < limit:
+	var t0: int = Time.get_ticks_msec()
+	while not r.done and Time.get_ticks_msec() - t0 < int(limit * 1000.0):
 		var d: CinemaDirector = r.director
 		if d != null and is_instance_valid(d):
 			var base: String = CinemaArchive.base_id(str(r.ids[r.index]))
@@ -119,7 +118,6 @@ func _play(ids: Array, speed: float) -> Dictionary:
 				for p: String in d.video.played:
 					played[p] = true
 		await get_tree().process_frame
-		w += get_process_delta_time()
 	var out: Dictionary = {"done": r.done, "played": played.keys(), "cards": cards, "film": films, "video": vid_layers,
 		"ends": ends, "missing": Array(r.missing)}
 	await get_tree().create_timer(1.5).timeout
