@@ -1,0 +1,4095 @@
+{
+  "source_root": "C:\\Users\\Devin\\PROJECTS\\bolt-and-sprocket-ultimate",
+  "files": [
+    {
+      "path": "assets/third_party/ambientcg/diamond-plate-008a/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/ambientcg/diamond-plate-008a/SOURCE.txt",
+      "bytes": 801
+    },
+    {
+      "path": "assets/third_party/ambientcg/diamond-plate-008a/textures/DiamondPlate008A_albedo.png",
+      "bytes": 1406867
+    },
+    {
+      "path": "assets/third_party/ambientcg/diamond-plate-008a/textures/DiamondPlate008A_normal.png",
+      "bytes": 1598716
+    },
+    {
+      "path": "assets/third_party/ambientcg/diamond-plate-008a/textures/DiamondPlate008A_orm.png",
+      "bytes": 1775694
+    },
+    {
+      "path": "assets/third_party/ambientcg/fabric-031/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/ambientcg/fabric-031/SOURCE.txt",
+      "bytes": 735
+    },
+    {
+      "path": "assets/third_party/ambientcg/fabric-031/textures/Fabric031_albedo.png",
+      "bytes": 1923218
+    },
+    {
+      "path": "assets/third_party/ambientcg/fabric-031/textures/Fabric031_normal.png",
+      "bytes": 2355355
+    },
+    {
+      "path": "assets/third_party/ambientcg/fabric-031/textures/Fabric031_orm.png",
+      "bytes": 604642
+    },
+    {
+      "path": "assets/third_party/ambientcg/fabric-066/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/ambientcg/fabric-066/SOURCE.txt",
+      "bytes": 725
+    },
+    {
+      "path": "assets/third_party/ambientcg/fabric-066/textures/Fabric066_albedo.png",
+      "bytes": 2510505
+    },
+    {
+      "path": "assets/third_party/ambientcg/fabric-066/textures/Fabric066_normal.png",
+      "bytes": 2363635
+    },
+    {
+      "path": "assets/third_party/ambientcg/fabric-066/textures/Fabric066_orm.png",
+      "bytes": 1638833
+    },
+    {
+      "path": "assets/third_party/ambientcg/ice-003/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/ambientcg/ice-003/SOURCE.txt",
+      "bytes": 710
+    },
+    {
+      "path": "assets/third_party/ambientcg/ice-003/textures/Ice003_albedo.png",
+      "bytes": 1440935
+    },
+    {
+      "path": "assets/third_party/ambientcg/ice-003/textures/Ice003_normal.png",
+      "bytes": 1159391
+    },
+    {
+      "path": "assets/third_party/ambientcg/ice-003/textures/Ice003_orm.png",
+      "bytes": 600267
+    },
+    {
+      "path": "assets/third_party/ambientcg/leather-014/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/ambientcg/leather-014/SOURCE.txt",
+      "bytes": 746
+    },
+    {
+      "path": "assets/third_party/ambientcg/leather-014/textures/Leather014_albedo.png",
+      "bytes": 1971924
+    },
+    {
+      "path": "assets/third_party/ambientcg/leather-014/textures/Leather014_normal.png",
+      "bytes": 1954041
+    },
+    {
+      "path": "assets/third_party/ambientcg/leather-014/textures/Leather014_orm.png",
+      "bytes": 716186
+    },
+    {
+      "path": "assets/third_party/ambientcg/snow-015/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/ambientcg/snow-015/SOURCE.txt",
+      "bytes": 762
+    },
+    {
+      "path": "assets/third_party/ambientcg/snow-015/textures/Snow015_albedo.png",
+      "bytes": 2152486
+    },
+    {
+      "path": "assets/third_party/ambientcg/snow-015/textures/Snow015_height.png",
+      "bytes": 534638
+    },
+    {
+      "path": "assets/third_party/ambientcg/snow-015/textures/Snow015_normal.png",
+      "bytes": 2185057
+    },
+    {
+      "path": "assets/third_party/ambientcg/snow-015/textures/Snow015_orm.png",
+      "bytes": 1952424
+    },
+    {
+      "path": "assets/third_party/ambientcg/wood-siding-012/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/ambientcg/wood-siding-012/SOURCE.txt",
+      "bytes": 804
+    },
+    {
+      "path": "assets/third_party/ambientcg/wood-siding-012/textures/WoodSiding012_albedo.png",
+      "bytes": 1418784
+    },
+    {
+      "path": "assets/third_party/ambientcg/wood-siding-012/textures/WoodSiding012_height.png",
+      "bytes": 439447
+    },
+    {
+      "path": "assets/third_party/ambientcg/wood-siding-012/textures/WoodSiding012_normal.png",
+      "bytes": 1960614
+    },
+    {
+      "path": "assets/third_party/ambientcg/wood-siding-012/textures/WoodSiding012_orm.png",
+      "bytes": 1658652
+    },
+    {
+      "path": "assets/third_party/google_fonts/ibm-plex-mono/IBMPlexMono-Bold.ttf",
+      "bytes": 137784
+    },
+    {
+      "path": "assets/third_party/google_fonts/ibm-plex-mono/IBMPlexMono-Regular.ttf",
+      "bytes": 135580
+    },
+    {
+      "path": "assets/third_party/google_fonts/ibm-plex-mono/IBMPlexMono-SemiBold.ttf",
+      "bytes": 140216
+    },
+    {
+      "path": "assets/third_party/google_fonts/ibm-plex-mono/LICENSE.txt",
+      "bytes": 4363
+    },
+    {
+      "path": "assets/third_party/google_fonts/ibm-plex-mono/SOURCE.txt",
+      "bytes": 723
+    },
+    {
+      "path": "assets/third_party/google_fonts/ibm-plex-sans/IBMPlexSans-Variable.ttf",
+      "bytes": 537244
+    },
+    {
+      "path": "assets/third_party/google_fonts/ibm-plex-sans/LICENSE.txt",
+      "bytes": 4363
+    },
+    {
+      "path": "assets/third_party/google_fonts/ibm-plex-sans/SOURCE.txt",
+      "bytes": 772
+    },
+    {
+      "path": "assets/third_party/google_fonts/old-standard-tt/LICENSE.txt",
+      "bytes": 4373
+    },
+    {
+      "path": "assets/third_party/google_fonts/old-standard-tt/OldStandard-Bold.ttf",
+      "bytes": 267128
+    },
+    {
+      "path": "assets/third_party/google_fonts/old-standard-tt/OldStandard-Italic.ttf",
+      "bytes": 272692
+    },
+    {
+      "path": "assets/third_party/google_fonts/old-standard-tt/OldStandard-Regular.ttf",
+      "bytes": 249668
+    },
+    {
+      "path": "assets/third_party/google_fonts/old-standard-tt/SOURCE.txt",
+      "bytes": 938
+    },
+    {
+      "path": "assets/third_party/google_fonts/special-elite/LICENSE.txt",
+      "bytes": 11358
+    },
+    {
+      "path": "assets/third_party/google_fonts/special-elite/SOURCE.txt",
+      "bytes": 804
+    },
+    {
+      "path": "assets/third_party/google_fonts/special-elite/SpecialElite-Regular.ttf",
+      "bytes": 166180
+    },
+    {
+      "path": "assets/third_party/google_fonts/stardos-stencil/LICENSE.txt",
+      "bytes": 4424
+    },
+    {
+      "path": "assets/third_party/google_fonts/stardos-stencil/SOURCE.txt",
+      "bytes": 676
+    },
+    {
+      "path": "assets/third_party/google_fonts/stardos-stencil/StardosStencil-Bold.ttf",
+      "bytes": 33044
+    },
+    {
+      "path": "assets/third_party/google_fonts/stardos-stencil/StardosStencil-Regular.ttf",
+      "bytes": 42624
+    },
+    {
+      "path": "assets/third_party/kenney/survival-kit/firewood.glb",
+      "bytes": 7272
+    },
+    {
+      "path": "assets/third_party/kenney/survival-kit/LICENSE.txt",
+      "bytes": 688
+    },
+    {
+      "path": "assets/third_party/kenney/survival-kit/log.glb",
+      "bytes": 9180
+    },
+    {
+      "path": "assets/third_party/kenney/survival-kit/SOURCE.txt",
+      "bytes": 667
+    },
+    {
+      "path": "assets/third_party/kenney/survival-kit/Textures/colormap.png",
+      "bytes": 7440
+    },
+    {
+      "path": "assets/third_party/opengameart/beach-ocean-waves/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/opengameart/beach-ocean-waves/SOURCE.txt",
+      "bytes": 1213
+    },
+    {
+      "path": "assets/third_party/opengameart/beach-ocean-waves/wave_01_cc0-18363__jasinski__alkaibeach.flac",
+      "bytes": 626248
+    },
+    {
+      "path": "assets/third_party/opengameart/beach-ocean-waves/wave_02_cc0-18363__jasinski__alkaibeach.flac",
+      "bytes": 404529
+    },
+    {
+      "path": "assets/third_party/opengameart/beach-ocean-waves/wave_03_cc0-18363__jasinski__alkaibeach.flac",
+      "bytes": 367584
+    },
+    {
+      "path": "assets/third_party/opengameart/beach-ocean-waves/wave_04_cc0-18363__jasinski__alkaibeach.flac",
+      "bytes": 591767
+    },
+    {
+      "path": "assets/third_party/opengameart/pichuliru-cartridges/LICENSE.txt",
+      "bytes": 18829
+    },
+    {
+      "path": "assets/third_party/opengameart/pichuliru-cartridges/model.glb",
+      "bytes": 273100
+    },
+    {
+      "path": "assets/third_party/opengameart/pichuliru-cartridges/SOURCE.txt",
+      "bytes": 1248
+    },
+    {
+      "path": "assets/third_party/opengameart/pichuliru-cartridges/textures/pichuliru_cartridges_ultimatelowpolyguns_albedo.png",
+      "bytes": 268
+    },
+    {
+      "path": "assets/third_party/opengameart/sea-and-river-wave-sounds/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/opengameart/sea-and-river-wave-sounds/SOURCE.txt",
+      "bytes": 853
+    },
+    {
+      "path": "assets/third_party/opengameart/sea-and-river-wave-sounds/vistula_excerpt_120s.ogg",
+      "bytes": 1638334
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-bar-m1918/LICENSE.txt",
+      "bytes": 18829
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-bar-m1918/model.glb",
+      "bytes": 234224
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-bar-m1918/SOURCE.txt",
+      "bytes": 1012
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-bar-m1918/textures/tt_bar_m1918_ultimatelowpolyguns_albedo.png",
+      "bytes": 268
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-double-barrel/LICENSE.txt",
+      "bytes": 18829
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-double-barrel/model.glb",
+      "bytes": 146844
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-double-barrel/SOURCE.txt",
+      "bytes": 1278
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-double-barrel/textures/tt_double_barrel_ultimatelowpolyguns_albedo.png",
+      "bytes": 268
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-gewehr-43/LICENSE.txt",
+      "bytes": 18829
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-gewehr-43/model.glb",
+      "bytes": 135356
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-gewehr-43/SOURCE.txt",
+      "bytes": 1031
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-gewehr-43/textures/tt_gewehr_43_ultimatelowpolyguns_albedo.png",
+      "bytes": 268
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-kar98k/LICENSE.txt",
+      "bytes": 18829
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-kar98k/model.glb",
+      "bytes": 156436
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-kar98k/SOURCE.txt",
+      "bytes": 1092
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-kar98k/textures/tt_kar98k_ultimatelowpolyguns_albedo.png",
+      "bytes": 268
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-m1-carbine/LICENSE.txt",
+      "bytes": 18829
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-m1-carbine/model.glb",
+      "bytes": 159692
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-m1-carbine/SOURCE.txt",
+      "bytes": 1036
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-m1-carbine/textures/tt_m1_carbine_ultimatelowpolyguns_albedo.png",
+      "bytes": 268
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-m1-garand/LICENSE.txt",
+      "bytes": 18829
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-m1-garand/model.glb",
+      "bytes": 265424
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-m1-garand/SOURCE.txt",
+      "bytes": 1102
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-m1-garand/textures/tt_m1_garand_ultimatelowpolyguns_albedo.png",
+      "bytes": 268
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-m1897-trench-gun/LICENSE.txt",
+      "bytes": 18829
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-m1897-trench-gun/model.glb",
+      "bytes": 301776
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-m1897-trench-gun/SOURCE.txt",
+      "bytes": 1139
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-m1897-trench-gun/textures/tt_m1897_trench_gun_ultimatelowpolyguns_albedo.png",
+      "bytes": 268
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-m1911/LICENSE.txt",
+      "bytes": 18829
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-m1911/model.glb",
+      "bytes": 148764
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-m1911/SOURCE.txt",
+      "bytes": 1018
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-m1911/textures/tt_m1911_ultimatelowpolyguns_albedo.png",
+      "bytes": 268
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-mg42/LICENSE.txt",
+      "bytes": 18829
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-mg42/model.glb",
+      "bytes": 592284
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-mg42/SOURCE.txt",
+      "bytes": 1143
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-mg42/textures/tt_mg42_ultimatelowpolyguns_albedo.png",
+      "bytes": 268
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-mp40/LICENSE.txt",
+      "bytes": 18829
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-mp40/model.glb",
+      "bytes": 292972
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-mp40/SOURCE.txt",
+      "bytes": 1077
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-mp40/textures/tt_mp40_ultimatelowpolyguns_albedo.png",
+      "bytes": 268
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-ppsh41/LICENSE.txt",
+      "bytes": 18829
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-ppsh41/model.glb",
+      "bytes": 265632
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-ppsh41/SOURCE.txt",
+      "bytes": 1058
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-ppsh41/textures/tt_ppsh41_ultimatelowpolyguns_albedo.png",
+      "bytes": 268
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-springfield-m1903/LICENSE.txt",
+      "bytes": 18829
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-springfield-m1903/model.glb",
+      "bytes": 107196
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-springfield-m1903/SOURCE.txt",
+      "bytes": 1058
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-springfield-m1903/textures/tt_springfield_m1903_ultimatelowpolyguns_albedo.png",
+      "bytes": 268
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-stg44/LICENSE.txt",
+      "bytes": 18829
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-stg44/model.glb",
+      "bytes": 372064
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-stg44/SOURCE.txt",
+      "bytes": 1015
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-stg44/textures/tt_stg44_ultimatelowpolyguns_albedo.png",
+      "bytes": 268
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-thompson-m1a1/LICENSE.txt",
+      "bytes": 18829
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-thompson-m1a1/model.glb",
+      "bytes": 217616
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-thompson-m1a1/SOURCE.txt",
+      "bytes": 1102
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-thompson-m1a1/textures/tt_thompson_m1a1_ultimatelowpolyguns_albedo.png",
+      "bytes": 268
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-walther-p38/LICENSE.txt",
+      "bytes": 18829
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-walther-p38/model.glb",
+      "bytes": 138752
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-walther-p38/SOURCE.txt",
+      "bytes": 1034
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-walther-p38/textures/tt_walther_p38_ultimatelowpolyguns_albedo.png",
+      "bytes": 268
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-webley-mkiv/LICENSE.txt",
+      "bytes": 18829
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-webley-mkiv/model.glb",
+      "bytes": 166212
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-webley-mkiv/SOURCE.txt",
+      "bytes": 1306
+    },
+    {
+      "path": "assets/third_party/opengameart/tt-webley-mkiv/textures/tt_webley_mkiv_ultimatelowpolyguns_albedo.png",
+      "bytes": 268
+    },
+    {
+      "path": "assets/third_party/polyhaven/barrel-03/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/barrel-03/model.glb",
+      "bytes": 46488
+    },
+    {
+      "path": "assets/third_party/polyhaven/barrel-03/SOURCE.txt",
+      "bytes": 1057
+    },
+    {
+      "path": "assets/third_party/polyhaven/barrel-03/textures/barrel_03_arm.png",
+      "bytes": 1588495
+    },
+    {
+      "path": "assets/third_party/polyhaven/barrel-03/textures/barrel_03_diff.png",
+      "bytes": 1067738
+    },
+    {
+      "path": "assets/third_party/polyhaven/barrel-03/textures/barrel_03_nor_gl.png",
+      "bytes": 991887
+    },
+    {
+      "path": "assets/third_party/polyhaven/barrel-stove/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/barrel-stove/model.glb",
+      "bytes": 85032
+    },
+    {
+      "path": "assets/third_party/polyhaven/barrel-stove/SOURCE.txt",
+      "bytes": 1083
+    },
+    {
+      "path": "assets/third_party/polyhaven/barrel-stove/textures/barrel_stove_arm.png",
+      "bytes": 375637
+    },
+    {
+      "path": "assets/third_party/polyhaven/barrel-stove/textures/barrel_stove_diff.png",
+      "bytes": 436656
+    },
+    {
+      "path": "assets/third_party/polyhaven/barrel-stove/textures/barrel_stove_nor_gl.png",
+      "bytes": 169405
+    },
+    {
+      "path": "assets/third_party/polyhaven/beige-wall-001/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/beige-wall-001/SOURCE.txt",
+      "bytes": 1238
+    },
+    {
+      "path": "assets/third_party/polyhaven/beige-wall-001/textures/beige_wall_001_albedo.png",
+      "bytes": 1380692
+    },
+    {
+      "path": "assets/third_party/polyhaven/beige-wall-001/textures/beige_wall_001_height.png",
+      "bytes": 475774
+    },
+    {
+      "path": "assets/third_party/polyhaven/beige-wall-001/textures/beige_wall_001_normal.png",
+      "bytes": 6345073
+    },
+    {
+      "path": "assets/third_party/polyhaven/beige-wall-001/textures/beige_wall_001_orm.png",
+      "bytes": 833466
+    },
+    {
+      "path": "assets/third_party/polyhaven/blue-metal-plate/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/blue-metal-plate/SOURCE.txt",
+      "bytes": 1032
+    },
+    {
+      "path": "assets/third_party/polyhaven/blue-metal-plate/textures/blue_metal_plate_albedo.png",
+      "bytes": 926046
+    },
+    {
+      "path": "assets/third_party/polyhaven/blue-metal-plate/textures/blue_metal_plate_normal.png",
+      "bytes": 570979
+    },
+    {
+      "path": "assets/third_party/polyhaven/blue-metal-plate/textures/blue_metal_plate_orm.png",
+      "bytes": 916641
+    },
+    {
+      "path": "assets/third_party/polyhaven/box-profile-metal-sheet/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/box-profile-metal-sheet/SOURCE.txt",
+      "bytes": 1121
+    },
+    {
+      "path": "assets/third_party/polyhaven/box-profile-metal-sheet/textures/box_profile_metal_sheet_albedo.png",
+      "bytes": 679781
+    },
+    {
+      "path": "assets/third_party/polyhaven/box-profile-metal-sheet/textures/box_profile_metal_sheet_normal.png",
+      "bytes": 1154089
+    },
+    {
+      "path": "assets/third_party/polyhaven/box-profile-metal-sheet/textures/box_profile_metal_sheet_orm.png",
+      "bytes": 1367795
+    },
+    {
+      "path": "assets/third_party/polyhaven/brown-mud-03/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/brown-mud-03/SOURCE.txt",
+      "bytes": 972
+    },
+    {
+      "path": "assets/third_party/polyhaven/brown-mud-03/textures/brown_mud_03_albedo.png",
+      "bytes": 1793525
+    },
+    {
+      "path": "assets/third_party/polyhaven/brown-mud-03/textures/brown_mud_03_normal.png",
+      "bytes": 2392010
+    },
+    {
+      "path": "assets/third_party/polyhaven/brown-mud-03/textures/brown_mud_03_orm.png",
+      "bytes": 1791539
+    },
+    {
+      "path": "assets/third_party/polyhaven/concrete-floor-painted/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/concrete-floor-painted/SOURCE.txt",
+      "bytes": 1112
+    },
+    {
+      "path": "assets/third_party/polyhaven/concrete-floor-painted/textures/concrete_floor_painted_albedo.png",
+      "bytes": 1959449
+    },
+    {
+      "path": "assets/third_party/polyhaven/concrete-floor-painted/textures/concrete_floor_painted_normal.png",
+      "bytes": 2054393
+    },
+    {
+      "path": "assets/third_party/polyhaven/concrete-floor-painted/textures/concrete_floor_painted_orm.png",
+      "bytes": 1762233
+    },
+    {
+      "path": "assets/third_party/polyhaven/concrete-floor-worn-001/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/concrete-floor-worn-001/SOURCE.txt",
+      "bytes": 1213
+    },
+    {
+      "path": "assets/third_party/polyhaven/concrete-floor-worn-001/textures/concrete_floor_worn_001_albedo.png",
+      "bytes": 682984
+    },
+    {
+      "path": "assets/third_party/polyhaven/concrete-floor-worn-001/textures/concrete_floor_worn_001_normal.png",
+      "bytes": 909722
+    },
+    {
+      "path": "assets/third_party/polyhaven/concrete-floor-worn-001/textures/concrete_floor_worn_001_orm.png",
+      "bytes": 1219044
+    },
+    {
+      "path": "assets/third_party/polyhaven/concrete-wall-004/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/concrete-wall-004/SOURCE.txt",
+      "bytes": 1142
+    },
+    {
+      "path": "assets/third_party/polyhaven/concrete-wall-004/textures/concrete_wall_004_albedo.png",
+      "bytes": 930783
+    },
+    {
+      "path": "assets/third_party/polyhaven/concrete-wall-004/textures/concrete_wall_004_normal.png",
+      "bytes": 1970569
+    },
+    {
+      "path": "assets/third_party/polyhaven/concrete-wall-004/textures/concrete_wall_004_orm.png",
+      "bytes": 1647813
+    },
+    {
+      "path": "assets/third_party/polyhaven/corrugated-iron/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/corrugated-iron/SOURCE.txt",
+      "bytes": 1126
+    },
+    {
+      "path": "assets/third_party/polyhaven/corrugated-iron/textures/corrugated_iron_albedo.png",
+      "bytes": 1525331
+    },
+    {
+      "path": "assets/third_party/polyhaven/corrugated-iron/textures/corrugated_iron_normal.png",
+      "bytes": 1653403
+    },
+    {
+      "path": "assets/third_party/polyhaven/corrugated-iron/textures/corrugated_iron_orm.png",
+      "bytes": 1109829
+    },
+    {
+      "path": "assets/third_party/polyhaven/dark-paneled-wood/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/dark-paneled-wood/SOURCE.txt",
+      "bytes": 1046
+    },
+    {
+      "path": "assets/third_party/polyhaven/dark-paneled-wood/textures/dark_paneled_wood_albedo.png",
+      "bytes": 1396173
+    },
+    {
+      "path": "assets/third_party/polyhaven/dark-paneled-wood/textures/dark_paneled_wood_normal.png",
+      "bytes": 1922894
+    },
+    {
+      "path": "assets/third_party/polyhaven/dark-paneled-wood/textures/dark_paneled_wood_orm.png",
+      "bytes": 1592424
+    },
+    {
+      "path": "assets/third_party/polyhaven/dark-wood/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/dark-wood/SOURCE.txt",
+      "bytes": 1062
+    },
+    {
+      "path": "assets/third_party/polyhaven/dark-wood/textures/dark_wood_albedo.png",
+      "bytes": 1442988
+    },
+    {
+      "path": "assets/third_party/polyhaven/dark-wood/textures/dark_wood_normal.png",
+      "bytes": 674633
+    },
+    {
+      "path": "assets/third_party/polyhaven/dark-wood/textures/dark_wood_orm.png",
+      "bytes": 1196514
+    },
+    {
+      "path": "assets/third_party/polyhaven/dirt-aerial-02/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/dirt-aerial-02/SOURCE.txt",
+      "bytes": 1000
+    },
+    {
+      "path": "assets/third_party/polyhaven/dirt-aerial-02/textures/dirt_aerial_02_albedo.png",
+      "bytes": 1490443
+    },
+    {
+      "path": "assets/third_party/polyhaven/dirt-aerial-02/textures/dirt_aerial_02_normal.png",
+      "bytes": 1714985
+    },
+    {
+      "path": "assets/third_party/polyhaven/dirt-aerial-02/textures/dirt_aerial_02_orm.png",
+      "bytes": 1402600
+    },
+    {
+      "path": "assets/third_party/polyhaven/dirty-concrete/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/dirty-concrete/SOURCE.txt",
+      "bytes": 1001
+    },
+    {
+      "path": "assets/third_party/polyhaven/dirty-concrete/textures/dirty_concrete_albedo.png",
+      "bytes": 2151128
+    },
+    {
+      "path": "assets/third_party/polyhaven/dirty-concrete/textures/dirty_concrete_normal.png",
+      "bytes": 2176449
+    },
+    {
+      "path": "assets/third_party/polyhaven/dirty-concrete/textures/dirty_concrete_orm.png",
+      "bytes": 1027288
+    },
+    {
+      "path": "assets/third_party/polyhaven/factory-brick/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/factory-brick/SOURCE.txt",
+      "bytes": 986
+    },
+    {
+      "path": "assets/third_party/polyhaven/factory-brick/textures/factory_brick_albedo.png",
+      "bytes": 2165010
+    },
+    {
+      "path": "assets/third_party/polyhaven/factory-brick/textures/factory_brick_normal.png",
+      "bytes": 2074922
+    },
+    {
+      "path": "assets/third_party/polyhaven/factory-brick/textures/factory_brick_orm.png",
+      "bytes": 2023652
+    },
+    {
+      "path": "assets/third_party/polyhaven/granite-tile/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/granite-tile/SOURCE.txt",
+      "bytes": 994
+    },
+    {
+      "path": "assets/third_party/polyhaven/granite-tile/textures/granite_tile_albedo.png",
+      "bytes": 1463995
+    },
+    {
+      "path": "assets/third_party/polyhaven/granite-tile/textures/granite_tile_normal.png",
+      "bytes": 1301200
+    },
+    {
+      "path": "assets/third_party/polyhaven/granite-tile/textures/granite_tile_orm.png",
+      "bytes": 1467919
+    },
+    {
+      "path": "assets/third_party/polyhaven/green-metal-rust/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/green-metal-rust/SOURCE.txt",
+      "bytes": 1020
+    },
+    {
+      "path": "assets/third_party/polyhaven/green-metal-rust/textures/green_metal_rust_albedo.png",
+      "bytes": 786402
+    },
+    {
+      "path": "assets/third_party/polyhaven/green-metal-rust/textures/green_metal_rust_normal.png",
+      "bytes": 467984
+    },
+    {
+      "path": "assets/third_party/polyhaven/green-metal-rust/textures/green_metal_rust_orm.png",
+      "bytes": 991657
+    },
+    {
+      "path": "assets/third_party/polyhaven/grey-plaster/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/grey-plaster/SOURCE.txt",
+      "bytes": 981
+    },
+    {
+      "path": "assets/third_party/polyhaven/grey-plaster/textures/grey_plaster_albedo.png",
+      "bytes": 2368907
+    },
+    {
+      "path": "assets/third_party/polyhaven/grey-plaster/textures/grey_plaster_normal.png",
+      "bytes": 1348402
+    },
+    {
+      "path": "assets/third_party/polyhaven/grey-plaster/textures/grey_plaster_orm.png",
+      "bytes": 2061634
+    },
+    {
+      "path": "assets/third_party/polyhaven/hanging-industrial-lamp/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/hanging-industrial-lamp/model.glb",
+      "bytes": 77964
+    },
+    {
+      "path": "assets/third_party/polyhaven/hanging-industrial-lamp/SOURCE.txt",
+      "bytes": 1686
+    },
+    {
+      "path": "assets/third_party/polyhaven/hanging-industrial-lamp/textures/hanging_industrial_lamp_arm.png",
+      "bytes": 445051
+    },
+    {
+      "path": "assets/third_party/polyhaven/hanging-industrial-lamp/textures/hanging_industrial_lamp_diff.png",
+      "bytes": 429471
+    },
+    {
+      "path": "assets/third_party/polyhaven/hanging-industrial-lamp/textures/hanging_industrial_lamp_emissive.png",
+      "bytes": 17627
+    },
+    {
+      "path": "assets/third_party/polyhaven/hanging-industrial-lamp/textures/hanging_industrial_lamp_glass_nor_gl.png",
+      "bytes": 308913
+    },
+    {
+      "path": "assets/third_party/polyhaven/hanging-industrial-lamp/textures/hanging_industrial_lamp_nor_gl.png",
+      "bytes": 389037
+    },
+    {
+      "path": "assets/third_party/polyhaven/hessian-230/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/hessian-230/SOURCE.txt",
+      "bytes": 1043
+    },
+    {
+      "path": "assets/third_party/polyhaven/hessian-230/textures/hessian_230_albedo.png",
+      "bytes": 2080719
+    },
+    {
+      "path": "assets/third_party/polyhaven/hessian-230/textures/hessian_230_normal.png",
+      "bytes": 1835269
+    },
+    {
+      "path": "assets/third_party/polyhaven/hessian-230/textures/hessian_230_orm.png",
+      "bytes": 2115581
+    },
+    {
+      "path": "assets/third_party/polyhaven/industrial-wall-lamp/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/industrial-wall-lamp/model.glb",
+      "bytes": 55320
+    },
+    {
+      "path": "assets/third_party/polyhaven/industrial-wall-lamp/SOURCE.txt",
+      "bytes": 1937
+    },
+    {
+      "path": "assets/third_party/polyhaven/industrial-wall-lamp/textures/industrial_wall_lamp_arm.png",
+      "bytes": 378276
+    },
+    {
+      "path": "assets/third_party/polyhaven/industrial-wall-lamp/textures/industrial_wall_lamp_diff.png",
+      "bytes": 386044
+    },
+    {
+      "path": "assets/third_party/polyhaven/industrial-wall-lamp/textures/industrial_wall_lamp_emissive.png",
+      "bytes": 33829
+    },
+    {
+      "path": "assets/third_party/polyhaven/industrial-wall-lamp/textures/industrial_wall_lamp_glass_arm.png",
+      "bytes": 296536
+    },
+    {
+      "path": "assets/third_party/polyhaven/industrial-wall-lamp/textures/industrial_wall_lamp_glass_diff.png",
+      "bytes": 209711
+    },
+    {
+      "path": "assets/third_party/polyhaven/industrial-wall-lamp/textures/industrial_wall_lamp_glass_nor_gl.png",
+      "bytes": 323156
+    },
+    {
+      "path": "assets/third_party/polyhaven/industrial-wall-lamp/textures/industrial_wall_lamp_nor_gl.png",
+      "bytes": 366372
+    },
+    {
+      "path": "assets/third_party/polyhaven/jug-01/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/jug-01/model.glb",
+      "bytes": 76460
+    },
+    {
+      "path": "assets/third_party/polyhaven/jug-01/SOURCE.txt",
+      "bytes": 1007
+    },
+    {
+      "path": "assets/third_party/polyhaven/jug-01/textures/jug_01_arm.png",
+      "bytes": 313513
+    },
+    {
+      "path": "assets/third_party/polyhaven/jug-01/textures/jug_01_diff.png",
+      "bytes": 236947
+    },
+    {
+      "path": "assets/third_party/polyhaven/jug-01/textures/jug_01_nor_gl.png",
+      "bytes": 50877
+    },
+    {
+      "path": "assets/third_party/polyhaven/kloppenheim-02-puresky/kloppenheim_02_puresky_2k.hdr",
+      "bytes": 5563538
+    },
+    {
+      "path": "assets/third_party/polyhaven/kloppenheim-02-puresky/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/kloppenheim-02-puresky/SOURCE.txt",
+      "bytes": 711
+    },
+    {
+      "path": "assets/third_party/polyhaven/lantern-01/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/lantern-01/model.glb",
+      "bytes": 114236
+    },
+    {
+      "path": "assets/third_party/polyhaven/lantern-01/SOURCE.txt",
+      "bytes": 1159
+    },
+    {
+      "path": "assets/third_party/polyhaven/lantern-01/textures/Lantern_01_brass_arm.png",
+      "bytes": 431618
+    },
+    {
+      "path": "assets/third_party/polyhaven/lantern-01/textures/Lantern_01_brass_diff.png",
+      "bytes": 319766
+    },
+    {
+      "path": "assets/third_party/polyhaven/lantern-01/textures/Lantern_01_brass_nor_gl.png",
+      "bytes": 379160
+    },
+    {
+      "path": "assets/third_party/polyhaven/lifebuoy/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/lifebuoy/model.glb",
+      "bytes": 42816
+    },
+    {
+      "path": "assets/third_party/polyhaven/lifebuoy/SOURCE.txt",
+      "bytes": 1035
+    },
+    {
+      "path": "assets/third_party/polyhaven/lifebuoy/textures/lifebuoy_arm.png",
+      "bytes": 326542
+    },
+    {
+      "path": "assets/third_party/polyhaven/lifebuoy/textures/lifebuoy_diff.png",
+      "bytes": 465484
+    },
+    {
+      "path": "assets/third_party/polyhaven/lifebuoy/textures/lifebuoy_nor_gl.png",
+      "bytes": 469429
+    },
+    {
+      "path": "assets/third_party/polyhaven/marble-tiles/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/marble-tiles/SOURCE.txt",
+      "bytes": 993
+    },
+    {
+      "path": "assets/third_party/polyhaven/marble-tiles/textures/marble_tiles_albedo.png",
+      "bytes": 1873793
+    },
+    {
+      "path": "assets/third_party/polyhaven/marble-tiles/textures/marble_tiles_normal.png",
+      "bytes": 1279772
+    },
+    {
+      "path": "assets/third_party/polyhaven/marble-tiles/textures/marble_tiles_orm.png",
+      "bytes": 1598942
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-grate-rusty/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-grate-rusty/SOURCE.txt",
+      "bytes": 1129
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-grate-rusty/textures/metal_grate_rusty_albedo.png",
+      "bytes": 1903016
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-grate-rusty/textures/metal_grate_rusty_normal.png",
+      "bytes": 1703822
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-grate-rusty/textures/metal_grate_rusty_orm.png",
+      "bytes": 1856939
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-jerrycan/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-jerrycan/model.glb",
+      "bytes": 46584
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-jerrycan/SOURCE.txt",
+      "bytes": 1137
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-jerrycan/textures/metal_jerrycan_arm.png",
+      "bytes": 447707
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-jerrycan/textures/metal_jerrycan_diff.png",
+      "bytes": 385126
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-jerrycan/textures/metal_jerrycan_nor_gl.png",
+      "bytes": 443577
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-plate/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-plate/SOURCE.txt",
+      "bytes": 962
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-plate/textures/metal_plate_albedo.png",
+      "bytes": 1505655
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-plate/textures/metal_plate_normal.png",
+      "bytes": 1521278
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-plate/textures/metal_plate_orm.png",
+      "bytes": 1922559
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-toolbox/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-toolbox/model.glb",
+      "bytes": 88248
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-toolbox/SOURCE.txt",
+      "bytes": 1122
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-toolbox/textures/metal_toolbox_arm.png",
+      "bytes": 465678
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-toolbox/textures/metal_toolbox_diff.png",
+      "bytes": 375633
+    },
+    {
+      "path": "assets/third_party/polyhaven/metal-toolbox/textures/metal_toolbox_nor_gl.png",
+      "bytes": 312988
+    },
+    {
+      "path": "assets/third_party/polyhaven/moon-dusted-01/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/moon-dusted-01/SOURCE.txt",
+      "bytes": 1215
+    },
+    {
+      "path": "assets/third_party/polyhaven/moon-dusted-01/textures/moon_dusted_01_albedo.png",
+      "bytes": 876105
+    },
+    {
+      "path": "assets/third_party/polyhaven/moon-dusted-01/textures/moon_dusted_01_normal.png",
+      "bytes": 2184757
+    },
+    {
+      "path": "assets/third_party/polyhaven/moon-dusted-01/textures/moon_dusted_01_orm.png",
+      "bytes": 1284670
+    },
+    {
+      "path": "assets/third_party/polyhaven/moon-footprints-01/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/moon-footprints-01/SOURCE.txt",
+      "bytes": 1271
+    },
+    {
+      "path": "assets/third_party/polyhaven/moon-footprints-01/textures/moon_footprints_01_albedo.png",
+      "bytes": 599779
+    },
+    {
+      "path": "assets/third_party/polyhaven/moon-footprints-01/textures/moon_footprints_01_normal.png",
+      "bytes": 1617680
+    },
+    {
+      "path": "assets/third_party/polyhaven/moon-footprints-01/textures/moon_footprints_01_orm.png",
+      "bytes": 900688
+    },
+    {
+      "path": "assets/third_party/polyhaven/moon-track-01/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/moon-track-01/SOURCE.txt",
+      "bytes": 1143
+    },
+    {
+      "path": "assets/third_party/polyhaven/moon-track-01/textures/moon_track_01_albedo.png",
+      "bytes": 711923
+    },
+    {
+      "path": "assets/third_party/polyhaven/moon-track-01/textures/moon_track_01_normal.png",
+      "bytes": 1238560
+    },
+    {
+      "path": "assets/third_party/polyhaven/moon-track-01/textures/moon_track_01_orm.png",
+      "bytes": 852437
+    },
+    {
+      "path": "assets/third_party/polyhaven/moonlit-golf/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/moonlit-golf/moonlit_golf_1k.hdr",
+      "bytes": 1725527
+    },
+    {
+      "path": "assets/third_party/polyhaven/moonlit-golf/SOURCE.txt",
+      "bytes": 573
+    },
+    {
+      "path": "assets/third_party/polyhaven/old-bed-frame/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/old-bed-frame/model.glb",
+      "bytes": 419828
+    },
+    {
+      "path": "assets/third_party/polyhaven/old-bed-frame/SOURCE.txt",
+      "bytes": 1109
+    },
+    {
+      "path": "assets/third_party/polyhaven/old-bed-frame/textures/old_bed_frame_arm.png",
+      "bytes": 1557011
+    },
+    {
+      "path": "assets/third_party/polyhaven/old-bed-frame/textures/old_bed_frame_diff.png",
+      "bytes": 1516163
+    },
+    {
+      "path": "assets/third_party/polyhaven/old-bed-frame/textures/old_bed_frame_nor_gl.png",
+      "bytes": 1404711
+    },
+    {
+      "path": "assets/third_party/polyhaven/old-gas-mask/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/old-gas-mask/model.glb",
+      "bytes": 61972
+    },
+    {
+      "path": "assets/third_party/polyhaven/old-gas-mask/SOURCE.txt",
+      "bytes": 1167
+    },
+    {
+      "path": "assets/third_party/polyhaven/old-gas-mask/textures/old_gas_mask_arm.png",
+      "bytes": 392352
+    },
+    {
+      "path": "assets/third_party/polyhaven/old-gas-mask/textures/old_gas_mask_diff.png",
+      "bytes": 316734
+    },
+    {
+      "path": "assets/third_party/polyhaven/old-gas-mask/textures/old_gas_mask_nor_gl.png",
+      "bytes": 264578
+    },
+    {
+      "path": "assets/third_party/polyhaven/painted-wooden-bench/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/painted-wooden-bench/model.glb",
+      "bytes": 27200
+    },
+    {
+      "path": "assets/third_party/polyhaven/painted-wooden-bench/SOURCE.txt",
+      "bytes": 1246
+    },
+    {
+      "path": "assets/third_party/polyhaven/painted-wooden-bench/textures/painted_wooden_bench_arm.png",
+      "bytes": 1203408
+    },
+    {
+      "path": "assets/third_party/polyhaven/painted-wooden-bench/textures/painted_wooden_bench_diff.png",
+      "bytes": 1227925
+    },
+    {
+      "path": "assets/third_party/polyhaven/painted-wooden-bench/textures/painted_wooden_bench_nor_gl.png",
+      "bytes": 1721553
+    },
+    {
+      "path": "assets/third_party/polyhaven/painted-wooden-chair-02/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/painted-wooden-chair-02/model.glb",
+      "bytes": 40868
+    },
+    {
+      "path": "assets/third_party/polyhaven/painted-wooden-chair-02/SOURCE.txt",
+      "bytes": 1296
+    },
+    {
+      "path": "assets/third_party/polyhaven/painted-wooden-chair-02/textures/painted_wooden_chair_02_arm.png",
+      "bytes": 360440
+    },
+    {
+      "path": "assets/third_party/polyhaven/painted-wooden-chair-02/textures/painted_wooden_chair_02_diff.png",
+      "bytes": 400910
+    },
+    {
+      "path": "assets/third_party/polyhaven/painted-wooden-chair-02/textures/painted_wooden_chair_02_nor_gl.png",
+      "bytes": 447799
+    },
+    {
+      "path": "assets/third_party/polyhaven/painted-wooden-nightstand/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/painted-wooden-nightstand/model.glb",
+      "bytes": 21624
+    },
+    {
+      "path": "assets/third_party/polyhaven/painted-wooden-nightstand/SOURCE.txt",
+      "bytes": 1330
+    },
+    {
+      "path": "assets/third_party/polyhaven/painted-wooden-nightstand/textures/painted_wooden_nightstand_arm.png",
+      "bytes": 368920
+    },
+    {
+      "path": "assets/third_party/polyhaven/painted-wooden-nightstand/textures/painted_wooden_nightstand_diff.png",
+      "bytes": 355628
+    },
+    {
+      "path": "assets/third_party/polyhaven/painted-wooden-nightstand/textures/painted_wooden_nightstand_nor_gl.png",
+      "bytes": 368096
+    },
+    {
+      "path": "assets/third_party/polyhaven/peeling-painted-wall/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/peeling-painted-wall/SOURCE.txt",
+      "bytes": 1089
+    },
+    {
+      "path": "assets/third_party/polyhaven/peeling-painted-wall/textures/peeling_painted_wall_albedo.png",
+      "bytes": 1010962
+    },
+    {
+      "path": "assets/third_party/polyhaven/peeling-painted-wall/textures/peeling_painted_wall_normal.png",
+      "bytes": 1901779
+    },
+    {
+      "path": "assets/third_party/polyhaven/peeling-painted-wall/textures/peeling_painted_wall_orm.png",
+      "bytes": 1592930
+    },
+    {
+      "path": "assets/third_party/polyhaven/pine-bark/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/pine-bark/SOURCE.txt",
+      "bytes": 938
+    },
+    {
+      "path": "assets/third_party/polyhaven/pine-bark/textures/pine_bark_albedo.png",
+      "bytes": 1780679
+    },
+    {
+      "path": "assets/third_party/polyhaven/pine-bark/textures/pine_bark_normal.png",
+      "bytes": 2143539
+    },
+    {
+      "path": "assets/third_party/polyhaven/pine-bark/textures/pine_bark_orm.png",
+      "bytes": 1559397
+    },
+    {
+      "path": "assets/third_party/polyhaven/plank-flooring-02/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/plank-flooring-02/SOURCE.txt",
+      "bytes": 1133
+    },
+    {
+      "path": "assets/third_party/polyhaven/plank-flooring-02/textures/plank_flooring_02_albedo.png",
+      "bytes": 1226326
+    },
+    {
+      "path": "assets/third_party/polyhaven/plank-flooring-02/textures/plank_flooring_02_normal.png",
+      "bytes": 1262485
+    },
+    {
+      "path": "assets/third_party/polyhaven/plank-flooring-02/textures/plank_flooring_02_orm.png",
+      "bytes": 931126
+    },
+    {
+      "path": "assets/third_party/polyhaven/plastered-stone-wall/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/plastered-stone-wall/SOURCE.txt",
+      "bytes": 1240
+    },
+    {
+      "path": "assets/third_party/polyhaven/plastered-stone-wall/textures/plastered_stone_wall_albedo.png",
+      "bytes": 5990850
+    },
+    {
+      "path": "assets/third_party/polyhaven/plastered-stone-wall/textures/plastered_stone_wall_height.png",
+      "bytes": 376945
+    },
+    {
+      "path": "assets/third_party/polyhaven/plastered-stone-wall/textures/plastered_stone_wall_normal.png",
+      "bytes": 7254818
+    },
+    {
+      "path": "assets/third_party/polyhaven/plastered-stone-wall/textures/plastered_stone_wall_orm.png",
+      "bytes": 1423151
+    },
+    {
+      "path": "assets/third_party/polyhaven/portable-welding-cart/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/portable-welding-cart/model.glb",
+      "bytes": 172808
+    },
+    {
+      "path": "assets/third_party/polyhaven/portable-welding-cart/SOURCE.txt",
+      "bytes": 1305
+    },
+    {
+      "path": "assets/third_party/polyhaven/portable-welding-cart/textures/portable_welding_cart_arm.png",
+      "bytes": 378072
+    },
+    {
+      "path": "assets/third_party/polyhaven/portable-welding-cart/textures/portable_welding_cart_diff.png",
+      "bytes": 423239
+    },
+    {
+      "path": "assets/third_party/polyhaven/portable-welding-cart/textures/portable_welding_cart_nor_gl.png",
+      "bytes": 259052
+    },
+    {
+      "path": "assets/third_party/polyhaven/propane-tank/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/propane-tank/model.glb",
+      "bytes": 68380
+    },
+    {
+      "path": "assets/third_party/polyhaven/propane-tank/SOURCE.txt",
+      "bytes": 1089
+    },
+    {
+      "path": "assets/third_party/polyhaven/propane-tank/textures/propane_tank_arm.png",
+      "bytes": 367621
+    },
+    {
+      "path": "assets/third_party/polyhaven/propane-tank/textures/propane_tank_diff.png",
+      "bytes": 409155
+    },
+    {
+      "path": "assets/third_party/polyhaven/propane-tank/textures/propane_tank_nor_gl.png",
+      "bytes": 357179
+    },
+    {
+      "path": "assets/third_party/polyhaven/red-brick-03/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/red-brick-03/SOURCE.txt",
+      "bytes": 975
+    },
+    {
+      "path": "assets/third_party/polyhaven/red-brick-03/textures/red_brick_03_albedo.png",
+      "bytes": 2213769
+    },
+    {
+      "path": "assets/third_party/polyhaven/red-brick-03/textures/red_brick_03_normal.png",
+      "bytes": 2153760
+    },
+    {
+      "path": "assets/third_party/polyhaven/red-brick-03/textures/red_brick_03_orm.png",
+      "bytes": 1253155
+    },
+    {
+      "path": "assets/third_party/polyhaven/reed-roof-04/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/reed-roof-04/SOURCE.txt",
+      "bytes": 966
+    },
+    {
+      "path": "assets/third_party/polyhaven/reed-roof-04/textures/reed_roof_04_albedo.png",
+      "bytes": 2247343
+    },
+    {
+      "path": "assets/third_party/polyhaven/reed-roof-04/textures/reed_roof_04_normal.png",
+      "bytes": 2379559
+    },
+    {
+      "path": "assets/third_party/polyhaven/reed-roof-04/textures/reed_roof_04_orm.png",
+      "bytes": 1732592
+    },
+    {
+      "path": "assets/third_party/polyhaven/rock-boulder-dry/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/rock-boulder-dry/SOURCE.txt",
+      "bytes": 1113
+    },
+    {
+      "path": "assets/third_party/polyhaven/rock-boulder-dry/textures/rock_boulder_dry_albedo.png",
+      "bytes": 1893776
+    },
+    {
+      "path": "assets/third_party/polyhaven/rock-boulder-dry/textures/rock_boulder_dry_normal.png",
+      "bytes": 1596843
+    },
+    {
+      "path": "assets/third_party/polyhaven/rock-boulder-dry/textures/rock_boulder_dry_orm.png",
+      "bytes": 1505487
+    },
+    {
+      "path": "assets/third_party/polyhaven/round-wooden-table-01/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/round-wooden-table-01/model.glb",
+      "bytes": 118760
+    },
+    {
+      "path": "assets/third_party/polyhaven/round-wooden-table-01/SOURCE.txt",
+      "bytes": 1261
+    },
+    {
+      "path": "assets/third_party/polyhaven/round-wooden-table-01/textures/round_wooden_table_01_arm.png",
+      "bytes": 752948
+    },
+    {
+      "path": "assets/third_party/polyhaven/round-wooden-table-01/textures/round_wooden_table_01_diff.png",
+      "bytes": 729425
+    },
+    {
+      "path": "assets/third_party/polyhaven/round-wooden-table-01/textures/round_wooden_table_01_nor_gl.png",
+      "bytes": 339630
+    },
+    {
+      "path": "assets/third_party/polyhaven/rusted-spade-01/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/rusted-spade-01/model.glb",
+      "bytes": 87056
+    },
+    {
+      "path": "assets/third_party/polyhaven/rusted-spade-01/SOURCE.txt",
+      "bytes": 1148
+    },
+    {
+      "path": "assets/third_party/polyhaven/rusted-spade-01/textures/rusted_spade_01_arm.png",
+      "bytes": 396772
+    },
+    {
+      "path": "assets/third_party/polyhaven/rusted-spade-01/textures/rusted_spade_01_diff.png",
+      "bytes": 375258
+    },
+    {
+      "path": "assets/third_party/polyhaven/rusted-spade-01/textures/rusted_spade_01_nor_gl.png",
+      "bytes": 369152
+    },
+    {
+      "path": "assets/third_party/polyhaven/rustic-stone-wall/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/rustic-stone-wall/SOURCE.txt",
+      "bytes": 1050
+    },
+    {
+      "path": "assets/third_party/polyhaven/rustic-stone-wall/textures/rustic_stone_wall_albedo.png",
+      "bytes": 1868732
+    },
+    {
+      "path": "assets/third_party/polyhaven/rustic-stone-wall/textures/rustic_stone_wall_normal.png",
+      "bytes": 2185418
+    },
+    {
+      "path": "assets/third_party/polyhaven/rustic-stone-wall/textures/rustic_stone_wall_orm.png",
+      "bytes": 1480166
+    },
+    {
+      "path": "assets/third_party/polyhaven/rusty-metal-04/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/rusty-metal-04/SOURCE.txt",
+      "bytes": 998
+    },
+    {
+      "path": "assets/third_party/polyhaven/rusty-metal-04/textures/rusty_metal_04_albedo.png",
+      "bytes": 1954877
+    },
+    {
+      "path": "assets/third_party/polyhaven/rusty-metal-04/textures/rusty_metal_04_normal.png",
+      "bytes": 1767206
+    },
+    {
+      "path": "assets/third_party/polyhaven/rusty-metal-04/textures/rusty_metal_04_orm.png",
+      "bytes": 1603400
+    },
+    {
+      "path": "assets/third_party/polyhaven/rusty-painted-metal/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/rusty-painted-metal/SOURCE.txt",
+      "bytes": 1066
+    },
+    {
+      "path": "assets/third_party/polyhaven/rusty-painted-metal/textures/rusty_painted_metal_albedo.png",
+      "bytes": 1006619
+    },
+    {
+      "path": "assets/third_party/polyhaven/rusty-painted-metal/textures/rusty_painted_metal_normal.png",
+      "bytes": 1185502
+    },
+    {
+      "path": "assets/third_party/polyhaven/rusty-painted-metal/textures/rusty_painted_metal_orm.png",
+      "bytes": 812426
+    },
+    {
+      "path": "assets/third_party/polyhaven/snow-01/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/snow-01/SOURCE.txt",
+      "bytes": 902
+    },
+    {
+      "path": "assets/third_party/polyhaven/snow-01/textures/snow_01_albedo.png",
+      "bytes": 4518455
+    },
+    {
+      "path": "assets/third_party/polyhaven/snow-01/textures/snow_01_normal.png",
+      "bytes": 9748947
+    },
+    {
+      "path": "assets/third_party/polyhaven/snow-01/textures/snow_01_orm.png",
+      "bytes": 1220831
+    },
+    {
+      "path": "assets/third_party/polyhaven/stone-floor/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/stone-floor/SOURCE.txt",
+      "bytes": 972
+    },
+    {
+      "path": "assets/third_party/polyhaven/stone-floor/textures/stone_floor_albedo.png",
+      "bytes": 2000166
+    },
+    {
+      "path": "assets/third_party/polyhaven/stone-floor/textures/stone_floor_normal.png",
+      "bytes": 1945137
+    },
+    {
+      "path": "assets/third_party/polyhaven/stone-floor/textures/stone_floor_orm.png",
+      "bytes": 1259163
+    },
+    {
+      "path": "assets/third_party/polyhaven/stone-wall/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/stone-wall/SOURCE.txt",
+      "bytes": 1183
+    },
+    {
+      "path": "assets/third_party/polyhaven/stone-wall/textures/stone_wall_albedo.png",
+      "bytes": 1852404
+    },
+    {
+      "path": "assets/third_party/polyhaven/stone-wall/textures/stone_wall_height.png",
+      "bytes": 336956
+    },
+    {
+      "path": "assets/third_party/polyhaven/stone-wall/textures/stone_wall_normal.png",
+      "bytes": 2105087
+    },
+    {
+      "path": "assets/third_party/polyhaven/stone-wall/textures/stone_wall_orm.png",
+      "bytes": 1258280
+    },
+    {
+      "path": "assets/third_party/polyhaven/terrazzo-tiles/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/terrazzo-tiles/SOURCE.txt",
+      "bytes": 1005
+    },
+    {
+      "path": "assets/third_party/polyhaven/terrazzo-tiles/textures/terrazzo_tiles_albedo.png",
+      "bytes": 2376167
+    },
+    {
+      "path": "assets/third_party/polyhaven/terrazzo-tiles/textures/terrazzo_tiles_normal.png",
+      "bytes": 168540
+    },
+    {
+      "path": "assets/third_party/polyhaven/terrazzo-tiles/textures/terrazzo_tiles_orm.png",
+      "bytes": 1080444
+    },
+    {
+      "path": "assets/third_party/polyhaven/tree-stump-01/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/tree-stump-01/model.glb",
+      "bytes": 119528
+    },
+    {
+      "path": "assets/third_party/polyhaven/tree-stump-01/SOURCE.txt",
+      "bytes": 1117
+    },
+    {
+      "path": "assets/third_party/polyhaven/tree-stump-01/textures/tree_stump_01_arm.png",
+      "bytes": 1577483
+    },
+    {
+      "path": "assets/third_party/polyhaven/tree-stump-01/textures/tree_stump_01_diff.png",
+      "bytes": 2014451
+    },
+    {
+      "path": "assets/third_party/polyhaven/tree-stump-01/textures/tree_stump_01_nor_gl.png",
+      "bytes": 2216639
+    },
+    {
+      "path": "assets/third_party/polyhaven/vintage-oil-lamp/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/vintage-oil-lamp/model.glb",
+      "bytes": 89268
+    },
+    {
+      "path": "assets/third_party/polyhaven/vintage-oil-lamp/SOURCE.txt",
+      "bytes": 1803
+    },
+    {
+      "path": "assets/third_party/polyhaven/vintage-oil-lamp/textures/vintage_oil_lamp_arm.png",
+      "bytes": 357190
+    },
+    {
+      "path": "assets/third_party/polyhaven/vintage-oil-lamp/textures/vintage_oil_lamp_diff.png",
+      "bytes": 350709
+    },
+    {
+      "path": "assets/third_party/polyhaven/vintage-oil-lamp/textures/vintage_oil_lamp_flame_diff.png",
+      "bytes": 67903
+    },
+    {
+      "path": "assets/third_party/polyhaven/vintage-oil-lamp/textures/vintage_oil_lamp_glass_arm.png",
+      "bytes": 72838
+    },
+    {
+      "path": "assets/third_party/polyhaven/vintage-oil-lamp/textures/vintage_oil_lamp_glass_diff.png",
+      "bytes": 11467
+    },
+    {
+      "path": "assets/third_party/polyhaven/vintage-oil-lamp/textures/vintage_oil_lamp_glass_nor_gl.png",
+      "bytes": 12705
+    },
+    {
+      "path": "assets/third_party/polyhaven/vintage-oil-lamp/textures/vintage_oil_lamp_nor_gl.png",
+      "bytes": 171049
+    },
+    {
+      "path": "assets/third_party/polyhaven/vintage-suitcase/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/vintage-suitcase/model.glb",
+      "bytes": 180244
+    },
+    {
+      "path": "assets/third_party/polyhaven/vintage-suitcase/SOURCE.txt",
+      "bytes": 1634
+    },
+    {
+      "path": "assets/third_party/polyhaven/vintage-suitcase/textures/vintage_suitcase_01_arm.png",
+      "bytes": 364286
+    },
+    {
+      "path": "assets/third_party/polyhaven/vintage-suitcase/textures/vintage_suitcase_01_diff.png",
+      "bytes": 296354
+    },
+    {
+      "path": "assets/third_party/polyhaven/vintage-suitcase/textures/vintage_suitcase_01_nor_gl.png",
+      "bytes": 372990
+    },
+    {
+      "path": "assets/third_party/polyhaven/vintage-suitcase/textures/vintage_suitcase_02_arm.png",
+      "bytes": 363806
+    },
+    {
+      "path": "assets/third_party/polyhaven/vintage-suitcase/textures/vintage_suitcase_02_diff.png",
+      "bytes": 314728
+    },
+    {
+      "path": "assets/third_party/polyhaven/vintage-suitcase/textures/vintage_suitcase_02_nor_gl.png",
+      "bytes": 373343
+    },
+    {
+      "path": "assets/third_party/polyhaven/weathered-brown-planks/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/weathered-brown-planks/SOURCE.txt",
+      "bytes": 1365
+    },
+    {
+      "path": "assets/third_party/polyhaven/weathered-brown-planks/textures/weathered_brown_planks_albedo.png",
+      "bytes": 4859771
+    },
+    {
+      "path": "assets/third_party/polyhaven/weathered-brown-planks/textures/weathered_brown_planks_height.png",
+      "bytes": 319451
+    },
+    {
+      "path": "assets/third_party/polyhaven/weathered-brown-planks/textures/weathered_brown_planks_normal.png",
+      "bytes": 6544433
+    },
+    {
+      "path": "assets/third_party/polyhaven/weathered-brown-planks/textures/weathered_brown_planks_orm.png",
+      "bytes": 1364423
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-barrel-01/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-barrel-01/model.glb",
+      "bytes": 205992
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-barrel-01/SOURCE.txt",
+      "bytes": 1142
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-barrel-01/textures/wine_barrel_01_arm.png",
+      "bytes": 1038950
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-barrel-01/textures/wine_barrel_01_diff.png",
+      "bytes": 1223172
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-barrel-01/textures/wine_barrel_01_nor_gl.png",
+      "bytes": 931117
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-bottles-01/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-bottles-01/model.glb",
+      "bytes": 108872
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-bottles-01/SOURCE.txt",
+      "bytes": 2855
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-bottles-01/textures/wine_bottles_01_arm.png",
+      "bytes": 261649
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-bottles-01/textures/wine_bottles_01_diff.png",
+      "bytes": 60544
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-bottles-01/textures/wine_bottles_01_label_clearwater_crystals_01_arm.png",
+      "bytes": 76930
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-bottles-01/textures/wine_bottles_01_label_clearwater_crystals_01_diff.png",
+      "bytes": 50806
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-bottles-01/textures/wine_bottles_01_label_ftero_vinea_01_arm.png",
+      "bytes": 104805
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-bottles-01/textures/wine_bottles_01_label_ftero_vinea_01_diff.png",
+      "bytes": 127265
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-bottles-01/textures/wine_bottles_01_label_ftero_vinea_02_arm.png",
+      "bytes": 82178
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-bottles-01/textures/wine_bottles_01_label_ftero_vinea_02_diff.png",
+      "bytes": 99484
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-bottles-01/textures/wine_bottles_01_label_intertwine_01_arm.png",
+      "bytes": 50300
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-bottles-01/textures/wine_bottles_01_label_intertwine_01_diff.png",
+      "bytes": 61656
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-bottles-01/textures/wine_bottles_01_nor_gl.png",
+      "bytes": 143246
+    },
+    {
+      "path": "assets/third_party/polyhaven/wine-bottles-01/textures/wine_bottles_01_paper_nor_gl.png",
+      "bytes": 425411
+    },
+    {
+      "path": "assets/third_party/polyhaven/wood-floor-worn/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/wood-floor-worn/SOURCE.txt",
+      "bytes": 1174
+    },
+    {
+      "path": "assets/third_party/polyhaven/wood-floor-worn/textures/wood_floor_worn_albedo.png",
+      "bytes": 5266163
+    },
+    {
+      "path": "assets/third_party/polyhaven/wood-floor-worn/textures/wood_floor_worn_height.png",
+      "bytes": 205358
+    },
+    {
+      "path": "assets/third_party/polyhaven/wood-floor-worn/textures/wood_floor_worn_normal.png",
+      "bytes": 5847249
+    },
+    {
+      "path": "assets/third_party/polyhaven/wood-floor-worn/textures/wood_floor_worn_orm.png",
+      "bytes": 1374667
+    },
+    {
+      "path": "assets/third_party/polyhaven/wood-table-001/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/wood-table-001/SOURCE.txt",
+      "bytes": 1092
+    },
+    {
+      "path": "assets/third_party/polyhaven/wood-table-001/textures/wood_table_001_albedo.png",
+      "bytes": 1171946
+    },
+    {
+      "path": "assets/third_party/polyhaven/wood-table-001/textures/wood_table_001_normal.png",
+      "bytes": 208468
+    },
+    {
+      "path": "assets/third_party/polyhaven/wood-table-001/textures/wood_table_001_orm.png",
+      "bytes": 1250917
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-axe-03/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-axe-03/model.glb",
+      "bytes": 88156
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-axe-03/SOURCE.txt",
+      "bytes": 1124
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-axe-03/textures/wooden_axe_03_arm.png",
+      "bytes": 398201
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-axe-03/textures/wooden_axe_03_diff.png",
+      "bytes": 379692
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-axe-03/textures/wooden_axe_03_nor_gl.png",
+      "bytes": 375892
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-bucket-01/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-bucket-01/model.glb",
+      "bytes": 108736
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-bucket-01/SOURCE.txt",
+      "bytes": 1175
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-bucket-01/textures/wooden_bucket_01_arm.png",
+      "bytes": 379848
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-bucket-01/textures/wooden_bucket_01_diff.png",
+      "bytes": 404726
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-bucket-01/textures/wooden_bucket_01_nor_gl.png",
+      "bytes": 346917
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-crate-01/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-crate-01/model.glb",
+      "bytes": 103840
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-crate-01/SOURCE.txt",
+      "bytes": 1159
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-crate-01/textures/wooden_crate_01_arm.png",
+      "bytes": 1505569
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-crate-01/textures/wooden_crate_01_diff.png",
+      "bytes": 1520874
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-crate-01/textures/wooden_crate_01_nor_gl.png",
+      "bytes": 1312673
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-crate-02/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-crate-02/model.glb",
+      "bytes": 100116
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-crate-02/SOURCE.txt",
+      "bytes": 1245
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-crate-02/textures/wooden_crate_02_arm.png",
+      "bytes": 1510488
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-crate-02/textures/wooden_crate_02_diff.png",
+      "bytes": 1528107
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-crate-02/textures/wooden_crate_02_nor_gl.png",
+      "bytes": 1203181
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-lantern-01/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-lantern-01/model.glb",
+      "bytes": 130616
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-lantern-01/SOURCE.txt",
+      "bytes": 1650
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-lantern-01/textures/wooden_lantern_01_arm.png",
+      "bytes": 398895
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-lantern-01/textures/wooden_lantern_01_diff.png",
+      "bytes": 415618
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-lantern-01/textures/wooden_lantern_01_glass_arm.png",
+      "bytes": 335601
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-lantern-01/textures/wooden_lantern_01_glass_diff.png",
+      "bytes": 230019
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-lantern-01/textures/wooden_lantern_01_glass_nor_gl.png",
+      "bytes": 154708
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-lantern-01/textures/wooden_lantern_01_nor_gl.png",
+      "bytes": 381709
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-military-crate/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-military-crate/model.glb",
+      "bytes": 189376
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-military-crate/SOURCE.txt",
+      "bytes": 1267
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-military-crate/textures/wooden_military_crate_arm.png",
+      "bytes": 1458828
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-military-crate/textures/wooden_military_crate_diff.png",
+      "bytes": 1618695
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-military-crate/textures/wooden_military_crate_nor_gl.png",
+      "bytes": 1578297
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-stool-01/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-stool-01/model.glb",
+      "bytes": 102248
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-stool-01/SOURCE.txt",
+      "bytes": 1164
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-stool-01/textures/wooden_stool_01_diff.png",
+      "bytes": 442356
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-stool-01/textures/wooden_stool_01_nor_gl.png",
+      "bytes": 427778
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-stool-01/textures/wooden_stool_01_rough.png",
+      "bytes": 225419
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-table-02/LICENSE.txt",
+      "bytes": 7048
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-table-02/model.glb",
+      "bytes": 9232
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-table-02/SOURCE.txt",
+      "bytes": 1159
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-table-02/textures/wooden_table_02_arm.png",
+      "bytes": 1225329
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-table-02/textures/wooden_table_02_diff.png",
+      "bytes": 1208769
+    },
+    {
+      "path": "assets/third_party/polyhaven/wooden-table-02/textures/wooden_table_02_nor_gl.png",
+      "bytes": 783339
+    },
+    {
+      "path": "assets/third_party/sketchfab/kar98k-dsamuta/LICENSE.txt",
+      "bytes": 18829
+    },
+    {
+      "path": "assets/third_party/sketchfab/kar98k-dsamuta/model.glb",
+      "bytes": 329280
+    },
+    {
+      "path": "assets/third_party/sketchfab/kar98k-dsamuta/SOURCE.txt",
+      "bytes": 1781
+    },
+    {
+      "path": "assets/third_party/sketchfab/kar98k-dsamuta/textures/kar98k_dsamuta_material_001_albedo.png",
+      "bytes": 3937730
+    },
+    {
+      "path": "assets/third_party/sketchfab/kar98k-dsamuta/textures/kar98k_dsamuta_material_001_normal.png",
+      "bytes": 3664318
+    },
+    {
+      "path": "assets/third_party/sketchfab/kar98k-dsamuta/textures/kar98k_dsamuta_material_001_orm.png",
+      "bytes": 3801061
+    },
+    {
+      "path": "assets/third_party/sketchfab/kar98k-dsamuta/textures/kar98k_dsamuta_material_002_albedo.png",
+      "bytes": 2859110
+    },
+    {
+      "path": "assets/third_party/sketchfab/kar98k-dsamuta/textures/kar98k_dsamuta_material_002_normal.png",
+      "bytes": 3756179
+    },
+    {
+      "path": "assets/third_party/sketchfab/kar98k-dsamuta/textures/kar98k_dsamuta_material_002_orm.png",
+      "bytes": 4718233
+    },
+    {
+      "path": "assets/third_party/sketchfab/kar98k-dsamuta/textures/kar98k_dsamuta_material_003_albedo.png",
+      "bytes": 236351
+    },
+    {
+      "path": "assets/third_party/sketchfab/kar98k-dsamuta/textures/kar98k_dsamuta_material_003_normal.png",
+      "bytes": 256127
+    },
+    {
+      "path": "assets/third_party/sketchfab/kar98k-dsamuta/textures/kar98k_dsamuta_material_003_orm.png",
+      "bytes": 369764
+    },
+    {
+      "path": "assets/third_party/sketchfab/kar98k-dsamuta/textures/kar98k_dsamuta_material_005_albedo.png",
+      "bytes": 979801
+    },
+    {
+      "path": "assets/third_party/sketchfab/kar98k-dsamuta/textures/kar98k_dsamuta_material_005_normal.png",
+      "bytes": 984525
+    },
+    {
+      "path": "assets/third_party/sketchfab/kar98k-dsamuta/textures/kar98k_dsamuta_material_005_orm.png",
+      "bytes": 1358055
+    },
+    {
+      "path": "assets/third_party/sketchfab/kar98k-dsamuta/textures/kar98k_dsamuta_material_albedo.png",
+      "bytes": 2972863
+    },
+    {
+      "path": "assets/third_party/sketchfab/kar98k-dsamuta/textures/kar98k_dsamuta_material_normal.png",
+      "bytes": 3861907
+    },
+    {
+      "path": "assets/third_party/sketchfab/kar98k-dsamuta/textures/kar98k_dsamuta_material_orm.png",
+      "bytes": 5005759
+    },
+    {
+      "path": "assets/third_party/sketchfab/m1-garand-sky-hunter/LICENSE.txt",
+      "bytes": 18829
+    },
+    {
+      "path": "assets/third_party/sketchfab/m1-garand-sky-hunter/model.glb",
+      "bytes": 675296
+    },
+    {
+      "path": "assets/third_party/sketchfab/m1-garand-sky-hunter/SOURCE.txt",
+      "bytes": 1451
+    },
+    {
+      "path": "assets/third_party/sketchfab/m1-garand-sky-hunter/textures/m1_garand_sky_hunter_bullets_albedo.png",
+      "bytes": 253023
+    },
+    {
+      "path": "assets/third_party/sketchfab/m1-garand-sky-hunter/textures/m1_garand_sky_hunter_bullets_normal.png",
+      "bytes": 238129
+    },
+    {
+      "path": "assets/third_party/sketchfab/m1-garand-sky-hunter/textures/m1_garand_sky_hunter_bullets_orm.png",
+      "bytes": 309371
+    },
+    {
+      "path": "assets/third_party/sketchfab/m1-garand-sky-hunter/textures/m1_garand_sky_hunter_m1_garand_albedo.png",
+      "bytes": 3497036
+    },
+    {
+      "path": "assets/third_party/sketchfab/m1-garand-sky-hunter/textures/m1_garand_sky_hunter_m1_garand_normal.png",
+      "bytes": 3632375
+    },
+    {
+      "path": "assets/third_party/sketchfab/m1-garand-sky-hunter/textures/m1_garand_sky_hunter_m1_garand_orm.png",
+      "bytes": 4427905
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/LICENSE.txt",
+      "bytes": 18829
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/model.glb",
+      "bytes": 601364
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/SOURCE.txt",
+      "bytes": 3137
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_001_albedo.png",
+      "bytes": 1336198
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_001_normal.png",
+      "bytes": 1640641
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_001_orm.png",
+      "bytes": 397372
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_002_albedo.png",
+      "bytes": 384484
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_002_normal.png",
+      "bytes": 444689
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_002_orm.png",
+      "bytes": 179050
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_003_albedo.png",
+      "bytes": 1271443
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_003_normal.png",
+      "bytes": 1458622
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_003_orm.png",
+      "bytes": 564796
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_004_albedo.png",
+      "bytes": 860632
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_004_normal.png",
+      "bytes": 967392
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_004_orm.png",
+      "bytes": 1502106
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_005_albedo.png",
+      "bytes": 672967
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_005_normal.png",
+      "bytes": 887234
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_005_orm.png",
+      "bytes": 1260261
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_006_albedo.png",
+      "bytes": 330458
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_006_normal.png",
+      "bytes": 966649
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_006_orm.png",
+      "bytes": 724742
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_007_albedo.png",
+      "bytes": 280285
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_007_normal.png",
+      "bytes": 395378
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_007_orm.png",
+      "bytes": 1140746
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_008_albedo.png",
+      "bytes": 76309
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_008_normal.png",
+      "bytes": 25178
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_008_orm.png",
+      "bytes": 112703
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_010_albedo.png",
+      "bytes": 105296
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_010_normal.png",
+      "bytes": 59219
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_010_orm.png",
+      "bytes": 222285
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_013_albedo.png",
+      "bytes": 491011
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_013_normal.png",
+      "bytes": 846627
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_013_orm.png",
+      "bytes": 919396
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_014_albedo.png",
+      "bytes": 168261
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_014_normal.png",
+      "bytes": 119259
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_014_orm.png",
+      "bytes": 323493
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_015_albedo.png",
+      "bytes": 505873
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_015_normal.png",
+      "bytes": 121524
+    },
+    {
+      "path": "assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_015_orm.png",
+      "bytes": 819046
+    },
+    {
+      "path": "assets/user_supplied/cutscenes/fourth_day/LICENSE.txt",
+      "bytes": 1218
+    },
+    {
+      "path": "assets/user_supplied/cutscenes/fourth_day/SOURCE.txt",
+      "bytes": 1082
+    },
+    {
+      "path": "assets/user_supplied/cutscenes/lazarus_saturday/LICENSE.txt",
+      "bytes": 1224
+    },
+    {
+      "path": "assets/user_supplied/cutscenes/lazarus_saturday/SOURCE.txt",
+      "bytes": 1100
+    },
+    {
+      "path": "assets/user_supplied/cutscenes/README.md",
+      "bytes": 3309
+    },
+    {
+      "path": "assets/user_supplied/cutscenes/staub/LICENSE.txt",
+      "bytes": 1213
+    },
+    {
+      "path": "assets/user_supplied/cutscenes/staub/SOURCE.txt",
+      "bytes": 1067
+    },
+    {
+      "path": "assets/user_supplied/packs/opengameart-ultimate-low-poly-guns-ww2/LICENSE.txt",
+      "bytes": 105
+    },
+    {
+      "path": "assets/user_supplied/packs/opengameart-ultimate-low-poly-guns-ww2/SOURCE.txt",
+      "bytes": 929
+    },
+    {
+      "path": "assets/user_supplied/packs/opengameart-ultimate-low-poly-guns-ww2/ultimate_low_poly_guns_world_war_2.zip",
+      "bytes": 4725683
+    },
+    {
+      "path": "assets/user_supplied/README.md",
+      "bytes": 614
+    },
+    {
+      "path": "assets/user_supplied/vehicles/sketchfab-c47-manilov/LICENSE.txt",
+      "bytes": 105
+    },
+    {
+      "path": "assets/user_supplied/vehicles/sketchfab-c47-manilov/SOURCE.txt",
+      "bytes": 498
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/LICENSE.txt",
+      "bytes": 105
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model.glb",
+      "bytes": 59646788
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_0.png",
+      "bytes": 2990585
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_1.png",
+      "bytes": 5026806
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_10.jpg",
+      "bytes": 49436
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_11.png",
+      "bytes": 3759625
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_12.png",
+      "bytes": 2892652
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_13.png",
+      "bytes": 5258161
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_14.jpg",
+      "bytes": 49436
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_15.png",
+      "bytes": 3806714
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_16.png",
+      "bytes": 3259647
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_17.png",
+      "bytes": 5102400
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_18.jpg",
+      "bytes": 49436
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_19.png",
+      "bytes": 3842921
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_2.jpg",
+      "bytes": 49436
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_3.png",
+      "bytes": 3865300
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_4.png",
+      "bytes": 3958925
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_5.png",
+      "bytes": 3813760
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_6.jpg",
+      "bytes": 49436
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_7.png",
+      "bytes": 3668643
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_8.png",
+      "bytes": 2879328
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_9.png",
+      "bytes": 4730205
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small.glb",
+      "bytes": 17095248
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small_0.png",
+      "bytes": 898983
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small_1.png",
+      "bytes": 1332938
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small_10.jpg",
+      "bytes": 12572
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small_11.png",
+      "bytes": 976649
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small_12.png",
+      "bytes": 878482
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small_13.png",
+      "bytes": 1422712
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small_14.jpg",
+      "bytes": 12572
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small_15.png",
+      "bytes": 982556
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small_16.png",
+      "bytes": 1005829
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small_17.png",
+      "bytes": 1403861
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small_18.jpg",
+      "bytes": 12572
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small_19.png",
+      "bytes": 1020662
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small_2.jpg",
+      "bytes": 12572
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small_3.png",
+      "bytes": 1027249
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small_4.png",
+      "bytes": 1210608
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small_5.png",
+      "bytes": 1073217
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small_6.jpg",
+      "bytes": 12572
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small_7.png",
+      "bytes": 1005204
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small_8.png",
+      "bytes": 905126
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small_9.png",
+      "bytes": 1344386
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/SOURCE.txt",
+      "bytes": 585
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-m1-garand-sky-hunter/LICENSE.txt",
+      "bytes": 105
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-m1-garand-sky-hunter/model.glb",
+      "bytes": 46912868
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-m1-garand-sky-hunter/model_0.jpg",
+      "bytes": 1187632
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-m1-garand-sky-hunter/model_1.png",
+      "bytes": 4781917
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-m1-garand-sky-hunter/model_2.png",
+      "bytes": 3987707
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-m1-garand-sky-hunter/model_3.jpg",
+      "bytes": 4365258
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-m1-garand-sky-hunter/model_4.png",
+      "bytes": 16487700
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-m1-garand-sky-hunter/model_5.png",
+      "bytes": 15071743
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-m1-garand-sky-hunter/model_small.glb",
+      "bytes": 6621380
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-m1-garand-sky-hunter/model_small_0.jpg",
+      "bytes": 429502
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-m1-garand-sky-hunter/model_small_1.png",
+      "bytes": 1210962
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-m1-garand-sky-hunter/model_small_2.png",
+      "bytes": 967007
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-m1-garand-sky-hunter/model_small_3.jpg",
+      "bytes": 503712
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-m1-garand-sky-hunter/model_small_4.png",
+      "bytes": 1336337
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-m1-garand-sky-hunter/model_small_5.png",
+      "bytes": 1142959
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-m1-garand-sky-hunter/SOURCE.txt",
+      "bytes": 690
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/LICENSE.txt",
+      "bytes": 105
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model.glb",
+      "bytes": 18035876
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_0.jpg",
+      "bytes": 208423
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_1.png",
+      "bytes": 922543
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_10.png",
+      "bytes": 822146
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_11.jpg",
+      "bytes": 79856
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_12.jpg",
+      "bytes": 25867
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_13.png",
+      "bytes": 112829
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_14.jpg",
+      "bytes": 10285
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_15.jpg",
+      "bytes": 263647
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_16.png",
+      "bytes": 1265502
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_17.jpg",
+      "bytes": 412445
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_18.jpg",
+      "bytes": 202057
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_19.png",
+      "bytes": 1290096
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_2.jpg",
+      "bytes": 363134
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_20.jpg",
+      "bytes": 179996
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_21.jpg",
+      "bytes": 114575
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_22.png",
+      "bytes": 1145493
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_23.jpg",
+      "bytes": 170708
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_24.jpg",
+      "bytes": 430455
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_25.png",
+      "bytes": 569960
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_26.jpg",
+      "bytes": 799399
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_27.jpg",
+      "bytes": 301639
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_28.png",
+      "bytes": 1508692
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_29.jpg",
+      "bytes": 386678
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_3.jpg",
+      "bytes": 43686
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_30.jpg",
+      "bytes": 440958
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_31.png",
+      "bytes": 402201
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_32.jpg",
+      "bytes": 895106
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_33.jpg",
+      "bytes": 482053
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_34.png",
+      "bytes": 607019
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_35.jpg",
+      "bytes": 857783
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_4.png",
+      "bytes": 222783
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_5.jpg",
+      "bytes": 30384
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_6.jpg",
+      "bytes": 126019
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_7.png",
+      "bytes": 730162
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_8.jpg",
+      "bytes": 451200
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model_9.jpg",
+      "bytes": 203246
+    },
+    {
+      "path": "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/SOURCE.txt",
+      "bytes": 631
+    },
+    {
+      "path": "assets/ours/characters/zombie_base/char_zombie_base_f_heavy.glb",
+      "bytes": 2427376
+    },
+    {
+      "path": "assets/ours/characters/zombie_base/char_zombie_base_f_medium.glb",
+      "bytes": 2412224
+    },
+    {
+      "path": "assets/ours/characters/zombie_base/char_zombie_base_f_thin.glb",
+      "bytes": 2458996
+    },
+    {
+      "path": "assets/ours/characters/zombie_base/char_zombie_base_m_heavy.glb",
+      "bytes": 2453328
+    },
+    {
+      "path": "assets/ours/characters/zombie_base/char_zombie_base_m_medium.glb",
+      "bytes": 2079092
+    },
+    {
+      "path": "assets/ours/characters/zombie_base/char_zombie_base_m_thin.glb",
+      "bytes": 2418508
+    },
+    {
+      "path": "assets/ours/characters/zombie_base/tex_armband_wiederkehr.png",
+      "bytes": 66242
+    },
+    {
+      "path": "assets/ours/characters/zombie_base/tex_zombie_skin_albedo.png",
+      "bytes": 1139594
+    },
+    {
+      "path": "assets/ours/characters/zombie_base/tex_zombie_skin_normal.png",
+      "bytes": 1691067
+    },
+    {
+      "path": "assets/ours/characters/zombie_base/tex_zombie_skin_orm.png",
+      "bytes": 854430
+    }
+  ],
+  "glbs": {
+    "assets/third_party/kenney/survival-kit/firewood.glb": {
+      "meshes": [
+        "resource-wood"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "colormap"
+      ]
+    },
+    "assets/third_party/kenney/survival-kit/log.glb": {
+      "meshes": [
+        "tree-log"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "colormap"
+      ]
+    },
+    "assets/third_party/opengameart/pichuliru-cartridges/model.glb": {
+      "meshes": [
+        "4_6x30mm",
+        "5_7x28mm",
+        "5_56x45mm",
+        "7_62x51mm",
+        "338_Lapua",
+        "50_BMG",
+        "5_45x39mm",
+        "7_62x39mm",
+        "7_62x54mmR",
+        "22LR",
+        "9x19mm",
+        "45_ACP",
+        "9x18mm",
+        "44_Magnum",
+        "12_Gauge"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "UltimateLowPolyGuns"
+      ]
+    },
+    "assets/third_party/opengameart/tt-bar-m1918/model.glb": {
+      "meshes": [
+        "Bolt",
+        "Body",
+        "Mag"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "UltimateLowPolyGuns"
+      ]
+    },
+    "assets/third_party/opengameart/tt-double-barrel/model.glb": {
+      "meshes": [
+        "Body",
+        "Trigger",
+        "Barrels",
+        "Shells"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "UltimateLowPolyGuns"
+      ]
+    },
+    "assets/third_party/opengameart/tt-gewehr-43/model.glb": {
+      "meshes": [
+        "Body",
+        "Mag",
+        "Bolt",
+        "Trigger"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "UltimateLowPolyGuns"
+      ]
+    },
+    "assets/third_party/opengameart/tt-kar98k/model.glb": {
+      "meshes": [
+        "Body",
+        "Bolt",
+        "Trigger"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "UltimateLowPolyGuns"
+      ]
+    },
+    "assets/third_party/opengameart/tt-m1-carbine/model.glb": {
+      "meshes": [
+        "Body",
+        "Mag",
+        "Bolt"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "UltimateLowPolyGuns"
+      ]
+    },
+    "assets/third_party/opengameart/tt-m1-garand/model.glb": {
+      "meshes": [
+        "Body",
+        "Clip",
+        "Bolt"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "UltimateLowPolyGuns"
+      ]
+    },
+    "assets/third_party/opengameart/tt-m1897-trench-gun/model.glb": {
+      "meshes": [
+        "Body",
+        "Pump",
+        "Hammer"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "UltimateLowPolyGuns"
+      ]
+    },
+    "assets/third_party/opengameart/tt-m1911/model.glb": {
+      "meshes": [
+        "Body",
+        "Slide",
+        "Mag",
+        "Hammer",
+        "Trigger"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "UltimateLowPolyGuns"
+      ]
+    },
+    "assets/third_party/opengameart/tt-mg42/model.glb": {
+      "meshes": [
+        "Body",
+        "Mag",
+        "Bolt",
+        "Cover"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "UltimateLowPolyGuns"
+      ]
+    },
+    "assets/third_party/opengameart/tt-mp40/model.glb": {
+      "meshes": [
+        "Body",
+        "Stock",
+        "Mag",
+        "Bolt"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "UltimateLowPolyGuns"
+      ]
+    },
+    "assets/third_party/opengameart/tt-ppsh41/model.glb": {
+      "meshes": [
+        "Body",
+        "Bolt",
+        "Mag",
+        "Trigger"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "UltimateLowPolyGuns"
+      ]
+    },
+    "assets/third_party/opengameart/tt-springfield-m1903/model.glb": {
+      "meshes": [
+        "Body",
+        "Bolt",
+        "Trigger"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "UltimateLowPolyGuns"
+      ]
+    },
+    "assets/third_party/opengameart/tt-stg44/model.glb": {
+      "meshes": [
+        "Body",
+        "Bolt",
+        "Mag",
+        "Cover"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "UltimateLowPolyGuns"
+      ]
+    },
+    "assets/third_party/opengameart/tt-thompson-m1a1/model.glb": {
+      "meshes": [
+        "Body",
+        "Mag",
+        "Bolt"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "UltimateLowPolyGuns"
+      ]
+    },
+    "assets/third_party/opengameart/tt-walther-p38/model.glb": {
+      "meshes": [
+        "Body",
+        "Trigger",
+        "Hammer",
+        "Mag",
+        "Slide"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "UltimateLowPolyGuns"
+      ]
+    },
+    "assets/third_party/opengameart/tt-webley-mkiv/model.glb": {
+      "meshes": [
+        "Body",
+        "Hammer",
+        "Barrels",
+        "Cylinder",
+        "Trigger"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "UltimateLowPolyGuns"
+      ]
+    },
+    "assets/third_party/polyhaven/barrel-03/model.glb": {
+      "meshes": [
+        "Circle.002"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "barrel_03"
+      ]
+    },
+    "assets/third_party/polyhaven/barrel-stove/model.glb": {
+      "meshes": [
+        "Cylinder.007"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "barrel_stove"
+      ]
+    },
+    "assets/third_party/polyhaven/hanging-industrial-lamp/model.glb": {
+      "meshes": [
+        "Cylinder"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "hanging_industrial_lamp",
+        "hanging_industrial_lamp_glass"
+      ]
+    },
+    "assets/third_party/polyhaven/industrial-wall-lamp/model.glb": {
+      "meshes": [
+        "Sphere.004"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "industrial_wall_lamp",
+        "industrial_wall_lamp_glass"
+      ]
+    },
+    "assets/third_party/polyhaven/jug-01/model.glb": {
+      "meshes": [
+        "Cylinder"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "jug_01"
+      ]
+    },
+    "assets/third_party/polyhaven/lantern-01/model.glb": {
+      "meshes": [
+        "Mesh",
+        "Mesh.002"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "Lantern_01_brass",
+        "Lantern_01_glass"
+      ]
+    },
+    "assets/third_party/polyhaven/lifebuoy/model.glb": {
+      "meshes": [
+        "Torus.001"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "lifebuoy"
+      ]
+    },
+    "assets/third_party/polyhaven/metal-jerrycan/model.glb": {
+      "meshes": [
+        "Cube.001"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "metal_jerrycan"
+      ]
+    },
+    "assets/third_party/polyhaven/metal-toolbox/model.glb": {
+      "meshes": [
+        "Cube.012",
+        "Cube.013",
+        "Cylinder.021",
+        "Cylinder.003",
+        "Cylinder.006",
+        "Cylinder.015"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "metal_toolbox"
+      ]
+    },
+    "assets/third_party/polyhaven/old-bed-frame/model.glb": {
+      "meshes": [
+        "Plane.037"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "old_bed_frame"
+      ]
+    },
+    "assets/third_party/polyhaven/old-gas-mask/model.glb": {
+      "meshes": [
+        "Plane.008"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "old_gas_mask"
+      ]
+    },
+    "assets/third_party/polyhaven/painted-wooden-bench/model.glb": {
+      "meshes": [
+        "bench.002"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "painted_wooden_bench"
+      ]
+    },
+    "assets/third_party/polyhaven/painted-wooden-chair-02/model.glb": {
+      "meshes": [
+        "chair.001"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "painted_wooden_chair_02"
+      ]
+    },
+    "assets/third_party/polyhaven/painted-wooden-nightstand/model.glb": {
+      "meshes": [
+        "nightstand.024",
+        "nightstand.025"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "painted_wooden_nightstand"
+      ]
+    },
+    "assets/third_party/polyhaven/portable-welding-cart/model.glb": {
+      "meshes": [
+        "Cylinder.044"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "portable_welding_cart",
+        "portable_welding_cart_glass"
+      ]
+    },
+    "assets/third_party/polyhaven/propane-tank/model.glb": {
+      "meshes": [
+        "Circle"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "propane_tank"
+      ]
+    },
+    "assets/third_party/polyhaven/round-wooden-table-01/model.glb": {
+      "meshes": [
+        "Cylinder",
+        "Cylinder.007"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "round_wooden_table_01"
+      ]
+    },
+    "assets/third_party/polyhaven/rusted-spade-01/model.glb": {
+      "meshes": [
+        "Cylinder.001"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "rusted_spade_01"
+      ]
+    },
+    "assets/third_party/polyhaven/tree-stump-01/model.glb": {
+      "meshes": [
+        "tt_01_rep.001"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "tree_stump_01"
+      ]
+    },
+    "assets/third_party/polyhaven/vintage-oil-lamp/model.glb": {
+      "meshes": [
+        "Glass.001",
+        "Circle.003",
+        "Plane.003"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "vintage_oil_lamp_glass",
+        "vintage_oil_lamp",
+        "vintage_oil_lamp_flame"
+      ]
+    },
+    "assets/third_party/polyhaven/vintage-suitcase/model.glb": {
+      "meshes": [
+        "handle_mount.003",
+        "latch.001",
+        "Handle.001",
+        "hinge_top.001",
+        "handle_mount.001",
+        "latch.002",
+        "Handle.002",
+        "hinge_top.002"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "vintage_suitcase_01",
+        "vintage_suitcase_02"
+      ]
+    },
+    "assets/third_party/polyhaven/wine-barrel-01/model.glb": {
+      "meshes": [
+        "DiameterSmall.012",
+        "Cylinder.014",
+        "Plane.006",
+        "DiameterSmall.004"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "wine_barrel_01"
+      ]
+    },
+    "assets/third_party/polyhaven/wine-bottles-01/model.glb": {
+      "meshes": [
+        "Circle",
+        "Circle.005",
+        "Circle.008",
+        "Circle.012"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "wine_bottles_01_glass_orange",
+        "wine_bottles_01_seal_cork",
+        "wine_bottles_01_wine_red",
+        "wine_bottles_01_ftero_vinea_02",
+        "wine_bottles_01_glass_yellow",
+        "wine_bottles_01_wine_clear",
+        "wine_bottles_01_clearwater",
+        "wine_bottles_01_glass_clear",
+        "wine_bottles_01_wine_light_red",
+        "wine_bottles_01_intertwine",
+        "wine_bottles_01_glass_green",
+        "wine_bottles_01_ftero_vinea_01"
+      ]
+    },
+    "assets/third_party/polyhaven/wooden-axe-03/model.glb": {
+      "meshes": [
+        "Plane.015"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "axe_03"
+      ]
+    },
+    "assets/third_party/polyhaven/wooden-bucket-01/model.glb": {
+      "meshes": [
+        "Cylinder",
+        "Plane"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "wooden_bucket_01"
+      ]
+    },
+    "assets/third_party/polyhaven/wooden-crate-01/model.glb": {
+      "meshes": [
+        "Cube.005",
+        "Cube.020",
+        "Cube.001"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "wooden_crate_01"
+      ]
+    },
+    "assets/third_party/polyhaven/wooden-crate-02/model.glb": {
+      "meshes": [
+        "Cube.006",
+        "Cube.008"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "wooden_crate_02"
+      ]
+    },
+    "assets/third_party/polyhaven/wooden-lantern-01/model.glb": {
+      "meshes": [
+        "Cube.001",
+        "Cube.004",
+        "Cylinder.031"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "wooden_lantern_01",
+        "wooden_lantern_01_glass"
+      ]
+    },
+    "assets/third_party/polyhaven/wooden-military-crate/model.glb": {
+      "meshes": [
+        "Cube.026",
+        "Cube.029",
+        "Cube.001"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "wooden_military_crate"
+      ]
+    },
+    "assets/third_party/polyhaven/wooden-stool-01/model.glb": {
+      "meshes": [
+        "Slice.003"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "wooden_stool_01"
+      ]
+    },
+    "assets/third_party/polyhaven/wooden-table-02/model.glb": {
+      "meshes": [
+        "Cube.003"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "wooden_table_02"
+      ]
+    },
+    "assets/third_party/sketchfab/kar98k-dsamuta/model.glb": {
+      "meshes": [
+        "Bolt",
+        "RearSight",
+        "Receiver",
+        "Stock",
+        "Barrel"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "Material_005",
+        "Material_003",
+        "Material_002",
+        "Material_001",
+        "Material"
+      ]
+    },
+    "assets/third_party/sketchfab/m1-garand-sky-hunter/model.glb": {
+      "meshes": [
+        "Body",
+        "Clip"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "M1_Garand",
+        "Bullets"
+      ]
+    },
+    "assets/third_party/sketchfab/thompson-artem-goyko/model.glb": {
+      "meshes": [
+        "Grip",
+        "Stock",
+        "Barrel",
+        "Foregrip",
+        "TriggerGroup",
+        "RearSight",
+        "ReceiverTop",
+        "Bolt",
+        "Rib",
+        "Mag",
+        "Receiver",
+        "Frame"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "Material_002",
+        "Material_001",
+        "Material_004",
+        "Material_003",
+        "Material_007",
+        "Material_014",
+        "Material_005",
+        "Material_008",
+        "Material_015",
+        "Material_006",
+        "Material_010",
+        "Material_013"
+      ]
+    },
+    "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model.glb": {
+      "meshes": [
+        "defaultMaterial",
+        "defaultMaterial",
+        "defaultMaterial",
+        "defaultMaterial",
+        "defaultMaterial",
+        "defaultMaterial",
+        "defaultMaterial"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "Material",
+        "Material_001",
+        "Material_002",
+        "Material_003",
+        "Material_005",
+        "Material_004"
+      ]
+    },
+    "assets/user_supplied/weapons/sketchfab-kar98k-dsamuta/model_small.glb": {
+      "meshes": [
+        "defaultMaterial",
+        "defaultMaterial",
+        "defaultMaterial",
+        "defaultMaterial",
+        "defaultMaterial",
+        "defaultMaterial",
+        "defaultMaterial"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "Material",
+        "Material_001",
+        "Material_002",
+        "Material_003",
+        "Material_005",
+        "Material_004"
+      ]
+    },
+    "assets/user_supplied/weapons/sketchfab-m1-garand-sky-hunter/model.glb": {
+      "meshes": [
+        "defaultMaterial",
+        "defaultMaterial"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "Bullets",
+        "M1_Garand"
+      ]
+    },
+    "assets/user_supplied/weapons/sketchfab-m1-garand-sky-hunter/model_small.glb": {
+      "meshes": [
+        "defaultMaterial",
+        "defaultMaterial"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "Bullets",
+        "M1_Garand"
+      ]
+    },
+    "assets/user_supplied/weapons/sketchfab-thompson-artem-goyko/model.glb": {
+      "meshes": [
+        "defaultMaterial",
+        "defaultMaterial",
+        "defaultMaterial",
+        "defaultMaterial",
+        "defaultMaterial",
+        "defaultMaterial",
+        "defaultMaterial",
+        "defaultMaterial",
+        "defaultMaterial",
+        "defaultMaterial",
+        "defaultMaterial",
+        "defaultMaterial"
+      ],
+      "skins": [],
+      "animations": [],
+      "materials": [
+        "Material_013",
+        "Material_010",
+        "Material_006",
+        "Material_015",
+        "Material_008",
+        "Material_005",
+        "Material_014",
+        "Material_007",
+        "Material_003",
+        "Material_004",
+        "Material_001",
+        "Material_002"
+      ]
+    },
+    "assets/ours/characters/zombie_base/char_zombie_base_f_heavy.glb": {
+      "meshes": [
+        "Body",
+        "Body_LOD1",
+        "Body_LOD2",
+        "Hair_f",
+        "Hair_m",
+        "Kit_bellringer",
+        "Kit_dockworker",
+        "Kit_labstaff",
+        "Kit_miner",
+        "Kit_nurse",
+        "Kit_sailor",
+        "Kit_soldier",
+        "Kit_soviet",
+        "Kit_soviet_burial",
+        "Kit_soviet_tunic",
+        "Kit_technician",
+        "Kit_villager",
+        "Parts"
+      ],
+      "skins": [
+        {
+          "name": "Armature",
+          "joints": [
+            "Root",
+            "Hips",
+            "LeftUpperLeg",
+            "LeftLowerLeg",
+            "LeftFoot",
+            "RightUpperLeg",
+            "RightLowerLeg",
+            "RightFoot",
+            "Spine",
+            "Chest",
+            "Neck",
+            "Head",
+            "Jaw",
+            "LeftUpperArm",
+            "LeftLowerArm",
+            "LeftHand",
+            "RightUpperArm",
+            "RightLowerArm",
+            "RightHand"
+          ]
+        }
+      ],
+      "animations": [],
+      "materials": []
+    },
+    "assets/ours/characters/zombie_base/char_zombie_base_f_medium.glb": {
+      "meshes": [
+        "Body",
+        "Body_LOD1",
+        "Body_LOD2",
+        "Hair_f",
+        "Hair_m",
+        "Kit_bellringer",
+        "Kit_dockworker",
+        "Kit_labstaff",
+        "Kit_miner",
+        "Kit_nurse",
+        "Kit_sailor",
+        "Kit_soldier",
+        "Kit_soviet",
+        "Kit_soviet_burial",
+        "Kit_soviet_tunic",
+        "Kit_technician",
+        "Kit_villager",
+        "Parts"
+      ],
+      "skins": [
+        {
+          "name": "Armature",
+          "joints": [
+            "Root",
+            "Hips",
+            "LeftUpperLeg",
+            "LeftLowerLeg",
+            "LeftFoot",
+            "RightUpperLeg",
+            "RightLowerLeg",
+            "RightFoot",
+            "Spine",
+            "Chest",
+            "Neck",
+            "Head",
+            "Jaw",
+            "LeftUpperArm",
+            "LeftLowerArm",
+            "LeftHand",
+            "RightUpperArm",
+            "RightLowerArm",
+            "RightHand"
+          ]
+        }
+      ],
+      "animations": [],
+      "materials": []
+    },
+    "assets/ours/characters/zombie_base/char_zombie_base_f_thin.glb": {
+      "meshes": [
+        "Body",
+        "Body_LOD1",
+        "Body_LOD2",
+        "Hair_f",
+        "Hair_m",
+        "Kit_bellringer",
+        "Kit_dockworker",
+        "Kit_labstaff",
+        "Kit_miner",
+        "Kit_nurse",
+        "Kit_sailor",
+        "Kit_soldier",
+        "Kit_soviet",
+        "Kit_soviet_burial",
+        "Kit_soviet_tunic",
+        "Kit_technician",
+        "Kit_villager",
+        "Parts"
+      ],
+      "skins": [
+        {
+          "name": "Armature",
+          "joints": [
+            "Root",
+            "Hips",
+            "LeftUpperLeg",
+            "LeftLowerLeg",
+            "LeftFoot",
+            "RightUpperLeg",
+            "RightLowerLeg",
+            "RightFoot",
+            "Spine",
+            "Chest",
+            "Neck",
+            "Head",
+            "Jaw",
+            "LeftUpperArm",
+            "LeftLowerArm",
+            "LeftHand",
+            "RightUpperArm",
+            "RightLowerArm",
+            "RightHand"
+          ]
+        }
+      ],
+      "animations": [],
+      "materials": []
+    },
+    "assets/ours/characters/zombie_base/char_zombie_base_m_heavy.glb": {
+      "meshes": [
+        "Body",
+        "Body_LOD1",
+        "Body_LOD2",
+        "Hair_f",
+        "Hair_m",
+        "Kit_bellringer",
+        "Kit_dockworker",
+        "Kit_labstaff",
+        "Kit_miner",
+        "Kit_nurse",
+        "Kit_sailor",
+        "Kit_soldier",
+        "Kit_soviet",
+        "Kit_soviet_burial",
+        "Kit_soviet_tunic",
+        "Kit_technician",
+        "Kit_villager",
+        "Parts"
+      ],
+      "skins": [
+        {
+          "name": "Armature",
+          "joints": [
+            "Root",
+            "Hips",
+            "LeftUpperLeg",
+            "LeftLowerLeg",
+            "LeftFoot",
+            "RightUpperLeg",
+            "RightLowerLeg",
+            "RightFoot",
+            "Spine",
+            "Chest",
+            "Neck",
+            "Head",
+            "Jaw",
+            "LeftUpperArm",
+            "LeftLowerArm",
+            "LeftHand",
+            "RightUpperArm",
+            "RightLowerArm",
+            "RightHand"
+          ]
+        }
+      ],
+      "animations": [],
+      "materials": []
+    },
+    "assets/ours/characters/zombie_base/char_zombie_base_m_medium.glb": {
+      "meshes": [
+        "Body",
+        "Body_LOD1",
+        "Body_LOD2",
+        "Hair_f",
+        "Hair_m",
+        "Kit_bellringer",
+        "Kit_dockworker",
+        "Kit_labstaff",
+        "Kit_miner",
+        "Kit_nurse",
+        "Kit_sailor",
+        "Kit_soldier",
+        "Kit_soviet",
+        "Kit_soviet_burial",
+        "Kit_soviet_tunic",
+        "Kit_technician",
+        "Kit_villager",
+        "Parts"
+      ],
+      "skins": [
+        {
+          "name": "Armature",
+          "joints": [
+            "Root",
+            "Hips",
+            "LeftUpperLeg",
+            "LeftLowerLeg",
+            "LeftFoot",
+            "RightUpperLeg",
+            "RightLowerLeg",
+            "RightFoot",
+            "Spine",
+            "Chest",
+            "Neck",
+            "Head",
+            "Jaw",
+            "LeftUpperArm",
+            "LeftLowerArm",
+            "LeftHand",
+            "RightUpperArm",
+            "RightLowerArm",
+            "RightHand"
+          ]
+        }
+      ],
+      "animations": [],
+      "materials": []
+    },
+    "assets/ours/characters/zombie_base/char_zombie_base_m_thin.glb": {
+      "meshes": [
+        "Body",
+        "Body_LOD1",
+        "Body_LOD2",
+        "Hair_f",
+        "Hair_m",
+        "Kit_bellringer",
+        "Kit_dockworker",
+        "Kit_labstaff",
+        "Kit_miner",
+        "Kit_nurse",
+        "Kit_sailor",
+        "Kit_soldier",
+        "Kit_soviet",
+        "Kit_soviet_burial",
+        "Kit_soviet_tunic",
+        "Kit_technician",
+        "Kit_villager",
+        "Parts"
+      ],
+      "skins": [
+        {
+          "name": "Armature",
+          "joints": [
+            "Root",
+            "Hips",
+            "LeftUpperLeg",
+            "LeftLowerLeg",
+            "LeftFoot",
+            "RightUpperLeg",
+            "RightLowerLeg",
+            "RightFoot",
+            "Spine",
+            "Chest",
+            "Neck",
+            "Head",
+            "Jaw",
+            "LeftUpperArm",
+            "LeftLowerArm",
+            "LeftHand",
+            "RightUpperArm",
+            "RightLowerArm",
+            "RightHand"
+          ]
+        }
+      ],
+      "animations": [],
+      "materials": []
+    }
+  },
+  "errors": [],
+  "extension_counts": {
+    "assets/third_party": {
+      ".txt": 216,
+      ".png": 341,
+      ".ttf": 10,
+      ".glb": 53,
+      ".flac": 4,
+      ".ogg": 1,
+      ".hdr": 2
+    },
+    "assets/user_supplied": {
+      ".txt": 16,
+      ".md": 2,
+      ".zip": 1,
+      ".glb": 5,
+      ".png": 50,
+      ".jpg": 38
+    },
+    "assets/ours/characters/zombie_base": {
+      ".glb": 6,
+      ".png": 4
+    }
+  }
+}

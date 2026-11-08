@@ -1,5 +1,15 @@
 # Gun shopping list (for Devin)
 
+## Zombie overhaul additions (2026-11-08)
+
+- MoCap Online zombie source FBX pack plus license/receipt permitting use in Godot. Not present in
+  `assets/user_supplied/` at audit time. Place purchased sources there, never unofficial mirrors.
+- Coverage needed: shamble/walk/jog/run/sprint variants, crawls, turns, swipes/lunge/grab/bite,
+  barricade tears/reach/vault, climbs, directional reactions, knockdowns/getups and eight or more deaths.
+  Audit the supplied pack before buying gap fillers; no exact pack contents assumed.
+- Additional body/head/outfit requests remain pending the close-up roster review.
+
+
 Claude Code models only the wonder weapons. These are the conventional guns you download or buy, then drop into:
 `C:\Users\Devin\PROJECTS\bolt-and-sprocket-ultimate\assets\user_supplied\weapons\<pack-name>\`
 Put the license text, or a screenshot of the license and receipt, in the same folder. Claude Code handles everything after that: unpacking, scaling, sight alignment, the shared materials, Crucible camo, and fitting animations.
