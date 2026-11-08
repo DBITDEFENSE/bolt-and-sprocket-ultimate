@@ -1072,6 +1072,20 @@
         {"name": "map04d_mondlicht", "map": "res://gravelight/maps/map04_fernflug/map04d.tscn", "pos": [0.0, 2.4, 3.0], "yaw": 180.0, "pitch": 8.0, "note": "north over the yard, the Earth up in the sky (+Z north)"},
         {"name": "menu", "scene": "res://gravelight/ui/main_menu.tscn", "settle_s": 9.0, "note": "the main menu's live backdrop (MenuScene) as it opens: the archive-reel black-and-white (data/look/menu.json)"}
       ]
+    },
+    "u12_post": {
+      "_doc": "UPDATE 12 section 2 (T-208): the post stack and the material pass, before (--look=off: the U11 game) and after. tools/look/post_frames.sh renders it with the u12_look set into docs/look/post/. One more camera per map and act than u12_look: an interior under the practicals (the darker nights' check) and, on Groom Lake, the impeller crater (the violet stays on the Nachtglas, the salt goes dust brown). The readability frames are u05 close_zombie and u05_objects ammo_box / wall_buy_close (perk_dark first: the opening card covers the first shot).",
+      "mode": "maps",
+      "settle_s": 7.0,
+      "cams": [
+        {"name": "map00_taproom", "map": "res://gravelight/maps/map00_crossroads/map00.tscn", "pos": [15.0, 1.62, 9.0], "yaw": 0.0, "pitch": -2.0, "note": "the taproom from the spawn: bar, hearth, the lamps (u05 taproom_spawn)"},
+        {"name": "map01_barracks", "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn", "pos": [-14.0, 1.62, 39.0], "yaw": -90.0, "pitch": -0.2, "note": "the barracks along the bunk rows (u09_ref ref_barracks)"},
+        {"name": "map02_cannery", "map": "res://gravelight/maps/map02_totenhafen/map02.tscn", "pos": [-1.0, 1.62, 15.0], "yaw": 90.0, "pitch": -0.4, "note": "the cannery from the quay door down the hall (u09_map02 B_wide)"},
+        {"name": "map04a_crater", "map": "res://gravelight/maps/map04_fernflug/map04a.tscn", "pos": [14.0, 1.62, 14.0], "yaw": -129.3, "pitch": -4.9, "note": "the Siedlung bomb crater and the washing-line posts under the raid glow (u09_map04a A_crater; the Kantine is black until the power)"},
+        {"name": "map04b_galley", "map": "res://gravelight/maps/map04_fernflug/map04b.tscn", "pos": [-4.6, 1.62, 43.0], "yaw": 90.0, "pitch": 8.0, "note": "the galley counter and the crew photograph (u10_map04b Galley_photo)"},
+        {"name": "map04c_crater", "map": "res://gravelight/maps/map04_fernflug/map04c.tscn", "pos": [5.0, 1.62, 8.0], "yaw": -128.7, "pitch": -3.3, "note": "the impeller core's crater on the lakebed (u09_map04c B_core): violet on the Nachtglas only"},
+        {"name": "map04d_concourse", "map": "res://gravelight/maps/map04_fernflug/map04d.tscn", "pos": [0.0, 1.62, 25.0], "yaw": 180.0, "pitch": 0.7, "note": "the concourse to the yard airlock (u09_map04d B_wide)"}
+      ]
     }
   }
 }

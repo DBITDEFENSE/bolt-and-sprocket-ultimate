@@ -51,6 +51,7 @@ var _root_3d_was: bool = false
 var _waiting_end: bool = false
 var _vo_held: bool = false
 var _room_set: bool = false
+var post: LookPost = null   # UPDATE 12 (T-208): the post stack inside the stage's viewport, the cut's grade (none on the reels)
 
 
 ## A reel of `cut_ids` under `parent` (in a match: the MapRoot, whose HUD it hides).
@@ -159,6 +160,11 @@ func _start(i: int) -> void:
 	var first: String = str((shots[0] as Dictionary).get("_set", "black")) if not shots.is_empty() else "black"
 	_swap(first)
 	_room(shots[0] if not shots.is_empty() else {})
+	var gid: String = LookGrade.cinema_id(map, id)   # T-208: the host map's post (grain, vignette, edges), under the letterbox and cards
+	if post == null:
+		post = LookPost.add_to(_vp, gid)
+	else:
+		post.set_grade(gid)
 	director = CinemaDirector.make(_vp, def, stage, {"speed": speed, "cast": false, "hide_hud": false, "auto": false, "vo": _say})
 	director.shot_started.connect(_on_shot)
 	director.skip_requested.connect(_on_skip)

@@ -678,6 +678,7 @@ func _build_camera() -> void:
 	_fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_fade_rect.visible = false
 	_fade_layer.add_child(_fade_rect)
+	LookPost.add_to(self, "menu", -2)   # UPDATE 12 (T-208): the archive grain, vignette and flicker, under the fade and every menu
 	_place_camera()
 
 

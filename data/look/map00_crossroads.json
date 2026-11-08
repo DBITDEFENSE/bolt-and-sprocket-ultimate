@@ -18,7 +18,7 @@
   },
   {
    "hue": 0,
-   "width": 18,
+   "width": 12,
    "amount": 0.85
   }
  ],
@@ -28,7 +28,7 @@
   "amount": 0.3
  },
  "ambient": {
-  "energy_scale": 0.7
+  "energy_scale": 0.62
  },
  "fog": {
   "density": 0.022,
@@ -50,5 +50,8 @@
   "adjust": {
    "saturation": 0.72
   }
+ },
+ "lights": {
+  "practical_scale": 1.25
  }
 }

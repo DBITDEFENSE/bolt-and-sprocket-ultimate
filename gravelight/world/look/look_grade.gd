@@ -30,6 +30,8 @@ const POST_DEFAULTS: Dictionary = {"grain": 0.05, "vignette": 0.35, "edge_soft":
 static var _cache: Dictionary = {}
 static var _luts: Dictionary = {}
 static var _off: int = -1   # -1 unread, 0 on, 1 off (the --look=off user arg)
+## T-208: the material audit loads a map with the material pass held back (its "before"); nothing else sets it.
+static var hold_materials: bool = false
 
 
 # ================================================================== data
@@ -142,7 +144,80 @@ static func attach(map: Node) -> Dictionary:
 	if we.has_method("look_zones"):
 		we.call("look_zones", data(id).get("zones", {}))
 	map.set_meta("gl_look", id)
+	if not hold_materials and not map.has_meta("gl_look_materials"):   # T-208: the material pass (roughness floor, palette, the wear layer)
+		var mp: Dictionary = LookMaterials.apply_tree(map)
+		map.set_meta("gl_look_materials", mp)
+		print("[LookMaterials] %s: %d materials, %d fixed, %d exempt, %d skipped, %.1f ms" % [id, int(mp.get("materials", 0)),
+			int(mp.get("changed", 0)), int(mp.get("exempt", 0)), int(mp.get("skipped", 0)), float(mp.get("ms", 0.0))])
 	return d
+
+
+## T-208: the MapRoot's _enter_tree hook, before any child's _ready (so a flicker or power script caches the new
+## energy): the grade's `lights` block on the map's omni / spot lights. Returns how many lights it changed.
+static func attach_scene(map: Node) -> int:
+	if map == null or disabled() or map.has_meta("gl_look_lights"):
+		return 0
+	var id: String = String(map.get("map_id")) if map.get("map_id") != null else ""
+	if id == "" or not has(id):
+		return 0
+	map.set_meta("gl_look_lights", id)
+	return apply_lights(map, resolved(id).get("lights", {}))
+
+
+## The `lights` block (darker nights, stronger practicals; DECISIONS T-208) on every OmniLight3D / SpotLight3D under
+## `root`:
+##   "practical_scale": x   the energy of every lamp (warm, cold or red: the practicals) times x; an accent-hue light
+##                          (a `rules` match) is left to its rule;
+##   "rules": [{"hue": deg, "width": deg, "min_sat": s, "range_scale": x, "energy_scale": x, "fog_scale": x}, ...]
+##                          a light whose colour is that hue (± width, saturation past min_sat) gets those scales:
+##                          Groom Lake's crater lamps keep their violet on the Nachtglas and stop lighting the salt.
+## The base energy a script keeps in the light's `energy` meta (power switches, the director's fog tween) scales too.
+static func apply_lights(root: Node, block: Dictionary) -> int:
+	if root == null or block.is_empty():
+		return 0
+	var practical: float = float(block.get("practical_scale", 1.0))
+	var rules: Array = block.get("rules", [])
+	var n: int = 0
+	for l: Node in root.find_children("*", "Light3D", true, false):
+		if not (l is OmniLight3D or l is SpotLight3D):
+			continue
+		var lt: Light3D = l as Light3D
+		var rule: Dictionary = light_rule(lt.light_color, rules)
+		var e_scale: float = float(rule.get("energy_scale", 1.0)) if not rule.is_empty() else practical
+		var changed: bool = false
+		if not is_equal_approx(e_scale, 1.0):
+			lt.light_energy *= e_scale
+			if lt.has_meta("energy"):
+				lt.set_meta("energy", float(lt.get_meta("energy")) * e_scale)
+			changed = true
+		if not rule.is_empty():
+			var rs: float = float(rule.get("range_scale", 1.0))
+			if not is_equal_approx(rs, 1.0):
+				if lt is OmniLight3D:
+					(lt as OmniLight3D).omni_range *= rs
+				else:
+					(lt as SpotLight3D).spot_range *= rs
+				changed = true
+			if rule.has("fog_scale"):
+				lt.light_volumetric_fog_energy *= float(rule["fog_scale"])
+				changed = true
+		if changed:
+			n += 1
+	return n
+
+
+## The first rule of `rules` whose hue window holds `c` (a saturated colour only), {} for none. Pure.
+static func light_rule(c: Color, rules: Array) -> Dictionary:
+	for r: Variant in rules:
+		if not (r is Dictionary):
+			continue
+		var rd: Dictionary = r
+		if c.s < float(rd.get("min_sat", 0.4)):
+			continue
+		var dh: float = absf(wrapf(c.h * 360.0 - float(rd.get("hue", 0.0)), -180.0, 180.0))
+		if dh <= float(rd.get("width", 20.0)):
+			return rd
+	return {}
 
 
 ## A cutscene stage (CinemaSet, its own World3D) built over `host`: the stage's environment gets `grade_id`'s look.
@@ -240,6 +315,12 @@ static func apply_dict(env: Environment, d: Dictionary) -> void:
 			env.volumetric_fog_anisotropy = float(fog["anisotropy"])
 		if fog.has("length"):
 			env.volumetric_fog_length = float(fog["length"])
+	var sky: Dictionary = d.get("sky", {})   # T-208: a sky shader's colours (Groom Lake's dust instead of the dawn violet)
+	if not sky.is_empty() and env.sky != null and env.sky.sky_material is ShaderMaterial:
+		var sm: ShaderMaterial = env.sky.sky_material as ShaderMaterial
+		for k: Variant in sky.keys():
+			var v: Variant = sky[k]
+			sm.set_shader_parameter(str(k), color(v) if (v is String or v is Array) else v)
 	var glow: Dictionary = d.get("glow", {})
 	if not glow.is_empty():
 		if glow.has("intensity"):

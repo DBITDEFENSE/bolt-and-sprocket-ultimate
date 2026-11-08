@@ -61,6 +61,9 @@ var values: Dictionary = {
 	"hint_mode": false,
 	"colorblind": "off",
 	"film_grain": true,
+	"post_vignette": true,         # T-208: the post stack's pieces (LookPost): the vignette, the lens softness at the frame
+	"post_edge_soft": true,        # edge, the chromatic aberration at the frame edge (film_grain is the grain); the per-map
+	"post_ca": true,               # numbers are data/look/<map>.json `post`, the web profile's _web.json
 	"graphics_preset": "high",
 	"zombie_smooth": true,         # T-162: the zombies' meshes interpolated between physics ticks (above 60 Hz), within the full-rate animation distance
 	"smooth_motion": true,         # T-133: camera + viewmodel at the render rate, the eye interpolated (high-refresh screens)
@@ -386,6 +389,14 @@ func _build_overlays() -> void:
 	_overlay.add_child(_grain_rect)
 
 
+## The old full-screen grain (over everything, the HUD too) only where no LookPost draws the grade's own grain under
+## the HUD (T-208): a map with no grade, the other screens of the game.
+func refresh_grain() -> void:
+	if _grain_rect == null or not is_inside_tree():
+		return
+	_grain_rect.visible = bool(values.get("film_grain", true)) and get_tree().get_nodes_in_group(&"look_post_grain").is_empty()
+
+
 func preset() -> Dictionary:
 	return PRESETS.get(str(values.get("graphics_preset", "high")), PRESETS["high"])
 
@@ -513,7 +524,9 @@ func apply_visuals() -> void:
 		var mode: int = maxi(0, COLORBLIND_MODES.find(str(values.get("colorblind", "off"))))
 		_cb_rect.visible = mode > 0
 		(_cb_rect.material as ShaderMaterial).set_shader_parameter("mode", mode)
-		_grain_rect.visible = bool(values.get("film_grain", true))
+		refresh_grain()
+	for lp: Node in get_tree().get_nodes_in_group(&"look_post"):
+		lp.call("refresh")   # T-208: the post stack re-reads its switches
 	var vp: Viewport = get_tree().root
 	apply_aa(vp, str(gfx("gfx_aa")))
 	vp.use_debanding = true   # T-133: no banding in the dark gradients (fog, the cellar's lamplight)

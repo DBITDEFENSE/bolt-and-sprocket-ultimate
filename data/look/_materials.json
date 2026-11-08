@@ -1,0 +1,654 @@
+{
+ "_doc": "UPDATE 12 section 2 (DECISIONS T-208): the material pass's rules, docs/ART_BIBLE.md section 7. gravelight/world/look/look_materials.gd applies them to every world material on a map when it loads (LookGrade.attach) and tools/look/material_audit lists what breaks them before and after. `tex_fix` / `tex_rough` are written by the audit (--write-fixes): an albedo texture whose average fights the palette is desaturated (the surface shader's albedo_saturation; on a StandardMaterial3D a multiply capped at tint_gain_max per channel), a roughness texture that averages under the floor gets its scalar raised. Skips: characters and viewmodels (their own shaders and skin rules), section 5's C-47 wreck (its own art pass), the cartoon worlds (Bolt & Sprocket, The Fine Print stay cartoon), and the bible's low-roughness list (glass, ice, water, Nachtglas). Presentation only.",
+ "rough_floor": 0.45,
+ "rough_floor_metal": 0.35,
+ "metal_threshold": 0.5,
+ "sat_max": 0.3,
+ "accent_hue_sat_max": 0.15,
+ "tint_gain_max": 1.6,
+ "val_min": 0.04,
+ "val_max": 0.9,
+ "plastic": {
+  "rough_below": 0.5,
+  "metal_below": 0.3,
+  "sat_above": 0.3
+ },
+ "grime_min": 0.35,
+ "detail": {
+  "texture": "res://assets/materials/textures/look_grime.png",
+  "tile_m": 2.5
+ },
+ "accent_hues": [
+  {
+   "hue": 268,
+   "width": 20
+  },
+  {
+   "hue": 0,
+   "width": 10
+  }
+ ],
+ "accent_words": [
+  "nachtglas",
+  "crucible",
+  "blood",
+  "lantern",
+  "warning",
+  "battle",
+  "violet",
+  "vein",
+  "pylon",
+  "core"
+ ],
+ "low_rough_words": [
+  "glass",
+  "ice",
+  "water",
+  "puddle",
+  "nachtglas",
+  "window",
+  "lens",
+  "visor",
+  "wet",
+  "chrome",
+  "mirror",
+  "screen",
+  "bottle",
+  "jar",
+  "blood"
+ ],
+ "no_wear_words": [
+  "snow",
+  "ice",
+  "glass",
+  "water",
+  "sky",
+  "cloud",
+  "fog",
+  "smoke",
+  "fire",
+  "flame",
+  "spark",
+  "nachtglas",
+  "blood",
+  "glow",
+  "lightbeam",
+  "shaft",
+  "moon",
+  "earth",
+  "decal",
+  "impostor",
+  "leaf",
+  "leaves",
+  "foliage",
+  "grass",
+  "needle",
+  "bulb",
+  "lamp"
+ ],
+ "skip_nodes": [
+  "Wreck",
+  "MountedGun",
+  "VisePistol",
+  "C47",
+  "GravelightOne",
+  "BoltSprocket",
+  "Bolt_",
+  "Sprocket",
+  "FinePrint",
+  "Fine_Print",
+  "Perk_"
+ ],
+ "skip_paths": [
+  "c47",
+  "u12/c47",
+  "bolt_sprocket",
+  "boltsprocket",
+  "fine_print",
+  "fineprint",
+  "/weapons/",
+  "/characters/",
+  "/people/",
+  "/zombies/"
+ ],
+ "skip_groups": [
+  "players",
+  "zombies",
+  "people",
+  "patrons",
+  "bots",
+  "look_skip"
+ ],
+ "tex_rough": {
+  "res://assets/third_party/polyhaven/propane-tank/textures/propane_tank_arm.png": 1.0,
+  "res://assets/third_party/polyhaven/round-wooden-table-01/textures/round_wooden_table_01_arm.png": 1.0
+ },
+ "tex_fix": {
+  "res://assets/third_party/ambientcg/leather-014/textures/Leather014_albedo.png|ccb399": {
+   "sat": 0.411,
+   "val": 1.0
+  },
+  "res://assets/third_party/ambientcg/wood-siding-012/textures/WoodSiding012_albedo.png|9e998f": {
+   "sat": 0.733,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/barrel-03/textures/barrel_03_diff.png|ffffff": {
+   "eff": "425569",
+   "sat": 0.67,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/barrel-stove/textures/barrel_stove_diff.png|ffffff": {
+   "eff": "7e5d49",
+   "sat": 0.589,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/beige-wall-001/textures/beige_wall_001_albedo.png|e6d6bd": {
+   "sat": 0.666,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/brown-mud-03/textures/brown_mud_03_albedo.png|b3a38f": {
+   "sat": 0.567,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/dark-paneled-wood/textures/dark_paneled_wood_albedo.png|c7a385": {
+   "sat": 0.239,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/dark-paneled-wood/textures/dark_paneled_wood_albedo.png|cca88a": {
+   "sat": 0.24,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/dark-wood/textures/dark_wood_albedo.png|8f8075": {
+   "sat": 0.21,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/dirt-aerial-02/textures/dirt_aerial_02_albedo.png|c7c2bd": {
+   "sat": 0.459,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/factory-brick/textures/factory_brick_albedo.png|dbbda8": {
+   "sat": 0.438,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/granite-tile/textures/granite_tile_albedo.png|c7b3fa": {
+   "sat": 0.371,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/green-metal-rust/textures/green_metal_rust_albedo.png|9ea88c": {
+   "sat": 0.548,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/hessian-230/textures/hessian_230_albedo.png|ccb894": {
+   "sat": 0.441,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/lifebuoy/textures/lifebuoy_diff.png|ffffff": {
+   "eff": "955b58",
+   "sat": 0.232,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/metal-grate-rusty/textures/metal_grate_rusty_albedo.png|bfb8b3": {
+   "sat": 0.335,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/metal-grate-rusty/textures/metal_grate_rusty_albedo.png|d9ccbf": {
+   "sat": 0.321,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/metal-jerrycan/textures/metal_jerrycan_diff.png|ffffff": {
+   "eff": "793724",
+   "sat": 0.271,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/metal-plate/textures/metal_plate_albedo.png|9e9e99": {
+   "sat": 0.433,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/metal-plate/textures/metal_plate_albedo.png|b3b8b8": {
+   "sat": 0.462,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/peeling-painted-wall/textures/peeling_painted_wall_albedo.png|d1ccbd": {
+   "sat": 0.534,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/pine-bark/textures/pine_bark_albedo.png|998c80": {
+   "sat": 0.492,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/plank-flooring-02/textures/plank_flooring_02_albedo.png|b8a894": {
+   "sat": 0.215,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/propane-tank/textures/propane_tank_diff.png|ffffff": {
+   "eff": "823d3c",
+   "sat": 0.152,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/red-brick-03/textures/red_brick_03_albedo.png|b8998a": {
+   "sat": 0.498,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/reed-roof-04/textures/reed_roof_04_albedo.png|8c7552": {
+   "sat": 0.371,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/reed-roof-04/textures/reed_roof_04_albedo.png|ebcc8f": {
+   "sat": 0.389,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/round-wooden-table-01/textures/round_wooden_table_01_diff.png|ffffff": {
+   "eff": "3b1f0f",
+   "sat": 0.262,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/rustic-stone-wall/textures/rustic_stone_wall_albedo.png|c7bfb3": {
+   "sat": 0.574,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/rusty-metal-04/textures/rusty_metal_04_albedo.png|ccc7c2": {
+   "sat": 0.572,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/rusty-painted-metal/textures/rusty_painted_metal_albedo.png|33363b": {
+   "sat": 0.401,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/rusty-painted-metal/textures/rusty_painted_metal_albedo.png|57595c": {
+   "sat": 0.369,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/rusty-painted-metal/textures/rusty_painted_metal_albedo.png|9e5c4d": {
+   "sat": 0.081,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/rusty-painted-metal/textures/rusty_painted_metal_albedo.png|c7d6c2": {
+   "sat": 0.349,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/stone-floor/textures/stone_floor_albedo.png|b8b3a8": {
+   "sat": 0.556,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/terrazzo-tiles/textures/terrazzo_tiles_albedo.png|9e7afa": {
+   "sat": 0.629,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/tree-stump-01/textures/tree_stump_01_diff.png|ffffff": {
+   "eff": "5d4e35",
+   "sat": 0.593,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/weathered-brown-planks/textures/weathered_brown_planks_albedo.png|c7b399": {
+   "sat": 0.423,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/weathered-brown-planks/textures/weathered_brown_planks_albedo.png|fff29a": {
+   "sat": 0.291,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/wine-barrel-01/textures/wine_barrel_01_diff.png|ffffff": {
+   "eff": "4f3824",
+   "sat": 0.425,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/wood-floor-worn/textures/wood_floor_worn_albedo.png|ccb399": {
+   "sat": 0.264,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/wood-table-001/textures/wood_table_001_albedo.png|ad998a": {
+   "sat": 0.18,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/wooden-axe-03/textures/wooden_axe_03_diff.png|ffffff": {
+   "eff": "4e4032",
+   "sat": 0.703,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/wooden-bucket-01/textures/wooden_bucket_01_diff.png|ffffff": {
+   "eff": "5d3e25",
+   "sat": 0.376,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/wooden-crate-01/textures/wooden_crate_01_diff.png|ffffff": {
+   "eff": "6e4728",
+   "sat": 0.345,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/wooden-crate-02/textures/wooden_crate_02_diff.png|ffffff": {
+   "eff": "644226",
+   "sat": 0.362,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/wooden-table-02/textures/wooden_table_02_diff.png|ffffff": {
+   "eff": "8b4e28",
+   "sat": 0.288,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_01w8j|ffffff": {
+   "eff": "4c120d",
+   "sat": 0.073,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_4vrgg|ffffff": {
+   "eff": "1a1c2f",
+   "sat": 0.475,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_62xdt|ffffff": {
+   "eff": "41190f",
+   "sat": 0.229,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_6gmp7|ffffff": {
+   "eff": "55412b",
+   "sat": 0.491,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_b2se7|ffffff": {
+   "eff": "273449",
+   "sat": 0.48,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_bgtdt|ffffff": {
+   "eff": "383b21",
+   "sat": 0.6,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_c0wh0|ffffff": {
+   "eff": "6d451f",
+   "sat": 0.296,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_e1tak|ffffff": {
+   "eff": "5f4a33",
+   "sat": 0.532,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_ip0l2|ffffff": {
+   "eff": "561d10",
+   "sat": 0.204,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_lfmbd|ffffff": {
+   "eff": "4b1d10",
+   "sat": 0.222,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_lj36r|ffffff": {
+   "eff": "553d23",
+   "sat": 0.395,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_nlot0|ffffff": {
+   "eff": "282c1d",
+   "sat": 0.784,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_nx1q1|ffffff": {
+   "eff": "4e442e",
+   "sat": 0.633,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_ovuku|ffffff": {
+   "eff": "431f0e",
+   "sat": 0.235,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_ppwje|ffffff": {
+   "eff": "2d2f1d",
+   "sat": 0.677,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_s1fy7|ffffff": {
+   "eff": "24301e",
+   "sat": 0.695,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_yqnfc|ffffff": {
+   "eff": "5d4c2e",
+   "sat": 0.483,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_0854q|ffffff": {
+   "eff": "4e442e",
+   "sat": 0.633,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_ekstv|ffffff": {
+   "eff": "41190f",
+   "sat": 0.229,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_n86te|ffffff": {
+   "eff": "192d1d",
+   "sat": 0.547,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_pcgxe|ffffff": {
+   "eff": "4b1d10",
+   "sat": 0.222,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_px55r|ffffff": {
+   "eff": "431f0e",
+   "sat": 0.235,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_sxo47|ffffff": {
+   "eff": "553d23",
+   "sat": 0.395,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_ty51d|ffffff": {
+   "eff": "24301e",
+   "sat": 0.695,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_ysdef|ffffff": {
+   "eff": "4c120d",
+   "sat": 0.073,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_3k1jm|ffffff": {
+   "eff": "282c1d",
+   "sat": 0.784,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_4h37q|ffffff": {
+   "eff": "4e442e",
+   "sat": 0.633,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_6b201|ffffff": {
+   "eff": "0e1611",
+   "sat": 0.756,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_84wj6|ffffff": {
+   "eff": "9d771c",
+   "sat": 0.273,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_bjeym|ffffff": {
+   "eff": "553d23",
+   "sat": 0.395,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_c7wwj|ffffff": {
+   "eff": "182110",
+   "sat": 0.507,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_fcfq6|ffffff": {
+   "eff": "431f0e",
+   "sat": 0.235,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_p2k4b|ffffff": {
+   "eff": "3f2319",
+   "sat": 0.351,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_ppcba|ffffff": {
+   "eff": "1e2515",
+   "sat": 0.614,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_rng62|ffffff": {
+   "eff": "24301e",
+   "sat": 0.695,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_twxae|ffffff": {
+   "eff": "5d4c2e",
+   "sat": 0.483,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_1fkdq|ffffff": {
+   "eff": "122817",
+   "sat": 0.439,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_28etw|ffffff": {
+   "eff": "5f4a33",
+   "sat": 0.532,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_2gxjf|ffffff": {
+   "eff": "41190f",
+   "sat": 0.229,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_2lovd|ffffff": {
+   "eff": "4c120d",
+   "sat": 0.073,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_3ulw4|ffffff": {
+   "eff": "431f0e",
+   "sat": 0.235,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_5uo5l|ffffff": {
+   "eff": "2d2f1d",
+   "sat": 0.677,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_8g810|ffffff": {
+   "eff": "32190c",
+   "sat": 0.253,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_dypi8|ffffff": {
+   "eff": "5d4c2e",
+   "sat": 0.483,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_gervh|ffffff": {
+   "eff": "282c1d",
+   "sat": 0.784,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_ingwv|ffffff": {
+   "eff": "192d1d",
+   "sat": 0.547,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_iqks5|ffffff": {
+   "eff": "9d771c",
+   "sat": 0.273,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_nprt3|ffffff": {
+   "eff": "24301e",
+   "sat": 0.695,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_rdxh7|ffffff": {
+   "eff": "4e442e",
+   "sat": 0.633,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_rno8m|ffffff": {
+   "eff": "1a1c2f",
+   "sat": 0.475,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04b.tscn::NoiseTexture2D_1j8au|ffffff": {
+   "eff": "1a1c2f",
+   "sat": 0.475,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04b.tscn::NoiseTexture2D_hea8p|ffffff": {
+   "eff": "122817",
+   "sat": 0.439,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04b.tscn::NoiseTexture2D_n8u8j|ffffff": {
+   "eff": "6d451f",
+   "sat": 0.296,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04b.tscn::NoiseTexture2D_urjce|ffffff": {
+   "eff": "383b21",
+   "sat": 0.6,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04b.tscn::NoiseTexture2D_wc1l8|ffffff": {
+   "eff": "282c1d",
+   "sat": 0.784,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04b.tscn::NoiseTexture2D_xnhsj|ffffff": {
+   "eff": "2d2f1d",
+   "sat": 0.677,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_25pxx|ffffff": {
+   "eff": "122817",
+   "sat": 0.439,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_2qyiq|ffffff": {
+   "eff": "383b21",
+   "sat": 0.6,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_5b0tm|ffffff": {
+   "eff": "4e442e",
+   "sat": 0.633,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_5sqtd|ffffff": {
+   "eff": "431f0e",
+   "sat": 0.235,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_6rxph|ffffff": {
+   "eff": "5d4c2e",
+   "sat": 0.483,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_7p7wy|ffffff": {
+   "eff": "5f4a33",
+   "sat": 0.532,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_82g66|ffffff": {
+   "eff": "9d771c",
+   "sat": 0.273,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_rton3|ffffff": {
+   "eff": "2d2f1d",
+   "sat": 0.677,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_y0tyx|ffffff": {
+   "eff": "24301e",
+   "sat": 0.695,
+   "val": 1.0
+  }
+ }
+}

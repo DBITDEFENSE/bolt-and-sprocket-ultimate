@@ -279,7 +279,7 @@ func _cam_set_maps(set_d: Dictionary) -> void:
 			_load(str(cam["scene"]))
 			await _secs(float(cam.get("settle_s", set_d.get("settle_s", 6.0))))
 			for cl: Node in get_tree().root.find_children("*", "CanvasLayer", true, false):
-				if not (cl.get_script() != null and str((cl.get_script() as Script).resource_path).ends_with("postfx.gd")):
+				if not (cl is LookPost):   # the post stack (PostFx on a map, the menu's LookPost) stays: it is the look (T-208)
 					(cl as CanvasLayer).visible = false
 			await _secs(1.0)
 			await _shot(cname)
@@ -298,7 +298,7 @@ func _cam_set_maps(set_d: Dictionary) -> void:
 		if map.director != null:
 			map.director.kill_all(true)
 		for cl: Node in get_tree().root.find_children("*", "CanvasLayer", true, false):   # the HUD, subtitles, toasts
-			if not (cl.get_script() != null and str((cl.get_script() as Script).resource_path).ends_with("postfx.gd")):
+			if not (cl is LookPost):   # the post stack (PostFx on a map, the menu's LookPost) stays: it is the look (T-208)
 				(cl as CanvasLayer).visible = false
 		var c3: Camera3D = Camera3D.new()
 		c3.name = "PreviewCamera"

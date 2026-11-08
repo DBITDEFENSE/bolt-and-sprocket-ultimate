@@ -170,7 +170,7 @@ practical that isn't a lamp with a reason; no red fog; the fire is orange (`#ff8
 | The reels / menu | 0% (the menu's Moon point is the exception: one pixel-sized dot) | 0% |
 
 Both accents are **kept, not added, by the grade**: every map's grade desaturates the frame by 40–60% through a
-generated 3D LUT that leaves a saturated hue 268 ± 20° (violet) and 0 ± 18° (red) at full saturation, so Nachtglas
+generated 3D LUT that leaves a saturated hue 268 ± 20° (violet) and 0 ± 12° (red; ± 18° until T-208 half-kept the warm lamps at 17-23° and painted red halos) at full saturation, so Nachtglas
 and blood are the only things that stay as saturated as their source. A new asset in those hues that isn't Nachtglas
 or blood will read as one: don't make it.
 
