@@ -33,6 +33,10 @@ var _talk_rate: float = 4.0
 var _jaw: float = 0.0
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _forced_blink: float = -1.0
+## T-210: the line's Rhubarb mouth cues (LipSync), [] = the syllable flap; the mouth's width; the bone fallback.
+var _cues: Array = []
+var _wide: float = 0.0
+var _bones: LipSyncBones = null
 
 
 ## A driver for `mi` (a PeopleBodies mesh) dressed as person `id`; added as a child of `mi`.
@@ -102,6 +106,7 @@ func _on_line(_id: StringName, speaker: StringName, text: String, duration: floa
 	_talk_t = 0.0
 	_talk_len = maxf(0.4, duration)
 	_talk_rate = clampf(float(syllables(text)) / _talk_len, 2.0, 6.5)
+	_cues = LipSync.cues(String(_id))   # T-210: the take's mouth shapes when they were made
 
 
 ## Vowel groups in a line (the lip flap's rhythm).
@@ -117,7 +122,11 @@ static func syllables(text: String) -> int:
 
 
 func _process(delta: float) -> void:
-	if _idx.is_empty() or mesh == null or not mesh.is_visible_in_tree():
+	if mesh == null or not mesh.is_visible_in_tree():
+		return
+	if _idx.is_empty():   # T-210: no blend shapes: the jaw bone and the brow beat speak instead
+		if talking or _jaw > 0.001 or _bones != null:
+			_step_bones(delta)
 		return
 	# T-162 (UPDATE 10 s6 item 1): the zombies' animation LOD for the face too: every frame within full_m of the camera,
 	# every 2nd to half_m, every 4th beyond, stepping with the time it skipped (the blink and the lip flap stay in time).
@@ -158,16 +167,7 @@ func step(delta: float) -> void:
 			_blink_t -= delta
 			if _blink_t <= 0.0:
 				_blink_k = 0.0
-	# lip flap
-	var jaw_target: float = 0.0
-	if talking:
-		_talk_t += delta
-		if _talk_t >= _talk_len:
-			talking = false
-		else:
-			var syl: float = absf(sin(PI * _talk_rate * _talk_t))
-			jaw_target = 0.08 + 0.42 * syl * (0.75 + 0.25 * sin(_talk_t * 7.3))
-	_jaw = move_toward(_jaw, jaw_target, delta * 9.0)
+	_lips(delta)
 	for s: String in _idx.keys():
 		var want: float = float(target.get(s, 0.0))
 		var cur: float = move_toward(float(_w.get(s, 0.0)), want, delta * EASE)
@@ -177,7 +177,44 @@ func step(delta: float) -> void:
 			v = maxf(cur, blink)
 		elif s == "jaw_open":
 			v = clampf(cur + _jaw, 0.0, 1.0)
+		elif s == "smile" and _wide > 0.0:
+			v = clampf(cur + _wide * 0.5, 0.0, 1.0)
 		mesh.set_blend_shape_value(int(_idx[s]), v)
+
+
+## The mouth this frame: the line's Rhubarb cues when it has them (T-210), else the syllable flap.
+func _lips(delta: float) -> void:
+	var jaw_target: float = 0.0
+	var wide_target: float = 0.0
+	if talking:
+		_talk_t += delta
+		if _talk_t >= _talk_len:
+			talking = false
+		elif not _cues.is_empty():
+			var m: Vector2 = LipSync.mouth_at(_cues, _talk_t)
+			jaw_target = m.x
+			wide_target = m.y
+		else:
+			var syl: float = absf(sin(PI * _talk_rate * _talk_t))
+			jaw_target = 0.08 + 0.42 * syl * (0.75 + 0.25 * sin(_talk_t * 7.3))
+	var rate: float = 22.0 if not _cues.is_empty() else 9.0   # cues are 60-200 ms apart: the mouth must keep up
+	_jaw = move_toward(_jaw, jaw_target, delta * rate)
+	_wide = move_toward(_wide, wide_target, delta * rate)
+
+
+## T-210: a head with no blend shapes (a dressed relief / cutscene body): the Jaw bone opens on the mouth and the
+## head lifts a touch on the open vowels, through a LipSyncBones modifier on the body's skeleton.
+func _step_bones(delta: float) -> void:
+	_lips(delta)
+	if _bones == null:
+		var sk: Skeleton3D = mesh.get_parent() as Skeleton3D
+		if sk == null:
+			return
+		_bones = LipSyncBones.new()
+		_bones.name = "LipSyncBones"
+		sk.add_child(_bones)
+	_bones.jaw = _jaw
+	_bones.brow = clampf((_jaw - 0.45) * 2.5, 0.0, 1.0)
 
 
 ## The value a shape has on the mesh right now (expression + blink / lip flap).
