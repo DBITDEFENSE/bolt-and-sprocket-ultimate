@@ -10,7 +10,7 @@ static func attach(map: Node) -> void:
 
 
 func _ready() -> void:
-	layer = 4
+	layer = 9   # T-208: over the post stack (5: its edge softness and vignette), under the HUD
 	var l: Label = Label.new()
 	l.text = "%s (%s)" % [EggMode.HUD_TEXT, EggMode.MODE_LABELS[maxi(0, EggMode.MODES.find(EggMode.current()))]]
 	l.add_theme_font_size_override("font_size", 15)

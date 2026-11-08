@@ -48,7 +48,7 @@ var _added: PackedStringArray = []
 var _added_prev: PackedStringArray = []
 ## `-- --ab=a,b` experiments (diagnosis only, they change what is drawn or run): hide_zombies, no_shadows,
 ## no_omni_shadows, no_dir_shadows, no_sdfgi, no_fog, no_anim, no_ssao, no_glow, no_lights, no_shadow_proxy,
-## hide_movers (zombies and players hidden), omni_dp (dual-paraboloid omni shadows), no_spot_shadows
+## hide_movers (zombies and players hidden), omni_dp (dual-paraboloid omni shadows), no_spot_shadows, no_post (T-208)
 var _ab: PackedStringArray = []
 var _map_path: String = MAP
 const QUICK_FRAMES: int = 6
@@ -468,6 +468,9 @@ func _apply_ab() -> void:
 	print("[perf] A/B: " + ",".join(_ab))
 	if "zsmooth" in _ab:   # T-162: the zombies' render-rate smoothing on (it is off headless), to price it with --probe
 		Zombie.smooth_motion = true
+	if "no_post" in _ab:   # T-208: the post stack off (LookPost / PostFx), to price the one full-screen pass
+		for lp: Node in get_tree().get_nodes_in_group(&"look_post"):
+			(lp as CanvasLayer).visible = false
 	if "no_shadow_proxy" in _ab:   # the batches cast their own shadows again (before T-070's ShadowProxies)
 		ShadowProxies.undo(_map)
 	var env: Environment = _env()

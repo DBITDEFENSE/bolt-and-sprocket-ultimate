@@ -1,9 +1,13 @@
 {
- "_doc": "Merged over every grade on the web / Compatibility profile (C2): no colour-correction LUT there, so the selective desaturation and the split tone go, and a map's own `web` block (a plain saturation) stands in.",
+ "_doc": "Merged over every grade on the web / Compatibility profile (C2): no colour-correction LUT there, so the selective desaturation and the split tone go, and a map's own `web` block (a plain saturation) stands in. `post` (T-208, the U09 section 2d budget): the browser keeps the one-tap pieces of the post stack (grain, vignette, the menu's flicker) and drops the edge softness and the chromatic aberration (the 4-6 extra screen taps at the frame edge); the pass is then one screen read and one tap a pixel.",
  "lut": null,
  "tint": {
   "amount": 0.0
  },
  "mono": 0.0,
- "lift": 0.0
+ "lift": 0.0,
+ "post": {
+  "edge_soft": 0.0,
+  "ca": 0.0
+ }
 }

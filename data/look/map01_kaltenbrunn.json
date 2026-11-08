@@ -16,7 +16,7 @@
   },
   {
    "hue": 0,
-   "width": 18,
+   "width": 12,
    "amount": 0.85
   }
  ],
@@ -33,7 +33,7 @@
   "surface": {
    "ambient": {
     "color": "#384566",
-    "energy": 0.26
+    "energy": 0.22
    },
    "fog": {
     "color": "#10151f",
@@ -87,5 +87,8 @@
   "adjust": {
    "saturation": 0.72
   }
+ },
+ "lights": {
+  "practical_scale": 1.2
  }
 }

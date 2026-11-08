@@ -29,7 +29,7 @@ static func frost_for(night: bool, in_vacuum: bool, heaters: bool) -> float:
 
 
 func _ready() -> void:
-	layer = 5
+	layer = 6   # T-208: over the post stack (PostFx, 5), under the HUD
 	name = "MoonSuitHud"
 	add_to_group(&"moon_suit_hud")
 	var root: Control = Control.new()

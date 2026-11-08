@@ -199,6 +199,10 @@ func _audio() -> void:
 func _video() -> void:
 	_graphics()
 	content.add_child(MenuKit.check("Film grain", bool(GLSettings.values.get("film_grain", true)), _setter("film_grain")))
+	# T-208: the rest of the post stack, piece by piece (LookPost); Volumetric fog is the quality row above
+	content.add_child(MenuKit.check("Vignette", bool(GLSettings.values.get("post_vignette", true)), _setter("post_vignette")))
+	content.add_child(MenuKit.check("Lens softness at the edges", bool(GLSettings.values.get("post_edge_soft", true)), _setter("post_edge_soft")))
+	content.add_child(MenuKit.check("Chromatic aberration (frame edge)", bool(GLSettings.values.get("post_ca", true)), _setter("post_ca")))
 	var gore_levels: PackedStringArray = ["off", "low", "full"]
 	var gcur: int = maxi(0, gore_levels.find(str(GLSettings.values.get("gore", "full"))))
 	content.add_child(MenuKit.row("Gore", MenuKit.options(PackedStringArray(["Off", "Low", "Full"]), gcur,

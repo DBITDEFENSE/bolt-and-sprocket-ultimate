@@ -46,6 +46,10 @@ func clamp_inside(p: Vector3, margin: float = 1.5) -> Vector3:
 	return q
 
 
+func _enter_tree() -> void:
+	LookGrade.attach_scene(self)   # UPDATE 12 (T-208): the grade's `lights` block before any lamp script caches its energy
+
+
 func _ready() -> void:
 	GLSettings.activate()
 	Game.set_mode(Game.Mode.GRAVELIGHT)

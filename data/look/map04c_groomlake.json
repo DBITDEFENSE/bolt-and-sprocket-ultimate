@@ -18,7 +18,7 @@
   },
   {
    "hue": 0,
-   "width": 18,
+   "width": 12,
    "amount": 0.85
   }
  ],
@@ -29,7 +29,8 @@
  },
  "fog": {
   "color": "#5a4e40",
-  "albedo": "#d8c8b0"
+  "albedo": "#d8c8b0",
+  "emission": "#060504"
  },
  "post": {
   "grain": 0.08,
@@ -45,5 +46,27 @@
   "adjust": {
    "saturation": 0.72
   }
+ },
+ "ambient": {
+  "color": "#7a6c5c"
+ },
+ "sky": {
+  "zenith": "#0d0c0b",
+  "upper": "#2b2520",
+  "band": "#7a6d5c",
+  "belt": "#5a4e42",
+  "ground": "#2a241d"
+ },
+ "lights": {
+  "rules": [
+   {
+    "hue": 268,
+    "width": 30,
+    "min_sat": 0.4,
+    "range_scale": 0.45,
+    "energy_scale": 0.8,
+    "fog_scale": 0.3
+   }
+  ]
  }
 }
