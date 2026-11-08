@@ -24,6 +24,9 @@ const SHIMMER_SHADER: String = "res://gravelight/world/map04/heat_shimmer.gdshad
 const MARKS_TEX: String = "res://assets/ours/textures/kranich_markings/kranich_markings.png"
 const SPAN: float = 134.0
 const CHUNK_COLS: int = 18
+## the render layer only the hull's own sky fill light lights (HullSkyFill: the wing reads at night without
+## brightening the walk, the squad or the dead)
+const FILL_LAYER: int = 1 << 18   # render layer 19 (layer 20 is the viewmodel, WeaponHolder.VM_LAYER)
 
 @export var build_on_ready: bool = true
 ## the perf A/B (perf_marks --no-plane): never builds, never ticks
@@ -45,6 +48,9 @@ var _frost_t: float = 0.0
 var _formation_done: bool = false
 var _formation_t: float = 0.0
 var _t: float = 0.0
+var _fill: DirectionalLight3D = null
+var _strobes: Array = []          # [OmniLight3D, lens material]
+var _sprite_mats: Array[StandardMaterial3D] = []
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 
@@ -244,6 +250,7 @@ func build() -> void:
 	_build_structure()
 	_build_flutter()
 	_build_walk_lamps()
+	_build_night_aids()
 	print("[exterior] der Kranich's hull: %d triangles, built in %.0f ms" % [tris, float(Time.get_ticks_usec() - t0) / 1000.0])
 
 
@@ -282,25 +289,43 @@ func _make_hull_material() -> ShaderMaterial:
 	var cols: Array = []
 	for mk: Variant in hull.get("markings", []):
 		var a: Array = mk
-		if rects.size() >= 12:
+		if rects.size() >= 16:
 			break
 		var rot: float = deg_to_rad(float(a[5]))
 		rects.append(Vector4(float(a[0]), float(a[1]), float(a[2]) * 0.5, float(a[3]) * 0.5))
 		cells.append(Vector4(float(a[4]), cos(rot), sin(rot), 0.0))
 		cols.append(Color(str(a[6])))
 	m.set_shader_parameter("mk_count", rects.size())
-	while rects.size() < 12:
+	while rects.size() < 16:
 		rects.append(Vector4.ZERO)
 		cells.append(Vector4.ZERO)
 		cols.append(Color(0, 0, 0, 0))
 	m.set_shader_parameter("mk_rect", rects)
 	m.set_shader_parameter("mk_cell", cells)
 	m.set_shader_parameter("mk_col", cols)
+	# the catwalk's footprint (map04b.json flight.wing_walk.segments): its non-skid strips and walk-limit line
+	var ww: Dictionary = ((GLData.load_json("res://data/gravelight/map04b.json") as Dictionary).get("flight", {}) as Dictionary).get("wing_walk", {})
+	var st: Array = []
+	for seg: Variant in ww.get("segments", []):
+		var a2: Array = (seg as Array)[0]
+		var b2: Array = (seg as Array)[1]
+		if st.size() < 8:
+			st.append(Vector4(minf(float(a2[0]), float(b2[0])), minf(float(a2[1]), float(b2[1])), maxf(float(a2[0]), float(b2[0])), maxf(float(a2[1]), float(b2[1]))))
+	m.set_shader_parameter("st_count", st.size())
+	while st.size() < 8:
+		st.append(Vector4(0, 0, 0, 0))
+	m.set_shader_parameter("st_rect", st)
+	var lg: Dictionary = hull.get("legibility", {})
+	for k2: String in ["st_pad", "st_line", "st_line_w", "seam_dark"]:
+		if lg.has(k2):
+			m.set_shader_parameter(k2, float(lg[k2]))
+	if lg.has("line_color"):
+		m.set_shader_parameter("line_color", Color(str(lg["line_color"])))
 	return m
 
 
 ## Adds a surface (vertices, normals, indices) as one MeshInstance3D child.
-func _add_mesh(nm: String, v: PackedVector3Array, n: PackedVector3Array, idx: PackedInt32Array, mat: Material, shadow: bool, parent: Node3D = null) -> MeshInstance3D:
+func _add_mesh(nm: String, v: PackedVector3Array, n: PackedVector3Array, idx: PackedInt32Array, mat: Material, shadow: bool, parent: Node3D = null, cols: PackedColorArray = PackedColorArray()) -> MeshInstance3D:
 	if idx.is_empty():
 		return null
 	var arr: Array = []
@@ -320,6 +345,8 @@ func _add_mesh(nm: String, v: PackedVector3Array, n: PackedVector3Array, idx: Pa
 		tan[i * 4 + 2] = t.z
 		tan[i * 4 + 3] = -1.0 if nn.y >= 0.0 else 1.0
 	arr[Mesh.ARRAY_TANGENT] = tan
+	if cols.size() == v.size():
+		arr[Mesh.ARRAY_COLOR] = cols
 	arr[Mesh.ARRAY_INDEX] = idx
 	var am: ArrayMesh = ArrayMesh.new()
 	am.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
@@ -329,6 +356,7 @@ func _add_mesh(nm: String, v: PackedVector3Array, n: PackedVector3Array, idx: Pa
 	mi.mesh = am
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if shadow else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mi.gi_mode = GeometryInstance3D.GI_MODE_DISABLED
+	mi.layers = mi.layers | FILL_LAYER
 	(parent if parent != null else self).add_child(mi)
 	tris += idx.size() / 3
 	return mi
@@ -358,6 +386,7 @@ func _build_surface(prefix: String, xs: PackedFloat32Array, rows: PackedFloat32A
 		var c1: int = mini(nc - 1, c0 + CHUNK_COLS)
 		var v: PackedVector3Array = []
 		var n: PackedVector3Array = []
+		var cl: PackedColorArray = []
 		var idx: PackedInt32Array = []
 		for i: int in range(c0, c1 + 1):
 			for j: int in nr:
@@ -369,6 +398,7 @@ func _build_surface(prefix: String, xs: PackedFloat32Array, rows: PackedFloat32A
 					nn = -nn
 				v.append(p)
 				n.append(nn)
+				cl.append(Color(rows[j], 0.0, 0.0, 1.0))   # the chord position for the hull shader (b = 0: the skin)
 		var w: int = nr
 		for i2: int in range(0, c1 - c0):
 			for j2: int in nr - 1:
@@ -379,7 +409,7 @@ func _build_surface(prefix: String, xs: PackedFloat32Array, rows: PackedFloat32A
 					idx.append_array([a, b, a + 1, b, b + 1, a + 1])
 				else:
 					idx.append_array([a, a + 1, b, b, a + 1, b + 1])
-		_add_mesh("%s%d" % [prefix, chunk], v, n, idx, _hull_mat, shadow, parent)
+		_add_mesh("%s%d" % [prefix, chunk], v, n, idx, _hull_mat, shadow, parent, cl)
 		chunk += 1
 		c0 = c1
 
@@ -475,6 +505,7 @@ func _mesh(nm: String, mesh: Mesh, mat: Material, xf: Transform3D, parent: Node3
 	mi.transform = xf
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if shadow else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mi.gi_mode = GeometryInstance3D.GI_MODE_DISABLED
+	mi.layers = mi.layers | FILL_LAYER
 	parent.add_child(mi)
 	var am: Mesh = mesh
 	for s: int in am.get_surface_count():
@@ -482,6 +513,14 @@ func _mesh(nm: String, mesh: Mesh, mat: Material, xf: Transform3D, parent: Node3
 		var ix: Variant = a[Mesh.ARRAY_INDEX]
 		tris += ((ix as PackedInt32Array).size() if ix != null else (a[Mesh.ARRAY_VERTEX] as PackedVector3Array).size()) / 3
 	return mi
+
+
+## A small low-poly sphere (the default SphereMesh is 4,000 triangles).
+func _ball() -> SphereMesh:
+	var b: SphereMesh = SphereMesh.new()
+	b.radial_segments = 12
+	b.rings = 6
+	return b
 
 
 func _cyl(r0: float, r1: float, h: float, seg: int = 20, caps: bool = true) -> CylinderMesh:
@@ -614,7 +653,7 @@ func _build_structure() -> void:
 			bx.z = bx.x.cross(bx.y).normalized()
 			_mesh("AerialWire", _cyl(wr, wr, ln, 4, false), wire, Transform3D(bx, (p0 + p1) * 0.5), root)
 		# insulators
-		_mesh("Insulator", SphereMesh.new(), _steel(Color(0.32, 0.26, 0.2), 0.0, 0.5), Transform3D(Basis.from_scale(Vector3.ONE * 0.09), tp.lerp(dtop, 0.02)), root)
+		_mesh("Insulator", _ball(), _steel(Color(0.32, 0.26, 0.2), 0.0, 0.5), Transform3D(Basis.from_scale(Vector3.ONE * 0.09), tp.lerp(dtop, 0.02)), root)
 	# the dorsal turret: a perspex dome on a ring, twin guns aft
 	var tu: Array = hull.get("turret", [0.0, 30.5])
 	var ty: float = _y(float(tu[0]), float(tu[1]))
@@ -686,7 +725,7 @@ func _build_structure() -> void:
 		var lens: StandardMaterial3D = StandardMaterial3D.new()
 		lens.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		lens.albedo_color = Color(0.9, 0.2, 0.15) if sx < 0.0 else Color(0.25, 0.9, 0.4)
-		_mesh("NavLens", SphereMesh.new(), lens, Transform3D(Basis.from_scale(Vector3.ONE * 0.22), lp), root)
+		_mesh("NavLens", _ball(), lens, Transform3D(Basis.from_scale(Vector3.ONE * 0.22), lp), root)
 
 
 # ---------------------------------------------------------------- the things the wind moves
@@ -835,6 +874,93 @@ func _build_walk_lamps() -> void:
 		root.add_child(l)
 
 
+## The night legibility aids (T-220 b): a cold sky fill that lights only the hull (render layer FILL_LAYER, no shadow,
+## kept out of the sky so the moon's disc stays the moon), anti-collision strobes at the wingtips (a white double
+## flash), a warm glow sprite at each nozzle's mouth that reads from the hatch.
+func _build_night_aids() -> void:
+	var lg: Dictionary = hull.get("legibility", {})
+	var root: Node3D = Node3D.new()
+	root.name = "NightAids"
+	add_child(root)
+	_fill = DirectionalLight3D.new()
+	_fill.name = "HullSkyFill"
+	_fill.light_color = Color(str(lg.get("fill_color", "#9fb2dc")))
+	_fill.light_energy = float(lg.get("fill_night", 0.45))
+	_fill.light_cull_mask = FILL_LAYER
+	_fill.shadow_enabled = false
+	_fill.sky_mode = DirectionalLight3D.SKY_MODE_LIGHT_ONLY
+	_fill.light_specular = float(lg.get("fill_specular", 1.4))
+	var fd: Array = lg.get("fill_from", [-0.3, 1.0, 0.45])
+	_fill.basis = _light_from(Vector3(float(fd[0]), float(fd[1]), float(fd[2])))
+	_fill.set_meta("zone", &"SKY")
+	root.add_child(_fill)
+	# the wingtip strobes
+	var lens_mesh: SphereMesh = _ball()
+	lens_mesh.radius = 0.5
+	lens_mesh.height = 1.0
+	for sx: float in [-1.0, 1.0]:
+		var at: Vector3 = Vector3(131.2 * sx, 0.0, 26.5)
+		at.y = _y(at.x, at.z) + 0.35
+		var l: OmniLight3D = OmniLight3D.new()
+		l.name = "TipStrobe"
+		l.light_color = Color(0.92, 0.95, 1.0)
+		l.light_energy = 0.0
+		l.omni_range = float(lg.get("strobe_range", 9.0))
+		l.shadow_enabled = false
+		l.light_volumetric_fog_energy = 0.4
+		l.position = at
+		l.visible = false
+		l.set_meta("zone", &"SKY")
+		root.add_child(l)
+		var lm: StandardMaterial3D = StandardMaterial3D.new()
+		lm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		lm.albedo_color = Color(0.35, 0.36, 0.38)
+		_mesh("StrobeLens", lens_mesh, lm, Transform3D(Basis.from_scale(Vector3.ONE * 0.2), at), root)
+		_strobes.append([l, lm])
+	# the nozzles' glow, seen from far (additive, unshaded, camera-facing)
+	var nz: Dictionary = hull.get("nozzle", {})
+	var glow_c: Color = Color(str(nz.get("glow", "#ff9a52")))
+	var q: QuadMesh = QuadMesh.new()
+	q.size = Vector2.ONE * float(lg.get("glow_sprite_m", 3.2))
+	for ex: Variant in hull.get("engines", []):
+		var x: float = float(ex)
+		var exit_z: float = te_z(hull, x) - float(nz.get("past_te", 1.3))
+		var sm: StandardMaterial3D = StandardMaterial3D.new()
+		sm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		sm.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+		sm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		sm.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+		sm.no_depth_test = false
+		sm.disable_fog = true
+		var g: Gradient = Gradient.new()
+		g.set_color(0, Color(glow_c.r, glow_c.g, glow_c.b, 1.0))
+		g.set_color(1, Color(0, 0, 0, 0))
+		var gt: GradientTexture2D = GradientTexture2D.new()
+		gt.gradient = g
+		gt.fill = GradientTexture2D.FILL_RADIAL
+		gt.fill_from = Vector2(0.5, 0.5)
+		gt.fill_to = Vector2(1.0, 0.5)
+		gt.width = 64
+		gt.height = 64
+		sm.albedo_texture = gt
+		_sprite_mats.append(sm)
+		_mesh("NozzleGlowSprite", q, sm, Transform3D(Basis.IDENTITY, Vector3(x, float(nz.get("y", 2.08)), exit_z - 0.4)), root)
+
+
+## A DirectionalLight3D basis whose light comes FROM `toward`.
+static func _light_from(toward: Vector3) -> Basis:
+	var z: Vector3 = toward.normalized()
+	var up: Vector3 = Vector3.UP if absf(z.y) < 0.98 else Vector3.FORWARD
+	var x: Vector3 = up.cross(z).normalized()
+	return Basis(x, z.cross(x).normalized(), z)
+
+
+## The anti-collision strobe's brightness `t` seconds into the flight: a white double flash every `period` s.
+static func strobe_at(t: float, period: float = 1.6) -> float:
+	var k: float = fmod(t, maxf(0.2, period))
+	return 1.0 if k < 0.06 or (k > 0.2 and k < 0.26) else 0.0
+
+
 ## The formation's bombers (MapAmbience kind `formation`, boxes) re-skinned as this same wing, smaller: their box
 ## meshes hidden, a low-detail copy of the hull under each (it rides their bob and the one that goes down).
 func _reskin_formation() -> void:
@@ -885,6 +1011,17 @@ func _process(delta: float) -> void:
 		l.light_energy = float(l.get_meta("base_energy", 0.55)) * glow_k * (0.9 + 0.1 * sin(_t * 23.0 + l.position.x))
 	for gm: StandardMaterial3D in _glow_mats:
 		gm.emission_energy_multiplier = 1.6 * glow_k
+	var lg: Dictionary = hull.get("legibility", {})
+	for sm: StandardMaterial3D in _sprite_mats:
+		sm.albedo_color = Color(1, 1, 1, clampf(float(lg.get("glow_sprite_a", 0.55)) * glow_k * (0.9 + 0.1 * sin(_t * 17.0)), 0.0, 1.0))
+	if _fill != null:
+		_fill.light_energy = lerpf(float(lg.get("fill_night", 0.45)), float(lg.get("fill_dawn", 0.12)), dawn)
+	var st: float = strobe_at(_t, float(lg.get("strobe_period_s", 1.6)))
+	for sb: Array in _strobes:
+		var sl: OmniLight3D = sb[0] as OmniLight3D
+		sl.visible = st > 0.0
+		sl.light_energy = st * float(lg.get("strobe_energy", 3.0))
+		(sb[1] as StandardMaterial3D).albedo_color = Color(1.0, 1.0, 1.0) * (4.0 if st > 0.0 else 0.35)
 	for fm: ShaderMaterial in _flutter_mats:
 		fm.set_shader_parameter("gust", gust)
 	for sm: ShaderMaterial in _shimmer_mats:

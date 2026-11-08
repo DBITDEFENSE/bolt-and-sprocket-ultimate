@@ -152,6 +152,16 @@ func test_the_hull_builds_without_colliders_and_within_budget() -> void:
 		lights += 1
 		assert_false((n as Light3D).shadow_enabled, "%s casts no shadow" % n.name)
 	assert_lte(lights, 16, "few lights (%d)" % lights)
+	var fill: DirectionalLight3D = ext.find_child("HullSkyFill", true, false) as DirectionalLight3D
+	assert_not_null(fill, "the hull's own sky fill")
+	if fill != null:
+		assert_eq(fill.light_cull_mask, KranichExterior.FILL_LAYER, "it lights only the hull's layer (never the walk, the squad or the dead)")
+		assert_eq(fill.sky_mode, DirectionalLight3D.SKY_MODE_LIGHT_ONLY, "and stays out of the sky (the moon's disc is the moon)")
+	assert_eq(KranichExterior.FILL_LAYER & (1 << 19), 0, "not the viewmodel's layer")
+	assert_eq(KranichExterior.strobe_at(0.03), 1.0, "the strobe flashes")
+	assert_eq(KranichExterior.strobe_at(0.12), 0.0, "and goes dark")
+	assert_eq(KranichExterior.strobe_at(0.23), 1.0, "a double flash")
+	assert_eq(KranichExterior.strobe_at(1.0), 0.0)
 
 
 # ---------------------------------------------------------------- KranichAir

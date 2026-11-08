@@ -748,7 +748,7 @@
         {"name": "Dawn_hatch", "pos": [-40.0, 3.4, 43.5], "yaw": 120.0, "pitch": -12.0, "note": "the hatch landing at dawn", "do": ["power", "call:FlightSky:calm:0.1", "call:WingWalk:open_now:1.5", "callv:KranichAir:preview_dawn:0.85:3"], "settle_s": 3.0},
         {"name": "Dawn_tip_back", "pos": [-112.0, 3.4, 24.0], "yaw": -100.0, "pitch": -3.0, "note": "from the wingtip back along the wing at dawn"},
         {"name": "Dawn_aft", "pos": [-75.0, 3.4, 21.0], "yaw": 30.0, "pitch": -6.0, "note": "aft over the trailing edge into the sunrise"},
-        {"name": "Cloudbank", "pos": [-80.0, 3.4, 21.5], "yaw": 175.0, "pitch": 2.0, "note": "a cloud bank streaming over the wing", "do": ["callv:KranichAir:cloud_bank_now:340.0,-70.0:4"]}
+        {"name": "Cloudbank", "pos": [-80.0, 3.4, 21.5], "yaw": 175.0, "pitch": 2.0, "note": "a cloud bank streaming over the wing", "do": ["callv:KranichAir:cloud_bank_now:300.0,-80.0:4"]}
       ]
     },
     "u10_map04a": {
