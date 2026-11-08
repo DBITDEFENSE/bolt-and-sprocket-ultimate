@@ -70,7 +70,7 @@ func _process(delta: float) -> void:
 
 
 func audit(root: Node) -> Dictionary:
-	var r: Dictionary = LookMaterials.rules()
+	var r: Dictionary = LookMaterials.rules_for(_map_id)   # T-214: the map's own block over the shared rules
 	var entries: Array[Dictionary] = LookMaterials.collect(root, r)
 	var checked: Array[Dictionary] = []
 	var exempt: Dictionary = {}

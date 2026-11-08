@@ -18,7 +18,7 @@ uniform float wear_amount : hint_range(0.0, 1.0) = 0.45;
 uniform float roughness_base : hint_range(0.0, 1.0) = 0.72;
 uniform float metal_amount : hint_range(0.0, 1.0) = 0.0;
 uniform float snow_amount : hint_range(0.0, 1.0) = 1.0;
-uniform vec4 snow_tint : source_color = vec4(0.82, 0.85, 0.92, 1.0);
+uniform vec4 snow_tint : source_color = vec4(0.70, 0.73, 0.78, 1.0);   // T-214: was 0.82/0.85/0.92 (paper white on the flat panels)
 uniform vec4 char_tint : source_color = vec4(0.03, 0.026, 0.022, 1.0);
 uniform vec4 heat_tint : source_color = vec4(0.22, 0.14, 0.08, 1.0);
 uniform float alpha_clip : hint_range(0.0, 1.0) = 0.5;
@@ -78,7 +78,7 @@ void fragment() {
 	// snow on what faces the sky
 	float up = smoothstep(0.45, 0.85, wnrm.y) * COLOR.b * snow_amount;
 	float sn = smoothstep(0.25, 0.6, up * (0.55 + 0.6 * vnoise(wpos * 1.3 + 7.0)));
-	col = mix(col, snow_tint.rgb, sn);
+	col = mix(col, snow_tint.rgb * (0.8 + 0.32 * vnoise(wpos * 3.7 + 11.0)), sn);   // T-214: drifted, not a flat sheet
 	rough = mix(rough, 0.82, sn);
 	metal = mix(metal, 0.0, sn);
 	ALBEDO = col;

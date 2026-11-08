@@ -57,6 +57,11 @@ def main() -> int:
             save_jpg(img, out, a.cap_kb)
             pairs.setdefault(name, {})[label] = out
             print(f"{name:22s} {label:6s} {stats(img)}  {os.path.getsize(out) // 1024} KB")
+    # T-214: the sheet shows every pair in the folder (a re-shoot of a few cameras keeps the others)
+    for fn in sorted(os.listdir(a.dir)):
+        for label in ("before", "after"):
+            if fn.endswith(f"_{label}.jpg"):
+                pairs.setdefault(fn[: -len(f"_{label}.jpg")], {}).setdefault(label, os.path.join(a.dir, fn))
     if not pairs:
         print("no frames")
         return 1

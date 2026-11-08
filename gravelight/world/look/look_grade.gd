@@ -143,13 +143,91 @@ static func attach(map: Node) -> Dictionary:
 	var d: Dictionary = apply(we.environment, id)
 	if we.has_method("look_zones"):
 		we.call("look_zones", data(id).get("zones", {}))
+	elif LookZones.has_boxes(data(id).get("zones", {})):
+		# T-214: any other map's zones with `boxes` (Map 0's inn: the interior haze cut) follow the camera
+		var lz: LookZones = LookZones.new()
+		lz.setup(we.environment, data(id).get("zones", {}), map)
+		map.add_child(lz)
+	var sp: Array = d.get("shader_params", [])
+	apply_shader_params(map, sp)
+	if not sp.is_empty() and map.is_inside_tree():
+		# a set piece built later (the living world's extra searchlights on Thalbach's ridges, rebuilt beams) gets it
+		# too: every mesh that enters the map from now on, while the map lives
+		var tree: SceneTree = map.get_tree()
+		var hook: Callable = func(n: Node) -> void:
+			if n is GeometryInstance3D and is_instance_valid(map) and map.is_ancestor_of(n):
+				apply_shader_params(n, sp, true)
+		tree.node_added.connect(hook)
+		map.tree_exiting.connect(func() -> void:
+			if tree.node_added.is_connected(hook):
+				tree.node_added.disconnect(hook), CONNECT_ONE_SHOT)
+	apply_nodes(map, d.get("nodes", []))
 	map.set_meta("gl_look", id)
 	if not hold_materials and not map.has_meta("gl_look_materials"):   # T-208: the material pass (roughness floor, palette, the wear layer)
-		var mp: Dictionary = LookMaterials.apply_tree(map)
+		var mp: Dictionary = LookMaterials.apply_tree(map, LookMaterials.rules_for(id))
 		map.set_meta("gl_look_materials", mp)
 		print("[LookMaterials] %s: %d materials, %d fixed, %d exempt, %d skipped, %.1f ms" % [id, int(mp.get("materials", 0)),
 			int(mp.get("changed", 0)), int(mp.get("exempt", 0)), int(mp.get("skipped", 0)), float(mp.get("ms", 0.0))])
 	return d
+
+
+## T-214: the grade's `shader_params` list, [{"shader": "<file name>", "node": "<path substring>", "params": {...}}]:
+## every ShaderMaterial of that shader under `root` (on a node whose path holds `node`, when given) gets the params
+## (a "#rrggbb" string is a colour). Thalbach's cloud deck: the searchlight spots no longer burn white; Kaltenbrunn's
+## far ridge. Returns how many materials it set.
+static func apply_shader_params(root: Node, list: Array, only_root: bool = false) -> int:
+	if root == null or list.is_empty():
+		return 0
+	var n: int = 0
+	var seen: Dictionary = {}
+	var nodes: Array = [root] if only_root else root.find_children("*", "GeometryInstance3D", true, false)
+	for g: Node in nodes:
+		if not (g is GeometryInstance3D):
+			continue
+		var path: String = String(g.get_path()) if only_root and g.is_inside_tree() else String(root.get_path_to(g))
+		for m: Material in LookMaterials.materials_of(g as GeometryInstance3D):
+			if not (m is ShaderMaterial) or seen.has(m.get_instance_id()):
+				continue
+			var sh: Shader = (m as ShaderMaterial).shader
+			if sh == null:
+				continue
+			for e: Variant in list:
+				var ed: Dictionary = e
+				if ed.has("shader") and not sh.resource_path.get_file().contains(str(ed["shader"])):
+					continue   # (no "shader": any shader on the named node, e.g. one built in code)
+				if not ed.has("shader") and not ed.has("node"):
+					continue
+				if ed.has("node") and not path.contains(str(ed["node"])):
+					continue
+				var pr: Dictionary = ed.get("params", {})
+				for k: Variant in pr.keys():
+					var v: Variant = pr[k]
+					if v is Array and (v as Array).size() == 3:
+						v = Vector3(float(v[0]), float(v[1]), float(v[2]))   # a vec3 uniform (a beam's colour)
+					(m as ShaderMaterial).set_shader_parameter(str(k), color(v) if v is String else v)
+				seen[m.get_instance_id()] = true
+				n += 1
+				break
+	return n
+
+
+## T-214: the grade's `nodes` list, [{"path": "Landscape/RidgeBand1", "scale": [x, y, z]}]: a far set piece reshaped
+## for the frame (presentation only: never a collider, a navmesh or anything a player can reach).
+static func apply_nodes(root: Node, list: Array) -> int:
+	var n: int = 0
+	for e: Variant in list:
+		var ed: Dictionary = e
+		var nd: Node = root.get_node_or_null(NodePath(str(ed.get("path", ""))))
+		if not (nd is Node3D):
+			continue
+		if ed.get("scale", null) is Array:
+			var sc: Array = ed["scale"]
+			(nd as Node3D).scale *= Vector3(float(sc[0]), float(sc[1]), float(sc[2]))
+		if ed.get("material", null) is Dictionary and nd is GeometryInstance3D:
+			for m: Material in LookMaterials.materials_of(nd as GeometryInstance3D):
+				set_props(m, ed["material"])   # a material's own properties by name (roughness, specular, ...)
+		n += 1
+	return n
 
 
 ## T-208: the MapRoot's _enter_tree hook, before any child's _ready (so a flicker or power script caches the new
@@ -165,11 +243,17 @@ static func attach_scene(map: Node) -> int:
 
 
 ## The `lights` block (darker nights, stronger practicals; DECISIONS T-208) on every OmniLight3D / SpotLight3D under
-## `root`:
-##   "practical_scale": x   the energy of every lamp (warm, cold or red: the practicals) times x; an accent-hue light
-##                          (a `rules` match) is left to its rule;
-##   "rules": [{"hue": deg, "width": deg, "min_sat": s, "range_scale": x, "energy_scale": x, "fog_scale": x}, ...]
-##                          a light whose colour is that hue (± width, saturation past min_sat) gets those scales:
+## `root` (and a DirectionalLight3D, by a rule that names "type": "directional"):
+##   "practical_scale": x   the energy of every lamp (warm, cold or red: the practicals) times x; a light a rule
+##                          matches is left to its rule;
+##   "rules": [{...}, ...]  the first rule that matches a light decides it. Match (every key optional):
+##                          "hue" / "width" / "min_sat" its colour (a hue window, saturated past min_sat), "type"
+##                          omni | spot | directional, "name" substrings of its name, "min_range" / "max_range" its
+##                          reach, "box" [x0, y0, z0, x1, y1, z1] where it stands (map frame);
+##                          effects: "energy_scale", "range_scale", "fog_scale" (its volumetric fog energy),
+##                          "sat_scale" (its colour toward white: a violet fill becomes a neutral one, T-214),
+##                          "color" (a new colour), "pool": {"range", "energy"} (a small light of the old colour
+##                          left under it: the tube keeps its own violet pool while its fill goes neutral, T-214).
 ##                          Groom Lake's crater lamps keep their violet on the Nachtglas and stop lighting the salt.
 ## The base energy a script keeps in the light's `energy` meta (power switches, the director's fog tween) scales too.
 static func apply_lights(root: Node, block: Dictionary) -> int:
@@ -179,44 +263,104 @@ static func apply_lights(root: Node, block: Dictionary) -> int:
 	var rules: Array = block.get("rules", [])
 	var n: int = 0
 	for l: Node in root.find_children("*", "Light3D", true, false):
-		if not (l is OmniLight3D or l is SpotLight3D):
-			continue
 		var lt: Light3D = l as Light3D
-		var rule: Dictionary = light_rule(lt.light_color, rules)
+		var at: Vector3 = _rel_origin(lt, root)
+		var rule: Dictionary = light_rule(lt.light_color, rules, lt, at)
+		if lt is DirectionalLight3D and rule.is_empty():
+			continue   # the sun / moon: only a rule that names it
 		var e_scale: float = float(rule.get("energy_scale", 1.0)) if not rule.is_empty() else practical
 		var changed: bool = false
+		var old_col: Color = lt.light_color
+		var old_e: float = lt.light_energy
 		if not is_equal_approx(e_scale, 1.0):
 			lt.light_energy *= e_scale
 			if lt.has_meta("energy"):
 				lt.set_meta("energy", float(lt.get_meta("energy")) * e_scale)
+			if lt.get("base_energy") != null:   # T-214: FlickerLight / HumPulse drive their energy from base_energy
+				lt.set("base_energy", float(lt.get("base_energy")) * e_scale)
 			changed = true
 		if not rule.is_empty():
 			var rs: float = float(rule.get("range_scale", 1.0))
 			if not is_equal_approx(rs, 1.0):
 				if lt is OmniLight3D:
 					(lt as OmniLight3D).omni_range *= rs
-				else:
+				elif lt is SpotLight3D:
 					(lt as SpotLight3D).spot_range *= rs
 				changed = true
 			if rule.has("fog_scale"):
 				lt.light_volumetric_fog_energy *= float(rule["fog_scale"])
 				changed = true
+			if rule.has("color"):
+				lt.light_color = color(rule["color"], lt.light_color)
+				changed = true
+			if rule.has("sat_scale"):
+				var c: Color = lt.light_color
+				lt.light_color = Color.from_hsv(c.h, c.s * float(rule["sat_scale"]), c.v, c.a)
+				changed = true
+			if rule.get("pool", null) is Dictionary and lt is OmniLight3D and old_e > 0.0:
+				var pd: Dictionary = rule["pool"]
+				var pool: OmniLight3D = OmniLight3D.new()
+				pool.name = "LookPool"
+				pool.light_color = old_col
+				pool.light_energy = old_e * float(pd.get("energy", 1.0))
+				pool.omni_range = float(pd.get("range", 3.0))
+				pool.omni_attenuation = float(pd.get("attenuation", 1.4))
+				pool.shadow_enabled = false
+				pool.light_volumetric_fog_energy = float(pd.get("fog", 0.0))
+				pool.light_specular = lt.light_specular
+				lt.add_child.call_deferred(pool)
 		if changed:
 			n += 1
 	return n
 
 
-## The first rule of `rules` whose hue window holds `c` (a saturated colour only), {} for none. Pure.
-static func light_rule(c: Color, rules: Array) -> Dictionary:
+## Where `n` stands in `root`'s frame, from the local transforms (the map's _enter_tree: nothing is in the tree yet).
+static func _rel_origin(n: Node, root: Node) -> Vector3:
+	var xf: Transform3D = Transform3D.IDENTITY
+	var cur: Node = n
+	while cur != null and cur != root:
+		if cur is Node3D:
+			xf = (cur as Node3D).transform * xf
+		cur = cur.get_parent()
+	return xf.origin
+
+
+## The first rule of `rules` that matches a light of colour `c` ({} for none). Pure: `light` (its type, name and
+## range) and `at` (where it stands) only matter to a rule that asks about them; a rule with a `hue` only takes a
+## saturated colour in its window.
+static func light_rule(c: Color, rules: Array, light: Light3D = null, at: Vector3 = Vector3.ZERO) -> Dictionary:
 	for r: Variant in rules:
 		if not (r is Dictionary):
 			continue
 		var rd: Dictionary = r
-		if c.s < float(rd.get("min_sat", 0.4)):
+		if rd.has("type"):
+			var ty: String = str(rd["type"])
+			if light == null or (ty == "omni" and not light is OmniLight3D) or (ty == "spot" and not light is SpotLight3D) 					or (ty == "directional" and not light is DirectionalLight3D):
+				continue
+		elif light is DirectionalLight3D:
 			continue
-		var dh: float = absf(wrapf(c.h * 360.0 - float(rd.get("hue", 0.0)), -180.0, 180.0))
-		if dh <= float(rd.get("width", 20.0)):
-			return rd
+		if rd.has("name"):
+			if light == null:
+				continue
+			var nm: String = String(light.name)
+			var names: Array = rd["name"] if rd["name"] is Array else [rd["name"]]
+			if not names.any(func(w: Variant) -> bool: return nm.contains(str(w))):
+				continue
+		if rd.has("min_range") or rd.has("max_range"):
+			var rg: float = (light as OmniLight3D).omni_range if light is OmniLight3D else ((light as SpotLight3D).spot_range if light is SpotLight3D else 0.0)
+			if rg < float(rd.get("min_range", -1.0)) or rg > float(rd.get("max_range", 1e9)):
+				continue
+		if rd.has("box"):
+			var bx: Array = rd["box"]
+			if at.x < float(bx[0]) or at.y < float(bx[1]) or at.z < float(bx[2]) or at.x > float(bx[3]) or at.y > float(bx[4]) or at.z > float(bx[5]):
+				continue
+		if rd.has("hue"):
+			if c.s < float(rd.get("min_sat", 0.4)):
+				continue
+			var dh: float = absf(wrapf(c.h * 360.0 - float(rd.get("hue", 0.0)), -180.0, 180.0))
+			if dh > float(rd.get("width", 20.0)):
+				continue
+		return rd
 	return {}
 
 
@@ -321,6 +465,11 @@ static func apply_dict(env: Environment, d: Dictionary) -> void:
 		for k: Variant in sky.keys():
 			var v: Variant = sky[k]
 			sm.set_shader_parameter(str(k), color(v) if (v is String or v is Array) else v)
+	elif not sky.is_empty() and env.sky != null and env.sky.sky_material != null:
+		set_props(env.sky.sky_material, sky)   # T-214: a ProceduralSkyMaterial's own properties (Thalbach's soot sky)
+	var envp: Dictionary = d.get("env", {})   # T-214: any other Environment property by name (sdfgi_energy, ssil_intensity, ...)
+	if not envp.is_empty():
+		set_props(env, envp)
 	var glow: Dictionary = d.get("glow", {})
 	if not glow.is_empty():
 		if glow.has("intensity"):
@@ -329,6 +478,16 @@ static func apply_dict(env: Environment, d: Dictionary) -> void:
 			env.glow_bloom = float(glow["bloom"])
 		if glow.has("threshold"):
 			env.glow_hdr_threshold = float(glow["threshold"])
+
+
+## `props` on `obj` by property name (a "#rrggbb" string or [r, g, b] for a Color property); unknown names are skipped.
+static func set_props(obj: Object, props: Dictionary) -> void:
+	for k: Variant in props.keys():
+		var cur: Variant = obj.get(str(k))
+		if cur == null:
+			continue
+		var v: Variant = props[k]
+		obj.set(str(k), color(v, cur) if cur is Color else v)
 
 
 ## The grade's brightness is the map's base brightness: the Brightness slider (T-133) scales it and the horror
@@ -380,9 +539,21 @@ static func lut_spec(d: Dictionary) -> Dictionary:
 		var keep: Array = []
 		for k: Variant in d.get("keep", []):
 			if k is Dictionary:
-				keep.append({"hue": float((k as Dictionary).get("hue", 0.0)), "width": float((k as Dictionary).get("width", 20.0)),
-					"amount": float((k as Dictionary).get("amount", 1.0))})
+				var kd: Dictionary = k
+				var ke: Dictionary = {"hue": float(kd.get("hue", 0.0)), "width": float(kd.get("width", 20.0)), "amount": float(kd.get("amount", 1.0))}
+				if kd.has("sat"):   # T-214: how saturated a colour must be to be kept ([from, full]; default [0.3, 0.55])
+					ke["sat"] = [float(kd["sat"][0]), float(kd["sat"][1])]
+				if kd.has("val"):   # T-214: how bright it must be ([from, full] display value)
+					ke["val"] = [float(kd["val"][0]), float(kd["val"][1])]
+				keep.append(ke)
 		spec["keep"] = keep
+	var sup: Array = []
+	for u: Variant in d.get("suppress", []):
+		if u is Dictionary:
+			sup.append({"hue": float((u as Dictionary).get("hue", 0.0)), "width": float((u as Dictionary).get("width", 20.0)),
+				"amount": float((u as Dictionary).get("amount", 1.0)), "max_sat": float((u as Dictionary).get("max_sat", 2.0))})
+	if not sup.is_empty():
+		spec["suppress"] = sup
 	if absf(float(d.get("lift", 0.0))) > 0.0005:
 		spec["lift"] = float(d["lift"])
 	return spec
@@ -399,9 +570,25 @@ static func lut_color(c: Color, spec: Dictionary) -> Color:
 			var dh: float = absf(wrapf(out.h * 360.0 - float(k["hue"]), -180.0, 180.0))
 			var half: float = maxf(0.5, float(k["width"]))
 			var win: float = 1.0 - smoothstep(half * 0.6, half, dh)
-			w = maxf(w, win * float(k["amount"]) * smoothstep(0.3, 0.55, out.s))   # only a saturated violet / red is kept; moonlit salt or a bluish grey is not
+			var sat: Array = k.get("sat", [0.3, 0.55])
+			var vk: float = 1.0
+			if k.has("val"):   # T-214: a dark violet (a floor washed by a fill light) is not the accent; the lit tube is
+				vk = smoothstep(float(k["val"][0]), float(k["val"][1]), out.v)
+			w = maxf(w, win * float(k["amount"]) * smoothstep(float(sat[0]), float(sat[1]), out.s) * vk)   # only a saturated violet / red is kept; moonlit salt or a bluish grey is not
 		var grey: Color = Color(luma, luma, luma)
 		out = out.lerp(grey, float(spec["mono"]) * (1.0 - w))
+	if spec.has("suppress"):
+		# T-214: hue bands greyed further whatever `mono` leaves: the pink / magenta / salmon where a warm lamp and the
+		# cold moon meet on a pale wall (blue + orange light sums to pink), never a colour of the palette
+		var sw: float = 0.0
+		for u: Dictionary in spec["suppress"]:
+			var du: float = absf(wrapf(out.h * 360.0 - float(u["hue"]), -180.0, 180.0))
+			var hu: float = maxf(0.5, float(u["width"]))
+			var ms: float = float(u.get("max_sat", 2.0))   # a band can spare what is past max_sat (blood red is)
+			sw = maxf(sw, (1.0 - smoothstep(hu * 0.6, hu, du)) * float(u["amount"]) * smoothstep(0.04, 0.12, out.s) \
+				* (1.0 - smoothstep(ms - 0.1, ms + 0.1, out.s)))
+		var g2: float = out.r * 0.299 + out.g * 0.587 + out.b * 0.114
+		out = out.lerp(Color(g2, g2, g2), sw)
 	if spec.has("tint"):
 		var t: Dictionary = spec["tint"]
 		var sh: Color = Color.html(str(t["shadows"]))

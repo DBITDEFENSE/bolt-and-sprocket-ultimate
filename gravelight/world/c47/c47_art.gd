@@ -161,6 +161,8 @@ static func _map_mesh(m: Mesh) -> void:
 	if m == null or m.has_meta("c47_mapped"):
 		return
 	m.set_meta("c47_mapped", true)
+	if m is ArrayMesh:
+		fix_flipped_normals(m as ArrayMesh)
 	for s: int in m.get_surface_count():
 		var cur: Material = m.surface_get_material(s)
 		if cur == null:
@@ -168,6 +170,85 @@ static func _map_mesh(m: Mesh) -> void:
 		var mapped: Material = mat(cur.resource_name, cur)
 		if mapped != null:
 			m.surface_set_material(s, mapped)
+
+
+## T-214: the torn skin's few faces whose vertex normals point against their winding (49 of the fuselage's 14,492:
+## peeled petals at the tears) were lit and snowed on as if they faced the sky while the cabin saw their inside:
+## pure-white triangles in the roof. Each such face gets its own vertices with the normal turned to its winding.
+## Returns how many faces it turned. (A real model's import goes through the same check.)
+static func fix_flipped_normals(m: ArrayMesh) -> int:
+	var turned: int = 0
+	var surfs: Array = []
+	for si: int in m.get_surface_count():
+		var arr: Array = m.surface_get_arrays(si)
+		var vx: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+		var nr: PackedVector3Array = arr[Mesh.ARRAY_NORMAL] if arr[Mesh.ARRAY_NORMAL] != null else PackedVector3Array()
+		var ix: PackedInt32Array = arr[Mesh.ARRAY_INDEX] if arr[Mesh.ARRAY_INDEX] != null else PackedInt32Array()
+		var bad: Array[int] = []
+		if not nr.is_empty() and not ix.is_empty() and m.surface_get_primitive_type(si) == Mesh.PRIMITIVE_TRIANGLES:
+			for f: int in ix.size() / 3:
+				var a: int = ix[f * 3]
+				var b: int = ix[f * 3 + 1]
+				var c: int = ix[f * 3 + 2]
+				var wn: Vector3 = (vx[c] - vx[a]).cross(vx[b] - vx[a])   # Godot's front face is clockwise
+				if wn.dot(nr[a] + nr[b] + nr[c]) < 0.0:
+					bad.append(f)
+		surfs.append([arr, bad])
+		turned += bad.size()
+	if turned == 0:
+		return 0
+	var mats: Array = []
+	var names: Array = []
+	var prims: Array = []
+	for si2: int in m.get_surface_count():
+		mats.append(m.surface_get_material(si2))
+		names.append(m.surface_get_name(si2))
+		prims.append(m.surface_get_primitive_type(si2))
+	m.clear_surfaces()
+	for si3: int in surfs.size():
+		var arr2: Array = surfs[si3][0]
+		var bad2: Array = surfs[si3][1]
+		if not bad2.is_empty():
+			arr2 = _turn_faces(arr2, bad2)
+		m.add_surface_from_arrays(prims[si3], arr2)
+		m.surface_set_material(si3, mats[si3])
+		m.surface_set_name(si3, str(names[si3]))
+	return turned
+
+
+## `arr` with each face in `bad` given its own three vertices (copied from its corners) whose normals (and
+## tangents) are turned around.
+static func _turn_faces(arr: Array, bad: Array) -> Array:
+	var out: Array = arr.duplicate()
+	var ix: PackedInt32Array = (arr[Mesh.ARRAY_INDEX] as PackedInt32Array).duplicate()
+	var per_vertex: Array = []
+	for k: int in Mesh.ARRAY_MAX:
+		if k == Mesh.ARRAY_INDEX or arr[k] == null:
+			continue
+		var n0: int = (arr[Mesh.ARRAY_VERTEX] as PackedVector3Array).size()
+		var a: Variant = arr[k]
+		var sz: int = a.size()
+		if sz % n0 == 0 and sz > 0:
+			per_vertex.append([k, sz / n0])
+			out[k] = a.duplicate()
+	var nv: int = (arr[Mesh.ARRAY_VERTEX] as PackedVector3Array).size()
+	for f: int in bad:
+		for j: int in 3:
+			var src: int = ix[f * 3 + j]
+			for pv: Array in per_vertex:
+				var k2: int = pv[0]
+				var w: int = pv[1]
+				for e: int in w:
+					var val: Variant = arr[k2][src * w + e]
+					if k2 == Mesh.ARRAY_NORMAL:
+						val = -Vector3(val)
+					elif k2 == Mesh.ARRAY_TANGENT and e < 3:
+						val = -float(val)
+					out[k2].append(val)
+			ix[f * 3 + j] = nv
+			nv += 1
+	out[Mesh.ARRAY_INDEX] = ix
+	return out
 
 
 ## The game material for a GLB slot (`cur` = the imported one, for the slots that keep their texture).

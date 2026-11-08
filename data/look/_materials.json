@@ -16,7 +16,8 @@
  "grime_min": 0.35,
  "detail": {
   "texture": "res://assets/materials/textures/look_grime.png",
-  "tile_m": 2.5
+  "tile_m": 1.6,
+  "strength": 0.6
  },
  "accent_hues": [
   {
@@ -649,6 +650,70 @@
    "eff": "24301e",
    "sat": 0.695,
    "val": 1.0
+  }
+ },
+ "detail_classes": [
+  {
+   "name": "pale flat colour (a painted board, a bunk end, a plaster wall)",
+   "untextured": true,
+   "min_value": 0.45,
+   "strength": 0.28,
+   "tile_m": 1.2
+  },
+  {
+   "name": "concrete and steel",
+   "words": [
+    "concrete",
+    "steel",
+    "metal",
+    "plaster",
+    "panel",
+    "tile",
+    "ceiling",
+    "alumin"
+   ],
+   "strength": 0.38,
+   "tile_m": 1.4
+  }
+ ],
+ "lit_smoke": true,
+ "maps": {
+  "map04d_mondlicht": {
+   "detail": {
+    "strength": 0.14,
+    "tile_m": 1.0
+   },
+   "detail_classes": []
+  },
+  "map04b_kranich": {
+   "emission": [
+    {
+     "hue": 268,
+     "width": 30,
+     "scale": 0.5
+    }
+   ]
+  },
+  "map01_kaltenbrunn": {
+   "accent_caps": [
+    {
+     "node": "Pylon_",
+     "hue": 268,
+     "width": 30,
+     "sat_max": 0.5,
+     "val_max": 0.85
+    }
+   ]
+  },
+  "map04a_thalbach": {
+   "emission": [
+    {
+     "hue": 214,
+     "width": 25,
+     "min_sat": 0.05,
+     "scale": 0.3
+    }
+   ]
   }
  }
 }

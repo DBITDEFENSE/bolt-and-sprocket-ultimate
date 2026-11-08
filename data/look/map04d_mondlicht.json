@@ -12,9 +12,17 @@
  "mono": 1.0,
  "keep": [
   {
-   "hue": 268,
-   "width": 36,
-   "amount": 1.0
+   "hue": 270,
+   "width": 24,
+   "amount": 1.0,
+   "sat": [
+    0.5,
+    0.75
+   ],
+   "val": [
+    0.3,
+    0.5
+   ]
   }
  ],
  "post": {
@@ -31,5 +39,49 @@
   "adjust": {
    "saturation": 0.15
   }
+ },
+ "ambient": {
+  "color": "#24262b"
+ },
+ "env": {
+  "sdfgi_energy": 1.2,
+  "ssil_intensity": 0.6
+ },
+ "fog": {
+  "emission": "#030304"
+ },
+ "lights": {
+  "rules": [
+   {
+    "type": "spot",
+    "hue": 270,
+    "width": 12,
+    "min_sat": 0.4,
+    "energy_scale": 0.85,
+    "fog_scale": 0.4
+   },
+   {
+    "hue": 265,
+    "width": 30,
+    "min_sat": 0.25,
+    "min_range": 12,
+    "sat_scale": 0.12,
+    "energy_scale": 0.8,
+    "fog_scale": 0.25,
+    "pool": {
+     "range": 3.2,
+     "energy": 0.9
+    }
+   },
+   {
+    "hue": 265,
+    "width": 30,
+    "min_sat": 0.25,
+    "range_scale": 0.55,
+    "energy_scale": 0.7,
+    "fog_scale": 0.25,
+    "sat_scale": 0.35
+   }
+  ]
  }
 }
