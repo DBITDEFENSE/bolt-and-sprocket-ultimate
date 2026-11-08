@@ -95,9 +95,9 @@ tools/voice.sh elevenlabs design --char=gl:SER --pick=2                creates p
 | The Operator (`OPR`) | a 1940s radio announcer with a salesman's warmth: bright, brassy, a little too quick; the tannoy is added afterwards | it stays cheerful about "the returned" and "the fourth day". The horror is the warmth |
 | Fasbender (`FAS`) | German-accented English, nervous, hushed, haunted | he saw the Soviet dead come in on the trains; field radio afterwards |
 | Reinholt (`REI`) | refined German-accented English, slow, cold; German lines in German | phonograph / PA afterwards |
-| Father Serafim (`SER`) | Russian: an older village priest, a deep, gentle, worn bass-baritone, liturgical cadence | subtitled; frightened faith, never a villain, never a zombie on screen |
-| Volkov (`VOL`) | Russian: a precise, quick, controlled baritone | frightened, clever, ambitious, never a cartoon |
-| Soviet radio (`SVR`), the brigade (`BRG`), the Returned (`RTN`) | Russian: a flat signaller on the radio chain; a zealous megaphone; young soldiers' hoarse, broken whispers | subtitled; the risen only from close up |
+| Father Serafim (`SER`) | English with a Russian accent (T-204): an older village priest, a deep, gentle, worn bass-baritone, liturgical cadence | frightened faith, never a villain, never a zombie on screen |
+| Volkov (`VOL`) | English with a Russian accent (T-204): a precise, quick, controlled baritone | frightened, clever, ambitious, never a cartoon |
+| Soviet radio (`SVR`), the brigade (`BRG`), the Returned (`RTN`) | English with a Russian accent (T-204): a flat signaller on the radio chain; a zealous megaphone; young soldiers' hoarse, broken whispers | the risen only from close up |
 | The PA (`PA`), the Bordwart (`BWT`), Lenz the Kielholer (`KLH`), U-boat radio (`UBR`) | German | the German announcements and Lenz's refusal stay German |
 | The map people (`WIE` `BRA` `KRO` `SOB` `ROT` `KUB` `TRU` `POH` `AMM` `PET` ...) | real people speaking English as a second language with a light German (or Polish) accent | played straight, never comic (T-077) |
 | The Cousins (`HAM` `RCH` `ALX` `CSN`) | German, creepy-doll horror, playful and sad | never sexualized; designed, never cloned from the owner's cousins |
@@ -124,9 +124,9 @@ who are never in one scene.
 | The Operator | Clyde: Vintage and Warm Radio Announcer | en | 0.40 |
 | Fasbender | Tobias: German accent | en | 0.40 |
 | Reinholt | Charlotte: Competent and Authoritative (German accent) | en / de | 0.55 |
-| Father Serafim | Alex: Calm Russian Analyst (native, 50-60) | ru | 0.60 |
-| Volkov | Aleksandr: Documentary Narrator (native, young Moscow baritone) | ru | 0.50 |
-| Soviet radio / the Returned / the brigade | BaMnyc (crisp) / Danik (calm, low stability) / Evgeniy Rybakov (expressive) | ru | 0.70 / 0.30 / 0.35 |
+| Father Serafim | Alex: Calm Russian Analyst (native, 50-60) | en (Russian accent; the ru takes kept, T-204) | 0.60 |
+| Volkov | Aleksandr: Documentary Narrator (native, young Moscow baritone) | en (Russian accent; ru kept) | 0.50 |
+| Soviet radio / the Returned / the brigade | BaMnyc (crisp) / Danik (calm, low stability) / Evgeniy Rybakov (expressive) | en (Russian accent; ru kept) | 0.70 / 0.30 / 0.35 |
 | The PA, U-boat radio, Lenz | Hans: Clear and Soft / Carl: Normal and Calm / Tom: Bass-heavy | de | 0.70 / 0.75 / 0.60 |
 | The Cousins (Mara, Jo, Alix, together) | Scarlett / Clara / Lucy (Scarlett for "together") | de | 0.35 to 0.40 |
 | PAUL (PAU), THE SLENDER (SLN) | Harry: Fierce Warrior (premade) / Austin (premade): library voices, never clones | en | 0.30 / 0.60 |

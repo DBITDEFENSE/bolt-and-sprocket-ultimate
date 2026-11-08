@@ -1298,18 +1298,18 @@
    },
    "SER": {
     "name": "Father Serafim Lebedev",
-    "who": "The 1930 priest of the Church of St Lazarus at Chetverodnevo: Russian, subtitled; the diary read-alouds.",
+    "who": "The 1930 priest of the Church of St Lazarus at Chetverodnevo: English with a Russian accent; the diary read-alouds.",
     "voice_notes": "",
     "actor": "[ACTOR]",
     "eleven": {
      "voice_id": "9AjtU6o19uipv7QL8dLL",
      "voice_name": "Alex - Calm Russian Analyst",
      "source": "library",
-     "design_prompt": "A Russian Orthodox village priest in his late fifties in 1930, speaking Russian: a deep, gentle, tired bass-baritone with a slow liturgical cadence, warm and frightened.",
-     "language": "ru",
+     "design_prompt": "A Russian Orthodox village priest in his late fifties in 1930, speaking English with a natural Russian accent: a deep, gentle, tired bass-baritone with a slow liturgical cadence, warm and frightened.",
+     "language": "en",
      "stability": 0.6,
      "similarity_boost": 0.75,
-     "why": "Alex - Calm Russian Analyst (standard, old, male, mature, ru): a native Russian man of 50-60, medium-low, warm, slightly textured: the old village priest, gentle and worn; subtitled.",
+     "why": "Alex - Calm Russian Analyst (standard, old, male, mature, ru): a native Russian man of 50-60, medium-low, warm, slightly textured: the old village priest, gentle and worn; speaks English, the native Russian voice carries the accent (T-204).",
      "candidates": [
       {
        "voice_id": "9AjtU6o19uipv7QL8dLL",
@@ -1346,23 +1346,27 @@
        "labels": "scottish, old, male, raspy, narrative_story, en",
        "query": "gender=male, language=ru, age=old"
       }
-     ]
+     ],
+     "accent": "ru",
+     "lang_versions": {
+      "ru": "data/gravelight/vo/lang/ru.json (the Russian takes, gravelight/audio/vo_lang/ru/)"
+     }
     }
    },
    "VOL": {
     "name": "Arkady Volkov",
-    "who": "The man who opened the vessel and ran FOURTH DAY: Russian, subtitled.",
+    "who": "The man who opened the vessel and ran FOURTH DAY: English with a Russian accent.",
     "voice_notes": "",
     "actor": "[ACTOR]",
     "eleven": {
      "voice_id": "JMT0QtVym2S8gHCkBqMp",
      "voice_name": "Aleksandr - Documentary Narrator",
      "source": "library",
-     "design_prompt": "A Soviet scientist and officer in his thirties speaking Russian: a precise, quick, controlled baritone, clever and ambitious, fear held under the surface.",
-     "language": "ru",
+     "design_prompt": "A Soviet scientist and officer in his thirties speaking English with a natural Russian accent: a precise, quick, controlled baritone, clever and ambitious, fear held under the surface.",
+     "language": "en",
      "stability": 0.5,
      "similarity_boost": 0.75,
-     "why": "Aleksandr - Documentary Narrator (moscow, young, male, deep, ru): a native young Moscow baritone, deep and clear, controlled: Volkov is precise, quick, frightened and clever; subtitled.",
+     "why": "Aleksandr - Documentary Narrator (moscow, young, male, deep, ru): a native young Moscow baritone, deep and clear, controlled: Volkov is precise, quick, frightened and clever; speaks English, the native Russian voice carries the accent (T-204).",
      "candidates": [
       {
        "voice_id": "e7B77Frwc7sILEL37AT3",
@@ -1399,55 +1403,71 @@
        "labels": "standard, middle_aged, male, wise, characters_animation, ru",
        "query": "gender=male, language=ru, age=middle_aged"
       }
-     ]
+     ],
+     "accent": "ru",
+     "lang_versions": {
+      "ru": "data/gravelight/vo/lang/ru.json (the Russian takes, gravelight/audio/vo_lang/ru/)"
+     }
     }
    },
    "SVR": {
     "name": "Soviet radio traffic",
-    "who": "Red Army signallers on Map 0 and at Kaltenbrunn: Russian, subtitled, field radio.",
+    "who": "Red Army signallers on Map 0 and at Kaltenbrunn: English with a Russian accent, field radio.",
     "voice_notes": "",
     "actor": "[ACTOR]",
     "eleven": {
      "voice_id": "e7B77Frwc7sILEL37AT3",
      "voice_name": "BaMnyc - Narrative",
      "source": "library",
-     "design_prompt": "A Red Army radio signaller in his twenties in 1944 speaking Russian: flat, practised, exhausted, clipped radio procedure.",
-     "language": "ru",
+     "design_prompt": "A Red Army radio signaller in his twenties in 1944 speaking English with a natural Russian accent: flat, practised, exhausted, clipped radio procedure.",
+     "language": "en",
      "stability": 0.7,
      "similarity_boost": 0.75,
-     "why": "BaMnyc - Narrative (standard, middle_aged, male, crisp, ru): a crisp middle-aged native Russian: the flat signaller on the radio chain; subtitled."
+     "why": "BaMnyc - Narrative (standard, middle_aged, male, crisp, ru): a crisp middle-aged native Russian: the flat signaller on the radio chain; speaks English, the native Russian voice carries the accent (T-204).",
+     "accent": "ru",
+     "lang_versions": {
+      "ru": "data/gravelight/vo/lang/ru.json (the Russian takes, gravelight/audio/vo_lang/ru/)"
+     }
     }
    },
    "RTN": {
     "name": "The Returned",
-    "who": "The risen Red Army soldiers' last words, repeated: Russian, subtitled, only from close up.",
+    "who": "The risen Red Army soldiers' last words, repeated: English with a Russian accent, only from close up.",
     "voice_notes": "",
     "actor": "[ACTOR]",
     "eleven": {
      "voice_id": "Q7Mq2HFFRhXPBkrv9ddL",
      "voice_name": "Danik - Casual",
      "source": "library",
-     "design_prompt": "A young Russian soldier speaking Russian in a hoarse, broken whisper, repeating his last words, dazed and far away.",
-     "language": "ru",
+     "design_prompt": "A young Russian soldier speaking English with a natural Russian accent in a hoarse, broken whisper, repeating his last words, dazed and far away.",
+     "language": "en",
      "stability": 0.3,
      "similarity_boost": 0.75,
-     "why": "Danik - Casual (standard, young, male, calm, ru): a young native Russian man, calm; low stability for hoarse, broken whispers: the risen soldiers, never a growl; subtitled."
+     "why": "Danik - Casual (standard, young, male, calm, ru): a young native Russian man, calm; low stability for hoarse, broken whispers: the risen soldiers, never a growl; speaks English, the native Russian voice carries the accent (T-204).",
+     "accent": "ru",
+     "lang_versions": {
+      "ru": "data/gravelight/vo/lang/ru.json (the Russian takes, gravelight/audio/vo_lang/ru/)"
+     }
     }
    },
    "BRG": {
     "name": "The 1930 brigade's megaphone",
-    "who": "The anti-religious brigade's megaphone at Chetverodnevo, Lazarus Saturday 1930: Russian, subtitled.",
+    "who": "The anti-religious brigade's megaphone at Chetverodnevo, Lazarus Saturday 1930: English with a Russian accent.",
     "voice_notes": "",
     "actor": "[ACTOR]",
     "eleven": {
      "voice_id": "ws3YyKFd5whKb21yaXES",
      "voice_name": "Evgeniy Rybakov - Expressive",
      "source": "library",
-     "design_prompt": "A young Soviet Komsomol activist in 1930 shouting slogans in Russian through a megaphone: loud, zealous, brash.",
-     "language": "ru",
+     "design_prompt": "A young Soviet Komsomol activist in 1930 shouting slogans in English with a natural Russian accent through a megaphone: loud, zealous, brash.",
+     "language": "en",
      "stability": 0.35,
      "similarity_boost": 0.75,
-     "why": "Evgeniy Rybakov - Expressive (moscow, young, male, casual, ru): a young expressive native Russian: the zealous Komsomol activist reading slogans off a paper through a megaphone; subtitled."
+     "why": "Evgeniy Rybakov - Expressive (moscow, young, male, casual, ru): a young expressive native Russian: the zealous Komsomol activist reading slogans off a paper through a megaphone; speaks English, the native Russian voice carries the accent (T-204).",
+     "accent": "ru",
+     "lang_versions": {
+      "ru": "data/gravelight/vo/lang/ru.json (the Russian takes, gravelight/audio/vo_lang/ru/)"
+     }
     }
    },
    "NAR": {

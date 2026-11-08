@@ -5,6 +5,7 @@ No network: the SDK client is a fake (FakeClient) with the SDK's own ApiError.""
 import contextlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import types
@@ -210,9 +211,14 @@ def test_every_line_has_a_voice_or_a_reason():
             el = e.get("eleven")
             assert el is not None and el.get("why"), "%s:%s has no casting reason" % (game, code)
             assert el.get("source") in ("library", "design"), "%s:%s source %s" % (game, code, el.get("source"))
-    # the U11 speakers are cast in their language
+    # the U11 Russian speakers speak English with a Russian accent (T-204: same native Russian voices, language en);
+    # their lines bake as English
+    by = {j.ln.file_id: j for j in E.build_jobs(cast, V.collect_gl())}
     for code in ("SER", "VOL", "SVR", "RTN", "BRG"):
-        assert cast["characters"]["gl"][code]["eleven"]["language"] == "ru"
+        el = cast["characters"]["gl"][code]["eleven"]
+        assert el["language"] == "en" and el["accent"] == "ru"
+    for fid in ("SER_LZS_01", "VOL_LZS_07", "BRG_LZS_03", "SVR_M0_01", "RTN_CLOSE_01", "SER_DIARY_MAP00_01"):
+        assert by[fid].lang == "en" and not re.search(r"[Ѐ-ӿ]", by[fid].text), fid
 
 
 def test_no_clone_without_consent(sandbox, monkeypatch):

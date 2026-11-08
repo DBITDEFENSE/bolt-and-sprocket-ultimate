@@ -12,6 +12,12 @@ where X is what is said (German, Russian in Cyrillic, Church Slavonic...) and Y 
 (gravelight/ui/subtitles.gd shows the VOManager's text; test_vo_speech checks no `text` holds Cyrillic). A line whose
 doc row has no speech keeps a `speech` another tool wrote into lines.json (the merge below).
 
+Other-language versions (T-204): `<ru>X</ru> Y` keeps X, the line in another language, out of the game's own line: Y is
+then both what is said and the subtitle (the Russian-speaking cast speaks English with a Russian accent), and X goes to
+the language store data/gravelight/vo/lang/<code>.json ({"lines": {id: {"speech": X, "audio": ...}}}) that a future
+language option reads (VOManager.voice_language plays gravelight/audio/vo_lang/<code>/<speaker>/<id>.ogg). Fields the
+store already holds (the take's audio row) are kept; ids the docs no longer tag are kept too.
+
 Re-run after editing either doc:   python gravelight/tools_src/extract_vo.py
 Then bake audio for the new lines:  python gravelight/tools_src/gen_vo.py
 """
@@ -25,8 +31,11 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 DOCS = ("docs/gravelight/VO_SCRIPT.md", "docs/gravelight/CHARACTERS.md")
 LINES_PATH = os.path.join(ROOT, "data", "gravelight", "vo", "lines.json")
 RULES_PATH = os.path.join(ROOT, "data", "gravelight", "vo", "rules.json")
+LANG_DIR = os.path.join(ROOT, "data", "gravelight", "vo", "lang")
+LANG_CODES = ("ru", "de", "pl", "fr", "it", "es", "uk")   # the language tags extract_vo knows (<ru>...</ru>)
 ID_RE = r"[A-Z]{2,3}_[A-Z0-9_]+"   # 2-letter speakers since UPDATE 07 (PA, the Bordfunk)
 lines = {}
+lang_lines = {}   # code -> {id: the line in that language} (T-204)
 
 
 def category_of(line_id):
@@ -58,9 +67,23 @@ def split_speech(text):
     return re.sub(r"\s{2,}", " ", rest), m.group(1).strip()
 
 
+LANG_RE = re.compile(r"<(%s)>(.*?)</\1>" % "|".join(LANG_CODES), re.DOTALL)
+
+
+def split_langs(text):
+    """'[whispers] <ru>Мокрая.</ru> It\'s wet.' -> ('[whispers] It\'s wet.', {'ru': 'Мокрая.'}); no tag -> (text, {})."""
+    found = {m.group(1): m.group(2).strip() for m in LANG_RE.finditer(text)}
+    if not found:
+        return text, found
+    return re.sub(r"\s{2,}", " ", LANG_RE.sub(" ", text)).strip(), found
+
+
 def add(line_id, text, condition="", source="", speech=""):
     if line_id in lines:
         return
+    text, other = split_langs(text)
+    for code, said in other.items():
+        lang_lines.setdefault(code, {})[line_id] = said
     text, tagged = split_speech(text)
     speech = (speech or "").strip().strip('"') or tagged
     lines[line_id] = {"speaker": line_id.split("_")[0], "category": category_of(line_id),
@@ -166,6 +189,29 @@ def parse_gl_tables(md):
 
 
 
+def write_lang_stores():
+    """data/gravelight/vo/lang/<code>.json: the docs' other-language text per id, merged into what the store holds
+    (an audio row written by the bake is kept)."""
+    for code, said in sorted(lang_lines.items()):
+        path = os.path.join(LANG_DIR, code + ".json")
+        store = json.load(open(path, encoding="utf-8")) if os.path.exists(path) else {}
+        store.setdefault("_doc", "T-204: the %s version of lines the game plays in English (the docs' <%s> tags, built by "
+                                 "gravelight/tools_src/extract_vo.py). speech = what is said in %s, subtitle = the English "
+                                 "line, audio = its baked take (VOManager.voice_language = \"%s\" plays it)." % (
+                                     code, code, code, code))
+        store["language"] = code
+        rows = store.setdefault("lines", {})
+        for lid, text in said.items():
+            row = rows.setdefault(lid, {})
+            row["speech"] = text
+            if lid in lines:
+                row["subtitle"] = lines[lid]["text"]
+        store["lines"] = {k: rows[k] for k in sorted(rows)}
+        os.makedirs(LANG_DIR, exist_ok=True)
+        json.dump(store, open(path, "w", encoding="utf-8", newline="\n"), indent=2, ensure_ascii=False)
+        print("language store %s: %d lines" % (code, len(rows)))
+
+
 def main():
     global lines
     for doc in DOCS:
@@ -192,8 +238,11 @@ def main():
             kept += 1
         else:
             # keep hand-added fields (once_per_match, min_round...) the docs don't carry
+            moved = any(k in d for d in lang_lines.values())
             for field, val in v.items():
                 if field not in ("speaker", "category", "text", "condition", "exchange", "tts"):
+                    if field == "speech" and moved:
+                        continue          # T-204: the other language lives in the language store now
                     lines[k].setdefault(field, val)
 
     rules_defaults = {
@@ -266,6 +315,7 @@ def main():
     os.makedirs(os.path.dirname(LINES_PATH), exist_ok=True)
     json.dump(lines, open(LINES_PATH, "w", encoding="utf-8", newline="\n"), indent=2, ensure_ascii=False)
     json.dump(rules, open(RULES_PATH, "w", encoding="utf-8", newline="\n"), indent=2, ensure_ascii=False)
+    write_lang_stores()
     counts = collections.Counter(v["speaker"] for v in lines.values())
     print("total", len(lines), "(kept %d ids that only exist in lines.json; %d rule keys added)" % (kept, added_rules))
     for k, v in sorted(counts.items()):
