@@ -1,3 +1,89 @@
+# Morning report: UPDATE 11 "LAZARUS" + UPDATE 12 "THE LOOK", 2026-11-08
+
+**The game opens straight to the menu. Every map has one shared film look (graded colour, grain, darker nights).
+The history cutscenes play as archive film. GRAVELIGHT ONE is now a real crashed C-47, and the Russian characters
+speak English with a Russian accent.** Everything is merged on `master` and pushed.
+
+## Start here
+- **Play:** double-click `Play.bat` or `build\windows\ClaudeZombies_0.0.1-m0\ClaudeZombies.exe` (the exe is from
+  before Update 12: rebuild it with `sh tools/build_windows.sh`). Both open the CLAUDE ZOMBIES menu, with no
+  cutscene first.
+- **Cutscenes:** they play only in Campaign. Solo and online go straight into the match. Rewatch any of them from
+  Extras > Cutscenes.
+- **Dev buttons:** `DevLauncher.bat` has the Update 12 buttons:
+  - Look test: every map's style frame
+  - the three archive reels (Lazarus Saturday, Fourth Day, Staub)
+  - Map 0: GRAVELIGHT ONE crash intro
+  - Map 0: walk the wreck (no zombies, god mode)
+
+## What to watch first
+1. **Campaign > new game.** You get LAZARUS SATURDAY (1930, sepia archive film), then FOURTH DAY (1944,
+   black-and-white), then the GRAVELIGHT ONE crash. The animation was cleaned up shot by shot:
+   - feet no longer slide;
+   - poses blend instead of snapping;
+   - people look at whoever is talking;
+   - hands actually reach the props.
+2. **Map 0 at night.** It's colder and darker, with warm windows and the new C-47 burning in the field. Walk into
+   its cabin and up to Selwyn in the cockpit.
+3. **Voices.** The Russian speakers (Serafim, Volkov and the others) now speak English in their own Russian voices;
+   the Russian takes are kept for a future language option. Every voice picks up the room it's in: the inn, the
+   cellar, the mine, the plane cabin. Settings > Audio > Room acoustics turns that off.
+
+## The look, map by map (before/after in `docs/look/post/sheet.jpg`)
+One post pass on every map: film grain, vignette, soft edges, a little colour fringing at the edges, filmic tone,
+and a colour grade per map from `data/look/`. Settings > Video turns each piece on or off. The rules are in
+`docs/ART_BIBLE.md`: greys, browns, cold blues and heavy fog, with Nachtglas violet the only bright colour and blood
+red the second.
+- **Crossroads Inn:** a frozen blue-grey night; the windows and the wreck fire are the only warm things.
+- **Kaltenbrunn:** cold steel on the surface; salt white and sodium amber below.
+- **Totenhafen:** storm green-grey and wet black concrete, with red battle lanterns.
+- **Thalbach:** ochre and soot.
+- **der Kranich:** dawn blue, with cold aluminium inside.
+- **Groom Lake:** bleached dust-brown desert (it was lavender).
+- **Mondlicht:** hard black and white, with violet the only colour.
+- **Menu:** archive black-and-white.
+- **Materials:** a material check found 2,370 materials off the bible (plastic-shiny, over-saturated, too clean).
+  2 are left, both explained in `docs/look/material_audit.md`. The rest got rougher surfaces, muted colour and a
+  shared layer of grime, so assets from different artists sit together.
+- **Blind review:** a reviewer who saw none of the work rated the maps as one game 5/10 before, 7/10 after. A fix
+  pass then dealt with its findings:
+  - Mondlicht's violet flood is gone (69% of the frame down to 1%; violet only on the tubes and signs).
+  - The Kaltenbrunn barracks and the inn's taproom read again (a pink cast and heavy indoor haze removed).
+  - Thalbach is finally ochre and soot, and Groom Lake no longer looks like a sepia filter.
+  - Kranich's violet spill is halved, the snow is cold grey instead of lavender, and a glowing smoke "ghost" in
+    Totenhafen's cannery is fixed.
+- **Not fixed:** a blown-out white streak in the sky in one Thalbach view, and a few white slivers seen through the
+  torn skin inside the C-47 cabin.
+
+## Still waiting on you (`morning/NEEDS_DEVIN.md` has the exact steps)
+- **49 archive-reel shots to generate** with Higgsfield: the prompts are in `docs/cutscenes/SHOT_PROMPTS.md`
+  (Lazarus Saturday 21, Fourth Day 15, Staub 13; priority 1 first). Drop each in as
+  `assets/user_supplied/cutscenes/<scene>/shot_NN.mp4` and run `python -I tools/cinema/archive_reel.py build`.
+  Until then, every shot plays the in-engine scene through the same film look. Please check Higgsfield's
+  commercial-use terms first.
+- **Motion capture with friends:** 27 shots, about 100 takes, around 4 to 5 hours of filming with one phone (about
+  half that with two). Each person acts their character on tape marks while the phone films the whole body. The
+  guide, `docs/MOCAP_GUIDE.md`, lists each shot's marks, moves and line, with its length. The free tiers of the
+  phone-mocap apps are too small (30 to 60 s a month), so pay for one month of one app (Rokoko allows commercial
+  use). The pipeline then retargets the takes, fixes foot sliding and drops them into the cutscenes. Lip sync from
+  the voice takes already works.
+- **The real C-47:** download it from Sketchfab (your login). Until then the game uses our own C-47, built from the
+  real dimensions.
+- **ElevenLabs:** about 1,400 characters left until 7 December. After the reset, the bake picks up The Fine Print
+  and then Bolt & Sprocket.
+
+## What's not working / not checked
+- **FPS targets not confirmed.** Every frame-rate run was made with other jobs loading the CPU. The post pass
+  itself costs about 0.13 ms on your GPU. Please run `--frame-log` on Low with nothing else open.
+- **Rare crashes in capture runs.** Three of the post-processing worker's off-screen capture runs died with a heap
+  error (one after errors on a Map 0 to Kaltenbrunn switch). Reruns were clean, and the cause is not found yet.
+- **A rare hang.** One test run froze inside Godot on exit (every test had passed); it didn't happen again in 3
+  reruns.
+- **Staub drops a few subtitles.** Overlapping lines queue up and 2 or 3 of its 12 subtitles get dropped.
+- **No ElevenLabs narration in the reels yet:** each reel has an empty narration slot for the December bake.
+
+---
+
 # Morning report — UPDATE 10 "BEYOND THE INN", 2026-11-02
 
 **Totenhafen now has its own Easter egg (LETZTE FAHRT), its own boss (DER KIELHOLER), its own wonder weapon (THE
