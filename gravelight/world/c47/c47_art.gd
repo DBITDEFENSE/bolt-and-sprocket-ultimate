@@ -147,6 +147,8 @@ static func impostor(kind: String) -> MeshInstance3D:
 	mi.material_override = sm
 	mi.position = Vector3(float(c[0]), float(c[1]), float(c[2]))
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	# a card the size of the whole site, drawn only from impostor_m off: never "in" a doorway (DoorClearance)
+	mi.set_meta(&"clearance_ignore", true)
 	var lod: Dictionary = layout().get("lod", {})
 	mi.visibility_range_begin = float(lod.get("impostor_m", 120.0))
 	mi.visibility_range_begin_margin = float(lod.get("margin_m", 4.0))
