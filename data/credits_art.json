@@ -137,6 +137,21 @@
    ]
   },
   {
+   "folder": "assets/third_party/google_fonts/old-standard-tt",
+   "source": "google_fonts",
+   "id": "old-standard-tt",
+   "title": "Old Standard TT",
+   "author": "Alexey Kryukov (The Old Standard Project Authors)",
+   "url": "https://fonts.google.com/specimen/Old+Standard+TT",
+   "license": "OFL 1.1",
+   "credit": "\"Old Standard TT\" by Alexey Kryukov, licensed under the SIL Open Font License 1.1.",
+   "files": [
+    "OldStandard-Bold.ttf",
+    "OldStandard-Italic.ttf",
+    "OldStandard-Regular.ttf"
+   ]
+  },
+  {
    "folder": "assets/third_party/google_fonts/special-elite",
    "source": "google_fonts",
    "id": "special-elite",
@@ -1792,6 +1807,17 @@
    ],
    "folders": [
     "assets/third_party/google_fonts/ibm-plex-sans"
+   ]
+  },
+  {
+   "credit": "\"Old Standard TT\" by Alexey Kryukov, licensed under the SIL Open Font License 1.1.",
+   "license": "OFL 1.1",
+   "source": "google_fonts",
+   "titles": [
+    "Old Standard TT"
+   ],
+   "folders": [
+    "assets/third_party/google_fonts/old-standard-tt"
    ]
   },
   {

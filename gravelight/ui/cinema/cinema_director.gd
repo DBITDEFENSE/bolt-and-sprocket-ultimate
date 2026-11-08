@@ -18,6 +18,13 @@ extends Node
 ##   card {title, subtitle, time, at, hold}   a title card mid-timeline (once per shot; a title-only card is fine)
 ##   black true                  the shot is black (a card on black, a sound over black): the picture fades out over
 ##                               `black_in` (0.4 s); the next shot that is not black fades back in over its `blend`
+## T-209 (UPDATE 12 s3, the archive reels) adds video and the film:
+##   video, video_from, video_graded   a cinema_video shot: the clip plays for the length of the shot (CinemaVideo)
+##   videos [{t0, t1, path, offset, id, graded}]   a video track over the timeline (CinemaArchive's built clips); the
+##                               in-engine shots under a span keep running (lines, cards, sounds), only their picture
+##                               is covered
+##   archive {...}               the archive-film treatment over the picture (CinemaFilm); `archive_card` per shot
+##   bars false                  no letterbox (a reel has its own Academy-ratio gate)
 ## Script-driven cutscenes (the endings) call `play_shot(dict, seconds)` instead of a timeline.
 ## Signals: shot_started(i, shot), skip_requested, finished. `step(dt)` is the whole update (tests drive it; the
 ## node drives itself with `auto` on), scaled by `speed` (Campaign.cutscene_speed). `missing` lists any `target` /
@@ -56,6 +63,8 @@ var _title_shown: bool = false
 var _fading: bool = false
 var _manual_end: float = -1.0
 var _in_black: bool = false   # T-194: the last shot was a black one
+var video: CinemaVideo = null   # T-209: the cinema_video track (null: the definition has no video)
+var film: CinemaFilm = null     # T-209: the archive-reel treatment (null: not a reel)
 
 
 ## Builds a director under `parent` for `d` over `map_node` (where the shots' node names are found).
@@ -101,7 +110,13 @@ func _ready() -> void:
 	if fade_in > 0.0 and not opens_black:   # (a cutscene that opens on black stays black until its first picture)
 		overlay.fade(0.0, fade_in)
 	_in_black = opens_black
-	overlay.bars(true, 0.8)
+	if bool(def.get("bars", true)):
+		overlay.bars(true, 0.8)
+	var vt: Array = CinemaVideo.track_of(def, shots)
+	if not vt.is_empty():
+		video = CinemaVideo.make(self, vt, speed)
+	if def.get("archive", null) is Dictionary:
+		film = CinemaFilm.make(self, def["archive"] as Dictionary)
 	overlay.grade(def.get("grade", "neutral"), 0.0)
 	_music_open()   # (the first shot starts on the first step, after the owner has connected shot_started)
 
@@ -124,6 +139,10 @@ func step(dt: float) -> void:
 		cam.advance(t - _shot_t0 - cam.shot_t if cut else dt)   # a new shot starts from its own first frame
 	if shot_i >= 0 and shot_i < shots.size():
 		_shot_events(shots[shot_i], t - _shot_t0)   # (after the move: a kick lands at full strength on its frame)
+	if video != null:
+		video.at(t)
+	if film != null:
+		film.at(t, shot_i)
 	if not _title_shown and def.has("title") and t >= float(def.get("title_at", seconds - 8.0)):
 		_title_shown = true
 		overlay.title_card(str(def.get("title", "")), str(def.get("subtitle", "")), str(def.get("time", "")), float(def.get("title_hold", 6.0)))
@@ -425,6 +444,12 @@ static func validate(d: Dictionary, lines: Dictionary = {}) -> PackedStringArray
 		var sg: Variant = s.get("stinger", null)
 		if sg is Array and (sg as Array).size() >= 2 and not AudioDirector.has_sound(str(sg[1])):
 			out.append("%s: no stinger %s" % [tag, str(sg[1])])
+		var vd: Variant = s.get("video", null)
+		if vd != null and (not (vd is String) or not str(vd).ends_with(".ogv")):
+			out.append("%s: a video is not an .ogv path" % tag)
+	for v: Variant in d.get("videos", []):
+		if not (v is Dictionary) or not str((v as Dictionary).get("path", "")).ends_with(".ogv") 				or float((v as Dictionary).get("t1", 0.0)) <= float((v as Dictionary).get("t0", 0.0)):
+			out.append("a videos entry is not {t0 < t1, path .ogv}")
 	var g0: Variant = d.get("grade", null)
 	if g0 is String and not CinemaOverlay.PRESETS.has(g0):
 		out.append("unknown opening grade %s" % g0)

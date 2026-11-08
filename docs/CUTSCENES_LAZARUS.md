@@ -348,3 +348,11 @@ runner (the cast's `place` / `face` / `walk`, plus the `sit` and `kneel` poses t
   for T-192's skins.
 - **Kept from the review (T-202)**: the lintel's wording (R-02), 18.IV (R-03), the cards' "a long day's cart" and "the
   East Prussian line" (R-09, R-16); nothing on screen names the NKVD (R-04).
+
+## 10. ARCHIVE REELS (UPDATE 12 §3, T-209)
+
+LAZARUS SATURDAY, FOURTH DAY and STAUB also exist as archive film reels: `data/gravelight/cinema_reels.json` cuts each
+into reel shots over spans of the timelines above (prompts: `docs/cutscenes/SHOT_PROMPTS.md`; drop-in guide:
+`assets/user_supplied/cutscenes/README.md`). A reel keeps this document's timing, lines and cards; a shot with a
+generated clip plays the clip, every other shot plays as built here through the film treatment (CinemaFilm). With
+`in_game` on, the game plays the reels; `engine:<id>` still plays the in-engine version.

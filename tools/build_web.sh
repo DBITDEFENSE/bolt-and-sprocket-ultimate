@@ -22,6 +22,8 @@ done
 rm -rf "$OUT" "$LOG"
 mkdir -p "$OUT/packs" "$LOG"
 touch build/.gdignore   # the editor must not import what the export writes here
+# UPDATE 12 s3 (T-209): treat any new archive-reel clip (assets/user_supplied/cutscenes) into assets/cutscene_reels first
+"$PYTHON" -I tools/cinema/archive_reel.py build || echo "[build_web] the archive-reel build failed: the reels keep their in-engine stand-ins"
 
 if [ "$SINGLE" = "1" ]; then
 	"$GODOT" --headless --audio-driver Dummy --path . --export-release "Web" "$OUT/index.html" > "$LOG/export_web.log" 2>&1 || { echo "[build_web] export failed (see $LOG/export_web.log)"; exit 1; }

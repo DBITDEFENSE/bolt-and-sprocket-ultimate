@@ -67,7 +67,7 @@ func _ready() -> void:
 			every = maxf(0.1, float(a.substr(8)))
 		elif a.begins_with("--until="):
 			until = float(a.substr(8))
-	if not MAPS.has(cut) and not CinemaLibrary.has_cut(cut):
+	if not MAPS.has(cut) and not CinemaArchive.is_known(cut):
 		_fail("unknown cutscene '%s' (one of %s)" % [cut, ", ".join(PackedStringArray(MAPS.keys() + CinemaLibrary.ids()))])
 		return
 	var tree: SceneTree = get_tree()
@@ -83,7 +83,7 @@ func _ready() -> void:
 	for a2: String in OS.get_cmdline_user_args():
 		if a2.begins_with("--gore="):
 			GLSettings.values["gore"] = a2.substr(7)
-	if CinemaLibrary.has_cut(cut):
+	if CinemaArchive.is_known(cut):
 		Campaign.cutscene_speed = 1.0
 		_reel_alone.call_deferred()
 		return
@@ -282,7 +282,7 @@ func _process(delta: float) -> void:
 		var img: Image = get_viewport().get_texture().get_image()
 		if img != null:
 			DirAccess.make_dir_recursive_absolute(stills)
-			img.save_png(stills.path_join("%s_%05.1f.png" % [cut, _t]))
+			img.save_png(stills.path_join("%s_%05.1f.png" % [cut.replace(":", "_"), _t]))
 	if until > 0.0 and _t >= until and _end_t < 0.0:
 		_end_t = _t
 		print("[clip] END (until) t=%.2f" % _t)
