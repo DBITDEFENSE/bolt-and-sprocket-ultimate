@@ -1,0 +1,157 @@
+{
+  "_doc": "UPDATE 12 section 5 (T-211): GRAVELIGHT ONE's crash layout, read by tools/c47/build_c47.py (Blender: where the skin is cut and where every piece lies) and by the game (gravelight/world/c47/: the LOD distances, the fire, haze, spark and creak points). Frames: WRECK = gen_map00's wreck frame (wreck_xf: the hull's colliders, the nose -Z, rolled 8 deg); SITE = the same position and yaw without the roll (y = 0 the snow). cuts / openings / crush / scorch are in the WRECK frame of the intact airframe; pieces' pos / drifts / gouge / fx in the SITE frame. openings must equal gen_map00 WRECK_OPENINGS (test_c47_wreck checks it); the 6th value marks a torn edge.",
+  "site": {
+    "pos": [46.0, 0.0, 6.0],
+    "yaw_deg": 28.0,
+    "roll_deg": -8.0
+  },
+  "cuts": {
+    "break_z": 6.3,
+    "wing_s_x": 1.62,
+    "wing_p_out_x": -9.0,
+    "engine_p_firewall_z": -2.95
+  },
+  "openings": [[1, 2.2, 4.0, 0.2, 2.35, true], [1, -4.3, -2.45, 0.2, 2.35, true], [1, -6.5, -5.1, 1.4, 2.25, false], [-1, -6.5, -5.1, 1.4, 2.25, false], [0, -1.0, 1.0, 1.1, 2.25, false]],
+  "windscreen": {
+    "half_x": 1.0,
+    "z0": -8.15,
+    "z1": -7.18,
+    "y0": 1.12
+  },
+  "roof_crack": {
+    "z": 3.1,
+    "w": 0.05,
+    "y0": 2.3,
+    "x0": -0.3
+  },
+  "crush": {
+    "from_z": -7.25,
+    "tip_z": -8.9,
+    "push_back": 0.6,
+    "push_down": 0.8,
+    "sill_y": 1.12,
+    "bulge": 0.12,
+    "crumple": 0.14
+  },
+  "props": {
+    "bend_deg": 72.0
+  },
+  "pieces": {
+    "tail": {
+      "pivot": [0.0, 1.3, 6.3],
+      "pos": [-0.2, 1.3, 6.75],
+      "rot": [-4.0, -12.0, 34.0],
+      "sink": 0.12,
+      "fin_bend_deg": -30.0
+    },
+    "stab_s": {
+      "pivot": [0.95, 1.9, 9.7],
+      "pos": [0.6, 0.0, 7.0],
+      "rot": [0.0, 75.0, 176.0],
+      "sink": 0.05
+    },
+    "wing_s": {
+      "pivot": [1.62, 0.18, 2.0],
+      "pos": [1.8, 0.0, 21.4],
+      "rot": [0.0, 165.0, -2.5],
+      "sink": 0.55
+    },
+    "engine_p": {
+      "pivot": [-3.55, 0.62, -3.6],
+      "pos": [-1.14, 0.0, -22.35],
+      "rot": [-12.0, 50.0, 80.0],
+      "sink": 0.15
+    },
+    "wing_p_out": {"pivot": [-9.0, 0.6, 0.6], "pos": [-8.3, 0.0, 1.8], "rot": [0.0, 196.0, 178.0], "sink": 0.15}
+  },
+  "scorch": [
+    {
+      "at": [1.55, 0.4, 0.0],
+      "r": 1.7,
+      "k": 1.0
+    },
+    {
+      "at": [1.42, 1.1, -3.35],
+      "r": 1.3,
+      "k": 0.95
+    },
+    {
+      "at": [0.0, 2.7, -1.2],
+      "r": 1.5,
+      "k": 0.7
+    },
+    {
+      "at": [-2.2, 0.45, 0.6],
+      "r": 1.5,
+      "k": 0.85
+    },
+    {
+      "at": [-3.55, 0.7, -2.8],
+      "r": 1.1,
+      "k": 0.95
+    },
+    {
+      "at": [1.2, 1.6, 3.1],
+      "r": 0.9,
+      "k": 0.6
+    },
+    {
+      "at": [3.55, 0.8, -2.6],
+      "r": 1.1,
+      "k": 0.85
+    },
+    {
+      "at": [0.0, 1.3, 6.3],
+      "r": 0.8,
+      "k": 0.5
+    }
+  ],
+  "drifts": [
+    {
+      "x0": -11.2,
+      "x1": -1.2,
+      "z0": -3.6,
+      "z1": 3.4,
+      "step": 0.35,
+      "flank_h": 0.5,
+      "flank_x": -1.4,
+      "max_h": 1.9
+    },
+    {
+      "x0": -3.4,
+      "x1": -1.25,
+      "z0": -8.2,
+      "z1": 6.4,
+      "step": 0.35,
+      "flank_h": 0.6,
+      "flank_x": -1.4,
+      "max_h": 0.8
+    }
+  ],
+  "gouge": {
+    "width": 3.2,
+    "path": [[0.7, 0.0, 26.0], [0.45, 0.0, 22.5], [0.05, 0.0, 17.5], [-0.35, 0.0, 12.5], [-0.3, 0.0, 9.0], [-0.1, 0.0, 6.4]]
+  },
+  "lod": {
+    "lod1_m": 32.0,
+    "lod2_m": 65.0,
+    "impostor_m": 120.0,
+    "interior_m": 38.0,
+    "margin_m": 4.0
+  },
+  "fx": {
+    "_doc": "SITE frame. fires: [pos, width, height, amount] (Props.flames); haze: [pos, size] heat-haze cards over the fuel fire; sparks: [pos, spread] (Props.embers); smoke: [pos, width, height, amount] (Props.smoke, drifting east with the map's wind); creaks: where the hull's metal groans from (C47Wreck plays them at random).",
+    "fires": [[ [1.55, 0.6, 0.2], 1.4, 1.6, 34 ], [ [1.9, 1.0, -3.2], 0.9, 1.2, 20 ], [ [-2.4, 1.0, 0.3], 1.2, 1.1, 22 ], [ [-3.4, 1.15, -2.7], 0.8, 0.9, 14 ], [ [-0.9, 0.5, 18.6], 1.0, 1.1, 16 ]],
+    "haze": [[ [1.55, 2.2, 0.2], [3.0, 3.2]],
+      [[-2.4, 2.3, 0.3], [2.6, 2.8]]
+    ],
+    "sparks": [[ [1.6, 1.4, 0.0], 1.8 ], [ [-3.3, 1.4, -2.6], 1.0 ]],
+    "smoke": [[ [1.4, 2.8, 0.0], 1.0, 2.4, 34 ], [ [-2.6, 2.4, 0.4], 0.8, 1.9, 22 ]],
+    "creaks": [[0.0, 1.4, -1.0], [0.0, 1.4, 4.5], [-4.5, 1.6, 0.4], [-0.6, 1.0, 8.5]],
+    "creak_gap_s": [5.0, 13.0]
+  },
+  "plow": {
+    "at": [0.0, 0.0, -9.6],
+    "size": [3.6, 0.95, 2.4]
+  }
+}

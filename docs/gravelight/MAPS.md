@@ -231,7 +231,17 @@ Outside the play space (nothing here collides; since T-080 the Grounds' edge wal
   at the first shots, a far dog (stops at round 10), the church bell at midnight (round 9), chimney smoke that stops
   when the Cousins put the fire out, breath fog in the cold rooms, frost creeping round the windows, the hanging
   lanterns swinging when shells land close, moonlight leaking through the stable's boards, ground fog in the field.
-- **GRAVELIGHT ONE**: burning harder (engine, wing, hold, small fires in the snow), the crushed cockpit with Flt Lt
+- **GRAVELIGHT ONE** (T-211, UPDATE 12 section 5): a real C-47 now (tools/c47/: the owner's downloaded model once built,
+  else our stand-in), an RAF Dakota out of Brindisi in olive drab over neutral grey, serial KQ913 (fictional), the name
+  stencilled small under the cockpit. Down on its belly, rolled onto the starboard side: the nose crushed into the field
+  and the snow it ploughed, the starboard wing sheared at the root and lying in the gouge behind the fuselage (it struck
+  the dead tree), the port engine torn off its mount and thrown into the north field, the port wing's outer panel broken
+  off into the snow, the fuselage split behind the wing (the starboard opening), the tail broken away behind the aft
+  bulkhead with its fin bent over and a tailplane snapped off; scorched along the fuel line, torn skin and stringers,
+  the glazing out, snow drifted against the windward (port) side. Inside: the paratroop seats folded or thrown loose,
+  the static line snapped, the crates lashed by the port door, the navigator's table and the radio, frost on the
+  windows; the cockpit with its panel driven down across Selwyn's knees, and the co-pilot covered with a parachute's
+  silk on the floor beside him. The bots' Wreck Loop bends round the debris (3.3 m+). Earlier: burning harder (engine, wing, hold, small fires in the snow), the crushed cockpit with Flt Lt
   Selwyn pinned alive in his seat (T-126: hand him a gun from the cabin and he shoots from it; the squad's line the first time
   someone looks in), the hull hollow (a cabin, in by the cargo door or the torn hole on the starboard side), the hold's cargo thrown about, a parachute caught in the
   dead tree by the yard's north-east corner, ammunition cooking off now and then.

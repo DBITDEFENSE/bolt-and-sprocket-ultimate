@@ -393,6 +393,22 @@
       "max_voices": 1,
       "attenuation": "world"
     },
+    "wreck_c47_creak": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/c47_creak_01.wav",
+        "res://gravelight/audio/sfx/ambience/c47_creak_02.wav",
+        "res://gravelight/audio/sfx/ambience/c47_creak_03.wav",
+        "res://gravelight/audio/sfx/ambience/c47_creak_04.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": -2.0,
+      "pitch": [
+        0.9,
+        1.08
+      ],
+      "max_voices": 2,
+      "attenuation": "world"
+    },
     "amb_wind_gust": {
       "files": [
         "res://gravelight/audio/sfx/ambience/wind_gust_01.wav",

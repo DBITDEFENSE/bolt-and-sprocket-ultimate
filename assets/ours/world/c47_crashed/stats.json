@@ -1,0 +1,22 @@
+{
+ "source": "standin",
+ "id": "standin",
+ "intact_tris": 37811,
+ "crashed_tris": 60301,
+ "crashed_lod_tris": {
+  "LOD0": 44569,
+  "LOD1": 14704,
+  "LOD2": 6752
+ },
+ "impostor": {
+  "frames": 8,
+  "cols": 4,
+  "rows": 2,
+  "width_m": 51.857,
+  "center": [
+   -5.514,
+   2.416,
+   2.032
+  ]
+ }
+}

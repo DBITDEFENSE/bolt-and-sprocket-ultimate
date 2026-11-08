@@ -43,3 +43,4 @@ voice_review/
 # UPDATE 12 (T-210): the mocap pipeline's working files and the Rhubarb Lip Sync release (fetched at run time)
 .mocap_work/
 /tools/dl_rhubarb/
+/tools/c47/_gen/
