@@ -232,7 +232,7 @@ func show_card(shot_i: int, card: Dictionary) -> void:
 	_rule.anchor_right = 0.58
 	_rule.anchor_top = top
 	_rule.anchor_bottom = top
-	_rule.offset_bottom = maxf(1.0, MenuKit.px(2))
+	_rule.offset_bottom = maxf(1.0, roundf(get_viewport().get_visible_rect().size.y / 720.0))   # a hairline (MenuKit.px snaps to its steps)
 	top += 0.03
 	for i: int in en.size():
 		_label(str(en[i]), MenuKit.type_font(), MenuKit.px(30 if i == 0 else 25), Color(0.66, 0.62, 0.55), top)
