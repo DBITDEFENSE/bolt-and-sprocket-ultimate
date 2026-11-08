@@ -51,6 +51,9 @@ var _added_prev: PackedStringArray = []
 ## hide_movers (zombies and players hidden), omni_dp (dual-paraboloid omni shadows), no_spot_shadows, no_post (T-208)
 var _ab: PackedStringArray = []
 var _map_path: String = MAP
+## T-220: `--pos=x,y,z,yaw` stands the player there once the 24 are up (the Kranich's wing walk: -80,3.4,21,90), with
+## the flight's tilts calmed (FlightSky.calm) so the measured view never moves; empty = the spawn, as before
+var _pos: PackedFloat32Array = []
 const QUICK_FRAMES: int = 6
 ## T-139: `--quick` (software GL under Xvfb, a frame a second or slower): census at 6 s, then 6 frames sampled, quit
 ## (no pause-map phase). Counts (draw calls, triangles, lights) are what it is for, not timings.
@@ -67,6 +70,12 @@ func _ready() -> void:
 				GLSettings.values[str(k)] = GLSettings.PRESETS[a.substr(9)][k]
 		elif a.begins_with("--map="):
 			_map_path = Campaign.scene_for(StringName(a.substr(6)))
+		elif a == "--no-plane":   # T-220: the A/B of der Kranich's plane pass (KranichExterior / KranichAir never build)
+			KranichExterior.disabled = true
+			KranichAir.disabled = true
+		elif a.begins_with("--pos="):
+			for v: String in a.substr(6).split(","):
+				_pos.append(float(v))
 		elif a == "--no-webprofile":
 			GLSettings.compat_override = 0
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -114,6 +123,15 @@ func _process(delta: float) -> void:
 				_phase = 2
 				RoundManager.stop()
 				(_map.get_node("ZombieDirector") as ZombieDirector).debug_spawn(24)
+				if _pos.size() >= 3:
+					var fs: Node = get_tree().get_first_node_in_group(&"flight_sky")
+					if fs != null and fs.has_method("calm"):
+						fs.call("calm")
+					_map.player.global_position = Vector3(_pos[0], _pos[1], _pos[2])
+					_map.player.velocity = Vector3.ZERO
+					if _pos.size() >= 4:
+						_map.player.rotation.y = deg_to_rad(_pos[3])
+					print("[perf] the player stands at %s" % str(_map.player.global_position))
 				if not ("--no-marks" in OS.get_cmdline_user_args()):
 					_place_marks()
 				print("[perf] round %d, bots %d, jakub %s, marks %d" % [RoundManager.current_round, GameState.bot_ids.size(),

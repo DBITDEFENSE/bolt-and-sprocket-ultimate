@@ -75,6 +75,8 @@ var values: Dictionary = {
 	"sprint_mode": "hold",     # hold / toggle (Update 02 §1)
 	"prone_enabled": false,    # hold crouch to go prone (Update 02 §1)
 	"screen_shake": 1.0,       # 0..1.5: camera shake + recoil FOV punch (weapons, explosions)
+	"camera_sway": "full",     # T-220 Camera Sway / Turbulence: full / reduced / off: the flight's camera motion (der Kranich's
+	                           # bank roll, its turbulence shake; CameraSway); off keeps the visuals and the audio
 	"last_join_ip": "127.0.0.1",   # co-op: the address typed in the lobby's Join field last time
 	"bots": 0,                     # AI teammates in a solo match (0-3, T-031)
 	"bot_skill": "veteran",        # Bot Skill: recruit / veteran / elite (Update 03 section 7; bots.json skills + ai/skills.json)

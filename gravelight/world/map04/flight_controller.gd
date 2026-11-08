@@ -299,11 +299,11 @@ func bank_now() -> void:
 		for p: Player in _players():
 			p.external_push(v, bank_left, &"push")
 			p.ext_roll_deg = -bank_side * float(tc.get("roll_deg", 4.0))
-			p.set("_shake", 0.2)
+			CameraSway.shake(p, 0.2)   # T-220: the comfort setting scales the flight's shake
 	else:
 		tilts_done += 1
 		for p2: Player in _players():
-			p2.set("_shake", 0.25)
+			CameraSway.shake(p2, 0.25)
 	if director != null:
 		for z: Zombie in director.active_zombies():
 			if z.is_active() and not (z is HomageBoss):

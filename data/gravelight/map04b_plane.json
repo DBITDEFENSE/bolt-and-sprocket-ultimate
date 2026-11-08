@@ -1,0 +1,81 @@
+{
+  "_doc": "Der Kranich as a plane (T-220, the owner's plane pass on Fernflug Act II; docs/MAP4_FERNFLUG.md section 4.10). Presentation only: nothing here collides, nothing is navmesh source, nothing changes a gameplay timing. Map frame: +Z the nose, +X starboard, y up, the deck at y = 0. `hull` (KranichExterior, gravelight/world/map04/kranich_exterior.gd): the outer skin built at load from the planform: le / te are the leading / trailing edge knots [|x|, z] (straight segments, mirrored port and starboard), top / bottom the skin's heights (the upper skin clears every room roof and stays under the wing walk's grating, 3.28 m), le_round / te_round the nose and tail rounding (m), mid_y the leading edge's height, te_top / te_bottom the trailing edge's lips, glass_x the flight-deck glass's half width (no nose rounding in front of it, the glass is the nose), tip_from the span where the tip thins; bumps [x0, z0, x1, z1, height, margin] are the fairings over the rooms, the engines and the window closets (the margin is the rounded shoulder); notch [x0, x1, z_aft, y] lowers the upper skin behind the starboard gun blisters so their gunners see out (starboard only). rows / cols_step: the mesh density. engines: the four impeller nacelles [x] (intake on the leading edge, the fairing on top, the nozzle at the trailing edge, heat shimmer, a dim exhaust glow at night, soot on the skin). paint: the upper camouflage and the night-black underside. markings: stencils on the upper skin [x, z, w, h, atlas cell, rotation deg, colour] from assets/ours/textures/kranich_markings/ (fictional unit code and plain German maintenance stencils; never an emblem where a period plane carried a national one: docs/ART_FACTIONS.md). hatches: crew-sized access hatches [x, z] (real depth, the scale cue). masts: the dorsal aerial mast and the wingtip masts with the aerial wires between them. flutter: tarps, ropes and streamers (a vertex shader; cosmetic). `air` (KranichAir, gravelight/world/map04/kranich_air.gd): exposure: how exposed the listener is (0 inside .. 1 out on the wing) from boxes [lo, hi, e, fade] and the live openings (the bay doors, a blown breach, a decompression), driving the wind roar and the outside engine roar; turbulence: the rare small events (a light camera shake through CameraSway, a rattle, the airframe's groan, a flicker of the nearby lamps, the hangings nudged) every every_s, only in a quiet moment (no boss, no cutscene, no egg holdout, no tilt or decompression or bomb run, no quest step in the last quiet_after_step_s, at most max_near_zombies within near_m, not hurt for hurt_s); bank: the sky, the clouds and the moon/sun bank a few degrees and recover (the world moves, never the floor or the camera); sun: the key light swings from the moon to the dawn sun behind the wing as the act's sunrise rises; cloud_banks: a cloud bank streaming through and over the wing now and then (billboard puffs plus a fog volume).",
+  "hull": {
+    "le": [[0.0, 74.4], [22.0, 74.4], [24.5, 73.2], [50.0, 67.5], [78.0, 61.0], [100.0, 49.0], [118.0, 39.5], [130.0, 33.4], [134.0, 30.0]],
+    "te": [[0.0, -2.6], [9.0, -2.4], [11.5, 7.0], [30.0, 12.4], [50.0, 13.4], [80.0, 13.5], [100.0, 12.6], [118.0, 12.5], [130.0, 15.5], [134.0, 19.5]],
+    "top": 2.95, "bottom": -0.62, "mid_y": 1.25, "te_top": 1.62, "te_bottom": 1.36,
+    "le_round": 6.0, "te_round": 3.8, "glass_x": 22.0, "glass_top": 4.85,
+    "tip_from": 120.0, "tip_top": 2.25, "tip_bottom": 0.45,
+    "rows": 120, "bottom_rows": 40, "cols_step": 2.0, "bottom_cols_step": 4.0,
+    "bumps": [
+      [-9.6, -0.8, 9.6, 24.6, 5.2, 2.6],
+      [-9.6, 24.0, 9.6, 54.0, 4.25, 2.6],
+      [-22.6, 53.4, 22.6, 74.4, 5.45, 2.4],
+      [-78.6, 23.6, -51.5, 58.6, 5.45, 0.8],
+      [51.5, 23.6, 78.6, 58.6, 5.45, 0.8],
+      [-12.3, 10.1, -8.4, 13.9, 3.6, 0.6], [8.4, 10.1, 12.3, 13.9, 3.6, 0.6],
+      [-12.3, 46.1, -8.4, 49.9, 3.6, 0.6], [8.4, 46.1, 12.3, 49.9, 3.6, 0.6],
+      [-31.9, 24.6, -28.1, 28.2, 3.6, 0.6], [28.1, 24.6, 31.9, 28.2, 3.6, 0.6],
+      [-81.4, 28.1, -77.8, 31.9, 3.6, 0.6]
+    ],
+    "notch": [51.0, 79.0, 23.4, -0.15],
+    "engine_fairing": {"half_w": 2.0, "height": 3.55, "margin": 1.6, "from_z": 24.6, "to_le": 1.2},
+    "engines": [-100.0, -84.0, 84.0, 100.0],
+    "nozzle": {"radius": 0.78, "y": 2.08, "len_fwd": 5.0, "past_te": 1.3, "glow": "#ff9a52", "glow_night": 0.9, "glow_dawn": 0.25, "light_energy": 0.55, "light_range": 7.0},
+    "intake": {"rx": 1.25, "ry": 0.62, "y": 1.5, "depth": 1.4},
+    "paint": {"top_a": "#5b6058", "top_b": "#6a7063", "under": "#1e2023", "bare": "#8d9196", "soot": "#151311", "oil": "#2a2116"},
+    "markings": [
+      [-92.0, 33.5, 15.0, 3.6, 0, 180.0, "#b9b6ab"],
+      [92.0, 33.5, 15.0, 3.6, 0, 180.0, "#b9b6ab"],
+      [-72.0, 16.8, 4.8, 0.72, 1, 180.0, "#b9b6ab"],
+      [-112.0, 34.4, 4.8, 0.72, 1, 180.0, "#b9b6ab"],
+      [-40.0, 47.2, 3.6, 0.6, 2, 180.0, "#b9b6ab"],
+      [-84.0, 18.2, 2.2, 0.5, 3, 180.0, "#c9b28a"],
+      [-100.0, 17.6, 2.2, 0.5, 3, 180.0, "#c9b28a"],
+      [-74.0, 44.0, 4.6, 0.56, 4, 90.0, "#b9b6ab"],
+      [0.0, 62.0, 8.0, 1.6, 5, 180.0, "#b9b6ab"],
+      [-30.0, 52.5, 4.4, 0.6, 6, 180.0, "#b9b6ab"]
+    ],
+    "hatches": [[-62.0, 17.0], [-92.0, 31.0], [-114.0, 33.0], [-30.0, 36.0], [62.0, 19.0], [92.0, 27.4], [30.0, 36.0], [0.0, 46.0], [-4.0, 16.0]],
+    "masts": {"dorsal": [0.0, 40.0, 4.6], "tips": [[-127.5, 27.0, 4.4], [127.5, 27.0, 4.4]], "wire_r": 0.016},
+    "turret": [0.0, 30.5],
+    "canopy": [0.0, 67.0, 7.0, 4.2, 1.1],
+    "flutter": {
+      "tarps": [[-92.5, 26.6, 0.0], [-110.0, 35.0, 25.0]],
+      "ropes": [[-58.0, 19.8, 2.6], [-90.0, 19.8, 2.2], [-112.0, 17.0, 3.0]],
+      "streamers": [[-127.5, 27.0, 4.4], [127.5, 27.0, 4.4], [-18.0, 77.8, 4.6]]
+    },
+    "formation_scale": 0.5,
+    "walk_lamps": {"color": "#ffc98a", "energy": 0.45, "range": 6.5, "up": 0.55}
+  },
+  "air": {
+    "exposure": {
+      "boxes": [
+        [[-120.0, 4.2, 15.0], [-37.0, 9.0, 47.5], 1.0, 2.5],
+        [[52.0, -1.0, 24.0], [78.0, 4.8, 27.6], 0.32, 2.0],
+        [[52.0, -1.0, 24.0], [78.0, 4.8, 58.0], 0.14, 1.0],
+        [[-22.0, -1.0, 69.0], [22.0, 4.8, 74.0], 0.16, 2.0],
+        [[-78.0, -1.0, 24.0], [-52.0, 4.8, 58.0], 0.1, 1.0]
+      ],
+      "base": 0.03,
+      "bay_doors": 0.72, "bay_box": [[-9.0, -1.0, 0.0], [9.0, 4.6, 24.0]],
+      "breach_open": 0.62, "breach_torn": 0.4, "breach_r": 7.0,
+      "decomp": 0.85, "decomp_r": 10.0,
+      "smooth_s": 0.6,
+      "wind": {"key": "kranich_wind_roar", "db_max": -1.0, "db_min": -48.0, "curve": 1.4},
+      "engine": {"key": "kranich_engine_outside", "db_max": -5.0, "db_min": -46.0, "curve": 1.1, "near_db": 4.0, "near_m": 18.0}
+    },
+    "turbulence": {
+      "first_s": [50.0, 90.0], "every_s": [70.0, 150.0], "retry_s": 6.0, "give_up_s": 45.0,
+      "shake": 0.14, "groan": "kranich_groan", "groan_db": -3.0, "rattle": "kranich_rattle", "rattle_db": -7.0,
+      "flicker_m": 16.0, "flicker": [[0.0, 1.0], [0.08, 0.3], [0.16, 0.95], [0.27, 0.45], [0.42, 1.0]],
+      "nudge_rad_s": 0.35, "gust_s": 2.2,
+      "quiet": {"near_m": 12.0, "max_near_zombies": 2, "hurt_s": 5.0, "quiet_after_step_s": 25.0, "tilt_clear_s": 12.0}
+    },
+    "bank": {"deg": 2.6, "periods_s": [53.0, 31.0], "weights": [0.62, 0.38], "ease_s": 3.0},
+    "sun": {"from_sunrise": 0.35, "to_sunrise": 0.8, "dir_from": [0.22, 0.017, -1.0], "dir_to": [0.26, 0.12, -1.0], "elev_from_sunrise": 0.5},
+    "cloud_banks": {"first_s": [25.0, 50.0], "every_s": [55.0, 120.0], "speed": 46.0, "from_z": 300.0, "to_z": -240.0,
+      "x": [-125.0, 40.0], "y": [2.0, 14.0], "puffs": [12, 18], "puff_size": [26.0, 52.0], "spread": [44.0, 9.0, 40.0],
+      "fog": [62.0, 16.0, 48.0], "fog_density": 0.035}
+  }
+}

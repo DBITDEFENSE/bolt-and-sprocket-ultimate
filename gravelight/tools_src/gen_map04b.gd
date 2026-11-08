@@ -308,6 +308,7 @@ func build_dressing() -> void:
 	sky.set_script(load("res://gravelight/world/map04/flight_sky.gd"))
 	sky.name = "FlightSky"
 	extra_root_nodes.append(sky)
+	_plane_pass()
 	Detail.dress_all(self)
 	power("F_COCKPIT", Vector3(0, 1.4, 72.7), 12.0, 1.3, Color(0.5, 0.9, 0.6))   # the instrument glow
 	# (T-219: the painted backing plates that hid the wall guns' labels behind the wall face are gone: the buys faced
@@ -323,30 +324,29 @@ func build_dressing() -> void:
 		Props.cyl(wd, Vector3(ix, 2.6, 0), 1.6, 3.5, "steel")
 
 
-## T-156: what the wing walk shows outside: the outer wing panels port and starboard (the skin's primer), the
-## trailing-edge aprons, the catwalk's stanchions and the tether rail, the port wingtip's navigation light.
+## T-220: the plane pass: der Kranich's outside (KranichExterior: the outer skin to the wingtips, the engines, the masts,
+## the canopy, the hatches, the canvas in the wind) and how the flight feels (KranichAir: the wind by exposure, the
+## rare turbulence, the world's slow bank, the dawn sun, the cloud banks). Both build at load from
+## data/gravelight/map04b_plane.json; presentation only (no collider, no navmesh source).
+func _plane_pass() -> void:
+	var ext: Node3D = Node3D.new()
+	ext.set_script(load("res://gravelight/world/map04/kranich_exterior.gd"))
+	ext.name = "KranichExterior"
+	extra_root_nodes.append(ext)
+	var air: Node3D = Node3D.new()
+	air.set_script(load("res://gravelight/world/map04/kranich_air.gd"))
+	air.name = "KranichAir"
+	extra_root_nodes.append(air)
+
+
+## T-156: what the wing walk shows outside: the catwalk's stanchions and the tether rail, the port wingtip's
+## navigation light (T-220: the flat outer wing panels this drew are KranichExterior's skin now).
 func _wing_walk_dressing() -> void:
 	var ww: Dictionary = flight_cfg.get("wing_walk", {})
 	if ww.is_empty():
 		return
 	var dy: float = float(ww.get("deck_y", 3.4))
 	var skin: Material = KranichShell.frame_material()
-	var panels: Array = []
-	for sx: float in [-1.0, 1.0]:
-		panels.append([Vector3(-100.0, 2.72, 12.0), Vector3(-80.6, 3.08, 46.0), sx])
-		panels.append([Vector3(-122.0, 2.74, 15.0), Vector3(-100.0, 3.06, 40.0), sx])
-		panels.append([Vector3(-130.0, 2.76, 18.0), Vector3(-122.0, 3.04, 32.0), sx])
-		panels.append([Vector3(-80.6, 2.72, 14.0), Vector3(-46.0, 2.92, 23.9), sx])
-	for pn: Array in panels:
-		var lo: Vector3 = pn[0]
-		var hi: Vector3 = pn[1]
-		if float(pn[2]) > 0.0:
-			var t: float = lo.x
-			lo.x = -hi.x
-			hi.x = -t
-		var mi: MeshInstance3D = Props.block(dress, lo, hi, "steel", false)
-		if mi != null and skin != null:
-			mi.material_override = skin
 	# fairings over the window closets whose roofs (3.3 m) stand above the wing skin (2.85 m) next to the walk
 	for w: Array in windows:
 		if not ["W_CL_S", "W_CR_S", "W_D_W"].has(str(w[0])):

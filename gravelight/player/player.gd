@@ -1427,7 +1427,8 @@ func _update_camera(delta: float) -> void:
 	var roll_target: float = -clampf(lateral / maxf(0.1, walk), -1.0, 1.0) * deg_to_rad(float(C.get("strafe_roll_deg", 1.5))) * bob_scale
 	_roll = lerpf(_roll, roll_target, 1.0 - exp(-float(C.get("roll_rate", 8.0)) * delta))
 	_punch_roll = move_toward(_punch_roll, 0.0, delta * maxf(0.2, absf(_punch_roll) * 6.0))
-	_ext_roll = lerpf(_ext_roll, deg_to_rad(ext_roll_deg), 1.0 - exp(-3.0 * delta))
+	# T-220: the flight's roll obeys the Camera Sway / Turbulence comfort setting (ext_roll_deg itself is the gameplay value)
+	_ext_roll = lerpf(_ext_roll, deg_to_rad(CameraSway.roll_deg(ext_roll_deg)), 1.0 - exp(-3.0 * delta))
 	camera.rotation.z = -_lean * 0.12 - _slide_k * (deg_to_rad(float(S.get("cam_tilt_deg", 3.5))) * (0.6 + 0.4 * side)) + _roll + bob_roll + _punch_roll + mk * 0.05 + _ext_roll
 	# shake (smooth pseudo-noise rather than per-frame white noise, scaled by the Screen Shake setting)
 	_shake = maxf(0.0, _shake - delta * 1.8)
