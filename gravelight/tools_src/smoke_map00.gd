@@ -63,10 +63,11 @@ func _physics_process(delta: float) -> void:
 	if _phase == 2:
 		print("[smoke] rounds seen: ", _rounds_seen)
 		if _fails.is_empty():
-			print("[smoke] PASS")
+			print("[smoke] RESULT PASS")   # (run_smokes.sh greps RESULT)
 		else:
 			for f: String in _fails:
 				print("[smoke] FAIL: ", f)
+			print("[smoke] RESULT FAIL")
 		get_tree().quit(0 if _fails.is_empty() else 1)
 		set_physics_process(false)
 

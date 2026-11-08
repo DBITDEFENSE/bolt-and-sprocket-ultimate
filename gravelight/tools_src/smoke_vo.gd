@@ -152,7 +152,7 @@ func _physics_process(delta: float) -> void:
 			_phase = 3
 			_phase_t = 0.0
 		3:
-			if _phase_t < 12.0:
+			if _phase_t < 20.0:   # let the longer ElevenLabs takes finish
 				return
 			_finish()
 
@@ -166,17 +166,24 @@ func _nudge(root: MapRoot) -> void:
 	_steps.append([0.0, func() -> void: GLBus.enemy_killed.emit(&"ganger", &"head", &"m1911", 1), "HEADSHOT"])
 	_steps.append([4.0, func() -> void: GLBus.weapon_acquired.emit(b1, &"m1_garand", &"wall"), "BUY_"])
 	_steps.append([5.0, func() -> void: GLBus.ammo_bought.emit(b2, &"m1911"), "BUY_AMMO"])
+	var door_state: Dictionary = {"id": &""}
 	_steps.append([5.0, func() -> void:
+		if door_state["id"] != &"":
+			# the line got no slot (the opening's ZONE_ line or a quip held the channel): the door is open already, so
+			# re-emit the event a bot would raise (T-213)
+			GLBus.door_opened.emit(door_state["id"], b2)
+			return
 		var door: BuyDoor = null
 		for n: Node in get_tree().get_nodes_in_group(&"doors"):
 			if n is BuyDoor and not (n as BuyDoor).is_open:
 				door = n as BuyDoor
 				break
 		if door != null:
+			door_state["id"] = door.door_id
 			door.open(b2)
 			print("[vo] door %s opened by P%d" % [door.door_id, b2])
 		else:
-			_fail("no closed door to open"), ""])   # (a door opens once: it just waits for a free channel)
+			_fail("no closed door to open"), "DOOR"])
 	_steps.append([5.0, func() -> void: GLBus.perk_denied.emit(1, &"ironhide_stout", &"no_scrip"), ""])
 	_steps.append([5.0, func() -> void: GLBus.intel_found.emit(&"qa_note"), ""])
 	_steps.append([5.0, func() -> void: GLBus.trap_activated.emit(&"qa_trap", b1), ""])
@@ -282,7 +289,7 @@ func _finish() -> void:
 			if int((r as Array)[0]) == _downed_bot.player_id:
 				reviver_spk = String(GLVO.speaker_of(int((r as Array)[1])))
 		var said: Dictionary = {}
-		var until_t: float = (_revived_t if _revived_t >= 0.0 else _t) + 8.0
+		var until_t: float = (_revived_t if _revived_t >= 0.0 else _t) + 30.0   # ElevenLabs takes run longer and queue (T-201)
 		for l: Variant in _lines:
 			# only this down's lines (a bot downed by zombies elsewhere in the match has its own sequence)
 			if float((l as Array)[0]) < _down_t - 0.5 or float((l as Array)[0]) > until_t:

@@ -1,0 +1,30 @@
+{
+  "seconds": 5.0,
+  "tag": "before",
+  "views": {
+    "cabin": {
+      "draw_calls": 6700.0,
+      "fps": 73.6,
+      "frames": 368,
+      "mean_ms": 13.59,
+      "p95_ms": 18.92,
+      "primitives": 7511391.0
+    },
+    "field_nw": {
+      "draw_calls": 5365.0,
+      "fps": 128.8,
+      "frames": 644,
+      "mean_ms": 7.77,
+      "p95_ms": 9.86,
+      "primitives": 4571811.0
+    },
+    "inn_door": {
+      "draw_calls": 5337.0,
+      "fps": 110.3,
+      "frames": 552,
+      "mean_ms": 9.07,
+      "p95_ms": 14.53,
+      "primitives": 5433951.0
+    }
+  }
+}
