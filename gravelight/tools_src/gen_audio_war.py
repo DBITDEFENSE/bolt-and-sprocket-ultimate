@@ -236,10 +236,31 @@ def gen_life():
              volume_db=-2.0, pitch=[0.9, 1.1], max_voices=4, attenuation="world")
 
 
+def gen_wreck_c47():
+    """UPDATE 12 section 5 (T-211): GRAVELIGHT ONE's hull groaning as it cools and settles in the snow: slow stick-slip
+    through the big panels' low resonances (a groan), and the cooling metal's ticks and pings."""
+    for i in A.variants(4):
+        r = A.rng_for(f"wreck_c47_creak{i}")
+        cd = r.uniform(1.4, 2.6)
+        rate = 9 + 22 * smooth_rand(r, cd, 4, 0, 1)
+        stick = np.zeros(N(cd))
+        idx = np.nonzero(np.diff(np.floor(np.cumsum(rate) / SR)) > 0)[0]
+        stick[idx] = r.uniform(0.3, 1.0, len(idx))
+        groan = reson(stick, r.uniform(150, 230), 7) + 0.8 * reson(stick, r.uniform(310, 460), 9) + 0.45 * reson(stick, r.uniform(780, 1100), 12)
+        groan = lp(groan, 2600) * adsr(N(cd), 0.25, 0.0, 1.0, 0.45)
+        x = np.zeros(N(cd + 0.8))
+        place(x, groan, 0.0)
+        for k in range(r.integers(2, 6)):   # the cooling skin's ticks after it
+            place(x, A.mech_click(r, r.uniform(2200, 4200), 0.06, 0.005) * r.uniform(0.15, 0.4), cd * r.uniform(0.3, 1.0) + k * r.uniform(0.08, 0.2))
+        emit("wreck_c47_creak", f"sfx/ambience/c47_creak_{i:02d}", reverb(x, r, 1.8, 0.3, 3000), -4.0, bus="SFX", volume_db=-2.0,
+             pitch=[0.9, 1.08], max_voices=2, attenuation="world")
+
+
 def main():
     gen_planes()
     gen_war()
     gen_life()
+    gen_wreck_c47()
     A.write_manifest()
     total = sum(d for _, d in A.STATS)
     print(f"gen_audio_war: wrote {len(A.STATS)} files ({total:.1f} s of audio), {len(A.KEYS)} keys merged into data/gravelight/audio.json")

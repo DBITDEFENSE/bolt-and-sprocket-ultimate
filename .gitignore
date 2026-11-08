@@ -39,3 +39,4 @@ voice_review/
 /.env.local
 # UPDATE 11 (T-193): the ElevenLabs take cache (raw API audio by hash, shared by every worktree; never committed)
 .voice_cache/
+/tools/c47/_gen/

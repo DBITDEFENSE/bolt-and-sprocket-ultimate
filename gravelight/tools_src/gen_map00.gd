@@ -454,11 +454,16 @@ func build_geometry() -> void:
 	# nacelles that hang out ahead of the wing are solid too, and the wing reaches the snow (no crawl space under it)
 	# (the hull is rolled 8 deg: the port wing tip stands 1.25 m off the snow, so the boxes reach down into the ground)
 	build_wreck_hull(wreck)
-	for wx: Array in [[-9.0, -1.4], [1.4, 7.0]]:   # T-126: the wing stops at the hull (the cabin floor runs over its root)
-		box(wreck, "Wing", Vector3(float(wx[0]), -1.4, -1.5), Vector3(float(wx[1]), 0.7, 1.5), "wreck", true, false).set_meta("no_mantle", true)
-	for sx: float in [-3.2, 3.2]:
-		box(wreck, "Nacelle", Vector3(sx - 0.65, -0.6, -2.35), Vector3(sx + 0.65, 1.55, -1.5), "wreck", true, false).set_meta("no_mantle", true)
-	box(wreck, "TailPlane", Vector3(-2.5, 1.5, 5.3), Vector3(2.5, 1.85, 6.7), "wreck", true, false).set_meta("no_mantle", true)
+	# T-211 (UPDATE 12 section 5, the C-47 rebuilt from tools/c47/): what stays on the rolled hull: the port wing to its
+	# broken joint (x -9; its outer panel lies in the snow, a debris box below), reaching the snow (the drift under it
+	# is drawn); the port nacelle torn open at the firewall (the engine lies in the north field); the nose cone
+	# crushed into the field ahead of the cockpit's wall (under the windscreen's sill: Selwyn's line of fire is over
+	# it); the supply crates lashed by the port cargo door. The starboard wing and its nacelle are gone from the hull
+	# (sheared at the root, behind the fuselage) and the tail broke away behind the aft bulkhead: their colliders are
+	# build_c47_debris()'s.
+	for wb: Array in WRECK_WING_BOXES:
+		box(wreck, str(wb[0]), wb[1], wb[2], "wreck", true, false).set_meta("no_mantle", true)
+	build_c47_debris()
 	build_grounds()
 
 
@@ -494,6 +499,57 @@ const WRECK_PILOT_SEAT: Vector3 = Vector3(-0.35, WRECK_FLOOR, -5.75)
 ## The wreck's frame (as the Wreck collider node and the WreckDress group stand).
 static func wreck_xf() -> Transform3D:
 	return Transform3D(Basis.from_euler(Vector3(0, deg_to_rad(28), deg_to_rad(-8))), Vector3(46, 0, 6))
+
+
+## T-211: the wreck's SITE frame: its position and yaw without the roll (y = 0 the snow). The C-47 model
+## (C47Wreck) and the loose pieces' colliders (data/gravelight/c47_colliders.json) are in it.
+static func wreck_site_xf() -> Transform3D:
+	return Transform3D(Basis.from_euler(Vector3(0, deg_to_rad(28), 0)), Vector3(46, 0, 6))
+
+
+## T-211: the colliders on the rolled hull besides its shell, in the wreck frame: [name, min, max]. Fitted to the
+## C-47's art (tools/c47/c47_airframe.py: the wing's root chord z -2.45..2.0, its dihedral outboard of x -3.9).
+const WRECK_WING_BOXES: Array = [
+	["Wing", Vector3(-5.0, -1.4, -2.4), Vector3(-1.4, 0.62, 2.05)],
+	["Wing", Vector3(-9.0, -1.4, -1.95), Vector3(-5.0, 0.88, 2.1)],
+	["Nacelle", Vector3(-4.3, -0.6, -3.0), Vector3(-2.8, 1.36, 1.0)],
+	["NoseCone", Vector3(-1.2, -0.4, -8.45), Vector3(1.2, 0.95, -7.2)],
+	["CargoStack", Vector3(-1.15, WRECK_FLOOR, 4.4), Vector3(-0.45, 1.25, 5.15)],
+]
+const C47_COLLIDERS: String = "res://data/gravelight/c47_colliders.json"
+
+
+## T-211: the C-47's loose pieces (the tail behind the split, both tailplanes, the starboard wing and its nacelle
+## behind the fuselage, the port wing's outer panel in the snow, the port engine in the north field): oriented boxes
+## the C-47 build fitted to the art (T-188: collision matches what you see), in the site frame. Cover, no perch.
+func build_c47_debris() -> void:
+	var site: Node3D = Node3D.new()
+	site.name = "WreckSite"
+	site.transform = wreck_site_xf()
+	geo.add_child(site)
+	var d: Variant = JSON.parse_string(FileAccess.get_file_as_string(C47_COLLIDERS))
+	if not d is Dictionary:
+		push_error("gen_map00: %s missing" % C47_COLLIDERS)
+		return
+	for b: Dictionary in (d as Dictionary).get("boxes", []):
+		var c: Array = b["center"]
+		var s: Array = b["size"]
+		var m: Array = b["basis"]   # rows of the 3x3 (columns = the box's axes)
+		var basis: Basis = Basis(Vector3(float(m[0][0]), float(m[1][0]), float(m[2][0])), Vector3(float(m[0][1]), float(m[1][1]), float(m[2][1])),
+			Vector3(float(m[0][2]), float(m[1][2]), float(m[2][2])))
+		var body: StaticBody3D = StaticBody3D.new()
+		body.name = str(b["name"])
+		body.collision_layer = 1
+		body.collision_mask = 0
+		body.transform = Transform3D(basis.orthonormalized(), Vector3(float(c[0]), float(c[1]), float(c[2])))
+		body.set_meta("no_mantle", true)
+		var cs: CollisionShape3D = CollisionShape3D.new()
+		var shape: BoxShape3D = BoxShape3D.new()
+		shape.size = Vector3(float(s[0]), float(s[1]), float(s[2]))
+		cs.shape = shape
+		body.add_child(cs)
+		site.add_child(body)
+		_count += 1
 
 
 ## A wall of the hull along z at x0..x1 from z0 to z1, full height, cut by the openings on `side`.
@@ -697,8 +753,8 @@ const OUT_SOLIDS: Array = [
 	["RoadCart", Vector3(-17.0, 0, -3.0), Vector3(1.9, 1.1, 3.0), 20.0],
 	["SandbagsW", Vector3(32.25, 0, -22.0), Vector3(4.5, 0.9, 0.7), 0.0],
 	["SandbagsN", Vector3(34.5, 0, -20.25), Vector3(0.7, 0.9, 3.5), 0.0],
-	["Engine", Vector3(34.5, 0, -13.2), Vector3(1.3, 1.2, 2.4), 30.0],
-	["WingPanel", Vector3(56.0, 0, 25.0), Vector3(5.0, 1.4, 0.45), 70.0],
+	# (T-211: GRAVELIGHT ONE's engine in the north field and its starboard wing behind the fuselage are the C-47's own
+	# pieces now, with their colliders from build_c47_debris)
 	["BurntCar", Vector3(49.0, 0, -14.5), Vector3(1.8, 1.5, 4.2), 100.0],
 	["Drums", Vector3(47.0, 0, 44.0), Vector3(1.4, 0.95, 1.4), 0.0],
 	# the road exits: a felled spruce across the north road, sawhorse barriers on the east road, the carters' road
@@ -2717,18 +2773,11 @@ Kreuzweg  ·  Zweigstelle"
 	for ap: Vector3 in [Vector3(33.4, 0.0, -21.1), Vector3(33.7, 0.0, -20.7)]:
 		Props.block(g, ap + Vector3(-0.14, 0, -0.08), ap + Vector3(0.14, 0.18, 0.08), "olive_steel")
 	Props._noshadow(Props.ball(g, Vector3(32.2, 0.85, -22.0), Vector3(4.0, 0.25, 0.8), "snow"))
-	# GRAVELIGHT ONE's torn-off engine and a wing panel thrown clear, a burnt-out car on the east road's verge
-	var en: Node3D = Props.group(g, "Engine", Vector3(34.5, 0, -13.2), 30.0)
-	Props.cyl(en, Vector3(0, 0.6, 0), 0.6, 2.2, "wreck", Vector3(90, 0, 0))
-	Props.cyl(en, Vector3(0, 0.6, -1.15), 0.5, 0.15, "char", Vector3(90, 0, 0))
-	Props.obox(en, Vector3(0.3, 0.9, -1.3), Vector3(0.18, 1.4, 0.06), "iron", Vector3(0, 0, 35))
-	Props.obox(en, Vector3(-0.3, 0.25, -1.3), Vector3(0.18, 1.0, 0.06), "iron", Vector3(0, 0, 70))
+	# GRAVELIGHT ONE's port engine, torn off its mount and thrown into the north field (T-211: the C-47's own piece,
+	# C47Wreck draws it): the scorched snow round it and its smoke; a burnt-out car on the east road's verge
 	Props._noshadow(Props.cyl(g, Vector3(34.5, 0.01, -13.2), 2.2, 0.02, "char"))
+	var en: Node3D = Props.group(g, "EngineSmoke", Vector3(34.5, 0, -13.2), 30.0)
 	Props.smoke(en, Vector3(0, 1.3, 0.2), 0.3, 1.2, 8)
-	var wp: Node3D = Props.group(g, "WingPanel", Vector3(56.0, 0, 25.0), 70.0)
-	Props.obox(wp, Vector3(0, 0.7, 0), Vector3(5.0, 1.4, 0.2), "wreck", Vector3(8, 0, 4))
-	Props.obox(wp, Vector3(-1.2, 1.05, 0.12), Vector3(1.6, 0.06, 0.05), "char")
-	Props._noshadow(Props.ball(wp, Vector3(0.4, 0.05, 0.4), Vector3(4.0, 0.4, 1.4), "snow"))
 	LandscapeProps.burnt_car(g, Vector3(49.0, -0.1, -14.5), 100.0, -6.0)
 	for dp: Vector3 in [Vector3(46.6, 0, 44.3), Vector3(47.4, 0, 44.25), Vector3(47.0, 0, 43.6)]:
 		Props.oil_drum(g, dp, "rust")
@@ -2998,119 +3047,24 @@ static func _wreck_open(x: float, y: float, z: float) -> bool:
 	return false
 
 
-## The shell: panels round WRECK_RING in 0.4 m bays from the nose to the tail, the openings left out with torn,
-## charred edges; the nose tapering to the broken windscreen; ribs, the cabin floor, the bucket seats along the port
-## wall, the static line, a cargo net and a crate; the choked cockpit doorway (LandscapeProps draws the pilot's corner).
-func _dress_wreck_hull(w: Node3D) -> void:
-	var g: Node3D = Props.group(w, "Hull", Vector3.ZERO)
-	var bay: float = 0.4
-	var z: float = WRECK_NOSE_Z
-	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
-	rng.seed = 126
-	while z < 6.0 - 0.01:
-		var z1: float = minf(z + bay, 6.0)
-		var zc: float = (z + z1) * 0.5
-		for i: int in WRECK_RING.size():
-			var a: Vector2 = WRECK_RING[i]
-			var b: Vector2 = WRECK_RING[(i + 1) % WRECK_RING.size()]
-			var m: Vector2 = (a + b) * 0.5
-			if _wreck_open(m.x, m.y, zc):
-				if rng.randf() < 0.5:   # a torn flap at the edge of the hole
-					Props.obox(g, Vector3(m.x * 0.98, m.y, zc), Vector3(0.05, 0.12, rng.randf_range(0.15, 0.35)), "char",
-						Vector3(rng.randf_range(-30, 30), rng.randf_range(-20, 20), rng.randf_range(-40, 40)))
-				continue
-			var d: Vector2 = b - a
-			Props.obox(g, Vector3(m.x, m.y, zc), Vector3(d.length() + 0.04, 0.05, z1 - z + 0.02), "wreck", Vector3(0, 0, rad_to_deg(atan2(d.y, d.x))))
-		z = z1
-	# the nose: two tapering rings ahead of the cockpit, the windscreen's frame with its glass out
-	for k: int in 2:
-		var sc: float = 0.86 - 0.18 * k
-		var nz: float = WRECK_NOSE_Z - 0.2 - 0.35 * k
-		for i2: int in WRECK_RING.size():
-			var a2: Vector2 = WRECK_RING[i2] * sc + Vector2(0, 0.25 * k)
-			var b2: Vector2 = WRECK_RING[(i2 + 1) % WRECK_RING.size()] * sc + Vector2(0, 0.25 * k)
-			var m2: Vector2 = (a2 + b2) * 0.5
-			if m2.y > WRECK_SCREEN and absf(m2.x) < 1.1:
-				continue   # the windscreen
-			var d2: Vector2 = b2 - a2
-			Props.obox(g, Vector3(m2.x, m2.y, nz), Vector3(d2.length() + 0.04, 0.05, 0.42), "wreck", Vector3(0, 0, rad_to_deg(atan2(d2.y, d2.x))))
-	Props.obox(g, Vector3(0, WRECK_SCREEN - 0.35, WRECK_NOSE_Z - 0.75), Vector3(1.4, 0.7, 0.06), "wreck", Vector3(-20, 0, 0))   # the nose cap under it
-	for fx: float in [-0.95, -0.05, 0.85]:   # the windscreen frame, bent
-		Props.obox(g, Vector3(fx, 1.95, WRECK_NOSE_Z - 0.15), Vector3(0.05, 0.85, 0.05), "rust", Vector3(25, 0, rng.randf_range(-12, 12)))
-	# inside: ribs every 1.2 m, the floor's planking and its tie-downs
-	var rz: float = WRECK_BULK_Z + 0.9
-	while rz < WRECK_AFT_Z - 0.2:
-		for i3: int in WRECK_RING.size() - 2:
-			var a3: Vector2 = WRECK_RING[i3] * 0.94 + Vector2(0, 0.08)
-			var b3: Vector2 = WRECK_RING[i3 + 1] * 0.94 + Vector2(0, 0.08)
-			var m3: Vector2 = (a3 + b3) * 0.5
-			if m3.y < WRECK_FLOOR + 0.1 or _wreck_open(m3.x / 0.94, m3.y, rz):
-				continue
-			var d3: Vector2 = b3 - a3
-			Props.obox(g, Vector3(m3.x, m3.y, rz), Vector3(d3.length(), 0.06, 0.08), "rust", Vector3(0, 0, rad_to_deg(atan2(d3.y, d3.x))))
-		rz += 1.2
-	Props.block(g, Vector3(-1.15, WRECK_FLOOR - 0.03, WRECK_BULK_Z), Vector3(1.15, WRECK_FLOOR + 0.005, WRECK_AFT_Z), "planks")
-	Props.block(g, Vector3(-1.4, WRECK_ROOF - 0.02, WRECK_NOSE_Z), Vector3(1.4, WRECK_ROOF, WRECK_AFT_Z), "char")   # the soot-black ceiling
-	for tz: float in [-3.0, -1.0, 1.0, 3.0]:
-		Props.block(g, Vector3(-0.04, WRECK_FLOOR, tz - 0.04), Vector3(0.04, WRECK_FLOOR + 0.03, tz + 0.04), "iron")
-	# the bucket seats along the port wall (a paratroop fit), one torn loose
-	for sz: float in [-3.6, -2.9, -2.2, -1.5, -0.8, -0.1, 0.6, 1.3]:
-		Props.block(g, Vector3(-1.12, 0.52, sz - 0.28), Vector3(-0.82, 0.57, sz + 0.28), "iron")
-		Props.obox(g, Vector3(-1.13, 0.85, sz), Vector3(0.04, 0.55, 0.5), "paint:#4b5333", Vector3(0, 0, 4))
-	Props.obox(g, Vector3(-0.6, WRECK_FLOOR + 0.1, 2.0), Vector3(0.56, 0.05, 0.3), "iron", Vector3(0, 35, 70))
-	Props.cyl(g, Vector3(0.55, 2.2, -0.5), 0.012, 8.5, "iron", Vector3(90, 0, 0))   # the static line
-	Props.obox(g, Vector3(0.3, WRECK_FLOOR + 0.06, 4.4), Vector3(1.6, 0.06, 1.0), "rope", Vector3(0, 20, 3))   # a cargo net
-	Props.crate(g, Vector3(0.75, WRECK_FLOOR, 4.6), 0.55, 15.0, "U.S.")
-	# the cockpit's choked doorway: the bent door, a fallen radio rack and a panel over the wreckage
-	Props.obox(g, Vector3(-0.1, 0.55, WRECK_BULK_Z + 0.05), Vector3(1.0, 0.75, 0.08), "wreck", Vector3(-25, 8, 12))
-	Props.obox(g, Vector3(0.25, 0.75, WRECK_BULK_Z - 0.15), Vector3(0.5, 0.6, 0.35), "paint:#3b3a2c", Vector3(10, -20, 35))
-	Props.obox(g, Vector3(-0.3, 1.0, WRECK_BULK_Z - 0.05), Vector3(0.7, 0.08, 0.45), "rust", Vector3(0, 0, -18))
-	for bx: float in [-0.75, 0.75]:
-		Props.obox(g, Vector3(bx * 1.25, 1.3, WRECK_BULK_Z + 0.12), Vector3(0.75, 2.2, 0.06), "wreck")
-	Props.obox(g, Vector3(0, 2.2, WRECK_BULK_Z + 0.12), Vector3(1.0, 0.3, 0.06), "wreck")
-	# a dim light inside: the hold's fire through the cargo door
+## T-211 (UPDATE 12 section 5): GRAVELIGHT ONE is a real C-47 now: C47Wreck (gravelight/world/c47/) draws the model
+## tools/c47/build_c47.py builds (the owner's downloaded C-47 once it is built, else our stand-in) in the wreck's site
+## frame, with the cabin, the cockpit Selwyn sits pinned in, the snow drifts and the gouge, and the fire, the heat
+## haze, the sparks, the smoke and the creaking metal round it. It replaced the boxes T-126 drew here (_dress_wreck_hull
+## and the old wings, nacelles, tail and labels); the hull's colliders above are unchanged. The cabin's dim fire glow
+## stays here, and the wreckage scattered over the field.
+func _dress_wreck() -> void:
+	var cw: Node3D = _scripted(Node3D.new(), "res://gravelight/world/c47/c47_wreck.gd", "C47Wreck", {})
+	cw.transform = wreck_site_xf()
+	dress.add_child(cw)
 	var ll: OmniLight3D = OmniLight3D.new()
 	ll.name = "CabinGlow"
 	ll.light_color = Color(1.0, 0.5, 0.2)
 	ll.light_energy = 0.7
 	ll.omni_range = 5.5
 	ll.shadow_enabled = false
-	ll.position = Vector3(0.3, 1.9, 0.5)
-	g.add_child(ll)
-
-
-func _dress_wreck() -> void:
-	var w: Node3D = Props.group(dress, "WreckDress", Vector3(46, 0, 6), 28.0)
-	w.rotation.z = deg_to_rad(-8)
-	_dress_wreck_hull(w)   # T-126: a panelled shell you can walk into (was a solid cylinder and a nose ball)
-	Props.obox(w, Vector3(-4.5, 0.6, 0), Vector3(9.0, 0.28, 3.0), "wreck", Vector3(0, 0, 4))
-	Props.obox(w, Vector3(3.8, 0.4, 0.4), Vector3(6.5, 0.28, 2.8), "wreck", Vector3(0, 12, -9))   # snapped wing
-	for s: float in [-1.0, 1.0]:
-		Props.cyl(w, Vector3(s * 3.2, 0.9, -1.0), 0.65, 2.6, "wreck", Vector3(90, 0, 0))   # engine nacelles
-		Props.cyl(w, Vector3(s * 3.2, 0.9, -2.4), 0.25, 0.3, "char", Vector3(90, 0, 0))
-	Props.obox(w, Vector3(0, 3.1, 5.9), Vector3(0.18, 2.6, 2.0), "wreck", Vector3(-12, 0, 0))   # tail fin
-	Props.obox(w, Vector3(0, 1.7, 6.0), Vector3(5.0, 0.18, 1.4), "wreck", Vector3(0, 0, 6))
-	var l: Label3D = Label3D.new()
-	l.text = "GRAVELIGHT ONE"
-	l.font_size = 64
-	l.pixel_size = 0.006
-	l.modulate = Color(0.75, 0.72, 0.62, 0.8)
-	l.position = Vector3(1.38, 1.6, -2.5)
-	l.rotation.y = PI * 0.5
-	w.add_child(l)
-	var serial: Label3D = Label3D.new()
-	serial.text = "2-100479"
-	serial.font_size = 48
-	serial.pixel_size = 0.006
-	serial.modulate = Color(0.85, 0.8, 0.6, 0.7)
-	serial.position = Vector3(0.1, 3.2, 6.2)
-	serial.rotation.y = PI * 0.5
-	w.add_child(serial)
-	# burning: flames on the hull and the wing root, embers, a smoke column
-	Props.flames(w, Vector3(0, 2.6, -2.0), 2.4, 2.2, 60)
-	Props.flames(w, Vector3(-3.2, 1.0, -0.5), 1.4, 1.6, 30)
-	Props.embers(w, Vector3(0, 2.8, -1.0), 2.5, 50)
-	Props.smoke(w, Vector3(0, 4.0, -1.0), 1.2, 2.5, 40)
+	ll.position = wreck_xf() * Vector3(0.3, 1.9, 0.5)
+	dress.add_child(ll)
 	# debris scattered in the snow
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = 23121944
@@ -3118,8 +3072,6 @@ func _dress_wreck() -> void:
 		var p: Vector3 = Vector3(rng.randf_range(-12, 12), 0.1, rng.randf_range(-14, 12))
 		Props.obox(dress, Vector3(46, 0, 6) + p, Vector3(rng.randf_range(0.3, 1.6), 0.08, rng.randf_range(0.3, 1.2)), "wreck",
 			Vector3(rng.randf_range(-20, 20), rng.randf_range(0, 360), rng.randf_range(-20, 20)))
-	# a scorched trail through the snow toward the impact
-	Props.block(dress, Vector3(52, 0.0, -25), Vector3(55, 0.016, 2), "char", false)
 
 
 # ================================================================== Update 02 section 8: the small-detail polish (T-053)

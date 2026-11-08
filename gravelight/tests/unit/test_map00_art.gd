@@ -12,9 +12,13 @@ const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 ## Re-baked by T-141: Ledger Lager's footprint in the cellar's south-east corner (gen_map00 CELLAR_PERKS).
 ## Re-baked by T-179: the cellar's late-delivery bay (gen_map00 BAY_*) and its two machines; every navmesh vertex outside the
 ## bay (and the field over it) is unchanged.
+## Re-baked by T-211: GRAVELIGHT ONE is a real C-47 (UPDATE 12 section 5): the starboard wing and nacelle off the hull,
+## the tail, both tailplanes, the starboard wing, the port wing's outer panel and the port engine as debris boxes
+## (data/gravelight/c47_colliders.json), the nose cone, the crates in the cabin; the hull's own colliders and openings
+## unchanged. Only polygons in the crash field (x 22..61, z -26..36) and their neighbours in the open snow changed.
 const NAV_FP: Dictionary = {
-	"Navigation": "223ee2103c396d1e25839478391dc56ea3322af9",
-	"NavigationBreachOpen": "b39570cba7024a4d76507968b647663b95e9e40f",
+	"Navigation": "483ff740089cc6ba252c7d39e746383e3ac29332",
+	"NavigationBreachOpen": "c486f183f194291cb387d8e3d59b005fbd5fbbd4",
 }
 ## Library-prop triangles within CAM_RADIUS of any capture camera (data/gravelight/capture_cams.json).
 const CAM_RADIUS: float = 12.0
@@ -47,7 +51,7 @@ func test_navmesh_unchanged_by_the_art_pass() -> void:
 		assert_not_null(r, rn)
 		if r == null:
 			continue
-		assert_eq(nav_fingerprint(r.navigation_mesh), str(NAV_FP[rn]), "%s is byte-for-byte the T-136 bake (T-093 art pass; T-106 dropped furniture-top islands; T-120 the bar walkway; T-126 the wreck's cabin; T-136 the bank in the old woodshed; T-179 the cellar's late-delivery bay)" % rn)
+		assert_eq(nav_fingerprint(r.navigation_mesh), str(NAV_FP[rn]), "%s is byte-for-byte the T-136 bake (T-093 art pass; T-106 dropped furniture-top islands; T-120 the bar walkway; T-126 the wreck's cabin; T-136 the bank in the old woodshed; T-179 the cellar's late-delivery bay; T-211 the C-47)" % rn)
 
 
 ## T-120: the walkway between the bar's west end and the stairwell wall (the way to the Old Cellar door) is open.
