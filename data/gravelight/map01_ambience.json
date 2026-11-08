@@ -3,14 +3,14 @@
  "intensity": {"start_round": 1, "full_round": 20},
  "bombers": {
   "first_after": [40, 75], "interval": [130, 250], "interval_late": [90, 160],
-  "count": [8, 14], "altitude": [170, 235], "speed": 9.0, "wingspan": 6.5, "spacing": 11.0,
+  "model": "pe2", "count": [8, 14], "altitude": [170, 235], "speed": 9.0, "wingspan": 6.5, "spacing": 11.0,
   "headings": [100, 140], "offset": [-150, 130],
   "sound": "war_bomber_drone", "volume_db": 1.0, "unit_size": 70.0, "max_distance": 900.0
  },
  "fighters": {
   "first_after": [90, 150], "interval": [100, 190], "interval_late": [55, 110],
   "altitude": [45, 90], "speed": 42.0, "pass_distance": [90, 210], "length": 640.0, "wingspan": 3.4,
-  "bursts": [2, 5], "chase_lag": 0.9,
+  "model": "il2_vs_night", "bursts": [2, 5], "chase_lag": 0.9,
   "sound": "war_fighter_pass", "mg_sound": "war_fighter_mg", "volume_db": 0.0, "unit_size": 45.0, "max_distance": 700.0
  },
  "plane_down": {
@@ -21,7 +21,7 @@
  },
  "dogfight": {
   "round": 7, "delay": 10.0, "seconds": 46.0, "bearing": 28.0, "distance": 150.0, "altitude": [100, 125],
-  "radius": 72.0, "speed": 36.0, "wingspan": 3.4, "chase_lag": 1.25, "burst_every": [1.6, 3.4],
+  "model": "il2_vs_night", "radius": 72.0, "speed": 36.0, "wingspan": 3.4, "chase_lag": 1.25, "burst_every": [1.6, 3.4],
   "sound": "war_fighter_pass", "mg_sound": "war_fighter_mg", "volume_db": 0.0
  },
  "searchlights": {"bearings": [28, 74], "radius": 296.0, "elevation": [40, 74], "sweep": [0.04, 0.1], "intensity": 0.1, "length": 330.0, "cloud_height": 250.0},

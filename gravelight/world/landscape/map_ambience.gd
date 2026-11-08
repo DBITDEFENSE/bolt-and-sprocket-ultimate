@@ -2802,7 +2802,7 @@ func _ev_dogfight() -> void:
 	_k_dog_planes.clear()
 	for i: int in 2:
 		var p: MeshInstance3D = MeshInstance3D.new()
-		p.mesh = PlaneModels.fighter()
+		p.mesh = SkyFlight._fighter_mesh(str(c.get("model", "")), i)   # T-212
 		p.scale = Vector3.ONE * float(c.get("wingspan", 3.4))
 		p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		_k_dog.add_child(p)
