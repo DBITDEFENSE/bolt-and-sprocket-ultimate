@@ -16,7 +16,7 @@
     1036
   ],
   "baked_at": "2026-11-02T14:31:56",
-  "poi_signature": "9c316fbae7f4f38e2386c771d60ecbef",
+  "poi_signature": "ea9efc9e0308bfb3cecca7d6af1dd37f",
   "floors": [
     {
       "id": "surface",
@@ -1158,7 +1158,7 @@
       "pos": [
         -60.0,
         -6.0,
-        114.2
+        113.5
       ],
       "floor": 1,
       "label": "Workbench (Lodestone)",
