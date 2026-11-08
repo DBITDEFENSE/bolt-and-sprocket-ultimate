@@ -1099,6 +1099,26 @@ func _later(seconds: float, pid: int, category: String, chance: float = -1.0) ->
 	_delayed.append({"at": _now + seconds, "pid": pid, "cat": category, "chance": chance})
 
 
+## A squad line scheduled `seconds` from now that retries until the squad channel is free, for at most
+## `window` s from then (see _tick_delayed).
+func _later_when_free(seconds: float, pid: int, category: String, window: float = 60.0, chance: float = -1.0) -> void:
+	_delayed.append({"at": _now + seconds, "pid": pid, "cat": category, "chance": chance, "retry_until": _now + seconds + window})
+
+
+## True when a chatter line would start right now: nothing from the story channel, nothing playing or queued in the
+## squad channel, the chatter gap passed, and (Map 0) the inn opening is not running.
+func _squad_channel_free() -> bool:
+	if not _current[GROUP_STORY].is_empty() or not _current[GROUP_PLAYER].is_empty() or not (_queue[GROUP_PLAYER] as Array).is_empty():
+		return false
+	if _now - _last_chatter < float(rules.get("player_chatter_gap", 3.5)):
+		return false
+	if is_inside_tree():
+		for n: Node in get_tree().get_nodes_in_group(&"inn_opening"):
+			if int(n.get("phase")) == 1:   # InnOpening.Phase.RUNNING
+				return false
+	return true
+
+
 func _tick_delayed() -> void:
 	if _delayed.is_empty():
 		return
@@ -1108,6 +1128,20 @@ func _tick_delayed() -> void:
 			keep.append(d)
 			continue
 		var pid: int = int(d["pid"])
+		# A line with a retry window (the squad's SPAWN lines) waits until the squad channel is really free (no story
+		# line, no other squad line playing or queued, the chatter gap passed, Map 0's inn opening over), then goes
+		# once. Otherwise a squad that is busy talking (HEADSHOT, BUY... while the opening plays) never said it.
+		if d.has("retry_until"):
+			if _now < float(d["retry_until"]) and not _squad_channel_free():
+				keep.append(d)
+				continue
+			if d.has("speaker"):
+				play_category(StringName(str(d["speaker"])), str(d["cat"]), float(d["chance"]))
+			elif pid == 0:
+				squad_say(str(d["cat"]), float(d["chance"]))
+			else:
+				say_as(pid, str(d["cat"]), float(d["chance"]))
+			continue
 		# A story beat (say_story_beat) waits for the radio / the Operator however long they talk, then goes.
 		if bool(d.get("after_story", false)) and not _current[GROUP_STORY].is_empty():
 			if _now < float(d.get("drop_at", INF)):
@@ -1206,12 +1240,14 @@ func _spawn_lines_after_opening(_r: int, _special: bool) -> void:
 
 ## The squad settles in: the local survivor first, then the others one at a time.
 func _spawn_lines() -> void:
-	_later(3.0, _local_player(), "SPAWN")
+	# (T-213: each waits for a free squad channel, up to 60 s; on Map 0 the opening and the squad's own quips used
+	# to fill the 10 s window, so nobody said SPAWN there)
+	_later_when_free(3.0, _local_player(), "SPAWN")
 	var i: int = 0
 	for pid: int in standing_pids():
 		if pid != _local_player():
 			i += 1
-			_later(3.0 + 5.0 * i, pid, "SPAWN")
+			_later_when_free(3.0 + 5.0 * i, pid, "SPAWN")
 
 
 func _on_round_started(round_number: int, is_special: bool) -> void:
