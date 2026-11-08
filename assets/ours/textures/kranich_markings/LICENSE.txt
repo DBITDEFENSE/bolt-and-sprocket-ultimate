@@ -1,0 +1,3 @@
+Original work of the GRAVELIGHT project (TERMS & CONDITIONS). Not third-party: no external licence applies.
+The glyph shapes come from Stardos Stencil (SIL Open Font License 1.1), whose licence travels with the font in
+assets/third_party/google_fonts/stardos-stencil/; rendering a font into an image is permitted by the OFL.

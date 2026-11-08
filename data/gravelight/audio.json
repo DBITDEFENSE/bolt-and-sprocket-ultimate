@@ -219,6 +219,46 @@
       "attenuation": "quiet",
       "loop": true
     },
+    "kranich_engine_outside": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/kranich_engine_outside.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "loop": true
+    },
+    "kranich_groan": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/kranich_groan_01.wav",
+        "res://gravelight/audio/sfx/ambience/kranich_groan_02.wav",
+        "res://gravelight/audio/sfx/ambience/kranich_groan_03.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        0.9,
+        1.08
+      ],
+      "max_voices": 1
+    },
+    "kranich_wind_roar": {
+      "files": [
+        "res://gravelight/audio/sfx/ambience/kranich_wind_roar.wav"
+      ],
+      "bus": "Ambience",
+      "volume_db": 0.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "loop": true
+    },
     "player_breath_hurt": {
       "files": [
         "res://gravelight/audio/sfx/player/breath_hurt_01.ogg",

@@ -76,6 +76,11 @@ var _scan_t: float = 0.0
 var _shake_t: float = 0.0
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var sunrise: float = 0.0          # UPDATE 10 (T-156): night -> dawn across the act (set_sunrise)
+## T-220 (the plane pass, KranichAir): the world's slow bank (radians about +Z; the sky, the cloud sheets and the ground
+## plane roll, never the deck), the key light's sun share at dawn (the sky's disc turns into the sun)
+var bank_rad: float = 0.0
+var sun_k: float = 0.0
+var sunrise_hold: float = -1.0   # T-220: KranichAir.preview_dawn holds the dawn here (captures); < 0 = the act clock
 
 
 # ---------------------------------------------------------------- pure rules
@@ -499,6 +504,12 @@ func _process(delta: float) -> void:
 		_sky_mat.set_shader_parameter("dawn", _dawn)
 		_sky_mat.set_shader_parameter("flash", _flash)
 		_sky_mat.set_shader_parameter("sunrise", sunrise)
+		# T-220: the bank, the far deck to the horizon (scrolling aft at the flight's speed), the dawn sun's disc
+		_sky_mat.set_shader_parameter("bank", bank_rad)
+		_sky_mat.set_shader_parameter("sun_k", sun_k)
+		_sky_mat.set_shader_parameter("deck", 0.0 if desert else 1.0)
+		_sky_mat.set_shader_parameter("deck_cover", clampf(float(cfg.get("deck_cover", 0.55)) * lerpf(0.6, 1.0, clampf(float(leg.get("clouds", 1.0)), 0.0, 1.0)), 0.0, 0.9))
+		_sky_mat.set_shader_parameter("deck_scroll", fmod(flight_t * float(cfg.get("deck_speed", 150.0)) * (0.0 if desert else float(leg.get("speed_k", 1.0))), 600000.0))
 
 
 func _tick_layers(delta: float, cp: Vector3) -> void:
@@ -508,6 +519,7 @@ func _tick_layers(delta: float, cp: Vector3) -> void:
 		var mi: MeshInstance3D = _clouds[k]
 		mi.position.x = cp.x
 		mi.position.z = cp.z
+		mi.basis = Basis(Vector3(0, 0, 1), bank_rad)   # T-220: the sheets bank with the world
 		var m: ShaderMaterial = _cloud_mats[k]
 		m.set_shader_parameter("scroll", Vector2(0.0, fmod(flight_t * float(c.get("speed", 20.0)) * speed_k, 40000.0)))
 		m.set_shader_parameter("center", cp)
@@ -519,6 +531,7 @@ func _tick_layers(delta: float, cp: Vector3) -> void:
 	if _ground != null:
 		_ground_y = move_toward(_ground_y, _ground_y_target, delta * 60.0)
 		_ground.position = Vector3(cp.x, _ground_y, cp.z)
+		_ground.basis = Basis(Vector3(0, 0, 1), bank_rad)
 		var gs: Dictionary = ground_state(leg, leg_t)
 		_ground_mat.set_shader_parameter("coast_z", float(gs["coast_z"]))
 		_ground_mat.set_shader_parameter("land_ahead", float(gs["land_ahead"]))
@@ -546,6 +559,8 @@ func _tick_turbulence(delta: float) -> void:
 			continue
 		# the bank throws the hangings outboard of the turn; a slow sway the rest of the time (the wing breathes)
 		var target: float = (-side * max_rad if banking else 0.0) + sin(flight_t * 0.7 + float(e["phase"])) * max_rad * 0.12
+		# T-220: the airframe's vibration under everything (the impellers' beat through the hangings)
+		target += sin(flight_t * 29.0 + float(e["phase"]) * 5.0) * deg_to_rad(float(sw.get("vibrate_deg", 0.35)))
 		var r: Vector2 = swing_step(float(e["angle"]), float(e["vel"]), target, float(e["omega"]), damping, delta)
 		e["angle"] = r.x
 		e["vel"] = r.y
@@ -566,7 +581,7 @@ func _tick_turbulence(delta: float) -> void:
 			var map: Node = get_tree().current_scene
 			var p: Node = map.get("player") if map != null else null
 			if p != null and is_instance_valid(p):
-				p.set("_shake", maxf(float(p.get("_shake")) if p.get("_shake") != null else 0.0, float((cfg.get("shake", {}) as Dictionary).get("bank", 0.06))))
+				CameraSway.shake(p, float((cfg.get("shake", {}) as Dictionary).get("bank", 0.06)))   # T-220: the comfort setting
 
 
 func _tick_fighters(delta: float) -> void:
@@ -777,8 +792,22 @@ func preview_london() -> void:
 
 
 ## UPDATE 10 (T-156): the living world's sun (MapAmbience kind flight_sun): 0 night .. 1 first light behind the wing.
+## T-220 (KranichAir): the world's bank (radians) and the dawn sun's share of the key light.
+func set_bank(rad: float, sun: float = -1.0) -> void:
+	bank_rad = rad
+	if sun >= 0.0:
+		sun_k = clampf(sun, 0.0, 1.0)
+
+
+## T-220 (KranichAir's turbulence): a jolt through every hanging thing (adds swing velocity, random sides).
+func nudge(rad_s: float) -> void:
+	for id: int in _swing.keys():
+		var e: Dictionary = _swing[id]
+		e["vel"] = float(e["vel"]) + rad_s * (1.0 if _rng.randf() < 0.5 else -1.0) * _rng.randf_range(0.6, 1.0)
+
+
 func set_sunrise(k: float) -> void:
-	sunrise = clampf(k, 0.0, 1.0)
+	sunrise = clampf(k if sunrise_hold < 0.0 else sunrise_hold, 0.0, 1.0)
 
 
 func _go_desert() -> void:

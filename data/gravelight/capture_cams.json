@@ -717,7 +717,7 @@
       ]
     },
     "fernflug_plane": {
-      "_doc": "The Kranich plane pass (T-218): the catwalk and edge views where the player sees outside: the wing walk from the hatch to the wingtip, the trailing edge by the nacelle and the exhausts, the gun blisters, the cockpit glass, the bay with its doors open, the torn breach. docs/captures/fernflug/before|after|side_by_side.",
+      "_doc": "The Kranich plane pass (T-220): the catwalk and edge views where the player sees outside: the wing walk from the hatch to the wingtip, the trailing edge by the nacelle and the exhausts, the gun blisters, the cockpit glass, the bay with its doors open, the torn breach. docs/captures/fernflug/before|after|side_by_side.",
       "map": "res://gravelight/maps/map04_fernflug/map04b.tscn",
       "bots": 0,
       "settle_s": 6.0,
@@ -737,6 +737,18 @@
         {"name": "Cockpit_side", "pos": [-14.0, 0.0, 70.0], "yaw": 150.0, "pitch": -2.0, "note": "F: forward and port through the glass (the leading edge sweeping back)"},
         {"name": "Bay_doors", "pos": [0.0, 0.0, 23.0], "yaw": 0.0, "pitch": -28.0, "note": "A: the bay doors open under the racks", "do": ["call:Trap_BayDoors:capture_open:3.0"]},
         {"name": "Breach_L2", "pos": [-40.0, 0.0, 43.6], "yaw": 180.0, "pitch": 6.0, "note": "C_L: the torn BreachL2 panel, the night through the hole"}
+      ]
+    },
+    "fernflug_plane_dawn": {
+      "_doc": "The Kranich plane pass (T-220), after only: wing walk views at the act's dawn (KranichAir.preview_dawn 0.85, the act round 6 dawn: the key light swung to the low sun behind the wing) and a cloud bank streaming over the wing.",
+      "map": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {"name": "Dawn_hatch", "pos": [-40.0, 3.4, 43.5], "yaw": 120.0, "pitch": -12.0, "note": "the hatch landing at dawn", "do": ["power", "call:FlightSky:calm:0.1", "call:WingWalk:open_now:1.5", "callv:KranichAir:preview_dawn:0.85:3"], "settle_s": 3.0},
+        {"name": "Dawn_tip_back", "pos": [-112.0, 3.4, 24.0], "yaw": -100.0, "pitch": -3.0, "note": "from the wingtip back along the wing at dawn"},
+        {"name": "Dawn_aft", "pos": [-75.0, 3.4, 21.0], "yaw": 30.0, "pitch": -6.0, "note": "aft over the trailing edge into the sunrise"},
+        {"name": "Cloudbank", "pos": [-80.0, 3.4, 21.5], "yaw": 160.0, "pitch": 0.0, "note": "a cloud bank streaming over the wing", "do": ["callv:KranichAir:cloud_bank_now:55.0,-85.0:4"]}
       ]
     },
     "u10_map04a": {
