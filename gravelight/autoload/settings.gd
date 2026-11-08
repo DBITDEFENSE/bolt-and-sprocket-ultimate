@@ -53,6 +53,8 @@ var values: Dictionary = {
 	"pad_sensitivity": 1.0,
 	"invert_y": false,
 	"subtitles": true,
+	"subtitle_size": "normal",     # T-218: normal / large / largest (x1, x1.2, x1.4)
+	"subtitle_back": "off",        # T-218: off / light / dark: a band behind the words (readable on snow)
 	"vol_master": 1.0, "vol_music": 0.8, "vol_sfx": 1.0, "vol_vo": 1.0, "vol_jingles": 0.8, "vol_ambience": 1.0,
 	"vo_room_acoustics": true,     # T-205: voices sit in the room they are spoken in (VORoomAcoustics); off = studio-dry
 	"classic_rules": false,

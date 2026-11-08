@@ -17,6 +17,8 @@ const TEST_RANGE: String = "res://gravelight/maps/test_range/test_range.tscn"
 const HUB: String = "res://ui/main_menu.tscn"
 const COL_X: float = 112.0
 const COL_Y: float = 372.0
+const WORDMARK_H: float = 184.0     # T-218: was 140; the lockup now starts on the column's rule
+const WORDMARK_PAD: float = 0.048   # the empty strip left of the letters in claude_zombies.png (99 of 2048 px)
 
 var scene: MenuScene = null
 var column: String = "main"
@@ -25,6 +27,9 @@ var _col_holder: Control
 var _col: HBoxContainer = null
 var _links: VBoxContainer = null
 var _foot: VBoxContainer
+var _hint: Label = null          # T-218: ENTER / ESC, or A / B with a controller
+var _hint_pad: int = -1
+var _version: Label = null
 var _screen: MenuScreen = null
 var _last_focus: Dictionary = {}     # column -> link name
 
@@ -50,7 +55,9 @@ func _ready() -> void:
 	_top.add_theme_constant_override("separation", 2)
 	_top.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_top)
-	_top.add_child(MenuKit.wordmark(140.0))   # CLAUDE ZOMBIES (T-140)
+	var wm: TextureRect = MenuKit.wordmark(WORDMARK_H) as TextureRect   # CLAUDE ZOMBIES (T-140)
+	wm.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT   # T-218: left-aligned on the rule, not centred over the tagline
+	_top.add_child(wm)
 	var tc: Label = Label.new()
 	tc.text = Game.GAME_TITLE.to_upper()
 	tc.add_theme_font_override("font", MenuKit.spaced(MenuKit.type_font(), 8))
@@ -61,6 +68,15 @@ func _ready() -> void:
 	var tag: Label = MenuKit.para("Silesia, winter 1944. The dead are keeping count.", 20, MenuKit.VIOLET.lightened(0.15))
 	tag.autowrap_mode = TextServer.AUTOWRAP_OFF
 	_top.add_child(tag)
+	for l: Label in [tc, tag]:   # the lines start where the letters of the wordmark start
+		var inset: StyleBoxEmpty = StyleBoxEmpty.new()
+		inset.content_margin_left = WORDMARK_H * 2048.0 / 940.0 * WORDMARK_PAD
+		l.add_theme_stylebox_override("normal", inset)
+	_version = MenuKit.label("v" + str(ProjectSettings.get_setting("application/config/version", "")), 15, MenuKit.DIM.darkened(0.15))
+	_version.name = "Version"
+	_version.add_theme_font_override("font", MenuKit.mono_font())
+	_version.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_version)
 	_col_holder = Control.new()
 	_col_holder.name = "ColumnHolder"
 	_col_holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -129,9 +145,11 @@ func _build_shade() -> void:
 func _layout() -> void:
 	var vp: Vector2 = get_viewport_rect().size
 	var inset: float = MenuKit.frame_inset(vp)
-	_top.position = Vector2(COL_X - 18.0 + inset, 58.0)
+	_top.position = Vector2(COL_X + inset - WORDMARK_H * 2048.0 / 940.0 * WORDMARK_PAD, 44.0)   # letters on the rule
 	_col_holder.position = Vector2(COL_X + inset, COL_Y)
 	_foot.position = Vector2(COL_X + inset, vp.y - 118.0)
+	if _version != null:
+		_version.position = Vector2(vp.x - inset - COL_X * 0.5 - _version.get_combined_minimum_size().x, vp.y - 52.0)
 
 
 func _build_footer() -> void:
@@ -148,12 +166,24 @@ func _build_footer() -> void:
 	if sub != "":
 		col.add_child(MenuKit.label(sub, 18, MenuKit.DIM))
 	head.add_child(col)
-	var hint: Label = MenuKit.label("ENTER  select      ESC  back", 18, MenuKit.DIM)
-	hint.add_theme_font_override("font", MenuKit.spaced(MenuKit.type_font(), 2))
-	_foot.add_child(hint)
+	_hint = MenuKit.label(hint_text(false), 18, MenuKit.DIM)
+	_hint.add_theme_font_override("font", MenuKit.spaced(MenuKit.type_font(), 2))
+	_foot.add_child(_hint)
 	if Net.last_error != "" and not Net.reopen_lobby:
 		_foot.add_child(MenuKit.para(Net.last_error, 18, MenuKit.INK.lightened(0.35)))
 		Net.last_error = ""
+
+
+## The footer's keys for the device in hand (pure, unit-tested).
+static func hint_text(pad: bool) -> String:
+	return "A  select      B  back" if pad else "ENTER  select      ESC  back"
+
+
+func _process(_delta: float) -> void:
+	var pad: int = 1 if GLSettings.using_pad else 0
+	if _hint != null and pad != _hint_pad:
+		_hint_pad = pad
+		_hint.text = hint_text(pad == 1)
 
 
 func _unlock_name(item_id: String) -> String:

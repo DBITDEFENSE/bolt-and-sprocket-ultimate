@@ -72,18 +72,39 @@ func _ready() -> void:
 
 
 ## Splits text at word boundaries into chunks of at most `max_chars`.
+## T-218: a chunk ends at a sentence or clause end ("." "!" "?" ";" ":" ",") when one falls in its last 55 %, so a
+## line no longer stops on "Keep the lamps lit and"; otherwise at the last word that fits.
 static func chunk(text: String, max_chars: int) -> PackedStringArray:
 	var out: PackedStringArray = []
 	var cur: String = ""
 	for word: String in text.split(" ", false):
 		if cur.length() + word.length() + 1 > max_chars and cur != "":
-			out.append(cur)
-			cur = word
+			var cut: int = _clause_end(cur, int(max_chars * 0.45))
+			if cut > 0:
+				out.append(cur.left(cut))
+				cur = cur.substr(cut).strip_edges() + " " + word
+			else:
+				out.append(cur)
+				cur = word
 		else:
 			cur = word if cur == "" else cur + " " + word
 	if cur != "":
 		out.append(cur)
 	return out
+
+
+## The length of `s` up to and including its last sentence / clause end at or after `min_at`, or 0 (strongest
+## stop first: a full stop beats a comma).
+static func _clause_end(s: String, min_at: int) -> int:
+	for marks: PackedStringArray in [PackedStringArray([". ", "! ", "? ", "... "]), PackedStringArray(["; ", ": ", " - "]), PackedStringArray([", "])]:
+		var best: int = -1
+		for m: String in marks:
+			var at: int = s.rfind(m)
+			if at >= min_at:
+				best = maxi(best, at + m.length() - 1)
+		if best > 0:
+			return best
+	return 0
 
 
 func _on_line(_id: StringName, speaker: StringName, text: String, duration: float) -> void:
@@ -117,7 +138,47 @@ func _show(row: Dictionary) -> void:
 	var name_str: String = str(NAMES.get(spk, String(spk)))
 	var body_col: String = "c07dff" if bool(row.get("slip", false)) else "ece6d6"   # a slip: Darkmatter violet
 	l.text = "[center][b][color=#%s]%s:[/color][/b] [color=#%s]%s[/color][/center]" % [col.to_html(false), name_str, body_col, chunks[i].replace("[", "[lb]")]
+	_style(l)
 	l.visible = true
+
+
+## T-218 (Settings > Accessibility): the subtitle size and the band behind the words.
+func _style(l: RichTextLabel) -> void:
+	var fs: int = roundi(float(MenuKit.size("hud_subtitle")) * size_scale(str(GLSettings.values.get("subtitle_size", "normal"))))
+	l.add_theme_font_size_override("normal_font_size", fs)
+	l.add_theme_font_size_override("bold_font_size", fs)
+	var a: float = back_alpha(str(GLSettings.values.get("subtitle_back", "off")))
+	if a <= 0.0:
+		l.remove_theme_stylebox_override("normal")
+		return
+	var sb: StyleBoxFlat = StyleBoxFlat.new()
+	sb.bg_color = Color(0.02, 0.02, 0.03, a)
+	sb.set_corner_radius_all(4)
+	sb.content_margin_left = 18
+	sb.content_margin_right = 18
+	sb.content_margin_top = 6
+	sb.content_margin_bottom = 8
+	l.add_theme_stylebox_override("normal", sb)
+
+
+## Pure: the font scale of a subtitle_size setting.
+static func size_scale(mode: String) -> float:
+	match mode:
+		"large":
+			return 1.2
+		"largest":
+			return 1.4
+	return 1.0
+
+
+## Pure: the band's opacity for a subtitle_back setting (0 = none).
+static func back_alpha(mode: String) -> float:
+	match mode:
+		"light":
+			return 0.45
+		"dark":
+			return 0.78
+	return 0.0
 
 
 func _process(delta: float) -> void:

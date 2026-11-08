@@ -7,6 +7,7 @@ extends Control
 signal closed
 
 var content: VBoxContainer
+var header: VBoxContainer   # T-218: rows that stay put above the scrolling content (Settings' tabs); fill in build_header()
 var _title: String = ""
 var _scroll: ScrollContainer
 var _page_root: Control = null
@@ -48,6 +49,12 @@ func _ready() -> void:
 	rule.custom_minimum_size = Vector2(0, 2)
 	rule.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	outer.add_child(rule)
+	header = VBoxContainer.new()
+	header.name = "Header"
+	header.add_theme_constant_override("separation", 6)
+	outer.add_child(header)
+	build_header()
+	header.visible = header.get_child_count() > 0
 	var scroll: ScrollContainer = ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -80,6 +87,11 @@ func _settle_scroll() -> void:
 
 ## Override: fill `content`.
 func build() -> void:
+	pass
+
+
+## Override (T-218): fill `header`, the rows above the scroll that never scroll away. Called once, before build().
+func build_header() -> void:
 	pass
 
 
