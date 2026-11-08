@@ -1,0 +1,10 @@
+Title: Old Standard TT
+Author: Alexey Kryukov (The Old Standard Project Authors)
+Source: https://fonts.google.com/specimen/Old+Standard+TT
+Author URL: https://github.com/google/fonts/tree/main/ofl/oldstandardtt
+License: SIL Open Font License 1.1 (OFL 1.1, https://openfontlicense.org)
+Credit line: "Old Standard TT" by Alexey Kryukov, licensed under the SIL Open Font License 1.1.
+Format: TrueType (TTF), Regular / Italic / Bold, unmodified (Latin, Latin Extended, Cyrillic, Cyrillic Extended)
+Downloaded: 2026-11-08 by Claude (T-209) from the google/fonts repository (ofl/oldstandardtt, main); LICENSE.txt is its OFL.txt
+Files used: OldStandard-Bold.ttf, OldStandard-Italic.ttf, OldStandard-Regular.ttf
+Game use: the archive reels' title cards (UPDATE 12 §3, tools/cinema/archive_reel.py and the in-game reel cards): the Russian (Cyrillic) and German card lines in a period book face; Stardos Stencil and Special Elite have no Cyrillic

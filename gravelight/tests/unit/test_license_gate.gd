@@ -1,11 +1,16 @@
 extends GutTest
 ## The licence gate (UPDATE_05 section 0.2, UPDATE_05A section 3, T-087): every file under assets/ (except
-## assets/user_supplied/, Devin's git-ignored drop box) must sit in a folder, or under one, that holds both
+## assets/user_supplied/, Devin's git-ignored drop box, but not its archive-reel clip folders, T-209) must sit in a folder, or under one, that holds both
 ## LICENSE.txt and SOURCE.txt, and that SOURCE.txt's `License:` line must name an allowed licence. Fails with the
 ## offending path. Nothing ships without paperwork.
 
 const ASSETS_DIR: String = "res://assets"
 const EXEMPT_DIRS: PackedStringArray = ["res://assets/user_supplied"]
+## T-209: inside the drop box, the archive-reel clip folders are checked like any asset (their paperwork is committed;
+## a clip the owner drops in sits under it), and so are the built reels (assets/cutscene_reels).
+const CHECKED_DIRS: PackedStringArray = ["res://assets/user_supplied/cutscenes"]
+## T-209: the only folders whose SOURCE.txt may name the owner-generated Higgsfield licence.
+const HIGGSFIELD_DIRS: PackedStringArray = ["res://assets/user_supplied/cutscenes/", "res://assets/cutscene_reels/"]
 ## Mirrors tools/assets_manifest.py LICENSES (regex on the lowercased License line -> canonical name).
 const ALLOWED: Array = [
 	["cc0|public domain", "CC0"],
@@ -16,6 +21,7 @@ const ALLOWED: Array = [
 	["apache", "Apache 2.0"],
 	["unity asset store|asset store eula", "Unity Asset Store EULA"],
 	["\\bours\\b|original work|in-house", "Ours"],
+	["higgsfield", "Owner-generated (Higgsfield)"],
 ]
 const FORBIDDEN: Array = ["nc\\b", "non-?commercial", "editorial", "noai", "no-ai"]
 ## Files that are paperwork or engine bookkeeping, not assets.
@@ -72,6 +78,9 @@ static func paperwork_folder(file: String) -> String:
 
 
 static func is_exempt(file: String) -> bool:
+	for c: String in CHECKED_DIRS:
+		if file.begins_with(c + "/"):
+			return false
 	for e: String in EXEMPT_DIRS:
 		if file.begins_with(e + "/"):
 			return true
@@ -103,6 +112,9 @@ func test_every_asset_file_has_paperwork() -> void:
 		if canon.is_empty():
 			offenders.append(folder + "/SOURCE.txt  (License not allowed or missing: '%s')" % lic_line)
 			continue
+		if canon == "Owner-generated (Higgsfield)" and not _in_any(folder + "/", HIGGSFIELD_DIRS):
+			offenders.append(folder + "/SOURCE.txt  (the Higgsfield licence is only for the archive-reel clips)")
+			continue
 		for bad: String in FORBIDDEN:
 			if RegEx.create_from_string(bad).search(lic_line.to_lower()) != null:
 				offenders.append(folder + "/SOURCE.txt  (forbidden licence term in '%s')" % lic_line)
@@ -113,6 +125,29 @@ func test_every_asset_file_has_paperwork() -> void:
 		gut.p("LICENSE GATE: " + o)
 	assert_eq(offenders.size(), 0, "every file under assets/ has paperwork with an allowed licence (%d files, %d folders checked)" % [checked, folders.size()])
 	gut.p("license gate: %d files in %d paperwork folders" % [checked, folders.size()])
+
+
+static func _in_any(path: String, dirs: PackedStringArray) -> bool:
+	for d: String in dirs:
+		if path.begins_with(d):
+			return true
+	return false
+
+
+## T-209: the archive-reel clip folders carry the paperwork the work order asks for (the tool, the model, the date,
+## the owner's account; the plan's commercial terms in LICENSE.txt) before any clip arrives.
+func test_archive_reel_clip_folders_have_paperwork() -> void:
+	for scene: String in ["lazarus_saturday", "fourth_day", "staub"]:
+		var dir: String = "res://assets/user_supplied/cutscenes/" + scene
+		var src: String = FileAccess.get_file_as_string(dir.path_join("SOURCE.txt"))
+		for key: String in ["Tool:", "Model:", "Generated:", "Account:", "License:", "Credit line:"]:
+			assert_true(src.contains(key), "%s/SOURCE.txt has %s" % [dir, key])
+		assert_eq(canonical_license(source_license(dir.path_join("SOURCE.txt"))), "Owner-generated (Higgsfield)", dir)
+		var lic: String = FileAccess.get_file_as_string(dir.path_join("LICENSE.txt"))
+		assert_true(lic.contains("commercial"), dir + "/LICENSE.txt notes the plan's commercial-use terms")
+	assert_false(is_exempt("res://assets/user_supplied/cutscenes/staub/shot_01.mp4"), "a dropped clip is checked")
+	assert_true(is_exempt("res://assets/user_supplied/u12/c47/raw.blend"), "the rest of the drop box stays exempt")
+	assert_eq(canonical_license("Owner-generated with Higgsfield under the owner's paid plan"), "Owner-generated (Higgsfield)")
 
 
 func test_third_party_layout() -> void:

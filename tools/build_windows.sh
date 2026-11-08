@@ -12,6 +12,8 @@ NAME="ClaudeZombies_$VER"
 DIR="build/windows/$NAME"
 mkdir -p build
 touch build/.gdignore   # the editor must not import what the export writes here
+# UPDATE 12 s3 (T-209): treat any new archive-reel clip (assets/user_supplied/cutscenes) into assets/cutscene_reels first
+"$PYTHON" -I tools/cinema/archive_reel.py build || echo "[build_windows] the archive-reel build failed: the reels keep their in-engine stand-ins"
 rm -rf "$DIR" "build/$NAME.zip"
 mkdir -p "$DIR"
 "$GODOT" --headless --audio-driver Dummy --path . --export-release "Windows Desktop" "$DIR/ClaudeZombies.exe" > build/windows/export.log 2>&1

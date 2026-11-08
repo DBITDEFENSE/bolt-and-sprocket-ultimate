@@ -13,6 +13,9 @@ extends Node
 ## skipped), skip_pressed (the local hold: solo skips at once with `auto_skip`; a co-op owner votes instead),
 ## finished (after the last cut; with `hold_at_end` the reel waits on black for `end_now()`, an online client waiting
 ## for the host). The reel frees itself after its closing fade.
+## T-209 (UPDATE 12 s3): ids go through CinemaArchive: "reel:<id>" plays the archive-reel version (clips where they are
+## built, the in-engine shots through the film treatment where not), "engine:<id>" the in-engine scene, a plain id
+## whichever the reels data says the game plays. The signals carry the plain library id either way.
 
 signal cut_started(index: int, id: String)
 signal cut_ended(index: int, id: String, skipped: bool)
@@ -55,7 +58,7 @@ static func play(parent: Node, cut_ids: Array, opts: Dictionary = {}) -> CinemaR
 	var r: CinemaReel = CinemaReel.new()
 	r.name = "CinemaReel"
 	for c: Variant in cut_ids:
-		if CinemaLibrary.has_cut(str(c)):
+		if CinemaArchive.is_known(str(c)):
 			r.ids.append(str(c))
 	r.map = opts.get("map", null)
 	r.speed = maxf(0.01, float(opts.get("speed", Campaign.cutscene_speed)))
@@ -147,7 +150,7 @@ func _restore_hud() -> void:
 func _start(i: int) -> void:
 	index = i
 	var id: String = ids[i]
-	def = CinemaLibrary.resolved(id, roster)
+	def = CinemaArchive.resolved(id, roster)
 	_fired.clear()
 	_seen_shot = -1
 	for sid: String in CinemaLibrary.sets_in(def):
@@ -160,8 +163,9 @@ func _start(i: int) -> void:
 	director.shot_started.connect(_on_shot)
 	director.skip_requested.connect(_on_skip)
 	director.finished.connect(_on_finished)
-	cut_started.emit(i, id)
-	print("[cinema] %s: %.1f s, %d shots, stages %s" % [id, float(def.get("seconds", 0.0)), shots.size(), ", ".join(CinemaLibrary.sets_in(def))])
+	cut_started.emit(i, CinemaArchive.base_id(id))
+	print("[cinema] %s: %.1f s, %d shots, stages %s%s" % [id, float(def.get("seconds", 0.0)), shots.size(), ", ".join(CinemaLibrary.sets_in(def)),
+		" (archive reel, %d of %d shots filmed)" % [(def.get("videos", []) as Array).size(), ((def["archive"] as Dictionary).get("spans", []) as Array).size()] if def.has("archive") else ""])
 
 
 ## The built stage for a set id (cached for the reel; "black" or an unknown id: an empty dark stage).
@@ -223,6 +227,10 @@ func _process(delta: float) -> void:
 	for m: String in d.missing:
 		if not missing.has(m):
 			missing.append(m)
+	if d.video != null:
+		for vf: String in d.video.failed:
+			if not missing.has("video:" + vf):
+				missing.append("video:" + vf)
 	if director != d or director == null:   # (the cut ended in that step: the next one has started, or the reel is done)
 		return
 	_timed_fx()
@@ -360,7 +368,7 @@ func _on_finished() -> void:
 func _end_cut(was_skipped: bool) -> void:
 	if director == null:
 		return
-	var id: String = ids[index]
+	var id: String = CinemaArchive.base_id(ids[index])
 	var d: CinemaDirector = director
 	director = null
 	if was_skipped:
@@ -380,7 +388,7 @@ func _end_cut(was_skipped: bool) -> void:
 
 
 func _free_unused(next_i: int) -> void:
-	var keep: Array[String] = CinemaLibrary.sets_in(CinemaLibrary.def(ids[next_i]))
+	var keep: Array[String] = CinemaLibrary.sets_in(CinemaLibrary.def(CinemaArchive.base_id(ids[next_i])))
 	for sid: Variant in _stages.keys():
 		if not keep.has(str(sid)):
 			var s: CinemaSet = _stages[sid]

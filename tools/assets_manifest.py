@@ -39,6 +39,9 @@ LICENSES = [
     (r"apache", "Apache 2.0"),
     (r"unity asset store|asset store eula", "Unity Asset Store EULA"),
     (r"\bours\b|original work|in-house", "Ours"),
+    # T-209: the owner's generated archive-reel clips; only under assets/user_supplied/cutscenes and assets/cutscene_reels
+    # (test_license_gate.gd), and their commercial terms wait on the owner's check (their LICENSE.txt, NEEDS_DEVIN)
+    (r"higgsfield", "Owner-generated (Higgsfield)"),
 ]
 KEY_ALIASES = {"authors": "author", "source url": "source", "url": "source", "credit": "credit line", "licence": "license"}
 REQUIRED = ["title", "author", "source", "license", "credit line"]
