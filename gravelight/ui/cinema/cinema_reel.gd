@@ -183,6 +183,7 @@ func _stage_for(sid: String) -> CinemaSet:
 	s.set_meta("roster", CinemaLibrary.seat_roster(roster))
 	s.set_meta("speed", speed)
 	s.build()
+	LookGrade.apply_stage(s, LookGrade.cinema_id(map, ids[index] if index >= 0 and index < ids.size() else ""))   # UPDATE 12 (T-207): the host map's grade, or the reel's
 	_stages[sid] = s
 	return s
 

@@ -1,0 +1,91 @@
+{
+ "_doc": "Kaltenbrunn: cold steel on the surface, salt white and sodium amber in the depths, the violet heart. The zones feed depth_grade.gd (surface / depths / core by camera height: fill, far fog, exposure, saturation). T-207.",
+ "map": "map01_kaltenbrunn",
+ "tonemap": "filmic",
+ "white": 6.0,
+ "adjust": {
+  "brightness": 1.0,
+  "contrast": 1.12
+ },
+ "mono": 0.4,
+ "keep": [
+  {
+   "hue": 268,
+   "width": 20,
+   "amount": 1.0
+  },
+  {
+   "hue": 0,
+   "width": 18,
+   "amount": 0.85
+  }
+ ],
+ "tint": {
+  "shadows": "#22303a",
+  "highlights": "#d8c6a0",
+  "amount": 0.25
+ },
+ "fog": {
+  "density": 0.012,
+  "volumetric": 0.02
+ },
+ "zones": {
+  "surface": {
+   "ambient": {
+    "color": "#384566",
+    "energy": 0.26
+   },
+   "fog": {
+    "color": "#10151f",
+    "emission": "#02020a"
+   },
+   "exposure": 1.05,
+   "adjust": {
+    "saturation": 0.8
+   }
+  },
+  "depths": {
+   "ambient": {
+    "color": "#4f4538",
+    "energy": 0.6
+   },
+   "fog": {
+    "color": "#0f0c08",
+    "emission": "#030201"
+   },
+   "exposure": 1.2,
+   "adjust": {
+    "saturation": 0.86
+   }
+  },
+  "core": {
+   "ambient": {
+    "color": "#42336b",
+    "energy": 0.62
+   },
+   "fog": {
+    "color": "#0a0510",
+    "emission": "#020105"
+   },
+   "exposure": 1.2,
+   "adjust": {
+    "saturation": 1.0
+   }
+  }
+ },
+ "post": {
+  "grain": 0.06,
+  "vignette": 0.36,
+  "edge_soft": 0.2,
+  "ca": 0.0015
+ },
+ "accents": {
+  "violet": "#8a4dff",
+  "red": "#8f1d1d"
+ },
+ "web": {
+  "adjust": {
+   "saturation": 0.72
+  }
+ }
+}

@@ -226,6 +226,7 @@ func _build_environment() -> void:
 		add_child(fv)
 	_env.adjustment_enabled = true
 	_env.adjustment_saturation = 0.85
+	LookGrade.apply(_env, "menu")   # UPDATE 12 (T-207): the archive-reel look, data/look/menu.json
 
 
 func _build_set() -> void:

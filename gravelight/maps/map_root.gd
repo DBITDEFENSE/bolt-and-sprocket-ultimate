@@ -49,6 +49,7 @@ func clamp_inside(p: Vector3, margin: float = 1.5) -> Vector3:
 func _ready() -> void:
 	GLSettings.activate()
 	Game.set_mode(Game.Mode.GRAVELIGHT)
+	LookGrade.attach(self)   # UPDATE 12 (T-207): the map's colour grade, data/look/<map_id>.json, on its Environment
 	get_tree().paused = false
 	_online = Net.is_online() and Net.in_match
 	GameState.reset_match(map_id, display_name, start_zone)

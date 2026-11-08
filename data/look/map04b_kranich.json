@@ -1,0 +1,48 @@
+{
+ "_doc": "Fernflug II, der Kranich: dawn blue over the cloud deck, cold aluminium inside; the red bay lamps keep their red. The unpowered bay is black in any grade, so the ambient is left alone. T-207.",
+ "map": "map04b_kranich",
+ "tonemap": "filmic",
+ "exposure": 1.7,
+ "white": 6.0,
+ "adjust": {
+  "brightness": 1.0,
+  "contrast": 1.12,
+  "saturation": 0.95
+ },
+ "mono": 0.45,
+ "keep": [
+  {
+   "hue": 268,
+   "width": 20,
+   "amount": 1.0
+  },
+  {
+   "hue": 0,
+   "width": 18,
+   "amount": 0.85
+  }
+ ],
+ "tint": {
+  "shadows": "#1c2736",
+  "highlights": "#d4dce8",
+  "amount": 0.3
+ },
+ "fog": {
+  "color": "#232c38"
+ },
+ "post": {
+  "grain": 0.06,
+  "vignette": 0.4,
+  "edge_soft": 0.2,
+  "ca": 0.0015
+ },
+ "accents": {
+  "violet": "#8a4dff",
+  "red": "#8f1d1d"
+ },
+ "web": {
+  "adjust": {
+   "saturation": 0.72
+  }
+ }
+}

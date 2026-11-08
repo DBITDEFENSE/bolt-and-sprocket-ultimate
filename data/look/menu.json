@@ -1,0 +1,28 @@
+{
+ "_doc": "The main menu: the archive-reel black-and-white (section 3), silver highlights, a lifted black floor like a print. T-207.",
+ "map": "menu",
+ "tonemap": "filmic",
+ "white": 6.0,
+ "adjust": {
+  "brightness": 1.0,
+  "contrast": 1.16,
+  "saturation": 0.0
+ },
+ "tint": {
+  "shadows": "#101214",
+  "highlights": "#d6dbe3",
+  "amount": 0.25
+ },
+ "lift": 0.04,
+ "post": {
+  "grain": 0.14,
+  "vignette": 0.5,
+  "edge_soft": 0.35,
+  "ca": 0.0,
+  "flicker": 0.04
+ },
+ "accents": {
+  "violet": "#8a4dff",
+  "red": "#8f1d1d"
+ }
+}

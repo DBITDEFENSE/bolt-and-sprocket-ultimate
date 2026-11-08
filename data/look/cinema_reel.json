@@ -1,0 +1,33 @@
+{
+ "_doc": "The archive-reel history scenes (section 3: LAZARUS SATURDAY, FOURTH DAY, STAUB) on an in-engine stage: the same black-and-white as the menu. `cuts` lists the cutscene ids that take it; every other cut takes its host map's grade. T-207.",
+ "map": "cinema_reel",
+ "cuts": [
+  "lazarus_saturday",
+  "fourth_day",
+  "staub"
+ ],
+ "tonemap": "filmic",
+ "white": 6.0,
+ "adjust": {
+  "brightness": 1.0,
+  "contrast": 1.16,
+  "saturation": 0.0
+ },
+ "tint": {
+  "shadows": "#101214",
+  "highlights": "#d6dbe3",
+  "amount": 0.25
+ },
+ "lift": 0.04,
+ "post": {
+  "grain": 0.16,
+  "vignette": 0.52,
+  "edge_soft": 0.4,
+  "ca": 0.0,
+  "flicker": 0.06
+ },
+ "accents": {
+  "violet": "#8a4dff",
+  "red": "#8f1d1d"
+ }
+}

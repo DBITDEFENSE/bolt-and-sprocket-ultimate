@@ -532,6 +532,7 @@ static func apply_grade(tree: SceneTree, g: Dictionary) -> WorldEnvironment:
 	if not env.has_meta("gl_base_brightness"):
 		env.set_meta("gl_base_brightness", env.adjustment_brightness if env.adjustment_enabled else 1.0)
 	env.set_meta("gl_base_brightness", float(env.get_meta("gl_base_brightness")) * float(g.get("brightness_mult", 0.9)))
+	env.set_meta("gl_horror_mult", float(g.get("brightness_mult", 0.9)))   # T-207: the look grade folds it into its own base
 	if not env.adjustment_enabled:
 		env.adjustment_enabled = true
 		env.adjustment_contrast = 1.0

@@ -1,0 +1,35 @@
+{
+ "_doc": "Fernflug IV, Mondlicht: hard black and white; Nachtglas violet is the only colour (the amber lamps and the red go grey on purpose). T-207.",
+ "map": "map04d_mondlicht",
+ "tonemap": "filmic",
+ "exposure": 1.7,
+ "white": 6.0,
+ "adjust": {
+  "brightness": 1.0,
+  "contrast": 1.2,
+  "saturation": 1.0
+ },
+ "mono": 1.0,
+ "keep": [
+  {
+   "hue": 268,
+   "width": 36,
+   "amount": 1.0
+  }
+ ],
+ "post": {
+  "grain": 0.05,
+  "vignette": 0.42,
+  "edge_soft": 0.16,
+  "ca": 0.001
+ },
+ "accents": {
+  "violet": "#8a4dff",
+  "red": "#000000"
+ },
+ "web": {
+  "adjust": {
+   "saturation": 0.15
+  }
+ }
+}
