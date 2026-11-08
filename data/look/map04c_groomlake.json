@@ -2,14 +2,14 @@
  "_doc": "Fernflug III, Groom Lake: bleached desert, dust brown (a night on the salt under a dust haze); the dust storm (DustStormFx) keeps its own fog density. T-207.",
  "map": "map04c_groomlake",
  "tonemap": "filmic",
- "exposure": 1.7,
+ "exposure": 1.35,
  "white": 6.0,
  "adjust": {
   "brightness": 1.0,
-  "contrast": 1.06,
+  "contrast": 1.1,
   "saturation": 0.95
  },
- "mono": 0.6,
+ "mono": 0.7,
  "keep": [
   {
    "hue": 268,
@@ -23,14 +23,15 @@
   }
  ],
  "tint": {
-  "shadows": "#4a3d30",
-  "highlights": "#ece0c8",
-  "amount": 0.5
+  "shadows": "#3e352b",
+  "highlights": "#dcd6cc",
+  "amount": 0.3
  },
  "fog": {
   "color": "#5a4e40",
   "albedo": "#d8c8b0",
-  "emission": "#060504"
+  "emission": "#060504",
+  "aerial": 0.6
  },
  "post": {
   "grain": 0.08,
@@ -68,5 +69,22 @@
     "fog_scale": 0.3
    }
   ]
- }
+ },
+ "shader_params": [
+  {
+   "shader": "desert_ridge",
+   "params": {
+    "haze": [
+     0.36,
+     0.31,
+     0.25
+    ],
+    "foot": [
+     0.2,
+     0.18,
+     0.16
+    ]
+   }
+  }
+ ]
 }

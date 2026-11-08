@@ -19,7 +19,11 @@
   {
    "hue": 0,
    "width": 12,
-   "amount": 0.85
+   "amount": 0.85,
+   "sat": [
+    0.6,
+    0.85
+   ]
   }
  ],
  "tint": {
@@ -52,6 +56,23 @@
   }
  },
  "lights": {
-  "practical_scale": 1.2
- }
+  "practical_scale": 1.2,
+  "rules": [
+   {
+    "name": [
+     "MoonShaft_W_B"
+    ],
+    "fog_scale": 0.35,
+    "energy_scale": 0.8
+   }
+  ]
+ },
+ "suppress": [
+  {
+   "hue": 330,
+   "width": 45,
+   "amount": 0.85,
+   "max_sat": 0.62
+  }
+ ]
 }

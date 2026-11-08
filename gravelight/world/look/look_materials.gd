@@ -23,6 +23,8 @@ const META: StringName = &"gl_look_mat"
 const ISSUES: PackedStringArray = ["rough_low", "clean_plastic", "albedo_sat", "albedo_value", "no_wear"]
 
 static var _rules: Dictionary = {}
+static var _rules_map: Dictionary = {}   # map id -> the rules with the file's `maps.<id>` block merged over them (T-214)
+static var _masks: Dictionary = {}       # strength -> a flat detail mask (the grime layer's strength, T-214)
 static var _detail: Texture2D = null
 static var _desat: Dictionary = {}   # "<tex key>|sat|val" -> the desaturated copy (one per texture and fix)
 
@@ -33,8 +35,22 @@ static func rules() -> Dictionary:
 	return _rules
 
 
+## T-214: the rules for one map: `maps.<map_id>` in the file merged over the shared ones (Mondlicht's clean concrete
+## takes less grime, der Kranich's violet strips half their glow). The shared rules when the map has no block.
+static func rules_for(map_id: String) -> Dictionary:
+	var r: Dictionary = rules()
+	var maps: Dictionary = r.get("maps", {})
+	if map_id == "" or not maps.has(map_id):
+		return r
+	if not _rules_map.has(map_id):
+		_rules_map[map_id] = LookGrade.merge(r, maps[map_id])
+	return _rules_map[map_id]
+
+
 static func reset_cache() -> void:
 	_rules = {}
+	_rules_map.clear()
+	_masks.clear()
 	_detail = null
 	_desat.clear()
 
@@ -116,6 +132,16 @@ static func materials_of(g: GeometryInstance3D) -> Array[Material]:
 				out.append(so)
 	elif g is MultiMeshInstance3D and (g as MultiMeshInstance3D).multimesh != null:
 		mesh = (g as MultiMeshInstance3D).multimesh.mesh
+	elif g is GPUParticles3D:
+		# T-214: a particle system's draw passes (the stove barrel's smoke: `lit_smoke`)
+		var gp: GPUParticles3D = g
+		for k: int in gp.draw_passes:
+			var dm: Mesh = gp.get_draw_pass_mesh(k)
+			if dm != null:
+				for si: int in dm.get_surface_count():
+					if dm.surface_get_material(si) != null:
+						out.append(dm.surface_get_material(si))
+		return out
 	if mesh != null:
 		for i: int in mesh.get_surface_count():
 			if g is MeshInstance3D and i < (g as MeshInstance3D).get_surface_override_material_count() \
@@ -310,6 +336,30 @@ static func small_image(t: Texture2D) -> Image:
 	return img
 
 
+## T-214: a code-built NoiseTexture2D whose colour ramp (times the material's colour) fights the palette: a copy
+## whose ramp is desaturated / darkened by the same rule as a texture (tex_fix_for); null when it is inside already.
+static func noise_fix(t: NoiseTexture2D, own: Color, r: Dictionary) -> NoiseTexture2D:
+	if t == null or t.color_ramp == null or t.color_ramp.get_point_count() == 0:
+		return null
+	var acc: Vector3 = Vector3.ZERO
+	for i: int in 16:
+		var gc: Color = t.color_ramp.sample(float(i) / 15.0)
+		acc += Vector3(gc.r, gc.g, gc.b)
+	acc /= 16.0
+	var eff: Color = Color(acc.x * own.r, acc.y * own.g, acc.z * own.b)
+	if eff.s <= sat_cap(eff, false, r) + 0.005 and eff.v <= float(r.get("val_max", 0.9)) + 0.005:
+		return null
+	var fx: Dictionary = tex_fix_for(eff, r)
+	var g: Gradient = t.color_ramp.duplicate() as Gradient
+	for i2: int in g.get_point_count():
+		var pc: Color = desat(g.get_color(i2), float(fx.get("sat", 1.0)))
+		var k: float = float(fx.get("val", 1.0))
+		g.set_color(i2, Color(pc.r * k, pc.g * k, pc.b * k, pc.a))
+	var nt: NoiseTexture2D = t.duplicate() as NoiseTexture2D
+	nt.color_ramp = g
+	return nt
+
+
 ## The fix for a texture the data can't name (built in code, no resource path): read once at load, small ones only.
 static func runtime_fix(m: Material, t: Texture2D, r: Dictionary) -> Dictionary:
 	if t == null or t.resource_path != "" or t.get_width() * t.get_height() > 512 * 512:
@@ -458,7 +508,14 @@ static func fix(m: Material, node: Node = null, r: Dictionary = rules()) -> Arra
 			var tt: Dictionary = r.get("tex_fix", {})
 			var tp: String = tint_key(b)
 			var fx: Dictionary = tt[tp] if tt.has(tp) else runtime_fix(m, b.albedo_texture, r)
-			if not accent_word and not fx.is_empty():
+			if not accent_word and fx.is_empty() and b.albedo_texture is NoiseTexture2D and b.albedo_texture.resource_path == "":
+				# T-214: a noise texture built in code is not generated yet at load (Map 0's red draft curtains kept
+				# their red): its colour ramp is the colour, so the ramp is desaturated instead
+				var nz: NoiseTexture2D = noise_fix(b.albedo_texture as NoiseTexture2D, c, r)
+				if nz != null:
+					b.albedo_texture = nz
+					changed.append("tint")
+			elif not accent_word and not fx.is_empty():
 				var nt: Texture2D = desat_texture(b.albedo_texture, fx)
 				if nt != null:
 					b.albedo_texture = nt
@@ -473,18 +530,31 @@ static func fix(m: Material, node: Node = null, r: Dictionary = rules()) -> Arra
 			if not nc.is_equal_approx(c):
 				b.albedo_color = nc
 				changed.append("albedo")
-		# the wear layer
+		# the wear layer: the shared grime map at the strength and size of the material's class (T-214)
 		if not b.detail_enabled and not has_word(words, r.get("no_wear_words", [])) and detail_texture(r) != null:
+			var dc: Dictionary = detail_class(b, words, r)
+			var tile: float = maxf(0.25, float(dc.get("tile_m", 2.5)))
 			b.detail_enabled = true
 			b.detail_blend_mode = BaseMaterial3D.BLEND_MODE_MUL
 			b.detail_albedo = detail_texture(r)
-			b.detail_uv_layer = BaseMaterial3D.DETAIL_UV_1
+			var strength: float = clampf(float(dc.get("strength", 1.0)), 0.0, 1.0)
+			if strength < 0.999:
+				b.detail_mask = detail_mask(strength)
 			if b.albedo_texture == null and b.normal_texture == null and b.roughness_texture == null and b.metallic_texture == null \
 					and b.get("orm_texture") == null and not b.uv1_triplanar:
-				var tile: float = maxf(0.25, float((r.get("detail", {}) as Dictionary).get("tile_m", 2.5)))
+				b.detail_uv_layer = BaseMaterial3D.DETAIL_UV_1
 				b.uv1_triplanar = true
 				b.uv1_world_triplanar = true
 				b.uv1_scale = Vector3.ONE / tile
+			elif not b.uv2_triplanar and not b.ao_on_uv2 and not b.emission_on_uv2:
+				# a textured material: the grime on its own triplanar (UV2) at the class's size, not stretched over the
+				# texture's UVs (a wall's 4 m UV tile made 2 m blotches: the camouflage on Mondlicht's concrete)
+				b.detail_uv_layer = BaseMaterial3D.DETAIL_UV_2
+				b.uv2_triplanar = true
+				b.uv2_world_triplanar = false
+				b.uv2_scale = Vector3.ONE / tile
+			else:
+				b.detail_uv_layer = BaseMaterial3D.DETAIL_UV_1
 			changed.append("wear")
 	elif m is ShaderMaterial:
 		var sm: ShaderMaterial = m
@@ -517,6 +587,98 @@ static func fix(m: Material, node: Node = null, r: Dictionary = rules()) -> Arra
 	return changed
 
 
+## T-214: the grime layer's strength and size for a material: the file's `detail` block, then the first
+## `detail_classes` entry that fits it ({"words": [...]} in its name / path, "untextured": true, "min_value": v of its
+## flat colour). Pale flat walls and clean concrete / steel take a light, small grime; Map 0's timber keeps the old.
+static func detail_class(b: BaseMaterial3D, words: String, r: Dictionary = rules()) -> Dictionary:
+	var out: Dictionary = (r.get("detail", {}) as Dictionary).duplicate()
+	for c: Variant in r.get("detail_classes", []):
+		var cd: Dictionary = c
+		if cd.has("words") and not has_word(words, cd["words"]):
+			continue
+		if bool(cd.get("untextured", false)) and b.albedo_texture != null:
+			continue
+		if cd.has("min_value") and (b.albedo_texture != null or b.albedo_color.v < float(cd["min_value"])):
+			continue
+		for k: String in ["strength", "tile_m"]:
+			if cd.has(k):
+				out[k] = cd[k]
+		break
+	return out
+
+
+## A flat detail mask of `strength` (the grime layer's mix; the mask's red channel scales the detail in Godot's
+## material). One small texture per strength, shared.
+static func detail_mask(strength: float) -> Texture2D:
+	var key: int = int(round(strength * 100.0))
+	if not _masks.has(key):
+		var img: Image = Image.create(4, 4, false, Image.FORMAT_L8)
+		img.fill(Color(strength, strength, strength))
+		_masks[key] = ImageTexture.create_from_image(img)
+	return _masks[key]
+
+
+## T-214: what the pass does to materials it otherwise leaves alone (emissive, unshaded; once, its own meta):
+##   "emission": [{"hue", "width", "scale"}] an emissive material whose glow is in the hue window glows `scale` x
+##               (der Kranich's violet strips at half);
+##   "accent_caps": [{"node", "hue", "width", "sat_max", "val_max"}] an unshaded / emissive colour on a node whose
+##               path holds `node`, in the hue window, capped (Kaltenbrunn's pylon cable in the snow);
+##   "lit_smoke": true  an unshaded alpha particle smoke (Props.smoke) is lit by the scene instead, so a smoke column
+##               in a dark hall is dark (Totenhafen's cannery stove read as a pale ghost).
+## Returns what it changed.
+static func fix_special(m: Material, node: Node, r: Dictionary = rules()) -> Array:
+	var out: Array = []
+	if m == null or m.has_meta(&"gl_look_mat2") or not (m is BaseMaterial3D or m is ShaderMaterial):
+		return out
+	m.set_meta(&"gl_look_mat2", true)
+	var path: String = String(node.get_path()) if node != null and node.is_inside_tree() else (String(node.name) if node != null else "")
+	for e: Variant in r.get("emission", []):
+		var ed: Dictionary = e
+		if m is BaseMaterial3D and (m as BaseMaterial3D).emission_enabled:
+			var b: BaseMaterial3D = m
+			if _in_hue(b.emission, ed):
+				b.emission_energy_multiplier *= float(ed.get("scale", 1.0))
+				out.append("emission")
+				break
+		elif m is ShaderMaterial and (m as ShaderMaterial).shader != null and (m as ShaderMaterial).shader.resource_path == SURFACE_SHADER:
+			var ec: Variant = _param(m as ShaderMaterial, "emission_color", Color.BLACK)
+			if ec is Color and _in_hue(ec, ed) and float(_param(m as ShaderMaterial, "emission_energy", 0.0)) > 0.0:
+				(m as ShaderMaterial).set_shader_parameter("emission_energy", float(_param(m as ShaderMaterial, "emission_energy", 0.0)) * float(ed.get("scale", 1.0)))
+				out.append("emission")
+				break
+	if m is BaseMaterial3D:
+		var b2: BaseMaterial3D = m
+		var glows: bool = b2.shading_mode == BaseMaterial3D.SHADING_MODE_UNSHADED or b2.emission_enabled
+		for a: Variant in r.get("accent_caps", []):
+			var ad: Dictionary = a
+			if not glows or (ad.has("node") and not path.contains(str(ad["node"]))) or not _in_hue(b2.albedo_color, ad):
+				continue
+			var c: Color = b2.albedo_color
+			b2.albedo_color = Color.from_hsv(c.h, minf(c.s, float(ad.get("sat_max", 1.0))), minf(c.v, float(ad.get("val_max", 1.0))), c.a)
+			if b2.emission_enabled:
+				var ec2: Color = b2.emission
+				b2.emission = Color.from_hsv(ec2.h, minf(ec2.s, float(ad.get("sat_max", 1.0))), minf(ec2.v, float(ad.get("val_max", 1.0))), ec2.a)
+			out.append("accent_cap")
+			break
+		if bool(r.get("lit_smoke", false)) and b2.shading_mode == BaseMaterial3D.SHADING_MODE_UNSHADED \
+				and b2.billboard_mode == BaseMaterial3D.BILLBOARD_PARTICLES and b2.vertex_color_use_as_albedo \
+				and b2.transparency == BaseMaterial3D.TRANSPARENCY_ALPHA and b2.blend_mode == BaseMaterial3D.BLEND_MODE_MIX \
+				and not b2.emission_enabled:
+			b2.shading_mode = BaseMaterial3D.SHADING_MODE_PER_VERTEX
+			b2.roughness = 1.0
+			b2.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
+			out.append("lit_smoke")
+	return out
+
+
+static func _in_hue(c: Color, d: Dictionary) -> bool:
+	if not d.has("hue"):
+		return true
+	if c.s < float(d.get("min_sat", 0.3)):
+		return false
+	return absf(wrapf(c.h * 360.0 - float(d["hue"]), -180.0, 180.0)) <= float(d.get("width", 20.0))
+
+
 ## A flat colour inside the palette: saturation under sat_max (an accent keeps its own), value 0.04..0.90. Pure.
 static func clamp_albedo(c: Color, r: Dictionary = rules(), accent: bool = false, low_ok: bool = false) -> Color:
 	var h: float = c.h
@@ -544,6 +706,8 @@ static func apply_tree(root: Node, r: Dictionary = rules()) -> Dictionary:
 			out["skipped"] = int(out["skipped"]) + 1
 			continue
 		var m: Material = e["mat"]
+		if not fix_special(m, e["node"], r).is_empty():
+			out["special"] = int(out.get("special", 0)) + 1
 		if exempt_reason(m) != "":
 			out["exempt"] = int(out["exempt"]) + 1
 			continue

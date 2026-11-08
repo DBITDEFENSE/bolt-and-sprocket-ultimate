@@ -243,6 +243,12 @@ merges `_web.json` (no LUT on Compatibility) and the file's own `web` block. `--
 The LUT's keep rule (§6) only keeps a *saturated* violet or red (saturation past 0.3–0.55, hue 268 ± 20°): moonlit
 salt, a blue-grey sky and the Moon's light on snow sit outside it and desaturate with the rest. The first pass kept a
 ± 34° window and the salt flats and Map 0's snow came out lavender; the frames decided the width.
+T-214 (the blind review): the red keep needs saturation 0.6–0.85 (blood, a battle lantern), not 0.3 (a warm-lit board
+in the Filmic toe turned red and stayed); Mondlicht's violet keep also needs brightness (value 0.3–0.5: the tube and
+its glow, never the floor its fill washed); and a `suppress` band greys the pink / salmon / lavender that a warm lamp
+and the cold moon sum to on a pale wall (hue 290–15 and 250–290 at low saturation only). Warm against cold stays in
+the light's colour, never as a pink third colour. Practical violet fills go neutral and keep a small violet pool
+(`lights.rules` `sat_scale` + `pool`).
 
 Per-map numbers are picked by the style frames and logged in DECISIONS T-207; change them in the json, re-render
 the frame, look at it, log it. Never in the generator.

@@ -6,12 +6,16 @@
 # --look=off (the U11 game: no grade, no post block, no material pass, no night lights) and once as shipped, then
 # files them as docs/look/post/<name>_before|after.jpg + sheet.jpg (tools/look/post_frames.py).
 # One GPU run at a time across the workers (U12 contract C3): the .claude/gpu.lock mkdir lock.
-# Usage: tools/look/post_frames.sh [out_dir] [before|after|both]
+# Usage: tools/look/post_frames.sh [out_dir] [before|after|both] [only=name,name]
+#   only= (or the ONLY environment variable) shoots just those cameras (T-214: re-shoot what a fix touched; the
+#   sheet is rebuilt from every pair in out_dir).
 cd "$(dirname "$0")/../.."
 . tools/env.sh
 OUT="${1:-docs/look/post}"
 case "$OUT" in /*|[A-Za-z]:*) ;; *) OUT="$(pwd)/$OUT" ;; esac
 WHICH="${2:-both}"
+case "${3:-}" in only=*) ONLY="${3#only=}" ;; esac
+ONLY="${ONLY:-}"
 L="$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)/../.claude/gpu.lock"
 [ -d "$(dirname "$L")" ] || L=".claude/gpu.lock"
 until mkdir "$L" 2>/dev/null; do sleep 20; done
@@ -24,6 +28,11 @@ shoot() {   # $1 label, $2 extra arg
 	for spec in "u12_look:" "u12_post:" "u05:close_zombie" "u05_objects:perk_dark,ammo_box,wall_buy_close"; do
 		set_name="${spec%%:*}"
 		only="${spec#*:}"
+		if [ -n "$ONLY" ]; then
+			# the cameras of this set that are asked for (none: skip the set)
+			only="$("$PYTHON" -I -c "import json,sys; s=json.load(open('data/gravelight/capture_cams.json'))['sets'][sys.argv[1]]; d=sys.argv[2].split(',') if sys.argv[2] else [c.get('name') for c in s['cams']]; print(','.join(n for n in sys.argv[3].split(',') if n in d))" "$set_name" "$only" "$ONLY")"
+			[ -z "$only" ] && continue
+		fi
 		[ -n "$only" ] && only="--only=$only"
 		timeout 900 "$GODOT" --audio-driver Dummy --windowed --position -4000,-4000 --resolution 1280x720 --path . \
 			res://tools_src/capture.tscn -- --set="$set_name" --out="$D" $only $2

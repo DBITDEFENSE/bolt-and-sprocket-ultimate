@@ -19,7 +19,11 @@
   {
    "hue": 0,
    "width": 12,
-   "amount": 0.85
+   "amount": 0.85,
+   "sat": [
+    0.6,
+    0.85
+   ]
   }
  ],
  "tint": {
@@ -44,5 +48,17 @@
   "adjust": {
    "saturation": 0.72
   }
+ },
+ "lights": {
+  "rules": [
+   {
+    "hue": 268,
+    "width": 25,
+    "min_sat": 0.4,
+    "energy_scale": 0.5,
+    "range_scale": 0.6,
+    "fog_scale": 0.5
+   }
+  ]
  }
 }
