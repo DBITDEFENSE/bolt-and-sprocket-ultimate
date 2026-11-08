@@ -52,7 +52,7 @@ func test_zones_merge_over_the_map_and_the_zones_key_is_dropped() -> void:
 	var d: Dictionary = LookGrade.resolved("map01_kaltenbrunn", "core")
 	assert_false(d.has("zones"), "the zones block is not in a resolved grade")
 	assert_eq(float(d["adjust"]["saturation"]), 1.0, "the core keeps full saturation (GDD 17)")
-	assert_eq(float(d["adjust"]["contrast"]), 1.1, "the map's contrast carries into the zone")
+	assert_eq(float(d["adjust"]["contrast"]), float(LookGrade.data("map01_kaltenbrunn")["adjust"]["contrast"]), "the map's contrast carries into the zone")
 	var s: Dictionary = LookGrade.resolved("map01_kaltenbrunn", "surface")
 	assert_lt(float(s["adjust"]["saturation"]), 1.0, "the surface is desaturated")
 	var none: Dictionary = LookGrade.resolved("map01_kaltenbrunn", "no_such_zone")
