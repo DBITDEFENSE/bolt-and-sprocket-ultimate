@@ -3,14 +3,14 @@
  "intensity": {"start_round": 1, "full_round": 15},
  "bombers": {
   "first_after": [30, 60], "interval": [120, 240], "interval_late": [100, 170],
-  "count": [7, 13], "altitude": [165, 225], "speed": 9.0, "wingspan": 6.5, "spacing": 11.0,
+  "model": "pe2", "count": [7, 13], "altitude": [165, 225], "speed": 9.0, "wingspan": 6.5, "spacing": 11.0,
   "headings": [70, 110], "offset": [-160, 120],
   "sound": "war_bomber_drone", "volume_db": 2.0, "unit_size": 70.0, "max_distance": 900.0
  },
  "fighters": {
   "first_after": [70, 130], "interval": [80, 160], "interval_late": [45, 95],
   "altitude": [40, 85], "speed": 42.0, "pass_distance": [90, 200], "length": 640.0, "wingspan": 3.4,
-  "bursts": [2, 5], "chase_lag": 0.9,
+  "model": "il2_vs_night", "bursts": [2, 5], "chase_lag": 0.9,
   "sound": "war_fighter_pass", "mg_sound": "war_fighter_mg", "volume_db": 0.0, "unit_size": 45.0, "max_distance": 700.0
  },
  "plane_down": {
