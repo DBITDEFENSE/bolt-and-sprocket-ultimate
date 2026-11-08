@@ -9,12 +9,12 @@ extends Node
 ##
 ## Voice limiting: each key may sound at most `max_voices` times at once (per 2D / 3D pool); the oldest voice of
 ## that key is stolen. Buses come from default_bus_layout.tres (Master, Music, SFX, VO, Jingles, Ambience) and
-## are re-created here if missing. Round stingers, ambience and a few one-shots are driven by EventBus signals,
+## are re-created here if missing (T-205: + VODry). Round stingers, ambience and a few one-shots are driven by EventBus signals,
 ## with the key mapping in audio.json "music" / "events" so it stays data-driven.
 
 const BANK_PATH: String = "res://data/gravelight/audio.json"
-const BUSES: PackedStringArray = ["Music", "SFX", "VO", "Jingles", "Ambience"]
-const VOLUME_KEYS: Dictionary = {"Master": "vol_master", "Music": "vol_music", "SFX": "vol_sfx", "VO": "vol_vo",
+const BUSES: PackedStringArray = ["Music", "SFX", "VO", "Jingles", "Ambience", "VODry"]   # T-205: VODry = voices with their own channel (no room)
+const VOLUME_KEYS: Dictionary = {"Master": "vol_master", "Music": "vol_music", "SFX": "vol_sfx", "VO": "vol_vo", "VODry": "vol_vo",
 	"Jingles": "vol_jingles", "Ambience": "vol_ambience"}
 const SFX_DIRS: PackedStringArray = ["res://gravelight/audio/sfx/final/", "res://gravelight/audio/sfx/placeholder/"]
 const MUSIC_DIRS: PackedStringArray = ["res://gravelight/audio/music/final/", "res://gravelight/audio/music/placeholder/"]

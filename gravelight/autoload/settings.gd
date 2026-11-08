@@ -54,6 +54,7 @@ var values: Dictionary = {
 	"invert_y": false,
 	"subtitles": true,
 	"vol_master": 1.0, "vol_music": 0.8, "vol_sfx": 1.0, "vol_vo": 1.0, "vol_jingles": 0.8, "vol_ambience": 1.0,
+	"vo_room_acoustics": true,     # T-205: voices sit in the room they are spoken in (VORoomAcoustics); off = studio-dry
 	"classic_rules": false,
 	"hard_truth": "auto",          # T-192 the fourth-day rule (HardTruth): auto (on unless Classic Rules) / on / off; online the host's
 	"egg_mode": "off",            # T-181 Easter Egg Mode: off / sparse (a few crawlers) / none (no zombies); practice, no profile progress (EggMode)
@@ -156,6 +157,8 @@ func set_value(key: String, v: Variant) -> void:
 	apply_visuals()
 	if key.begins_with("vol_") and has_node("/root/AudioDirector"):
 		AudioDirector.apply_volumes()
+	if key == "vo_room_acoustics" and has_node("/root/GLVO") and GLVO.rooms != null:
+		GLVO.rooms.refresh()   # T-205: the room goes (or comes back) at once, not at the next poll
 
 
 func _input(event: InputEvent) -> void:

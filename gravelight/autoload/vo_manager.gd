@@ -116,6 +116,9 @@ var voice_log: Array[Dictionary] = []
 var voice_language: String = ""
 var _ext_2d: AudioStreamPlayer = null
 var _vt_manifest: Dictionary = {}
+## T-205: the room the lines are heard in (the VO bus's EQ + reverb per map, zone and cutscene set; VODry for lines that
+## carry their own channel). gravelight/world/vo_room_acoustics.gd, data/gravelight/vo_rooms.json.
+var rooms: VORoomAcoustics = null
 
 
 func _ready() -> void:
@@ -162,6 +165,9 @@ func _ready() -> void:
 	add_child(_comp_3d)
 	_subtitles = (load("res://gravelight/ui/subtitles.gd") as GDScript).new() as CanvasLayer
 	add_child(_subtitles)
+	rooms = VORoomAcoustics.new()
+	rooms.name = "RoomAcoustics"
+	add_child(rooms)
 	_connect_triggers()
 
 
@@ -479,6 +485,7 @@ func play_external(file_id: String, speaker_code: String) -> float:
 		_ext_2d.name = "ExternalVoice"
 		_ext_2d.bus = &"VO"
 		add_child(_ext_2d)
+	_ext_2d.bus = bus_for_part(StringName(speaker_code.to_upper()), "", "")
 	_ext_2d.stream = stream
 	_ext_2d.volume_db = float((rules.get("audio", {}) as Dictionary).get("story_volume_db", 0.0))
 	if is_inside_tree():
@@ -884,17 +891,32 @@ func _next_part(group: StringName) -> void:
 		var len_s: float = stream.get_length()
 		if len_s > 0.05:
 			dur = len_s
-		_play_stream(group, stream, pid)
+		_play_stream(group, stream, pid, bus_for_part(speaker, str((lines.get(String(item["id"]), {}) as Dictionary).get("category", "")), str(part[1])))
 	var gap: float = float(rules.get("exchange_gap", 0.4)) if int(item["part"]) < parts.size() - 1 else 0.0
 	item["end"] = _now + dur + gap
 	GLBus.vo_line_started.emit(item["id"], speaker, text, dur)
 
 
+## T-205: the bus a line (or an exchange part) plays on: VODry when it carries its own channel (the tannoy, a radio, a
+## PA, a [radio] cue), else VO with the room.
+func bus_for_part(speaker: StringName, category: String, raw_text: String) -> StringName:
+	return rooms.bus_for(speaker, category, raw_text) if rooms != null else &"VO"
+
+
+## The bus for a line by id (world scripts that play a line's audio themselves: the inn, the tellers, the people).
+func bus_for_line(line_id: StringName) -> StringName:
+	var rec: Dictionary = lines.get(String(line_id), {})
+	return bus_for_part(StringName(str(rec.get("speaker", ""))), str(rec.get("category", "")), str(rec.get("text", "")))
+
+
 ## Story and local-player lines are 2D; another survivor's line plays at their body (3D).
-func _play_stream(group: StringName, stream: AudioStream, pid: int) -> void:
+func _play_stream(group: StringName, stream: AudioStream, pid: int, bus: StringName = &"VO") -> void:
 	var au: Dictionary = rules.get("audio", {})
 	var p2d: AudioStreamPlayer = _story_2d if group == GROUP_STORY else (_squad_2d if group == GROUP_SQUAD else (_comp_2d if group == GROUP_COMPANION else _player_2d))
 	var p3d: AudioStreamPlayer3D = null if group == GROUP_STORY else (_squad_3d if group == GROUP_SQUAD else (_comp_3d if group == GROUP_COMPANION else _player_3d))
+	p2d.bus = bus
+	if p3d != null:
+		p3d.bus = bus
 	var node: Node3D = _player_node(pid) if p3d != null and pid > 0 and pid != _local_player() else null
 	if node != null:
 		p2d.stop()
