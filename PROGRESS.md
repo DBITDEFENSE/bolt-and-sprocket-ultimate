@@ -1,5 +1,17 @@
 # PROGRESS
 
+RESUME HERE: 2026-11-08 Codex resume pass on codex/zombie-overhaul (.wt/zombie-overhaul).
+NOT all done. Gallery now has --kit/--clip/--kind/--frames, camera-facing labels and close-ups;
+soldier walk capture/sequence rendered and inspected. Gallery exit frees unattached weapon
+template Nodes; headless/rendered reruns no longer report RID/ObjectDB leaks. Actual gameplay fix:
+ZombieRagdoll frees live-budget slots when frozen and freezes oldest under cap pressure to admit
+newest death. Regression scene tools/zombie_ragdoll_check.tscn failed before (6/9 admitted,
+frozen bodies counted) and passes after (9/9, peak 6, zero stale live registrations).
+Existing zombie regression suite 8/8, 61 asserts PASS. Unicode/NUL warnings remain.
+NEXT: complete bespoke enemy coverage, pop detection, per-zombie CPU timings and before scores;
+then licensed FBX intake and first-locomotion phase/event synchronization. Mocap pack still absent.
+Stage 0 incomplete; Stage 2 has this isolated ragdoll fix; stages 1/3/4 not implemented.
+
 RESUME HERE: 2026-11-08 Codex zombie overhaul, Stage 0 PARTIAL checkpoint on codex/zombie-overhaul,
 isolated checkout .wt/zombie-overhaul (owner approved master e96a0188 as base; no main exists).
 Read docs/ZOMBIE_OVERHAUL_PLAN.md and tools/ZOMBIE_GALLERY.md. Next: improve gallery preview

@@ -23,6 +23,12 @@ var sample_count: int = 0
 var finished: bool = false
 var min_active: int = 24
 var moving_samples: int = 0
+var only_clip: String = ""
+var only_kit: String = ""
+var only_kind: String = "ganger"
+var frame_sequence: bool = false
+var sequence_next: float = 0.0
+var sequence_frame: int = 0
 
 func _ready() -> void:
 	seed(74119)
@@ -36,6 +42,10 @@ func _ready() -> void:
 		elif arg == "--capture": capture = true
 		elif arg.begins_with("--seconds="): seconds = maxf(2.0, float(arg.substr(10)))
 		elif arg.begins_with("--out="): _out = arg.substr(6)
+		elif arg.begins_with("--clip="): only_clip = arg.substr(7)
+		elif arg.begins_with("--kit="): only_kit = arg.substr(6)
+		elif arg.begins_with("--kind="): only_kind = arg.substr(7)
+		elif arg == "--frames": frame_sequence = true
 	if capture and DisplayServer.get_name() == "headless":
 		push_error("Screenshots require a rendered run; omit --headless.")
 		get_tree().quit(2)
@@ -50,6 +60,13 @@ func _ready() -> void:
 	_player.position = Vector3(0, 0.1, -35)
 	_cam.position = Vector3(0, 5, -12)
 	_cam.look_at(Vector3(0, 1, 5))
+	if not horde:
+		_cam.position = Vector3(0, 6, -5)
+		_cam.look_at(Vector3(0, 1, 6))
+		_cam.fov = 55
+		if not only_kit.is_empty():
+			_cam.position = Vector3(0.6, 1.5, -3.3)
+			_cam.look_at(Vector3(0, 1.0, 0))
 	# Replace the legacy capture's violet fill with neutral warm studio illumination.
 	for light: Node in _studio.get_children():
 		if light is OmniLight3D: light.light_color = Color(1.0, 0.85, 0.68)
@@ -59,18 +76,37 @@ func _ready() -> void:
 	_label.position = Vector2(20, 20)
 	ui.add_child(_label)
 	var kits: Array = GLData.table("anim")["kits"].keys().filter(func(k: String) -> bool: return not k.begins_with("_"))
-	for i: int in 24:
+	if not only_kit.is_empty():
+		if not kits.has(only_kit):
+			push_error("Unknown kit: " + only_kit)
+			get_tree().quit(2)
+			return
+		kits = [only_kit]
+	if not GLData.table("enemies")["enemies"].has(only_kind) or only_kind in ["foreman", "screamer"]:
+		push_error("Unknown kind or bespoke boss unsupported by this shared-rig viewer: " + only_kind)
+		get_tree().quit(2)
+		return
+	for i: int in (24 if horde or only_kit.is_empty() else 1):
 		var kit: String = str(kits[i % kits.size()])
-		var z: Zombie = _place_new({"enemy_id": "ganger", "variant": kit, "tier": TIERS[i % TIERS.size()], "health": 1000}, Vector3((i % 8 - 3.5) * 1.6, 0, 3 + (i / 8) * 3))
+		var at: Vector3 = Vector3((i % 8 - 3.5) * 1.6, 0, 3 + (i / 8) * 3) if horde or only_kit.is_empty() else Vector3.ZERO
+		var z: Zombie = _place_new({"enemy_id": only_kind, "variant": kit, "tier": TIERS[i % TIERS.size()], "health": 1000}, at)
 		z.call("_enter", Zombie.State.CHASE)
 		if not horde:
 			z.set_physics_process(false)
+			z.rotation.y = 0
 			var label := Label3D.new()
 			label.text = kit
 			label.position.y = 2.25
 			label.font_size = 24
+			label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 			z.add_child(label)
 	clips = ZombieClips.library().get_animation_list()
+	if not only_clip.is_empty():
+		if not clips.has(only_clip):
+			push_error("Unknown clip: " + only_clip)
+			get_tree().quit(2)
+			return
+		clips = [only_clip]
 	var inventory: Dictionary = {"bones": Array(ZombieRig.bone_names()), "kits": kits, "clips": [], "source": "Existing procedural ZombieClips library; NOT mocap"}
 	for clip: String in clips:
 		var anim: Animation = ZombieClips.library().get_animation(clip)
@@ -104,6 +140,8 @@ func _process(delta: float) -> void:
 	if clip_index < 0 or clip_time >= maxf(1.0, ZombieClips.length_of(clips[clip_index])):
 		clip_index += 1
 		clip_time = 0
+		sequence_next = 0
+		sequence_frame = 0
 		if clip_index >= clips.size():
 			_finish()
 			return
@@ -115,6 +153,10 @@ func _process(delta: float) -> void:
 			var ap: AnimationPlayer = z.get("_ap")
 			if not ap.has_animation(clip): missing.append(clip)
 			else: ap.play(clip)
+	if capture and frame_sequence and clip_time >= sequence_next:
+		sequence_next += 1.0 / 12.0
+		_save_frame("sequence_%03d_%s_%04d" % [clip_index, clips[clip_index], sequence_frame])
+		sequence_frame += 1
 	# Preview root translation is shown, not discarded; reset only at the next clip.
 	if capture and clip_time > 0.35 and captures == clip_index:
 		captures += 1
@@ -182,4 +224,9 @@ func _finish() -> void:
 	_studio.queue_free()
 	await get_tree().process_frame
 	await get_tree().process_frame
+	# The studio's Player loads weapon templates stored as unattached Nodes. Release them
+	# only on tool exit; do not alter the shared gameplay cache's lifecycle here.
+	for template: Node in WeaponModels._templates.values():
+		if is_instance_valid(template): template.free()
+	WeaponModels._templates.clear()
 	get_tree().quit(0 if missing.is_empty() else 1)

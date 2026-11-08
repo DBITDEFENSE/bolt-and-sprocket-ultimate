@@ -17,6 +17,16 @@ Outputs default to `docs/captures/before/`. Set `--out=res://docs/captures/after
 Capture requires rendering; headless capture is rejected. The window stays off-screen and silent.
 The project stretch settings may produce a larger framebuffer than the requested window size.
 
+Close-up/frame-sequence example (12 captures per second):
+`--capture --kit=soldier --clip=walk_a --frames --out=res://docs/captures/before/closeup`.
+`--kind=glasshide` selects a shared-rig enemy kind. Foreman and Screamer are explicitly rejected
+until their bespoke rigs have their own viewer; they are never silently shown as Gangers.
+Labels face the camera. Single-kit previews use a close camera; the original wide captures remain.
+
+Run `res://tools/zombie_ragdoll_check.tscn` headless to stress nine deaths against the six-ragdoll
+budget. It fails if a new death is denied, the oldest keeps simulating, frozen corpses consume
+the budget, or cleanup leaves a live registration. This checks lifecycle, not visual death quality.
+
 Reports: runtime_inventory.json lists every loaded clip, duration, tracks, loop mode, kit and bone.
 horde.json reports contact-foot velocity, timing, state-machine phase occupancy and rest-pose samples.
 Contact detection uses a flat-floor height/vertical-velocity heuristic and moving bodies only;

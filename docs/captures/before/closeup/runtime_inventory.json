@@ -1,0 +1,35 @@
+{
+	"bones": [
+		"Root",
+		"Hips",
+		"LeftUpperLeg",
+		"RightUpperLeg",
+		"LeftLowerLeg",
+		"RightLowerLeg",
+		"LeftFoot",
+		"RightFoot",
+		"Spine",
+		"Chest",
+		"Neck",
+		"Head",
+		"Jaw",
+		"LeftUpperArm",
+		"RightUpperArm",
+		"LeftLowerArm",
+		"RightLowerArm",
+		"LeftHand",
+		"RightHand"
+	],
+	"clips": [
+		{
+			"loop": 1,
+			"name": "walk_a",
+			"seconds": 0.58,
+			"tracks": 21
+		}
+	],
+	"kits": [
+		"soldier"
+	],
+	"source": "Existing procedural ZombieClips library; NOT mocap"
+}

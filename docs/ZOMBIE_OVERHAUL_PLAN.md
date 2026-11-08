@@ -61,7 +61,7 @@ These are tool/compile baselines, not acceptance results. No art quality or perf
 
 ## Scores (1–5)
 
-All types: before NOT SCORED / after NOT SCORED. No rendered frames reviewed yet. Assigning numbers
+All types: before NOT SCORED / after NOT SCORED. Wide frames and a soldier close-up reviewed. Assigning full motion scores
 from source inspection would misrepresent evidence. No visual/runtime overhaul completed yet.
 
 ## ASSETS STILL NEEDED
@@ -95,6 +95,27 @@ from source inspection would misrepresent evidence. No visual/runtime overhaul c
   per-zombie CPU profiling. Captured previews are wide roster shots, not close-up quality evidence.
 - Stages 1–4 not implemented. No gameplay files changed. No locomotion/attack/death keys authored.
 
-RESUME HERE: Open .wt/zombie-overhaul on codex/zombie-overhaul. Finish Stage 0 gaps above;
-first improve preview framing/labels, add special-enemy coverage and inspect shutdown leaks.
-Then commit the completed baseline and proceed to licensed clip intake (pack is still absent).
+## Resume pass: gallery and ragdoll lifecycle
+
+- Added camera-facing labels, single-kit close-ups, per-clip filtering, shared enemy-kind selection
+  and 12 Hz PNG frame sequences. Rendered and inspected the soldier walk close-up/sequence.
+  Bespoke Foreman/Screamer selection explicitly fails instead of showing the wrong body.
+- Shutdown leak source isolated to WeaponModels' unattached template Nodes, loaded by the studio's
+  Player. The gallery releases these only at exit. Headless 24-zombie run and rendered close-up
+  now exit without RID/ObjectDB/resource-leak reports. No shared weapon code changed.
+- Added ragdoll lifecycle stress scene. BEFORE: 6 admitted of 9, last 3 denied; frozen corpses
+  still counted against the cap. AFTER: 9 admitted, peak 6, oldest frozen, frozen/freed count 0.
+- Fixed ZombieRagdoll: live registry prunes non-simulating bodies; budget pressure freezes the
+  oldest simulation and admits the newest death. max_live<=0 still disables admission.
+  Existing animation clips, HP, attack timing, navigation and hitboxes untouched.
+- Verified focused stress PASS and existing test_zombie_mz_fixes 8/8 tests, 61 assertions PASS.
+  Missing GUT font import sidecars in the worktree were copied from the original checkout; rerun
+  clean apart from the pre-existing three Unicode/NUL warnings. A temporary variable-name parser
+  conflict during development was fixed before these passing runs.
+- Stage 0 remains incomplete. Stage 2 ragdoll lifecycle defect fixed opportunistically after its
+  baseline test failed; no claim of completed animation overhaul or licensed motion integration.
+
+RESUME HERE: Open .wt/zombie-overhaul on codex/zombie-overhaul. Complete bespoke enemy coverage,
+pop detection and per-zombie CPU profiling; finish before scores. The gallery framing, sequences,
+shutdown leak and ragdoll-budget lifecycle are now handled. Next substantive animation work:
+licensed-source intake and first-locomotion random phase/event synchronization. Pack still absent.

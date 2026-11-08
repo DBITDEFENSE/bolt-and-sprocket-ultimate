@@ -26,7 +26,7 @@ static func live_count() -> int:
 static func _prune() -> void:
 	var keep: Array = []
 	for e: Array in _live:
-		if is_instance_valid(e[0]) and (e[0] as Node).is_inside_tree():
+		if is_instance_valid(e[0]) and (e[0] as Node).is_inside_tree() and (e[0] as PhysicalBoneSimulator3D).is_simulating_physics():
 			keep.append(e)
 	_live = keep
 
@@ -39,8 +39,13 @@ static func start(skel: Skeleton3D, impulse: Vector3 = Vector3.ZERO) -> Physical
 	_prune()
 	var c: Dictionary = cfg()
 	tick()
-	if _live.size() >= int(c.get("max_live", 6)):
-		return null   # at the cap: this death keeps its authored clip and holds the key pose instead
+	var live_cap: int = int(c.get("max_live", 6))
+	if live_cap <= 0:
+		return null
+	while _live.size() >= live_cap:
+		# Preserve the settled pose, but spend the simulation budget on the newest death.
+		var oldest: Array = _live.pop_front()
+		freeze(oldest[0] as PhysicalBoneSimulator3D)
 	var sim: PhysicalBoneSimulator3D = PhysicalBoneSimulator3D.new()
 	sim.name = "Ragdoll"
 	var joint: Dictionary = c.get("joint", {})
