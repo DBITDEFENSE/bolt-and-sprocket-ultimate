@@ -441,10 +441,14 @@ class Markers extends Control:
 			var sp: Vector2 = cam.unproject_position(world)
 			if behind:
 				sp = sz - sp
-			var margin: float = 48.0
-			var clamped: Vector2 = Vector2(clampf(sp.x, margin, sz.x - margin), clampf(sp.y, margin, sz.y - margin))
+			# T-218: the cross AND its name stay on screen (the name is 120 px wide, centred under the cross; at the
+			# old 48 px margin "Deacon 5m" ran off the left edge), inside the HUD's own margins
+			var hm: Vector2 = MenuKit.hud_margin(sz)
+			var mx: float = hm.x + 24.0   # the 120 px name box starts ~20 px in
+			var my: float = maxf(hm.y, 48.0)
+			var clamped: Vector2 = Vector2(clampf(sp.x, mx, sz.x - mx), clampf(sp.y, my, sz.y - my - 40.0))
 			if behind:
-				clamped.y = sz.y - margin
+				clamped.y = sz.y - my - 40.0
 			var col: Color = Color(0.85, 0.15, 0.1, 0.9)
 			var pulse: float = 0.75 + 0.25 * sin(Time.get_ticks_msec() * 0.008)
 			draw_circle(clamped, 15.0 * pulse, Color(0, 0, 0, 0.55))

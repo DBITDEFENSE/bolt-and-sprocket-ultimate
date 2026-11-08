@@ -445,18 +445,53 @@ static func bar(value: float, width: float = 320.0, color: Color = INK) -> Progr
 	return pb
 
 
+## The left inset that puts a row's label under a button's text (the theme's 3 px rule + 14 px margin; T-218).
+const ROW_INSET: float = 17.0
+## How much of a row's width the control may take (the rest stays empty, so a slider is not 1,400 px long).
+const ROW_CONTROL_SHARE: float = 0.72
+
+
+## A label and its control on one line. A slider gets its value printed after it (slider_text, T-218). The label
+## lines up with the text of the buttons and switches above and below it.
 static func row(label_text: String, control: Control, label_width: float = 300.0) -> HBoxContainer:
 	var h: HBoxContainer = HBoxContainer.new()
 	h.add_theme_constant_override("separation", 16)
 	var l: Label = label(label_text, 20)
 	l.custom_minimum_size = Vector2(label_width, 0)
+	var inset: StyleBoxEmpty = StyleBoxEmpty.new()
+	inset.content_margin_left = ROW_INSET
+	l.add_theme_stylebox_override("normal", inset)
 	h.add_child(l)
-	control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	h.add_child(control)
+	var body: Control = control
+	if control is HSlider:
+		var s: HSlider = control as HSlider
+		var hb: HBoxContainer = HBoxContainer.new()
+		hb.add_theme_constant_override("separation", 14)
+		s.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		s.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		hb.add_child(s)
+		var v: Label = label(slider_text(s.value, s.min_value, s.max_value, s.step, str(s.get_meta("fmt", ""))), 19, GOLD)
+		v.add_theme_font_override("font", mono_font())
+		v.custom_minimum_size = Vector2(px(19) * 4.2, 0)
+		v.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		v.name = "Value"
+		hb.add_child(v)
+		s.value_changed.connect(func(x: float) -> void: v.text = slider_text(x, s.min_value, s.max_value, s.step, str(s.get_meta("fmt", ""))))
+		body = hb
+	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	body.size_flags_stretch_ratio = ROW_CONTROL_SHARE
+	h.add_child(body)
+	var rest: Control = Control.new()
+	rest.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	rest.size_flags_stretch_ratio = 1.0 - ROW_CONTROL_SHARE
+	rest.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	h.add_child(rest)
 	return h
 
 
-static func slider(lo: float, hi: float, step: float, value: float, cb: Callable) -> HSlider:
+## `fmt`: how row() prints the value: "pct" (0..1 as a percent), "x" (a multiplier, 1.25x), "deg" (degrees), or
+## a format string with one placeholder ("%d%%"); "" picks one from the range (T-218).
+static func slider(lo: float, hi: float, step: float, value: float, cb: Callable, fmt: String = "") -> HSlider:
 	var s: HSlider = HSlider.new()
 	s.min_value = lo
 	s.max_value = hi
@@ -464,8 +499,28 @@ static func slider(lo: float, hi: float, step: float, value: float, cb: Callable
 	s.value = value
 	s.custom_minimum_size = Vector2(280, 28)
 	s.focus_mode = Control.FOCUS_ALL
+	s.set_meta("fmt", fmt)
 	s.value_changed.connect(cb)
 	return s
+
+
+## A slider's value as row() prints it (pure, unit-tested). With no fmt: 0..1 -> a percent, whole steps -> an
+## integer, anything else -> two decimals.
+static func slider_text(v: float, lo: float, hi: float, step: float, fmt: String = "") -> String:
+	match fmt:
+		"pct":
+			return "%d%%" % roundi(v * 100.0)
+		"x":
+			return "%.2fx" % v
+		"deg":
+			return "%d°" % roundi(v)
+		"":
+			if lo >= 0.0 and hi <= 1.0:
+				return "%d%%" % roundi(v * 100.0)
+			if step >= 1.0:
+				return "%d" % roundi(v)
+			return "%.2f" % v
+	return fmt % (roundi(v) if fmt.contains("%d") else v)
 
 
 static func check(text_str: String, value: bool, cb: Callable) -> CheckButton:
@@ -475,8 +530,100 @@ static func check(text_str: String, value: bool, cb: Callable) -> CheckButton:
 	c.add_theme_font_override("font", type_font())
 	c.add_theme_font_size_override("font_size", MenuKit.size("body_large"))
 	c.focus_mode = Control.FOCUS_ALL
+	# T-218: a switch that reads at a glance: off was a lone dot on the dark panel
+	c.add_theme_icon_override("checked", switch_icon(true, false))
+	c.add_theme_icon_override("unchecked", switch_icon(false, false))
+	c.add_theme_icon_override("checked_disabled", switch_icon(true, true))
+	c.add_theme_icon_override("unchecked_disabled", switch_icon(false, true))
 	c.toggled.connect(cb)
 	return c
+
+
+## An on/off setting laid out like row(): the label in the label column, the switch at the end of the control
+## column, so it lines up with the sliders' values and the dropdowns' arrows (T-218).
+static func switch_row(text_str: String, value: bool, cb: Callable) -> HBoxContainer:
+	var c: CheckButton = check("", value, cb)
+	c.name = "Switch"
+	c.tooltip_text = text_str
+	var r: HBoxContainer = row(text_str, c)
+	var l: Label = r.get_child(0) as Label
+	l.mouse_filter = Control.MOUSE_FILTER_STOP   # the label toggles it too
+	l.gui_input.connect(func(e: InputEvent) -> void:
+		if e is InputEventMouseButton and (e as InputEventMouseButton).pressed and (e as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
+			c.button_pressed = not c.button_pressed)
+	return r
+
+
+static var _switch_icons: Dictionary = {}
+
+
+## A 52 x 26 px switch drawn once (T-218): on = a red pill with a paper knob on the right; off = an outlined pill
+## with a dim knob on the left. Disabled ones are faded.
+static func switch_icon(on: bool, disabled: bool) -> Texture2D:
+	var key: String = "%s%s" % [on, disabled]
+	if _switch_icons.has(key):
+		return _switch_icons[key]
+	var w: int = 52
+	var h: int = 26
+	var img: Image = Image.create(w, h, false, Image.FORMAT_RGBA8)
+	var r: float = h * 0.5 - 1.0
+	var track: Color = INK.lightened(0.1) if on else Color(0.1, 0.09, 0.1, 0.9)
+	var edge: Color = INK.lightened(0.35) if on else DIM
+	var knob: Color = PAPER if on else DIM.darkened(0.15)
+	var kx: float = (w - r - 1.0) if on else (r + 1.0)
+	for y: int in h:
+		for x: int in w:
+			var px_c: Vector2 = Vector2(x + 0.5, y + 0.5)
+			var cx: float = clampf(px_c.x, r + 1.0, w - r - 1.0)
+			var d: float = px_c.distance_to(Vector2(cx, h * 0.5))   # distance to the pill's spine
+			var col: Color = Color(0, 0, 0, 0)
+			var a_pill: float = clampf(r + 0.5 - d, 0.0, 1.0)
+			if a_pill > 0.0:
+				col = track
+				col.a *= a_pill
+				var a_edge: float = clampf(1.5 - absf(d - (r - 0.75)), 0.0, 1.0)
+				col = col.lerp(Color(edge, col.a), a_edge)
+			var dk: float = px_c.distance_to(Vector2(kx, h * 0.5))
+			var a_knob: float = clampf(r - 3.5 + 0.5 - dk, 0.0, 1.0)
+			if a_knob > 0.0:
+				col = col.lerp(Color(knob, maxf(col.a, a_knob)), a_knob)
+			if disabled:
+				col.a *= 0.4
+			img.set_pixel(x, y, col)
+	var tex: ImageTexture = ImageTexture.create_from_image(img)
+	_switch_icons[key] = tex
+	return tex
+
+
+## A heading that opens a group of settings rows: some air above, the title in gold, a short rule (T-218).
+static func section(title: String) -> VBoxContainer:
+	var v: VBoxContainer = VBoxContainer.new()
+	v.add_theme_constant_override("separation", 4)
+	var gap: Control = Control.new()
+	gap.custom_minimum_size = Vector2(0, 10)
+	v.add_child(gap)
+	var l: Label = label(title.to_upper(), 19, GOLD)
+	l.add_theme_font_override("font", spaced(type_font(), 3))
+	var inset: StyleBoxEmpty = StyleBoxEmpty.new()
+	inset.content_margin_left = ROW_INSET
+	l.add_theme_stylebox_override("normal", inset)
+	v.add_child(l)
+	var r: ColorRect = rule(1.0, 1.0, BRASS_DARK)
+	r.custom_minimum_size = Vector2(0, 1)
+	r.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	v.add_child(r)
+	return v
+
+
+## The explanation under a setting: readable size, indented under the row it explains (T-218).
+static func help(text_str: String) -> MarginContainer:
+	var m: MarginContainer = MarginContainer.new()
+	m.add_theme_constant_override("margin_left", int(ROW_INSET))
+	m.add_theme_constant_override("margin_right", 40)
+	m.add_theme_constant_override("margin_bottom", 4)
+	m.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	m.add_child(para(text_str, 17, DIM.lightened(0.12)))
+	return m
 
 
 static func options(items: PackedStringArray, selected: int, cb: Callable) -> OptionButton:
