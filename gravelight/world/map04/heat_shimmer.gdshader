@@ -6,7 +6,7 @@ render_mode unshaded, blend_mix, cull_disabled, depth_draw_never, shadows_disabl
 
 uniform sampler2D screen_tex : hint_screen_texture, filter_linear_mipmap;
 uniform vec4 glow : source_color = vec4(1.0, 0.6, 0.32, 1.0);
-uniform float strength = 0.008;
+uniform float strength = 0.014;
 uniform float night : hint_range(0.0, 1.0) = 1.0;
 
 float hash12(vec2 p) {

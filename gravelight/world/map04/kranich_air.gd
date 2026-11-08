@@ -49,6 +49,7 @@ var _puff_mat: ShaderMaterial = null
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _scan_t: float = 0.0
 var _engines_x: Array[float] = []
+var _clouds_lit: bool = false
 
 
 # ---------------------------------------------------------------- pure rules
@@ -234,6 +235,21 @@ func _rescan() -> void:
 			if m is DirectionalLight3D:
 				_moon = m as DirectionalLight3D
 				_moon_base = _moon.basis
+	if not _clouds_lit and _sky != null:
+		# T-220 b: the sheets below with moonlit tops (FlightSky's own cloud materials, once)
+		var cl: Dictionary = cfg.get("clouds", {})
+		var mats: Variant = _sky.get("_cloud_mats")
+		if mats is Array and not (mats as Array).is_empty():
+			_clouds_lit = true
+			for mt: Variant in mats:
+				var sm: ShaderMaterial = mt as ShaderMaterial
+				if sm == null:
+					continue
+				if cl.has("lit"):
+					sm.set_shader_parameter("lit_color", Color(str(cl["lit"])))
+				var op: Variant = sm.get_shader_parameter("opacity")
+				if op != null:
+					sm.set_shader_parameter("opacity", clampf(float(op) * float(cl.get("opacity_mult", 1.0)), 0.0, 0.95))
 
 
 # ---------------------------------------------------------------- tick

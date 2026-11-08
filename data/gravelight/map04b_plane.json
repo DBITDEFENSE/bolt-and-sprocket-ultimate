@@ -6,7 +6,7 @@
     "top": 2.95, "bottom": -0.62, "mid_y": 1.25, "te_top": 1.62, "te_bottom": 1.36,
     "le_round": 6.0, "te_round": 3.8, "glass_x": 22.0, "glass_top": 4.85,
     "tip_from": 120.0, "tip_top": 2.25, "tip_bottom": 0.45,
-    "rows": 120, "bottom_rows": 40, "cols_step": 2.0, "bottom_cols_step": 4.0,
+    "rows": 100, "bottom_rows": 30, "cols_step": 2.0, "bottom_cols_step": 4.0,
     "bumps": [
       [-9.6, -0.8, 9.6, 24.6, 5.2, 2.6],
       [-9.6, 24.0, 9.6, 54.0, 4.25, 2.6],
@@ -25,16 +25,20 @@
     "intake": {"rx": 1.25, "ry": 0.62, "y": 1.5, "depth": 1.4},
     "paint": {"top_a": "#5b6058", "top_b": "#6a7063", "under": "#1e2023", "bare": "#8d9196", "soot": "#151311", "oil": "#2a2116"},
     "markings": [
-      [-92.0, 33.5, 15.0, 3.6, 0, 180.0, "#b9b6ab"],
-      [92.0, 33.5, 15.0, 3.6, 0, 180.0, "#b9b6ab"],
-      [-72.0, 16.8, 4.8, 0.72, 1, 180.0, "#b9b6ab"],
-      [-112.0, 34.4, 4.8, 0.72, 1, 180.0, "#b9b6ab"],
-      [-40.0, 47.2, 3.6, 0.6, 2, 180.0, "#b9b6ab"],
-      [-84.0, 18.2, 2.2, 0.5, 3, 180.0, "#c9b28a"],
-      [-100.0, 17.6, 2.2, 0.5, 3, 180.0, "#c9b28a"],
-      [-74.0, 44.0, 4.6, 0.56, 4, 90.0, "#b9b6ab"],
-      [0.0, 62.0, 8.0, 1.6, 5, 180.0, "#b9b6ab"],
-      [-30.0, 52.5, 4.4, 0.6, 6, 180.0, "#b9b6ab"]
+      [-94.0, 33.5, 26.0, 6.0, 0, 180.0, "#cfcabb"],
+      [94.0, 33.5, 26.0, 6.0, 0, 180.0, "#cfcabb"],
+      [-124.5, 25.5, 7.0, 4.4, 5, 90.0, "#cfcabb"],
+      [124.5, 25.5, 7.0, 4.4, 5, -90.0, "#cfcabb"],
+      [-60.0, 18.3, 6.0, 0.9, 1, 180.0, "#cfcabb"],
+      [-74.0, 18.3, 6.0, 0.9, 1, 180.0, "#cfcabb"],
+      [-92.0, 18.3, 6.0, 0.9, 1, 180.0, "#cfcabb"],
+      [-112.0, 15.4, 6.0, 0.9, 1, 180.0, "#cfcabb"],
+      [-40.0, 47.4, 4.4, 0.75, 2, 180.0, "#cfcabb"],
+      [-84.0, 18.2, 3.0, 0.7, 3, 180.0, "#d6b98c"],
+      [-100.0, 18.2, 3.0, 0.7, 3, 180.0, "#d6b98c"],
+      [-74.0, 44.0, 4.6, 0.56, 4, 90.0, "#cfcabb"],
+      [0.0, 62.0, 8.0, 1.6, 5, 180.0, "#cfcabb"],
+      [-30.0, 52.5, 4.4, 0.6, 6, 180.0, "#cfcabb"]
     ],
     "hatches": [[-62.0, 17.0], [-92.0, 31.0], [-114.0, 33.0], [-30.0, 36.0], [62.0, 19.0], [92.0, 27.4], [30.0, 36.0], [0.0, 46.0], [-4.0, 16.0]],
     "masts": {"dorsal": [0.0, 40.0, 4.6], "tips": [[-127.5, 27.0, 4.4], [127.5, 27.0, 4.4]], "wire_r": 0.016},
@@ -46,7 +50,11 @@
       "streamers": [[-127.5, 27.0, 4.4], [127.5, 27.0, 4.4], [-18.0, 77.8, 4.6]]
     },
     "formation_scale": 0.5,
-    "walk_lamps": {"color": "#ffc98a", "energy": 0.45, "range": 6.5, "up": 0.55}
+    "walk_lamps": {"color": "#ffc98a", "energy": 0.45, "range": 6.5, "up": 0.55},
+    "legibility": {"_doc": "T-220 b: what makes the skin read from the catwalk at night: a cold sky fill on the hull's own render layer (fill_night .. fill_dawn energy, from fill_from, extra specular so the panels shine), the non-skid strips st_pad m round the catwalk's segments and the walk-limit line st_line m out (st_line_w wide, line_color), the seams' darkness, the wingtip strobes (a double flash every strobe_period_s), the nozzles' glow sprites.",
+      "fill_color": "#9fb2dc", "fill_night": 0.45, "fill_dawn": 0.12, "fill_from": [-0.3, 1.0, 0.45], "fill_specular": 1.4,
+      "st_pad": 0.5, "st_line": 1.6, "st_line_w": 0.14, "line_color": "#cbc6b6", "seam_dark": 0.62,
+      "strobe_period_s": 1.6, "strobe_energy": 3.0, "strobe_range": 9.0, "glow_sprite_m": 3.2, "glow_sprite_a": 0.55}
   },
   "air": {
     "exposure": {
@@ -73,6 +81,7 @@
       "quiet": {"near_m": 12.0, "max_near_zombies": 2, "hurt_s": 5.0, "quiet_after_step_s": 25.0, "tilt_clear_s": 12.0}
     },
     "bank": {"deg": 2.6, "periods_s": [53.0, 31.0], "weights": [0.62, 0.38], "ease_s": 3.0},
+    "clouds": {"_doc": "T-220 b: the sheets below lit brighter on top (FlightSky cloud_layer lit_color), so the deck reads through the gaps at night", "lit": "#98a5c4", "opacity_mult": 1.12},
     "sun": {"from_sunrise": 0.35, "to_sunrise": 0.8, "dir_from": [0.22, 0.017, -1.0], "dir_to": [0.26, 0.12, -1.0], "elev_from_sunrise": 0.5},
     "cloud_banks": {"first_s": [25.0, 50.0], "every_s": [55.0, 120.0], "speed": 46.0, "from_z": 300.0, "to_z": -240.0,
       "x": [-125.0, 40.0], "y": [2.0, 14.0], "puffs": [12, 18], "puff_size": [26.0, 52.0], "spread": [44.0, 9.0, 40.0],
