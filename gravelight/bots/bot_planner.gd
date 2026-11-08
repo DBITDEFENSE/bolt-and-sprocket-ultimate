@@ -10,6 +10,14 @@ extends Node
 ## offline, busy past its timeout or answers nonsense, the highest score wins. The pick becomes `directive`, which
 ## the brain turns into an errand (BotBrain._planner_errand) and executes; it reports back through
 ## on_errand_finished. Fights, revives and fleeing still come first in the brain.
+## T-217: the brain is a setting (bot_ai_brain, BotConfig.resolve_brain): "builtin" runs no model at all and picks
+## with learned_index (each option's score plus the adjustments trained from logged model answers, LEARNED_PATH);
+## the Ollama tiers (small / small_cpu / large) ask a model and fall back to learned_index. Every model answer is
+## logged (DECISIONS_PATH) so tools/bot_ai/train_planner.py can train the builtin brain from it.
+
+const LEARNED_PATH: String = "res://data/gravelight/bot_planner_learned.json"
+const DECISIONS_PATH: String = "user://bot_ai/decisions.jsonl"
+static var _learned: Dictionary = {}
 
 var brain: BotBrain
 var squad: BotSquad
@@ -21,6 +29,7 @@ var decisions: int = 0
 var llm_picks: int = 0
 var scripted_picks: int = 0
 var history: PackedStringArray = []   # the last picks, "t source id"
+var brain_name: String = "builtin"    # T-217: builtin / small / small_cpu / large
 
 var _cfg: Dictionary = {}
 var _t: float = 1.0
@@ -34,13 +43,18 @@ func setup(b: BotBrain, s: BotSquad, llm: bool) -> void:
 	squad = s
 	use_llm = llm
 	_cfg = BotConfig.cfg().get("local_ai", {})
+	brain_name = "builtin"
+	if use_llm:
+		var machine: String = "medium" if DisplayServer.get_name() == "headless" else GLSettings.auto_detect_preset()
+		brain_name = BotConfig.resolve_brain(str(GLSettings.values.get("bot_ai_brain", _cfg.get("brain_default", "auto"))), machine, GLSettings.is_web())
+		use_llm = brain_name != "builtin"
 	if use_llm:
 		ai = LocalAI.new()
 		ai.name = "LocalAI"
 		add_child(ai)
-		ai.setup(_cfg)
+		ai.setup(BotConfig.brain_cfg(_cfg, brain_name))
 		ai.start()
-	print("[planner] %s plans its own objectives (%s)" % [Net.display_name(brain.player.player_id), "local AI" if use_llm else "scripted"])
+	print("[planner] %s plans its own objectives (%s)" % [Net.display_name(brain.player.player_id), "local AI, brain %s" % brain_name if use_llm else "built-in brain"])
 
 
 func _physics_process(delta: float) -> void:
@@ -85,10 +99,12 @@ func _decide(force: bool) -> void:
 		directive = {}
 		return
 	var cur: String = str(directive.get("id", ""))
-	var fb: int = fallback_index(_scores(options), _ids(options), cur)
-	if ai != null and ai.is_ready():
+	var feats: Array = features(options, cur)
+	var fb: int = learned_index(feats, learned())
+	if ai != null and ai.is_ready() and options.size() > 1:   # T-217: one option is no choice: no model call
 		var ids: Array = _ids(options)
-		var sent: bool = ai.ask(_messages(cur), reply_schema(ids), func(reply: Variant, ms: int) -> void: _on_reply(reply, ms, ids))
+		var row: Dictionary = _decision_row(feats, cur)
+		var sent: bool = ai.ask(_messages(cur), reply_schema(ids), func(reply: Variant, ms: int) -> void: _on_reply(reply, ms, ids, row))
 		if not sent and (force or directive.is_empty()):
 			_set_directive(options[fb], "scripted (model busy)", "")
 		elif sent and (force or directive.is_empty()):
@@ -97,12 +113,16 @@ func _decide(force: bool) -> void:
 	_set_directive(options[fb], "scripted", "")
 
 
-func _on_reply(reply: Variant, ms: int, ids: Array) -> void:
+func _on_reply(reply: Variant, ms: int, ids: Array, row: Dictionary = {}) -> void:
 	if brain == null or not is_instance_valid(brain):
 		return
 	var i: int = choice_index(reply, ids)
 	if i < 0:
 		return   # nonsense: the scripted pick stands until the next decision
+	if not row.is_empty() and bool(_cfg.get("log_decisions", true)):
+		row["pick"] = i
+		row["ms"] = ms
+		log_decision(row, DECISIONS_PATH, int(_cfg.get("log_max_mb", 20)))
 	var id: String = str(ids[i])
 	for o: Dictionary in options:
 		if str(o["id"]) == id and is_instance_valid(o.get("node")):
@@ -136,6 +156,8 @@ func _say(text: String) -> void:
 
 
 func _announce() -> void:
+	if ai == null:
+		return
 	var who: String = Net.display_name(brain.player.player_id)
 	if ai.is_ready():
 		_say("[%s is on local AI: %s]" % [who, ai.model])
@@ -168,6 +190,69 @@ static func fallback_index(scores: Array, ids: Array, current: String, stickines
 			best_s = s
 			best = i
 	return best
+
+
+## T-217: what the builtin brain sees of each option (pure): its kind, its score, its distance, and whether it is
+## the current objective.
+static func features(opts: Array[Dictionary], current: String) -> Array:
+	var out: Array = []
+	for o: Dictionary in opts:
+		out.append({"id": str(o.get("id", "")), "kind": str(o.get("kind", "")), "score": snappedf(float(o.get("score", 0.0)), 0.01),
+			"dist": snappedf(float(o.get("dist", 0.0)), 0.1), "cur": str(o.get("id", "")) == current})
+	return out
+
+
+## The builtin brain's pick (pure, unit-tested): the best of score_scale * score + kind_bias[kind] + dist_w * dist
+## (+ current_bonus for the current objective). With no trained file (score_scale 1, no biases, current_bonus 8)
+## this is exactly fallback_index. -1 when empty.
+static func learned_index(feats: Array, w: Dictionary) -> int:
+	var scale: float = float(w.get("score_scale", 1.0))
+	var bias: Dictionary = w.get("kind_bias", {})
+	var dist_w: float = float(w.get("dist_w", 0.0))
+	var cur_bonus: float = float(w.get("current_bonus", 8.0))
+	var best: int = -1
+	var best_u: float = -INF
+	for i: int in feats.size():
+		var f: Dictionary = feats[i]
+		var u: float = scale * float(f["score"]) + float(bias.get(str(f["kind"]), 0.0)) + dist_w * float(f["dist"]) + (cur_bonus if bool(f["cur"]) else 0.0)
+		if u > best_u:
+			best_u = u
+			best = i
+	return best
+
+
+## The trained adjustments (LEARNED_PATH), loaded once; the plain scores when the file is missing.
+static func learned() -> Dictionary:
+	if _learned.is_empty():
+		var f: FileAccess = FileAccess.open(LEARNED_PATH, FileAccess.READ)
+		var d: Variant = JSON.parse_string(f.get_as_text()) if f != null else null
+		_learned = d as Dictionary if d is Dictionary else {"score_scale": 1.0}
+	return _learned
+
+
+## One training row: the match state now and every option's features; the pick and the latency come with the reply.
+func _decision_row(feats: Array, current: String) -> Dictionary:
+	var p: Player = brain.player
+	var dir: ZombieDirector = squad.director()
+	return {"v": 1, "t": snappedf(squad.time(), 0.1), "map": str(squad.map.name) if squad.map != null else "",
+		"round": RoundManager.current_round, "fighting": RoundManager.state == RoundManager.State.ROUND,
+		"zombies": dir.active_zombies().size() if dir != null else 0, "power": GameState.power_on,
+		"hp": snappedf(p.hp / maxf(1.0, p.max_hp), 0.01), "scrip": Economy.get_scrip(p.player_id),
+		"player_bot": brain.is_player_bot, "model": ai.model if ai != null else "", "brain": brain_name,
+		"cur": current, "opts": feats}
+
+
+## Appends `row` as one JSON line to `path` (made if missing); skipped once the file holds `max_mb`. True when written.
+static func log_decision(row: Dictionary, path: String, max_mb: int) -> bool:
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(path.get_base_dir()))
+	var f: FileAccess = FileAccess.open(path, FileAccess.READ_WRITE) if FileAccess.file_exists(path) else FileAccess.open(path, FileAccess.WRITE)
+	if f == null:
+		return false
+	if f.get_length() > max_mb * 1024 * 1024:
+		return false
+	f.seek_end()
+	f.store_line(JSON.stringify(row))
+	return true
 
 
 ## The option a model reply names: {"choice": "<id>"} exactly, case-insensitively, or by its 1-based number
@@ -300,8 +385,9 @@ func gather() -> Array[Dictionary]:
 		sorted = keep
 	for o4: Dictionary in sorted:
 		var n: Node3D = o4.get("node") as Node3D
+		o4["dist"] = brain.flat_distance(n.global_position) if n != null and is_instance_valid(n) else 0.0
 		if n != null and str(o4["kind"]) != "follow":
-			o4["label"] = "%s (%d m)" % [str(o4.get("label", "")), int(brain.flat_distance(n.global_position))]
+			o4["label"] = "%s (%d m)" % [str(o4.get("label", "")), int(float(o4["dist"]))]
 	return sorted
 
 

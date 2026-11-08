@@ -111,3 +111,122 @@ func test_prompt_lists_every_option_with_its_id() -> void:
 	assert_string_contains(text, "- egg:s2_tune: tune the radio [score 75]")
 	assert_string_contains(text, "- follow: stick with Dutch [score 12]")
 	assert_string_contains(text, "Current objective: egg:s2_tune")
+
+
+# ---------------------------------------------------------------- T-217 brains, the built-in brain, the decision log
+
+func test_resolve_brain() -> void:
+	assert_eq(BotConfig.resolve_brain("auto", "high", false), "small", "a discrete GPU: the small model")
+	assert_eq(BotConfig.resolve_brain("auto", "medium", false), "small")
+	assert_eq(BotConfig.resolve_brain("auto", "low", false), "small_cpu", "an integrated GPU: the model on the CPU")
+	assert_eq(BotConfig.resolve_brain("large", "low", false), "large", "an explicit choice stands")
+	assert_eq(BotConfig.resolve_brain("builtin", "high", false), "builtin")
+	assert_eq(BotConfig.resolve_brain("large", "high", true), "builtin", "no Ollama in the web build")
+	assert_eq(BotConfig.resolve_brain("nonsense", "high", false), "small", "unknown -> auto")
+
+
+func test_brain_setting_and_cycle() -> void:
+	assert_eq(BotConfig.brain_setting({"bot_local_ai": false, "bot_ai_brain": "large"}), "off")
+	assert_eq(BotConfig.brain_setting({"bot_local_ai": true, "bot_ai_brain": "small_cpu"}), "small_cpu")
+	assert_eq(BotConfig.brain_setting({}), "auto", "an old settings file")
+	var seen: Dictionary = {}
+	var b: String = "auto"
+	for i: int in BotConfig.AI_BRAIN_CYCLE.size():
+		seen[b] = true
+		assert_true(BotConfig.AI_BRAIN_LABELS.has(b), "%s has a menu label" % b)
+		b = BotConfig.next_brain(b)
+	assert_eq(b, "auto", "the cycle comes back round")
+	assert_true(seen.has("off") and seen.has("builtin"), "Off and Built-in are on the cycle")
+
+
+func test_brain_tiers_in_bots_json() -> void:
+	var lc: Dictionary = cfg["local_ai"]
+	for tier: String in ["small", "small_cpu", "large"]:
+		var bc: Dictionary = BotConfig.brain_cfg(lc, tier)
+		assert_false((bc["models"] as Array).is_empty(), "%s lists models" % tier)
+		assert_eq(int((bc["options"] as Dictionary).get("num_ctx", 0)), 2048, "%s keeps the context small" % tier)
+		assert_eq(bc["brain"], tier)
+	assert_eq(int(BotConfig.brain_cfg(lc, "small_cpu")["options"]["num_gpu"]), 0, "CPU only: no layers on the GPU")
+	assert_false((BotConfig.brain_cfg(lc, "small")["options"] as Dictionary).has("num_gpu"), "the GPU tiers let Ollama decide")
+	assert_eq(str(BotConfig.brain_cfg(lc, "small")["models"][0]), "gemma3:4b")
+	assert_eq(str(BotConfig.brain_cfg(lc, "small_cpu")["models"][0]), "gemma3:1b")
+	assert_eq(str(lc["keep_alive"]), "2m", "the model leaves video memory soon after a match")
+
+
+func test_chat_options_carry_the_tier() -> void:
+	var o: Dictionary = LocalAI.chat_options(BotConfig.brain_cfg(cfg["local_ai"], "small_cpu"))
+	assert_eq(o["num_gpu"], 0)
+	assert_typeof(o["num_ctx"], TYPE_INT, "JSON floats go to Ollama as integers")
+	assert_eq(o["num_ctx"], 2048)
+	assert_true(o.has("temperature") and o.has("num_predict"))
+	var b: Dictionary = LocalAI.chat_body("gemma3:1b", [], {}, BotConfig.brain_cfg(cfg["local_ai"], "small_cpu"))
+	assert_eq(b["options"]["num_gpu"], 0)
+	assert_eq(b["keep_alive"], "2m")
+
+
+func _feats(rows: Array) -> Array:
+	var out: Array = []
+	for r: Array in rows:
+		out.append({"id": r[0], "kind": r[1], "score": float(r[2]), "dist": float(r[3]), "cur": bool(r[4])})
+	return out
+
+
+func test_learned_index_plain_is_the_scripted_pick() -> void:
+	var plain: Dictionary = {"score_scale": 1.0}
+	for case: Array in [[[10.0, 50.0, 20.0], ""], [[10.0, 50.0, 45.0], "c"], [[10.0, 70.0, 45.0], "c"], [[30.0, 30.0, 5.0], "a"]]:
+		var ids: Array = ["a", "b", "c"]
+		var opts: Array[Dictionary] = []
+		for i: int in 3:
+			opts.append({"id": ids[i], "kind": "repair", "score": case[0][i], "dist": 5.0})
+		assert_eq(BotPlanner.learned_index(BotPlanner.features(opts, case[1]), plain), BotPlanner.fallback_index(case[0], ids, case[1]),
+			"no trained weights: the same pick as fallback_index %s" % str(case))
+	assert_eq(BotPlanner.learned_index([], plain), -1)
+
+
+func test_learned_index_applies_the_weights() -> void:
+	var f: Array = _feats([["repair:W1", "repair", 40, 3, false], ["door:D", "door", 34, 10, false], ["follow", "follow", 12, 0, false]])
+	assert_eq(BotPlanner.learned_index(f, {"score_scale": 1.0}), 0, "the best score")
+	assert_eq(BotPlanner.learned_index(f, {"score_scale": 1.0, "kind_bias": {"door": 8.0}}), 1, "a door bias flips it")
+	assert_eq(BotPlanner.learned_index(f, {"score_scale": 1.0, "kind_bias": {"door": 8.0}, "dist_w": -1.0}), 0, "but the door is farther")
+
+
+func test_shipped_weights_load() -> void:
+	var w: Dictionary = BotPlanner.learned()
+	assert_gt(float(w.get("score_scale", 0.0)), 0.0, "the built-in brain has a score scale")
+	assert_true(w.get("kind_bias", {}) is Dictionary)
+
+
+func test_log_decision_appends_json_lines() -> void:
+	var path: String = "user://_test_bot_ai/decisions.jsonl"
+	if FileAccess.file_exists(path):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+	var row: Dictionary = {"v": 1, "opts": _feats([["a", "repair", 1, 2, true], ["b", "door", 3, 4, false]]), "pick": 1}
+	assert_true(BotPlanner.log_decision(row, path, 1))
+	assert_true(BotPlanner.log_decision(row, path, 1))
+	var lines: PackedStringArray = FileAccess.get_file_as_string(path).strip_edges().split("\n")
+	assert_eq(lines.size(), 2, "one line per decision, appended")
+	var back: Dictionary = JSON.parse_string(lines[1])
+	assert_eq(int(back["pick"]), 1)
+	assert_eq(str((back["opts"] as Array)[1]["kind"]), "door")
+	assert_false(BotPlanner.log_decision(row, path, 0), "a full log is left alone")
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+
+
+# ---------------------------------------------------------------- T-216 the crash probe's --set parser
+
+func test_probe_set_parser() -> void:
+	var probe: GDScript = load("res://gravelight/tools_src/probe_campaign_start.gd")
+	var v: Dictionary = {"gfx_gi": true, "fov": 80.0, "bots": 0, "gfx_fog": "high"}
+	assert_string_contains(probe.apply_set(v, "gfx_gi"), "ignored", "no colon: ignored, no crash")
+	assert_string_contains(probe.apply_set(v, "nope:1"), "ignored", "unknown key")
+	probe.apply_set(v, "gfx_gi:false")
+	assert_eq(v["gfx_gi"], false)
+	probe.apply_set(v, "fov:90")
+	assert_typeof(v["fov"], TYPE_FLOAT, "a float setting stays a float")
+	assert_eq(v["fov"], 90.0)
+	probe.apply_set(v, "bots:2")
+	assert_eq(v["bots"], 2)
+	probe.apply_set(v, "gfx_fog:low")
+	assert_eq(v["gfx_fog"], "low")
+	assert_string_contains(probe.apply_set(v, "bots:many"), "ignored", "a bad number")
+	assert_eq(v["bots"], 2)

@@ -157,11 +157,12 @@ func _build_squad() -> void:
 	s.custom_minimum_size = Vector2(240, 44)
 	s.disabled = bots <= 0
 	row.add_child(s)
-	var ai_on: bool = bool(GLSettings.values.get("bot_local_ai", true))
-	var ai: Button = MenuKit.button("Local AI bot: %s" % ("On" if ai_on else "Off"), func() -> void:
-		GLSettings.set_value("bot_local_ai", not ai_on)
+	var brain: String = BotConfig.brain_setting(GLSettings.values)   # T-217: off / auto / builtin / small / small_cpu / large
+	var ai: Button = MenuKit.button("Bot AI: %s" % str(BotConfig.AI_BRAIN_LABELS.get(brain, brain)), func() -> void:
+		BotConfig.set_brain(BotConfig.next_brain(brain))
 		rebuild(), 22)
-	ai.custom_minimum_size = Vector2(240, 44)
+	ai.custom_minimum_size = Vector2(300, 44)
+	ai.tooltip_text = "Which brain the planning bot uses. Built-in: works on any PC, no download. Small / Large: a local model through Ollama (Small uses ~3 GB of video memory, Large ~17 GB; CPU only uses none but thinks slower). Auto picks Small, or CPU only on a low-end GPU."
 	ai.disabled = bots <= 0
 	row.add_child(ai)
 	if bots > 0:
@@ -169,7 +170,7 @@ func _build_squad() -> void:
 		var who: PackedStringArray = []
 		for ch: StringName in others:
 			who.append(str(Net.DISPLAY.get(String(ch), String(ch))))
-		content.add_child(MenuKit.para("%s fight alongside you: they follow, shoot, rebuild boards, buy their own guns, open doors with their own Scrip, and revive you (and you them). They spawn with a Thompson, Ironhide Stout and Second Wind. With the local AI on, %s runs on a local model (Ollama) and works the map's tasks and easter egg on its own. Zombies scale as for %d players." % [
+		content.add_child(MenuKit.para("%s fight alongside you: they follow, shoot, rebuild boards, buy their own guns, open doors with their own Scrip, and revive you (and you them). They spawn with a Thompson, Ironhide Stout and Second Wind. With Bot AI on, %s plans its own objectives (power, perks, guns, doors, boards): Built-in works on any PC; the model brains need Ollama and fall back to Built-in without it. Zombies scale as for %d players." % [
 
 			" and ".join(who) if who.size() <= 2 else ", ".join(who.slice(0, who.size() - 1)) + " and " + who[who.size() - 1],
 			who[clampi(int((c.get("local_ai", {}) as Dictionary).get("bot_index", 0)), 0, who.size() - 1)] if not who.is_empty() else "one bot",
@@ -179,6 +180,13 @@ func _build_squad() -> void:
 func _start(scene: String, campaign: bool = false) -> void:
 	if scene == "":
 		return
+	prepare_match(campaign)
+	LoadingScreen.go(get_tree(), scene)   # T-144: the map's art, a tip and a lore line; it awaits MapPacks.ensure (T-139) first
+
+
+## Everything a match start sets before the loading screen: the bots from the settings and the campaign chain (or
+## single-map play). Shared with the crash probe (probe_campaign_start, T-216) so it always tests this exact path.
+static func prepare_match(campaign: bool) -> void:
 	GameState.bot_count = BotConfig.clamp_bots(BotConfig.cfg(), int(GLSettings.values.get("bots", 0)))
 	GameState.bot_skill = BotConfig.skill_key(BotConfig.cfg(), str(GLSettings.values.get("bot_skill", "veteran")))
 	GameState.bot_ai_mode = BotConfig.ai_mode_from_settings(GLSettings.values, GameState.bot_count)
@@ -186,7 +194,6 @@ func _start(scene: String, campaign: bool = false) -> void:
 		Campaign.begin()
 	else:
 		Campaign.reset()   # single-map play: no beacon, no chain
-	LoadingScreen.go(get_tree(), scene)   # T-144: the map's art, a tip and a lore line; it awaits MapPacks.ensure (T-139) first
 
 
 

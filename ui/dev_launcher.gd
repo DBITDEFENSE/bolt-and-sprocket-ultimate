@@ -146,7 +146,7 @@ func _ready() -> void:
 	_bots.select(clampi(int(GLSettings.values.get("bots", 2)), 0, 3))
 	row.add_child(_bots)
 	_ai = CheckBox.new()
-	_ai.text = "One bot on local AI (Ollama)"
+	_ai.text = "One bot plans its own objectives (Bot AI brain: Settings > Gameplay)"
 	_ai.button_pressed = bool(GLSettings.values.get("bot_local_ai", true))
 	row.add_child(_ai)
 

@@ -76,7 +76,8 @@ var values: Dictionary = {
 	"last_join_ip": "127.0.0.1",   # co-op: the address typed in the lobby's Join field last time
 	"bots": 0,                     # AI teammates in a solo match (0-3, T-031)
 	"bot_skill": "veteran",        # Bot Skill: recruit / veteran / elite (Update 03 section 7; bots.json skills + ai/skills.json)
-	"bot_local_ai": true,          # one bot runs on a local LLM (Ollama) and does the map's tasks and easter egg
+	"bot_local_ai": true,          # one bot plans its own objectives (the map's tasks, power, perks, guns) instead of following
+	"bot_ai_brain": "auto",        # T-217: its brain: auto / builtin (any PC, no Ollama) / small / small_cpu / large (Ollama tiers, bots.json local_ai.brains)
 	"bot_bonus_perk": true,        # each bot gets one random bonus perk at match start (U02 section 5, bots.json bonus_perk)
 	"bot_ee_help": "full",         # Bot Easter-Egg Help: off / ask (When Asked) / full (Full Partner, the default since T-086) (Update 04 section 5, T-067)
 	"bot_ee_help_rev": 2,          # T-086: a settings file saved before this revision gets the new Full Partner default once

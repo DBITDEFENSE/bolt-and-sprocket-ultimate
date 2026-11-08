@@ -54,20 +54,30 @@
     "companions": false
   },
   "local_ai": {
-    "_doc": "One bot (squad index bot_index) gets a planner that picks its objective: the map's easter egg steps, the power, doors, perks, guns, the Crucible, boards, or sticking with the team. In mode 'local' a local LLM served by Ollama (endpoint) makes the pick every decide_every_s from a short text summary of the match and a numbered option list (structured JSON output, the option ids as an enum); the first installed model in `models` is used and kept loaded for keep_alive. When Ollama is unreachable, slow (timeout_s) or answers nonsense, the scripted planner (each option's own score) decides instead, so the bot never stalls. autostart_ollama runs `ollama serve` (hidden) when the API is down and the exe is found. The bot then roams the whole map for its objectives (no leash) and fights from where it stands. speak: the LLM's short remark as a subtitle in the bot's voice, at most every speak_cooldown_s.",
+    "_doc": "One bot (squad index bot_index) gets a planner that picks its objective: the map's easter egg steps, the power, doors, perks, guns, the Crucible, boards, or sticking with the team. In mode 'local' a local LLM served by Ollama (endpoint) makes the pick every decide_every_s from a short text summary of the match and a numbered option list (structured JSON output, the option ids as an enum); the first installed model of the chosen brain (brains, T-217) is used and kept loaded for keep_alive after the last request (2m: it leaves video memory soon after a match; 30m held 17 GB for half an hour after the game closed). When Ollama is unreachable, slow (timeout_s) or answers nonsense, the scripted planner (each option's own score) decides instead, so the bot never stalls. autostart_ollama runs `ollama serve` (hidden) when the API is down and the exe is found. The bot then roams the whole map for its objectives (no leash) and fights from where it stands. speak: the LLM's short remark as a subtitle in the bot's voice, at most every speak_cooldown_s.",
     "bot_index": 0,
     "endpoint": "http://127.0.0.1:11434",
     "models": [
-      "gemma3:27b",
       "gemma3:4b",
-      "gemma4:31b"
+      "gemma3:1b"
     ],
+    "_brains_doc": "T-217: which brain the planner bot uses (setting bot_ai_brain; BotConfig.resolve_brain). builtin = no Ollama: each option's score plus the trained adjustments in data/gravelight/bot_planner_learned.json (tools/bot_ai/train_planner.py). The Ollama tiers each list models (the first installed one is used) and Ollama options: num_ctx 2048 keeps the memory small (the prompt is ~600 tokens; Ollama's default context is 32k), num_gpu 0 runs the model on the CPU with no video memory. auto: small, or small_cpu on a machine whose first-launch graphics preset is low (integrated or software GPU), or builtin in the web build. Measured on the owner's RTX 5090 with the GPU idle (T-217): gemma3:1b 0.36 s / under 1 GB, gemma3:4b 0.53 s / 2.9 GB, gemma3:27b 0.78 s / 17 GB (1.7 s in a match, sharing the GPU), gemma3:1b on the CPU 1.75 s, gemma3:4b on the CPU 2.8 s.",
+    "brain_default": "auto",
+    "brains": {
+      "small": {"models": ["gemma3:4b", "qwen2.5:3b", "llama3.2:3b", "gemma3:1b", "qwen2.5:1.5b", "llama3.2:1b"], "options": {"num_ctx": 2048}},
+      "small_cpu": {"models": ["gemma3:1b", "qwen2.5:1.5b", "llama3.2:1b", "gemma3:4b"], "options": {"num_ctx": 2048, "num_gpu": 0}},
+      "large": {"models": ["gemma3:27b", "gemma4:31b", "gemma3:12b", "qwen2.5:14b"], "options": {"num_ctx": 2048}}
+    },
+    "pull_hint": "gemma3:1b",
+    "log_decisions": true,
+    "_log_doc": "T-217: every model answer appends one line (the match state, every option's kind, score and distance, and the pick) to user://bot_ai/decisions.jsonl, at most log_max_mb; tools/bot_ai/train_planner.py trains the builtin brain from those lines.",
+    "log_max_mb": 20,
     "decide_every_s": 4.0,
     "timeout_s": 10.0,
     "warmup_timeout_s": 120.0,
     "temperature": 0.3,
     "max_tokens": 90,
-    "keep_alive": "30m",
+    "keep_alive": "2m",
     "autostart_ollama": true,
     "ollama_paths": [
       "{LOCALAPPDATA}/Programs/Ollama/ollama.exe",

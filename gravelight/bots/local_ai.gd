@@ -101,7 +101,7 @@ func _on_tags(data: Variant, err: String) -> void:
 			installed.append(str((m as Dictionary).get("name", (m as Dictionary).get("model", ""))))
 	model = pick_model(_cfg.get("models", []), installed)
 	if model == "":
-		_go_offline("none of %s installed (have %s)" % [str(_cfg.get("models", [])), str(installed)])
+		_go_offline("none of %s installed (have %s; `ollama pull %s`)" % [str(_cfg.get("models", [])), str(installed), str(_cfg.get("pull_hint", "gemma3:1b"))])
 		return
 	state = State.WARMING
 	var body: Dictionary = chat_body(model, [{"role": "user", "content": "Reply with the JSON {\"ok\": true}."}], {}, _cfg)
@@ -110,7 +110,7 @@ func _on_tags(data: Variant, err: String) -> void:
 			_go_offline("warm-up failed: " + e)
 			return
 		state = State.READY
-		print("[local_ai] ready: %s at %s" % [model, _endpoint]))
+		print("[local_ai] ready: %s at %s (brain %s, options %s)" % [model, _endpoint, str(_cfg.get("brain", "-")), str(chat_options(_cfg))]))
 
 
 func _go_offline(why: String) -> void:
@@ -167,9 +167,18 @@ static func chat_body(model_name: String, messages: Array, schema: Dictionary, c
 		"messages": messages,
 		"stream": false,
 		"format": schema if not schema.is_empty() else "json",
-		"keep_alive": str(cfg.get("keep_alive", "30m")),
-		"options": {"temperature": float(cfg.get("temperature", 0.3)), "num_predict": int(cfg.get("max_tokens", 90))},
+		"keep_alive": str(cfg.get("keep_alive", "2m")),
+		"options": chat_options(cfg),
 	}
+
+
+## The Ollama options: the temperature and the reply cap, then the brain tier's own (num_ctx, num_gpu; T-217). Pure.
+static func chat_options(cfg: Dictionary) -> Dictionary:
+	var o: Dictionary = {"temperature": float(cfg.get("temperature", 0.3)), "num_predict": int(cfg.get("max_tokens", 90))}
+	for k: Variant in (cfg.get("options", {}) as Dictionary):
+		var v: Variant = (cfg["options"] as Dictionary)[k]
+		o[str(k)] = int(v) if v is float and float(v) == floorf(float(v)) else v   # JSON numbers load as floats
+	return o
 
 
 ## The JSON object in an /api/chat answer's message content, or null (pure, unit-tested).
