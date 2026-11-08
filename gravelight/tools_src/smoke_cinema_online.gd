@@ -5,6 +5,10 @@ extends Node
 ## plays it because the host says so). Then the co-op skip vote: the host holds first (1 of 2: nothing happens, the
 ## tally reaches the client), the client holds second; the host's copy ends and the client's follows; both peers'
 ## input comes back and round 1 starts on both.
+## T-209 (UPDATE 12 s3): `--cut=<id>` plays another cut (default GRAVELIGHT ONE); smoke_cinema_reels_online.tscn runs it
+## with the archive reel of STAUB ("reel:staub") with a clip for every shot (the fixture, in a user:// folder both peers
+## read): both peers' copies run the film treatment and play the clips on their own clock, the vote and the host's end
+## work as for an in-engine cut.
 ## Usage: godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/smoke_cinema_online.tscn
 ## Prints "[cinema_online:<role>] ..." and "RESULT: PASS" / "RESULT: FAIL" (exit 0/1).
 
@@ -22,11 +26,15 @@ var _fails: PackedStringArray = []
 var _done: bool = false
 var _client_result: Dictionary = {}
 var _log_path: String = ""
+var _cut: String = ""
+var _reel_root: String = ""
+var _film_seen: bool = false
+var _played: Dictionary = {}
 
 
 func _ready() -> void:
 	if get_parent() != get_tree().root or name != "CinemaOnlineDriver":
-		var d: Node = (load("res://gravelight/tools_src/smoke_cinema_online.gd") as GDScript).new() as Node
+		var d: Node = (get_script() as GDScript).new() as Node
 		d.name = "CinemaOnlineDriver"
 		get_tree().root.add_child.call_deferred(d)
 		queue_free.call_deferred()
@@ -37,6 +45,16 @@ func _ready() -> void:
 			_role = a.get_slice("=", 1)
 		elif a.begins_with("--port="):
 			_port = int(a.get_slice("=", 1))
+		elif a.begins_with("--cut="):
+			_cut = a.get_slice("=", 1)
+		elif a.begins_with("--reel-root="):
+			_reel_root = a.get_slice("=", 1)
+	if _cut == "":
+		_cut = _default_cut()
+	if _role == "host" and _wants_clips() and _reel_root == "":
+		_reel_root = _make_clips(CinemaArchive.base_id(_cut))
+	if _reel_root != "":
+		CinemaArchive.root_override = _reel_root
 	ProfileSave.path = "user://_qa_cinema_online_%s.json" % _role
 	ProfileSave.profile = ProfileSave.new_profile()
 	GLSettings.path = "user://_qa_cinema_online_%s.cfg" % _role
@@ -49,10 +67,56 @@ func _ready() -> void:
 		f.close()
 	if _role == "host":
 		LazarusCinema.force = true
-		LazarusCinema.force_ids = ["gravelight_one"]
+		LazarusCinema.force_ids = [_cut]
 		_start_host()
 	else:
 		_start_client()
+
+
+## T-209: what a scene variant overrides (smoke_cinema_reels_online.gd).
+func _default_cut() -> String:
+	return "gravelight_one"
+
+
+func _scene_path() -> String:
+	return "res://gravelight/tools_src/smoke_cinema_online.tscn"
+
+
+func _wants_clips() -> bool:
+	return false
+
+
+## A clip for every reel shot of `scene` (the committed fixture) in a user:// folder both peers read.
+func _make_clips(scene: String) -> String:
+	var root: String = "user://_qa_reels_online"
+	var dir: String = root.path_join(scene)
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir))
+	for s: Variant in (CinemaArchive.scenes().get(scene, {}) as Dictionary).get("shots", []):
+		var n: int = int((s as Dictionary)["n"])
+		DirAccess.copy_absolute(ProjectSettings.globalize_path("res://gravelight/tests/fixtures/reel_test_shot.ogv"),
+			ProjectSettings.globalize_path(dir.path_join(CinemaArchive.shot_name(n) + ".ogv")))
+	return root
+
+
+## The reel's film and clips as this peer saw them (checked when it ends).
+func _watch_reel() -> void:
+	var lc: LazarusCinema = _lc()
+	if lc == null or lc.reel == null or lc.reel.director == null:
+		return
+	if lc.reel.director.film != null:
+		_film_seen = true
+	if lc.reel.director.video != null:
+		for p: String in lc.reel.director.video.played:
+			_played[p] = true
+
+
+func _check_reel_seen(who: String) -> void:
+	if not CinemaArchive.plays_as_reel(_cut):
+		return
+	_check(_film_seen, "%s: the reel ran its film treatment" % who)
+	if _wants_clips():
+		_check(not _played.is_empty(), "%s: the reel played its clips (%s)" % [who, str(_played.keys())])
+	_log("%s: film %s, clips played %s" % [who, str(_film_seen), str(_played.keys())])
 
 
 func _log(msg: String) -> void:
@@ -94,7 +158,7 @@ func _start_host() -> void:
 		_finish()
 		return
 	var args: PackedStringArray = ["--headless", "--audio-driver", "Dummy", "--path", ProjectSettings.globalize_path("res://"),
-		"res://gravelight/tools_src/smoke_cinema_online.tscn", "--", "--role=client", "--port=%d" % _port]
+		_scene_path(), "--", "--role=client", "--port=%d" % _port, "--cut=" + _cut, "--reel-root=" + _reel_root]
 	_child_pid = OS.create_process(OS.get_executable_path(), args)
 	if _child_pid <= 0:
 		_fail("couldn't start the client process")
@@ -118,7 +182,7 @@ func _host_tick() -> void:
 				_log("the host plays %s" % str(lc.playing))
 				_goto("vote")
 			elif _step_t > 120.0:
-				_fail("the host never played GRAVELIGHT ONE")
+				_fail("the host never played %s" % _cut)
 				_finish()
 		"vote":
 			var lc2: LazarusCinema = _lc()
@@ -131,7 +195,8 @@ func _host_tick() -> void:
 			var lc3: LazarusCinema = _lc()
 			if lc3.reel == null:
 				_log("the host's reel ended (%s) at %.1f s into the wait" % [str(lc3.history), _step_t])
-				_check(lc3.history.has("gravelight_one"), "the host's history")
+				_check(lc3.history.has(CinemaArchive.base_id(_cut)), "the host's history")
+				_check_reel_seen("the host")
 				_check(not GameState.input_blocked, "the host's input is back")
 				_goto("round1")
 			elif _step_t > 60.0:
@@ -184,7 +249,7 @@ func _client_tick() -> void:
 		"lobby":
 			if lc != null and lc.reel != null:
 				_saw_reel = true
-				_check(lc.playing == ["gravelight_one"], "the client plays what the host said (%s)" % str(lc.playing))
+				_check(lc.playing == [_cut], "the client plays what the host said (%s)" % str(lc.playing))
 				_check(GameState.input_blocked, "the client's input is blocked during the cutscene")
 				_log("the client plays %s (the host's call)" % str(lc.playing))
 				_goto("wait_vote")
@@ -202,7 +267,8 @@ func _client_tick() -> void:
 				_client_finish()
 		"wait_end":
 			if lc.reel == null:
-				_check(lc.history.has("gravelight_one"), "the client's reel ended on the host's end")
+				_check(lc.history.has(CinemaArchive.base_id(_cut)), "the client's reel ended on the host's end")
+				_check_reel_seen("the client")
 				_check(not GameState.input_blocked, "the client's input is back")
 				_log("the client's reel ended with the host's")
 				_goto("round1")
@@ -249,6 +315,7 @@ func _physics_process(delta: float) -> void:
 		return
 	_t += delta
 	_step_t += delta
+	_watch_reel()
 	if _role == "host":
 		if _t > HOST_TIMEOUT:
 			_fail("host timeout in '%s'" % _step)

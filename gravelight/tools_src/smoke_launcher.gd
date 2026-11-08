@@ -140,6 +140,14 @@ func _check_u09_targets() -> void:
 		else:
 			_check(k == "review" and FileAccess.file_exists("res://tools/voice/review.py"), "U11 '%s' review page script exists" % str(b[0]))
 	_check(ResourceLoader.exists(CinemaTheatre.LAUNCHER), "the theatre's way back to the launcher exists")
+	# UPDATE 12 s3 (T-209): the three archive-reel buttons play reel: ids the archive knows
+	var reel_labels: Array = []
+	for b: Array in DevLauncher.U12_BUTTONS:
+		if str(b[2]) == "cut":
+			_check(CinemaArchive.is_known(str(b[3])) and CinemaArchive.plays_as_reel(str(b[3])), "U12 '%s' plays a reel" % str(b[0]))
+			reel_labels.append(str(b[0]))
+	for want: String in ["Cutscene — Lazarus Saturday (reel)", "Cutscene — Fourth Day (reel)", "Cutscene — Staub (reel)"]:
+		_check(reel_labels.has(want), "U12 button '%s'" % want)
 	# the flags of the two test-lobby windows parse the way the game reads them
 	for set: Array in [DevLauncher.HOST_ARGS, DevLauncher.GUEST_ARGS]:
 		for a: Variant in set:

@@ -74,6 +74,14 @@ const U11_BUTTONS: Array = [
 	["Hard Truth test (bleed-out rises)", "Map 0 at round 2, 3 bots, the fourth-day rule on: 8 s in a bot goes down and bleeds out; 4 s later its body gets up. Put it down for its death crate.", "hard_truth", U11_MAP0],
 	["Voice review (ElevenLabs takes)", "The voice review page in your browser: every line with its take; the ElevenLabs takes are marked AI. Your own recordings still replace them line by line.", "review", ""],
 ]
+## UPDATE 12 FINISH (s3, T-209): [label, hint, kind, target]; kind "cut" plays the id on CinemaTheatre (back to this
+## launcher). The reel: ids are the archive-reel versions (CinemaArchive: the built clips where they exist, the
+## in-engine shots through the film treatment where not). smoke_launcher checks the targets.
+const U12_BUTTONS: Array = [
+	["Cutscene — Lazarus Saturday (reel)", "The 1930 prologue as an archive film reel (about 4 min): generated clips where you have dropped them in (assets/user_supplied/cutscenes, then tools/cinema/archive_reel.py build), the in-engine shots through the same film look where not. Hold to skip.", "cut", "reel:lazarus_saturday"],
+	["Cutscene — Fourth Day (reel)", "October 1944 as an archive film reel (about 1:45): the soft shells, the field graves, the walk west. Clips where they exist, in-engine stand-ins elsewhere.", "cut", "reel:fourth_day"],
+	["Cutscene — Staub (reel)", "Kaltenbrunn, 20 December 1944, as an archive film reel (about 1:15): the dust mill, the launch, the wind turning. Clips where they exist, in-engine stand-ins elsewhere.", "cut", "reel:staub"],
+]
 ## the user args of the two windows of "Host a test lobby (local)": [host, guest]
 const HOST_ARGS: Array = ["--mock-online-serve=28500", "--open=online", "--auto-host"]
 const GUEST_ARGS: Array = ["--mock-online=28500", "--open=online", "--auto-join"]
@@ -209,6 +217,8 @@ func _ready() -> void:
 	_add_u10_buttons(col)
 	col.add_child(_header("Update 11 — LAZARUS (the new cutscenes, the fourth-day rule, the ElevenLabs voices)"))
 	_add_u11_buttons(col)
+	col.add_child(_header("Update 12 — THE LOOK (the archive reels; %s)" % CinemaArchive.summary()))
+	_add_u12_buttons(col)
 	col.add_child(_header("Muster (your sidearm and Field Habits; saved per survivor, used by every match)"))
 	col.add_child(MenuKit.button("Muster — pick the sidearm and Field Habits for the survivor above", func() -> void: add_child(MenuMuster.new(CHARACTERS[_char.selected])), 22, "ui_confirm"))
 	col.add_child(_header("Bot mode (an AI plays your survivor; F6 or any input takes over)"))
@@ -288,6 +298,14 @@ func _press_u11(b: Array) -> void:
 			_start_gl(target, 2, "", 3)
 		"review":
 			_open_voice_review()
+
+
+## UPDATE 12 FINISH: the buttons from U12_BUTTONS ("cut" plays on the theatre like the U11 ones).
+func _add_u12_buttons(col: Control) -> void:
+	for b: Array in U12_BUTTONS:
+		var btn: Button = _hinted(col, str(b[0]), str(b[1]), func() -> void: _press_u11(b))
+		if str(b[2]) == "cut":
+			btn.disabled = not CinemaArchive.is_known(str(b[3]))
 
 
 ## UPDATE 10 section 9: one button per set-piece the work order names, from U10_BUTTONS.
