@@ -74,9 +74,10 @@ func setup_tables() -> void:
 		[Vector3(-40, LAB_Y, 149.6), Vector3(-40, LAB_Y, 150.4), "G_SILO"],
 	]
 	buys = [
-		["m1_carbine", Vector3(-13.83, 1.5, -30.0), 90.0], ["m1_garand", Vector3(-59.83, 1.5, 20.0), 90.0],
-		["thompson", Vector3(69.83, 1.5, 72.0), -90.0], ["bar", Vector3(-69.83, 1.5, 70.0), 90.0],
-		["springfield", Vector3(69.83, 1.5, 110.0), -90.0],
+		# T-219: every yaw turned 180 (they faced their wall: the act was authored with the yaw sign flipped)
+		["m1_carbine", Vector3(-13.83, 1.5, -30.0), -90.0], ["m1_garand", Vector3(-59.83, 1.5, 20.0), -90.0],
+		["thompson", Vector3(69.83, 1.5, 72.0), 90.0], ["bar", Vector3(-69.83, 1.5, 70.0), -90.0],
+		["springfield", Vector3(69.83, 1.5, 110.0), 90.0],
 	]
 	doors = [
 		["Door_Lakebed", "door_lakebed", "B_LAKEBED", [], "", 750, "the lake bed", Vector3(0, 0, -4), 0.0, 2.4, false],
@@ -89,8 +90,9 @@ func setup_tables() -> void:
 		["Door_Silo", "door_silo", "G_SILO", [], "", 2000, "the test silo", Vector3(-40, LAB_Y, 150), 0.0, 3.0, false],
 	]
 	ammo_boxes = [
-		["Wreck", Vector3(13.48, 0, -30.0), -90.0], ["Hangar", Vector3(69.48, 0, 88.0), -90.0],
-		["Motorpool", Vector3(-45.0, 0, 99.48), 180.0], ["Silo", Vector3(-69.48, LAB_Y, 185.0), 90.0],
+		# T-219: turned 180 (they faced their wall; the nav blocks are the same either way)
+		["Wreck", Vector3(13.48, 0, -30.0), 90.0], ["Hangar", Vector3(69.48, 0, 88.0), 90.0],
+		["Motorpool", Vector3(-45.0, 0, 99.48), 0.0], ["Silo", Vector3(-69.48, LAB_Y, 185.0), -90.0],
 	]
 	grounds = [
 		["A_WRECK", Vector3(0, 0, -30), 1],
@@ -106,15 +108,16 @@ func setup_tables() -> void:
 	for p: Vector3 in [Vector3(-30, 0, 12), Vector3(0, 0, 20), Vector3(30, 0, 12), Vector3(-30, 0, 40), Vector3(0, 0, 48), Vector3(30, 0, 40)]:
 		catwalks.append(["B_LAKEBED", p, true])
 	perks = [
-		["second_wind", Vector3(-8.0, 0, -35.2), 0.0],
-		["ironhide_stout", Vector3(-59.2, 0, 44.0), 90.0],
-		["magpie_mead", Vector3(20.8, 0, 86.0), 90.0],
-		["trigger_tonic", Vector3(-20.8, 0, 70.0), -90.0],
-		["hawkeye_brandy", Vector3(20.8, 0, 120.0), 90.0],
-		["twin_barrel", Vector3(-57.2, LAB_Y, 112.8), 0.0],
-		["blastproof_bock", Vector3(-20.8, LAB_Y, 125.0), -90.0],
-		["packmule_porter", Vector3(-69.2, LAB_Y, 170.0), 90.0],
-		["skyhook_sekt", Vector3(-20.8, LAB_Y, 165.0), -90.0],
+		# T-219: every machine but Ledger Lager turned 180 (they showed the room their backs)
+		["second_wind", Vector3(-8.0, 0, -35.2), 180.0],
+		["ironhide_stout", Vector3(-59.2, 0, 44.0), -90.0],
+		["magpie_mead", Vector3(20.8, 0, 86.0), -90.0],
+		["trigger_tonic", Vector3(-20.8, 0, 70.0), 90.0],
+		["hawkeye_brandy", Vector3(20.8, 0, 120.0), -90.0],
+		["twin_barrel", Vector3(-57.2, LAB_Y, 112.8), 180.0],
+		["blastproof_bock", Vector3(-20.8, LAB_Y, 125.0), 90.0],
+		["packmule_porter", Vector3(-69.2, LAB_Y, 170.0), -90.0],
+		["skyhook_sekt", Vector3(-20.8, LAB_Y, 165.0), 90.0],
 		# Ledger Lager (T-141): on the hangar's north wall, 8 m west of Dee's cage and the Range Finance Office (bank.json)
 		["ledger_lager", Vector3(54.0, 0, 99.45), 0.0],
 	]
@@ -136,7 +139,7 @@ func setup_tables() -> void:
 		# U10 §3 (T-157): the fuel dump lights a 20 s wall of fire with a whump and a smoke column (was a live wire)
 		["res://gravelight/world/map04/trap_fuel_dump.gd", "Trap_FuelDump", {"size": Vector3(8.0, 2.4, 1.6)}, Vector3(-27.0, 0, 90.0), 0.0, Vector3(-36.0, 0, 97.0), 180.0, "fuel_dump"],
 		# U10 §3: the hangar's sliding door drops on the south doorway (a crush trap, 60 s), its lever inside by the door
-		["res://gravelight/world/map04/trap_door_drop.gd", "Trap_HangarDoor", {"size": Vector3(3.2, 2.4, 2.0), "hang_y": 2.6}, Vector3(45.0, 0, 60.35), 0.0, Vector3(49.4, 0, 60.45), 0.0, "door_drop"],
+		["res://gravelight/world/map04/trap_door_drop.gd", "Trap_HangarDoor", {"size": Vector3(3.2, 2.4, 2.0), "hang_y": 2.6}, Vector3(45.0, 0, 60.35), 0.0, Vector3(49.4, 0, 60.45), 180.0, "door_drop"],   # T-219: the lever yaw 180 (it faced the wall)
 	]
 	mat_map = {
 		"wall": "planks", "concrete": "concrete", "ground": "concrete", "metal": "iron", "steel": "steel", "rust": "rust",
@@ -1094,7 +1097,10 @@ func build_gameplay_extra() -> void:
 			["ls_part_cradle", "dish_gimbal", Vector3(45.0, 1.0, 120.0)], ["ls_part_cradle", "shack", Vector3(62.0, 0, 127.2)],
 			["ls_part_lens", "stone_port", Vector3(-60.2, LAB_Y, 131.0)], ["ls_part_lens", "specimen_3", Vector3(-64.0, LAB_Y, 146.0)]]:
 		_node("res://gravelight/world/buildable_part.gd", "Part_%s_%s" % [pt[0], pt[1]], {"part_id": StringName(pt[0]), "spot_id": StringName(pt[1]), "buildable_id": &"lodestone"}, pt[2], 0.0)
-	_node("res://gravelight/world/workbench.gd", "Workbench", {"buildable_id": &"lodestone"}, Vector3(-60.0, LAB_Y, 114.2), 0.0)
+	# T-219: yaw 180 at z 113.5 (was 0 at 114.2: the node is the bench's front edge and the bench runs to its local +Z,
+	# so it pointed its tools and parts 0.9 m north of Bench_Work, in the air, and showed the hall its back; now its
+	# back edge is Bench_Work's north edge and the parts lie on the bench)
+	_node("res://gravelight/world/workbench.gd", "Workbench", {"buildable_id": &"lodestone"}, Vector3(-60.0, LAB_Y, 113.5), 180.0)
 	# the story objects: Dee's radio on the cage's counter, the radar shack's radio, the impeller core on the salt,
 	# the hangar cradle (Hale's hatch: Peg's choice) and the rocket's cradle, the silo console, Dee's cage items
 	map_root.set("quest_files", PackedStringArray(["res://data/gravelight/quests/map04_kuendigung.json", "res://data/gravelight/quests/map04c_cage.json"]))   # T-115: the egg's Act III steps, Dee's yard rule

@@ -142,7 +142,9 @@ func setup_tables() -> void:
 	power_switch = {"name": "Hauptschalter", "label": "the works' main breaker", "pos": Vector3(-59.0, 0, 66.0), "yaw": -90.0,
 		"zone_order": ["E_MONTAGE", "C_KANTINE", "B_BAHNHOF", "A_SIEDLUNG", "D_KIRCHPLATZ", "F_WINDKANAL", "G_PRUEFSTAND", "H_HALLE"]}
 	crucible = {"pos": Vector3(-58.5, 0, 146.0), "yaw": -90.0, "needs_power": true}
-	armorers_bench = [Vector3(30.0, 0, 0.5 + T * 0.5 + 0.01), 0.0]
+	# T-219: yaw 180 (was 0: the bench ran from the node into the south wall, its front to the wall; its nav block
+	# was always the room side, z 0.66..1.38, where the bench now stands)
+	armorers_bench = [Vector3(30.0, 0, 0.5 + T * 0.5 + 0.01), 180.0]
 	burst_points = [Vector3(-30, 0, 70), Vector3(-30, 0, 100), Vector3(-6, 0, 64)]
 	traps = [
 		["res://gravelight/world/trap_chandelier.gd", "Trap_CoalHopper", {"drop_points": PackedVector3Array([Vector3(-10, 0, 0), Vector3(0, 0, 0), Vector3(10, 0, 0)]),

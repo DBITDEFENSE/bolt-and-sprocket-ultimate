@@ -1,0 +1,5915 @@
+{
+  "_doc": "Approach cameras for every interactable (tools/tests/test_interactable_facing.gd --cams): cam_pos is the eye (1.65 m over the navmesh, 2.75 m out on the open side when it fits), look_at the object's centre ~1.1 m up. capture_sets are the same cameras in data/gravelight/capture_cams.json's set format (pos = feet, yaw 0 = -Z, positive turns toward -X, pitch): paste a set into that file to shoot it with tools_src/capture.gd --set=<name>.",
+  "cams": [
+    {
+      "act": "map04a",
+      "cam_pos": [
+        20.0,
+        1.65,
+        27.25
+      ],
+      "look_at": [
+        20.0,
+        1.1,
+        30.0
+      ],
+      "name": "Door_Bahnhof",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -2.75,
+        1.65,
+        45.0
+      ],
+      "look_at": [
+        0.0,
+        1.1,
+        45.0
+      ],
+      "name": "Door_Kantine",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        20.0,
+        1.65,
+        57.25
+      ],
+      "look_at": [
+        20.0,
+        1.1,
+        60.0
+      ],
+      "name": "Door_Kirchplatz",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -22.0,
+        1.69,
+        57.25
+      ],
+      "look_at": [
+        -22.0,
+        1.1,
+        60.0
+      ],
+      "name": "Door_Montage",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        8.0,
+        1.65,
+        97.25
+      ],
+      "look_at": [
+        8.0,
+        1.1,
+        100.0
+      ],
+      "name": "Door_Windkanal",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -30.0,
+        1.65,
+        107.25
+      ],
+      "look_at": [
+        -30.0,
+        1.1,
+        110.0
+      ],
+      "name": "Door_Pruefstand",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -2.75,
+        1.65,
+        122.0
+      ],
+      "look_at": [
+        0.0,
+        1.1,
+        122.0
+      ],
+      "name": "Door_ServiceGate",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -30.0,
+        1.65,
+        147.25
+      ],
+      "look_at": [
+        -30.0,
+        1.1,
+        150.0
+      ],
+      "name": "Door_Halle",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        14.92,
+        1.65,
+        6.0
+      ],
+      "look_at": [
+        12.17,
+        1.5,
+        6.0
+      ],
+      "name": "WallBuy_kar98k",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        36.0,
+        1.65,
+        27.08
+      ],
+      "look_at": [
+        36.0,
+        1.5,
+        29.83
+      ],
+      "name": "WallBuy_m1_carbine",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        37.08,
+        1.65,
+        50.0
+      ],
+      "look_at": [
+        39.83,
+        1.5,
+        50.0
+      ],
+      "name": "WallBuy_mp40",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -10.0,
+        1.64,
+        57.08
+      ],
+      "look_at": [
+        -10.0,
+        1.5,
+        59.83
+      ],
+      "name": "WallBuy_thompson",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        28.92,
+        1.65,
+        90.0
+      ],
+      "look_at": [
+        26.17,
+        1.5,
+        90.0
+      ],
+      "name": "WallBuy_m1_garand",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -2.92,
+        1.65,
+        80.0
+      ],
+      "look_at": [
+        -0.17,
+        1.5,
+        80.0
+      ],
+      "name": "WallBuy_stg44",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -2.92,
+        1.65,
+        114.0
+      ],
+      "look_at": [
+        -0.17,
+        1.5,
+        114.0
+      ],
+      "name": "WallBuy_bar",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        3.75,
+        1.65,
+        22.0
+      ],
+      "look_at": [
+        1.0,
+        1.1,
+        22.0
+      ],
+      "name": "Perk_second_wind",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        36.0,
+        1.65,
+        33.75
+      ],
+      "look_at": [
+        36.0,
+        1.1,
+        31.0
+      ],
+      "name": "Perk_ironhide_stout",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -3.75,
+        1.65,
+        56.0
+      ],
+      "look_at": [
+        -1.0,
+        1.1,
+        56.0
+      ],
+      "name": "Perk_trigger_tonic",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        6.0,
+        1.65,
+        96.25
+      ],
+      "look_at": [
+        6.0,
+        1.1,
+        99.0
+      ],
+      "name": "Perk_twin_barrel",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -10.0,
+        1.65,
+        106.25
+      ],
+      "look_at": [
+        -10.0,
+        1.1,
+        109.0
+      ],
+      "name": "Perk_marathon_malt",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        3.75,
+        1.65,
+        126.0
+      ],
+      "look_at": [
+        1.0,
+        1.1,
+        126.0
+      ],
+      "name": "Perk_hawkeye_brandy",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -20.0,
+        1.65,
+        146.25
+      ],
+      "look_at": [
+        -20.0,
+        1.1,
+        149.0
+      ],
+      "name": "Perk_packmule_porter",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -40.0,
+        1.65,
+        146.25
+      ],
+      "look_at": [
+        -40.0,
+        1.1,
+        149.0
+      ],
+      "name": "Perk_blastproof_bock",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        3.6,
+        1.65,
+        54.7
+      ],
+      "look_at": [
+        3.6,
+        1.1,
+        57.45
+      ],
+      "name": "Perk_ledger_lager",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        7.0,
+        1.65,
+        5.95
+      ],
+      "look_at": [
+        7.0,
+        1.1,
+        3.2
+      ],
+      "name": "Crate_Cellar",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        34.0,
+        1.65,
+        55.85
+      ],
+      "look_at": [
+        34.0,
+        1.1,
+        58.6
+      ],
+      "name": "Crate_Shed",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        36.0,
+        1.65,
+        95.85
+      ],
+      "look_at": [
+        36.0,
+        1.1,
+        98.6
+      ],
+      "name": "Crate_Parish",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -50.0,
+        1.65,
+        145.85
+      ],
+      "look_at": [
+        -50.0,
+        1.1,
+        148.6
+      ],
+      "name": "Crate_Bunker",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -56.25,
+        1.65,
+        66.0
+      ],
+      "look_at": [
+        -59.0,
+        1.1,
+        66.0
+      ],
+      "name": "Hauptschalter",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -55.75,
+        1.65,
+        146.0
+      ],
+      "look_at": [
+        -58.5,
+        1.1,
+        146.0
+      ],
+      "name": "Crucible",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        6.0,
+        1.65,
+        26.73
+      ],
+      "look_at": [
+        6.0,
+        1.1,
+        29.48
+      ],
+      "name": "AmmoBox_Siedlung",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        3.27,
+        1.65,
+        34.0
+      ],
+      "look_at": [
+        0.52,
+        1.1,
+        34.0
+      ],
+      "name": "AmmoBox_Bahnhof",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -40.73,
+        1.65,
+        34.0
+      ],
+      "look_at": [
+        -43.48,
+        1.1,
+        34.0
+      ],
+      "name": "AmmoBox_Kantine",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -30.0,
+        1.65,
+        63.27
+      ],
+      "look_at": [
+        -30.0,
+        1.1,
+        60.52
+      ],
+      "name": "AmmoBox_Montage",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -56.73,
+        1.65,
+        134.0
+      ],
+      "look_at": [
+        -59.48,
+        1.1,
+        134.0
+      ],
+      "name": "AmmoBox_Pruefstand",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -67.36,
+        1.65,
+        155.12
+      ],
+      "look_at": [
+        -69.48,
+        1.1,
+        153.0
+      ],
+      "name": "AmmoBox_Halle",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "UNSURE"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        30.0,
+        1.65,
+        3.41
+      ],
+      "look_at": [
+        30.0,
+        1.1,
+        0.66
+      ],
+      "name": "ArmorersBench",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        36.85,
+        1.65,
+        47.0
+      ],
+      "look_at": [
+        39.6,
+        1.1,
+        47.0
+      ],
+      "name": "Lever_CoalHopper",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -3.15,
+        1.65,
+        90.0
+      ],
+      "look_at": [
+        -0.4,
+        1.1,
+        90.0
+      ],
+      "name": "Lever_JigCrane",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -45.0,
+        1.65,
+        72.0
+      ],
+      "look_at": [
+        -47.75,
+        1.1,
+        72.0
+      ],
+      "name": "Lever_RivetLine",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -14.4,
+        1.87,
+        102.85
+      ],
+      "look_at": [
+        -14.4,
+        1.32,
+        105.6
+      ],
+      "name": "File1",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        41.0,
+        1.87,
+        118.25
+      ],
+      "look_at": [
+        41.0,
+        1.32,
+        121.0
+      ],
+      "name": "File2",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -57.6,
+        1.87,
+        149.2
+      ],
+      "look_at": [
+        -57.6,
+        1.32,
+        147.0
+      ],
+      "name": "File3",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -39.0,
+        1.61,
+        50.45
+      ],
+      "look_at": [
+        -39.0,
+        1.1,
+        53.2
+      ],
+      "name": "PASwitchboard",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        1.85,
+        1.65,
+        121.0
+      ],
+      "look_at": [
+        4.6,
+        1.1,
+        121.0
+      ],
+      "name": "WindTunnel",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -20.0,
+        1.65,
+        157.75
+      ],
+      "look_at": [
+        -20.0,
+        1.1,
+        160.5
+      ],
+      "name": "RampSwitch",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -36.0,
+        1.55,
+        52.1
+      ],
+      "look_at": [
+        -36.0,
+        0.8,
+        54.3
+      ],
+      "name": "Glider1",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -42.0,
+        1.55,
+        93.25
+      ],
+      "look_at": [
+        -42.0,
+        0.6,
+        96.0
+      ],
+      "name": "Glider2",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        33.0,
+        1.55,
+        122.35
+      ],
+      "look_at": [
+        33.0,
+        0.6,
+        119.6
+      ],
+      "name": "Glider3",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        40.45,
+        1.65,
+        124.0
+      ],
+      "look_at": [
+        43.2,
+        1.1,
+        124.0
+      ],
+      "name": "JetteHatch",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -55.0,
+        1.65,
+        107.25
+      ],
+      "look_at": [
+        -55.0,
+        1.1,
+        110.0
+      ],
+      "name": "Breach_E_apron",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        3.0,
+        1.65,
+        54.75
+      ],
+      "look_at": [
+        3.0,
+        1.1,
+        52.0
+      ],
+      "name": "BankCounter",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04a",
+      "cam_pos": [
+        -20.0,
+        1.65,
+        154.25
+      ],
+      "look_at": [
+        -20.0,
+        1.1,
+        157.0
+      ],
+      "name": "ExfilPoint",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        0.0,
+        1.65,
+        21.25
+      ],
+      "look_at": [
+        0.0,
+        1.1,
+        24.0
+      ],
+      "name": "Door_Mittelrumpf",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -11.75,
+        1.65,
+        36.0
+      ],
+      "look_at": [
+        -9.0,
+        1.1,
+        36.0
+      ],
+      "name": "Door_FluegelL",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        6.25,
+        1.65,
+        36.0
+      ],
+      "look_at": [
+        9.0,
+        1.1,
+        36.0
+      ],
+      "name": "Door_FluegelR",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -54.75,
+        1.65,
+        36.0
+      ],
+      "look_at": [
+        -52.0,
+        1.1,
+        36.0
+      ],
+      "name": "Door_Triebwerk",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        49.25,
+        1.65,
+        36.0
+      ],
+      "look_at": [
+        52.0,
+        1.1,
+        36.0
+      ],
+      "name": "Door_Kanzel",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -24.75,
+        1.65,
+        56.0
+      ],
+      "look_at": [
+        -22.0,
+        1.1,
+        56.0
+      ],
+      "name": "Door_CockpitL",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        19.25,
+        1.65,
+        56.0
+      ],
+      "look_at": [
+        22.0,
+        1.1,
+        56.0
+      ],
+      "name": "Door_CockpitR",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -6.89,
+        1.65,
+        4.06
+      ],
+      "look_at": [
+        -8.83,
+        1.5,
+        6.0
+      ],
+      "name": "WallBuy_kar98k",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        6.34,
+        1.65,
+        28.84
+      ],
+      "look_at": [
+        8.83,
+        1.5,
+        30.0
+      ],
+      "name": "WallBuy_mp40",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -30.0,
+        1.65,
+        43.08
+      ],
+      "look_at": [
+        -30.0,
+        1.5,
+        45.83
+      ],
+      "name": "WallBuy_thompson",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        30.0,
+        1.65,
+        43.08
+      ],
+      "look_at": [
+        30.0,
+        1.5,
+        45.83
+      ],
+      "name": "WallBuy_stg44",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        66.0,
+        1.65,
+        55.08
+      ],
+      "look_at": [
+        66.0,
+        1.5,
+        57.83
+      ],
+      "name": "WallBuy_bar",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        6.0,
+        1.65,
+        20.05
+      ],
+      "look_at": [
+        6.0,
+        1.1,
+        22.8
+      ],
+      "name": "Perk_second_wind",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -5.05,
+        1.65,
+        30.0
+      ],
+      "look_at": [
+        -7.8,
+        1.1,
+        30.0
+      ],
+      "name": "Perk_skyhook_sekt",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        5.05,
+        1.65,
+        33.6
+      ],
+      "look_at": [
+        7.8,
+        1.1,
+        33.6
+      ],
+      "name": "Perk_trigger_tonic",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -24.0,
+        1.65,
+        41.85
+      ],
+      "look_at": [
+        -24.0,
+        1.1,
+        44.6
+      ],
+      "name": "Perk_ironhide_stout",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        24.0,
+        1.65,
+        41.85
+      ],
+      "look_at": [
+        24.0,
+        1.1,
+        44.6
+      ],
+      "name": "Perk_marathon_malt",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -60.0,
+        1.65,
+        28.15
+      ],
+      "look_at": [
+        -60.0,
+        1.1,
+        25.4
+      ],
+      "name": "Perk_blastproof_bock",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        56.0,
+        1.65,
+        53.85
+      ],
+      "look_at": [
+        56.0,
+        1.1,
+        56.6
+      ],
+      "name": "Perk_hawkeye_brandy",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        6.0,
+        1.65,
+        69.85
+      ],
+      "look_at": [
+        6.0,
+        1.1,
+        72.6
+      ],
+      "name": "Perk_packmule_porter",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -5.0,
+        1.65,
+        50.7
+      ],
+      "look_at": [
+        -5.0,
+        1.1,
+        53.45
+      ],
+      "name": "Perk_ledger_lager",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -8.2,
+        1.65,
+        50.0
+      ],
+      "look_at": [
+        -6.0,
+        1.1,
+        50.0
+      ],
+      "name": "Crate_Galley",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        74.15,
+        1.65,
+        33.0
+      ],
+      "look_at": [
+        76.9,
+        1.1,
+        33.0
+      ],
+      "name": "Crate_Kanzel",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        5.95,
+        1.65,
+        42.0
+      ],
+      "look_at": [
+        8.7,
+        1.1,
+        42.0
+      ],
+      "name": "AuxBus",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -3.25,
+        1.65,
+        34.0
+      ],
+      "look_at": [
+        -6.0,
+        1.1,
+        34.0
+      ],
+      "name": "Crucible",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -5.73,
+        1.65,
+        20.0
+      ],
+      "look_at": [
+        -8.48,
+        1.1,
+        20.0
+      ],
+      "name": "AmmoBox_Bay",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        5.99,
+        1.65,
+        51.16
+      ],
+      "look_at": [
+        8.48,
+        1.1,
+        50.0
+      ],
+      "name": "AmmoBox_Galley",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "UNSURE"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -74.73,
+        1.65,
+        44.0
+      ],
+      "look_at": [
+        -77.48,
+        1.1,
+        44.0
+      ],
+      "name": "AmmoBox_Triebwerk",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        74.73,
+        1.65,
+        44.0
+      ],
+      "look_at": [
+        77.48,
+        1.1,
+        44.0
+      ],
+      "name": "AmmoBox_Kanzel",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        7.0,
+        1.77,
+        24.8
+      ],
+      "look_at": [
+        7.0,
+        1.22,
+        27.0
+      ],
+      "name": "Tag1",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        7.0,
+        1.77,
+        29.0
+      ],
+      "look_at": [
+        7.0,
+        1.22,
+        31.2
+      ],
+      "name": "Tag2",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        62.0,
+        1.55,
+        28.35
+      ],
+      "look_at": [
+        62.0,
+        0.6,
+        25.6
+      ],
+      "name": "Tag3",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -20.0,
+        1.65,
+        43.25
+      ],
+      "look_at": [
+        -20.0,
+        1.1,
+        46.0
+      ],
+      "name": "BreachL1",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -40.0,
+        1.65,
+        43.25
+      ],
+      "look_at": [
+        -40.0,
+        1.1,
+        46.0
+      ],
+      "name": "BreachL2",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        20.0,
+        1.65,
+        43.25
+      ],
+      "look_at": [
+        20.0,
+        1.1,
+        46.0
+      ],
+      "name": "BreachR1",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        40.0,
+        1.65,
+        43.25
+      ],
+      "look_at": [
+        40.0,
+        1.1,
+        46.0
+      ],
+      "name": "BreachR2",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -8.1,
+        1.65,
+        6.0
+      ],
+      "look_at": [
+        -5.6,
+        1.1,
+        6.0
+      ],
+      "name": "Rack1",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        2.85,
+        1.65,
+        6.0
+      ],
+      "look_at": [
+        5.6,
+        1.1,
+        6.0
+      ],
+      "name": "Rack2",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -8.1,
+        1.65,
+        12.0
+      ],
+      "look_at": [
+        -5.6,
+        1.1,
+        12.0
+      ],
+      "name": "Rack3",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        2.85,
+        1.65,
+        12.0
+      ],
+      "look_at": [
+        5.6,
+        1.1,
+        12.0
+      ],
+      "name": "Rack4",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -5.6,
+        1.65,
+        20.75
+      ],
+      "look_at": [
+        -5.6,
+        1.1,
+        18.0
+      ],
+      "name": "Rack5",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        2.85,
+        1.65,
+        18.0
+      ],
+      "look_at": [
+        5.6,
+        1.1,
+        18.0
+      ],
+      "name": "Rack6",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -40.0,
+        1.65,
+        42.55
+      ],
+      "look_at": [
+        -40.0,
+        1.1,
+        45.3
+      ],
+      "name": "WingHatchOut",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -40.0,
+        5.05,
+        42.35
+      ],
+      "look_at": [
+        -40.0,
+        4.5,
+        45.1
+      ],
+      "name": "WingHatchIn",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -39.4,
+        5.05,
+        38.25
+      ],
+      "look_at": [
+        -39.4,
+        4.5,
+        41.0
+      ],
+      "name": "ClipPoint1",
+      "on_navmesh": false,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -47.75,
+        5.05,
+        36.6
+      ],
+      "look_at": [
+        -45.0,
+        4.5,
+        36.6
+      ],
+      "name": "ClipPoint2",
+      "on_navmesh": false,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -49.8,
+        5.05,
+        26.25
+      ],
+      "look_at": [
+        -49.8,
+        4.5,
+        29.0
+      ],
+      "name": "ClipPoint3",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -60.75,
+        5.05,
+        21.6
+      ],
+      "look_at": [
+        -58.0,
+        4.5,
+        21.6
+      ],
+      "name": "ClipPoint4",
+      "on_navmesh": false,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -72.75,
+        5.05,
+        21.6
+      ],
+      "look_at": [
+        -70.0,
+        4.5,
+        21.6
+      ],
+      "name": "ClipPoint5",
+      "on_navmesh": false,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -84.75,
+        5.05,
+        21.6
+      ],
+      "look_at": [
+        -82.0,
+        4.5,
+        21.6
+      ],
+      "name": "ClipPoint6",
+      "on_navmesh": false,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -96.75,
+        5.05,
+        21.6
+      ],
+      "look_at": [
+        -94.0,
+        4.5,
+        21.6
+      ],
+      "name": "ClipPoint7",
+      "on_navmesh": false,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -106.75,
+        5.05,
+        21.6
+      ],
+      "look_at": [
+        -104.0,
+        4.5,
+        21.6
+      ],
+      "name": "ClipPoint8",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -111.0,
+        5.05,
+        20.75
+      ],
+      "look_at": [
+        -111.0,
+        4.5,
+        23.5
+      ],
+      "name": "ClipPoint9",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -112.0,
+        5.05,
+        26.85
+      ],
+      "look_at": [
+        -112.0,
+        4.5,
+        29.6
+      ],
+      "name": "WingChest",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        5.95,
+        1.65,
+        44.6
+      ],
+      "look_at": [
+        8.7,
+        1.1,
+        44.6
+      ],
+      "name": "CrewRoster",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        2.55,
+        1.65,
+        48.0
+      ],
+      "look_at": [
+        5.3,
+        1.1,
+        48.0
+      ],
+      "name": "BordfunkReel",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        5.0,
+        1.65,
+        21.0
+      ],
+      "look_at": [
+        5.0,
+        1.1,
+        23.75
+      ],
+      "name": "Lever_BayDoors",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -5.85,
+        1.65,
+        3.0
+      ],
+      "look_at": [
+        -8.6,
+        1.1,
+        3.0
+      ],
+      "name": "GripBay1",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        5.85,
+        1.65,
+        3.0
+      ],
+      "look_at": [
+        8.6,
+        1.1,
+        3.0
+      ],
+      "name": "GripBay2",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        -5.85,
+        1.65,
+        8.5
+      ],
+      "look_at": [
+        -8.6,
+        1.1,
+        8.5
+      ],
+      "name": "GripBay3",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        5.85,
+        1.65,
+        8.5
+      ],
+      "look_at": [
+        8.6,
+        1.1,
+        8.5
+      ],
+      "name": "GripBay4",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        26.0,
+        1.65,
+        42.95
+      ],
+      "look_at": [
+        26.0,
+        1.1,
+        45.7
+      ],
+      "name": "GripStb1",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        34.0,
+        1.65,
+        42.95
+      ],
+      "look_at": [
+        34.0,
+        1.1,
+        45.7
+      ],
+      "name": "GripStb2",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        24.0,
+        1.65,
+        31.05
+      ],
+      "look_at": [
+        24.0,
+        1.1,
+        28.3
+      ],
+      "name": "GripStb3",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        36.0,
+        1.65,
+        31.05
+      ],
+      "look_at": [
+        36.0,
+        1.1,
+        28.3
+      ],
+      "name": "GripStb4",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        0.0,
+        1.65,
+        49.75
+      ],
+      "look_at": [
+        0.0,
+        1.1,
+        52.5
+      ],
+      "name": "BankCounter",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04b",
+      "cam_pos": [
+        0.0,
+        1.65,
+        68.75
+      ],
+      "look_at": [
+        0.0,
+        1.1,
+        66.0
+      ],
+      "name": "ExfilPoint",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        0.0,
+        1.65,
+        -6.75
+      ],
+      "look_at": [
+        0.0,
+        1.1,
+        -4.0
+      ],
+      "name": "Door_Lakebed",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        45.0,
+        1.65,
+        57.25
+      ],
+      "look_at": [
+        45.0,
+        1.1,
+        60.0
+      ],
+      "name": "Door_Hangar",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -45.0,
+        1.65,
+        57.25
+      ],
+      "look_at": [
+        -45.0,
+        1.1,
+        60.0
+      ],
+      "name": "Door_Motorpool",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        17.25,
+        1.65,
+        93.0
+      ],
+      "look_at": [
+        20.0,
+        1.1,
+        93.0
+      ],
+      "name": "Door_Side",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        45.0,
+        1.65,
+        97.25
+      ],
+      "look_at": [
+        45.0,
+        1.1,
+        100.0
+      ],
+      "name": "Door_Radar",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -45.0,
+        1.99,
+        97.25
+      ],
+      "look_at": [
+        -45.0,
+        1.1,
+        100.0
+      ],
+      "name": "Door_Lab",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        17.25,
+        1.35,
+        137.0
+      ],
+      "look_at": [
+        20.0,
+        1.1,
+        137.0
+      ],
+      "name": "Door_Trench",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -40.0,
+        -4.35,
+        147.25
+      ],
+      "look_at": [
+        -40.0,
+        -4.9,
+        150.0
+      ],
+      "name": "Door_Silo",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -11.08,
+        1.65,
+        -30.0
+      ],
+      "look_at": [
+        -13.83,
+        1.5,
+        -30.0
+      ],
+      "name": "WallBuy_m1_carbine",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -57.08,
+        1.65,
+        20.0
+      ],
+      "look_at": [
+        -59.83,
+        1.5,
+        20.0
+      ],
+      "name": "WallBuy_m1_garand",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        67.08,
+        1.65,
+        72.0
+      ],
+      "look_at": [
+        69.83,
+        1.5,
+        72.0
+      ],
+      "name": "WallBuy_thompson",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -67.08,
+        1.65,
+        70.0
+      ],
+      "look_at": [
+        -69.83,
+        1.5,
+        70.0
+      ],
+      "name": "WallBuy_bar",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        67.08,
+        1.65,
+        110.0
+      ],
+      "look_at": [
+        69.83,
+        1.5,
+        110.0
+      ],
+      "name": "WallBuy_springfield",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -8.0,
+        1.65,
+        -32.45
+      ],
+      "look_at": [
+        -8.0,
+        1.1,
+        -35.2
+      ],
+      "name": "Perk_second_wind",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -56.45,
+        1.65,
+        44.0
+      ],
+      "look_at": [
+        -59.2,
+        1.1,
+        44.0
+      ],
+      "name": "Perk_ironhide_stout",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        23.55,
+        1.65,
+        86.0
+      ],
+      "look_at": [
+        20.8,
+        1.1,
+        86.0
+      ],
+      "name": "Perk_magpie_mead",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -23.55,
+        1.65,
+        70.0
+      ],
+      "look_at": [
+        -20.8,
+        1.1,
+        70.0
+      ],
+      "name": "Perk_trigger_tonic",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        23.55,
+        1.65,
+        120.0
+      ],
+      "look_at": [
+        20.8,
+        1.1,
+        120.0
+      ],
+      "name": "Perk_hawkeye_brandy",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -57.2,
+        -4.35,
+        115.55
+      ],
+      "look_at": [
+        -57.2,
+        -4.9,
+        112.8
+      ],
+      "name": "Perk_twin_barrel",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -23.55,
+        -4.35,
+        125.0
+      ],
+      "look_at": [
+        -20.8,
+        -4.9,
+        125.0
+      ],
+      "name": "Perk_blastproof_bock",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -66.45,
+        -4.35,
+        170.0
+      ],
+      "look_at": [
+        -69.2,
+        -4.9,
+        170.0
+      ],
+      "name": "Perk_packmule_porter",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -23.55,
+        -4.35,
+        165.0
+      ],
+      "look_at": [
+        -20.8,
+        -4.9,
+        165.0
+      ],
+      "name": "Perk_skyhook_sekt",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        54.0,
+        1.65,
+        96.7
+      ],
+      "look_at": [
+        54.0,
+        1.1,
+        99.45
+      ],
+      "name": "Perk_ledger_lager",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        8.75,
+        1.65,
+        -12.0
+      ],
+      "look_at": [
+        6.0,
+        1.1,
+        -12.0
+      ],
+      "name": "Crate_Wreck",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        23.25,
+        1.65,
+        76.0
+      ],
+      "look_at": [
+        26.0,
+        1.1,
+        76.0
+      ],
+      "name": "Crate_Hangar",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -28.75,
+        -4.35,
+        114.0
+      ],
+      "look_at": [
+        -26.0,
+        -4.9,
+        114.0
+      ],
+      "name": "Crate_Lab",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -64.0,
+        1.65,
+        102.05
+      ],
+      "look_at": [
+        -64.0,
+        1.1,
+        99.3
+      ],
+      "name": "Generator",
+      "on_navmesh": false,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "UNREACHABLE"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -63.25,
+        -4.35,
+        160.0
+      ],
+      "look_at": [
+        -66.0,
+        -4.9,
+        160.0
+      ],
+      "name": "Crucible",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        10.73,
+        1.65,
+        -30.0
+      ],
+      "look_at": [
+        13.48,
+        1.1,
+        -30.0
+      ],
+      "name": "AmmoBox_Wreck",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        66.73,
+        1.65,
+        88.0
+      ],
+      "look_at": [
+        69.48,
+        1.1,
+        88.0
+      ],
+      "name": "AmmoBox_Hangar",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -45.0,
+        1.65,
+        96.73
+      ],
+      "look_at": [
+        -45.0,
+        1.1,
+        99.48
+      ],
+      "name": "AmmoBox_Motorpool",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -66.73,
+        -4.35,
+        185.0
+      ],
+      "look_at": [
+        -69.48,
+        -4.9,
+        185.0
+      ],
+      "name": "AmmoBox_Silo",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -36.0,
+        1.65,
+        99.2
+      ],
+      "look_at": [
+        -36.0,
+        1.1,
+        97.0
+      ],
+      "name": "Lever_FuelDump",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        49.4,
+        1.65,
+        63.2
+      ],
+      "look_at": [
+        49.4,
+        1.1,
+        60.45
+      ],
+      "name": "Lever_HangarDoor",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        45.0,
+        2.65,
+        118.5
+      ],
+      "look_at": [
+        45.0,
+        2.1,
+        116.7
+      ],
+      "name": "TowerLadder_Foot",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        47.75,
+        17.65,
+        117.6
+      ],
+      "look_at": [
+        45.0,
+        17.1,
+        117.6
+      ],
+      "name": "TowerLadder_Top",
+      "on_navmesh": false,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        23.3,
+        1.65,
+        76.0
+      ],
+      "look_at": [
+        20.55,
+        1.1,
+        76.0
+      ],
+      "name": "Jukebox",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        57.25,
+        1.65,
+        62.8
+      ],
+      "look_at": [
+        60.0,
+        1.1,
+        62.8
+      ],
+      "name": "Part_ls_part_coil_relay_object",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        45.0,
+        1.65,
+        68.05
+      ],
+      "look_at": [
+        45.0,
+        1.1,
+        70.8
+      ],
+      "name": "Part_ls_part_coil_bomber_bay",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        45.0,
+        2.65,
+        117.25
+      ],
+      "look_at": [
+        45.0,
+        2.1,
+        120.0
+      ],
+      "name": "Part_ls_part_cradle_dish_gimbal",
+      "on_navmesh": false,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "UNREACHABLE"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        62.0,
+        1.65,
+        124.45
+      ],
+      "look_at": [
+        62.0,
+        1.1,
+        127.2
+      ],
+      "name": "Part_ls_part_cradle_shack",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -60.2,
+        -3.72,
+        128.25
+      ],
+      "look_at": [
+        -60.2,
+        -4.16,
+        131.0
+      ],
+      "name": "Part_ls_part_lens_stone_port",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -64.0,
+        -4.35,
+        143.25
+      ],
+      "look_at": [
+        -64.0,
+        -4.9,
+        146.0
+      ],
+      "name": "Part_ls_part_lens_specimen_3",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -60.0,
+        -4.35,
+        116.25
+      ],
+      "look_at": [
+        -60.0,
+        -4.9,
+        113.5
+      ],
+      "name": "Workbench",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        58.85,
+        1.65,
+        96.0
+      ],
+      "look_at": [
+        61.6,
+        1.1,
+        96.0
+      ],
+      "name": "DeeRadio",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        62.0,
+        1.65,
+        124.85
+      ],
+      "look_at": [
+        62.0,
+        1.1,
+        127.6
+      ],
+      "name": "RadarRadio",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        20.0,
+        2.05,
+        13.75
+      ],
+      "look_at": [
+        20.0,
+        1.5,
+        16.5
+      ],
+      "name": "ImpellerCore",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        39.15,
+        1.65,
+        96.0
+      ],
+      "look_at": [
+        36.4,
+        1.1,
+        96.0
+      ],
+      "name": "HangarCradle",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -39.35,
+        -4.35,
+        173.0
+      ],
+      "look_at": [
+        -36.6,
+        -4.9,
+        173.0
+      ],
+      "name": "RocketCradle",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -58.0,
+        -4.35,
+        174.85
+      ],
+      "look_at": [
+        -58.0,
+        -4.9,
+        177.6
+      ],
+      "name": "SiloConsole",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -7.5,
+        1.65,
+        -18.2
+      ],
+      "look_at": [
+        -7.5,
+        1.1,
+        -16.0
+      ],
+      "name": "CageItem_casing",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        51.6,
+        1.65,
+        95.15
+      ],
+      "look_at": [
+        51.6,
+        1.1,
+        92.4
+      ],
+      "name": "CageItem_bomber_coil",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        25.95,
+        2.15,
+        69.0
+      ],
+      "look_at": [
+        23.2,
+        1.6,
+        69.0
+      ],
+      "name": "CageItem_honey",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        64.0,
+        1.65,
+        88.15
+      ],
+      "look_at": [
+        64.0,
+        1.1,
+        90.9
+      ],
+      "name": "BankCounter",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04c",
+      "cam_pos": [
+        -36.94,
+        -4.35,
+        174.94
+      ],
+      "look_at": [
+        -38.0,
+        -4.9,
+        176.0
+      ],
+      "name": "ExfilPoint",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "verdict": "UNSURE"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        0.0,
+        1.65,
+        21.25
+      ],
+      "look_at": [
+        0.0,
+        1.1,
+        24.0
+      ],
+      "name": "Door_Concourse",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        0.0,
+        1.65,
+        57.25
+      ],
+      "look_at": [
+        0.0,
+        1.1,
+        60.0
+      ],
+      "name": "Door_Yard",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        9.25,
+        1.65,
+        42.0
+      ],
+      "look_at": [
+        12.0,
+        1.1,
+        42.0
+      ],
+      "name": "Door_FulfillmentB",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        28.0,
+        1.65,
+        57.25
+      ],
+      "look_at": [
+        28.0,
+        1.1,
+        60.0
+      ],
+      "name": "Door_FulfillmentY",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        28.0,
+        1.65,
+        21.25
+      ],
+      "look_at": [
+        28.0,
+        1.1,
+        24.0
+      ],
+      "name": "Door_Hall",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        28.0,
+        1.65,
+        -18.75
+      ],
+      "look_at": [
+        28.0,
+        1.1,
+        -16.0
+      ],
+      "name": "Door_Account",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        -9.08,
+        1.65,
+        16.0
+      ],
+      "look_at": [
+        -11.83,
+        1.5,
+        16.0
+      ],
+      "name": "WallBuy_kar98k",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        9.08,
+        1.65,
+        32.0
+      ],
+      "look_at": [
+        11.83,
+        1.5,
+        32.0
+      ],
+      "name": "WallBuy_thompson",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        -38.1,
+        1.65,
+        80.0
+      ],
+      "look_at": [
+        -39.6,
+        1.5,
+        80.0
+      ],
+      "name": "WallBuy_springfield",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        41.08,
+        1.65,
+        42.0
+      ],
+      "look_at": [
+        43.83,
+        1.5,
+        42.0
+      ],
+      "name": "WallBuy_bar",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        8.0,
+        1.65,
+        19.85
+      ],
+      "look_at": [
+        8.0,
+        1.1,
+        22.6
+      ],
+      "name": "Perk_second_wind",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        -8.55,
+        1.65,
+        30.0
+      ],
+      "look_at": [
+        -11.3,
+        1.1,
+        30.0
+      ],
+      "name": "Perk_skyhook_sekt",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        8.55,
+        1.65,
+        30.0
+      ],
+      "look_at": [
+        11.3,
+        1.1,
+        30.0
+      ],
+      "name": "Perk_magpie_mead",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        15.45,
+        1.65,
+        50.0
+      ],
+      "look_at": [
+        12.7,
+        1.1,
+        50.0
+      ],
+      "name": "Perk_ironhide_stout",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        40.55,
+        1.65,
+        28.0
+      ],
+      "look_at": [
+        43.3,
+        1.1,
+        28.0
+      ],
+      "name": "Perk_trigger_tonic",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        15.45,
+        1.65,
+        16.0
+      ],
+      "look_at": [
+        12.7,
+        1.1,
+        16.0
+      ],
+      "name": "Perk_hawkeye_brandy",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        40.55,
+        1.65,
+        -8.0
+      ],
+      "look_at": [
+        43.3,
+        1.1,
+        -8.0
+      ],
+      "name": "Perk_blastproof_bock",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        17.45,
+        1.65,
+        -24.0
+      ],
+      "look_at": [
+        14.7,
+        1.1,
+        -24.0
+      ],
+      "name": "Perk_packmule_porter",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        8.7,
+        1.65,
+        36.6
+      ],
+      "look_at": [
+        11.45,
+        1.1,
+        36.6
+      ],
+      "name": "Perk_ledger_lager",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        -9.75,
+        1.65,
+        18.0
+      ],
+      "look_at": [
+        -7.0,
+        1.1,
+        18.0
+      ],
+      "name": "Crate_Reception",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        9.75,
+        1.65,
+        56.0
+      ],
+      "look_at": [
+        7.0,
+        1.1,
+        56.0
+      ],
+      "name": "Crate_Concourse",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        -5.25,
+        1.65,
+        46.0
+      ],
+      "look_at": [
+        -8.0,
+        1.1,
+        46.0
+      ],
+      "name": "Crucible",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        8.73,
+        1.65,
+        4.0
+      ],
+      "look_at": [
+        11.48,
+        1.1,
+        4.0
+      ],
+      "name": "AmmoBox_Reception",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        -8.73,
+        1.65,
+        56.0
+      ],
+      "look_at": [
+        -11.48,
+        1.1,
+        56.0
+      ],
+      "name": "AmmoBox_Concourse",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        40.73,
+        1.65,
+        56.0
+      ],
+      "look_at": [
+        43.48,
+        1.1,
+        56.0
+      ],
+      "name": "AmmoBox_Store",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        15.27,
+        1.65,
+        -12.0
+      ],
+      "look_at": [
+        12.52,
+        1.1,
+        -12.0
+      ],
+      "name": "AmmoBox_Hall",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        0.0,
+        1.65,
+        106.75
+      ],
+      "look_at": [
+        0.0,
+        1.1,
+        104.0
+      ],
+      "name": "SmileMarker",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        18.0,
+        1.95,
+        1.25
+      ],
+      "look_at": [
+        18.0,
+        1.4,
+        4.0
+      ],
+      "name": "Column_1",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        28.0,
+        1.95,
+        1.25
+      ],
+      "look_at": [
+        28.0,
+        1.4,
+        4.0
+      ],
+      "name": "Column_2",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        38.0,
+        1.95,
+        1.25
+      ],
+      "look_at": [
+        38.0,
+        1.4,
+        4.0
+      ],
+      "name": "Column_3",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        28.0,
+        1.65,
+        -27.25
+      ],
+      "look_at": [
+        28.0,
+        1.1,
+        -30.0
+      ],
+      "name": "AccountConsole",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        -7.5,
+        1.65,
+        56.8
+      ],
+      "look_at": [
+        -7.5,
+        1.1,
+        59.55
+      ],
+      "name": "HeaterSwitch",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        17.8,
+        1.65,
+        -20.0
+      ],
+      "look_at": [
+        15.05,
+        1.1,
+        -20.0
+      ],
+      "name": "ShaftGrateLever",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        23.45,
+        1.65,
+        -29.2
+      ],
+      "look_at": [
+        26.2,
+        1.1,
+        -29.2
+      ],
+      "name": "TagSlot",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    },
+    {
+      "act": "map04d",
+      "cam_pos": [
+        -8.35,
+        1.65,
+        35.2
+      ],
+      "look_at": [
+        -11.1,
+        1.1,
+        35.2
+      ],
+      "name": "BankCounter",
+      "on_navmesh": true,
+      "scene": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "verdict": "OK"
+    }
+  ],
+  "capture_sets": {
+    "facing_map04a": {
+      "bots": 0,
+      "cams": [
+        {
+          "name": "door_bahnhof",
+          "note": "facing check: Door_Bahnhof (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            20.0,
+            0.0,
+            27.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "door_kantine",
+          "note": "facing check: Door_Kantine (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -2.75,
+            0.0,
+            45.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "door_kirchplatz",
+          "note": "facing check: Door_Kirchplatz (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            20.0,
+            0.0,
+            57.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "door_montage",
+          "note": "facing check: Door_Montage (door.gd)",
+          "pitch": -12.0,
+          "pos": [
+            -22.0,
+            0.04,
+            57.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "door_windkanal",
+          "note": "facing check: Door_Windkanal (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            8.0,
+            0.0,
+            97.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "door_pruefstand",
+          "note": "facing check: Door_Pruefstand (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -30.0,
+            0.0,
+            107.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "door_service_gate",
+          "note": "facing check: Door_ServiceGate (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -2.75,
+            0.0,
+            122.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "door_halle",
+          "note": "facing check: Door_Halle (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -30.0,
+            0.0,
+            147.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "wall_buy_kar_98k",
+          "note": "facing check: WallBuy_kar98k (wall_buy.gd)",
+          "pitch": -3.1,
+          "pos": [
+            14.92,
+            0.0,
+            6.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "wall_buy_m_1_carbine",
+          "note": "facing check: WallBuy_m1_carbine (wall_buy.gd)",
+          "pitch": -3.1,
+          "pos": [
+            36.0,
+            0.0,
+            27.08
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "wall_buy_mp_40",
+          "note": "facing check: WallBuy_mp40 (wall_buy.gd)",
+          "pitch": -3.1,
+          "pos": [
+            37.08,
+            0.0,
+            50.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "wall_buy_thompson",
+          "note": "facing check: WallBuy_thompson (wall_buy.gd)",
+          "pitch": -3.0,
+          "pos": [
+            -10.0,
+            -0.01,
+            57.08
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "wall_buy_m_1_garand",
+          "note": "facing check: WallBuy_m1_garand (wall_buy.gd)",
+          "pitch": -3.1,
+          "pos": [
+            28.92,
+            0.0,
+            90.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "wall_buy_stg_44",
+          "note": "facing check: WallBuy_stg44 (wall_buy.gd)",
+          "pitch": -3.1,
+          "pos": [
+            -2.92,
+            0.0,
+            80.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "wall_buy_bar",
+          "note": "facing check: WallBuy_bar (wall_buy.gd)",
+          "pitch": -3.1,
+          "pos": [
+            -2.92,
+            0.0,
+            114.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "perk_second_wind",
+          "note": "facing check: Perk_second_wind (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            3.75,
+            0.0,
+            22.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "perk_ironhide_stout",
+          "note": "facing check: Perk_ironhide_stout (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            36.0,
+            0.0,
+            33.75
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "perk_trigger_tonic",
+          "note": "facing check: Perk_trigger_tonic (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -3.75,
+            0.0,
+            56.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "perk_twin_barrel",
+          "note": "facing check: Perk_twin_barrel (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            6.0,
+            0.0,
+            96.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "perk_marathon_malt",
+          "note": "facing check: Perk_marathon_malt (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -10.0,
+            0.0,
+            106.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "perk_hawkeye_brandy",
+          "note": "facing check: Perk_hawkeye_brandy (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            3.75,
+            0.0,
+            126.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "perk_packmule_porter",
+          "note": "facing check: Perk_packmule_porter (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -20.0,
+            0.0,
+            146.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "perk_blastproof_bock",
+          "note": "facing check: Perk_blastproof_bock (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -40.0,
+            0.0,
+            146.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "perk_ledger_lager",
+          "note": "facing check: Perk_ledger_lager (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            3.6,
+            0.0,
+            54.7
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "crate_cellar",
+          "note": "facing check: Crate_Cellar (mystery_crate.gd)",
+          "pitch": -11.3,
+          "pos": [
+            7.0,
+            0.0,
+            5.95
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "crate_shed",
+          "note": "facing check: Crate_Shed (mystery_crate.gd)",
+          "pitch": -11.3,
+          "pos": [
+            34.0,
+            0.0,
+            55.85
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "crate_parish",
+          "note": "facing check: Crate_Parish (mystery_crate.gd)",
+          "pitch": -11.3,
+          "pos": [
+            36.0,
+            0.0,
+            95.85
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "crate_bunker",
+          "note": "facing check: Crate_Bunker (mystery_crate.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -50.0,
+            0.0,
+            145.85
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "hauptschalter",
+          "note": "facing check: Hauptschalter (power_switch.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -56.25,
+            0.0,
+            66.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "crucible",
+          "note": "facing check: Crucible (crucible.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -55.75,
+            0.0,
+            146.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "ammo_box_siedlung",
+          "note": "facing check: AmmoBox_Siedlung (ammo_box.gd)",
+          "pitch": -11.3,
+          "pos": [
+            6.0,
+            0.0,
+            26.73
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "ammo_box_bahnhof",
+          "note": "facing check: AmmoBox_Bahnhof (ammo_box.gd)",
+          "pitch": -11.3,
+          "pos": [
+            3.27,
+            0.0,
+            34.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "ammo_box_kantine",
+          "note": "facing check: AmmoBox_Kantine (ammo_box.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -40.73,
+            0.0,
+            34.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "ammo_box_montage",
+          "note": "facing check: AmmoBox_Montage (ammo_box.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -30.0,
+            0.0,
+            63.27
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "ammo_box_pruefstand",
+          "note": "facing check: AmmoBox_Pruefstand (ammo_box.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -56.73,
+            0.0,
+            134.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "ammo_box_halle",
+          "note": "facing check: AmmoBox_Halle (ammo_box.gd)",
+          "pitch": -10.4,
+          "pos": [
+            -67.36,
+            0.0,
+            155.12
+          ],
+          "yaw": 45.0
+        },
+        {
+          "name": "armorers_bench",
+          "note": "facing check: ArmorersBench (armorers_bench.gd)",
+          "pitch": -11.3,
+          "pos": [
+            30.0,
+            0.0,
+            3.41
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "lever_coal_hopper",
+          "note": "facing check: Lever_CoalHopper (trap_lever.gd)",
+          "pitch": -11.3,
+          "pos": [
+            36.85,
+            0.0,
+            47.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "lever_jig_crane",
+          "note": "facing check: Lever_JigCrane (trap_lever.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -3.15,
+            0.0,
+            90.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "lever_rivet_line",
+          "note": "facing check: Lever_RivetLine (trap_lever.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -45.0,
+            0.0,
+            72.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "file_1",
+          "note": "facing check: File1 (quest_note.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -14.4,
+            0.22,
+            102.85
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "file_2",
+          "note": "facing check: File2 (quest_note.gd)",
+          "pitch": -11.3,
+          "pos": [
+            41.0,
+            0.22,
+            118.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "file_3",
+          "note": "facing check: File3 (quest_note.gd)",
+          "pitch": -14.0,
+          "pos": [
+            -57.6,
+            0.22,
+            149.2
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "pa_switchboard",
+          "note": "facing check: PASwitchboard (switchboard.gd)",
+          "pitch": -10.5,
+          "pos": [
+            -39.0,
+            -0.04,
+            50.45
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "wind_tunnel",
+          "note": "facing check: WindTunnel (wind_tunnel.gd)",
+          "pitch": -11.3,
+          "pos": [
+            1.85,
+            0.0,
+            121.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "ramp_switch",
+          "note": "facing check: RampSwitch (quest_interact.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -20.0,
+            0.0,
+            157.75
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "glider_1",
+          "note": "facing check: Glider1 (quest_note.gd)",
+          "pitch": -18.8,
+          "pos": [
+            -36.0,
+            -0.1,
+            52.1
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "glider_2",
+          "note": "facing check: Glider2 (quest_note.gd)",
+          "pitch": -19.1,
+          "pos": [
+            -42.0,
+            -0.1,
+            93.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "glider_3",
+          "note": "facing check: Glider3 (quest_note.gd)",
+          "pitch": -19.1,
+          "pos": [
+            33.0,
+            -0.1,
+            122.35
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "jette_hatch",
+          "note": "facing check: JetteHatch (quest_interact.gd)",
+          "pitch": -11.3,
+          "pos": [
+            40.45,
+            0.0,
+            124.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "breach_e_apron",
+          "note": "facing check: Breach_E_apron (breach_door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -55.0,
+            0.0,
+            107.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "bank_counter",
+          "note": "facing check: BankCounter (bank.json branch)",
+          "pitch": -11.3,
+          "pos": [
+            3.0,
+            0.0,
+            54.75
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "exfil_point",
+          "note": "facing check: ExfilPoint (exfil (map04a.json))",
+          "pitch": -11.3,
+          "pos": [
+            -20.0,
+            0.0,
+            154.25
+          ],
+          "yaw": -180.0
+        }
+      ],
+      "map": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "settle_s": 4.0
+    },
+    "facing_map04b": {
+      "bots": 0,
+      "cams": [
+        {
+          "name": "door_mittelrumpf",
+          "note": "facing check: Door_Mittelrumpf (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            0.0,
+            0.0,
+            21.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "door_fluegel_l",
+          "note": "facing check: Door_FluegelL (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -11.75,
+            0.0,
+            36.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "door_fluegel_r",
+          "note": "facing check: Door_FluegelR (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            6.25,
+            0.0,
+            36.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "door_triebwerk",
+          "note": "facing check: Door_Triebwerk (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -54.75,
+            0.0,
+            36.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "door_kanzel",
+          "note": "facing check: Door_Kanzel (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            49.25,
+            0.0,
+            36.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "door_cockpit_l",
+          "note": "facing check: Door_CockpitL (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -24.75,
+            0.0,
+            56.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "door_cockpit_r",
+          "note": "facing check: Door_CockpitR (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            19.25,
+            0.0,
+            56.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "wall_buy_kar_98k",
+          "note": "facing check: WallBuy_kar98k (wall_buy.gd)",
+          "pitch": -3.1,
+          "pos": [
+            -6.89,
+            0.0,
+            4.06
+          ],
+          "yaw": 135.0
+        },
+        {
+          "name": "wall_buy_mp_40",
+          "note": "facing check: WallBuy_mp40 (wall_buy.gd)",
+          "pitch": -3.1,
+          "pos": [
+            6.34,
+            0.0,
+            28.84
+          ],
+          "yaw": -115.0
+        },
+        {
+          "name": "wall_buy_thompson",
+          "note": "facing check: WallBuy_thompson (wall_buy.gd)",
+          "pitch": -3.1,
+          "pos": [
+            -30.0,
+            0.0,
+            43.08
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "wall_buy_stg_44",
+          "note": "facing check: WallBuy_stg44 (wall_buy.gd)",
+          "pitch": -3.1,
+          "pos": [
+            30.0,
+            0.0,
+            43.08
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "wall_buy_bar",
+          "note": "facing check: WallBuy_bar (wall_buy.gd)",
+          "pitch": -3.1,
+          "pos": [
+            66.0,
+            0.0,
+            55.08
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "perk_second_wind",
+          "note": "facing check: Perk_second_wind (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            6.0,
+            0.0,
+            20.05
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "perk_skyhook_sekt",
+          "note": "facing check: Perk_skyhook_sekt (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -5.05,
+            0.0,
+            30.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "perk_trigger_tonic",
+          "note": "facing check: Perk_trigger_tonic (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            5.05,
+            0.0,
+            33.6
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "perk_ironhide_stout",
+          "note": "facing check: Perk_ironhide_stout (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -24.0,
+            0.0,
+            41.85
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "perk_marathon_malt",
+          "note": "facing check: Perk_marathon_malt (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            24.0,
+            0.0,
+            41.85
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "perk_blastproof_bock",
+          "note": "facing check: Perk_blastproof_bock (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -60.0,
+            0.0,
+            28.15
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "perk_hawkeye_brandy",
+          "note": "facing check: Perk_hawkeye_brandy (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            56.0,
+            0.0,
+            53.85
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "perk_packmule_porter",
+          "note": "facing check: Perk_packmule_porter (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            6.0,
+            0.0,
+            69.85
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "perk_ledger_lager",
+          "note": "facing check: Perk_ledger_lager (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -5.0,
+            0.0,
+            50.7
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "crate_galley",
+          "note": "facing check: Crate_Galley (mystery_crate.gd)",
+          "pitch": -14.0,
+          "pos": [
+            -8.2,
+            0.0,
+            50.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "crate_kanzel",
+          "note": "facing check: Crate_Kanzel (mystery_crate.gd)",
+          "pitch": -11.3,
+          "pos": [
+            74.15,
+            0.0,
+            33.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "aux_bus",
+          "note": "facing check: AuxBus (aux_bus.gd)",
+          "pitch": -11.3,
+          "pos": [
+            5.95,
+            0.0,
+            42.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "crucible",
+          "note": "facing check: Crucible (crucible.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -3.25,
+            0.0,
+            34.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "ammo_box_bay",
+          "note": "facing check: AmmoBox_Bay (ammo_box.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -5.73,
+            0.0,
+            20.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "ammo_box_galley",
+          "note": "facing check: AmmoBox_Galley (ammo_box.gd)",
+          "pitch": -11.3,
+          "pos": [
+            5.99,
+            0.0,
+            51.16
+          ],
+          "yaw": -65.0
+        },
+        {
+          "name": "ammo_box_triebwerk",
+          "note": "facing check: AmmoBox_Triebwerk (ammo_box.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -74.73,
+            0.0,
+            44.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "ammo_box_kanzel",
+          "note": "facing check: AmmoBox_Kanzel (ammo_box.gd)",
+          "pitch": -11.3,
+          "pos": [
+            74.73,
+            0.0,
+            44.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "tag_1",
+          "note": "facing check: Tag1 (quest_note.gd)",
+          "pitch": -14.0,
+          "pos": [
+            7.0,
+            0.12,
+            24.8
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "tag_2",
+          "note": "facing check: Tag2 (quest_note.gd)",
+          "pitch": -14.0,
+          "pos": [
+            7.0,
+            0.12,
+            29.0
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "tag_3",
+          "note": "facing check: Tag3 (quest_note.gd)",
+          "pitch": -19.1,
+          "pos": [
+            62.0,
+            -0.1,
+            28.35
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "breach_l_1",
+          "note": "facing check: BreachL1 (breach_panel.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -20.0,
+            0.0,
+            43.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "breach_l_2",
+          "note": "facing check: BreachL2 (breach_panel.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -40.0,
+            0.0,
+            43.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "breach_r_1",
+          "note": "facing check: BreachR1 (breach_panel.gd)",
+          "pitch": -11.3,
+          "pos": [
+            20.0,
+            0.0,
+            43.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "breach_r_2",
+          "note": "facing check: BreachR2 (breach_panel.gd)",
+          "pitch": -11.3,
+          "pos": [
+            40.0,
+            0.0,
+            43.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "rack_1",
+          "note": "facing check: Rack1 (bomb_rack.gd)",
+          "pitch": -12.4,
+          "pos": [
+            -8.1,
+            0.0,
+            6.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "rack_2",
+          "note": "facing check: Rack2 (bomb_rack.gd)",
+          "pitch": -11.3,
+          "pos": [
+            2.85,
+            0.0,
+            6.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "rack_3",
+          "note": "facing check: Rack3 (bomb_rack.gd)",
+          "pitch": -12.4,
+          "pos": [
+            -8.1,
+            0.0,
+            12.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "rack_4",
+          "note": "facing check: Rack4 (bomb_rack.gd)",
+          "pitch": -11.3,
+          "pos": [
+            2.85,
+            0.0,
+            12.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "rack_5",
+          "note": "facing check: Rack5 (bomb_rack.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -5.6,
+            0.0,
+            20.75
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "rack_6",
+          "note": "facing check: Rack6 (bomb_rack.gd)",
+          "pitch": -11.3,
+          "pos": [
+            2.85,
+            0.0,
+            18.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "wing_hatch_out",
+          "note": "facing check: WingHatchOut (wing_hatch.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -40.0,
+            0.0,
+            42.55
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "wing_hatch_in",
+          "note": "facing check: WingHatchIn (wing_hatch.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -40.0,
+            3.4,
+            42.35
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "clip_point_1",
+          "note": "facing check: ClipPoint1 (clip_point.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -39.4,
+            3.4,
+            38.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "clip_point_2",
+          "note": "facing check: ClipPoint2 (clip_point.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -47.75,
+            3.4,
+            36.6
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "clip_point_3",
+          "note": "facing check: ClipPoint3 (clip_point.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -49.8,
+            3.4,
+            26.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "clip_point_4",
+          "note": "facing check: ClipPoint4 (clip_point.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -60.75,
+            3.4,
+            21.6
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "clip_point_5",
+          "note": "facing check: ClipPoint5 (clip_point.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -72.75,
+            3.4,
+            21.6
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "clip_point_6",
+          "note": "facing check: ClipPoint6 (clip_point.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -84.75,
+            3.4,
+            21.6
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "clip_point_7",
+          "note": "facing check: ClipPoint7 (clip_point.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -96.75,
+            3.4,
+            21.6
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "clip_point_8",
+          "note": "facing check: ClipPoint8 (clip_point.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -106.75,
+            3.4,
+            21.6
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "clip_point_9",
+          "note": "facing check: ClipPoint9 (clip_point.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -111.0,
+            3.4,
+            20.75
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "wing_chest",
+          "note": "facing check: WingChest (wing_chest.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -112.0,
+            3.4,
+            26.85
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "crew_roster",
+          "note": "facing check: CrewRoster (quest_interact.gd)",
+          "pitch": -11.3,
+          "pos": [
+            5.95,
+            0.0,
+            44.6
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "bordfunk_reel",
+          "note": "facing check: BordfunkReel (quest_interact.gd)",
+          "pitch": -11.3,
+          "pos": [
+            2.55,
+            0.0,
+            48.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "lever_bay_doors",
+          "note": "facing check: Lever_BayDoors (trap_lever.gd)",
+          "pitch": -11.3,
+          "pos": [
+            5.0,
+            0.0,
+            21.0
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "grip_bay_1",
+          "note": "facing check: GripBay1 (rail_grip.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -5.85,
+            0.0,
+            3.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "grip_bay_2",
+          "note": "facing check: GripBay2 (rail_grip.gd)",
+          "pitch": -11.3,
+          "pos": [
+            5.85,
+            0.0,
+            3.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "grip_bay_3",
+          "note": "facing check: GripBay3 (rail_grip.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -5.85,
+            0.0,
+            8.5
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "grip_bay_4",
+          "note": "facing check: GripBay4 (rail_grip.gd)",
+          "pitch": -11.3,
+          "pos": [
+            5.85,
+            0.0,
+            8.5
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "grip_stb_1",
+          "note": "facing check: GripStb1 (rail_grip.gd)",
+          "pitch": -11.3,
+          "pos": [
+            26.0,
+            0.0,
+            42.95
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "grip_stb_2",
+          "note": "facing check: GripStb2 (rail_grip.gd)",
+          "pitch": -11.3,
+          "pos": [
+            34.0,
+            0.0,
+            42.95
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "grip_stb_3",
+          "note": "facing check: GripStb3 (rail_grip.gd)",
+          "pitch": -11.3,
+          "pos": [
+            24.0,
+            0.0,
+            31.05
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "grip_stb_4",
+          "note": "facing check: GripStb4 (rail_grip.gd)",
+          "pitch": -11.3,
+          "pos": [
+            36.0,
+            0.0,
+            31.05
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "bank_counter",
+          "note": "facing check: BankCounter (bank.json branch)",
+          "pitch": -11.3,
+          "pos": [
+            0.0,
+            0.0,
+            49.75
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "exfil_point",
+          "note": "facing check: ExfilPoint (exfil (map04b.json))",
+          "pitch": -11.3,
+          "pos": [
+            0.0,
+            0.0,
+            68.75
+          ],
+          "yaw": 0.0
+        }
+      ],
+      "map": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "settle_s": 4.0
+    },
+    "facing_map04c": {
+      "bots": 0,
+      "cams": [
+        {
+          "name": "door_lakebed",
+          "note": "facing check: Door_Lakebed (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            0.0,
+            0.0,
+            -6.75
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "door_hangar",
+          "note": "facing check: Door_Hangar (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            45.0,
+            0.0,
+            57.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "door_motorpool",
+          "note": "facing check: Door_Motorpool (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -45.0,
+            0.0,
+            57.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "door_side",
+          "note": "facing check: Door_Side (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            17.25,
+            0.0,
+            93.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "door_radar",
+          "note": "facing check: Door_Radar (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            45.0,
+            0.0,
+            97.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "door_lab",
+          "note": "facing check: Door_Lab (door.gd)",
+          "pitch": -17.9,
+          "pos": [
+            -45.0,
+            0.34,
+            97.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "door_trench",
+          "note": "facing check: Door_Trench (door.gd)",
+          "pitch": -5.1,
+          "pos": [
+            17.25,
+            -0.3,
+            137.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "door_silo",
+          "note": "facing check: Door_Silo (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -40.0,
+            -6.0,
+            147.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "wall_buy_m_1_carbine",
+          "note": "facing check: WallBuy_m1_carbine (wall_buy.gd)",
+          "pitch": -3.1,
+          "pos": [
+            -11.08,
+            0.0,
+            -30.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "wall_buy_m_1_garand",
+          "note": "facing check: WallBuy_m1_garand (wall_buy.gd)",
+          "pitch": -3.1,
+          "pos": [
+            -57.08,
+            0.0,
+            20.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "wall_buy_thompson",
+          "note": "facing check: WallBuy_thompson (wall_buy.gd)",
+          "pitch": -3.1,
+          "pos": [
+            67.08,
+            0.0,
+            72.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "wall_buy_bar",
+          "note": "facing check: WallBuy_bar (wall_buy.gd)",
+          "pitch": -3.1,
+          "pos": [
+            -67.08,
+            0.0,
+            70.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "wall_buy_springfield",
+          "note": "facing check: WallBuy_springfield (wall_buy.gd)",
+          "pitch": -3.1,
+          "pos": [
+            67.08,
+            0.0,
+            110.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "perk_second_wind",
+          "note": "facing check: Perk_second_wind (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -8.0,
+            0.0,
+            -32.45
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "perk_ironhide_stout",
+          "note": "facing check: Perk_ironhide_stout (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -56.45,
+            0.0,
+            44.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "perk_magpie_mead",
+          "note": "facing check: Perk_magpie_mead (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            23.55,
+            0.0,
+            86.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "perk_trigger_tonic",
+          "note": "facing check: Perk_trigger_tonic (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -23.55,
+            0.0,
+            70.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "perk_hawkeye_brandy",
+          "note": "facing check: Perk_hawkeye_brandy (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            23.55,
+            0.0,
+            120.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "perk_twin_barrel",
+          "note": "facing check: Perk_twin_barrel (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -57.2,
+            -6.0,
+            115.55
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "perk_blastproof_bock",
+          "note": "facing check: Perk_blastproof_bock (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -23.55,
+            -6.0,
+            125.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "perk_packmule_porter",
+          "note": "facing check: Perk_packmule_porter (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -66.45,
+            -6.0,
+            170.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "perk_skyhook_sekt",
+          "note": "facing check: Perk_skyhook_sekt (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -23.55,
+            -6.0,
+            165.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "perk_ledger_lager",
+          "note": "facing check: Perk_ledger_lager (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            54.0,
+            0.0,
+            96.7
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "crate_wreck",
+          "note": "facing check: Crate_Wreck (mystery_crate.gd)",
+          "pitch": -11.3,
+          "pos": [
+            8.75,
+            0.0,
+            -12.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "crate_hangar",
+          "note": "facing check: Crate_Hangar (mystery_crate.gd)",
+          "pitch": -11.3,
+          "pos": [
+            23.25,
+            0.0,
+            76.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "crate_lab",
+          "note": "facing check: Crate_Lab (mystery_crate.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -28.75,
+            -6.0,
+            114.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "generator",
+          "note": "facing check: Generator (power_switch.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -64.0,
+            0.0,
+            102.05
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "crucible",
+          "note": "facing check: Crucible (crucible.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -63.25,
+            -6.0,
+            160.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "ammo_box_wreck",
+          "note": "facing check: AmmoBox_Wreck (ammo_box.gd)",
+          "pitch": -11.3,
+          "pos": [
+            10.73,
+            0.0,
+            -30.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "ammo_box_hangar",
+          "note": "facing check: AmmoBox_Hangar (ammo_box.gd)",
+          "pitch": -11.3,
+          "pos": [
+            66.73,
+            0.0,
+            88.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "ammo_box_motorpool",
+          "note": "facing check: AmmoBox_Motorpool (ammo_box.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -45.0,
+            0.0,
+            96.73
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "ammo_box_silo",
+          "note": "facing check: AmmoBox_Silo (ammo_box.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -66.73,
+            -6.0,
+            185.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "lever_fuel_dump",
+          "note": "facing check: Lever_FuelDump (trap_lever.gd)",
+          "pitch": -14.0,
+          "pos": [
+            -36.0,
+            0.0,
+            99.2
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "lever_hangar_door",
+          "note": "facing check: Lever_HangarDoor (trap_lever.gd)",
+          "pitch": -11.3,
+          "pos": [
+            49.4,
+            0.0,
+            63.2
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "tower_ladder_foot",
+          "note": "facing check: TowerLadder_Foot (tower_ladder.gd)",
+          "pitch": -17.0,
+          "pos": [
+            45.0,
+            1.0,
+            118.5
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "tower_ladder_top",
+          "note": "facing check: TowerLadder_Top (tower_ladder.gd)",
+          "pitch": -11.3,
+          "pos": [
+            47.75,
+            16.0,
+            117.6
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "jukebox",
+          "note": "facing check: Jukebox (jukebox.gd)",
+          "pitch": -11.3,
+          "pos": [
+            23.3,
+            0.0,
+            76.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "part_ls_part_coil_relay_object",
+          "note": "facing check: Part_ls_part_coil_relay_object (buildable_part.gd)",
+          "pitch": -11.3,
+          "pos": [
+            57.25,
+            0.0,
+            62.8
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "part_ls_part_coil_bomber_bay",
+          "note": "facing check: Part_ls_part_coil_bomber_bay (buildable_part.gd)",
+          "pitch": -11.3,
+          "pos": [
+            45.0,
+            0.0,
+            68.05
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "part_ls_part_cradle_dish_gimbal",
+          "note": "facing check: Part_ls_part_cradle_dish_gimbal (buildable_part.gd)",
+          "pitch": -11.3,
+          "pos": [
+            45.0,
+            1.0,
+            117.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "part_ls_part_cradle_shack",
+          "note": "facing check: Part_ls_part_cradle_shack (buildable_part.gd)",
+          "pitch": -11.3,
+          "pos": [
+            62.0,
+            0.0,
+            124.45
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "part_ls_part_lens_stone_port",
+          "note": "facing check: Part_ls_part_lens_stone_port (buildable_part.gd)",
+          "pitch": -9.1,
+          "pos": [
+            -60.2,
+            -5.37,
+            128.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "part_ls_part_lens_specimen_3",
+          "note": "facing check: Part_ls_part_lens_specimen_3 (buildable_part.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -64.0,
+            -6.0,
+            143.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "workbench",
+          "note": "facing check: Workbench (workbench.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -60.0,
+            -6.0,
+            116.25
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "dee_radio",
+          "note": "facing check: DeeRadio (story_radio.gd)",
+          "pitch": -11.3,
+          "pos": [
+            58.85,
+            0.0,
+            96.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "radar_radio",
+          "note": "facing check: RadarRadio (story_radio.gd)",
+          "pitch": -11.3,
+          "pos": [
+            62.0,
+            0.0,
+            124.85
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "impeller_core",
+          "note": "facing check: ImpellerCore (carry_object.gd)",
+          "pitch": -11.3,
+          "pos": [
+            20.0,
+            0.4,
+            13.75
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "hangar_cradle",
+          "note": "facing check: HangarCradle (carry_cradle.gd)",
+          "pitch": -11.3,
+          "pos": [
+            39.15,
+            0.0,
+            96.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "rocket_cradle",
+          "note": "facing check: RocketCradle (carry_cradle.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -39.35,
+            -6.0,
+            173.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "silo_console",
+          "note": "facing check: SiloConsole (silo_console.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -58.0,
+            -6.0,
+            174.85
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "cage_item_casing",
+          "note": "facing check: CageItem_casing (cage_item.gd)",
+          "pitch": -14.0,
+          "pos": [
+            -7.5,
+            0.0,
+            -18.2
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "cage_item_bomber_coil",
+          "note": "facing check: CageItem_bomber_coil (cage_item.gd)",
+          "pitch": -11.3,
+          "pos": [
+            51.6,
+            0.0,
+            95.15
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "cage_item_honey",
+          "note": "facing check: CageItem_honey (cage_item.gd)",
+          "pitch": -11.3,
+          "pos": [
+            25.95,
+            0.5,
+            69.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "bank_counter",
+          "note": "facing check: BankCounter (bank.json branch)",
+          "pitch": -11.3,
+          "pos": [
+            64.0,
+            0.0,
+            88.15
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "exfil_point",
+          "note": "facing check: ExfilPoint (exfil (map04c.json))",
+          "pitch": -20.1,
+          "pos": [
+            -36.94,
+            -6.0,
+            174.94
+          ],
+          "yaw": 135.0
+        }
+      ],
+      "map": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "settle_s": 4.0
+    },
+    "facing_map04d": {
+      "bots": 0,
+      "cams": [
+        {
+          "name": "door_concourse",
+          "note": "facing check: Door_Concourse (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            0.0,
+            0.0,
+            21.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "door_yard",
+          "note": "facing check: Door_Yard (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            0.0,
+            0.0,
+            57.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "door_fulfillment_b",
+          "note": "facing check: Door_FulfillmentB (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            9.25,
+            0.0,
+            42.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "door_fulfillment_y",
+          "note": "facing check: Door_FulfillmentY (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            28.0,
+            0.0,
+            57.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "door_hall",
+          "note": "facing check: Door_Hall (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            28.0,
+            0.0,
+            21.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "door_account",
+          "note": "facing check: Door_Account (door.gd)",
+          "pitch": -11.3,
+          "pos": [
+            28.0,
+            0.0,
+            -18.75
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "wall_buy_kar_98k",
+          "note": "facing check: WallBuy_kar98k (wall_buy.gd)",
+          "pitch": -3.1,
+          "pos": [
+            -9.08,
+            0.0,
+            16.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "wall_buy_thompson",
+          "note": "facing check: WallBuy_thompson (wall_buy.gd)",
+          "pitch": -3.1,
+          "pos": [
+            9.08,
+            0.0,
+            32.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "wall_buy_springfield",
+          "note": "facing check: WallBuy_springfield (wall_buy.gd)",
+          "pitch": -5.7,
+          "pos": [
+            -38.1,
+            0.0,
+            80.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "wall_buy_bar",
+          "note": "facing check: WallBuy_bar (wall_buy.gd)",
+          "pitch": -3.1,
+          "pos": [
+            41.08,
+            0.0,
+            42.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "perk_second_wind",
+          "note": "facing check: Perk_second_wind (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            8.0,
+            0.0,
+            19.85
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "perk_skyhook_sekt",
+          "note": "facing check: Perk_skyhook_sekt (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -8.55,
+            0.0,
+            30.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "perk_magpie_mead",
+          "note": "facing check: Perk_magpie_mead (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            8.55,
+            0.0,
+            30.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "perk_ironhide_stout",
+          "note": "facing check: Perk_ironhide_stout (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            15.45,
+            0.0,
+            50.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "perk_trigger_tonic",
+          "note": "facing check: Perk_trigger_tonic (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            40.55,
+            0.0,
+            28.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "perk_hawkeye_brandy",
+          "note": "facing check: Perk_hawkeye_brandy (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            15.45,
+            0.0,
+            16.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "perk_blastproof_bock",
+          "note": "facing check: Perk_blastproof_bock (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            40.55,
+            0.0,
+            -8.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "perk_packmule_porter",
+          "note": "facing check: Perk_packmule_porter (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            17.45,
+            0.0,
+            -24.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "perk_ledger_lager",
+          "note": "facing check: Perk_ledger_lager (perk_machine.gd)",
+          "pitch": -11.3,
+          "pos": [
+            8.7,
+            0.0,
+            36.6
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "crate_reception",
+          "note": "facing check: Crate_Reception (mystery_crate.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -9.75,
+            0.0,
+            18.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "crate_concourse",
+          "note": "facing check: Crate_Concourse (mystery_crate.gd)",
+          "pitch": -11.3,
+          "pos": [
+            9.75,
+            0.0,
+            56.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "crucible",
+          "note": "facing check: Crucible (crucible.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -5.25,
+            0.0,
+            46.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "ammo_box_reception",
+          "note": "facing check: AmmoBox_Reception (ammo_box.gd)",
+          "pitch": -11.3,
+          "pos": [
+            8.73,
+            0.0,
+            4.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "ammo_box_concourse",
+          "note": "facing check: AmmoBox_Concourse (ammo_box.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -8.73,
+            0.0,
+            56.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "ammo_box_store",
+          "note": "facing check: AmmoBox_Store (ammo_box.gd)",
+          "pitch": -11.3,
+          "pos": [
+            40.73,
+            0.0,
+            56.0
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "ammo_box_hall",
+          "note": "facing check: AmmoBox_Hall (ammo_box.gd)",
+          "pitch": -11.3,
+          "pos": [
+            15.27,
+            0.0,
+            -12.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "smile_marker",
+          "note": "facing check: SmileMarker (quest_interact.gd)",
+          "pitch": -11.3,
+          "pos": [
+            0.0,
+            0.0,
+            106.75
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "column_1",
+          "note": "facing check: Column_1 (retention_column.gd)",
+          "pitch": -11.3,
+          "pos": [
+            18.0,
+            0.3,
+            1.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "column_2",
+          "note": "facing check: Column_2 (retention_column.gd)",
+          "pitch": -11.3,
+          "pos": [
+            28.0,
+            0.3,
+            1.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "column_3",
+          "note": "facing check: Column_3 (retention_column.gd)",
+          "pitch": -11.3,
+          "pos": [
+            38.0,
+            0.3,
+            1.25
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "account_console",
+          "note": "facing check: AccountConsole (account_console.gd)",
+          "pitch": -11.3,
+          "pos": [
+            28.0,
+            0.0,
+            -27.25
+          ],
+          "yaw": 0.0
+        },
+        {
+          "name": "heater_switch",
+          "note": "facing check: HeaterSwitch (heater_switch.gd)",
+          "pitch": -11.3,
+          "pos": [
+            -7.5,
+            0.0,
+            56.8
+          ],
+          "yaw": -180.0
+        },
+        {
+          "name": "shaft_grate_lever",
+          "note": "facing check: ShaftGrateLever (shaft_grate_lever.gd)",
+          "pitch": -11.3,
+          "pos": [
+            17.8,
+            0.0,
+            -20.0
+          ],
+          "yaw": 90.0
+        },
+        {
+          "name": "tag_slot",
+          "note": "facing check: TagSlot (tag_slot.gd)",
+          "pitch": -11.3,
+          "pos": [
+            23.45,
+            0.0,
+            -29.2
+          ],
+          "yaw": -90.0
+        },
+        {
+          "name": "bank_counter",
+          "note": "facing check: BankCounter (bank.json branch)",
+          "pitch": -11.3,
+          "pos": [
+            -8.35,
+            0.0,
+            35.2
+          ],
+          "yaw": 90.0
+        }
+      ],
+      "map": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "settle_s": 4.0
+    }
+  }
+}
