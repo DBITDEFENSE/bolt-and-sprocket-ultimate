@@ -86,3 +86,15 @@ func test_settings_tabs_stay_above_the_scroll_and_mark_the_open_tab() -> void:
 	assert_eq(audio.get_theme_color("font_color"), MenuKit.GOLD, "the open tab is gold")
 	assert_ne(game.get_theme_color("font_color"), MenuKit.GOLD)
 	assert_eq(m.get_viewport().gui_get_focus_owner(), audio, "the focus stays on the open tab")
+
+
+func test_camera_sway_row_in_gameplay() -> void:   # T-220: the Fernflug plane pass's comfort setting
+	var m: MenuSettings = MenuSettings.new()
+	add_child_autofree(m)
+	await wait_process_frames(2)
+	var found: bool = false
+	for l: Node in m.content.find_children("*", "Label", true, false):
+		if (l as Label).text == "Camera Sway / Turbulence":
+			found = true
+	assert_true(found, "Settings > Gameplay has the Camera Sway / Turbulence row")
+	assert_eq(CameraSway.MODES[0], "full", "Full first (the default)")
