@@ -111,9 +111,9 @@ func _kitchen() -> void:
 	cyl(cart, Vector3(0.15, 2.3, 0.2), 0.008, 2.6, "steel", Vector3(0, 0, 6))
 	marker("Kitchen", Vector3(2.0, 1.4, 12.0))
 	var looks: Array = ["rkka_soldier_a", "rkka_soldier_b", "rkka_soldier_c", "rkka_soldier_d"]
-	for s: int in 8:
+	for s: int in 8:   # (T-206: yaw 180 faces +z, the kitchen: their backs to the graves until the earth moves)
 		var p: CinemaPerson = person(self, "soldier_%d" % s, look_of(looks[s % 4]), Vector3(-2.5 + 1.15 * float(s) + rng.randf_range(-0.2, 0.2), 0, 10.0 + rng.randf_range(-0.6, 0.6)),
-			rng.randf_range(-20, 20), "stand" if s % 3 != 1 else "hold")
+			180.0 + rng.randf_range(-20, 20), "stand" if s % 3 != 1 else "hold")
 		soldiers.append(p)
 	marker("Soldiers", Vector3(1.5, 1.5, 10.0))
 
@@ -165,13 +165,37 @@ func fx_mound_rise(secs: float) -> void:
 			st.visible = true)
 
 
-## Shot 9-10: the soldiers at the kitchen, one by one, turn to look at it.
+## Shot 9-10: the soldiers at the kitchen, one by one, turn to look at it (T-206: the head first, then the body, the
+## short way round).
 func fx_soldiers_turn(secs: float) -> void:
 	for k: int in soldiers.size():
 		var p: CinemaPerson = soldiers[k]
-		var to: Vector3 = Vector3(1.5, 0, 0) - p.position
-		var yaw: float = atan2(-to.x, -to.z)
-		tween_to(p, "rotation:y", yaw, 0.9, Tween.TRANS_SINE, Tween.EASE_IN_OUT, secs * 0.3 + 0.35 * float(k))
+		var yaw: float = CinemaPerson.yaw_to(Vector3(1.5, 0, 0) - p.position)
+		later(secs * 0.3 + 0.35 * float(k), func() -> void:
+			p.look_toward(Vector3(1.5, 0.4, 0))
+			p.turn_to(yaw, 0.9, 0.3)
+			later(1.2, func() -> void: p.look_toward(Vector3(1.5, 0.4, 0))))
+
+
+## Shot 10: their faces. One takes off his cap (his hand to it and down), one crosses himself and looks round to see
+## who saw (T-206: the shot list's beats, on the hands).
+func fx_faces(_secs: float) -> void:
+	if soldiers.size() < 6:
+		return
+	var cap: CinemaPerson = soldiers[2]
+	cap.hand_r = Vector3(0.12, 0.1, -0.25)
+	tween_to(cap, "hand_r", Vector3(0.1, 0.64, -0.1), 0.6, Tween.TRANS_SINE, Tween.EASE_IN_OUT, 1.0)
+	tween_to(cap, "hand_r", Vector3(0.14, 0.05, -0.2), 0.8, Tween.TRANS_SINE, Tween.EASE_IN_OUT, 2.4)
+	later(3.3, func() -> void: cap.hand_r = null)
+	var cross: CinemaPerson = soldiers[5]
+	cross.hand_r = Vector3(0.12, 0.1, -0.25)
+	var tw: Tween = create_tween()
+	tw.tween_interval(2.0)
+	for p: Vector3 in [Vector3(0.04, 0.56, -0.22), Vector3(0.04, 0.18, -0.24), Vector3(0.2, 0.42, -0.2), Vector3(-0.18, 0.42, -0.2), Vector3(0.14, 0.05, -0.2)]:
+		tw.tween_property(cross, "hand_r", p, 0.38).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_callback(func() -> void: cross.hand_r = null)
+	later(4.1, func() -> void: cross.look_toward(soldiers[4].position + Vector3(0, 1.55, 0)))
+	later(5.4, func() -> void: cross.look_toward(Vector3(1.5, 0.4, 0)))
 
 
 ## Shot 11: they walk west.

@@ -31,10 +31,16 @@ func setup_look(id: String, look: Dictionary, pose_name: String = "stand") -> vo
 	head_down = float(look.get("head_down", 0.0))
 
 
-## Forgets the motion so far (after a teleport: the walk cycle does not read the jump as speed).
+## Forgets the motion so far (after a teleport: the walk cycle does not read the jump as speed) and snaps the pose
+## blends (a teleport is a cut: the new pose is already held on the first frame).
 func reset_motion() -> void:
 	_last_pos = global_position if is_inside_tree() else position
 	_speed = 0.0
+	_snap = true
+	for tw: Tween in _moves:   # a walk or a turn still running would drag the teleported body back along its old path
+		if is_instance_valid(tw) and tw.is_valid():
+			tw.kill()
+	_moves.clear()
 
 
 static func _srgb(a: Variant, fallback: Color) -> Color:
@@ -178,16 +184,45 @@ func _extra(x: String, cloth: Color) -> void:
 
 ## The cutscene's poses on top of PatronBody's: the body (stand / sit / kneel) and what the hands do.
 ##   kneel, pray, kneel_reach (both hands forward and low, at the vessel), palm, hold, sit_hold, writing (a board held
-##   at the chest, the right hand on it), plus every PatronBody pose (stand, sit, panic, cower, ...).
+##   at the chest, the right hand on it), raise (the right hand up at eye level: a lantern to the letters), binoculars
+##   (both hands at the eyes), plus every PatronBody pose (stand, sit, run, cower, ...).
+## T-206 (the polish pass): a pose change blends instead of snapping (the hands glide to their new targets over about
+## a third of a second, a kneel folds down and a rise comes up over about 0.4 s, the head turns over about 0.3 s);
+## `reset_motion()` snaps everything (a teleport is a cut). The walk is the cutscene's own: when the node moves, the
+## legs swing so that the feet cover the ground the body does (the stride grows with the speed, 0.45-0.85 m a step
+## walking, longer at a run) instead of the puppet's fixed small swing, so nobody skates. `hand_l` / `hand_r` are
+## chest-local hand targets a stage can set or tween over a pose (a hand to a cap, a handset passed, a hand on a
+## dial); `head_yaw` / `head_down` turn the head (`look_toward(point)` aims it at a point of the world); `hold_width`
+## spreads the hold's hands (arms round a case). `walk_to()` and `turn_to()` move a person at a walking speed, facing
+## the way they go.
 const ALIASES: Dictionary = {
 	&"kneel": [&"stand", &"kneel", &""], &"pray": [&"stand", &"kneel", &"pray"], &"kneel_reach": [&"stand", &"kneel", &"reach"],
 	&"palm": [&"stand", &"", &"palm"], &"hold": [&"stand", &"", &"hold"], &"sit_hold": [&"sit", &"", &"hold"],
-	&"writing": [&"stand", &"", &"writing"], &"sit_brace": [&"sit", &"", &"brace"],
+	&"writing": [&"stand", &"", &"writing"], &"sit_brace": [&"sit", &"", &"brace"], &"raise": [&"stand", &"", &"raise"],
+	&"binoculars": [&"stand", &"", &"binoculars"],
 }
+const HAND_RATE: float = 9.0     # the hands' glide (1/s: about 0.3 s to settle)
+const KNEEL_RATE: float = 2.6    # a kneel or a rise (1/s)
+const HEAD_RATE: float = 6.0     # a head turn (1/s)
+const LEG_M: float = 0.86        # hip to sole, for the stride
+const KNEEL_LEGS: Array = [[0.05, -1.62, 0.0], [-0.03, -1.55, 0.0]]
+
 var cine_pose: StringName = &"stand"
 var _body_mode: StringName = &""
 var _hands_mode: StringName = &""
-var head_down: float = 0.0   # extra bow of the head (radians), e.g. a sleeper, a man reading
+var head_down: float = 0.0   # extra bow of the head (radians; negative looks up), e.g. a sleeper, a man reading
+var head_yaw: float = 0.0    # extra turn of the head (radians; positive looks to the body's left)
+var hand_l: Variant = null   # chest-local hand targets over the pose's own (Vector3), or null
+var hand_r: Variant = null
+var hold_width: float = 0.11
+var walk_stride: float = 0.0   # metres a step when walking; 0 = from the speed
+var _kneel_k: float = 0.0
+var _hl_s: Vector3 = Vector3.ZERO
+var _hr_s: Vector3 = Vector3.ZERO
+var _head_s: Vector2 = Vector2.ZERO   # (down, yaw) smoothed
+var _snap: bool = true
+var _cphase: float = 0.0
+var _moves: Array[Tween] = []   # the walks and turns running (reset_motion kills them)
 
 
 func set_pose(p: StringName) -> void:
@@ -203,20 +238,104 @@ func set_pose(p: StringName) -> void:
 		super.set_pose(p)
 
 
+## Aims the head at a point of the world (the speaker, the vessel, the bell), within what a neck does.
+func look_toward(world_point: Vector3, pitch: bool = true) -> void:
+	var head_w: Vector3 = global_position + global_basis * Vector3(0, 1.55 * (float(look_row.get("height", 1.0)) if not look_row.is_empty() else 1.0), 0)
+	var local: Vector3 = global_basis.inverse() * (world_point - head_w)
+	head_yaw = clampf(atan2(-local.x, -local.z), -1.25, 1.25)
+	if pitch:
+		var flat: float = Vector2(local.x, local.z).length()
+		head_down = clampf(-atan2(local.y, maxf(0.05, flat)), -0.6, 0.7)
+
+
+## The head straight again.
+func look_ahead() -> void:
+	head_yaw = 0.0
+	head_down = 0.0
+
+
+## The yaw (rotation.y) that faces a direction of the world (local -Z is forward).
+static func yaw_to(dir: Vector3) -> float:
+	return atan2(-dir.x, -dir.z)
+
+
+## Turns to face `yaw` the short way round, over `secs`.
+func turn_to(yaw: float, secs: float = 0.4, delay: float = 0.0) -> Tween:
+	var goal: float = rotation.y + wrapf(yaw - rotation.y, -PI, PI)
+	if not is_inside_tree():
+		rotation.y = goal
+		return null
+	var tw: Tween = create_tween()
+	if delay > 0.0:
+		tw.tween_interval(delay)
+	tw.tween_property(self, "rotation:y", goal, maxf(0.01, secs)).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_moves.append(tw)
+	return tw
+
+
+## Walks to `target` at `mps` metres a second (0.6 a shuffle, 1.0-1.4 a walk, 3 a run), turning to face the way first
+## (`face`), after `delay`. The move itself is linear: the stride matches the speed, the puppet eases the first steps.
+func walk_to(target: Vector3, mps: float = 1.2, delay: float = 0.0, face: bool = true) -> Tween:
+	var d: Vector3 = target - position
+	var flat: Vector3 = Vector3(d.x, 0.0, d.z)
+	var dur: float = flat.length() / maxf(0.1, mps)
+	if not is_inside_tree():
+		position = target
+		if face and flat.length() > 0.01:
+			rotation.y = yaw_to(flat)
+		return null
+	var tw: Tween = create_tween()
+	if delay > 0.0:
+		tw.tween_interval(delay)
+	if face and flat.length() > 0.05:
+		var goal: float = rotation.y + wrapf(yaw_to(flat) - rotation.y, -PI, PI)
+		tw.tween_property(self, "rotation:y", goal, 0.35).set_trans(Tween.TRANS_SINE)
+	tw.tween_property(self, "position", target, maxf(0.05, dur)).set_trans(Tween.TRANS_LINEAR)
+	_moves.append(tw)
+	return tw
+
+
 func _pose_body(delta: float) -> void:
 	super._pose_body(delta)
-	if person == null or (_body_mode == &"" and _hands_mode == &"" and head_down == 0.0):
+	if person == null:
 		return
-	var legs: Array = _legs_d
+	var k_dt: float = clampf(delta, 0.0, 0.2)
+	var want_k: float = 1.0 if _body_mode == &"kneel" else 0.0
+	_kneel_k = want_k if _snap else move_toward(_kneel_k, want_k, k_dt * KNEEL_RATE)
+	var legs: Array = _legs_d.duplicate(true)
+	var hips: Vector3 = _hips.position
 	var plant: bool = pose != &"sit"
-	if _body_mode == &"kneel":
-		_hips.position = Vector3(0, 0.58 + sin(_t * 1.3) * 0.01, 0.06)
-		_chest.rotation = Vector3(-0.1 - (0.12 if _hands_mode == &"pray" else 0.0) - (0.25 if _hands_mode == &"reach" else 0.0), 0.0, 0.0)
-		_head.rotation = Vector3(-0.42 if _hands_mode == &"pray" else -0.1, 0.0, 0.0)
-		legs = [[0.05, -1.62, 0.0], [-0.03, -1.55, 0.0]]
+	var poles: Array = _poles.duplicate()
+	# --- the cutscene's walk: standing and moving, the feet cover the ground the body does
+	var walking: bool = pose == &"stand" and _speed > 0.25 and _kneel_k < 0.01
+	if walking:
+		var stride: float = walk_stride if walk_stride > 0.0 else (clampf(0.3 + 0.4 * _speed, 0.45, 0.85) if _speed < 2.0 else clampf(0.9 + 0.2 * (_speed - 2.0), 0.9, 1.3))
+		_cphase += k_dt * PI * _speed / stride
+		var amp: float = clampf(stride / (2.0 * LEG_M), 0.0, 0.62)
+		for side: int in 2:
+			var lph: float = _cphase + (0.0 if side == 0 else PI)
+			legs[side] = [sin(lph) * amp, -maxf(0.0, cos(lph)) * amp * 1.4, 0.0]
+		_phase = _cphase   # the puppet's own bob and arm pump keep step with these legs
+	else:
+		_cphase = _phase
+	# --- a kneel (or the rise out of one) blends over the standing pose
+	if _kneel_k > 0.0:
+		var kh: Vector3 = Vector3(0, 0.58 + sin(_t * 1.3) * 0.01, 0.06)
+		hips = hips.lerp(kh, _kneel_k)
+		var cx: float = -0.1 - (0.12 if _hands_mode == &"pray" else 0.0) - (0.25 if _hands_mode == &"reach" else 0.0)
+		_chest.rotation.x = lerpf(_chest.rotation.x, cx, _kneel_k)
+		_head.rotation.x = lerpf(_head.rotation.x, -0.42 if _hands_mode == &"pray" else -0.1, _kneel_k)
+		for side2: int in 2:
+			for c: int in 3:
+				legs[side2][c] = lerpf(float(legs[side2][c]), float(KNEEL_LEGS[side2][c]), _kneel_k)
 		plant = true
-	if head_down != 0.0:
-		_head.rotation.x -= head_down
+	_hips.position = hips   # (the chest and the hand targets hang from the hips node: it must sit where the rig's hips go)
+	# --- the head: a bow and a turn, smoothed (the chest follows a little)
+	_head_s = Vector2(head_down, head_yaw) if _snap else _head_s.lerp(Vector2(head_down, head_yaw), 1.0 - exp(-k_dt * HEAD_RATE))
+	_head.rotation.x -= _head_s.x
+	_head.rotation.y += _head_s.y
+	_chest.rotation.y += _head_s.y * 0.2
+	# --- the hands: the pose's targets (chest-local), the stage's overrides over them, the puppet's own under them
 	var hl: Variant = null
 	var hr: Variant = null
 	match _hands_mode:
@@ -231,23 +350,43 @@ func _pose_body(delta: float) -> void:
 			hr = Vector3(0.2, 0.38, -0.42)
 		&"hold":
 			var y: float = lerpf(0.02, 0.24, hold_lift)
-			hl = Vector3(-0.11, y, -0.32)
-			hr = Vector3(0.11, y, -0.32)
+			hl = Vector3(-hold_width, y, -0.32)
+			hr = Vector3(hold_width, y, -0.32)
 		&"writing":
 			hl = Vector3(-0.08, 0.2, -0.3)
 			hr = Vector3(0.06, 0.24 + sin(_t * 5.0) * 0.01, -0.3)
 		&"brace":
 			hl = Vector3(-0.3, -0.05, -0.15)
 			hr = Vector3(0.3, -0.05, -0.15)
+		&"raise":
+			hl = Vector3(-0.23, -0.2, -0.02)
+			hr = Vector3(0.14, 0.68, -0.28)
+		&"binoculars":
+			hl = Vector3(-0.07, 0.46, -0.22)
+			hr = Vector3(0.07, 0.46, -0.22)
 		_:
-			if _body_mode == &"kneel":
+			if _kneel_k > 0.0:
 				hl = Vector3(-0.2, -0.12, -0.08)
 				hr = Vector3(0.2, -0.12, -0.08)
-	var hands: Array = _hand_t.duplicate()
-	if hl != null:
-		hands = [_hand_world(hl as Vector3), _hand_world(hr as Vector3)]
-	person.drive({"hips": _hips.position, "chest": _chest.basis, "head": _head.basis, "legs": legs, "hands": hands,
-		"poles": [Vector3(-0.6, -1.0, 0.3), Vector3(0.6, -1.0, 0.3)], "plant": plant})
+	if hand_l != null:
+		hl = hand_l
+	if hand_r != null:
+		hr = hand_r
+	var want_l: Vector3 = _hand_world(hl as Vector3) if hl != null else (_hand_t[0] as Vector3)
+	var want_r: Vector3 = _hand_world(hr as Vector3) if hr != null else (_hand_t[1] as Vector3)
+	if _kneel_k > 0.0 and _kneel_k < 1.0 and hl == null:
+		want_l = want_l.lerp(_hand_world(Vector3(-0.2, -0.12, -0.08)), _kneel_k)
+		want_r = want_r.lerp(_hand_world(Vector3(0.2, -0.12, -0.08)), _kneel_k)
+	if _snap:
+		_hl_s = want_l
+		_hr_s = want_r
+	else:
+		var a: float = 1.0 - exp(-k_dt * HAND_RATE)
+		_hl_s = _hl_s.lerp(want_l, a)
+		_hr_s = _hr_s.lerp(want_r, a)
+	_snap = false
+	person.drive({"hips": hips, "chest": _chest.basis, "head": _head.basis, "legs": legs, "hands": [_hl_s, _hr_s],
+		"poles": poles, "plant": plant})
 
 
 func _hand_world(chest_local: Vector3) -> Vector3:

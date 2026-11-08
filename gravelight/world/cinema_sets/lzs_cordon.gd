@@ -21,7 +21,8 @@ func _build() -> void:
 	var gc: Array = ["ogpu_a", "ogpu_b"]
 	for i: int in 7:
 		var x: float = -120.0 + 40.0 * float(i)
-		var p: CinemaPerson = person(self, "cordon_%d" % i, look_of(gc[i % 2]), Vector3(x + rng.randf_range(-3, 3), 0, -30.0 + rng.randf_range(-4, 4)), 180.0 + rng.randf_range(-6, 6), "stand")
+		# (T-206: yaw 0 faces -z, toward the burning village: their backs to us, as the shot list says; they stood facing the lens)
+		var p: CinemaPerson = person(self, "cordon_%d" % i, look_of(gc[i % 2]), Vector3(x + rng.randf_range(-3, 3), 0, -30.0 + rng.randf_range(-4, 4)), rng.randf_range(-6, 6), "stand")
 		var rifle: MeshInstance3D = MeshInstance3D.new()
 		rifle.mesh = Props.unit_box()
 		rifle.scale = Vector3(0.05, 1.15, 0.05)

@@ -327,6 +327,10 @@ runner (the cast's `place` / `face` / `walk`, plus the `sit` and `kneel` poses t
 
 ## 9. AS BUILT (T-194; DECISIONS T-194)
 
+> T-206 (the polish pass, DECISIONS T-206) re-blocked the acting and corrected eleven cameras over this build without
+> changing a beat, a line or a length; the shot-by-shot notes, with what is still off and needs assets, are
+> docs/CUTSCENE_POLISH.md. Where a position or an effect below differs from the stage code, the code is right.
+
 - **Data** `data/gravelight/cutscenes_lazarus.json`: the five definitions, `sets` (14 stage ids on 13 scenes), `cast`
   (every person's look), `hooks`, the Archive `gallery`, `risen_kind`. Lengths: LAZARUS SATURDAY 240 s, FOURTH DAY
   106 s, STAUB 73 s, GRAVELIGHT ONE 84 s, the Moscow card 23 s (each within +15 % of §1-§5: shots were lengthened

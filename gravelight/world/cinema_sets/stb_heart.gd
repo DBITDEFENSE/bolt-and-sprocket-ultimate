@@ -8,6 +8,7 @@ extends CinemaSet
 var dial: Node3D
 var heart_light: OmniLight3D
 var crystal: Node3D
+var reinholt: CinemaPerson
 var _t: float = 0.0
 var _hum: float = 1.0
 
@@ -51,17 +52,22 @@ func _build() -> void:
 	cyl(dial, Vector3.ZERO, 0.11, 0.05, "bakelite")
 	box(dial, Vector3(0, 0.03, 0.07), Vector3(0.02, 0.012, 0.07), "brass")
 	marker("Dial", Vector3(0.4 - 0.45, 1.2, -1.4 + 0.02))
-	var r: CinemaPerson = person(self, "reinholt", look_of("reinholt"), Vector3(0.0, 0, -0.72), 0.0, "hold")
-	r.name = "Reinholt"
-	r.hold_lift = 0.85
-	ball(r, Vector3(0.12, 1.66, 0.02), Vector3(0.01, 0.01, 0.14), "#c2a060")   # the pencil behind her ear
+	# T-206: at the console (she stood 0.35 m short of the dial with her hands in the air), the left hand on the dial
+	reinholt = person(self, "reinholt", look_of("reinholt"), Vector3(0.0, 0, -0.95), 0.0, "hold")
+	reinholt.name = "Reinholt"
+	reinholt.hold_lift = 0.6
+	reinholt.hand_l = Vector3(-0.05, 0.1, -0.44)   # the dial, chest-local (world (-0.05, 1.17, -1.38))
+	reinholt.head_down = -0.12   # not looking at the gauges now
+	ball(reinholt, Vector3(0.12, 1.66, 0.02), Vector3(0.01, 0.01, 0.14), "#c2a060")   # the pencil behind her ear
 
 
-## Shot 9: her hand turns the resonance to its stop; the hum climbs.
+## Shot 9: her hand turns the resonance to its stop; the hum climbs. T-206: she bows her head on the second line.
 func fx_dial_turn(secs: float) -> void:
 	tween_to(dial, "rotation:y", deg_to_rad(-150.0), secs * 0.7, Tween.TRANS_SINE, Tween.EASE_IN_OUT, secs * 0.1)
 	var tw: Tween = create_tween()
 	tw.tween_property(self, "_hum", 2.4, secs * 0.9).set_trans(Tween.TRANS_SINE)
+	if reinholt != null:
+		later(4.0, func() -> void: reinholt.head_down = 0.55)
 
 
 func _process(delta: float) -> void:
