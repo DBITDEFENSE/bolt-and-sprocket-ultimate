@@ -1,5 +1,5 @@
 extends GutTest
-## The interactables' facing check (UPDATE 13 Part 3, DECISIONS T-218; gravelight/tools_src/interactable_facing.gd):
+## The interactables' facing check (UPDATE 13 Part 3, DECISIONS T-219; gravelight/tools_src/interactable_facing.gd):
 ## the pure verdict from the four sides' openness, and the scene survey on a tiny built scene (a wall, a navmesh
 ## floor in front of it, a wall buy turned toward the room and one turned into the wall). The map runs are
 ## tools/tests/test_interactable_facing.gd.
@@ -44,6 +44,13 @@ func test_about_turn_wins_a_near_tie() -> void:
 	assert_eq(float(c["turn"]), 180.0, "the yaw-sign mistake: keep the footprint")
 	var c2: Dictionary = Facing.classify("faced", _open(0.0, 0.0, 1.0, 0.0), {0.0: true}, false, false, true, {180.0: 0.5, 90.0: 0.3})
 	assert_eq(float(c2["turn"]), 90.0, "no about-turn when the back is shut")
+
+
+func test_back_on_its_wall_with_a_narrow_front_is_ok() -> void:
+	# a wall buy in a bay aisle: its back on the hull, a third of its front walkable, a side more open
+	var c: Dictionary = Facing.classify("faced", _open(0.33, 0.0, 1.0, 0.2), {180.0: true}, true, false, true, {0.0: 0.0})
+	assert_eq(c["verdict"], "OK")
+	assert_eq(float(c["turn"]), 0.0)
 
 
 func test_front_on_a_wall_with_a_narrow_aisle_behind() -> void:

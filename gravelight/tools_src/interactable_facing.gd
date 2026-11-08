@@ -1,5 +1,5 @@
 extends RefCounted
-## The interactables' facing check (UPDATE 13 Part 3, DECISIONS T-218): does each interactable's front face the open,
+## The interactables' facing check (UPDATE 13 Part 3, DECISIONS T-219): does each interactable's front face the open,
 ## walkable side players walk up from, and can a player standing on the navmesh reach its interaction area?
 ## Works from the scene file alone (nothing's _ready runs, no physics, no NavigationServer): the baked navmesh
 ## polygons of every NavigationRegion3D and every BoxShape3D collider (oriented boxes) are read from the
@@ -8,17 +8,21 @@ extends RefCounted
 ## (No class_name: callers preload it, so a fresh checkout works before the editor rebuilds its class cache.)
 ##
 ## For each interactable: its world front (basis * the script's front axis; most scripts face local -Z), then for
-## the four turns of the node (0 = as placed, 180, +90, -90) the "openness" of that side: the share of 9 sample
-## points (3 distances x 3 lateral offsets, starting just past the body) that lie on the navmesh at the object's
-## floor and that a straight line at chest height from the object reaches without crossing a collider box.
-## classify() turns the four numbers into a verdict:
-##   OK          the front side is open
-##   BACKWARDS   the front is blocked, the back is clearly the open side
-##   SIDEWAYS    the front is blocked, a side is clearly the open side
-##   UNSURE      the front is blocked and no side is clearly open (a niche, a catwalk edge, a table top)
+## the four turns of the node (0 = as placed, 180, +90, -90) the "openness" of that side: the share of 15 sample
+## points (3 distances x 5 lateral offsets, 0.8-1.8 m past the body's front face) that lie on the navmesh at the
+## object's floor and that a straight line at chest height from the body's face reaches without crossing a collider
+## box; plus which sides have a wall within WALL_GAP and how far the wall behind would be after each turn.
+## classify() turns them into a verdict:
+##   OK          the front side is open (or the back is on its wall and the front is a narrow walkable strip)
+##   BACKWARDS   the front is blocked, the back is clearly the open side (or the front is on a wall)
+##   SIDEWAYS    the front is blocked and a side is clearly open, or a wall-backed object stands with its flank
+##               on a wall and its back in the open
+##   UNSURE      no side is clearly right (a niche, a free-standing post with a narrow front)
 ##   UNREACHABLE no player standing on the navmesh can reach the interaction area
 ## Objects with no front (doors, carried parts, round consoles, quest props: kind "omni"/"door") are only checked
-## for reach. The suggested yaw turns the front to the most open side.
+## for reach; windows (barricades) are layout and only listed. The suggested yaw turns the front to the open side,
+## one with a wall behind first, the plain about-turn on a near tie. Also built at load and checked here: the bank
+## counter (bank.json) and the campaign exfil beacon (the map json's "exfil").
 
 const INTERACTABLE_SCRIPT: String = "res://gravelight/world/interactable.gd"
 
@@ -136,6 +140,9 @@ static func classify(kind: String, open: Dictionary, walls: Dictionary, reachabl
 					var p: float = _pick(open, behind, wall_backed, [180.0, 90.0, -90.0], -1.0, CLEAR_MIN)
 					return {"verdict": "BACKWARDS" if p == 180.0 else "SIDEWAYS", "turn": 0.0 if locked else p, "best": p}
 		return {"verdict": "OK" if reachable else "UNREACHABLE", "turn": 0.0, "best": 0.0}
+	# back on its wall, front onto a narrow but walkable strip (a bay aisle, a nook) and in reach: right as it is
+	if wall_backed and fo > 0.0 and bool(walls.get(180.0, false)) and not bool(walls.get(0.0, false)):
+		return {"verdict": "OK" if reachable else "UNREACHABLE", "turn": 0.0, "best": 0.0}
 	if not clear.is_empty():
 		var p2: float = _pick(open, behind, wall_backed, clear, clear[0])
 		return {"verdict": "BACKWARDS" if p2 == 180.0 else "SIDEWAYS", "turn": 0.0 if locked else p2, "best": p2}
@@ -201,6 +208,12 @@ static func rule_for(n: Node) -> Dictionary:
 		if RULES.has(key):
 			var r: Dictionary = (RULES[key] as Dictionary).duplicate()
 			r["script"] = key
+			# a door sizes its use box from its own `size` (BuyDoor._ready): deep doorways (Totenhafen's pens) too
+			if str(r["kind"]) == "door" and n.get("size") is Vector3:
+				var dz: Vector3 = n.get("size")
+				r["isize"] = Vector3(dz.x + 0.2, dz.y, dz.z + 0.3)
+				r["ioff"] = Vector3(0, dz.y * 0.5, 0)
+				r["f"] = dz.z * 0.5
 			return r
 		s = s.get_base_script()
 	var o: Dictionary = OMNI.duplicate()
@@ -270,7 +283,7 @@ static func local_index(geo: Dictionary, at: Vector3, skip_near: float, rule: Di
 		# wall. By name when the generator names it after the node, else a nav block standing on the origin.
 		if str(bb[3]).begins_with("NavBlock_"):
 			var own: String = str(rule.get("navblock", ""))
-			if (own != "" and str(bb[3]).begins_with(own)) or (own == "" and _plan_dist(ab2, at) < minf(skip_near, 0.05)):
+			if (own != "" and str(bb[3]).begins_with(own)) or _plan_dist(ab2, at) < minf(skip_near, 0.05):
 				continue
 		# a door's own leaf or plug (BreachPlug, the gate's body) stands on its origin: not a wall either
 		if str(rule.get("kind", "")) == "door" and _plan_dist(ab2, at) < 0.05 and ab2.position.y < at.y + CHEST and ab2.end.y > at.y + CHEST \
@@ -559,7 +572,7 @@ static func check_one(geo: Dictionary, it: Dictionary) -> Dictionary:
 	for t: float in TURNS:
 		var dir: Vector3 = _dir(yaw + t, axis)
 		# the samples start past the body's front face as it would be after the turn (the body turns with the node)
-		var ext: float = f_ext if kind == "faced" else 0.3
+		var ext: float = f_ext if kind == "faced" else (maxf(0.3, f_ext) if kind == "door" else 0.3)
 		var pts: Array = []
 		var n_open: int = 0
 		for d: float in SAMPLE_D:
@@ -581,8 +594,8 @@ static func check_one(geo: Dictionary, it: Dictionary) -> Dictionary:
 		open[t] = float(n_open) / float(SAMPLE_D.size() * LATERAL.size())
 		samples[t] = pts
 	res["open"] = open
-	# reach: from an open sample on the side players will use (the front for a faced object, any side else)
-	var reach_turns: Array = [0.0] if kind == "faced" else TURNS
+	# reach: from any open sample round the object (the use ray only needs the eye within reach of the use box)
+	var reach_turns: Array = TURNS
 	res["reachable"] = _reachable(li, xf, rule, samples, reach_turns, floor_y)
 	var walls: Dictionary = {}
 	for t2: float in TURNS:
@@ -730,7 +743,9 @@ static func approach_cam(li: Dictionary, res: Dictionary, axis: Vector3) -> Dict
 	var y2: float = float(res.get("suggested_yaw", res["yaw"]))
 	var dirs: Array = []
 	if str(res["kind"]) == "faced":
-		dirs.append(_dir(y2, axis))
+		# straight out front first, then a little to either side (a narrow aisle, a rack in the way)
+		for off: float in [0.0, 25.0, -25.0, 45.0, -45.0]:
+			dirs.append(_dir(y2 + off, axis))
 	else:
 		var open: Dictionary = res["open"]
 		var order: Array = TURNS.duplicate()
@@ -741,7 +756,7 @@ static func approach_cam(li: Dictionary, res: Dictionary, axis: Vector3) -> Dict
 	var lift: float = floor_y - gy
 	var look: Vector3 = Vector3(o.x, maxf(gy + 1.1, o.y if o.y > gy + 0.5 else gy + 1.1), o.z)
 	for dir: Vector3 in dirs:
-		for d: float in [2.75, 3.0, 2.5, 2.2, 1.8]:
+		for d: float in [2.75, 3.0, 2.5, 2.2, 1.8, 1.5]:
 			var feet: Vector3 = Vector3(o.x, floor_y, o.z) + dir * d
 			var h: float = nav_height(li, feet.x, feet.z, floor_y, NAV_DY)
 			if is_nan(h):

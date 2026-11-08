@@ -1,5 +1,5 @@
 extends SceneTree
-## The interactables' facing test (UPDATE 13 Part 3, DECISIONS T-218): for every interactable of each map (perk
+## The interactables' facing test (UPDATE 13 Part 3, DECISIONS T-219): for every interactable of each map (perk
 ## machines, wall buys, ammo boxes, the mystery crate's spots, the Crucible, the power switch, the bench, trap levers,
 ## doors, the bank counter, quest and egg objects) the front must face open walkable navmesh and the interaction area
 ## must be reachable from the navmesh. Headless, from the scene files alone (gravelight/tools_src/interactable_facing.gd).
@@ -32,7 +32,11 @@ const TITLES: Dictionary = {
 const FERNFLUG: Array = ["map04a", "map04b", "map04c", "map04d"]
 ## Listed exceptions ("<map>/<node>": why): problems that are not the facing and need a layout change the facing
 ## pass may not make (docs/captures/fernflug/facing_after.md lists them for the owner). Reported, never failed.
-const KNOWN: Dictionary = {}
+const KNOWN: Dictionary = {
+	"map04a/AmmoBox_Halle": "buried under the hangar's west catwalk ramp (Ramp_CatwalkW starts at z 150.5; the box at z 153 is under its slab): needs a new spot, a layout change",
+	"map04c/Generator": "the power switch stands in the 1.45 m strip between the generator shed's nav block and the motor pool's north wall: no navmesh there and its front is on the wall; the right yaw depends on where it should stand (the comment says the shed's south face): a layout change",
+	"map04c/Part_ls_part_cradle_dish_gimbal": "the Lodestone part lies inside the radar mast's 2 x 2 m collider (the use ray ignores walls, so it is taken from the tower base); a quest position, not a facing",
+}
 
 
 func _initialize() -> void:
@@ -98,6 +102,8 @@ func _initialize() -> void:
 		md += Facing.markdown_table(str(TITLES.get(key, key)), rows)
 		var set_cams: Array = []
 		for r2: Dictionary in rows:
+			if str(r2["verdict"]) == "LAYOUT":
+				continue   # windows: layout, no camera
 			var cam: Dictionary = r2["cam"]
 			cams.append({"act": key, "scene": MAPS[key], "name": r2["name"], "verdict": r2["verdict"],
 				"cam_pos": _v(cam["cam_pos"]), "look_at": _v(cam["look_at"]), "on_navmesh": cam["on_nav"]})
