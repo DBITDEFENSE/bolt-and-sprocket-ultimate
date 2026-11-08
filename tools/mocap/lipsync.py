@@ -3,7 +3,7 @@
 
     tools/mocap.sh lipsync              every line an in-engine cutscene speaks (the cutscene data, shots.json, the
                                         endings' scripts), from its ElevenLabs take
-    tools/mocap.sh lipsync --all        every line with a take (the in-match lines too)
+    tools/mocap.sh lipsync --all        every line with a take (the in-match lines too, with the faster phonetic recognizer)
     tools/mocap.sh lipsync --ids=A,B    just these
     options: --force (redo lines whose cue file is newer than the take), --amplitude (skip Rhubarb), --jobs=N
 
@@ -220,7 +220,7 @@ def amplitude_cues(path):
 
 # ------------------------------------------------------------------ one line
 
-def make(lid, row, audio, exe, force=False):
+def make(lid, row, audio, exe, force=False, fast=False):
     out = os.path.join(OUT, lid + ".json")
     if not force and os.path.exists(out) and os.path.getmtime(out) >= os.path.getmtime(audio):
         return "kept"
@@ -229,7 +229,7 @@ def make(lid, row, audio, exe, force=False):
     try:
         if not exe:
             raise RuntimeError("no rhubarb")
-        eng = is_english(row)
+        eng = is_english(row) and not fast
         cues, _ = run_rhubarb(exe, audio, dialog_text(row), eng)
         src = "rhubarb %s %s" % (VERSION, "pocketSphinx" if eng else "phonetic")
     except Exception as e:
@@ -260,6 +260,9 @@ def main(argv=None):
     else:
         ids = cutscene_ids(lines)
     exe = "" if a.amplitude else rhubarb_exe()
+    # the cutscene lines get PocketSphinx with their text (closer, several seconds a line); the in-match lines of
+    # --all the phonetic recognizer (about a second a line: 2,500 lines in minutes, not hours)
+    close = set(cutscene_ids(lines))
     todo, no_audio = [], []
     for lid in ids:
         au = audio_of(lid, man)
@@ -267,7 +270,7 @@ def main(argv=None):
     log("%d lines (%d with a take, %d without); Rhubarb: %s" % (len(ids), len(todo), len(no_audio), exe or "none (loudness fallback)"))
     counts = {}
     with concurrent.futures.ThreadPoolExecutor(max_workers=a.jobs) as ex:
-        futs = {ex.submit(make, lid, lines.get(lid, {}), au, exe, a.force): lid for lid, au in todo}
+        futs = {ex.submit(make, lid, lines.get(lid, {}), au, exe, a.force, lid not in close): lid for lid, au in todo}
         for i, f in enumerate(concurrent.futures.as_completed(futs)):
             try:
                 r = f.result()
