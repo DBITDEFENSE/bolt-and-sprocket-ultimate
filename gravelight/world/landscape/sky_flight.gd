@@ -47,7 +47,7 @@ func setup_bombers(c: Dictionary, from: Vector3, dir: Vector3, dist: float, coun
 	transform = Transform3D(Basis.looking_at(heading, Vector3.UP), from)
 	var span: float = float(c.get("wingspan", 3.6))
 	var sp: float = float(c.get("spacing", 11.0))
-	var mesh: ArrayMesh = PlaneModels.bomber()
+	var mesh: ArrayMesh = PlaneModels.by_name(str(c.get("model", "bomber")))   # T-212: "pe2" over the Soviet front
 	for i: int in count:
 		var vic: int = i / 3
 		var slot: int = i % 3
@@ -73,7 +73,7 @@ func setup_fighters(c: Dictionary, ctrl: Array[Vector3], secs: float, seed_v: in
 	var span: float = float(c.get("wingspan", 1.9))
 	for i: int in 2:
 		var p: MeshInstance3D = MeshInstance3D.new()
-		p.mesh = PlaneModels.mosquito() if str(c.get("model", "")) == "mosquito" else PlaneModels.fighter()   # T-154
+		p.mesh = _fighter_mesh(str(c.get("model", "")), i)
 		p.scale = Vector3.ONE * span
 		p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		p.set_meta("lag", float(i))
@@ -88,6 +88,16 @@ func setup_fighters(c: Dictionary, ctrl: Array[Vector3], secs: float, seed_v: in
 	_burst_t = _rng.randf_range(1.0, 3.0)
 	_engine(str(c.get("sound", "")), float(c.get("volume_db", 0.0)), float(c.get("unit_size", 45.0)), float(c.get("max_distance", 700.0)), planes[0])
 	_place_fighters()
+
+
+## T-154: "mosquito" is two Mosquitoes. T-212: "il2_vs_night" is a Soviet Il-2 (index 0, the one chased and, when a
+## plane goes down in a fighter flight, the one that falls) with a German night fighter (index 1) on its tail.
+static func _fighter_mesh(model: String, index: int) -> ArrayMesh:
+	if model == "il2_vs_night":
+		return PlaneModels.il2() if index == 0 else PlaneModels.nightfighter()
+	if model == "mosquito":
+		return PlaneModels.mosquito()
+	return PlaneModels.fighter()
 
 
 func _engine(key: String, vol: float, unit: float, max_d: float, parent: Node) -> void:

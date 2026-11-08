@@ -385,7 +385,7 @@ func _say_line(line_id: String) -> void:
 		var stream: AudioStream = GLVO.load_stream(path)
 		if stream != null:
 			var ap: AudioStreamPlayer3D = AudioStreamPlayer3D.new()
-			ap.bus = &"VO"
+			ap.bus = GLVO.bus_for_line(StringName(line_id))   # T-205
 			ap.stream = stream
 			ap.unit_size = 6.0
 			ap.max_distance = 45.0

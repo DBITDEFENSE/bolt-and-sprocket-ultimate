@@ -64,8 +64,14 @@ func _ramp() -> void:
 	box(hut, Vector3(0, 1.4, 0), Vector3(4.0, 2.8, 3.0), "planks")
 	box(hut, Vector3(0.9, 1.0, -1.52), Vector3(0.9, 2.0, 0.02), glow(Color(1.0, 0.85, 0.6), 1.6))
 	omni(hut, Vector3(0.9, 1.2, -2.2), [1.0, 0.85, 0.6], 1.2, 6.0)
-	for c: int in 3:   # the crew in winter whites
-		person(r, "ramp_crew_%d" % c, look_of("ramp_crew"), Vector3(-4.0 + 2.6 * float(c), 0, 8.0 + 1.2 * float(c % 2)), 90.0 + rng.randf_range(-40, 40), "stand")
+	# the crew in winter whites, at the rails (T-206: they stood 8 m behind the lens of shot 4; two clamp a canister
+	# at the rockets' noses, one checks the low end of the frame)
+	var cr0: CinemaPerson = person(r, "ramp_crew_0", look_of("ramp_crew"), Vector3(2.1, 0, -3.0), 90.0, "hold")
+	cr0.hold_lift = 0.8
+	var cr1: CinemaPerson = person(r, "ramp_crew_1", look_of("ramp_crew"), Vector3(2.3, 0, 1.0), 90.0, "hold")
+	cr1.hold_lift = 0.8
+	var cr2: CinemaPerson = person(r, "ramp_crew_2", look_of("ramp_crew"), Vector3(-3.4, 0, -1.0), -90.0, "stand")
+	cr2.head_down = 0.4
 	for s: int in 4:   # sheds and pipework behind
 		box(self, Vector3(-30.0 + 15.0 * float(s), 2.5, -26.0), Vector3(10.0, 5.0, 7.0), "fl_corrugated")
 	precipitation(self, Vector3(0, 0, 0), Vector3(18, 6, 18), true, 600)

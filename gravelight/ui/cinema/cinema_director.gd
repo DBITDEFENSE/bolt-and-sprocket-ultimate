@@ -180,6 +180,7 @@ func _begin_shot(s: CinemaShot) -> void:
 		for l: Variant in lt as Array:
 			if l is Dictionary:
 				_add_light(l as Dictionary)
+	MocapStage.on_shot(self, s)   # T-210: a phone-mocap clip for the shot's actors when one exists (else nothing)
 
 
 ## A script-driven shot (the endings): plays `d` for `secs` from now. Returns the shot.

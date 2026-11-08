@@ -20,6 +20,8 @@ var serafim: CinemaPerson
 var bearers: Array[CinemaPerson] = []
 var guards: Array[CinemaPerson] = []
 var lamp_light: OmniLight3D
+var volkov_lantern: Node3D
+var step_lantern: Node3D
 
 
 func _build() -> void:
@@ -125,8 +127,29 @@ func _vessel(at: Vector3) -> void:
 
 
 func _people() -> void:
-	volkov = person(self, "volkov", look_of("volkov_1930"), Vector3(0.1, 0.0, 0.5), 0.0, "stand")
+	volkov = person(self, "volkov", look_of("volkov_1930"), Vector3(0.1, 0.0, 0.5), 0.0, "hold")
 	volkov.name = "Volkov"
+	volkov.hold_lift = 0.2
+	# T-206: Volkov carries his own lantern (the shot list has his lantern come up to the letters); he sets it on the
+	# step beside the vessel to open it
+	volkov_lantern = PropLibrary.instance("lantern_oil") if PropLibrary.has_key("lantern_oil") else null
+	if volkov_lantern == null:
+		volkov_lantern = Node3D.new()
+		ball(volkov_lantern, Vector3.ZERO, Vector3(0.08, 0.12, 0.08), glow(Color(1.0, 0.75, 0.4), 2.0))
+	volkov.in_hand(volkov_lantern, true, Vector3(0, -0.12, -0.02))
+	var vl: OmniLight3D = omni(volkov_lantern, Vector3(0, 0.08, 0), [1.0, 0.72, 0.42], 1.5, 6.0)
+	vl.set_meta("flicker", 1.5)
+	vl.add_to_group(&"cinema_flicker")
+	step_lantern = group(self, "StepLantern", Vector3(0.45, -2.2, -8.35))
+	var sl: Node3D = PropLibrary.instance("lantern_oil") if PropLibrary.has_key("lantern_oil") else null
+	if sl != null:
+		step_lantern.add_child(sl)
+	else:
+		ball(step_lantern, Vector3(0, 0.1, 0), Vector3(0.08, 0.12, 0.08), glow(Color(1.0, 0.75, 0.4), 2.0))
+	var sll: OmniLight3D = omni(step_lantern, Vector3(0, 0.2, 0), [1.0, 0.72, 0.42], 1.5, 5.0)
+	sll.set_meta("flicker", 1.5)
+	sll.add_to_group(&"cinema_flicker")
+	step_lantern.visible = false
 	for k: int in 2:
 		var b: CinemaPerson = person(self, "bearer_%d" % k, look_of(["brigade_a", "brigade_c"][k]), Vector3(-0.3 + 0.6 * float(k), 0.0, -0.2), 0.0, "hold")
 		var lan: Node3D = PropLibrary.instance("lantern_oil") if PropLibrary.has_key("lantern_oil") else null
@@ -145,33 +168,46 @@ func _people() -> void:
 		guards.append(gp)
 
 
-## Shot 18: down the steps behind two lanterns.
+## Shot 18: down the steps behind two lanterns. T-206: the two lanterns stand at the foot of the steps (their old
+## 10 cm/s creep read as a slide); Volkov comes down ahead of the lens at a stair's pace (0.4 m/s, a step a tread),
+## watching his feet, his lantern low.
 func fx_descend(secs: float) -> void:
-	# the two lanterns already at the foot of the steps, either side of the door; Volkov going down ahead of the lens,
-	# to one side (the camera follows them down and must see the lamp and the line between them)
 	for k: int in bearers.size():
 		var b: CinemaPerson = bearers[k]
-		b.position = Vector3(-0.62 + 1.24 * float(k), -2.2 - 0.2 * float(k), -3.25 - 0.4 * float(k))
+		b.position = Vector3(-0.62 + 1.24 * float(k), -2.4, -3.75 - 0.2 * float(k))
+		b.rotation.y = 0.0
 		b.reset_motion()
-		tween_to(b, "position", Vector3(-0.62 + 1.24 * float(k), -2.4, -3.75 - 0.2 * float(k)), secs * 0.5, Tween.TRANS_SINE)
-	volkov.position = Vector3(0.6, -1.3, -2.2)
-	volkov.reset_motion()
-	tween_to(volkov, "position", Vector3(0.6, -2.4, -3.4), secs, Tween.TRANS_LINEAR)
-
-
-## Shot 19: Volkov's lantern up to the letters; Serafim on the stair behind him.
-func fx_at_inscription(_secs: float) -> void:
-	volkov.position = Vector3(0.25, -2.4, -3.75)
+	volkov.position = Vector3(0.6, -0.6, -1.05)
 	volkov.rotation.y = 0.0
 	volkov.set_pose(&"hold")
-	volkov.hold_lift = 1.0
+	volkov.hold_lift = 0.2
+	volkov.head_down = 0.35
+	volkov.walk_stride = 0.3
 	volkov.reset_motion()
+	var tw: Tween = volkov.walk_to(Vector3(0.6, -2.4, -3.6), 2.6 / maxf(1.0, secs * 0.92), 0.3, false)
+	if tw != null:
+		tw.finished.connect(func() -> void:
+			volkov.walk_stride = 0.0
+			volkov.look_toward(Vector3(0, -0.36, -4.27)))
+
+
+## Shot 19: Volkov's lantern up to the letters; Serafim on the stair behind him. T-206: Volkov stands to the lens's
+## left with the lantern raised to the stone (the old spot put the back of his head 0.45 m in front of the lens).
+func fx_at_inscription(_secs: float) -> void:
+	volkov.position = Vector3(-0.55, -2.4, -3.7)
+	volkov.rotation.y = 0.0
+	volkov.walk_stride = 0.0
+	volkov.set_pose(&"raise")
+	volkov.reset_motion()
+	volkov.look_toward(Vector3(0, -0.36, -4.27))
 	for k: int in bearers.size():
-		bearers[k].position = Vector3(-0.45 + 0.9 * float(k), -2.4 + 0.2 * float(k), -3.5 + 0.5 * float(k))
+		bearers[k].position = Vector3(-1.2 + 2.4 * float(k), -2.4, -3.5)
+		bearers[k].rotation.y = 0.0
 		bearers[k].reset_motion()
 	serafim.visible = true
-	serafim.position = Vector3(-0.2, -1.6, -2.4)
+	serafim.position = Vector3(0.2, -1.6, -2.4)
 	serafim.rotation.y = 0.0
+	serafim.look_toward(Vector3(0, -0.36, -4.27))
 	serafim.reset_motion()
 
 
@@ -179,38 +215,56 @@ func fx_at_inscription(_secs: float) -> void:
 func fx_enter(_secs: float) -> void:
 	volkov.position = Vector3(1.25, -2.4, -6.9)
 	volkov.rotation.y = 0.0
-	volkov.set_pose(&"stand")
+	volkov.set_pose(&"hold")
+	volkov.hold_lift = 0.45
+	volkov.look_toward(Vector3(0, -2.0, -8.4))
 	volkov.reset_motion()
-	for k: int in bearers.size():
-		bearers[k].position = Vector3(-0.9 + 1.8 * float(k), -2.4, -5.4)
+	for k: int in bearers.size():   # (the left one back by the door, clear of the lens of shot 24 at (-1.25, -5.7))
+		bearers[k].position = Vector3(-1.55, -2.4, -5.0) if k == 0 else Vector3(1.3, -2.4, -5.6)
 		bearers[k].rotation.y = 0.0
+		bearers[k].look_toward(Vector3(0, -2.0, -8.4))
 		bearers[k].reset_motion()
 	serafim.visible = true
-	serafim.position = Vector3(0, -2.4, -4.85)
+	serafim.position = Vector3(-0.28, -2.4, -4.6)   # in the doorway, by its left jamb (the men pass on his right)
 	serafim.rotation.y = 0.0
 	serafim.set_pose(&"stand")
+	serafim.look_toward(Vector3(1.25, -0.8, -6.9))
 	serafim.reset_motion()
 	for g: int in guards.size():
 		guards[g].visible = true
-		guards[g].position = Vector3(-0.42 + 0.84 * float(g), -2.4, -4.6)
+		guards[g].position = Vector3(-0.85 if g == 0 else 0.78, -2.4, -5.05)
+		guards[g].rotation.y = deg_to_rad(-40.0 if g == 0 else 40.0)
+		guards[g].look_toward(Vector3(0, -2.0, -8.4))
 		guards[g].reset_motion()
 
 
-## Shot 22: his hands at the step: the knife under the wax, the curl of wax, the cord, the lid.
+## Shot 22: his hands at the step: the knife under the wax, the curl of wax, the cord, the lid. T-206: he kneels
+## close enough to reach it, his lantern set on the step beside it; the right hand works at the wax, then follows
+## the lid as it comes off.
 func fx_vessel_open(secs: float) -> void:
-	volkov.position = Vector3(0.05, -2.4, -7.75)
+	volkov_lantern.visible = false
+	step_lantern.visible = true
+	volkov.position = Vector3(0.05, -2.4, -7.92)
 	volkov.rotation.y = 0.0
 	volkov.set_pose(&"kneel_reach")
+	volkov.look_ahead()
+	volkov.head_down = 0.5
 	volkov.reset_motion()
 	lid.position = Vector3(0, 0.3, 0)
 	lid.rotation = Vector3.ZERO
 	seal.visible = true
+	volkov.hand_r = Vector3(0.1, 0.02, -0.5)
+	var work: Tween = create_tween().set_loops(3)
+	work.tween_property(volkov, "hand_r", Vector3(0.07, -0.02, -0.52), secs * 0.08).set_trans(Tween.TRANS_SINE)
+	work.tween_property(volkov, "hand_r", Vector3(0.12, 0.03, -0.49), secs * 0.08).set_trans(Tween.TRANS_SINE)
 	tween_to(seal, "position", Vector3(0.09, 0.33, 0.05), secs * 0.3, Tween.TRANS_SINE, Tween.EASE_OUT, secs * 0.25)
 	tween_to(seal, "rotation:z", 1.2, secs * 0.3, Tween.TRANS_SINE, Tween.EASE_OUT, secs * 0.25)
 	later(secs * 0.62, func() -> void:
 		(vessel.get_node("VesselInside") as Node3D).visible = true
 		tween_to(lid, "position", Vector3(-0.14, 0.05, 0.06), secs * 0.3, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
-		tween_to(lid, "rotation:z", -1.4, secs * 0.3))
+		tween_to(lid, "rotation:z", -1.4, secs * 0.3)
+		volkov.hand_r = Vector3(0.0, 0.08, -0.5)
+		tween_to(volkov, "hand_r", Vector3(-0.24, -0.12, -0.46), secs * 0.3, Tween.TRANS_SINE, Tween.EASE_IN_OUT))   # the lid set down on the step, left of the vessel
 
 
 ## Shot 23: close on the mouth: wet, the light moving on it. Gore full: a drop runs down the lip onto the stone.
@@ -219,6 +273,8 @@ func fx_drop_run(secs: float) -> void:
 	seal.visible = false
 	lid.position = Vector3(-0.14, 0.05, 0.06)
 	lid.rotation.z = -1.4
+	volkov.hand_l = Vector3(-0.14, -0.2, -0.3)   # his hands drawn back onto his knees: nothing over the mouth the lens is on
+	volkov.hand_r = Vector3(0.14, -0.2, -0.3)
 	if gore() != "full":
 		return
 	drop.visible = true
@@ -226,21 +282,46 @@ func fx_drop_run(secs: float) -> void:
 	tween_to(drop, "position", Vector3(0.062, 0.02, 0.0), secs * 0.6, Tween.TRANS_QUAD, Tween.EASE_IN, secs * 0.25)
 
 
-## Shot 24: he stands up too fast in front of the brigade.
+## Shot 24: he stands up too fast in front of the brigade. T-206: the rise is seen (the kneel blends up over about
+## 0.4 s on the cut), the hands drop from the vessel; he turns his face to the men on the clever answer.
 func fx_stand_up(_secs: float) -> void:
 	volkov.position = Vector3(0.1, -2.4, -7.6)
 	volkov.rotation.y = PI
-	volkov.set_pose(&"stand")
-	volkov.reset_motion()
-
-
-## Shot 25: the men move past Serafim in the door, out, with the vessel.
-func fx_men_out(secs: float) -> void:
-	vessel.visible = false
+	volkov.hand_r = null
+	volkov.hand_l = null
+	volkov.set_pose(&"kneel_reach")
+	volkov.head_down = 0.5
+	volkov.reset_motion()   # (the first frame snaps to the kneel; the rise starts a frame later and blends)
+	later(0.06, func() -> void:
+		volkov.set_pose(&"stand")
+		volkov.head_down = 0.0)
+	later(0.5, func() -> void: volkov.look_toward(Vector3(-0.28, -0.85, -4.6)))
 	for k: int in bearers.size():
-		var b: CinemaPerson = bearers[k]
-		b.rotation.y = PI
-		tween_to(b, "position", Vector3(-0.25 + 0.5 * float(k), -2.4, -4.0), secs * 0.8, Tween.TRANS_SINE, Tween.EASE_IN_OUT, 0.3 * float(k))
+		bearers[k].look_toward(Vector3(0.1, -0.8, -7.6))
+	for g: int in guards.size():
+		guards[g].look_toward(Vector3(0.1, -0.8, -7.6))
+	serafim.look_toward(Vector3(0.1, -0.8, -7.6))
+
+
+## Shot 25: the men move past Serafim in the door, out, with the vessel. T-206: single file through the door on his
+## right (a waypoint inside the room first, so nobody walks through a jamb or through him), Volkov last.
+func fx_men_out(_secs: float) -> void:
+	vessel.visible = false
+	step_lantern.visible = false
+	serafim.look_ahead()
+	var order: Array = [[bearers[1], 0.2], [bearers[0], 1.7], [volkov, 3.0]]
+	for e: Array in order:
+		var p: CinemaPerson = e[0]
+		var delay: float = float(e[1])
+		if p == volkov:
+			p.set_pose(&"hold")
+			p.hold_lift = 0.4
+			p.hand_r = null
+			volkov_lantern.visible = true
+		p.look_ahead()
+		var leg1: Tween = p.walk_to(Vector3(0.25, -2.4, -5.15), 1.1, delay)
+		if leg1 != null:
+			leg1.finished.connect(func() -> void: p.walk_to(Vector3(0.25, -2.4, -3.5), 1.0))
 
 
 func _process(delta: float) -> void:

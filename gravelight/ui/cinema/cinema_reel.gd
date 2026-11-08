@@ -47,6 +47,7 @@ var _hidden_hud: Dictionary = {}
 var _root_3d_was: bool = false
 var _waiting_end: bool = false
 var _vo_held: bool = false
+var _room_set: bool = false
 
 
 ## A reel of `cut_ids` under `parent` (in a match: the MapRoot, whose HUD it hides).
@@ -154,6 +155,7 @@ func _start(i: int) -> void:
 	var shots: Array = def.get("shots", [])
 	var first: String = str((shots[0] as Dictionary).get("_set", "black")) if not shots.is_empty() else "black"
 	_swap(first)
+	_room(shots[0] if not shots.is_empty() else {})
 	director = CinemaDirector.make(_vp, def, stage, {"speed": speed, "cast": false, "hide_hud": false, "auto": false, "vo": _say})
 	director.shot_started.connect(_on_shot)
 	director.skip_requested.connect(_on_skip)
@@ -216,6 +218,7 @@ func _process(delta: float) -> void:
 	if i != _seen_shot and i >= 0:
 		_seen_shot = i
 		_swap(str(director.shots[i].raw.get("_set", stage_id)))
+		_room(director.shots[i].raw)
 	var d: CinemaDirector = director
 	d.step(dt)
 	for m: String in d.missing:
@@ -319,7 +322,19 @@ func _say(id: String) -> void:
 		GLVO.cinema_pass = false
 
 
+## T-205: the lines sit in the shot's space (VORoomAcoustics: the shot's `vo_room`, else its set's preset in
+## data/gravelight/vo_rooms.json cinema_sets); the reel's end hands the room back to the map (or dry over the menu).
+func _room(shot: Dictionary) -> void:
+	if GLVO.rooms == null:
+		return
+	_room_set = true
+	GLVO.rooms.set_cinema(GLVO.rooms.preset_for_shot(str(shot.get("_set", stage_id)), shot))
+
+
 func _release_vo() -> void:
+	if _room_set and GLVO.rooms != null:
+		_room_set = false
+		GLVO.rooms.clear_cinema()
 	if _vo_held:
 		_vo_held = false
 		GLVO.cinema_hold = maxi(0, GLVO.cinema_hold - 1)

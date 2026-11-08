@@ -3,8 +3,9 @@
 Four cutscenes and one epilogue card, all on the T-184 cinema library (`gravelight/ui/cinema/*`: CinemaDirector's
 timeline of CinemaShot entries, CinemaCamera, CinemaOverlay's letterbox / grade / title card / captions / hold-to-skip,
 CinemaCast for the squad). Every line they speak is an ID row in `docs/gravelight/VO_SCRIPT.md` §26 and so in
-`data/gravelight/vo/lines.json` (Russian and German lines carry the spoken form in `speech`; the subtitle is `text`,
-always English; the cinema subtitles sit in the bottom bar as T-184 built them). The canon is the work order §1 until
+`data/gravelight/vo/lines.json` (German lines carry the spoken form in `speech`; the subtitle is `text`, always
+English; since T-204 the Russian-speaking cast speaks English with a Russian accent, the Russian kept in
+`data/gravelight/vo/lang/ru.json`; the cinema subtitles sit in the bottom bar as T-184 built them). The canon is the work order §1 until
 `docs/LAZARUS.md` (T-190) lands; the names here are the work order's and must stay exactly as written.
 
 **Rules for every cutscene (work order §5):** skippable (hold [interact], the overlay's bar, after `skip_after` 3 s;
@@ -325,6 +326,10 @@ runner (the cast's `place` / `face` / `walk`, plus the `sit` and `kneel` poses t
     per second into `morning/clips/t194_*`; the respect reviewer (T-202) reads the stills against §1's rules.
 
 ## 9. AS BUILT (T-194; DECISIONS T-194)
+
+> T-206 (the polish pass, DECISIONS T-206) re-blocked the acting and corrected eleven cameras over this build without
+> changing a beat, a line or a length; the shot-by-shot notes, with what is still off and needs assets, are
+> docs/CUTSCENE_POLISH.md. Where a position or an effect below differs from the stage code, the code is right.
 
 - **Data** `data/gravelight/cutscenes_lazarus.json`: the five definitions, `sets` (14 stage ids on 13 scenes), `cast`
   (every person's look), `hooks`, the Archive `gallery`, `risen_kind`. Lengths: LAZARUS SATURDAY 240 s, FOURTH DAY

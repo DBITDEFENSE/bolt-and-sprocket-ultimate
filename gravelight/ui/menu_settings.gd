@@ -192,6 +192,8 @@ func _audio() -> void:
 	var v: Dictionary = GLSettings.values
 	for pair: Array in [["Master", "vol_master"], ["Music", "vol_music"], ["Sound effects", "vol_sfx"], ["Voices", "vol_vo"], ["Perk jingles", "vol_jingles"], ["Ambience", "vol_ambience"]]:
 		content.add_child(MenuKit.row(str(pair[0]), MenuKit.slider(0.0, 1.0, 0.05, float(v[pair[1]]), _setter(str(pair[1])))))
+	content.add_child(MenuKit.check("Room acoustics", bool(v.get("vo_room_acoustics", true)), _setter("vo_room_acoustics")))   # T-205
+	content.add_child(MenuKit.para("Voices carry a little of the room they are spoken in: the inn, a cellar, a mine, a plane. Off: every voice dry.", 16, MenuKit.DIM))
 
 
 func _video() -> void:
