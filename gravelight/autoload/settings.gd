@@ -120,6 +120,12 @@ func _ready() -> void:
 		set_preset(picked)
 	if OS.get_cmdline_user_args().has("--frame-log") and ResourceLoader.exists("res://gravelight/tools_src/frame_log.gd"):
 		add_child((load("res://gravelight/tools_src/frame_log.gd") as GDScript).new())   # dev: a played session's frame times (not in the web build)
+	if OS.get_cmdline_user_args().has("--probe-campaign") and ResourceLoader.exists("res://gravelight/tools_src/probe_campaign_start.gd"):
+		# T-216: the crash probe inside the exported exe (release builds refuse a scene path on the command line):
+		# ClaudeZombies.exe --headless --audio-driver Dummy -- --probe-campaign [--solo] [--seconds=N]
+		var probe: Node = (load("res://gravelight/tools_src/probe_campaign_start.gd") as GDScript).new() as Node
+		probe.name = "ProbeDriver"
+		add_child.call_deferred(probe)
 	_build_overlays()
 	_overlay.visible = false   # Gravelight only: see activate() (T-024)
 	get_tree().node_added.connect(_on_node_added)

@@ -5,8 +5,8 @@ extends Node
 ##
 ## Headless (no window, no GPU):
 ##   Godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/probe_campaign_start.tscn [-- args]
-## The exported exe ships gravelight/tools_src, so the same probe runs inside the release build:
-##   ClaudeZombies.exe --headless --audio-driver Dummy res://gravelight/tools_src/probe_campaign_start.tscn [-- args]
+## The exported exe ships gravelight/tools_src but refuses a scene path, so GLSettings starts the probe on a user arg:
+##   ClaudeZombies.exe --headless --audio-driver Dummy -- --probe-campaign [args]
 ## Rendered only with the owner's OK: add --position -4000,-4000 and keep --audio-driver Dummy (CLAUDE.md). A crash in
 ## the audio driver needs the real driver: leave --audio-driver out only with the owner's OK (Master is muted either way).
 ##
