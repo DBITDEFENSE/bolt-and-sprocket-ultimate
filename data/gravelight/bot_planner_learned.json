@@ -1,0 +1,25 @@
+{
+ "_doc": "T-217: the bot planner's built-in brain (BotPlanner.learned_index): u = score_scale * score + kind_bias[kind] + dist_w * dist_m + current_bonus for the current objective; the best u wins. Trained by tools/bot_ai/train_planner.py from logged local-model picks (user://bot_ai/decisions.jsonl). Retrain after more play with a model brain; delete the weights to go back to the plain scores (score_scale 1, current_bonus 8).",
+ "trained": "2026-11-08",
+ "rows": 483,
+ "models": [
+  "gemma3:27b"
+ ],
+ "agreement_plain_heldout": 0.866,
+ "agreement_trained_heldout": 0.959,
+ "score_scale": 0.2717,
+ "dist_w": -0.2885,
+ "current_bonus": 13.363,
+ "kind_bias": {
+  "ammo_box": -0.099,
+  "bench": -0.333,
+  "crate": -0.192,
+  "crucible": -0.647,
+  "door": 0.8,
+  "follow": -0.122,
+  "gun": -0.057,
+  "perk": -0.347,
+  "repair": 0.686,
+  "use": 0.284
+ }
+}

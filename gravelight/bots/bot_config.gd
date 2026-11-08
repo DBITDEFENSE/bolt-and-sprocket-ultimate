@@ -81,6 +81,61 @@ static func ai_mode_from_settings(values: Dictionary, bots: int) -> String:
 	return "local" if bool(values.get("bot_local_ai", true)) else "off"
 
 
+## T-217: the planner bot's brains. builtin needs nothing (the trained scorer); the others are Ollama tiers
+## (bots.json local_ai.brains). The menu cycles AI_BRAIN_CYCLE ("off" = the bot_local_ai setting off).
+const AI_BRAINS: PackedStringArray = ["auto", "builtin", "small", "small_cpu", "large"]
+const AI_BRAIN_LABELS: Dictionary = {"off": "Off", "auto": "Auto", "builtin": "Built-in (any PC)", "small": "Small model",
+	"small_cpu": "Small model, CPU only", "large": "Large model"}
+const AI_BRAIN_CYCLE: PackedStringArray = ["auto", "builtin", "small", "small_cpu", "large", "off"]
+
+
+## The brain the setting names on this machine (pure). `machine_preset` = the first-launch graphics preset this
+## GPU gets (GLSettings.detect_preset): auto picks small_cpu on a "low" machine (integrated or software GPU: keep
+## the video memory for the game), small elsewhere, builtin in the web build (no Ollama there). Unknown -> auto.
+static func resolve_brain(setting: String, machine_preset: String, web: bool) -> String:
+	if web:
+		return "builtin"
+	if setting in AI_BRAINS and setting != "auto":
+		return setting
+	return "small_cpu" if machine_preset == "low" else "small"
+
+
+## The menu's current brain: "off" when the bot_local_ai setting is off, else bot_ai_brain (pure).
+static func brain_setting(values: Dictionary) -> String:
+	if not bool(values.get("bot_local_ai", true)):
+		return "off"
+	var b: String = str(values.get("bot_ai_brain", "auto"))
+	return b if b in AI_BRAINS else "auto"
+
+
+## The brain after `cur` in the menu's cycle (pure).
+static func next_brain(cur: String) -> String:
+	var i: int = AI_BRAIN_CYCLE.find(cur)
+	return AI_BRAIN_CYCLE[(i + 1) % AI_BRAIN_CYCLE.size()]
+
+
+## Writes a menu brain choice into the settings: "off" turns bot_local_ai off, anything else turns it on.
+static func set_brain(choice: String) -> void:
+	if choice == "off":
+		GLSettings.set_value("bot_local_ai", false)
+		return
+	GLSettings.values["bot_local_ai"] = true
+	GLSettings.set_value("bot_ai_brain", choice)
+
+
+## The LocalAI tuning for an Ollama tier: local_ai with the tier's models and Ollama options laid over it (pure).
+static func brain_cfg(local_cfg: Dictionary, brain: String) -> Dictionary:
+	var out: Dictionary = local_cfg.duplicate(true)
+	var tier: Dictionary = (local_cfg.get("brains", {}) as Dictionary).get(brain, {})
+	if tier.has("models"):
+		out["models"] = (tier["models"] as Array).duplicate()
+	var opts: Dictionary = (out.get("options", {}) as Dictionary).duplicate()
+	opts.merge(tier.get("options", {}) as Dictionary, true)
+	out["options"] = opts
+	out["brain"] = brain
+	return out
+
+
 ## Players the round scaling sees: humans count 1, bots `bot_player_weight` each (rounded), 1..max_players.
 static func scaled_player_count(humans: int, bots: int, c: Dictionary, max_players: int = 4) -> int:
 	var w: float = float((c.get("scaling", {}) as Dictionary).get("bot_player_weight", 1.0))

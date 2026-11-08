@@ -86,6 +86,11 @@ func _gameplay() -> void:
 	var skill_labels: PackedStringArray = PackedStringArray(skill_ids.map(func(k: Variant) -> String: return str(k).capitalize()))
 	content.add_child(MenuKit.row("Bot Skill (AI teammates)", MenuKit.options(skill_labels, skill_cur,
 		func(i: int) -> void: GLSettings.set_value("bot_skill", str(skill_ids[i])))))
+	var brains: PackedStringArray = BotConfig.AI_BRAIN_CYCLE   # T-217
+	var brain_labels: PackedStringArray = PackedStringArray(Array(brains).map(func(k: Variant) -> String: return str(BotConfig.AI_BRAIN_LABELS.get(str(k), k))))
+	content.add_child(MenuKit.row("Bot AI (the planning bot's brain)", MenuKit.options(brain_labels, maxi(0, brains.find(BotConfig.brain_setting(v))),
+		func(i: int) -> void: BotConfig.set_brain(brains[i]))))
+	content.add_child(MenuKit.para("Built-in works on any PC with no download. Small and Large run a local model through Ollama (Small ~3 GB of video memory, Large ~17 GB); CPU only uses no video memory but thinks slower. Auto picks Small, or CPU only on a low-end GPU. Without Ollama every choice falls back to Built-in.", 16, MenuKit.DIM))
 	var ee_cur: int = maxi(0, BotEECatalog.MODES.find(BotEECatalog.mode_of(v)))
 	content.add_child(MenuKit.row("Bot Easter-Egg Help", MenuKit.options(BotEECatalog.MODE_LABELS, ee_cur,
 		func(i: int) -> void: GLSettings.set_value(BotEECatalog.SETTING, BotEECatalog.MODES[i]))))

@@ -44,7 +44,7 @@ extends Node
 ## --player-kit (T-058): the scripted player's kit. "baseline" (the default, as in the Update 03 baseline): the
 ## bots' free spawn kit, buys nothing, never touches the power. "realistic": the Thompson only, opens the way to the
 ## power and throws it by round 3-4, drinks (and rebuys) Ironhide Stout and Second Wind (tools_src/soak_dummy.gd).
-## The bots' local-AI planner is off (GameState.bot_ai_mode = "off"), so no run depends on Ollama.
+## The bots' planner is off (GameState.bot_ai_mode = "off"), so no run depends on Ollama, unless --local-ai=<brain> (T-217).
 ## Accelerated time: headless with --fixed-fps 60 (as tools/ai_soak.sh runs it) is not tied to the clock, so a run
 ## goes as fast as the CPU allows (6-7x real time on Map 0's early rounds here) with the exact 1/60 s physics step a
 ## real-time match uses; every bot and game timer runs on that delta. --speed=N also sets Engine.time_scale, but
@@ -100,6 +100,8 @@ var start_round: int = 0
 ## --homage=0 (tuning only): the Homage Bosses off (no Cousins round at 10 on Map 0); the default (as in every
 ## Update 03 measurement) is on.
 var homage: bool = true
+var local_ai: String = ""   # --local-ai=builtin|small|small_cpu|large|auto (T-217): the planner bot on that brain; "" = off (no Ollama)
+var _batch_ai: String = ""
 var egg_mode: String = "off"   # --egg-mode=off|sparse|none (T-181 Easter Egg Mode; the saved setting never leaks in)
 ## --character=<id>: the scripted player's character (default peg, so the bots are Dutch, Deacon and Wren; e.g.
 ## --character=dutch puts Peg among the bots).
@@ -234,6 +236,8 @@ func _ready() -> void:
 			BotTrainer.force_loop = a.substr(7)   # (tuning only, T-071 pass 2) the agent trains on this loop only
 		elif a.begins_with("--loco="):
 			BotLocomotion.force_mode = a.substr(7)   # U03 section 3: v1 / v2 against bots.json locomotion
+		elif a.begins_with("--local-ai="):
+			local_ai = a.substr(11)
 	if not ["player3", "bots3", "cousins", "kaltenbrunn", "totenhafen", "ee_full", "botmode", "fernflug"].has(scenario):
 		print("[soak] unknown --scenario=%s (player3, bots3, cousins, kaltenbrunn, totenhafen, ee_full, botmode, fernflug)" % scenario)
 		print("[soak] RESULT FAIL")
@@ -273,7 +277,10 @@ func _ready() -> void:
 	GLSettings.values["homage_bosses"] = homage
 	GLSettings.values[EggMode.SETTING] = egg_mode
 	GLSettings.values["homage_names"] = "real"
-	GLSettings.values["bot_local_ai"] = false   # T-071: the agent's planner is the scripted one in every soak (no Ollama)
+	GLSettings.values["bot_local_ai"] = local_ai != ""   # T-071: no Ollama in a soak unless --local-ai names a brain (T-217)
+	GLSettings.values["bot_ai_brain"] = local_ai if local_ai != "" else "builtin"
+	if local_ai != "":
+		_batch_ai = "_ai" + local_ai
 	Engine.time_scale = speed
 	_batch = "%s_%s_x%d" % [Time.get_datetime_string_from_system(false, true).replace(":", "").replace(" ", "_").replace("-", ""), scenario, runs]
 	if BotLocomotion.force_mode != "":
@@ -292,6 +299,7 @@ func _ready() -> void:
 				_act_boss_kills += 1)
 	if not homage:
 		_batch += "_nohomage"
+	_batch += _batch_ai
 	if scenario == "botmode":
 		_batch += "_%s_b%d" % [map_key, bots_n]
 		GLBus.player_downed.connect(func(pid: int) -> void:
@@ -300,8 +308,8 @@ func _ready() -> void:
 		GLBus.player_damaged.connect(func(pid: int, amount: float) -> void:
 			if _live and pid == 1 and amount > 0.0:
 				_pb_round(RoundManager.current_round)[1] += 1)
-	print("[soak] scenario %s, %d run(s), seed %d, max round %s, speed %.2fx, skill %s, map %s, player kit %s, local AI off" % [scenario, runs, seed_base,
-		str(max_round) if max_round > 0 else "to the wipe", speed, skill, map_key, player_kit])
+	print("[soak] scenario %s, %d run(s), seed %d, max round %s, speed %.2fx, skill %s, map %s, player kit %s, local AI %s" % [scenario, runs, seed_base,
+		str(max_round) if max_round > 0 else "to the wipe", speed, skill, map_key, player_kit, local_ai if local_ai != "" else "off"])
 	GLBus.scrip_changed.connect(func(pid: int, _t: int, delta: int) -> void:
 		if _live and pid == 1 and delta > 0:
 			_earned += delta)
@@ -327,7 +335,7 @@ func _start_run() -> void:
 	GameState.character_id = StringName(character)
 	GameState.bot_count = bots_n if scenario == "botmode" else 3
 	GameState.bot_skill = skill
-	GameState.bot_ai_mode = "off"
+	GameState.bot_ai_mode = "local" if local_ai != "" else "off"
 	GameState.god_mode = god
 	GameState.retained = false
 	_acts = []

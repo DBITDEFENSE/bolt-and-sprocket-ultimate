@@ -1250,3 +1250,38 @@ The runs are in the report of T-163.
 - Act IV: the meteor shelter, Pohl's tag read in by a bot.
 
 The soak trace shows the move (`| setpiece wing_walk:chest`), and each bot's report line gets a `setpieces ...` counters line.
+
+## 16. The planner's brains (T-217, 2026-11-08)
+
+The planning bot (BotPlanner, one bot, or the agent in bot mode) has a **brain** setting, `bot_ai_brain` (Settings >
+Gameplay "Bot AI", and the squad row's "Bot AI" button; Off = `bot_local_ai` false):
+
+| Brain | Needs | Per decision (owner's RTX 5090, GPU idle) | Video memory |
+|---|---|---|---|
+| Built-in (any PC) | nothing | instant | none |
+| Small model | Ollama + gemma3:4b (or 1b, qwen2.5, llama3.2) | 0.53 s (gemma3:1b 0.36 s) | 2.9 GB (1b under 1 GB) |
+| Small model, CPU only | Ollama + gemma3:1b | 1.75 s (gemma3:4b 2.8 s) | none (`num_gpu` 0) |
+| Large model | Ollama + gemma3:27b | 0.78 s (1.7 s in a match) | 17 GB |
+| Auto (default) | | Small; CPU only on a "low" machine (integrated / software GPU); Built-in on the web | |
+
+Rules: `BotConfig.resolve_brain` / `brain_cfg` (tiers in bots.json `local_ai.brains`). Every tier sends `num_ctx` 2048
+(the prompt is ~600 tokens; Ollama otherwise gave gemma3:27b a 32k context) and `keep_alive` is 2 minutes (it was
+30: the 27B stayed in 17 GB of video memory for half an hour after the game closed). With one option the model is not asked.
+
+**The built-in brain** (`BotPlanner.learned_index`) scores each option `score_scale * score + kind_bias[kind] +
+dist_w * dist_m (+ current_bonus for the current objective)` with the weights in
+`data/gravelight/bot_planner_learned.json`. It is also the fallback of every model brain (model offline, busy,
+thinking, nonsense). Without weights it is exactly the old scripted pick.
+
+**Training.** Every model answer appends a row (state, every option's kind / score / distance / current, the pick)
+to `user://bot_ai/decisions.jsonl` (bots.json `log_decisions`, at most `log_max_mb`). `python -I
+tools/bot_ai/train_planner.py` fits the weights (a softmax choice model, 80/20 split by time) and writes them only
+when they agree with the model more often than the plain scores on the held-out 20 %. Collect rows headless with
+`tools/ai_soak.sh --scenario=bots3 --local-ai=large` (any brain name works).
+
+First training (2026-11-08): 536 gemma3:27b answers from 2 bots3 soaks (Map 0, rounds 1-13), 483 usable. Agreement
+with the 27B on the held-out rows: plain scores 87 %, trained 96 %. The 27B prefers near jobs (about 1 score point
+per metre) and keeps its current objective (about 49 points), and weighs the listed score less. Checked in 2 bots3
+soaks to round 12 (seeds 1-2, x3 speed): trained built-in brain round 13 both runs, 0 bot downs, power thrown and
+doors opened, 54-58 stuck events; the 27B round 13 both runs, 0-1 downs, 94-101 stuck events. Two runs on one map:
+retrain with rows from Kaltenbrunn, Totenhafen and Fernflug before trusting it there.
