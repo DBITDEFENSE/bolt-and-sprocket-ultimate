@@ -30,6 +30,9 @@ var _set_name: String = ""
 var _label: String = "before"
 
 
+var _open_after: bool = false
+
+
 func _ready() -> void:
 	var milestone: String = "overnight"
 	for a: String in OS.get_cmdline_user_args():
@@ -43,6 +46,8 @@ func _ready() -> void:
 			_set_name = a.substr(6)
 		elif a.begins_with("--label="):
 			_label = a.substr(8)
+		elif a == "--open-after":   # U12 launcher "Look test": open the folder when the tour ends
+			_open_after = true
 	if _out == "":
 		if _set_name != "":
 			_out = ProjectSettings.globalize_path("res://").path_join("morning/screenshots").path_join(_set_name).path_join(_label)
@@ -77,6 +82,8 @@ func _run() -> void:
 		await _cam_set()
 		print("[capture] %d screenshots in %s" % [_saved.size(), _out])
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(ProfileSave.path))
+		if _open_after:
+			OS.shell_open(_out)
 		get_tree().quit()
 		return
 	for t: Array in TARGETS:

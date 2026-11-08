@@ -32,7 +32,8 @@ static var _pending_scrip: int = 0
 static var _pending_boss: String = ""
 static var _pending_squad: bool = false   # T-142: force a relief squad on the next round
 static var _pending_power: bool = false   # T-145: power on once the map is up
-static var _pending_setpiece: String = ""   # UPDATE 10 section 9: a set-piece forced a few seconds after the map is up
+static var _pending_setpiece: String = ""
+static var _egg_before: String = "off"   # U12 "walk the wreck": the egg_mode setting to put back   # UPDATE 10 section 9: a set-piece forced a few seconds after the map is up
 
 ## UPDATE 09 section 8 (T-145): the targets of the "Update 09 — online, web, rebuilt maps" buttons, as data so
 ## smoke_launcher can check that every scene exists and every flag parses without opening a window.
@@ -81,6 +82,9 @@ const U12_BUTTONS: Array = [
 	["Cutscene — Lazarus Saturday (reel)", "The 1930 prologue as an archive film reel (about 4 min): generated clips where you have dropped them in (assets/user_supplied/cutscenes, then tools/cinema/archive_reel.py build), the in-engine shots through the same film look where not. Hold to skip.", "cut", "reel:lazarus_saturday"],
 	["Cutscene — Fourth Day (reel)", "October 1944 as an archive film reel (about 1:45): the soft shells, the field graves, the walk west. Clips where they exist, in-engine stand-ins elsewhere.", "cut", "reel:fourth_day"],
 	["Cutscene — Staub (reel)", "Kaltenbrunn, 20 December 1944, as an archive film reel (about 1:15): the dust mill, the launch, the wind turning. Clips where they exist, in-engine stand-ins elsewhere.", "cut", "reel:staub"],
+	["Look test — every map's style frame", "Tours the UPDATE 12 style-frame camera on every map and the menu with today's grades (data/look/), saving each frame to your user folder (logs/look_test) and opening it at the end. Takes a few minutes; a window opens per map.", "look", "u12_look"],
+	["Map 0 — GRAVELIGHT ONE crash intro", "The new C-47 in flight (UPDATE 11 + 12): the dead walking west below, the violet column, the crash; then the inn's match start with 3 bots.", "crash", U11_MAP0],
+	["Map 0 — walk the wreck", "Map 0 with no zombies, no bots and god mode, starting in the field by the crashed C-47: walk round it, into the cabin and up to the cockpit.", "walk_wreck", U11_MAP0],
 ]
 ## the user args of the two windows of "Host a test lobby (local)": [host, guest]
 const HOST_ARGS: Array = ["--mock-online-serve=28500", "--open=online", "--auto-host"]
@@ -303,9 +307,28 @@ func _press_u11(b: Array) -> void:
 ## UPDATE 12 FINISH: the buttons from U12_BUTTONS ("cut" plays on the theatre like the U11 ones).
 func _add_u12_buttons(col: Control) -> void:
 	for b: Array in U12_BUTTONS:
-		var btn: Button = _hinted(col, str(b[0]), str(b[1]), func() -> void: _press_u11(b))
+		var btn: Button = _hinted(col, str(b[0]), str(b[1]), func() -> void: _press_u12(b))
 		if str(b[2]) == "cut":
 			btn.disabled = not CinemaArchive.is_known(str(b[3]))
+		elif str(b[2]) in ["crash", "walk_wreck"]:
+			btn.disabled = not ResourceLoader.exists(str(b[3]))
+
+
+func _press_u12(b: Array) -> void:
+	match str(b[2]):
+		"look":
+			# The capture tool in its own (visible) window: the style-frame set, frames into user://look_test.
+			var out: String = ProjectSettings.globalize_path("user://look_test")
+			OS.create_process(OS.get_executable_path(), ["--path", ProjectSettings.globalize_path("res://"),
+				"res://tools_src/capture.tscn", "--", "--set=%s" % str(b[3]), "--out=%s" % out, "--open-after"])
+			_status.text = "Look test running in its own window; the frames land in %s" % out
+		"walk_wreck":
+			_egg_before = str(GLSettings.values.get("egg_mode", "off"))
+			GLSettings.values["egg_mode"] = "none"   # this match only (T-181 Easter Egg Mode: no zombies); put back below
+			_pending_setpiece = "walk_wreck"
+			_start_gl(str(b[3]), 1, "", 0)
+		_:
+			_press_u11(b)
 
 
 ## UPDATE 10 section 9: one button per set-piece the work order names, from U10_BUTTONS.
@@ -351,6 +374,11 @@ static func _force_setpiece(piece: String) -> void:
 	if tree == null:
 		return
 	match piece:
+		"walk_wreck":   # U12: stand in the field west of GRAVELIGHT ONE (the capture set's "wreck" camera spot)
+			GLSettings.values["egg_mode"] = _egg_before   # the match already took "none" at its start
+			for n: Node in tree.get_nodes_in_group(&"players"):
+				if (n as Player).is_local:
+					(n as Player).global_position = Vector3(40.0, 1.0, 6.0)
 		"spring":
 			var tide: TideController = tree.get_first_node_in_group(&"tide") as TideController
 			if tide != null:

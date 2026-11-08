@@ -148,6 +148,17 @@ func _check_u09_targets() -> void:
 			reel_labels.append(str(b[0]))
 	for want: String in ["Cutscene — Lazarus Saturday (reel)", "Cutscene — Fourth Day (reel)", "Cutscene — Staub (reel)"]:
 		_check(reel_labels.has(want), "U12 button '%s'" % want)
+	# UPDATE 12 s8: the look test (the capture set exists), the crash intro and the wreck walk (Map 0 exists)
+	var u12: Dictionary = {}
+	for b: Array in DevLauncher.U12_BUTTONS:
+		u12[str(b[0])] = b
+	for want: String in ["Look test — every map's style frame", "Map 0 — GRAVELIGHT ONE crash intro", "Map 0 — walk the wreck"]:
+		_check(u12.has(want), "U12 button '%s'" % want)
+	var cams: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/capture_cams.json"))
+	_check(ResourceLoader.exists("res://tools_src/capture.tscn") and cams is Dictionary and ((cams as Dictionary).get("sets", {}) as Dictionary).has("u12_look"), "the look test's capture tool and its u12_look camera set exist")
+	for k: String in ["Map 0 — GRAVELIGHT ONE crash intro", "Map 0 — walk the wreck"]:
+		if u12.has(k):
+			_check(ResourceLoader.exists(str(u12[k][3])), "U12 '%s' scene exists" % k)
 	# the flags of the two test-lobby windows parse the way the game reads them
 	for set: Array in [DevLauncher.HOST_ARGS, DevLauncher.GUEST_ARGS]:
 		for a: Variant in set:
