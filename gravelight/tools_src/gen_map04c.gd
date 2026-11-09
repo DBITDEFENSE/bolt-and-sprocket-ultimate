@@ -147,7 +147,19 @@ func setup_tables() -> void:
 		"machine": "machine_grey", "olive": "feldgrau", "rail": "iron", "roof": "roof", "planks": "planks", "dirt": "dirt", "salt": "concrete",
 		"caliche": "stone", "sand": "dirt", "stairs": "concrete",
 	}
-	mat_rules = [["Salt*", "concrete"], ["Tower_Base*", "concrete"], ["Hull*", "steel"], ["Wing*", "steel"], ["Caliche*", "stone"], ["Berm*", "dirt"], ["Tower*", "iron"], ["Truck*", "feldgrau"], ["Rocket*", "steel"]]
+	# T-222: the lab's floor and ceilings were the dry-stone wall texture (the "Caliche*" rule): a poured floor and
+	# board-formed concrete ceilings over the cut caliche walls
+	# T-222: the silo's floor overlaps the lab's by 2 m at the door (z 150..152, same top): the same floor material
+	# on both so the overlap shows one surface instead of a flicker between two
+	# T-222: the hatch and trench ramps were the procedural "concrete" (a soft noise that smears along a slope)
+	mat_rules = [["CalicheFloor", "fl_floor"], ["SiloFloor", "fl_floor"], ["HatchRamp", "fl_floor"], ["TrenchRamp", "fl_floor"], ["LabRoof", "fl_concrete"], ["HatchRoof", "fl_concrete"], ["Salt*", "concrete"], ["Tower_Base*", "concrete"], ["Hull*", "steel"], ["Wing*", "steel"], ["Caliche*", "stone"], ["Berm*", "dirt"], ["Tower*", "iron"], ["Truck*", "feldgrau"], ["Rocket*", "steel"]]
+	# T-222: walls of two rooms built on the same line fought on both faces (the lab's north wall F_N under the
+	# silo's G_S_W; the hangar's and the motor pool's south walls C_S / D_S over the salt berm Berm_N; the trench
+	# walls against the salt slab's cut edge): each mesh
+	# keeps its own room's side (the colliders, the navmesh and the table's boxes are untouched)
+	visual_adjust = [["G_S_W*", Vector3(0, 0, 0.16), Vector3.ZERO], ["F_N_0", Vector3.ZERO, Vector3(0, 0, -0.16)],
+		["F_N_end", Vector3.ZERO, Vector3(0, 0, -0.16)], ["C_S_*", Vector3(0, 0, 0.15), Vector3(0, 0, 0.03)],
+		["D_S_*", Vector3(0, 0, 0.15), Vector3(0, 0, 0.03)], ["TrenchWallS", Vector3.ZERO, Vector3(0, 0, 0.02)], ["TrenchWallN", Vector3(0, 0, -0.02), Vector3.ZERO]]
 	hide = ["NavBlock*", "Truck*", "Bomber*", "Cage*", "Office*", "Bench*", "Pit*", "Tank*", "Console*", "Rocket*", "Dish*", "Shack*", "Gantry*", "Wing*", "Tower_Mast*", "G_E*", "G_N*", "G_S_E*"]
 	sky_top = Color(0.32, 0.46, 0.74)
 	sky_horizon = Color(0.96, 0.74, 0.5)
@@ -562,7 +574,7 @@ func _dress_lakebed() -> void:
 		Props.ball(dress, p, Vector3(2.2, 0.7, 1.4), "concrete_floor").rotation.y = -a
 	B(Vector3(17.0, 0.0, 17.0), Vector3(23.0, 0.4, 23.0), "dirt")
 	var gouge: Material = _track_mat(Color(0.42, 0.36, 0.3, 0.75))
-	D.tyre_tracks(dress, [Vector3(6, 0, -2.0), Vector3(12, 0, 7), Vector3(18, 0, 15.5)], 0.9, gouge)
+	D.tyre_tracks(dress, [Vector3(6, 0, -2.0), Vector3(12, 0, 7), Vector3(18, 0, 15.5)], 0.9, gouge, 0.02)   # T-222: over the tracks it crosses
 	lamp(Vector3(20, 1.2, 17), VIOLET, 1.4, 8.0, 0.15, 0.6)
 	# tyre tracks: the range's trucks between the motor pool, the hangar and the wreck
 	var tracks: Material = _track_mat(Color(0.5, 0.46, 0.4, 0.5))
@@ -927,7 +939,7 @@ func _dress_silo() -> void:
 	B(Vector3(-29.2, LAB_Y, 195.85), Vector3(-19.85, 1.0, 196.15), sc)
 	B(Vector3(-30.8, LAB_Y, 195.85), Vector3(-29.2, LAB_Y + SILL, 196.15), sc)
 	B(Vector3(-30.8, LAB_Y + WTOP, 195.85), Vector3(-29.2, 1.0, 196.15), sc)
-	B(Vector3(-34.15, LAB_Y, 149.85), Vector3(-19.85, 1.0, 150.15), sc)
+	B(Vector3(-34.15, LAB_Y, 150.01), Vector3(-19.85, 1.0, 150.15), sc)   # T-222: the shaft side only (it fought the lab wall F_N)
 	B(Vector3(-46.3, LAB_Y + CEIL_CTRL, 149.85), Vector3(-34.15, 1.0, 150.15), sc)
 	for rl: Array in [[Vector3(-46.0, 1.0, 150.0), Vector3(-20.0, 1.0, 150.0)], [Vector3(-20.0, 1.0, 150.0), Vector3(-20.0, 1.0, 196.0)],
 			[Vector3(-20.0, 1.0, 196.0), Vector3(-46.0, 1.0, 196.0)], [Vector3(-46.0, 1.0, 196.0), Vector3(-46.0, 1.0, 150.0)]]:
@@ -999,6 +1011,65 @@ func _power_lights() -> void:
 	pendant("G_SILO", Vector3(-58, LAB_Y + CEIL_CTRL - 0.6, 184), LAB_Y + CEIL_CTRL, "enamel_green", 1.1)
 	power("G_SILO", Vector3(-21.4, 1.2, 160.0), 22.0, 1.0, SODIUM)
 	power("G_SILO", Vector3(-21.4, 1.2, 192.0), 22.0, 1.0, SODIUM)
+	_t222_lights()
+
+
+## T-222 (the Fernflug lighting pass): the hull, the hangar, the hatch, the trench, the lab and the silo were black
+## inside (frame means 3-20 of 255). Every added light is a fixture you can see and casts no shadow: the range's
+## battery emergency lamps (caged bulkheads, always on, dim, warm), the lab's specimen-room cages lit on the power
+## (they were drawn but gave no light), more wall lamps down the hatch ramp, along the trench and in the silo, two
+## more pendants and two floods on the cannibalized bomber in the hangar. Lights and fixtures only.
+const T222_EMERGENCY: Array = [
+	# [pos on the wall face, yaw the lamp faces (0 = -Z, -90 = +X)]
+	[Vector3(-13.85, 3.0, -30.0), -90.0], [Vector3(-13.85, 3.0, -12.0), -90.0], [Vector3(13.85, 3.0, -30.0), 90.0], [Vector3(13.85, 3.0, -12.0), 90.0],   # the hull
+	[Vector3(20.15, 3.2, 66.0), -90.0], [Vector3(20.15, 3.2, 84.0), -90.0], [Vector3(69.85, 3.2, 70.0), 90.0], [Vector3(69.85, 3.2, 86.0), 90.0],   # the hangar
+	[Vector3(-60.0, 2.6, 60.15), 180.0], [Vector3(-30.0, 2.6, 60.15), 180.0], [Vector3(-30.0, 2.6, 99.85), 0.0], [Vector3(-10.0, 2.6, 86.15), 180.0],   # the motor pool
+	[Vector3(10.0, 2.6, 86.15), 180.0],
+	[Vector3(-47.85, 0.6, 103.0), -90.0], [Vector3(-42.15, -2.6, 109.0), 90.0],   # the hatch ramp
+	[Vector3(-16.0, LAB_Y + 2.4, 134.15), 180.0],   # the trench's foot
+	[Vector3(-20.15, LAB_Y + 2.8, 120.0), 90.0], [Vector3(-20.15, LAB_Y + 2.8, 146.0), 90.0], [Vector3(-53.0, LAB_Y + 2.8, 112.15), 180.0],   # the lab hall
+	[Vector3(-69.85, LAB_Y + 2.8, 156.0), -90.0], [Vector3(-69.85, LAB_Y + 2.8, 178.0), -90.0],   # the control room
+	[Vector3(-7.0, 3.0, -35.85), 180.0], [Vector3(7.0, 3.0, -35.85), 180.0], [Vector3(-7.0, 3.0, -4.15), 0.0],   # the hull's ends
+	[Vector3(42.0, 4.2, 59.99), 0.0], [Vector3(48.0, 4.2, 59.99), 0.0], [Vector3(19.85, 3.4, 90.0), 90.0],   # outside: the hangar's doors
+	[Vector3(-48.5, 2.9, 59.99), 0.0], [Vector3(-41.5, 2.9, 59.99), 0.0],   # outside: the motor pool's door
+]
+
+
+func _t222_lights() -> void:
+	for e: Array in T222_EMERGENCY:
+		var p: Vector3 = e[0]
+		var yaw: float = float(e[1])
+		Props.bulkhead_lamp(dress, p, yaw, "bulb_warm")
+		var out: Vector3 = Basis(Vector3.UP, deg_to_rad(yaw)) * Vector3(0, 0, -1)
+		lamp(p + out * 0.35, INCAND, 1.1, 10.0, 0.05, 0.0, false, 3.0)   # no volumetric fog share (cheaper, no haze halo on every wall lamp)
+	# the hangar: two more pendants over the bomber's nose and tail, two floods on the bomber from the side walls
+	for hp: Vector3 in [Vector3(45, 7.4, 64), Vector3(45, 7.4, 96), Vector3(26, 7.4, 78), Vector3(64, 7.4, 78), Vector3(54, 7.4, 94)]:
+		pendant("C_HANGAR", hp, CEIL_HANGAR, "enamel_green", 1.5)
+	for hf: Array in [[Vector3(20.4, 6.5, 76.0), -90.0], [Vector3(69.6, 6.5, 76.0), 90.0]]:
+		var fb: Vector3 = GenDetail.lamp_fixture(dress, hf[0], "flood", float(hf[1]), 0.0, "machine_grey", "bulb_warm")
+		power("C_HANGAR", fb, 12.0, 0.8, SODIUM, false, {"dir": (Vector3(45, 1.5, 82) - fb).normalized(), "energy": 2.6, "range": 40.0, "angle": 28.0, "color": SODIUM})
+	# the lab: the specimen rooms' caged lamps light on the power; two more tubes over the hall's ends
+	for i: int in 3:
+		power("F_LAB", Vector3(-69.4, LAB_Y + 3.0, 112.0 + 12.0 * float(i) + 6.0), 11.0, 1.2, Color(0.75, 0.95, 0.85))
+	for lp: Vector3 in [Vector3(-30, LAB_Y + CEIL_LAB - 0.75, 116), Vector3(-30, LAB_Y + CEIL_LAB - 0.75, 146), Vector3(-50, LAB_Y + CEIL_LAB - 0.75, 128),
+			Vector3(-40, LAB_Y + CEIL_LAB - 0.75, 122), Vector3(-40, LAB_Y + CEIL_LAB - 0.75, 138), Vector3(-24, LAB_Y + CEIL_LAB - 0.75, 126),
+			Vector3(-24, LAB_Y + CEIL_LAB - 0.75, 142)]:
+		_noshadow(B(lp + Vector3(-0.9, 0.35, -0.08), lp + Vector3(0.9, 0.45, 0.08), "neon_off"))
+		_noshadow(Props.block(G("F_LAB"), lp + Vector3(-0.85, 0.3, -0.05), lp + Vector3(0.85, 0.35, 0.05), "bulb_cold"))
+		power("F_LAB", lp, 12.0, 0.8, Color(0.75, 0.95, 0.85))
+	# the silo door: a lamp over it on the lab side (always on, it is where the hall leads)
+	Props.bulkhead_lamp(dress, Vector3(-40.0, LAB_Y + 3.3, 149.85), 0.0, "bulb_warm")
+	lamp(Vector3(-40.0, LAB_Y + 3.3, 149.5), INCAND, 1.0, 9.0, 0.03, 0.15, false, 3.0)
+	# the hatch ramp and the trench: wall lamps on the power sweep
+	for wl: Array in [[Vector3(-42.15, 1.4, 102.0), 90.0], [Vector3(-47.85, -1.6, 107.0), -90.0], [Vector3(-42.15, -3.6, 111.0), 90.0]]:
+		power("F_LAB", GenDetail.lamp_fixture(dress, wl[0], "wall", float(wl[1]), 0.0, "black_paint", "bulb_warm"), 8.0, 0.8, INCAND)
+	for tx: float in [-8.0, 4.0, 16.0]:
+		var ty: float = LAB_Y + (tx + 20.0) / 40.0 * absf(LAB_Y) + 1.7
+		power("F_LAB", GenDetail.lamp_fixture(dress, Vector3(tx, ty, 134.15), "wall", 180.0, 0.0, "black_paint", "bulb_warm"), 9.0, 0.8, INCAND)
+	pendant("G_SILO", Vector3(-58, LAB_Y + CEIL_CTRL - 0.6, 172), LAB_Y + CEIL_CTRL, "enamel_green", 1.1)   # the console's own lamp
+	# the silo: wall lamps on the control room's shaft side
+	for sz: float in [158.0, 176.0, 194.0]:
+		power("G_SILO", GenDetail.lamp_fixture(dress, Vector3(-45.85, LAB_Y + 3.0, sz), "wall", -90.0, 0.0, "black_paint", "bulb_warm"), 12.0, 1.0, SODIUM)
 
 
 ## The blue hour: the desert sky shader replaces the lib's procedural sky, the sun sits just over the eastern
@@ -1035,6 +1106,7 @@ func build_lights() -> void:
 		env.ambient_light_energy = 0.8
 		env.adjustment_saturation = 0.95
 	_zone_meta_and_count()
+	print("  T-222: %d small lights fade with distance" % fade_small_lights())
 
 
 func _zone_of(p: Vector3) -> StringName:

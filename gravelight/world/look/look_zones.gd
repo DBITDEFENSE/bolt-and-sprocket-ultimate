@@ -15,6 +15,7 @@ const SNAP_M: float = 8.0       # a camera jump farther than this snaps
 
 var env: Environment
 var zones: Dictionary = {}
+var keys: PackedStringArray = ["fog_density", "vol_density", "fog_color", "ambient", "exposure"]   # setup() narrows it (T-222)
 var map: Node3D
 var current: String = ""
 var _base: Dictionary = {}       # the Environment's own values when the camera entered a zone
@@ -38,7 +39,26 @@ func setup(e: Environment, z: Dictionary, m: Node) -> void:
 	for k: Variant in z.keys():
 		if z[k] is Dictionary and has_boxes({k: z[k]}):
 			zones[str(k)] = z[k]
+	keys = keys_of(zones)
 	name = "LookZones"
+
+
+## T-222: the Environment values the zones set at all (read_env's names). Only these are written: a value no zone
+## touches stays whoever's it is (Groom Lake's dust storm and the director's special-round fog tween the fog while
+## the camera may be inside an exposure-only zone; writing the fog back from the entry snapshot would undo them).
+## Pure.
+static func keys_of(zs: Dictionary) -> PackedStringArray:
+	var out: PackedStringArray = []
+	for v: Variant in zs.values():
+		if not (v is Dictionary):
+			continue
+		var z: Dictionary = v
+		var fog: Dictionary = z.get("fog", {})
+		for pair: Array in [[fog.has("density"), "fog_density"], [fog.has("volumetric"), "vol_density"], [fog.has("color"), "fog_color"],
+				[(z.get("ambient", {}) as Dictionary).has("energy_scale"), "ambient"], [z.has("exposure"), "exposure"]]:
+			if bool(pair[0]) and not out.has(str(pair[1])):
+				out.append(str(pair[1]))
+	return out
 
 
 ## Which zone holds `p` (map frame), "" for none. Pure.
@@ -79,11 +99,16 @@ func target(id: String, base: Dictionary) -> Dictionary:
 
 
 func _write(v: Dictionary) -> void:
-	env.fog_density = v["fog_density"]
-	env.volumetric_fog_density = v["vol_density"]
-	env.fog_light_color = v["fog_color"]
-	env.ambient_light_energy = v["ambient"]
-	env.tonemap_exposure = v["exposure"]
+	if keys.has("fog_density"):
+		env.fog_density = v["fog_density"]
+	if keys.has("vol_density"):
+		env.volumetric_fog_density = v["vol_density"]
+	if keys.has("fog_color"):
+		env.fog_light_color = v["fog_color"]
+	if keys.has("ambient"):
+		env.ambient_light_energy = v["ambient"]
+	if keys.has("exposure"):
+		env.tonemap_exposure = v["exposure"]
 
 
 func _process(delta: float) -> void:

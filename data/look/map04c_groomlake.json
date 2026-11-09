@@ -1,5 +1,5 @@
 {
- "_doc": "Fernflug III, Groom Lake: bleached desert, dust brown (a night on the salt under a dust haze); the dust storm (DustStormFx) keeps its own fog density. T-207.",
+ "_doc": "Fernflug III, Groom Lake: bleached desert, dust brown (a night on the salt under a dust haze); the dust storm (DustStormFx) keeps its own fog density. T-207. T-222: the covered places (the hull, the hangar, the motor pool shed, the hatch, the lab, the trench, the silo) lift their exposure as the camera walks in (LookZones boxes): the salt keeps the day exposure, a lamp-lit room under it no longer reads black.",
  "map": "map04c_groomlake",
  "tonemap": "filmic",
  "exposure": 1.35,
@@ -86,5 +86,115 @@
     ]
    }
   }
- ]
+ ],
+ "zones": {
+  "t222_hull": {
+   "_doc": "T-222: the wreck's hull (spawn)",
+   "boxes": [
+    [
+     -14,
+     -1,
+     -36,
+     14,
+     4.6,
+     -4
+    ]
+   ],
+   "exposure": 2.4
+  },
+  "t222_hangar": {
+   "_doc": "T-222: the hangar",
+   "boxes": [
+    [
+     20,
+     -1,
+     60,
+     70,
+     9.5,
+     100
+    ]
+   ],
+   "exposure": 2.4
+  },
+  "t222_shed": {
+   "_doc": "T-222: the motor pool's shed and the lane",
+   "boxes": [
+    [
+     -70,
+     -1,
+     60,
+     -20,
+     3.6,
+     100
+    ],
+    [
+     -20,
+     -1,
+     86,
+     20,
+     3.6,
+     100
+    ]
+   ],
+   "exposure": 2.3
+  },
+  "t222_lab": {
+   "_doc": "T-222: the hatch ramp, the lab, the control room",
+   "boxes": [
+    [
+     -70,
+     -7,
+     112,
+     -20,
+     -1.6,
+     150
+    ],
+    [
+     -70,
+     -7,
+     150,
+     -46,
+     -1.6,
+     196
+    ]
+   ],
+   "exposure": 2.5
+  },
+  "t222_trench": {
+   "_doc": "T-222: the cable trench and the silo's shaft (open to the sky)",
+   "boxes": [
+    [
+     -20,
+     -7,
+     134,
+     20,
+     1.0,
+     140
+    ],
+    [
+     -46,
+     -7,
+     150,
+     -20,
+     -1.0,
+     196
+    ]
+   ],
+   "exposure": 2.0
+  },
+  "t222_hatch": {
+   "_doc": "T-222: the hatch ramp (narrow, lamp by lamp: less lift than the lab)",
+   "boxes": [
+    [
+     -48.3,
+     -7,
+     100,
+     -41.7,
+     3.0,
+     112
+    ]
+   ],
+   "exposure": 1.75
+  }
+ }
 }
