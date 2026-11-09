@@ -552,6 +552,8 @@ func apply_visuals() -> void:
 			vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_BILINEAR
 	vp.fsr_sharpness = clampf(float(values.get("gfx_sharpness", 0.4)), 0.0, 2.0)
 	vp.mesh_lod_threshold = float(LOD_Q.get(str(gfx("gfx_lod")), 1.0))
+	if is_inside_tree():
+		DetailRange.refresh(get_tree(), str(gfx("gfx_lod")))   # T-223: the draw distance of small detail follows the setting
 	var sq: Array = SHADOW_Q.get(str(gfx("gfx_shadows")), SHADOW_Q["high"])
 	vp.positional_shadow_atlas_size = int(sq[1])
 	RenderingServer.directional_shadow_atlas_set_size(int(sq[0]), true)
