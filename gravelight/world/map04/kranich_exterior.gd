@@ -978,16 +978,100 @@ func _reskin_formation() -> void:
 	proto.name = "WingProto"
 	_build_surface("FTop", grid_columns(hull, 9.0, false), grid_rows(24), true, proto, k, false)
 	_build_surface("FUnder", grid_columns(hull, 18.0, false), grid_rows(8), false, proto, k, false)
+	# T-221 b: a dark silhouette with depth: near-black painted metal whose sheen picks up a rim from the low sun, kept
+	# off the hull's own fill layer (that greyed it into a flat slab)
+	var dark: StandardMaterial3D = StandardMaterial3D.new()
+	dark.albedo_color = Color(0.045, 0.048, 0.055)
+	dark.metallic = 0.75
+	dark.roughness = 0.32
+	dark.rim_enabled = true
+	dark.rim = 0.6
+	dark.rim_tint = 0.8
+	for mi: Node in proto.find_children("*", "MeshInstance3D", true, false):
+		(mi as MeshInstance3D).material_override = dark
+		(mi as MeshInstance3D).layers = 1
+	# its engines (four soft warm glows in the trailing edge) and nav lights (red port, green starboard)
+	var soft: Callable = func(c: Color) -> StandardMaterial3D:
+		var m: StandardMaterial3D = StandardMaterial3D.new()
+		m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		m.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		m.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+		m.disable_fog = true
+		var g: Gradient = Gradient.new()
+		g.set_color(0, c)
+		g.set_color(1, Color(0, 0, 0, 0))
+		var gt: GradientTexture2D = GradientTexture2D.new()
+		gt.gradient = g
+		gt.fill = GradientTexture2D.FILL_RADIAL
+		gt.fill_from = Vector2(0.5, 0.5)
+		gt.fill_to = Vector2(1.0, 0.5)
+		m.albedo_texture = gt
+		return m
+	var eng_m: StandardMaterial3D = soft.call(Color(1.0, 0.62, 0.32, 1.0))
+	var q: QuadMesh = QuadMesh.new()
+	q.size = Vector2.ONE * 5.0
+	for ex: Variant in hull.get("engines", []):
+		var x: float = float(ex)
+		var gm: MeshInstance3D = MeshInstance3D.new()
+		gm.mesh = q
+		gm.material_override = eng_m
+		gm.position = Vector3(x, 2.1, te_z(hull, x) - 1.5) * k
+		proto.add_child(gm)
+	var nq: QuadMesh = QuadMesh.new()
+	nq.size = Vector2.ONE * 3.5
+	for side: Array in [[-1.0, Color(1.0, 0.2, 0.15, 1.0)], [1.0, Color(0.25, 1.0, 0.4, 1.0)]]:
+		var nl: MeshInstance3D = MeshInstance3D.new()
+		nl.mesh = nq
+		nl.material_override = soft.call(side[1])
+		nl.position = Vector3(131.0 * float(side[0]), 2.6, 26.0) * k
+		proto.add_child(nl)
 	for n2: Node in nodes:
 		var f: Node3D = n2 as Node3D
 		for c: Node in f.get_children():
 			if c is MeshInstance3D and (c as MeshInstance3D).mesh is BoxMesh:
+				(c as MeshInstance3D).visible = false
+			elif c is MeshInstance3D and (c as MeshInstance3D).mesh is QuadMesh:
+				# MapAmbience's violet engine glows were flat-coloured squares (the stray violet card): hide them,
+				# the wing's own engine glows replace them
 				(c as MeshInstance3D).visible = false
 		var copy: Node3D = proto.duplicate() as Node3D
 		copy.position = Vector3(0, -1.6, -37.0) * k
 		f.add_child(copy)
 	proto.free()
 	print("[exterior] re-skinned %d formation bombers" % nodes.size())
+
+
+## T-221 b: the living world's glow cards (MapAmbience: St Elmo's fire, the bombers' glows, flak fire) are billboard
+## quads in a flat colour, which read as hard violet squares against the bright sunset sky: give each a soft radial
+## falloff in its own colour (once per material).
+func _soften_cards() -> void:
+	var root: Node = get_parent()
+	if root == null:
+		return
+	for amb: Node in root.get_children():
+		if not (amb.get_script() != null and str((amb.get_script() as Script).resource_path).ends_with("map_ambience.gd")):
+			continue
+		for n: Node in amb.find_children("*", "MeshInstance3D", true, false):
+			var mi: MeshInstance3D = n as MeshInstance3D
+			if not (mi.mesh is QuadMesh):
+				continue
+			var m: StandardMaterial3D = mi.material_override as StandardMaterial3D
+			if m == null or m.albedo_texture != null or m.billboard_mode == BaseMaterial3D.BILLBOARD_DISABLED or m.has_meta("softened"):
+				continue
+			var g: Gradient = Gradient.new()
+			g.set_color(0, Color(1, 1, 1, 1))
+			g.set_color(1, Color(1, 1, 1, 0))
+			var gt: GradientTexture2D = GradientTexture2D.new()
+			gt.gradient = g
+			gt.fill = GradientTexture2D.FILL_RADIAL
+			gt.fill_from = Vector2(0.5, 0.5)
+			gt.fill_to = Vector2(1.0, 0.5)
+			gt.width = 64
+			gt.height = 64
+			m.albedo_texture = gt
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			m.set_meta("softened", true)
 
 
 # ---------------------------------------------------------------- tick
@@ -997,11 +1081,12 @@ func _process(delta: float) -> void:
 		return
 	_t += delta
 	gust = move_toward(gust, 0.0, delta / 2.5)
-	if not _formation_done:
-		_formation_t += delta
-		if _formation_t > 1.0:
-			_formation_t = 0.0
+	_formation_t += delta
+	if _formation_t > 1.0 + (1.0 if _formation_done else 0.0):
+		_formation_t = 0.0
+		if not _formation_done:
 			_reskin_formation()
+		_soften_cards()
 	if _sky == null or not is_instance_valid(_sky):
 		_sky = get_tree().get_first_node_in_group(&"flight_sky")
 	var dawn: float = clampf(float(_sky.get("sunrise")) if _sky != null else 0.0, 0.0, 1.0)

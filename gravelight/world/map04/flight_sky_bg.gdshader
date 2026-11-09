@@ -39,9 +39,9 @@ uniform vec4 sun_color : source_color = vec4(1.0, 0.72, 0.45, 1.0);
 // T-221: the golden hour of the bomb run (KranichSunset): a strong gradient, orange at the horizon behind the wing,
 // a pink band over it, deep blue overhead and ahead; the sun's glow wide; the far deck's tops gold over blue shadow
 uniform float golden : hint_range(0.0, 1.0) = 0.0;
-uniform vec4 gold_horizon : source_color = vec4(1.0, 0.44, 0.12, 1.0);
-uniform vec4 gold_pink : source_color = vec4(0.62, 0.26, 0.34, 1.0);
-uniform vec4 gold_zenith : source_color = vec4(0.04, 0.07, 0.2, 1.0);
+uniform vec4 gold_horizon : source_color = vec4(1.0, 0.4, 0.06, 1.0);
+uniform vec4 gold_pink : source_color = vec4(0.72, 0.16, 0.42, 1.0);
+uniform vec4 gold_zenith : source_color = vec4(0.025, 0.045, 0.17, 1.0);
 uniform vec4 gold_ahead : source_color = vec4(0.22, 0.2, 0.38, 1.0);
 
 float hash12d(vec2 p) {
@@ -112,9 +112,12 @@ void sky() {
 	if (golden > 0.0) {
 		float aft2 = clamp(-d.z * 0.5 + 0.5, 0.0, 1.0);
 		float up = clamp(h, 0.0, 1.0);
-		vec3 gsky = mix(mix(gold_ahead.rgb, gold_horizon.rgb, pow(aft2, 2.2)), gold_zenith.rgb, pow(up, 0.45));
-		gsky += gold_pink.rgb * exp(-abs(h - 0.14) * 7.0) * pow(aft2, 1.4) * 0.8;
-		col = mix(col, gsky, golden * (h >= 0.0 ? 0.92 : 0.35));
+		// T-221 b: a real sunset: a hot orange-gold band low round the sun, magenta over it, deep blue overhead
+		vec3 gsky = mix(mix(gold_ahead.rgb, gold_horizon.rgb * 0.75, pow(aft2, 2.2)), gold_zenith.rgb, pow(up, 0.38));
+		gsky += gold_horizon.rgb * exp(-max(h, 0.0) * 8.0) * pow(aft2, 2.6) * 1.8;
+		gsky += gold_pink.rgb * exp(-abs(h - 0.2) * 6.0) * pow(aft2, 1.2) * 0.6;
+		gsky += gold_pink.rgb * 0.15 * exp(-abs(h - 0.3) * 4.0) * (1.0 - aft2);
+		col = mix(col, gsky, golden * (h >= 0.0 ? 0.97 : 0.4));
 	}
 	if (!AT_CUBEMAP_PASS) {
 		// stars: one candidate per cell of a cube-ish grid on the sphere, twinkling
@@ -136,11 +139,21 @@ void sky() {
 			// a few maria
 			vec3 mp = dw - LIGHT0_DIRECTION;
 			float maria = 0.82 + 0.18 * sin(mp.x * 400.0) * sin(mp.y * 350.0 + 1.0);
-			float disc_s = mix(1.0, 1.35, sun_k);
-			disc = smoothstep(moon_size * disc_s, moon_size * disc_s * 0.92, a);
+			float disc_s = mix(1.0, 1.35, sun_k) * mix(1.0, 2.1, golden);
+			disc = smoothstep(moon_size * disc_s, moon_size * disc_s * 0.9, a);
 			col = mix(col, mix(moon_color.rgb * 1.6 * maria, sun_color.rgb * 2.6, sun_k), disc);
 			col += sun_color.rgb * sun_k * 0.35 * exp(-a * 3.5);
 			col += gold_horizon.rgb * golden * (1.2 * exp(-a * 10.0) + 0.12 * exp(-a * 2.5));
+			// T-221 b: the sun's glare (a hot core the glow blooms) and its rays fanning out
+			if (golden > 0.0) {
+				col += vec3(1.0, 0.86, 0.6) * golden * (6.0 * exp(-a * 55.0) + 1.4 * exp(-a * 16.0));
+				vec3 tx = normalize(cross(LIGHT0_DIRECTION, vec3(0.0, 1.0, 0.0)) + vec3(1e-4));
+				vec3 ty = cross(tx, LIGHT0_DIRECTION);
+				vec3 off = dw - LIGHT0_DIRECTION * dot(dw, LIGHT0_DIRECTION);
+				float ang = atan(dot(off, ty), dot(off, tx));
+				float rays = pow(0.5 + 0.5 * sin(ang * 13.0 + sin(ang * 5.0) * 2.0), 6.0) * 0.7 + pow(0.5 + 0.5 * sin(ang * 29.0 + 1.3), 10.0) * 0.5;
+				col += gold_horizon.rgb * golden * rays * exp(-a * 6.0) * 0.55 * smoothstep(moon_size * 2.0, moon_size * 5.0, a);
+			}
 			col += moon_color.rgb * 0.3 * exp(-a * 6.0) * (1.0 - dawn);
 		}
 	}
