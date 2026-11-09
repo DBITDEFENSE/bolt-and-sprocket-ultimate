@@ -9,6 +9,12 @@ GLBs are local under `assets/zombies/anims/`. No standalone animation files are 
 |---|---|---|
 | Existing six `assets/ours/characters/zombie_base/char_zombie_base_*.glb`, their embedded outfit/gear parts and existing skin textures | Project-owned original work; `assets/ours/characters/LICENSE.txt` | Zombie gallery bodies and baseline captures |
 | Existing `ZombieRig`, `ZombieBody`, `ZombieClips` generated animation library and materials | Project-owned original code/art; canonical ledger MZ/T-041 and character pipeline T-091 | Gallery's 102 clip previews and live AI baseline |
+| `ambientcg/fabric-031/textures/Fabric031_albedo.png`, Lennart Demes / [Fabric 031](https://ambientcg.com/a/Fabric031) | CC0 1.0; bundled LICENSE.txt/SOURCE.txt | Existing zombie clothing colour detail, aligned with normal/ORM projections |
+| `ambientcg/fabric-031/textures/Fabric031_normal.png`, Lennart Demes / [Fabric 031](https://ambientcg.com/a/Fabric031) | CC0 1.0; bundled LICENSE.txt/SOURCE.txt | Zombie-only fabric surface normals; rest-space triplanar sampling |
+| `ambientcg/fabric-031/textures/Fabric031_orm.png`, Lennart Demes / [Fabric 031](https://ambientcg.com/a/Fabric031) | CC0 1.0; existing project channel packing | Zombie-only fabric occlusion and roughness |
+| `ambientcg/leather-014/textures/Leather014_albedo.png`, Lennart Demes / [Leather 014](https://ambientcg.com/a/Leather014) | CC0 1.0; bundled LICENSE.txt/SOURCE.txt | Existing zombie boots/belts/gloves colour detail |
+| `ambientcg/leather-014/textures/Leather014_normal.png`, Lennart Demes / [Leather 014](https://ambientcg.com/a/Leather014) | CC0 1.0; bundled LICENSE.txt/SOURCE.txt | Zombie-only leather surface normals |
+| `ambientcg/leather-014/textures/Leather014_orm.png`, Lennart Demes / [Leather 014](https://ambientcg.com/a/Leather014) | CC0 1.0; existing project channel packing | Zombie-only leather occlusion and roughness |
 
 All rows below: source **Motus Digital / MoCap Online Zombie Starter 2.7**, owner-supplied
 `FBX_Zombie_27_Starter`; license **MoCap Online Standard License**,

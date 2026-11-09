@@ -48,6 +48,7 @@ var played_gaits: Dictionary = {}
 var verify_motion: bool = false
 var verify_performance: bool = false
 var near_player: bool = false
+var material_closeup: bool = false
 
 func _place_new(spec: Dictionary, pos: Vector3, window: Barricade = null) -> Zombie:
 	var z: Zombie = preload("res://tools/zombie_profiled.gd").new()
@@ -70,6 +71,7 @@ func _ready() -> void:
 			autoload.set_process_unhandled_input(false)
 	_out = "res://docs/captures/before"
 	for arg: String in OS.get_cmdline_user_args():
+		if arg == "--material-closeup": material_closeup = true
 		if arg == "--horde": horde = true
 		elif arg == "--capture": capture = true
 		elif arg.begins_with("--seconds="): seconds = maxf(2.0, float(arg.substr(10)))
@@ -108,6 +110,9 @@ func _ready() -> void:
 		if not only_kit.is_empty():
 			_cam.position = Vector3(0.6, 1.5, -3.3)
 			_cam.look_at(Vector3(0, 1.0, 0))
+			if material_closeup:
+				_cam.position = Vector3(0.9, 1.2, -1.4)
+				_cam.look_at(Vector3(0, 1.0, 0))
 	# Replace the legacy capture's violet fill with neutral warm studio illumination.
 	for light: Node in _studio.get_children():
 		if light is OmniLight3D: light.light_color = Color(1.0, 0.85, 0.68)
@@ -164,6 +169,11 @@ func _ready() -> void:
 		var anim: Animation = ZombieClips.library().get_animation(clip)
 		inventory["clips"].append({"name": clip, "seconds": anim.length, "tracks": anim.get_track_count(), "loop": anim.loop_mode, "source": anim.get_meta("source", "existing procedural library")})
 	_write_json("runtime_inventory.json", inventory)
+	if material_closeup and DisplayServer.get_name() != "headless":
+		# Allow asynchronous shader/pipeline compilation before the first comparison still.
+		var warm_start: int = Time.get_ticks_msec()
+		while Time.get_ticks_msec() - warm_start < 1000:
+			await get_tree().process_frame
 	ready_gallery = true
 
 func _process(delta: float) -> void:

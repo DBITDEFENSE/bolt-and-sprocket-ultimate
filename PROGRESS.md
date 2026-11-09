@@ -1,5 +1,28 @@
 # PROGRESS
 
+RESUME HERE: 2026-11-09 Codex Stage 3 material/final-local-check checkpoint. Work ONLY in
+.wt/zombie-overhaul on codex/zombie-overhaul. State commit baa71d96 adds the two recorded swipes
+and two recorded deaths with momentum into ragdoll. New material slice uses existing CC0 fabric/
+leather normal/ORM maps, configured in data/gravelight/zombie_materials.json; two body surfaces,
+separate zombie-only material, living people unchanged. Blender headless: 4 maps valid. Godot:
+45 zombie tests / 2,679 asserts; 859 scripts / 0 failures; license 4/4 / 367 asserts; manifest current.
+Final 60 s rendered 24-active near-player soak PASS: frame p95 4.7619 ms, callback CPU .155 ms per
+actor/frame (Ryzen 7800X3D / RTX5090, not mid-range/full-map sign-off). Final 60 s fixed-60 motion
+PASS: 50,255 contacts, toe drift p95 .012804 m/s, root mismatch 1.0104%. Both runs minimum24,
+zero missing clips/rest samples, 83,520 pose samples. Reports: docs/captures/after/mocap/
+acceptance_materials_{rendered,motion}. Close-ups: mocap/materials; state videos: mocap/states.
+All gameplay speeds and jitter preserved. Soldier motion/swipes/two deaths 2 -> 3/5, model stays2,
+variety stays3. Full premium target NOT MET. Shader prototype/sampler failure and overly strict
+RGB-normal audit fixed/rerun; final renders have no shader/script/engine errors. Unicode/NUL
+startup warnings remain. A license check overlapped part of the rendered performance run.
+NEXT: review/clean supplied mco_turn_l_45/r_45 (net +45/-45 degrees, 1.267 s), extract root yaw
+and match visual phase to existing facing without changing gameplay speeds/facing. Do not alias
+raw turns (double rotation). Then stairs/rubble and special-body coverage. Missing recordings,
+six more deaths and artist-authored soldier/PBR/LOD sample remain in the shopping list. Original
+Starter pack is already received/built locally; never request it again. Source/converted files
+remain ignored; tools/zombie_mocap_build.ps1 rebuilds them. No merge/push/export/main replacement.
+
+
 RESUME HERE: 2026-11-09 Codex Stage 2 swipe/death checkpoint. Branch codex/zombie-overhaul;
 work ONLY in .wt/zombie-overhaul. Now 28 converted clips from 26 supplied FBXs (two swipe trims).
 Live swipe_l/r use reviewed recording strikes; original windups, 0.35 s recovery, damage and

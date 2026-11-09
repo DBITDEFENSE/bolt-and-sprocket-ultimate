@@ -3,7 +3,45 @@
 Base: master e96a0188; branch codex/zombie-overhaul in .wt/zombie-overhaul.
 The owner approved master because main does not exist. No new animation poses or assets authored.
 
-## 2026-11-09 next checkpoint — recorded swipes and deaths active
+## 2026-11-09 latest checkpoint — zombie clothing detail and final local acceptance
+
+State work is committed as `baa71d96`. The next Stage 3 slice activates the repo's existing
+CC0 fabric/leather normal and ORM maps for zombie clothing. Tuning is in
+`data/gravelight/zombie_materials.json`; two body surfaces remain. Shared `ZombieBody` gains an
+opt-in material path: living people keep the existing defaults and severed pieces retain the
+zombie material. No model topology, skin weights, base poses or gameplay speeds changed.
+
+Blender headless material audit: 4 maps, zero failures. Godot: **45/45 zombie tests, 2,679
+assertions; 859 scripts, zero failures; 4/4 license tests, 367 assertions; 108-folder manifest
+current**. Three before/after material close-ups are in `docs/captures/after/mocap/materials`.
+The effect is modest: model quality remains **2/5**, not premium acceptance. The shader sampler
+prototype failure and an audit rule that incorrectly checked source blue instead of the actual
+RG decode were corrected and rerun; raw diagnostics remain documented. Final captures have no
+shader/script/engine errors; Unicode/NUL startup warnings remain.
+
+Fresh near-player 24-active checks, 60 s each:
+
+| Check | Result |
+|---|---|
+| Rendered real-time frame interval p95 | **4.7619 ms**, under 16.667 ms |
+| Zombie synchronous callback CPU p95 | **0.155 ms/actor/frame**, under 0.35 ms |
+| Fixed-60 headless planted toe drift p95 | **0.012804 m/s**, under 0.10; 50,255 source-contact samples |
+| Fixed-60 root/body mismatch p95 | **1.0104%**, under 5% |
+| Both runs | Minimum 24 active; no missing clips/rest samples; 83,520 pose samples each |
+
+Reports: `acceptance_materials_rendered` and `acceptance_materials_motion` under the mocap
+capture folder. Hardware remains Ryzen 7800X3D / RTX 5090; this does not certify mid-range/full-map
+performance. A license-check process overlapped part of the rendered run, so timing differences
+cannot be attributed solely to materials. Fixed-step frame timing is not a performance result.
+
+RESUME HERE: review the supplied 45-degree turns and implement root-yaw/visual-phase matching
+without changing gameplay facing or speeds; preserve original clips for comparison. Existing
+`mco_turn_l_45` / `mco_turn_r_45` carry +45 / -45 degrees over 1.267 s, unlike the fast existing
+facing response. Then stairs/rubble and special-body coverage. Complete the missing source
+states and artist-authored model sample in the shopping list before claiming the full overhaul.
+No merge, push, export or main-build replacement. Full Stage 2/3/4 acceptance remains open.
+
+## 2026-11-09 previous checkpoint — recorded swipes and deaths active
 
 This section supersedes the earlier locomotion-only state inventory below. The bank now has
 **28 converted clips from 26 source FBXs**. Two single-swipe trims sample the supplied arm loop;

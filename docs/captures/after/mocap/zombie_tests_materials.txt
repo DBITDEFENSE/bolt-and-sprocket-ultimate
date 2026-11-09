@@ -1,0 +1,113 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+Godot_v4.7.2-stable_win64_console.exe : Unicode parsing error, some characters were replaced with � (U+FFFD):
+Unexpected NUL character
+At line:2 char:1
++ & 'C:/Users/Devin/PROJECTS/bolt-and-sprocket-ultimate/tools/dl_godot/ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Unicode parsing...d NUL character:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+Unicode parsing error, some characters were replaced with � (U+FFFD): Unexpected NUL character
+Unicode parsing error, some characters were replaced with � (U+FFFD): Unexpected NUL character
+---  GUT  ---
+[INFO]:  using [C:/Users/Devin/AppData/Roaming/Godot/app_userdata/TERMS & CONDITIONS] for temporary output.
+Godot version:  4.7.2
+GUT version:  9.6.1
+
+
+res://gravelight/tests/unit/test_zombie_anim.gd
+* test_anim_json_clip_counts
+* test_rig_is_humanoid_profile_with_bone_map
+* test_clip_library_has_every_clip_and_root_motion_matches_tier_speed
+* test_tree_root_has_every_state
+* test_kits_skinned_and_laborer_retired
+* test_live_zombie_rig_tree_and_dismemberment
+* test_gore_setting_default
+7/7 passed.
+
+
+res://gravelight/tests/unit/test_zombie_body.gd
+* test_every_body_glb_is_present_and_weighted_to_rig_bones
+* test_every_kit_build_sex_merges_into_two_surfaces
+* test_meshes_sit_inside_the_hitboxes
+* test_gore_split_gives_every_limb_piece
+* test_lods_and_triangle_budget
+* test_skin_material_has_painted_maps
+* test_living_set_for_the_people_builder
+* test_crawl_pose_lies_on_the_floor
+8/8 passed.
+
+
+res://gravelight/tests/unit/test_zombie_emerge.gd
+* test_table_shape_and_variants
+* test_stage_times_monotonic
+* test_pick_is_deterministic_from_the_seed_and_biased_by_tier
+* test_duration_is_variant_seconds_times_round_multiplier
+* test_clips_bake_at_table_length_and_nothing_pokes_through_before_its_stage
+* test_hitboxes_enable_at_head_out_and_on_every_early_exit
+* test_crawlers_rise_on_their_elbows
+* test_killed_mid_rise_sinks_back
+* test_surface_class_follows_the_spawn
+9/9 passed.
+
+
+res://gravelight/tests/unit/test_zombie_materials.gd
+* test_clothing_detail_is_zombie_only_and_survives_dismemberment
+1/1 passed.
+
+
+res://gravelight/tests/unit/test_zombie_mocap.gd
+* test_recorded_swipes_keep_gameplay_windup_and_recovery
+* test_recorded_deaths_keep_network_names_and_reset_pooled_root_offset
+* test_contact_event_crossings_include_wrap_without_duplicate_boundaries
+* test_local_licensed_clips_keep_targets_and_multiple_step_events
+* test_live_gaits_keep_speed_and_match_root_travel_after_random_seek
+5/5 passed.
+
+
+res://gravelight/tests/unit/test_zombie_mz_fixes.gd
+* test_foreman_has_no_rig_and_rig_paths_are_safe
+* test_getup_survives_fire_and_bursts
+* test_replayed_one_shot_state_restarts_its_clip
+* test_ragdoll_sync_keeps_severed_bones_collapsed
+* test_grab_pull_is_steady_and_springs_back
+* test_last_hit_bone_never_leaks
+* test_nurse_keeps_a_slight_hunch
+* test_map01_buy_doors_fill_their_openings
+8/8 passed.
+
+
+res://gravelight/tests/unit/test_zombie_phase.gd
+* test_ground_spawns_keep_emerge_and_enter_different_first_strides
+1/1 passed.
+
+
+res://gravelight/tests/unit/test_zombie_smooth.gd
+* test_default_on_and_headless_off
+* test_the_pivot_leads_back_by_the_unfinished_part_of_the_tick
+* test_a_teleport_snaps
+* test_far_zombies_and_the_switch_clear_the_offset
+* test_the_pivot_move_of_a_state_is_kept
+* test_the_face_and_the_posing_share_the_animation_lod
+6/6 passed.
+
+
+
+
+==============================================
+= Run Summary
+==============================================
+
+Totals
+------
+Scripts               8
+Tests                45
+Passing Tests        45
+Asserts            2679
+Time              4.332s
+
+
+Ran Scripts matching "test_zombie"
+---- All tests passed! ----
+GUT 9.7.1:  https://github.com/bitwes/Gut/releases/tag/v9.7.1 is now available!

@@ -54,7 +54,7 @@ func test_every_kit_build_sex_merges_into_two_surfaces() -> void:
 			var tag: String = "%s %s/%s" % [kit, bf[0], "f" if bf[1] else "m"]
 			assert_eq(m.get_surface_count(), 2, tag + ": skin + kit (two draw calls)")
 			assert_true(m.surface_get_material(0) is ShaderMaterial, tag + ": infection shader on the skin")
-			assert_same(m.surface_get_material(1), ZombieBody.kit_material(), tag + ": the one shared kit material")
+			assert_same(m.surface_get_material(1), ZombieBody.kit_material(true), tag + ": the one shared zombie kit material")
 			var skin: Array = m.surface_get_arrays(0)
 			var body_tris: int = ((ZombieBody.base_parts(bf[0], bf[1])["Body"] as Array)[Mesh.ARRAY_INDEX] as PackedInt32Array).size() / 3
 			var tris: int = (skin[Mesh.ARRAY_INDEX] as PackedInt32Array).size() / 3
