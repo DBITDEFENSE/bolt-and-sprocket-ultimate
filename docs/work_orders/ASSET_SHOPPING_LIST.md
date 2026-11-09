@@ -7,7 +7,11 @@
 - Coverage needed: shamble/walk/jog/run/sprint variants, crawls, turns, swipes/lunge/grab/bite,
   barricade tears/reach/vault, climbs, directional reactions, knockdowns/getups and eight or more deaths.
   Audit the supplied pack before buying gap fillers; no exact pack contents assumed.
-- Additional body/head/outfit requests remain pending the close-up roster review.
+- Close-up review found the current soldier head and uniform too simplified for the art bible.
+  Needed: an original artist-authored zombie head/body and distressed WW2-style clothing set
+  (or a commercially licensed source with editable meshes), PBR albedo/normal/roughness, clean
+  deformation weights, and LOD0-2. Fictional markings only; no prisoner/forced-laborer enemies.
+  Fit it to the shared rig and validate one soldier before commissioning the rest of the roster.
 
 
 Claude Code models only the wonder weapons. These are the conventional guns you download or buy, then drop into:

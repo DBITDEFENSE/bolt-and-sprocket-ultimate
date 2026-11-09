@@ -27,6 +27,20 @@ Add `--horde --emerge` to keep the real ground-emerge state before the first cha
 skipping directly to walking. This exercises deferred gait phase initialization. With captures,
 the horde shot is delayed to six seconds to include the initial emerges and early strides.
 
+Final-check options:
+- `--full-rate` disables animation distance throttling in this tool only. It does not force IK
+  or head tracking outside their normal range; the studio's player target is distant.
+- `--count=1 --kit=soldier --tier=walk --follow --horde` follows one live actor. Tiers are
+  shamble, walk, jog, run, sprint and crawl. The default horde still requests 24 actors.
+- `--capture --frames` also records live AI at 12 images per simulation second. Use Godot's
+  `--fixed-fps 60` **before** `--` for motion-review recordings, so PNG readback stalls do not
+  alter the sampled gait. Those recordings are not performance measurements.
+- Track wraps rebase the studio-owned progress/stuck watches. No actors are silently respawned
+  and genuine reclamation fails the check. Reports include wraps, state counts and the last
+  state/position before any loss. Inactive actors are excluded from pose measurements.
+- Exit 1 means a requested actor was lost, a sampled pose was at rest, or resources/captures
+  failed. Exit 0 covers only these checks: it does **not** certify art, foot contact or performance.
+
 Run `res://tools/zombie_ragdoll_check.tscn` headless to stress nine deaths against the six-ragdoll
 budget. It fails if a new death is denied, the oldest keeps simulating, frozen corpses consume
 the budget, or cleanup leaves a live registration. This checks lifecycle, not visual death quality.

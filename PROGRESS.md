@@ -1,5 +1,23 @@
 # PROGRESS
 
+RESUME HERE: 2026-11-08 Codex final-check checkpoint, codex/zombie-overhaul in .wt/zombie-overhaul.
+QUALITY TARGET NOT MET; do not describe this branch as a completed new-zombie asset overhaul.
+Delivered/tested fixes: deferred random gait phase, evaluated-playhead footsteps, ragdoll live
+budget. Fixed gallery-only teleport/progress watches; inactive actors no longer inflate samples,
+losses fail the tool. Both fresh 60 s full-rate-animation soaks sustained 24 active (zero losses,
+83,520 pose samples each; zero sampled rest poses/missing clips). Rendered p95 interval 4.167 ms
+on RTX 5090; headless 7.576 ms. Not a mid-range/per-zombie CPU or near-player IK sign-off.
+Final Godot checks: 39/39 zombie tests (1,906 asserts), 855 scripts / zero failures, ragdoll stress
+9 admitted / peak 6. Blender: 6 GLBs, zero weight errors, 90 UV review findings. Fixed-timestep
+live tier videos and clip previews: docs/captures/after/final/; read its README and the plan.
+Foot sliding remains unaccepted (heuristic p95 6.832 rendered / 7.404 headless m/s). Soldier
+locomotion/model ratings remain 2/5; no premium claim. One sprint capture exited without report
+and logged cleanup errors; fresh rerun passed, cause unconfirmed. Unicode/NUL warnings remain.
+NEXT: obtain licensed source mocap + the artist-authored soldier quality sample in the shopping
+list. Build/verify tools/blender/zombie_anim_batch.py, retargeting and contact/root-motion handling
+on one body, then expand. Finish special-body/state/pop/CPU coverage and per-type scores.
+Stages 1/3/4 and most Stage 2 remain unfinished. No merge, push or playable-build replacement.
+
 RESUME HERE: Codex gait-phase pass, codex/zombie-overhaul in .wt/zombie-overhaul.
 Fixed deferred random stride start after ground emerge via AnimationNodeTimeSeek; crawl seek uses
 its own clip duration. Rig-less bodies are guarded. Footsteps now sample the evaluated locomotion

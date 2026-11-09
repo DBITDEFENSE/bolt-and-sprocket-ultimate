@@ -3,6 +3,56 @@
 Base: master e96a0188; branch codex/zombie-overhaul in .wt/zombie-overhaul.
 The owner approved master because main does not exist. No new animation poses or assets authored.
 
+## Final check verdict — not ready for premium-quality sign-off
+
+The branch contains tested phase/footstep and ragdoll-budget fixes, plus reproducible review tools.
+It does **not** contain the requested mocap/model overhaul. Do not describe the existing procedural
+clips or original body block-outs as new premium zombies. No merge or playable-build export made.
+
+Final checks executed on 2026-11-08:
+
+| Check | Result |
+|---|---|
+| Godot headless zombie suite | PASS: 39 tests, 1,906 assertions |
+| Godot headless script scan | PASS: 855 scripts, zero failed |
+| Ragdoll budget stress | PASS: all 9 deaths admitted; peak 6; frozen/freed slots released |
+| Blender 5.1.2 headless body import | PASS: 6 GLBs, zero unweighted-vertex errors; 90 UV review findings remain |
+| 60 s rendered, full-rate animation, 24 actors | PASS for population: minimum 24, no reclamations, 144 track wraps |
+| 60 s headless, full-rate animation, 24 actors | PASS for population: minimum 24, no reclamations, 147 track wraps |
+| Missing clips / sampled identity poses in these soaks | Zero / zero, 83,520 pose samples in each run |
+| Rendered frame interval on RTX 5090 | p95 4.167 ms; capped bare studio, not per-zombie CPU or target-machine acceptance |
+| Headless frame interval | p95 7.576 ms; excludes rendering cost |
+| Foot contact | NOT ACCEPTED: heuristic speed p95 6.832 m/s rendered, 7.404 m/s headless |
+| Full zero-pop / T-pose certification | NOT ESTABLISHED by the rest-pose heuristic |
+| Licensed mocap / polished models | MISSING / below the requested art bar |
+
+Reports and recordings are under `docs/captures/after/final/`. `rendered` and `headless` are the
+60-second soaks. `motion` contains fixed-timestep close-up gameplay recordings of the six tiers;
+their PNG capture stalls and fixed deltas make their timing fields unsuitable for performance.
+The distant studio target leaves IK/look-at outside their normal range for much of a soak.
+Full map, near-player modifiers, special bodies, reactions and interactions still need acceptance.
+
+The previous minimum-active failure was a gallery bug: after teleporting a zombie to the back of
+the track, the tool kept its old best-distance watch. Repeated laps eventually triggered the
+40-second no-progress reclamation. The gallery now rebases those watches at its own teleports.
+It does not disable ordinary stall handling or silently replace a reclaimed actor. It records
+state counts/losses and returns failure if the requested population drops. Gameplay navigation
+and reclamation are unchanged. Inactive actors no longer inflate pose samples.
+
+Visual review finds the soldier's uniform/head too simple and smooth, the movement mechanical,
+and foot planting unconvincing. Correct phase variation does not fix those source limitations.
+The remaining existing Unicode/NUL startup warnings do not fail the executed checks.
+One sprint recording exited without its completion report and emitted renderer/resource cleanup
+errors. Its cause is unconfirmed. It was excluded; a fresh sprint rerun completed with its report,
+exit 0 and no cleanup errors. This intermittent exit is not claimed fixed.
+
+RESUME HERE: Work only in .wt/zombie-overhaul on codex/zombie-overhaul. The gallery reclamation
+defect is fixed and both 60 s / 24-active reruns pass their population checks. Obtain the licensed
+source mocap and an artist-authored soldier quality sample listed below; then build and validate
+tools/blender/zombie_anim_batch.py, retarget/stride/contact handling and materials on that sample
+before expanding the roster. Finish missing Stage 0 special-body/state/pop/CPU coverage alongside
+that work. Stages 1/3/4 and most of Stage 2 remain unfinished; do not mark the overhaul delivered.
+
 ## Current findings
 
 The spec's opening description is obsolete. The runtime uses ZombieRig (19 bones), ZombieClips,
@@ -17,7 +67,7 @@ The supplied ZIP is a weapons pack. docs/ASSETS.md is the existing asset ledger.
 | Skinned bodies / builds / kits / LODs | partial | CHARACTER_PIPELINE; six original GLBs, visual quality not scored |
 | State machine / blend spaces / additive layers | partial | zombie_clips.gd builds all nine states; procedural sources |
 | Root motion / planted feet | partial | root track exists but movement drives playback; existing test only compares speeds |
-| Random phase | partial | _random_phase only advances if already in Locomotion/Crawl; ground spawn enters Emerge |
+| Random phase | done | Deferred TimeSeek; equal-clip ground-spawn regression passes |
 | Speed jitter +/-10% | partial | activate reads enemies.speed_jitter=0.05, anim.speed_jitter=0.1 is not used there |
 | Locomotion variants / turns / lean / posture | partial | configured and generated; licensed motion missing |
 | Foot IK / head look | partial | modifiers present; stairs/rubble verification pending |
@@ -29,14 +79,14 @@ The supplied ZIP is a weapons pack. docs/ASSETS.md is the existing asset ledger.
 | Knockdown / getup | partial | gameplay states exist; verification pending |
 | Partial physical bone hit blend | missing | modifier uses damped angular springs, not physical bone simulation |
 | 8+ death clips / explosive ragdolls | partial | nine deaths plus crawler, all procedural; physics exists |
-| Ragdoll cap / corpse dissolve | partial | config max_live=6 and 8–12 seconds; fresh cap test pending |
+| Ragdoll cap / corpse dissolve | partial | live cap stress passes 9 admissions / peak 6; dissolve visual acceptance pending |
 | Severed pieces / caps / wounds / gore modes | partial | existing gore system; mesh validation pending |
 | Modular gear / tint / infection / damage shader | partial | existing system; 24-instance visual uniqueness not proven |
 | Normal maps / texel density / PBR | partial | texture pipeline present; visual and UV validation pending |
-| Animation events / surface sound | partial | footsteps use separate _cycle clock; can disagree with randomized tree phase |
+| Animation events / surface sound | partial | footsteps now follow evaluated playhead; authored contact/event timing still missing |
 | Distance LOD | partial | existing tick throttling; measured cost pending |
 | Distant crowd impostors | missing | no audit evidence of implemented billboard crowd |
-| 24 zombies / 60 FPS / <=0.35 ms per zombie | missing | fresh target-machine measurement required |
+| 24 zombies / 60 FPS / <=0.35 ms per zombie | partial | 24 active for 60 s on RTX 5090; target-machine/per-zombie CPU requirement unverified |
 | Zero pops / T poses / missing clips | missing | compile checks cannot establish these |
 
 ## Priorities
@@ -61,15 +111,29 @@ These are tool/compile baselines, not acceptance results. No art quality or perf
 
 ## Scores (1–5)
 
-All types: before NOT SCORED / after NOT SCORED. Wide frames and a soldier close-up reviewed. Assigning full motion scores
-from source inspection would misrepresent evidence. No visual/runtime overhaul completed yet.
+Scale: 1 placeholder, 2 playable with obvious art/motion defects, 3 production competent,
+4 requested premium target, 5 exceptional. Scores are review judgments, not test results.
+
+| Reviewed sample | Locomotion before / after | Reactions | Deaths | Variety before / after | Model before / after |
+|---|---|---|---|---|---|
+| Ganger / soldier | 2 / 2 | Not scored | Not scored | 3 / 3 (shared horde) | 2 / 2 |
+
+Before: `before/closeup` walk sequence and wide 14-kit previews. After: `after/final/motion`
+live tier recordings and rendered horde. Different preview/live modes are explicitly identified;
+these are not a controlled locomotion A/B. No change to source motion or model art was made,
+and the tested phase/ragdoll fixes do not move these broad visual ratings into a higher band.
+Other types and reaction/death quality remain unscored without adequate comparable close-ups.
+The requested complete per-type scorecard is unfinished; no 4/5 quality claim is supported.
 
 ## ASSETS STILL NEEDED
 
 - MoCap Online zombie pack (source FBX plus license/receipt permitting this use), absent locally.
 - Licensed coverage for all required tiers, turns, attacks, barricades, climbs, crawl transitions,
   directional reactions, knockdowns/getups and 8+ deaths. Exact gaps require auditing the supplied pack.
-- Any additional body/head/outfit assets only after rendered roster review identifies actual gaps.
+- An original artist-authored zombie soldier head/body and distressed WW2-style outfit with
+  PBR maps, deformation weights and LOD0-2 (or commercially licensed editable sources).
+  The rendered soldier sample establishes this quality gap. Validate one fitted sample before
+  purchasing/commissioning the remaining roster; fictional markings and no prisoner enemies.
 
 ## Stage 0 checkpoint results (not stage completion)
 
@@ -140,7 +204,7 @@ to replace reclaimed zombies. Investigate state histories/reclamation before usi
 Contact-foot speed p95 5.985 m/s remains high; this phase fix does not solve foot-sliding.
 Full report: docs/captures/after/phase/horde.json. Normal cleanup emitted no resource leak errors.
 
-RESUME HERE: Open .wt/zombie-overhaul on codex/zombie-overhaul. Complete bespoke enemy coverage,
+Historical checkpoint next steps: Open .wt/zombie-overhaul on codex/zombie-overhaul. Complete bespoke enemy coverage,
 pop detection and per-zombie CPU profiling; finish before scores. The gallery framing, sequences,
 shutdown leak and ragdoll-budget lifecycle are now handled. Next substantive animation work:
 licensed-source intake. First-locomotion random phase/event synchronization now has a tested fix.

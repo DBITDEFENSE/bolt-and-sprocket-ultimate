@@ -30,6 +30,15 @@ var frame_sequence: bool = false
 var sequence_next: float = 0.0
 var sequence_frame: int = 0
 var emerge_together: bool = false
+var wrap_count: int = 0
+var inactive_events: Array[Dictionary] = []
+var last_actor_state: Dictionary = {}
+var state_samples: Dictionary = {}
+var validation_failures: Array[String] = []
+var full_rate: bool = false
+var actor_count: int = 24
+var only_tier: String = ""
+var follow_actor: bool = false
 
 func _ready() -> void:
 	seed(74119)
@@ -48,12 +57,17 @@ func _ready() -> void:
 		elif arg.begins_with("--kind="): only_kind = arg.substr(7)
 		elif arg == "--frames": frame_sequence = true
 		elif arg == "--emerge": emerge_together = true
+		elif arg == "--full-rate": full_rate = true
+		elif arg.begins_with("--count="): actor_count = clampi(int(arg.substr(8)), 1, 24)
+		elif arg.begins_with("--tier="): only_tier = arg.substr(7)
+		elif arg == "--follow": follow_actor = true
 	if capture and DisplayServer.get_name() == "headless":
 		push_error("Screenshots require a rendered run; omit --headless.")
 		get_tree().quit(2)
 		return
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(_out))
 	GameState.map_id = &"map01_kaltenbrunn"
+	if full_rate: Zombie.anim_lod_scale = 100.0
 	_build_studio()
 	await get_tree().process_frame
 	while NavigationServer3D.map_get_iteration_id(_studio.get_world_3d().navigation_map) == 0:
@@ -72,6 +86,9 @@ func _ready() -> void:
 	# Replace the legacy capture's violet fill with neutral warm studio illumination.
 	for light: Node in _studio.get_children():
 		if light is OmniLight3D: light.light_color = Color(1.0, 0.85, 0.68)
+		# The inherited legacy/new divider crosses the solo preview's ankles.
+		if light is MeshInstance3D and light.mesh is BoxMesh and light.mesh.size == Vector3(0.2, 0.3, 80):
+			light.queue_free()
 	var ui := CanvasLayer.new()
 	add_child(ui)
 	_label = Label.new()
@@ -88,10 +105,17 @@ func _ready() -> void:
 		push_error("Unknown kind or bespoke boss unsupported by this shared-rig viewer: " + only_kind)
 		get_tree().quit(2)
 		return
-	for i: int in (24 if horde or only_kit.is_empty() else 1):
+	if not only_tier.is_empty() and not GLData.table("enemies")["tiers"].has(only_tier) and only_tier != "crawl":
+		push_error("Unknown tier: " + only_tier)
+		get_tree().quit(2)
+		return
+	if not horde and not only_kit.is_empty(): actor_count = 1
+	min_active = actor_count
+	for i: int in actor_count:
 		var kit: String = str(kits[i % kits.size()])
-		var at: Vector3 = Vector3((i % 8 - 3.5) * 1.6, 0, 3 + (i / 8) * 3) if horde or only_kit.is_empty() else Vector3.ZERO
-		var z: Zombie = _place_new({"enemy_id": only_kind, "variant": kit, "tier": TIERS[i % TIERS.size()], "health": 1000}, at)
+		var at: Vector3 = Vector3((i % 8 - 3.5) * 1.6, 0, 3 + (i / 8) * 3) if actor_count > 1 else Vector3(3, 0, 3) if horde else Vector3.ZERO
+		var tier_name: String = only_tier if not only_tier.is_empty() and only_tier != "crawl" else str(TIERS[i % TIERS.size()])
+		var z: Zombie = _place_new({"enemy_id": only_kind, "variant": kit, "tier": tier_name, "crawler": only_tier == "crawl", "health": 1000}, at)
 		if not emerge_together or not horde:
 			z.call("_enter", Zombie.State.CHASE)
 		if not horde:
@@ -124,18 +148,40 @@ func _process(delta: float) -> void:
 	elapsed += delta
 	peak_ragdolls = maxi(peak_ragdolls, ZombieRagdoll.live_count())
 	if horde:
+		if follow_actor and not _new.is_empty():
+			_cam.position = _new[0].position + Vector3(2.2, 1.5, -4.0)
+			_cam.look_at(_new[0].position + Vector3.UP)
 		var active_count: int = 0
 		for actor: Zombie in _new:
-			if actor.state != Zombie.State.INACTIVE: active_count += 1
+			if actor.is_active(): active_count += 1
+			var actor_id: int = actor.get_instance_id()
+			var state_name: String = Zombie.State.keys()[actor.state]
+			state_samples[state_name] = int(state_samples.get(state_name, 0)) + 1
+			if not actor.is_active() and not bool(last_actor_state.get(actor_id, {}).get("inactive", false)):
+				inactive_events.append({"actor": actor_id, "seconds": elapsed, "state": state_name, "previous": last_actor_state.get(actor_id, {})})
+			last_actor_state[actor_id] = {"inactive": not actor.is_active(), "state": state_name, "position": str(actor.position), "no_progress_seconds": actor.get("_progress_t"), "stuck_seconds": actor.get("_stuck_t")}
 		min_active = mini(min_active, active_count)
-		_label.text = "LIVE AI BASELINE | 24 zombies | %.1f / %.1f s" % [elapsed, seconds]
+		_label.text = "LIVE AI | %d active zombies | %.1f / %.1f s" % [active_count, elapsed, seconds]
 		if elapsed > 2.0: frames.append(delta * 1000.0)
 		if capture and elapsed > (6.0 if emerge_together else 3.0) and captures == 0:
 			captures = 1
 			_save_frame("horde_24")
+		if capture and frame_sequence and elapsed >= sequence_next:
+			sequence_next += 1.0 / 12.0
+			_save_frame("horde_frame_%04d" % sequence_frame)
+			sequence_frame += 1
 		for z: Zombie in _new:
-			if z.position.z < -12:
+			if z.is_active() and z.position.z < -12:
 				z.position.z = 12
+				# This is a tool-owned discontinuity, not lack of navigation progress.
+				# Rebase distance watches after the wrap; ordinary stalls still recycle/fail.
+				z.set("_progress_best", INF)
+				z.set("_progress_t", 0.0)
+				z.set("_stuck_origin", z.global_position)
+				z.set("_stuck_t", 0.0)
+				z.set("_tick_prev", Vector3.INF)
+				z.reset_physics_interpolation()
+				wrap_count += 1
 				previous_feet.erase(z.get_instance_id())
 		if elapsed >= seconds: _finish()
 		return
@@ -169,6 +215,7 @@ func _physics_process(delta: float) -> void:
 	if not ready_gallery or not horde or finished or elapsed < 2: return
 	var bins: Dictionary = {}
 	for z: Zombie in _new:
+		if not z.is_active(): continue
 		var sk: Skeleton3D = z.get("_skel")
 		if sk == null: continue
 		var id: int = z.get_instance_id()
@@ -221,6 +268,20 @@ func _finish() -> void:
 	result["min_active"] = min_active
 	result["moving_pose_samples"] = moving_samples
 	result["contact_requires_body_speed_mps"] = 0.4
+	result["full_rate_animation"] = full_rate
+	result["requested_active"] = actor_count
+	result["tier"] = only_tier
+	result["track_wraps"] = wrap_count
+	result["inactive_events"] = inactive_events
+	result["state_samples"] = state_samples
+	result["capture_affects_timing"] = capture and frame_sequence
+	result["validation_scope"] = "Active population, missing resources/captures, sampled rest poses only. Not art or foot-contact acceptance."
+	result["quality_acceptance"] = "NOT CERTIFIED: procedural source clips; planted-contact annotations and full state coverage still missing"
+	if horde and min_active < actor_count:
+		validation_failures.append("Expected %d active zombies throughout; minimum was %d" % [actor_count, min_active])
+	if not missing.is_empty(): validation_failures.append("Missing clips or failed captures")
+	if zero_pose_samples > 0: validation_failures.append("Sampled identity/rest poses")
+	result["validation_failures"] = validation_failures
 	_write_json("horde.json" if horde else "preview.json", result)
 	print("[zombie_gallery] ", JSON.stringify(result))
 	_clear()
@@ -232,4 +293,4 @@ func _finish() -> void:
 	for template: Node in WeaponModels._templates.values():
 		if is_instance_valid(template): template.free()
 	WeaponModels._templates.clear()
-	get_tree().quit(0 if missing.is_empty() else 1)
+	get_tree().quit(0 if validation_failures.is_empty() else 1)

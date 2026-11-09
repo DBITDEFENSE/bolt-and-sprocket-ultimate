@@ -1,0 +1,654 @@
+{
+	"bones": [
+		"Root",
+		"Hips",
+		"LeftUpperLeg",
+		"RightUpperLeg",
+		"LeftLowerLeg",
+		"RightLowerLeg",
+		"LeftFoot",
+		"RightFoot",
+		"Spine",
+		"Chest",
+		"Neck",
+		"Head",
+		"Jaw",
+		"LeftUpperArm",
+		"RightUpperArm",
+		"LeftLowerArm",
+		"RightLowerArm",
+		"LeftHand",
+		"RightHand"
+	],
+	"clips": [
+		{
+			"loop": 1,
+			"name": "broken_neck",
+			"seconds": 0.2,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "climb_loop",
+			"seconds": 1.0,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "climb_mantle",
+			"seconds": 0.45,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "crawl_bite",
+			"seconds": 0.8,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "crawl_drag",
+			"seconds": 1.125,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "crawl_idle",
+			"seconds": 2.4,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "crawl_scuttle",
+			"seconds": 1.125,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "death_back",
+			"seconds": 1.3,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "death_crawl",
+			"seconds": 1.3,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "death_faceplant",
+			"seconds": 1.3,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "death_gut",
+			"seconds": 1.3,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "death_head_snap",
+			"seconds": 1.3,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "death_headless",
+			"seconds": 1.3,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "death_knee",
+			"seconds": 1.3,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "death_sit",
+			"seconds": 1.3,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "death_spin",
+			"seconds": 1.3,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "death_tumble",
+			"seconds": 1.3,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "drag_foot_l",
+			"seconds": 0.2,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "drag_foot_r",
+			"seconds": 0.2,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "drop_down",
+			"seconds": 0.9,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "emerge_ceiling",
+			"seconds": 0.9,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "emerge_crawler",
+			"seconds": 2.4,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "emerge_fast",
+			"seconds": 1.4,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "emerge_portal",
+			"seconds": 0.7,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "emerge_roll",
+			"seconds": 2.3,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "emerge_slow",
+			"seconds": 3.0,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "emerge_standard",
+			"seconds": 2.1,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "emerge_wade",
+			"seconds": 1.6,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "fall_crawl",
+			"seconds": 0.7,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "flinch_arm_l",
+			"seconds": 0.25,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "flinch_arm_r",
+			"seconds": 0.25,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "flinch_head",
+			"seconds": 0.25,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "flinch_leg_l",
+			"seconds": 0.25,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "flinch_leg_r",
+			"seconds": 0.25,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "flinch_torso",
+			"seconds": 0.25,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "getup_back",
+			"seconds": 1.0,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "getup_front",
+			"seconds": 1.0,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "grab",
+			"seconds": 0.8,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "hang_arm_l",
+			"seconds": 0.2,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "hang_arm_r",
+			"seconds": 0.2,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "headbutt",
+			"seconds": 0.8,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "hunch",
+			"seconds": 0.2,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "idle",
+			"seconds": 2.4,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "jog_a",
+			"seconds": 0.5,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "jog_a_lean_l",
+			"seconds": 0.5,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "jog_a_lean_r",
+			"seconds": 0.5,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "jog_b",
+			"seconds": 0.5,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "jog_b_lean_l",
+			"seconds": 0.5,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "jog_b_lean_r",
+			"seconds": 0.5,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "knockdown_back",
+			"seconds": 0.9,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "knockdown_front",
+			"seconds": 0.9,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "limp_l",
+			"seconds": 0.2,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "limp_r",
+			"seconds": 0.2,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "lunge",
+			"seconds": 0.8,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "posture_none",
+			"seconds": 0.2,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "run_a",
+			"seconds": 0.479166666666667,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "run_a_lean_l",
+			"seconds": 0.479166666666667,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "run_a_lean_r",
+			"seconds": 0.479166666666667,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "run_b",
+			"seconds": 0.479166666666667,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "run_b_lean_l",
+			"seconds": 0.479166666666667,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "run_b_lean_r",
+			"seconds": 0.479166666666667,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "run_c",
+			"seconds": 0.479166666666667,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "run_c_lean_l",
+			"seconds": 0.479166666666667,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "run_c_lean_r",
+			"seconds": 0.479166666666667,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "shamble_a",
+			"seconds": 0.646153846153846,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "shamble_a_lean_l",
+			"seconds": 0.646153846153846,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "shamble_a_lean_r",
+			"seconds": 0.646153846153846,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "shamble_b",
+			"seconds": 0.646153846153846,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "shamble_b_lean_l",
+			"seconds": 0.646153846153846,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "shamble_b_lean_r",
+			"seconds": 0.646153846153846,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "shamble_c",
+			"seconds": 0.646153846153846,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "shamble_c_lean_l",
+			"seconds": 0.646153846153846,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "shamble_c_lean_r",
+			"seconds": 0.646153846153846,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "sprint_a",
+			"seconds": 0.464285714285714,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "sprint_a_lean_l",
+			"seconds": 0.464285714285714,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "sprint_a_lean_r",
+			"seconds": 0.464285714285714,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "sprint_b",
+			"seconds": 0.464285714285714,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "sprint_b_lean_l",
+			"seconds": 0.464285714285714,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "sprint_b_lean_r",
+			"seconds": 0.464285714285714,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "stagger",
+			"seconds": 0.45,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "swipe_double",
+			"seconds": 0.8,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "swipe_l",
+			"seconds": 0.8,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "swipe_over",
+			"seconds": 0.8,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "swipe_r",
+			"seconds": 0.8,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "tear_rip",
+			"seconds": 1.2,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "tear_slam",
+			"seconds": 1.2,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "tear_wrench",
+			"seconds": 1.2,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "turn_l",
+			"seconds": 0.8,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "turn_r",
+			"seconds": 0.8,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "vault_a",
+			"seconds": 1.1,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "vault_b",
+			"seconds": 1.1,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "walk_a",
+			"seconds": 0.58,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "walk_a_lean_l",
+			"seconds": 0.58,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "walk_a_lean_r",
+			"seconds": 0.58,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "walk_b",
+			"seconds": 0.58,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "walk_b_lean_l",
+			"seconds": 0.58,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "walk_b_lean_r",
+			"seconds": 0.58,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "walk_c",
+			"seconds": 0.58,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "walk_c_lean_l",
+			"seconds": 0.58,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "walk_c_lean_r",
+			"seconds": 0.58,
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "window_swipe",
+			"seconds": 0.8,
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "window_wait",
+			"seconds": 2.4,
+			"tracks": 21
+		}
+	],
+	"kits": [
+		"soldier",
+		"villager",
+		"miner",
+		"labstaff",
+		"technician",
+		"sailor",
+		"drowned",
+		"drowned_diver",
+		"dockworker",
+		"bellringer",
+		"nurse",
+		"soviet",
+		"soviet_tunic",
+		"soviet_burial"
+	],
+	"source": "Existing procedural ZombieClips library; NOT mocap"
+}
