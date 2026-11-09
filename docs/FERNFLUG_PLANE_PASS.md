@@ -155,6 +155,61 @@ Full table: `docs/captures/fernflug/facing_other_maps.md`.
 - **The cockpit glass** looks out at sky only (no nose below it); the bay with its doors open still shows the old flat
   sea plane below rather than the new cloud deck.
 
+## 7. Follow-up: lighting, the sunset bomb run and trailer tools (T-221, T-221 b, T-222)
+
+The owner: "the lighting needs to be improved on the map ... make the sunset look great the bombs dropping, and the
+lighting around it, too many dark areas and the textures on some hallways are messed up". Layout untouched on all
+four acts (collision, navmesh and gameplay nodes hashed identical); no gameplay timing changed.
+
+**Der Kranich (Act II, T-221 / T-221 b)**
+- **The golden hour**: the act's clock still runs night to dawn (the story stays dawn), but from act round 4 into 5
+  it turns into a low golden sun and holds it through the bomb run: a big sun disc with glare and rays, an orange-gold
+  horizon band going magenta then deep blue overhead, the cloud deck's tops hot orange over violet-blue shadows, thin
+  haze, a gold key light streaking the rails and the hull's seams. The U12 grade keeps the saturated sunset colours.
+- **The bomb run**: the low sun comes into the bay through the aft ramp seam (god rays through the racks, dust in the
+  shafts), each dropped rack's hatch glows from below; outside, the casing falls away under the belly, tumbling, with a
+  sun glint and a thick vapour trail, into the cloud deck; a live one ends in a violet flash that lights the clouds from
+  below. Visual only: timers, jams, cities and flags are unchanged. The bay doors are not shown open (their aisle is
+  walkable floor).
+- **Dark areas**: 50 shadowless practical lamps (battery emergency lamps from the start, bulkhead lamps the aux bus
+  wakes, the flight deck's instruments, the impeller's violet), per-zone light boosts, a cold ambient fill. Interior
+  luminance (20 frames): mean 12 -> 26, near-black pixels 73 % -> 47 %. The big rooms are still under the art bible's
+  targets (a look-file number if you want them brighter).
+- **Hallways**: the "messed up" walkway floors beside the cockpit were the sky showing through the grating as a white
+  grid; dark plates under them fix it.
+- **The formation bomber**: a dark rim-lit silhouette with engine glows and nav lights (a stray flat violet card is gone).
+
+**Werk Thalbach, Groom Lake, Mondlicht (T-222)**
+- Darkest spots before -> after (mean luminance 0-255, power on): Thalbach's wind-tunnel lane 5 -> 68, Kraftzentrale
+  18 -> 49, canteen 10-14 -> 50-62; Groom Lake's hatch 4-6 -> 82-93, trench 7-16 -> 46-61, lab 8-18 -> 40-45, silo
+  4 -> 39, hangar 3-8 -> 21-38; Mondlicht's store 12-14 -> 37-66, hall 9-14 -> 27-45. Done with always-on battery
+  emergency lamps, more lamps on the power, and exposure zones that open up indoors. GPU cost unchanged (4.57 -> 4.57,
+  5.56 -> 5.53, 4.98 -> 4.92 ms).
+- Hallway textures fixed: Groom Lake's lab floor and ceilings and the hatch roof used the stone wall texture, the hatch
+  and trench ramps smeared, and four places where two walls or floors sat on the same plane and flickered (lab/silo
+  wall 97 m², hangar and motor pool vs the salt berm, the trench walls, crossing tyre tracks); Mondlicht's reception /
+  hall wall at x 12 flickered white against violet (106 m²).
+- Left for you: the Great Hangar from the floor still reads as fog and a grey wing (it wants a moving or high camera);
+  Groom Lake's building faces are black against the bright salt at dawn (mood; a brighter outdoor fill is one number).
+
+**Trailer tools** (dev console, any act; `god` and `noclip` first):
+- `hud off` hides the HUD, crosshair and viewmodel (`hud off subs` keeps subtitles); `hud on` brings it back.
+- `flyspeed 3` slow, eased flying (crouch sinks); `timescale 0.25` slow motion while the camera keeps real-time speed
+  (`flyspeed 3 game` slows the camera too).
+- `tod golden` (or `night`, `dawn`, `0`-`1`, `auto`) holds the Kranich's time of day.
+- `bombrun now` starts the real bomb run; `bombrun drop` releases the next rack now; `bombrun fx 3` replays a rack's
+  falling casing as a visual-only take (add `dud` for no flash).
+- Staging: the bay drop: `power_on`, `tod golden`, stand at the bay's forward door looking aft, `hud off`, `bombrun now`.
+  The wing into the sun: the wing walk near (-75, 3.4, 21) looking aft. The falling casing: the wing-walk corner by the
+  nacelle looking aft-starboard and down, then `bombrun fx 2` with `timescale 0.3`. The lit clouds: the aft blister
+  looking down. Captured examples: `docs/captures/fernflug/lighting/trailer/` (HUD-free) and a 5.5 s slow-motion drop,
+  `trailer/kranich_drop_slowmo.mp4`; the other acts' views in `lighting/<act>/trailer/` (capture sets
+  `trailer_kranich`, `fernflug_trailer_a/c/d`).
+- Tip: the capture runs used a 110° field of view, which makes subjects small; a narrower FOV frames the drop better.
+
+Left for you on the sunset: the sky still leans purple-magenta overall (warmer is two colours in
+`flight_sky_bg.gdshader`); the bomber-crossing-the-sun framing (T04) hides the sun completely at its distance.
+
 ## 6. Where to stand
 
 - The wing walk's trailing edge by the port engine, (-75, 3.4, 21), looking along the trailing edge: the nozzle glow,
