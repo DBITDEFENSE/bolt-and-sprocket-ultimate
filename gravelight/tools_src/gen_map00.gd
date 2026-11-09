@@ -1569,8 +1569,9 @@ func _dress_floors_and_ceilings() -> void:
 			Props.block(dress, Vector3(x - 0.15, 0, 15.58), Vector3(x + 0.15, TAP_H, 15.85), "beam")
 	# upstairs beams + hall runner
 	for x: float in [2.0, 6.0, 10.0, 14.0, 18.0, 22.0]:
-		Props.block(dress, Vector3(x - 0.12, UP_TOP - 0.24, 0.15), Vector3(x + 0.12, UP_TOP, 9.85), "beam")
-	Props.block(dress, Vector3(1.0, UP_Y, 7.4), Vector3(23.0, UP_Y + 0.012, 8.6), "rug")
+		var bz1: float = ASTAIR_Z0 - 0.02 if (x > ASTAIR_HOLE_X0 and x < ASTAIR_X1) else 9.85   # (T-224: the x 10 beam stops at the attic well)
+		Props.block(dress, Vector3(x - 0.12, UP_TOP - 0.24, 0.15), Vector3(x + 0.12, UP_TOP, bz1), "beam")
+	Props.block(dress, Vector3(1.0, UP_Y, 6.7), Vector3(23.0, UP_Y + 0.012, 7.9), "rug")   # (z 6.7..7.9 since T-224: the attic flight runs z 8.1..9.85)
 	# stable trusses: tie beams, their wall posts (pilasters, flush enough that nobody clips them on the landing), a
 	# purlin each side and collar beams under the ridge (T-084: the loft looks up into a real roof now)
 	for z: float in [24.5, 28.0, 31.5]:
@@ -2818,60 +2819,100 @@ func _dress_attic() -> void:
 	_dress_attic_stairs(g)
 
 
-## T-224: the attic flight (see build_attic): fifteen treads with a nosing over their risers, drawn under the invisible
-## ramp (a tread's top is never above the nosing line), a closed string along the open side with the balusters and
-## newels between the rail bars, the rails' balusters round the well on the attic floor, a wall rail on the south wall,
-## and the panelled under-stair with its little cupboard door.
+## T-224 (touched up after the owner's look): the attic flight (see build_attic). Fifteen solid steps, each a riser
+## block with its tread board and nosing, drawn under the invisible ramp (a tread's top is never above the nosing line);
+## a footboard where the ramp leaves the hall floor. The open north side is a closed string on the slope over a
+## panelled under-stair (0.25 m panels whose tops tuck behind the string, so no daylight shows between them), with the
+## little cupboard door; the under-stair's east end is panelled too, floor to ceiling, so the hall east of the flight
+## sees a wainscoted end wall and not into the cavity. Newels and balusters between the rail bars up the flight and
+## round the well, a wall rail on the south wall with a sconce mid-flight, fascia boards over the attic floor's cut
+## edges round the well (the slab's raw faces otherwise), and the hall runner stops short of the flight.
 func _dress_attic_stairs(g: Node3D) -> void:
 	var z0: float = ASTAIR_Z0
 	var z1: float = ASTAIR_Z1
 	var rh: float = (ATT_Y - UP_Y) / float(ASTAIR_STEPS + 1)
+	var foot: float = ASTAIR_X0 - ASTAIR_STEP
+	var run: float = ASTAIR_X1 - foot
+	var rise: float = ATT_Y - UP_Y
+	var ang_r: float = atan2(rise, run)
+	var ang: float = rad_to_deg(ang_r)
+	var perp: Vector3 = Vector3(-sin(ang_r), cos(ang_r), 0)   # the slope's up-normal
+	# the steps: a riser block (beam) with the tread board and its nosing (furniture) on top
 	for k: int in ASTAIR_STEPS:
 		var xa: float = ASTAIR_X0 + k * ASTAIR_STEP
 		var xb: float = xa + ASTAIR_STEP
 		var yt: float = UP_Y + (k + 1) * rh
-		Props.block(g, Vector3(xa - 0.02, yt - 0.05, z0), Vector3(xb, yt, z1), "furniture")
-		Props.block(g, Vector3(xa, yt - rh, z0), Vector3(xa + 0.03, yt - 0.05, z1), "beam")
-	Props.block(g, Vector3(ASTAIR_X1 - 0.03, ATT_Y - rh, z0), Vector3(ASTAIR_X1, ATT_Y, z1), "beam")   # the last riser, under the attic floor's edge
-	# the string along the open north side (a board on the slope), the panelled under-stair below it with its door
-	var foot: float = ASTAIR_X0 - ASTAIR_STEP
-	var slope_len: float = Vector2(ASTAIR_X1 - foot, ATT_Y - UP_Y).length()
-	var ang: float = rad_to_deg(atan2(ATT_Y - UP_Y, ASTAIR_X1 - foot))
-	Props.obox(g, Vector3((foot + ASTAIR_X1) * 0.5, (UP_Y + ATT_Y) * 0.5 - 0.17, z0 + 0.015), Vector3(slope_len, 0.34, 0.03), "beam", Vector3(0, 0, ang))
-	var xp: float = ASTAIR_X0 + 0.5
+		Props.block(g, Vector3(xa, yt - rh, z0 + 0.02), Vector3(xb + 0.02, yt - 0.045, z1), "beam")
+		Props.block(g, Vector3(xa - 0.03, yt - 0.045, z0 + 0.02), Vector3(xb + 0.02, yt, z1), "furniture")
+	Props.block(g, Vector3(ASTAIR_X1 - 0.03, ATT_Y - rh, z0 + 0.02), Vector3(ASTAIR_X1 + 0.005, ATT_Y, z1), "beam")   # the last riser, the attic floor's edge
+	Props.block(g, Vector3(foot + 0.2, UP_Y, z0 + 0.02), Vector3(ASTAIR_X0, UP_Y + 0.1, z1), "furniture")   # the footboard (the ramp is 0.1 up here)
+	# the closed string on the slope (its top on the nosing line, 0.36 deep), from where it clears the hall floor to the head
+	var xs: float = foot + 0.405 / rise * run
+	var s_len: float = (ASTAIR_X1 - xs) / cos(ang_r)
+	var s_mid: Vector3 = Vector3((xs + ASTAIR_X1) * 0.5, _astair_y((xs + ASTAIR_X1) * 0.5), z0 - 0.015)
+	Props.obox(g, s_mid - perp * 0.18, Vector3(s_len, 0.36, 0.05), "beam", Vector3(0, 0, ang))
+	Props.block(g, Vector3(ASTAIR_X0 - 0.03, UP_Y, z0 - 0.04), Vector3(xs, UP_Y + 0.26, z0 + 0.02), "beam")   # the string's foot, a cheek on the first riser
+	# the panelled under-stair below the string (quarter-metre panels: their tops at 0.2 under the nosing line stay
+	# behind the string's lower edge), the skirting, the cupboard door
+	var xp: float = ASTAIR_X0
 	while xp < ASTAIR_X1 - 0.01:
-		var xq: float = minf(xp + 0.5, ASTAIR_X1)
-		var top: float = _astair_y(xp) - 0.34
-		if top > UP_Y + 0.1:
-			Props.block(g, Vector3(xp, UP_Y, z0 - 0.015), Vector3(xq, top, z0 + 0.0), "wainscot")
+		var xq: float = minf(xp + 0.25, ASTAIR_X1)
+		var top: float = _astair_y(xp) - 0.2
+		if top > UP_Y + 0.14:
+			Props.block(g, Vector3(xp, UP_Y + 0.12, z0 - 0.03), Vector3(xq, top, z0 + 0.02), "wainscot")
 		xp = xq
-	Props.block(g, Vector3(10.6, UP_Y + 0.08, z0 - 0.03), Vector3(11.5, UP_Y + 1.55, z0 - 0.015), "planks")   # the cupboard door
-	Props.cyl(g, Vector3(11.38, UP_Y + 0.9, z0 - 0.04), 0.02, 0.04, "iron", Vector3(90, 0, 0))
-	Props.block(g, Vector3(ASTAIR_X0, UP_Y, z0 - 0.015), Vector3(ASTAIR_X1, UP_Y + 0.12, z0), "beam")   # skirting
+	Props.block(g, Vector3(ASTAIR_X0 - 0.03, UP_Y, z0 - 0.045), Vector3(ASTAIR_X1 + 0.06, UP_Y + 0.14, z0 + 0.02), "beam")   # skirting
+	Props.block(g, Vector3(10.6, UP_Y + 0.14, z0 - 0.05), Vector3(11.5, UP_Y + 1.6, z0 - 0.03), "board_wood_v")   # the cupboard door
+	for fy: float in [UP_Y + 0.14, UP_Y + 1.6]:
+		Props.block(g, Vector3(10.55, fy - 0.02, z0 - 0.055), Vector3(11.55, fy + 0.02, z0 - 0.03), "beam")
+	for fx: float in [10.55, 11.51]:
+		Props.block(g, Vector3(fx, UP_Y + 0.14, z0 - 0.055), Vector3(fx + 0.04, UP_Y + 1.6, z0 - 0.03), "beam")
+	Props.cyl(g, Vector3(11.38, UP_Y + 0.9, z0 - 0.07), 0.02, 0.04, "iron", Vector3(90, 0, 0))
+	# the under-stair's east end: a panelled wall from the hall floor to the ceiling, skirting, chair rail, cornice
+	Props.block(g, Vector3(ASTAIR_X1, UP_Y, z0 - 0.03), Vector3(ASTAIR_X1 + 0.04, UP_TOP, z1), "wainscot")
+	Props.block(g, Vector3(ASTAIR_X1 - 0.01, UP_Y, z0 - 0.045), Vector3(ASTAIR_X1 + 0.06, UP_Y + 0.14, z1), "beam")
+	Props.block(g, Vector3(ASTAIR_X1 - 0.01, UP_Y + 1.0, z0 - 0.045), Vector3(ASTAIR_X1 + 0.06, UP_Y + 1.06, z1), "beam")
+	Props.block(g, Vector3(ASTAIR_X1 - 0.01, UP_TOP - 0.14, z0 - 0.045), Vector3(ASTAIR_X1 + 0.06, UP_TOP, z1), "beam")
+	Props.block(g, Vector3(ASTAIR_X1 - 0.01, UP_Y + 0.14, z0 - 0.045), Vector3(ASTAIR_X1 + 0.06, UP_TOP - 0.14, z0 - 0.03), "beam")   # the corner post
+	# fascia boards over the attic floor's cut edges round the well (the slab is 0.3 m thick), with a nosing on top
+	var hx: float = ASTAIR_HOLE_X0
+	Props.block(g, Vector3(hx - 0.02, UP_TOP, z0 - 0.04), Vector3(ASTAIR_X1 + 0.04, ATT_Y, z0 + 0.0), "beam")   # the north edge
+	Props.block(g, Vector3(hx - 0.02, UP_TOP, z0 - 0.04), Vector3(hx + 0.02, ATT_Y, z1), "beam")   # the west end
+	Props.block(g, Vector3(hx - 0.04, ATT_Y, z0 - 0.06), Vector3(ASTAIR_X1 + 0.04, ATT_Y + 0.03, z0 + 0.0), "furniture")
+	Props.block(g, Vector3(hx - 0.04, ATT_Y, z0 - 0.06), Vector3(hx + 0.02, ATT_Y + 0.03, z1), "furniture")
 	# newels and balusters: up the flight between the rail bars, round the well's north edge and west end
 	var rz: float = z0 + 0.05
 	Props.newel(g, Vector3(ASTAIR_X0, UP_Y, rz), 1.05)
 	Props.newel(g, Vector3(ASTAIR_X1 + 0.03, ATT_Y, rz), 1.05)
-	Props.newel(g, Vector3(ASTAIR_HOLE_X0, ATT_Y, rz), 1.05)
-	Props.newel(g, Vector3(ASTAIR_HOLE_X0 + 0.05, ATT_Y, z1 - 0.1), 1.05)
-	var n: int = int(Vector2(ASTAIR_X1 - ASTAIR_X0, ATT_Y - UP_Y).length() / 0.18)
+	Props.newel(g, Vector3(hx, ATT_Y, rz), 1.05)
+	Props.newel(g, Vector3(hx + 0.05, ATT_Y, z1 - 0.1), 1.05)
+	var n: int = int(Vector2(ASTAIR_X1 - ASTAIR_X0, rise).length() / 0.18)
 	for k2: int in n:
 		var t: float = (float(k2) + 0.5) / float(n)
 		var bx: float = lerpf(ASTAIR_X0, ASTAIR_X1, t)
 		Props.cyl(g, Vector3(bx, lerpf(UP_Y, ATT_Y, t) + 0.46, rz), 0.018, 0.9, "furniture")
-	var wx: float = ASTAIR_HOLE_X0 + 0.2
+	var wx: float = hx + 0.2
 	while wx < ASTAIR_X1 - 0.1:
 		Props.cyl(g, Vector3(wx, ATT_Y + 0.46, rz), 0.018, 0.9, "furniture")
 		wx += 0.18
 	var wz: float = z0 + 0.25
 	while wz < z1 - 0.2:
-		Props.cyl(g, Vector3(ASTAIR_HOLE_X0 + 0.05, ATT_Y + 0.46, wz), 0.018, 0.9, "furniture")
+		Props.cyl(g, Vector3(hx + 0.05, ATT_Y + 0.46, wz), 0.018, 0.9, "furniture")
 		wz += 0.18
-	# a wall rail up the south wall with iron brackets
+	# a wall rail up the south wall with iron brackets, the wainscot following the flight, the sconce mid-flight
 	Props.strut(g, Vector3(ASTAIR_X0, UP_Y + 0.98, z1 - 0.09), Vector3(ASTAIR_X1, ATT_Y + 0.98, z1 - 0.09), 0.045, "furniture", true)
 	for t2: float in [0.1, 0.4, 0.7, 0.95]:
 		var bx2: float = lerpf(ASTAIR_X0, ASTAIR_X1, t2)
 		Props.block(g, Vector3(bx2 - 0.02, lerpf(UP_Y, ATT_Y, t2) + 0.9, z1 - 0.09), Vector3(bx2 + 0.02, lerpf(UP_Y, ATT_Y, t2) + 0.94, z1), "iron")
+	var w_len: float = (ASTAIR_X1 - ASTAIR_X0) / cos(ang_r)
+	var w_mid: Vector3 = Vector3((ASTAIR_X0 + ASTAIR_X1) * 0.5, _astair_y((ASTAIR_X0 + ASTAIR_X1) * 0.5), z1 - 0.015)
+	Props.obox(g, w_mid + perp * 0.57, Vector3(w_len - 0.1, 0.9, 0.03), "wainscot_matte", Vector3(0, 0, ang))
+	Props.obox(g, w_mid + perp * 1.14, Vector3(w_len - 0.1, 0.07, 0.06), "beam", Vector3(0, 0, ang))
+	Props.obox(g, w_mid + perp * 0.09, Vector3(w_len - 0.1, 0.14, 0.045), "beam", Vector3(0, 0, ang))
+	Props.wall_lamp(g, Vector3(9.4, _astair_y(9.4) + 1.75, z1 - 0.01), 0.0)
+	# two more oil lanterns under the roof over the well and the east end: the attic was too dark to read
+	Props.lantern(g, Vector3(10.0, ATT_Y + 2.1, 9.0), ATT_TOP)
+	Props.lantern(g, Vector3(12.0, ATT_Y + 2.05, 2.8), ATT_TOP)
 
 
 func _dress_stable() -> void:
@@ -4173,9 +4214,12 @@ func build_environment() -> void:
 	_lamp("Room2Lamp", Vector3(12.0, UP_Y + 2.05, 3.0), warm, 1.53, 8.0, false, true, 0.08)
 	_lamp("Room3Lamp", Vector3(20.0, UP_Y + 2.05, 3.0), warm, 1.70, 8.0, false, true, 0.08)
 	_lamp("HallLamp", Vector3(12.0, UP_Y + 2.05, 7.0), warm, 1.87, 11.0, true, true, 0.08)   # (z 7 since T-224: the attic flight runs along the south wall)
-	_lamp("AtticLamp", Vector3(5.0, ATT_Y + 1.85, 5.0), warm, 1.9, 10.0, true, true, 0.1)   # T-224: the attic's lanterns and the sconce at its stair head
-	_lamp("AtticEastLamp", Vector3(19.0, ATT_Y + 1.9, 5.0), warm, 1.4, 9.0, false, true, 0.1)
-	_lamp("AtticStairLamp", Vector3(11.5, ATT_Y + 1.8, 9.3), warm, 1.0, 7.0, false, true, 0.1)
+	_lamp("AtticLamp", Vector3(5.0, ATT_Y + 1.85, 5.0), warm, 2.4, 11.0, true, true, 0.1)   # T-224: the attic's lanterns and the sconce at its stair head
+	_lamp("AtticEastLamp", Vector3(19.0, ATT_Y + 1.9, 5.0), warm, 2.2, 10.0, false, true, 0.1)
+	_lamp("AtticStairLamp", Vector3(11.5, ATT_Y + 1.8, 9.3), warm, 1.4, 8.0, false, true, 0.1)
+	_lamp("AtticWellLamp", Vector3(10.0, ATT_Y + 1.95, 9.0), warm, 1.8, 9.0, false, true, 0.1)   # (touch-up: the lantern over the well and the flight)
+	_lamp("AtticMidLamp", Vector3(12.0, ATT_Y + 1.9, 2.8), warm, 1.8, 9.0, false, true, 0.1)
+	_lamp("AtticFlightLamp", Vector3(9.4, _astair_y(9.4) + 1.7, 9.45), warm, 1.1, 6.5, false, true, 0.12)   # the sconce mid-flight
 	_lamp("PassLamp", Vector3(20.0, 2.25, 19.0), warm, 2.21, 10.0, false, true)
 	_lamp("StableLamp1", Vector3(19.0, 3.85, 26.0), warm, 3.82, 14.0, true, true)
 	_lamp("StableLamp2", Vector3(19.0, 2.35, 31.5), warm, 3.26, 13.0, true, true)   # under the gallery since T-084

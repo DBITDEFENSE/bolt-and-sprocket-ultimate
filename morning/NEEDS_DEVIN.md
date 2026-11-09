@@ -2,6 +2,17 @@
 
 Short, phone-readable. Nothing here blocks the build.
 
+## TOUCH-UP after your look (2026-11-09 evening): look again, then merge. Nothing blocks the build.
+- [ ] **Look at the attic flight and the Waschkaue again.** `DevLauncher.bat` into Map 0 (upstairs hall, east along
+  the south wall) and Map 1 (you spawn inside the Kaue; step out and turn round), or
+  `tools_src/capture.gd --set=u05 --only=attic_flight,attic_well,attic_stairhead` and
+  `--set=u10_map01 --only=A_kaue_front,A_kaue_corner,A_kaue_inside`. My own renders of these are in
+  `morning/screenshots/u05/touchup2` and `u10_map01/touchup2` (software renderer, darker than yours).
+- [ ] **Say what else looks unfinished.** Name the spot and I will render it here first next time; I can now see the
+  maps on this machine (WSL, off your screen), so "looks incomplete" is checkable before you are asked to look.
+- [ ] **Merge `claude/maps-1-2-production` to master** when happy:
+  `git checkout master && git merge claude/maps-1-2-production && git push`.
+
 ## MAPS 1-2 PRODUCTION PASS (2026-11-09): look before merging. Nothing blocks the build.
 - [ ] **Eyeball the four new areas** (I had no renderer: everything was checked by geometry, navmesh and smokes only).
   `DevLauncher.bat` into Map 0 / Map 1, or capture them: `tools_src/capture.gd --set=u05 --only=attic_stairhead,attic_east,bar_counter,bar_service`

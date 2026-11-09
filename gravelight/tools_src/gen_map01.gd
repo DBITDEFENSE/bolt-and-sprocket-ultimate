@@ -154,6 +154,8 @@ const KAUE_X1: float = 16.0
 const KAUE_Z0: float = 26.0
 const KAUE_H: float = 3.4
 const KAUE_DOORS: Array = [[4.6, 9.0], [11.0, 15.4]]   # the two doorways' x spans in the north face (the pier x 9..11)
+const KAUE_BACK: float = 4.0   # the lean-to roof meets the yard wall at its top; its eaves are the front wall's top (KAUE_H)
+const KAUE_ZW: float = 31.85   # the yard wall's inner face
 
 ## T-123: the spawn yard's solid props (drawn by _dress_yard_south): [collider name, low corner, high corner].
 ## Built before the bake (build_yard_prop_blocks) so the navmesh goes round them. T-225: the Kaue's furniture is here
@@ -213,7 +215,7 @@ const HIDE: Array = [
 	"Rail", "TowerLeg", "TowerHead", "SnowMound?", "Drift", "Boxcar", "Locomotive", "LocoCab", "BufferStop", "SignalBox",
 	"Gate", "FilingA", "Bunk", "MessTable", "ServingLine", "Pews", "Altar", "AltarTop", "Bell", "Font", "ChandelierVis",
 	"Confessional", "Turbine", "Catwalk", "Tank", "NurseryBed", "AdminStairs", "FlightA", "FlightB", "FlightC",
-	"NavBlock_Ammo*", "NavBlock_ArmorersBench", "NavBlock_Perk*", "CoreProp*", "KaueProp*",
+	"NavBlock_Ammo*", "NavBlock_ArmorersBench", "NavBlock_Perk*", "CoreProp*", "KaueProp*", "KaueRoof", "NavBlock_Kaue*",
 ]
 const SODIUM: Color = Color(1.0, 0.66, 0.36)
 const INCAND: Color = Color(1.0, 0.78, 0.55)
@@ -841,6 +843,9 @@ func build_kaue() -> void:
 		ops.append([float(d[0]), float(d[1]), 0.0, KAUE_H - 0.5])
 	wall_x("KaueN", KAUE_Z0, KAUE_X0 - T * 0.5, KAUE_X1 + T * 0.5, 0, KAUE_H, ops, "brick")
 	box(geo, "KaueRoof", Vector3(KAUE_X0 - T * 0.5, KAUE_H, KAUE_Z0 - T * 0.5), Vector3(KAUE_X1 + T * 0.5, KAUE_H + 0.2, zw), "concrete")
+	# the night shift's brazier in front of the pier (its light is the facade's before the power); a hidden collider so
+	# the navmesh goes round the drum (the headframe loop's lane loses 0.7 m of its 6 at one point)
+	box(geo, "NavBlock_KaueBrazier", Vector3(9.65, 0, 24.6), Vector3(10.35, 1.0, 25.3), "metal")
 
 
 ## The ammo boxes' footprints as hidden colliders, so the navmesh is cut round them (the boxes are placed in
@@ -1171,7 +1176,7 @@ func _dress_yard() -> void:
 	# sodium goosenecks on the yard walls (dark until the sweep reaches the yard)
 	for gn: Array in [[Vector3(12.0, 3.5, 0.15), 180.0], [Vector3(28.0, 3.5, 0.15), 180.0], [Vector3(39.85, 3.5, 18.0), 90.0],
 			[Vector3(18.6, 3.4, 31.85), 0.0], [Vector3(31.0, 3.4, 31.85), 0.0], [Vector3(0.15, 3.0, 21.0), -90.0],
-			[Vector3(6.8, KAUE_H - 0.3, KAUE_Z0 - 0.15), 0.0], [Vector3(13.2, KAUE_H - 0.3, KAUE_Z0 - 0.15), 0.0]]:   # (T-225: the Kaue's front)
+			[Vector3(6.8, KAUE_H - 0.3, KAUE_Z0 - 0.22), 0.0], [Vector3(13.2, KAUE_H - 0.3, KAUE_Z0 - 0.22), 0.0]]:   # (T-225: the Kaue's front, on its lintel band)
 		goose("A_MINEHEAD", gn[0], float(gn[1]))
 
 
@@ -1281,68 +1286,160 @@ func _dress_yard_south() -> void:
 	_noshadow(B(Vector3(16.3, 0.0, 28.6), Vector3(36.5, 0.012, 30.6), "snow_trodden", false))
 
 
-## T-225: the Waschkaue inside and out (its shell is build_kaue's, its furniture's colliders YARD_PROPS'): the concrete
-## floor with its drain, the boarded roof underside on its joists, the doorways' lintels and the roof's coping under the
-## snow; the benches with boots and a lunch pail under them, the lockers (two doors hanging open, a jacket in one), the
-## stove with its flue through the roof and its ember glow, the coal scuttle and the poker; the tag board (a brass tag per
-## man, the empty hooks the men still down there) and the lamp rack; the clothes baskets on their chains under the roof,
-## the high ones hauled up (their men below), a jacket or boots in the low ones; the wash trough and the shift board on
-## the pier; the broom and bucket in the corner; two hurricane lanterns on the benches, the lantern over the lockers (so
-## the spawn is lit before the power), and two enamel pendants that come on with the yard. Outside: WASCHKAUE over the
-## pier, and the two goosenecks on the front (_dress_yard).
+## T-225 (touched up after the owner's look): the Waschkaue inside and out. Its shell is build_kaue's; the flat slab is
+## hidden and the roof drawn as a lean-to against the yard wall (zinc sheets under snow, the eaves on the front wall's
+## top with rafter tails, a fascia, a gutter and downpipes, barge boards on the gables, brick wedges closing the gable
+## walls under the slope, the stove's brick stack through it). The front: a plinth, corner pilasters, one lintel band
+## over both doorways, a string course under the eaves, steel sliding doors slid back over the pier on their rail, the
+## name on a board over the pier, a lantern on a bracket at each corner and the night shift's brazier before the pier
+## (the yard before the power was a black box with two black holes). Lit windows in the gable ends. Inside: the floor
+## and its drain, the boarded underside of the lean-to on its rafters, the benches with boots and a lunch pail, the
+## lockers (two hanging open, a jacket in one), the stove with its glow, the coal and the poker, the tag board (a brass
+## tag per man; the empty hooks the men still down there), the lamp rack, the clothes baskets on their chains under the
+## rafters (the high ones hauled up, their men below), the wash trough and shift board on the pier, the broom and bucket,
+## the hurricane lanterns on the benches, the lantern over the lockers (the spawn lit before the power) and the two
+## enamel pendants that come on with the yard.
 func _dress_kaue() -> void:
 	var x0: float = KAUE_X0 + 0.15
 	var x1: float = KAUE_X1 - 0.15
 	var z0: float = KAUE_Z0 + 0.15
-	var wz: float = 31.85
+	var zf: float = KAUE_Z0 - 0.15   # the front face
+	var wz: float = KAUE_ZW
+	var slope: float = (KAUE_BACK - KAUE_H) / (wz - zf)
+	var ang: float = rad_to_deg(atan(slope))
+	# ---- the roof: sheets on the slope with an overhang at the front and the sides, snow, the fascia and rafter tails,
+	# a gutter and two downpipes, barge boards, the brick wedges over the gable walls, the stack
+	var zr0: float = zf - 0.45
+	var r_len: float = (wz - zr0) / cos(atan(slope))
+	var r_mid: Vector3 = Vector3(10.0, _kaue_roof_y((zr0 + wz) * 0.5), (zr0 + wz) * 0.5)
+	OB(r_mid, Vector3(12.9, 0.06, r_len), "zinc", Vector3(-ang, 0, 0))
+	_noshadow(OB(r_mid + Vector3(0, 0.08, 0), Vector3(12.8, 0.1, r_len * 0.98), "snow", Vector3(-ang, 0, 0)))
+	for k: int in 7:   # the sheets' seams
+		var sx: float = 4.0 + k * 2.0
+		OB(Vector3(sx, r_mid.y + 0.035, r_mid.z), Vector3(0.05, 0.03, r_len), "iron", Vector3(-ang, 0, 0))
+	OB(Vector3(10.0, _kaue_roof_y(zr0) - 0.08, zr0 + 0.02), Vector3(12.9, 0.2, 0.04), "planks")   # the fascia
+	for k2: int in 13:   # the rafter tails under the overhang
+		OB(Vector3(4.0 + k2 * 1.0, _kaue_roof_y(zf - 0.22) - 0.12, zf - 0.22), Vector3(0.08, 0.14, 0.5), "beam", Vector3(-ang, 0, 0))
+	CYL(Vector3(10.0, _kaue_roof_y(zr0) - 0.2, zr0 - 0.02), 0.07, 12.9, "zinc", Vector3(0, 0, 90))   # the gutter
+	for dx: float in [3.7, 16.3]:
+		Props.pipe(dress, Vector3(dx, _kaue_roof_y(zr0) - 0.2, zr0 - 0.02), Vector3(dx, 0.35, zr0 + 0.1), 0.045, "zinc")
+		Props.pipe(dress, Vector3(dx, 0.35, zr0 + 0.1), Vector3(dx + (0.25 if dx < 10.0 else -0.25), 0.1, zr0 + 0.1), 0.045, "zinc")
+	for bx: float in [3.57, 16.43]:   # barge boards
+		OB(Vector3(bx, r_mid.y - 0.1, r_mid.z), Vector3(0.04, 0.2, r_len), "planks", Vector3(-ang, 0, 0))
+	for wx: float in [KAUE_X0, KAUE_X1]:   # the brick wedges that close the gable walls under the slope
+		_wedge_z(Vector3(wx, KAUE_H, (zf + wz) * 0.5), wz - zf, KAUE_BACK - KAUE_H, T, "brick")
+	B(Vector3(9.85, KAUE_H - 0.2, 30.4), Vector3(10.45, 5.0, 31.0), "brick")   # the stove's stack
+	B(Vector3(9.78, 5.0, 30.33), Vector3(10.52, 5.12, 31.07), "concrete")
+	CYL(Vector3(10.15, 5.3, 30.7), 0.09, 0.4, "iron")
+	Props.smoke(dress, Vector3(10.15, 5.55, 30.7), 0.15, 0.6, 10)
+	# ---- the front: plinth, corner pilasters, the lintel band, the string course, the name board, the sliding doors
+	B(Vector3(3.75, 0, zf - 0.08), Vector3(16.25, 0.45, zf), "concrete")
+	for px: Array in [[3.75, 4.25], [15.75, 16.25]]:
+		B(Vector3(float(px[0]), 0.45, zf - 0.15), Vector3(float(px[1]), KAUE_H, zf), "brick")
+		B(Vector3(float(px[0]) - 0.03, 0.45, zf - 0.18), Vector3(float(px[1]) + 0.03, 0.53, zf), "concrete")
+	B(Vector3(3.75, 0, zf - 0.1), Vector3(3.85, 0.45, wz), "concrete")
+	B(Vector3(16.15, 0, zf - 0.1), Vector3(16.25, 0.45, wz), "concrete")
+	B(Vector3(3.75, KAUE_H - 0.5, zf - 0.07), Vector3(16.25, KAUE_H - 0.24, zf), "concrete")   # the lintel band over both doorways
+	for d: Array in KAUE_DOORS:   # the doorways' inner lintels and reveals
+		B(Vector3(float(d[0]) - 0.2, KAUE_H - 0.5, z0 - 0.02), Vector3(float(d[1]) + 0.2, KAUE_H - 0.26, z0 + 0.06), "concrete")
+		for rx: float in [float(d[0]), float(d[1])]:
+			B(Vector3(rx - 0.06, 0, zf), Vector3(rx + 0.06, KAUE_H - 0.5, z0), "concrete")
+	B(Vector3(3.75, KAUE_H - 0.18, zf - 0.05), Vector3(16.25, KAUE_H - 0.1, zf), "concrete")   # the string course under the eaves
+	B(Vector3(8.3, KAUE_H - 0.48, zf - 0.13), Vector3(11.7, KAUE_H - 0.04, zf - 0.07), "planks")   # the name board
+	_label("WASCHKAUE", Vector3(10.0, KAUE_H - 0.26, zf - 0.135), 180.0, 30, Color(0.85, 0.82, 0.72, 0.9))
+	# the sliding doors: a rail on brackets along the front, two steel leaves slid back over the pier (one from each
+	# doorway, on their own planes), their hangers and wheels, a handle each
+	B(Vector3(4.5, KAUE_H - 0.62, zf - 0.2), Vector3(15.5, KAUE_H - 0.56, zf - 0.14), "iron")
+	var bx2: float = 4.6
+	while bx2 < 15.5:
+		B(Vector3(bx2 - 0.03, KAUE_H - 0.64, zf - 0.14), Vector3(bx2 + 0.03, KAUE_H - 0.54, zf), "iron")
+		bx2 += 1.2
+	for leaf: Array in [[8.95, zf - 0.32], [9.05, zf - 0.40]]:   # [west x, face z]
+		var lx: float = float(leaf[0])
+		var lz: float = float(leaf[1])
+		B(Vector3(lx, 0.08, lz), Vector3(lx + 2.0, 2.62, lz + 0.05), "machine_grey")
+		for fy: Array in [[0.08, 0.16], [2.54, 2.62], [1.3, 1.36]]:
+			B(Vector3(lx - 0.01, float(fy[0]), lz - 0.015), Vector3(lx + 2.01, float(fy[1]), lz + 0.065), "iron")
+		for fx: float in [lx, lx + 1.93]:
+			B(Vector3(fx - 0.01, 0.08, lz - 0.015), Vector3(fx + 0.08, 2.62, lz + 0.065), "iron")
+		for hx: float in [lx + 0.4, lx + 1.6]:
+			B(Vector3(hx - 0.03, 2.5, lz + 0.05), Vector3(hx + 0.03, KAUE_H - 0.6, zf - 0.17), "iron")
+			CYL(Vector3(hx, KAUE_H - 0.56, zf - 0.17), 0.07, 0.03, "steel", Vector3(0, 0, 90))
+		var hxx: float = lx + 0.3 if lx < 9.0 else lx + 1.7
+		B(Vector3(hxx - 0.02, 1.1, lz - 0.06), Vector3(hxx + 0.02, 1.5, lz), "iron")
+	# the corner lanterns on their brackets, the night shift's brazier before the pier (over NavBlock_KaueBrazier)
+	for cx: float in [4.0, 16.0]:
+		Props.strut(dress, Vector3(cx, 2.4, zf - 0.15), Vector3(cx, 2.36, zf - 0.55), 0.03, "iron")
+		Props.strut(dress, Vector3(cx, 2.1, zf - 0.15), Vector3(cx, 2.34, zf - 0.5), 0.02, "iron")
+		_hurricane(Vector3(cx, 2.02, zf - 0.55), 1.0)
+	Props.oil_drum(dress, Vector3(10.0, 0, 24.95), "rust")
+	Props.flames(dress, Vector3(10.0, 0.92, 24.95), 0.42, 0.55, 20)
+	Props.embers(dress, Vector3(10.0, 1.1, 24.95), 0.2, 8)
+	lamp(Vector3(10.0, 1.6, 24.95), Color(1.0, 0.5, 0.2), 2.2, 10.0, 0.35, 0.6)
+	_noshadow(B(Vector3(9.0, 0.0, 24.0), Vector3(11.0, 0.012, 25.6), "snow_trodden", false))
+	# ---- the gable windows: a steel three-light with bars in each end wall, lit from inside; its frame on the inner face
+	for side: Array in [[KAUE_X0 - 0.15, -1.0], [KAUE_X1 + 0.15, 1.0]]:
+		var fx2: float = float(side[0])
+		var o: float = float(side[1])
+		var wa: Vector3 = Vector3(fx2, 1.7, 28.5)
+		var wb: Vector3 = Vector3(fx2 + o * 0.08, 2.5, 29.7)
+		B(Vector3(minf(wa.x, wb.x), wa.y - 0.1, wa.z - 0.1), Vector3(maxf(wa.x, wb.x), wb.y + 0.1, wb.z + 0.1), "concrete")
+		_noshadow(B(Vector3(minf(fx2 + o * 0.07, fx2 + o * 0.1), 1.75, 28.55), Vector3(maxf(fx2 + o * 0.07, fx2 + o * 0.1), 2.45, 29.65), "lantern_glass", false))
+		for mz: float in [28.9, 29.3]:
+			B(Vector3(minf(fx2 + o * 0.1, fx2 + o * 0.12), 1.75, mz - 0.015), Vector3(maxf(fx2 + o * 0.1, fx2 + o * 0.12), 2.45, mz + 0.015), "iron")
+		B(Vector3(minf(fx2 + o * 0.1, fx2 + o * 0.12), 2.08, 28.55), Vector3(maxf(fx2 + o * 0.1, fx2 + o * 0.12), 2.12, 29.65), "iron")
+		B(Vector3(minf(fx2, fx2 + o * 0.14), 1.58, 28.4), Vector3(maxf(fx2, fx2 + o * 0.14), 1.7, 29.8), "concrete")   # the sill
+		lamp(Vector3(fx2 + o * 0.5, 2.1, 29.1), Color(1.0, 0.7, 0.4), 0.7, 5.0, 0.08)
+		var ix: float = fx2 - o * T   # the inner face
+		B(Vector3(minf(ix, ix - o * 0.06), 1.6, 28.4), Vector3(maxf(ix, ix - o * 0.06), 2.6, 29.8), "beam")
+		_noshadow(B(Vector3(minf(ix - o * 0.02, ix - o * 0.07), 1.7, 28.5), Vector3(maxf(ix - o * 0.02, ix - o * 0.07), 2.5, 29.7), "window_dark", false))
+		B(Vector3(minf(ix - o * 0.07, ix - o * 0.09), 1.7, 29.08), Vector3(maxf(ix - o * 0.07, ix - o * 0.09), 2.5, 29.12), "beam")
+	# ---- inside: the floor and its drain, the boarded underside of the lean-to on its rafters, the wall plates
 	_noshadow(B(Vector3(x0, 0.0, z0), Vector3(x1, 0.012, wz), "concrete_floor", false))
 	_noshadow(CYL(Vector3(10.15, 0.014, 29.2), 0.3, 0.004, "steel_grate"))
-	_noshadow(B(Vector3(x0, KAUE_H - 0.012, z0), Vector3(x1, KAUE_H, wz), "planks", false))
-	for jx: float in [5.5, 7.5, 9.5, 11.5, 13.5]:
-		B(Vector3(jx - 0.08, KAUE_H - 0.3, z0), Vector3(jx + 0.08, KAUE_H - 0.012, wz), "beam")
-	for d: Array in KAUE_DOORS:
-		B(Vector3(float(d[0]) - 0.2, KAUE_H - 0.5, KAUE_Z0 - 0.2), Vector3(float(d[1]) + 0.2, KAUE_H - 0.26, KAUE_Z0 + 0.2), "concrete")
-	B(Vector3(KAUE_X0 - 0.22, KAUE_H + 0.2, KAUE_Z0 - 0.25), Vector3(KAUE_X1 + 0.22, KAUE_H + 0.32, wz), "concrete")
-	_noshadow(B(Vector3(KAUE_X0 - 0.15, KAUE_H + 0.32, KAUE_Z0 - 0.2), Vector3(KAUE_X1 + 0.15, KAUE_H + 0.4, wz), "snow", false))
-	_label("WASCHKAUE", Vector3(10.0, KAUE_H - 0.95, KAUE_Z0 - 0.17), 180.0, 40, Color(0.85, 0.82, 0.72, 0.85))
-	# the benches (over YardPropBenchW / E), boots and a lunch pail under the west one, clogs under the east one
+	var c_mid: Vector3 = Vector3(10.0, _kaue_roof_y((z0 + wz) * 0.5) - 0.07, (z0 + wz) * 0.5)
+	var c_len: float = (wz - z0) / cos(atan(slope))
+	_noshadow(OB(c_mid, Vector3(x1 - x0, 0.03, c_len), "planks", Vector3(-ang, 0, 0)))
+	for jx: float in [4.65, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5, 15.35]:
+		OB(Vector3(jx, c_mid.y - 0.16, c_mid.z), Vector3(0.1, 0.16, c_len), "beam", Vector3(-ang, 0, 0))
+	B(Vector3(x0, KAUE_H - 0.5, z0), Vector3(x1, KAUE_H - 0.26, z0 + 0.08), "beam")   # the front wall plate over the lintels
+	B(Vector3(x0, KAUE_BACK - 0.3, wz - 0.1), Vector3(x1, KAUE_BACK - 0.08, wz), "beam")   # the back plate on the yard wall
+	# the benches (over KauePropBenchW / E), boots and a lunch pail under the west one, clogs under the east one
 	for bx: Array in [[x0, x0 + 0.45], [x1 - 0.45, x1]]:
 		B(Vector3(float(bx[0]), 0.4, 27.2), Vector3(float(bx[1]), 0.45, 30.9), "planks")
 		for bz: float in [27.4, 29.05, 30.7]:
 			B(Vector3(float(bx[0]) + 0.05, 0, bz - 0.03), Vector3(float(bx[1]) - 0.05, 0.4, bz + 0.03), "beam")
-	for k: int in 2:
-		OB(Vector3(x0 + 0.22, 0.12, 28.1 + k * 0.16), Vector3(0.3, 0.24, 0.11), "leather", Vector3(0, -8 + k * 16, 0))
+	for k3: int in 2:
+		OB(Vector3(x0 + 0.22, 0.12, 28.1 + k3 * 0.16), Vector3(0.3, 0.24, 0.11), "leather", Vector3(0, -8 + k3 * 16, 0))
 	CYL(Vector3(x0 + 0.25, 0.1, 29.6), 0.09, 0.2, "zinc")
-	for k2: int in 2:
-		OB(Vector3(x1 - 0.22, 0.06, 30.1 + k2 * 0.15), Vector3(0.28, 0.12, 0.1), "beam", Vector3(0, 5, 0))
+	for k4: int in 2:
+		OB(Vector3(x1 - 0.22, 0.06, 30.1 + k4 * 0.15), Vector3(0.28, 0.12, 0.1), "beam", Vector3(0, 5, 0))
 	# the lockers (over YardPropLockers): eleven steel doors, vents and handles, two hanging open, a jacket in one
 	B(Vector3(4.7, 0, 31.35), Vector3(9.1, 1.9, wz), "machine_grey")
-	for k3: int in 11:
-		var lx: float = 4.7 + k3 * 0.4
-		if k3 == 3 or k3 == 8:
-			B(Vector3(lx + 0.03, 0.08, 31.36), Vector3(lx + 0.37, 1.84, 31.4), "black_paint")
-			OB(Vector3(lx + 0.37, 0.96, 31.15), Vector3(0.03, 1.76, 0.36), "machine_green", Vector3(0, 70, 0))
-			if k3 == 3:
-				OB(Vector3(lx + 0.2, 1.3, 31.5), Vector3(0.28, 0.7, 0.12), "feldgrau")
+	for k5: int in 11:
+		var lx2: float = 4.7 + k5 * 0.4
+		if k5 == 3 or k5 == 8:
+			B(Vector3(lx2 + 0.03, 0.08, 31.36), Vector3(lx2 + 0.37, 1.84, 31.4), "black_paint")
+			OB(Vector3(lx2 + 0.37, 0.96, 31.15), Vector3(0.03, 1.76, 0.36), "machine_green", Vector3(0, 70, 0))
+			if k5 == 3:
+				OB(Vector3(lx2 + 0.2, 1.3, 31.5), Vector3(0.28, 0.7, 0.12), "feldgrau")
 		else:
-			B(Vector3(lx + 0.02, 0.05, 31.33), Vector3(lx + 0.38, 1.85, 31.35), "machine_green")
+			B(Vector3(lx2 + 0.02, 0.05, 31.33), Vector3(lx2 + 0.38, 1.85, 31.35), "machine_green")
 			for vy: float in [0.3, 0.38, 1.6, 1.68]:
-				B(Vector3(lx + 0.1, vy, 31.325), Vector3(lx + 0.3, vy + 0.03, 31.33), "black_paint")
-		B(Vector3(lx + 0.3, 0.95, 31.31), Vector3(lx + 0.34, 1.05, 31.33), "steel")
-	# the stove (over YardPropStove): a cast-iron drum on its plate, the flue up through the roof, the fire door's glow,
+				B(Vector3(lx2 + 0.1, vy, 31.325), Vector3(lx2 + 0.3, vy + 0.03, 31.33), "black_paint")
+		B(Vector3(lx2 + 0.3, 0.95, 31.31), Vector3(lx2 + 0.34, 1.05, 31.33), "steel")
+		_label(str(k5 + 1), Vector3(lx2 + 0.2, 1.75, 31.32), 180.0, 12, Color(0.9, 0.88, 0.8, 0.8))
+	# the stove (over YardPropStove): a cast-iron drum on its plate, the flue up into the stack, the fire door's glow,
 	# the coal scuttle and the poker; its warm light is the one the spawn has before the power
 	CYL(Vector3(10.15, 0.04, 30.7), 0.4, 0.08, "iron")
 	CYL(Vector3(10.15, 0.68, 30.7), 0.3, 1.0, "iron")
 	CYL(Vector3(10.15, 1.21, 30.7), 0.34, 0.06, "iron")
-	CYL(Vector3(10.15, 2.3, 30.7), 0.08, 2.2, "iron")
-	CYL(Vector3(10.15, KAUE_H + 0.5, 30.7), 0.09, 0.9, "iron")
-	CYL(Vector3(10.15, KAUE_H + 0.98, 30.7), 0.16, 0.08, "iron")
-	Props.smoke(dress, Vector3(10.15, KAUE_H + 1.05, 30.7), 0.15, 0.6, 10)
+	CYL(Vector3(10.15, 2.5, 30.7), 0.08, 2.6, "iron")
 	_noshadow(B(Vector3(10.0, 0.35, 30.385), Vector3(10.3, 0.55, 30.4), "ember"))
 	for gy: float in [0.4, 0.47]:
 		B(Vector3(10.0, gy, 30.38), Vector3(10.3, gy + 0.015, 30.385), "iron")
 	Props.embers(dress, Vector3(10.15, 0.5, 30.3), 0.1, 6)
-	lamp(Vector3(10.15, 0.9, 29.9), Color(1.0, 0.5, 0.2), 2.0, 9.0, 0.3, 0.5)
+	lamp(Vector3(10.15, 0.9, 29.9), Color(1.0, 0.5, 0.2), 2.2, 10.0, 0.3, 0.5)
 	CYL(Vector3(9.3, 0.2, 30.65), 0.16, 0.4, "iron")
 	Props.ball(dress, Vector3(9.3, 0.4, 30.65), Vector3(0.26, 0.1, 0.26), "coal")
 	Props.strut(dress, Vector3(10.75, 0.0, 31.8), Vector3(10.9, 1.1, 31.6), 0.02, "iron", true)
@@ -1360,37 +1457,41 @@ func _dress_kaue() -> void:
 				continue
 			_noshadow(B(tp + Vector3(-0.035, -0.06, -0.035), tp + Vector3(0.035, 0.02, -0.02), "brass"))
 	# the lamp rack (over YardPropRack): two shelves of miners' lamps
-	for rx: float in [13.65, 15.25]:
-		B(Vector3(rx - 0.04, 0, 31.47), Vector3(rx + 0.04, 1.9, wz), "beam")
+	for rx2: float in [13.65, 15.25]:
+		B(Vector3(rx2 - 0.04, 0, 31.47), Vector3(rx2 + 0.04, 1.9, wz), "beam")
 	for sy: float in [0.95, 1.55]:
 		B(Vector3(13.6, sy, 31.47), Vector3(15.3, sy + 0.04, wz), "planks")
 		for li: int in 6:
-			var lx2: float = 13.8 + li * 0.27
+			var lx3: float = 13.8 + li * 0.27
 			if (li + int(sy * 10.0)) % 4 == 0:
 				continue   # a lamp gone with its man
-			CYL(Vector3(lx2, sy + 0.14, 31.66), 0.06, 0.2, "brass")
-			_noshadow(CYL(Vector3(lx2, sy + 0.27, 31.66), 0.045, 0.06, "lantern_glass"))
-	# the clothes baskets on their chains under the roof: two rows over a bar each; the high ones are still down there
+			CYL(Vector3(lx3, sy + 0.14, 31.66), 0.06, 0.2, "brass")
+			_noshadow(CYL(Vector3(lx3, sy + 0.27, 31.66), 0.045, 0.06, "lantern_glass"))
+	# the clothes baskets on their chains under the rafters: two rows over a bar each; the high ones are still down there
 	for row2: Array in [[28.1, 0], [29.9, 1]]:
 		var bz2: float = float(row2[0])
-		B(Vector3(x0, KAUE_H - 0.1, bz2 - 0.04), Vector3(x1, KAUE_H - 0.02, bz2 + 0.04), "iron")
-		for k4: int in 9:
-			var bx2: float = 5.2 + k4 * 1.3
-			if absf(bx2 - 10.15) < 0.75 and bz2 > 29.0:
+		var ry: float = _kaue_roof_y(bz2) - 0.3
+		B(Vector3(x0, ry - 0.04, bz2 - 0.04), Vector3(x1, ry + 0.04, bz2 + 0.04), "iron")
+		for k6: int in 9:
+			var bx3: float = 5.2 + k6 * 1.3
+			if absf(bx3 - 10.15) < 0.75 and bz2 > 29.0:
 				continue   # the stove's flue
-			var high: bool = (k4 + int(row2[1])) % 3 == 0
-			var by: float = KAUE_H - 0.55 if high else 2.6
-			Props.strut(dress, Vector3(bx2, KAUE_H - 0.06, bz2), Vector3(bx2, by, bz2), 0.02, "iron", true)
-			CYL(Vector3(bx2, by - 0.15, bz2), 0.22, 0.3, "rust")
-			CYL(Vector3(bx2, by - 0.3, bz2), 0.2, 0.02, "iron")
+			var high: bool = (k6 + int(row2[1])) % 3 == 0
+			var by: float = ry - 0.45 if high else 2.6
+			Props.strut(dress, Vector3(bx3, ry, bz2), Vector3(bx3, by, bz2), 0.02, "iron", true)
+			CYL(Vector3(bx3, by - 0.15, bz2), 0.21, 0.3, "steel_grate")   # the wire basket
+			CYL(Vector3(bx3, by - 0.3, bz2), 0.22, 0.02, "iron")
+			CYL(Vector3(bx3, by, bz2), 0.23, 0.02, "iron")
+			for a: float in [0.0, 90.0]:
+				OB(Vector3(bx3, by - 0.15, bz2), Vector3(0.015, 0.3, 0.015), "iron", Vector3(0, a, 0))
 			if high:
 				continue
-			if k4 % 2 == 0:
-				OB(Vector3(bx2 + 0.12, by - 0.45, bz2), Vector3(0.26, 0.4, 0.1), "feldgrau" if k4 % 4 == 0 else "cloth_navy", Vector3(0, 20, 6))
+			if k6 % 2 == 0:
+				OB(Vector3(bx3 + 0.12, by - 0.45, bz2), Vector3(0.26, 0.4, 0.1), "feldgrau" if k6 % 4 == 0 else "cloth_navy", Vector3(0, 20, 6))
 			else:
-				OB(Vector3(bx2, by - 0.02, bz2 + 0.05), Vector3(0.12, 0.26, 0.3), "leather", Vector3(0, 30, 0))
-	for k5: int in 6:   # the chains' cleats along the west wall
-		B(Vector3(x0, 1.55, 27.4 + k5 * 0.6), Vector3(x0 + 0.08, 1.65, 27.5 + k5 * 0.6), "iron")
+				OB(Vector3(bx3, by - 0.02, bz2 + 0.05), Vector3(0.12, 0.26, 0.3), "leather", Vector3(0, 30, 0))
+	for k7: int in 6:   # the chains' cleats along the west wall
+		B(Vector3(x0, 1.55, 27.4 + k7 * 0.6), Vector3(x0 + 0.08, 1.65, 27.5 + k7 * 0.6), "iron")
 	# the wash trough on the pier, its taps and pipe; the shift board over it
 	B(Vector3(9.1, 0.78, z0), Vector3(10.9, 0.86, z0 + 0.42), "zinc")
 	B(Vector3(9.12, 0.8, z0 + 0.02), Vector3(10.88, 0.9, z0 + 0.4), "puddle")
@@ -1405,19 +1506,41 @@ func _dress_kaue() -> void:
 	B(Vector3(9.36, 2.3, z0), Vector3(10.64, 2.34, z0 + 0.06), "beam")
 	_label("SCHICHT III - 23. XII.", Vector3(10.0, 2.1, z0 + 0.05), 0.0, 20, Color(0.9, 0.9, 0.86, 0.85))
 	_label("Seilfahrt 6.00 / 14.00 / 22.00", Vector3(10.0, 1.8, z0 + 0.05), 0.0, 14, Color(0.9, 0.9, 0.86, 0.75))
-	# the broom and the bucket in the north-east corner, a coat on the wall
+	# the broom and the bucket in the north-east corner, a coat on the wall, duckboards along the benches
 	Props.strut(dress, Vector3(15.55, 0.02, 26.6), Vector3(15.75, 1.45, 26.35), 0.025, "pine", true)
 	OB(Vector3(15.5, 0.03, 26.7), Vector3(0.3, 0.06, 0.1), "straw_floor", Vector3(0, -30, 0))
 	CYL(Vector3(15.35, 0.15, 27.0), 0.14, 0.3, "zinc")
 	OB(Vector3(x1 - 0.08, 1.5, 28.4), Vector3(0.1, 0.9, 0.42), "cloth_navy", Vector3(0, 0, 0))
+	for dxx: Array in [[x0 + 0.5, x0 + 1.3], [x1 - 1.3, x1 - 0.5]]:
+		for sz: int in 7:
+			B(Vector3(float(dxx[0]), 0.012, 27.3 + sz * 0.5), Vector3(float(dxx[1]), 0.042, 27.42 + sz * 0.5), "planks")
 	# light: two hurricane lanterns on the benches, the lantern over the lockers, the two pendants that come on with the yard
 	_hurricane(Vector3(x0 + 0.22, 0.45, 27.4), 0.9)
 	_hurricane(Vector3(x1 - 0.22, 0.45, 30.7), 0.9)
 	Props.wall_lamp(dress, Vector3(7.0, 2.5, wz), 0.0)
 	lamp(Vector3(7.0, 2.3, 31.1), Color(1.0, 0.68, 0.38), 1.3, 9.0, 0.08)
 	for pxx: float in [7.0, 13.0]:
-		pendant("A_MINEHEAD", Vector3(pxx, KAUE_H - 0.95, 29.0), KAUE_H, "enamel_green")
+		pendant("A_MINEHEAD", Vector3(pxx, KAUE_H - 0.95, 29.0), _kaue_roof_y(29.0) - 0.1, "enamel_green")
 		power("A_MINEHEAD", Vector3(pxx, KAUE_H - 1.05, 29.0), 8.0, 1.1, INCAND)
+
+
+## The Kaue's lean-to roof line at z (the eaves at the front wall, KAUE_BACK at the yard wall).
+func _kaue_roof_y(z: float) -> float:
+	return KAUE_H + (KAUE_BACK - KAUE_H) * clampf((z - (KAUE_Z0 - 0.15)) / (KAUE_ZW - (KAUE_Z0 - 0.15)), 0.0, 1.0)
+
+
+## A right-triangle wedge along Z (a gable wall's top under a lean-to): base at c.y, rising to c.y + h at the +Z end.
+func _wedge_z(c: Vector3, len_z: float, h: float, thick: float, key: String) -> void:
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	var pm: PrismMesh = PrismMesh.new()
+	pm.size = Vector3.ONE
+	pm.left_to_right = 1.0
+	mi.mesh = pm
+	mi.material_override = Mats.get_mat(key)
+	mi.position = c + Vector3(0, h * 0.5, 0)
+	mi.rotation_degrees = Vector3(0, -90, 0)
+	mi.scale = Vector3(len_z, h, thick)
+	dress.add_child(mi)
 
 
 func _dress_headframe() -> void:

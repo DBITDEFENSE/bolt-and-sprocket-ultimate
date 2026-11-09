@@ -49,3 +49,6 @@ voice_review/
 .mocap_work/
 /tools/dl_rhubarb/
 /tools/c47/_gen/
+
+# local renderer overrides for WSL captures (Compatibility light caps); never committed
+override.cfg
