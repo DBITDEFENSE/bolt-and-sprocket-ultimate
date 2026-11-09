@@ -212,6 +212,7 @@ static func kind_config(kind: StringName) -> Dictionary:
 
 
 func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
+	_contact_lock.reset()
 	var tiers: Dictionary = GLData.table("enemies")["tiers"]
 	var jitter: float = float(GLData.table("enemies")["speed_jitter"])
 	net_died = false
@@ -290,6 +291,7 @@ func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
 
 
 func deactivate() -> void:
+	_contact_lock.reset()
 	state = State.INACTIVE
 	forced_target = null
 	prey = null
@@ -2134,6 +2136,7 @@ var _turn_rate: float = 0.0
 var _cycle: float = 0.0
 var _step_phase_valid: bool = false
 var _cycle_len: float = 1.0
+var _contact_lock: RefCounted = preload("res://gravelight/enemies/zombie_contact_lock.gd").new()
 var _attack_clip: String = "swipe_l"
 var _tear_clip: String = "tear_rip"
 var _climb_clip: String = "vault_a"
@@ -2528,11 +2531,14 @@ func set_posture(posture: String, amount: float) -> void:
 func _pick_locomotion() -> void:
 	var loco: Dictionary = _anim["clips"]["locomotion"]
 	var key: String = String(tier) if loco.has(String(tier)) else "walk"
-	_loco_clip = str(_pick(loco[key]))
-	_loco_speed = float(_anim["gait"][key]["speed"])
+	_loco_clip = str(_pick(ZombieClips.locomotion_clips(key)))
+	_loco_speed = ZombieClips.stride_speed(_loco_clip, key)
 	_cycle_len = ZombieClips.length_of(_loco_clip)
+	(_loco_bs.get_blend_point_node(0) as AnimationNodeAnimation).animation = StringName(str(_pick(ZombieClips.idle_clips())))
 	for i: int in 3:
-		(_loco_bs.get_blend_point_node(1 + i) as AnimationNodeAnimation).animation = StringName(_loco_clip if i == 0 else _loco_clip + ("_lean_l" if i == 1 else "_lean_r"))
+		var clip: String = _loco_clip if i == 0 else _loco_clip + ("_lean_l" if i == 1 else "_lean_r")
+		# Imported performances have no fabricated lean versions. Preserve their original motion.
+		(_loco_bs.get_blend_point_node(1 + i) as AnimationNodeAnimation).animation = StringName(clip if ZombieClips.has_clip(clip) else _loco_clip)
 	var crawl: String = str(_pick(loco["crawl"]))
 	(_crawl_bs.get_blend_point_node(1) as AnimationNodeAnimation).animation = StringName(crawl)
 
@@ -3231,12 +3237,25 @@ func _animate(dt: float) -> void:
 	if _flinch > 0.0:
 		_flinch = maxf(0.0, _flinch - dt)
 	_tree.advance(dt)
+	var contact_cfg: Dictionary = ZombieClips.contact_lock_config()
+	if _loco_clip.begins_with("mco_") and _tree_state == "Locomotion":
+		# Upper-body turn lean is additive to the recording and leaves planted leg motion intact.
+		var lean_angle: float = _loco_turn * float(_anim["turn"]["lean_tiers"].get(String(tier), 0.0))
+		for bone: String in ["Spine", "Chest"]:
+			var idx: int = _skel.find_bone(bone)
+			_skel.set_bone_pose_rotation(idx, _skel.get_bone_pose_rotation(idx) * Quaternion(Vector3.BACK, lean_angle * 0.5))
+	if _loco_clip.begins_with("mco_") and _tree_state == "Locomotion" and _playback.get_fading_from_node() == &"" and _loco_x >= 0.99 and spd > 0.4 and bool(contact_cfg.get("enabled", false)):
+		_contact_lock.apply(_skel, _modifier, _loco_clip, fposmod(_playback.get_current_play_position(), _cycle_len), dt, contact_cfg)
+	else:
+		_contact_lock.reset()
 	# Use the evaluated state's clock, including seeks, idle blends and resumes after
 	# attacks. A separate integrated clock drifts away from the feet on those paths.
 	if _tree_state == "Locomotion" and String(_playback.get_current_node()) == "Locomotion" and _loco_x > 0.5:
 		var phase: float = fposmod(_playback.get_current_play_position() / _cycle_len, 1.0)
-		if _step_phase_valid and ((_cycle < 0.5 and phase >= 0.5) or phase < _cycle):
-			_footstep(phase < _cycle)
+		if _step_phase_valid:
+			for event: Dictionary in ZombieClips.footstep_events(_loco_clip):
+				if ZombieClips.crossed_phase(_cycle, phase, float(event["phase"])):
+					_footstep(bool(event["left"]))
 		_cycle = phase
 		_step_phase_valid = true
 	else:
@@ -3318,7 +3337,7 @@ func _update_audio(delta: float) -> void:
 		AudioDirector.play_3d(ring_key, global_position + Vector3.UP, -8.0, 0.0)
 
 
-## A footstep from the locomotion clip's events (phase 0 and 0.5), surface-aware: culled by distance to the
+## A footstep from the locomotion clip's contact events, surface-aware: culled by distance to the
 ## target player and rate-capped across the horde (anim.json footsteps).
 func _footstep(_left: bool) -> void:
 	var fs: Dictionary = _anim["footsteps"]

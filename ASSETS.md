@@ -20,11 +20,11 @@ free-asset intake rule. The Motus demonstration body/textures are not used in th
 | Source FBX in `Animation/Root_Motion` | Derived clip / use |
 |---|---|
 | `Zombie_Walk_F_1_Loop.fbx` | `mco_walk` / gallery, retarget/contact validation |
-| `Zombie_Chase_1_Loop.fbx` | `mco_chase` / gallery, retarget/contact validation |
-| `Zombie_HyperChase_1_Loop.fbx` | `mco_fast_chase` / gallery, retarget/contact validation |
+| `Zombie_Chase_1_Loop.fbx` | `mco_chase` / live shamble + walk tiers, gallery |
+| `Zombie_HyperChase_1_Loop.fbx` | `mco_fast_chase` / live jog + run + sprint tiers, gallery |
 | `Zombie_Crawl_1_Loop.fbx` | `mco_crawl` / gallery |
-| `Zombie_Idle_1_v2.fbx` | `mco_idle` / gallery |
-| `Zombie_Idle_2.fbx` | `mco_idle_2` / gallery |
+| `Zombie_Idle_1_v2.fbx` | `mco_idle` / live upright idle blend, gallery |
+| `Zombie_Idle_2.fbx` | `mco_idle_2` / live upright idle blend, gallery |
 | `Zombie_Reach_1_Loop.fbx` | `mco_reach` / gallery |
 | `Zombie_Atk_Loop_1.fbx` | `mco_attack_loop` / gallery |
 | `Zombie_Atk_Arms_3_SHORT_Loop.fbx` | `mco_attack_arms` / gallery |

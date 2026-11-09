@@ -128,6 +128,18 @@ func _apply_foot_ik(sk: Skeleton3D, dt: float) -> void:
 func _solve_leg(sk: Skeleton3D, thigh: String, shin: String, foot: String, lift: float) -> void:
 	if lift < 0.0005:
 		return
+	var fi: int = int(_idx[foot])
+	if fi < 0: return
+	_solve_leg_target(sk, thigh, shin, foot, sk.get_bone_global_pose(fi).origin + Vector3(0, lift, 0))
+
+
+## Contact correction uses the same analytic solve as terrain IK, after the additive pose blend.
+func solve_foot_target(sk: Skeleton3D, side: String, target: Vector3) -> void:
+	_resolve(sk)
+	_solve_leg_target(sk, side + "UpperLeg", side + "LowerLeg", side + "Foot", target)
+
+
+func _solve_leg_target(sk: Skeleton3D, thigh: String, shin: String, foot: String, target: Vector3) -> void:
 	var ti: int = int(_idx[thigh])
 	var si: int = int(_idx[shin])
 	var fi: int = int(_idx[foot])
@@ -136,7 +148,6 @@ func _solve_leg(sk: Skeleton3D, thigh: String, shin: String, foot: String, lift:
 	var h: Transform3D = sk.get_bone_global_pose(ti)
 	var k: Transform3D = sk.get_bone_global_pose(si)
 	var f: Transform3D = sk.get_bone_global_pose(fi)
-	var target: Vector3 = f.origin + Vector3(0, lift, 0)
 	var to_t: Vector3 = target - h.origin
 	var d: float = clampf(to_t.length(), absf(_len_thigh - _len_shin) + 0.01, _len_thigh + _len_shin - 0.005)
 	if to_t.length_squared() < 1e-6:
@@ -171,7 +182,7 @@ func _solve_leg(sk: Skeleton3D, thigh: String, shin: String, foot: String, lift:
 
 static func _arc(from: Vector3, to: Vector3) -> Quaternion:
 	var d: float = clampf(from.dot(to), -1.0, 1.0)
-	if d > 0.99999:
+	if d > 0.99999999:
 		return Quaternion.IDENTITY
 	var axis: Vector3 = from.cross(to)
 	if axis.length_squared() < 1e-9:

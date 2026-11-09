@@ -49,7 +49,7 @@ func _ok(msg: String) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if not _map.is_inside_tree() or _done:
+	if _done or not _map.is_inside_tree():
 		return
 	if _p == null:
 		_p = _map.get_node_or_null("Player1") as Player
@@ -310,6 +310,7 @@ func _check_deaths(_delta: float) -> void:
 
 
 func _check_lod_and_finish() -> void:
+	_done = true # Prevent overlapping finish coroutines while the distance check awaits physics.
 	# a zombie 40 m from its target: no IK, no look-at
 	var zs: Array[Zombie] = _dir.active_zombies()
 	if not zs.is_empty():
@@ -326,6 +327,15 @@ func _check_lod_and_finish() -> void:
 			_ok("IK and look-at off at 40 m")
 		var surf: String = z._floor_surface()
 		print("[za] floor surface under a zombie: %s" % surf)
-	_done = true
 	print("[za] RESULT: %s" % ("PASS" if _fails.is_empty() else "FAIL (%d): %s" % [_fails.size(), ", ".join(_fails)]))
+	_map.queue_free()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	# The map's weapon cache owns unattached template Nodes; release tool-owned instances on exit.
+	for template: Node in WeaponModels._templates.values():
+		if is_instance_valid(template): template.free()
+	WeaponModels._templates.clear()
+	for template: Node in Arms._scenes.values():
+		if is_instance_valid(template): template.free()
+	Arms._scenes.clear()
 	get_tree().quit(0 if _fails.is_empty() else 1)

@@ -25,6 +25,7 @@ static var _lengths: Dictionary = {}
 static var _cfg: Dictionary = {}
 static var _bones: PackedStringArray = []
 static var _mocap: RefCounted
+static var _contact_events: Dictionary = {}
 
 
 static func cfg() -> Dictionary:
@@ -61,7 +62,67 @@ static func library() -> AnimationLibrary:
 
 static func mocap_info() -> Dictionary:
 	library()
-	return {"loaded": _mocap.metadata.keys(), "errors": _mocap.errors, "runtime_enabled": _mocap.config.get("runtime_enabled", false)}
+	return {"loaded": _mocap.metadata.keys(), "errors": _mocap.errors, "runtime_enabled": mocap_enabled()}
+
+
+static func mocap_enabled() -> bool:
+	library()
+	return bool(_mocap.config.get("runtime_enabled", false)) and not "--legacy-zombies" in OS.get_cmdline_user_args()
+
+
+## A fresh checkout without the licensed local files retains the existing playable fallback.
+static func locomotion_clips(tier: String) -> Array:
+	library()
+	var candidates: Array = _mocap.config.get("locomotion", {}).get(tier, []) if mocap_enabled() else []
+	var ready: Array = candidates.filter(func(n: String) -> bool: return _mocap.animations.has(n))
+	return ready if not ready.is_empty() else cfg()["clips"]["locomotion"][tier]
+
+
+static func idle_clips() -> Array:
+	library()
+	var candidates: Array = _mocap.config.get("idle", []) if mocap_enabled() else []
+	var ready: Array = candidates.filter(func(n: String) -> bool: return _mocap.animations.has(n))
+	return ready if not ready.is_empty() else [cfg()["clips"]["idle"]]
+
+
+static func stride_speed(clip: String, tier: String) -> float:
+	library()
+	return float(_mocap.metadata[clip]["speed_mps"]) if _mocap.metadata.has(clip) else float(cfg()["gait"][tier]["speed"])
+
+
+static func contact_windows(clip: String) -> Dictionary:
+	library()
+	return _mocap.metadata.get(clip, {}).get("contact_windows", {})
+
+
+static func contact_lock_config() -> Dictionary:
+	library()
+	return _mocap.config.get("contact_lock", {})
+
+
+## Recorded loops may contain several strides. Events are source contact onsets, not even halves.
+static func footstep_events(clip: String) -> Array:
+	if _contact_events.has(clip): return _contact_events[clip]
+	var windows: Dictionary = contact_windows(clip)
+	var events: Array = []
+	if windows.is_empty():
+		events = [{"phase": 0.0, "left": true}, {"phase": 0.5, "left": false}]
+	else:
+		var duration: float = length_of(clip)
+		for side: String in windows:
+			var intervals: Array = windows[side]
+			for interval: Array in intervals:
+				var start: float = float(interval[0])
+				# A stance continuing across the seam has only its original onset event.
+				if start < 0.0001 and float(intervals.back()[1]) >= duration - 0.0001: continue
+				events.append({"phase": start / duration, "left": side == "Left"})
+		events.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return float(a["phase"]) < float(b["phase"]))
+	_contact_events[clip] = events
+	return events
+
+
+static func crossed_phase(previous: float, current: float, event: float) -> bool:
+	return (event > previous and event <= current) if current >= previous else (event > previous or event <= current)
 
 
 static func length_of(clip: String) -> float:

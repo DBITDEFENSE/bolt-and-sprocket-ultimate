@@ -39,9 +39,31 @@ var full_rate: bool = false
 var actor_count: int = 24
 var only_tier: String = ""
 var follow_actor: bool = false
+var source_slips: Array[float] = []
+var source_relative_slips: Array[float] = []
+var root_errors: Array[float] = []
+var actor_cpu_ms: Array[float] = []
+var source_feet: Dictionary = {}
+var played_gaits: Dictionary = {}
+var verify_motion: bool = false
+var verify_performance: bool = false
+var near_player: bool = false
+
+func _place_new(spec: Dictionary, pos: Vector3, window: Barricade = null) -> Zombie:
+	var z: Zombie = preload("res://tools/zombie_profiled.gd").new()
+	_studio.add_child(z)
+	_spawn.global_position = pos
+	_spawn.window_path = _spawn.get_path_to(window) if window != null else NodePath("")
+	_spawn.kind = &"window" if window != null else &"ground"
+	z.activate(spec, _spawn, _player)
+	z.global_position = pos
+	(z.get("_agent") as NavigationAgent3D).avoidance_enabled = false
+	_new.append(z)
+	return z
 
 func _ready() -> void:
 	seed(74119)
+	process_priority = 10 # Sample after the actual zombie animation callbacks.
 	# Tool owns its input; the project's console references a missing action in this baseline.
 	for autoload: Node in get_tree().root.get_children():
 		if autoload.get_script() != null and str(autoload.get_script().resource_path).ends_with("/dev_console.gd"):
@@ -61,6 +83,9 @@ func _ready() -> void:
 		elif arg.begins_with("--count="): actor_count = clampi(int(arg.substr(8)), 1, 24)
 		elif arg.begins_with("--tier="): only_tier = arg.substr(7)
 		elif arg == "--follow": follow_actor = true
+		elif arg == "--verify-motion": verify_motion = true
+		elif arg == "--verify-performance": verify_performance = true
+		elif arg == "--near-player": near_player = true
 	if capture and DisplayServer.get_name() == "headless":
 		push_error("Screenshots require a rendered run; omit --headless.")
 		get_tree().quit(2)
@@ -73,7 +98,7 @@ func _ready() -> void:
 	while NavigationServer3D.map_get_iteration_id(_studio.get_world_3d().navigation_map) == 0:
 		await get_tree().physics_frame
 	_player.set_physics_process(false)
-	_player.position = Vector3(0, 0.1, -35)
+	_player.position = Vector3(0, 0.1, -5 if near_player else -35)
 	_cam.position = Vector3(0, 5, -12)
 	_cam.look_at(Vector3(0, 1, 5))
 	if not horde:
@@ -148,8 +173,9 @@ func _process(delta: float) -> void:
 	elapsed += delta
 	peak_ragdolls = maxi(peak_ragdolls, ZombieRagdoll.live_count())
 	if horde:
+		_sample_mocap(delta)
 		if follow_actor and not _new.is_empty():
-			_cam.position = _new[0].position + Vector3(2.2, 1.5, -4.0)
+			_cam.position = _new[0].position + Vector3(1.3, 1.4, -2.6)
 			_cam.look_at(_new[0].position + Vector3.UP)
 		var active_count: int = 0
 		for actor: Zombie in _new:
@@ -161,7 +187,8 @@ func _process(delta: float) -> void:
 				inactive_events.append({"actor": actor_id, "seconds": elapsed, "state": state_name, "previous": last_actor_state.get(actor_id, {})})
 			last_actor_state[actor_id] = {"inactive": not actor.is_active(), "state": state_name, "position": str(actor.position), "no_progress_seconds": actor.get("_progress_t"), "stuck_seconds": actor.get("_stuck_t")}
 		min_active = mini(min_active, active_count)
-		_label.text = "LIVE AI | %d active zombies | %.1f / %.1f s" % [active_count, elapsed, seconds]
+		var version: String = "BEFORE / legacy" if "--legacy-zombies" in OS.get_cmdline_user_args() else "AFTER"
+		_label.text = "%s | LIVE AI | %d active | %.1f / %.1f s" % [version, active_count, elapsed, seconds]
 		if elapsed > 2.0: frames.append(delta * 1000.0)
 		if capture and elapsed > (6.0 if emerge_together else 3.0) and captures == 0:
 			captures = 1
@@ -171,8 +198,8 @@ func _process(delta: float) -> void:
 			_save_frame("horde_frame_%04d" % sequence_frame)
 			sequence_frame += 1
 		for z: Zombie in _new:
-			if z.is_active() and z.position.z < -12:
-				z.position.z = 12
+			if z.is_active() and z.position.z < (-2 if near_player else -12):
+				z.position.z = 9 if near_player else 12
 				# This is a tool-owned discontinuity, not lack of navigation progress.
 				# Rebase distance watches after the wrap; ordinary stalls still recycle/fail.
 				z.set("_progress_best", INF)
@@ -180,9 +207,14 @@ func _process(delta: float) -> void:
 				z.set("_stuck_origin", z.global_position)
 				z.set("_stuck_t", 0.0)
 				z.set("_tick_prev", Vector3.INF)
+				z.set("_rm_dist", 0.0)
+				z.set("_body_dist", 0.0)
+				z.set("_rm_time", 0.0)
+				z.set("_body_speed", 0.0)
 				z.reset_physics_interpolation()
 				wrap_count += 1
 				previous_feet.erase(z.get_instance_id())
+				source_feet.erase(z.get_instance_id())
 		if elapsed >= seconds: _finish()
 		return
 	clip_time += delta
@@ -217,6 +249,39 @@ func _process(delta: float) -> void:
 	if capture and clip_time > 0.35 and captures == clip_index:
 		captures += 1
 		_save_frame("clip_%03d_%s" % [clip_index, clips[clip_index]])
+
+func _sample_mocap(delta: float) -> void:
+	for z: Zombie in _new:
+		var cost: float = float(z.get("callback_usec")) / 1000.0
+		z.set("callback_usec", 0)
+		if elapsed > 2.0: actor_cpu_ms.append(cost)
+		var id: int = z.get_instance_id()
+		var clip: String = str(z.get("_loco_clip"))
+		played_gaits[clip] = int(played_gaits.get(clip, 0)) + 1
+		if elapsed < 2.0 or z.current_clip_state() != "Locomotion" or float(z.get("_loco_x")) < 0.99 or Vector2(z.velocity.x, z.velocity.z).length() < 0.4:
+			source_feet.erase(id)
+			continue
+		var body_speed: float = float(z.get("_body_speed"))
+		if body_speed > 0.4: root_errors.append(absf(float(z.get("_rm_speed")) - body_speed) / body_speed)
+		var windows: Dictionary = ZombieClips.contact_windows(clip)
+		if windows.is_empty(): continue
+		var playback: AnimationNodeStateMachinePlayback = z.get("_playback")
+		var time: float = fposmod(playback.get_current_play_position(), ZombieClips.length_of(clip))
+		var sk: Skeleton3D = z.get("_skel")
+		var now: Dictionary = {"time": time, "clip": clip}
+		var old: Dictionary = source_feet.get(id, {})
+		for side: String in windows:
+			var pose: Transform3D = sk.get_bone_global_pose(sk.find_bone(side + "Foot"))
+			var toe: Vector3 = sk.global_transform * (pose * Vector3(0, -0.06, -0.15))
+			now[side] = toe
+			if not old.has(side) or old.get("clip") != clip: continue
+			for interval: Array in windows[side]:
+				if time >= float(interval[0]) and time <= float(interval[1]) and float(old["time"]) >= float(interval[0]) and float(old["time"]) <= float(interval[1]) and time >= float(old["time"]):
+					var v: Vector3 = (toe - (old[side] as Vector3)) / maxf(delta, 0.00001)
+					source_slips.append(Vector2(v.x, v.z).length())
+					source_relative_slips.append(Vector2(v.x, v.z).length() / Vector2(z.velocity.x, z.velocity.z).length())
+					break
+		source_feet[id] = now
 
 func _physics_process(delta: float) -> void:
 	if not ready_gallery or not horde or finished or elapsed < 2: return
@@ -282,12 +347,44 @@ func _finish() -> void:
 	result["inactive_events"] = inactive_events
 	result["state_samples"] = state_samples
 	result["capture_affects_timing"] = capture and frame_sequence
+	result["mocap_contact_speed_p95_mps"] = _percentile(source_slips, 0.95)
+	result["mocap_contact_samples"] = source_slips.size()
+	result["mocap_contact_speed_relative_p95"] = _percentile(source_relative_slips, 0.95)
+	result["mocap_contact_timing_caveat"] = "Use fixed-fps 60 for contact acceptance: unsynchronized render/physics clocks create sampling jitter, especially headless. Do not use fixed-fps runs for performance."
+	result["mocap_contact_method"] = "Source toe contact intervals; actual rendered toe world displacement; excludes blends, transitions and track wraps"
+	result["root_body_speed_relative_error_p95"] = _percentile(root_errors, 0.95)
+	result["callback_cpu_ms_per_actor_frame_p95"] = _percentile(actor_cpu_ms, 0.95)
+	result["cpu_scope"] = "Gallery wrapper around Zombie physics/process callbacks, includes synchronous calls; excludes deferred engine/GPU work and other game systems. Render FPS affects calls/frame. Not mid-range certification."
+	result["cpu"] = OS.get_processor_name()
+	result["played_gaits"] = played_gaits
+	result["near_player_modifiers"] = near_player
 	result["validation_scope"] = "Active population, missing resources/captures, sampled rest poses only. Not art or foot-contact acceptance."
 	result["quality_acceptance"] = "NOT CERTIFIED: mixed legacy/mocap library; full state and planted-contact runtime acceptance still required"
 	if horde and min_active < actor_count:
 		validation_failures.append("Expected %d active zombies throughout; minimum was %d" % [actor_count, min_active])
 	if not missing.is_empty(): validation_failures.append("Missing clips or failed captures")
 	if zero_pose_samples > 0: validation_failures.append("Sampled identity/rest poses")
+	var limits: Dictionary = GLData.load_json("res://data/gravelight/zombie_mocap.json")["validation"]
+	# Godot consumes engine flags before OS.get_cmdline_args(); validate observed deltas instead.
+	var fixed_sixty: bool = not frames.is_empty() and frames.all(func(ms: float) -> bool: return absf(ms - 1000.0/60.0) < 0.000001)
+	if verify_motion:
+		if not fixed_sixty or Engine.physics_ticks_per_second != 60:
+			validation_failures.append("Motion acceptance requires --fixed-fps 60 and 60 Hz physics")
+		if source_slips.size() < int(limits["minimum_contact_samples"]):
+			validation_failures.append("Insufficient recorded contact samples")
+		elif float(_percentile(source_slips, 0.95)) > float(limits["contact_p95_mps"]):
+			validation_failures.append("Recorded contact p95 exceeds configured foot drift limit")
+		if root_errors.is_empty() or float(_percentile(root_errors, 0.95)) > float(limits["root_relative_error"]):
+			validation_failures.append("Root/body stride mismatch exceeds 5%")
+	if verify_performance:
+		if fixed_sixty or frame_sequence:
+			validation_failures.append("Performance acceptance must use real elapsed time without frame capture")
+		if frames.is_empty() or float(_percentile(frames, 0.95)) > float(limits["frame_p95_ms"]):
+			validation_failures.append("Frame interval p95 exceeds configured budget on this machine")
+		if actor_cpu_ms.is_empty() or float(_percentile(actor_cpu_ms, 0.95)) > float(limits["callback_cpu_p95_ms"]):
+			validation_failures.append("Measured zombie callback CPU p95 exceeds budget")
+	result["motion_acceptance_requested"] = verify_motion
+	result["performance_acceptance_requested"] = verify_performance
 	result["validation_failures"] = validation_failures
 	_write_json("horde.json" if horde else "preview.json", result)
 	print("[zombie_gallery] ", JSON.stringify(result))

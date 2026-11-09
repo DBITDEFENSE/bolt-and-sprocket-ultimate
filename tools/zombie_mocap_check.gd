@@ -60,6 +60,30 @@ func _ready() -> void:
 				for t: int in a.get_track_count(): item["tracks"].append(str(a.track_get_path(t)))
 				item["duration"] = a.length
 				if absf(a.length - float(row["duration"])) > 0.04: failures.append(key + ": duration changed on import")
+				if sk != null:
+					ap.play(anim_name)
+					var rest_samples: int = 0
+					var max_jump: float = 0.0
+					var previous: Array[Quaternion] = []
+					var samples: int = int(ceil(a.length * 60.0))
+					for frame: int in samples:
+						ap.seek(minf(float(frame)/60.0, a.length - 0.00001), true)
+						ap.advance(0.0)
+						var all_rest: bool = true
+						for bone: int in sk.get_bone_count():
+							var q: Quaternion = sk.get_bone_pose_rotation(bone)
+							var p: Vector3 = sk.get_bone_global_pose(bone).origin
+							if not p.is_finite() or not is_finite(q.length_squared()): failures.append(key + ": nonfinite pose")
+							if q.angle_to(Quaternion.IDENTITY) > 0.02: all_rest = false
+							if frame == 0: previous.append(q)
+							else:
+								max_jump = maxf(max_jump, previous[bone].angle_to(q))
+								previous[bone] = q
+						if all_rest: rest_samples += 1
+					item["sampled_frames_60hz"] = samples
+					item["identity_pose_frames"] = rest_samples
+					item["largest_bone_step_degrees"] = rad_to_deg(max_jump)
+					if rest_samples > 0: failures.append(key + ": identity pose in imported recording")
 		rows.append(item)
 		node.free()
 	if rows.size() != (cfg["clips"] as Array).size():

@@ -6,8 +6,11 @@
   "fps": 30,
   "loop_blend_seconds": 0.15,
   "contact": {"height_m": 0.035, "speed_mps": 0.18, "minimum_frames": 3, "blend_frames": 3},
-  "runtime_enabled": false,
-  "locomotion": {},
+  "runtime_enabled": true,
+  "locomotion": {"shamble":["mco_chase"], "walk":["mco_chase"], "jog":["mco_fast_chase"], "run":["mco_fast_chase"], "sprint":["mco_fast_chase"]},
+  "idle": ["mco_idle", "mco_idle_2"],
+  "contact_lock": {"enabled":true, "max_correction_m":0.18, "release_seconds":0.08},
+  "validation": {"root_relative_error":0.05, "contact_p95_mps":0.10, "minimum_contact_samples":100, "frame_p95_ms":16.667, "callback_cpu_p95_ms":0.35},
   "clips": [
     {"name":"mco_walk", "source":"Zombie_Walk_F_1_Loop", "loop":true, "foot_lock":true},
     {"name":"mco_chase", "source":"Zombie_Chase_1_Loop", "loop":true, "foot_lock":true},

@@ -1,5 +1,27 @@
 # PROGRESS
 
+RESUME HERE: 2026-11-09 Codex Stage 2 locomotion checkpoint, codex/zombie-overhaul,
+.wt/zombie-overhaul ONLY. Licensed motion is NOW ACTIVE: mco_chase for shamble/walk,
+mco_fast_chase for jog/run/sprint, two mocap idles. enemies.json speeds and existing jitter
+are unchanged. Crawl and attack/reaction/death/interaction clips remain legacy pending source
+selection/event review; the Starter pack does NOT cover the entire spec. Source-driven contact
+IK follows additive postures, phase-derived audio handles multi-stride loops, turn lean remains
+additive. All 26 imported clips sampled at 60 Hz: zero identity/nonfinite poses, largest bone
+step 28.26 degrees (diagnostic, not full T-pose/pop certification). GUT: 42/42, 2,550 assertions;
+script scan 858/0; ragdoll stress 9 admitted, peak 6. Map 2 zombie smoke PASS (climb, root speed,
+IK/look-at, sever/gore, knockdown/get-up, deaths/dissolve). Fixed its overlapping finish coroutine
+and released its map/weapon/arms templates: final rerun has no SCRIPT ERROR/ERROR/leak warnings.
+60 s near-player, 24-active fixed-60 motion acceptance PASS: 51,058 recorded-contact samples,
+toe drift p95 0.01321 m/s, root/body mismatch p95 2.38%, no losses/rest poses/missing clips.
+Rendered real-time near-player 24-active acceptance PASS: frame p95 4.167 ms, zombie callback
+CPU p95 0.149 ms on Ryzen 7800X3D / RTX 5090. This is not a mid-range/full-map perf certification.
+NEXT: finish the verification report/compact comparison-artifact commit, rerun the run/sprint
+comparison after the lean-direction correction, and record remaining Stage 2/3/4 gaps honestly.
+Do not merge/push/export main. Final state is a verified locomotion upgrade, not the full model
+overhaul. Subsequent work: review/trim supplied attacks and two deaths with gameplay event and
+ragdoll timing, acquire missing state recordings and an artist-authored soldier quality sample.
+
+
 RESUME HERE: 2026-11-09 Codex Stage 1 intake/pipeline checkpoint, branch codex/zombie-overhaul,
 work ONLY in .wt/zombie-overhaul. Devin supplied Downloads/FBX_Zombie_27_Starter and explicitly
 said PRESERVE CURRENT SPEEDS. Copied originals to ignored assets/user_supplied/mocap_online/

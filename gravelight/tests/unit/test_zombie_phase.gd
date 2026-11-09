@@ -15,6 +15,8 @@ func test_ground_spawns_keep_emerge_and_enter_different_first_strides() -> void:
 		z.set_physics_process(false)
 		# Equal clip and body scale remove ordinary cadence differences as an explanation.
 		z._cycle_len = ZombieClips.length_of("walk_a")
+		z._loco_clip = "walk_a"
+		z._loco_speed = ZombieClips.stride_speed("walk_a", "walk")
 		z._pivot.scale = Vector3.ONE
 		for point: int in range(1, 4):
 			(z._loco_bs.get_blend_point_node(point) as AnimationNodeAnimation).animation = &"walk_a"
