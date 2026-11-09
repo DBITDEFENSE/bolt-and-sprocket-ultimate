@@ -60,7 +60,7 @@ func test_every_level_has_floors_images_and_pois() -> void:
 
 func test_gravelight_floors_match_the_brief() -> void:
 	var inn: MapData = MapData.for_map(&"map00_crossroads")
-	assert_eq(inn.floors.map(func(f: Dictionary) -> String: return str(f["id"])), ["cellar", "ground", "upstairs"])
+	assert_eq(inn.floors.map(func(f: Dictionary) -> String: return str(f["id"])), ["cellar", "ground", "upstairs", "attic"])   # (the attic since T-224)
 	var kb: MapData = MapData.for_map(&"map01_kaltenbrunn")
 	assert_eq(kb.floors.map(func(f: Dictionary) -> String: return str(f["id"])), ["vault", "level_2", "surface", "admin"])
 
@@ -88,8 +88,10 @@ func test_floor_for_y_and_floor_at() -> void:
 	assert_eq(inn.floor_for_y(0.0), 1, "the ground floor")
 	assert_eq(inn.floor_for_y(3.8), 2, "upstairs")
 	assert_eq(inn.floor_for_y(-50.0), 0, "below everything: the bottom floor")
-	assert_eq(inn.floor_for_y(99.0), 2, "above everything: the top floor")
+	assert_eq(inn.floor_for_y(7.1), 3, "the attic (T-224)")
+	assert_eq(inn.floor_for_y(99.0), 3, "above everything: the top floor")
 	assert_eq(inn.floor_at(Vector3(12, 3.9, 4)), 2, "the guest rooms")
+	assert_eq(inn.floor_at(Vector3(18, 7.2, 5)), 3, "the attic")
 	assert_eq(inn.floor_at(Vector3(40, 3.9, 40)), 1, "up on something outside the inn: still the ground floor")
 	var kb: MapData = MapData.for_map(&"map01_kaltenbrunn")
 	assert_eq(kb.floor_at(Vector3(47, -18, 110)), 0, "the core vault")

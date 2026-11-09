@@ -107,7 +107,7 @@ func _run() -> void:
 	for d: Node in get_tree().get_nodes_in_group(&"doors"):
 		(d as BuyDoor).open(1)
 	await _frames(2)
-	await _place(Vector3(9.75, 0, 6.9), 90.0, -26.0)
+	await _place(Vector3(9.1, 0, 6.9), 90.0, -26.0)   # (the side counter is at x 7.6..8.4 since T-224; the book lies on its top)
 	_check(_p.prompt_text.contains("Guest Book"), "guest book prompt: " + _p.prompt_text)
 	_check(not ProfileSave.has_intel("INT_M0_09"), "guest book not yet in the Archive")
 	var xp0: int = int(ProfileSave.profile.get("xp", 0)) + int(ProfileSave.cur_match.get("xp", 0))

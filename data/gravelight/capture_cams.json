@@ -6,6 +6,10 @@
       "bots": 3,
       "settle_s": 6.0,
       "cams": [
+        {"name": "attic_stairhead", "pos": [13.4, 7.1, 7.0], "yaw": 70.0, "pitch": 0.0, "note": "T-224: the attic from the stair head, west over the well to the hoist window, the trunks and the washing line"},
+        {"name": "attic_east", "pos": [15.0, 7.1, 5.5], "yaw": -70.0, "pitch": 2.0, "note": "T-224: the attic's east end: the BAR chalk, the wardrobe, the dummy, the east hoist window and its ledge"},
+        {"name": "bar_counter", "pos": [10.5, 0.0, 9.3], "yaw": 55.0, "pitch": 0.0, "note": "T-224: the bigger bar from the taproom: the long front, the side counter, the taps, the back-bar and its mirror"},
+        {"name": "bar_service", "pos": [5.6, 0.0, 6.4], "yaw": -34.0, "pitch": -2.0, "note": "T-224: behind the bar: the flap, the till, the cask on its cradle, the wireless on the top board"},
         {
           "name": "taproom_spawn",
           "pos": [
@@ -633,6 +637,10 @@
       "bots": 0,
       "settle_s": 6.0,
       "cams": [
+        {"name": "A_kaue_inside", "pos": [10.0, 0.0, 30.6], "yaw": 0.0, "pitch": 1.0, "note": "T-225: the Waschkaue from its back wall: the baskets on their chains, the benches, the doorways and the headframe beyond", "do": [], "settle_s": 3.0},
+        {"name": "A_kaue_front", "pos": [10.0, 0.0, 20.5], "yaw": 180.0, "pitch": 2.0, "note": "T-225: the Kaue's front from the headframe loop: the two doorways, the goosenecks, WASCHKAUE over the pier, the stove's glow inside", "do": ["power"], "settle_s": 3.0},
+        {"name": "I_skyhook", "pos": [34.5, -18.0, 108.0], "yaw": 0.0, "pitch": 4.0, "note": "T-226: Skyhook Sekt under the Core's north wall between the ramp doors, the conduit and its junction box, the pit's gauge stands", "do": ["power"], "settle_s": 3.0},
+        {"name": "I_crucible_corner", "pos": [41.0, -18.0, 121.5], "yaw": -115.0, "pitch": 2.0, "note": "T-226: the Crucible's apron from the pit: the jib crane, the installers' bench and crates, the plate and its conduit", "do": ["power"], "settle_s": 3.0},
         {"name": "A_yard_ridges", "pos": [6.0, 0.0, 26.0], "yaw": -20.0, "pitch": 9.0, "note": "Minehead Yard looking north over the wall at the Alpine wall and the foothill forest", "do": ["power"], "settle_s": 4.0},
         {"name": "B_railyard", "pos": [48.0, 0.0, 45.0], "yaw": 0.0, "pitch": 6.0, "note": "Rail yard: up the tracks to where the snow-buried line runs off into the valley"},
         {"name": "C_cablecar", "pos": [47.0, 0.0, 20.0], "yaw": -30.0, "pitch": 14.0, "note": "Rail yard looking north-east over the wall to the dead cable car tower over the valley"},

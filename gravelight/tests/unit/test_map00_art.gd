@@ -16,9 +16,13 @@ const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 ## the tail, both tailplanes, the starboard wing, the port wing's outer panel and the port engine as debris boxes
 ## (data/gravelight/c47_colliders.json), the nose cone, the crates in the cabin; the hull's own colliders and openings
 ## unchanged. Only polygons in the crash field (x 22..61, z -26..36) and their neighbours in the open snow changed.
+## Re-baked by T-224: the attic over the guest rooms (gen_map00 ATT_* / ASTAIR_*: the floor with its stair well, the flight
+## along the upstairs hall's south wall, the two gable ledges) and the bigger bar (BAR_* / SHELF_*: the counter 1.1 m west
+## and 0.6 m further north, the cask behind it). Nothing else moved: the taproom loop, the Old Cellar door walkway, the
+## stable, the yard, the grounds and the cellars bake the same polygons.
 const NAV_FP: Dictionary = {
-	"Navigation": "483ff740089cc6ba252c7d39e746383e3ac29332",
-	"NavigationBreachOpen": "c486f183f194291cb387d8e3d59b005fbd5fbbd4",
+	"Navigation": "dc5d1972354bd932d8f6b0bb2d44db6d4177c176",
+	"NavigationBreachOpen": "894b20696a44f369ee411c270095a8f84c56588d",
 }
 ## Library-prop triangles within CAM_RADIUS of any capture camera (data/gravelight/capture_cams.json).
 const CAM_RADIUS: float = 12.0
