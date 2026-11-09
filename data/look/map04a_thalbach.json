@@ -1,5 +1,5 @@
 {
- "_doc": "Fernflug I, Werk Thalbach: industrial ochre and soot; brown shadows, not blue. T-207.",
+ "_doc": "Fernflug I, Werk Thalbach: industrial ochre and soot; brown shadows, not blue. T-207. T-222: the halls' interiors (canteen, Montage + Kraftzentrale, Windkanal + its lane, the test stands' bunker, the Great Hangar) lift their exposure as the camera walks in (LookZones boxes): the works' lamps light them, the exposure keeps a lamp-lit hall from reading as a black box at night.",
  "map": "map04a_thalbach",
  "tonemap": "filmic",
  "exposure": 1.7,
@@ -107,5 +107,59 @@
     ]
    }
   }
- ]
+ ],
+ "zones": {
+  "t222_halls": {
+   "_doc": "T-222: the covered halls (map frame boxes)",
+   "boxes": [
+    [
+     -44,
+     -1,
+     30,
+     0,
+     6.5,
+     60
+    ],
+    [
+     -60,
+     -1,
+     60,
+     0,
+     9.5,
+     110
+    ],
+    [
+     0,
+     -1,
+     100,
+     44,
+     8.5,
+     130
+    ],
+    [
+     -60,
+     -1,
+     138,
+     -48,
+     4.5,
+     150
+    ]
+   ],
+   "exposure": 2.3
+  },
+  "t222_hangar": {
+   "_doc": "T-222: the Great Hangar: a little less lift (its fog and the high bays carry it)",
+   "boxes": [
+    [
+     -70,
+     -1,
+     150,
+     30,
+     24,
+     215
+    ]
+   ],
+   "exposure": 2.15
+  }
+ }
 }

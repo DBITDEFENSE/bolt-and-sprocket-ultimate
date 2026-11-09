@@ -51,6 +51,7 @@ var traps: Array = []                 # [script, name, props, pos, yaw, lever_po
 var mat_map: Dictionary = {}
 var mat_rules: Array = []
 var hide: Array = []
+var visual_adjust: Array = []          # T-222: [name pattern, Vector3 lo offset, Vector3 hi offset]: the mesh only
 var stage_windows: Array = []
 var sky_top: Color = Color(0.006, 0.009, 0.02)
 var sky_horizon: Color = Color(0.04, 0.05, 0.075)
@@ -172,6 +173,15 @@ func _mk(n: String, key: String) -> String:
 	return str(mat_map.get(key, key))
 
 
+## T-222 (opt-in table `visual_adjust`, empty by default: only the acts that fill it change): [lo offset, hi offset]
+## for a box whose name matches a pattern (first match), or [] for none.
+func _visual_adjust(n: String) -> Array:
+	for r: Array in visual_adjust:
+		if n.match(str(r[0])):
+			return [r[1], r[2]]
+	return []
+
+
 func _hidden(n: String) -> bool:
 	for p: String in hide:
 		if n.match(p):
@@ -193,11 +203,19 @@ func box(parent: Node3D, n: String, a: Vector3, b: Vector3, mat_key: String, col
 		mi.mesh = Props.unit_box()
 		mi.scale = size
 		mi.material_override = Mats.get_mat(_mk(n, mat_key))
+		var va: Array = _visual_adjust(n)
+		if not va.is_empty():
+			# T-222: the visual box differs from the collider (two walls of different rooms built on the same line
+			# z-fought on both faces): only the mesh moves; the collider and the navmesh keep the table's box
+			var vlo: Vector3 = lo + (va[0] as Vector3)
+			var vhi: Vector3 = hi + (va[1] as Vector3)
+			mi.scale = (vhi - vlo).max(Vector3(0.002, 0.002, 0.002))
+			mi.position = (vlo + vhi) * 0.5 - (lo + hi) * 0.5
 	if not collide:
 		if mi == null:
 			return null
 		mi.name = n
-		mi.position = (lo + hi) * 0.5
+		mi.position += (lo + hi) * 0.5
 		parent.add_child(mi)
 		return mi
 	var body: StaticBody3D = StaticBody3D.new()
@@ -907,6 +925,22 @@ func zone_at(p: Vector3) -> String:
 			best_d = d
 			best = str(zb[0])
 	return best
+
+
+## T-222 (opt-in: Acts I, III and IV call it; Act II does not): every shadowless omni light with a range up to
+## `max_range` fades out past `begin` metres from the camera (Godot's per-light distance fade), so the practicals the
+## lighting pass added cost nothing on the far side of a hall or the map. Returns how many lights it touched.
+func fade_small_lights(begin: float = 42.0, length: float = 12.0, max_range: float = 16.0) -> int:
+	var n: int = 0
+	for l: Node in map_root.find_children("*", "OmniLight3D", true, false):
+		var o: OmniLight3D = l as OmniLight3D
+		if o.shadow_enabled or o.omni_range > max_range:
+			continue
+		o.distance_fade_enabled = true
+		o.distance_fade_begin = begin
+		o.distance_fade_length = length
+		n += 1
+	return n
 
 
 ## Gives every Light3D under the map root (except directional lights) a `zone` meta from its position when it has

@@ -859,7 +859,7 @@ static func scrub(parent: Node3D, p: Vector3, s: float, seed_v: int) -> void:
 
 
 ## Tyre tracks: pairs of dark strips along a polyline (world points on the salt).
-static func tyre_tracks(parent: Node3D, pts: Array, gauge: float, mat: Material) -> void:
+static func tyre_tracks(parent: Node3D, pts: Array, gauge: float, mat: Material, lift: float = 0.012) -> void:
 	var st: SurfaceTool = st_new(false)
 	for i: int in pts.size() - 1:
 		var a: Vector3 = pts[i]
@@ -869,5 +869,6 @@ static func tyre_tracks(parent: Node3D, pts: Array, gauge: float, mat: Material)
 		for s: float in [-gauge * 0.5, gauge * 0.5]:
 			var o: Vector3 = side * s
 			var w: Vector3 = side * 0.22
-			face(st, [a + o - w + Vector3(0, 0.012, 0), b + o - w + Vector3(0, 0.012, 0), b + o + w + Vector3(0, 0.012, 0), a + o + w + Vector3(0, 0.012, 0)], Vector3.UP)
+			var up: Vector3 = Vector3(0, lift, 0)   # T-222: two track sets that cross sit at different heights (no z-fight)
+			face(st, [a + o - w + up, b + o - w + up, b + o + w + up, a + o + w + up], Vector3.UP)
 	mesh_node(parent, "TyreTracks", finish(st), mat, false)

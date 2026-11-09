@@ -262,6 +262,12 @@ The ramp beacon lights; the vote; the cutscene (§11.1): the squad goes up the r
   soak (stuck numbers in T-155).
 - **The boarding** preloads Act II while the exfil cutscene plays (master's `Campaign.preload_next`, T-157/T-158); the card
   that follows shows the Act I -> II transition line (tips.json `transition_lines` "map04a>map04b").
+- **The lighting pass** (DECISIONS T-222): every covered hall has a source before the power (the works' battery
+  emergency lamps, caged bulkheads on the walls, always on, dim and warm; the cellar lantern brighter) and more of
+  the works' own lamps on the power sweep (the canteen's tables, the Montage's aisles and covered way, wall lamps down
+  the wind tunnel's lane, the test stands' back wall); the Great Hangar gets the ground crew's sodium floods on the
+  side walls, aimed at the Kranich. Inside the halls the grade lifts its exposure (`data/look/map04a_thalbach.json`
+  zones `t222_halls` / `t222_hangar`, LookZones boxes). No shadowed light added; the small lamps fade past 42 m.
 
 ## 4. ACT 2 — DER KRANICH, in flight (act rounds 15–20)
 
@@ -459,6 +465,17 @@ Act rounds are the act's own count: in a campaign act round 1 is match round 21,
 - **Transitions**: the crash (II → III) and the rocket (III → IV) preload the next act during the exfil cutscene (`Campaign.preload_next`); the loading card shows the transition's own line (`tips.json transition_lines`).
 - **Online** (C8): the storm, the collapses, the pings, the spread and the act's numbering (`act_start`) are host-owned and mirrored.
 - **For the bots worker** (names in the scene / data): interactables `TowerLadder_Foot`, `TowerLadder_Top` (group `tower_ladders`), `Jukebox` (group `jukebox`), `Trap_FuelDump` (FuelDumpTrap) and `Lever_FuelDump`, `Trap_HangarDoor` (DoorDropTrap) and `Lever_HangarDoor` (group `traps`, `danger_contains()`), `Person_dee` / `Person_hale` (ExtraPerson; Dee's favour item `radio_valve` at (-37, 0, 75)), `RadarController` (RadarDish, group `radar_dish`), `BulkheadPlate`, `Crate_bay_roof` (after the first collapse), `Collapse_<id>` debris holders, `Link_Gap_hull_west`; nav `Climb_TowerPerch` (E_RADAR), `Nav_A_WRECK_0` re-baked on each collapse; zombie field `Zombie.hunt_by_sound` (the storm's stalkers), `GroomController.dust_active()`, `spread_points()` (the hull's burning spots), `collapsed` / `warned` (section ids `bay_roof`, `hull_west`); signal `GLBus.radar_ping(seconds)`; flags read: `peg_resigned`, `peg_delivered`, `cage_*`. Suggested bot rules: the storm is "stay close, don't sprint" (C7); keep out of `spread_points()` and the collapse boxes during a warning.
+- **The lighting pass** (DECISIONS T-222): the range's battery emergency lamps in the hull, the hangar, the motor
+  pool, down the hatch, at the trench's foot, in the lab and the control room (always on), a lamp over the silo door;
+  on the power: the specimen rooms' caged lamps light, four more lab tubes, wall lamps down the hatch ramp and along
+  the trench, three more hangar pendants and two sodium floods on the bomber, a console pendant and wall lamps in
+  the silo. Lamps over the hangar's and the motor pool's doors outside. Interior exposure zones in
+  `data/look/map04c_groomlake.json` (hull, hangar, shed, hatch, lab, trench). **Textures:** the lab's floor and
+  ceiling were the dry-stone wall texture (now a poured floor and board-formed concrete), the hatch and trench ramps
+  a smeared procedural concrete (now the concrete floor), and four places z-fought (two rooms' walls on one line:
+  the lab / silo wall, the hangar's and the motor pool's south walls over the salt berm, the trench walls against the
+  salt's edge; the lab's and the silo's floors at the silo door; two crossing sets of tyre tracks) — the meshes moved,
+  the colliders did not (`visual_adjust` in gen_map04c.gd).
 
 ---
 
@@ -569,6 +586,11 @@ The Woman in Violet's **executive machine**: a tall, elegant, ledger-faced unit 
 - **Story props**: the delivery log (reception, the pad), Haas's tag (rack 2 bay 5), the maintenance card (the dish foundation's junction box, a hop up), the LANTERN's flight card (by the hatch). The smile gets a minimap note the first time you look up at it from the yard.
 - **The loop past round 30**: the hall–concourse ring through the store (two doors into the store, the hall pads for a quick turn); soak numbers in T-158.
 - **Online**: the line, the meteor strikes, the pads' launches and the fling are host-owned (`Net.mirror`).
+- **The lighting pass** (DECISIONS T-222): Darkmatter lights its buildings like a showroom: a cold strip light down
+  the retention hall's ridge, cold uplights at the nave's pilasters, the store's aisle strips lit at last, a ring of
+  cold strips in the Account, strips by the yard airlocks; interior exposure zones (store, hall, Account) in
+  `data/look/map04d_mondlicht.json`. The violet stays on the Nachtglas. **Texture:** reception's east wall and the
+  hall's west wall stood on the same line (x 12) and z-fought (white against violet); each mesh keeps its own side.
 
 ---
 
