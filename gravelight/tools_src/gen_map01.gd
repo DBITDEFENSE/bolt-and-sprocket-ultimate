@@ -96,6 +96,40 @@ const BUYS: Array = [
 	["bar", Vector3(-15.83, DY + 1.5, 78), -90.0],
 	["stg44", Vector3(56, DY + 1.5, 81.83), 0.0], ["etool", Vector3(51, DY + 1.5, 81.83), 0.0],
 ]
+## Perk machines: [perk, pos (floor), yaw so local -Z faces the room]. T-226: their footprints are baked into the navmesh
+## (build_perk_blocks, as Map 0 has done since T-027), and Skyhook Sekt stands in the Core Vault: the installers set the
+## ELEVATION cabinet (Consignment W.T., Werk Thalbach's) under the north wall between the two ramp doors, where the lab's
+## cable run comes down, a few metres from the Crucible's apron.
+const PERKS: Array = [
+	["second_wind", Vector3(-15.2, 0, 14), -90.0], ["ironhide_stout", Vector3(24, 0, 32.8), 180.0],
+	["marathon_malt", Vector3(2, DY, 60.8), 180.0], ["twin_barrel", Vector3(34, DY, 60.8), 180.0],
+	["trigger_tonic", Vector3(68, DY, 81.2), 0.0],
+	["hawkeye_brandy", Vector3(55, DY, 88.8), 180.0], ["packmule_porter", Vector3(96, DY, 88.8), 180.0],
+	["blastproof_bock", Vector3(64, DY, 97.2), 0.0],
+	# Overclock Cordial (T-034): in the Generator Hall, wired into the north-wall switchgear in the gap between
+	# the first two panel sections (x 59.5-61), facing the turbines. The hall's own bus feeds the coil.
+	["overclock_cordial", Vector3(60.25, DY, 60.45), 180.0],
+	# Ledger Lager (T-141): the pay office's original cabinet, bolted beside Fenske's desk wall, 3 m north of
+	# Second Wind and the Bergmannskasse's counter (the bank branch is at z 15.75..20.75)
+	["ledger_lager", Vector3(-15.2, 0, 11.0), -90.0],
+	["skyhook_sekt", Vector3(34.5, CY, 101.6), 180.0],   # T-226: the Core Vault's north wall, between the F and G ramp doors
+]
+## Same as PerkMachine._shape_footprint (that script needs the autoloads, which a --script run doesn't have). Keep in step.
+const MACHINE_FOOTPRINTS: Dictionary = {
+	"barrel": Vector3(1.2, 1.9, 1.2), "cabinet": Vector3(0.8, 2.3, 0.6), "crate": Vector3(1.0, 2.0, 0.65),
+	"twin": Vector3(1.2, 2.1, 0.6), "teardrop": Vector3(1.0, 2.4, 0.9), "periscope": Vector3(0.9, 1.8, 0.65),
+	"wagon": Vector3(1.7, 1.7, 0.85), "safe": Vector3(1.1, 1.9, 0.95), "coil": Vector3(0.8, 2.3, 0.6),
+	"register": Vector3(1.0, 2.2, 0.75), "glider": Vector3(0.8, 2.4, 0.7), "bandit": Vector3(0.9, 2.3, 0.65),
+}
+## T-226: the Core Vault's solid dressing (hidden colliders drawn by _dress_core): the installers' bench and crates in the
+## east wall's south corner, the cable drums by the G ramp door, oil drums in the north-east corner. [name, min, max].
+const CORE_PROPS: Array = [
+	["CorePropBench", Vector3(48.15, CY, 127.6), Vector3(48.85, CY + 0.95, 129.4)],
+	["CorePropCrates", Vector3(47.8, CY, 129.6), Vector3(48.85, CY + 1.6, 130.7)],
+	["CorePropDrums", Vector3(47.9, CY, 105.4), Vector3(48.85, CY + 0.95, 107.0)],
+	["CorePropCableDrums", Vector3(40.0, CY, 101.3), Vector3(41.3, CY + 1.2, 102.6)],
+]
+
 ## Ammo boxes (Update 02 section 4, T-049): [name, floor pos, yaw so local -Z faces the room]. One per zone the brief
 ## names, each on a bare wall 4 m+ from any perk machine or the Crucible, clear of windows, doors and the ore-cart
 ## track and the dressing: the Rail Yard's west wall between its two doors; the bunk room's north wall by the
@@ -106,16 +140,41 @@ const AMMO_BOXES: Array = [
 	["RailYard", Vector3(40.48, 0, 32.5), -90.0], ["Barracks", Vector3(-1.6, 0, 32.48), 180.0],
 	["SaltChapel", Vector3(39.43, DY, 78.5), 90.0], ["LabWing", Vector3(83.5, DY, 95.0), 90.0],
 ]
+## T-225 (the owner: "rework the starting area on map 2"): the squad starts inside the WASCHKAUE, the miners' changing
+## house built against the yard's south wall (x KAUE_X0..KAUE_X1, z KAUE_Z0..the wall; brick, a flat roof at KAUE_H under
+## the 4 m wall), open to the yard through two wide doorways in its north face either side of a pier. Inside: the benches
+## along the west and east walls, the lockers and the stove on the south wall, the tag board and the lamp rack, and the
+## clothes baskets on their chains under the roof (every miner's clothes went up on a chain while he was below; the ones
+## still hanging are the men still down there). Lit before the power by the stove and the lanterns. The four spawns
+## face north out of the doorways at the headframe. Zone A_MINEHEAD, no door of its own; the headframe loop's 6 m south
+## lane (z 20..26) is untouched, the lane west of it (x 0..4) keeps the ground spawn at (3, 29) and the way to the
+## Administration door.
+const KAUE_X0: float = 4.0
+const KAUE_X1: float = 16.0
+const KAUE_Z0: float = 26.0
+const KAUE_H: float = 3.4
+const KAUE_DOORS: Array = [[4.6, 9.0], [11.0, 15.4]]   # the two doorways' x spans in the north face (the pier x 9..11)
+
 ## T-123: the spawn yard's solid props (drawn by _dress_yard_south): [collider name, low corner, high corner].
-## Built before the bake (build_yard_prop_blocks) so the navmesh goes round them.
+## Built before the bake (build_yard_prop_blocks) so the navmesh goes round them. T-225: the Kaue's furniture is here
+## too (benches, lockers, the stove, the lamp rack), and the brazier moved out to the lane by the Administration door.
 const YARD_PROPS: Array = [
-	["YardPropDrum", Vector3(6.65, 0, 30.85), Vector3(7.35, 0.95, 31.55)],
-	["YardPropRack", Vector3(15.9, 0, 31.45), Vector3(17.7, 1.9, 31.85)],
+	["YardPropLockers", Vector3(4.7, 0, 31.35), Vector3(9.1, 1.9, 31.85)],
+	["YardPropStove", Vector3(9.75, 0, 30.3), Vector3(10.55, 1.25, 31.1)],
+	["YardPropRack", Vector3(13.6, 0, 31.45), Vector3(15.3, 1.9, 31.85)],
+	["YardPropSled", Vector3(17.0, 0, 29.9), Vector3(17.8, 0.55, 31.3)],
 	["YardPropTimber", Vector3(22.4, 0, 30.6), Vector3(26.6, 0.95, 31.85)],
 	["YardPropSet", Vector3(27.4, 0, 31.35), Vector3(29.6, 2.6, 31.85)],
 	["YardPropBench", Vector3(30.45, 0, 31.0), Vector3(32.55, 0.95, 31.85)],
 	["YardPropCart", Vector3(34.0, 0, 30.2), Vector3(36.0, 1.1, 31.6)],
 	["YardPropCrates", Vector3(36.6, 0, 30.6), Vector3(38.4, 1.5, 31.85)],
+]
+
+## T-225: the Kaue's own benches (hidden colliders drawn by _dress_kaue), inside it along its west and east walls; the
+## test's rules for them are the Kaue's (inside its walls, clear of its doorways and spawns), not T-123's wall rules.
+const KAUE_PROPS: Array = [
+	["KauePropBenchW", Vector3(KAUE_X0 + 0.15, 0, 27.2), Vector3(KAUE_X0 + 0.6, 0.45, 30.9)],
+	["KauePropBenchE", Vector3(KAUE_X1 - 0.6, 0, 27.2), Vector3(KAUE_X1 - 0.15, 0.45, 30.9)],
 ]
 
 ## The Armorer's Bench (UPDATE_04 section 6, T-068): [floor position against the wall, yaw so local -Z faces the yard].
@@ -144,6 +203,7 @@ const MAT_RULES: Array = [
 	["AdminNLedge", "roof"], ["BalconyLedge", "planks"],
 	["BarrRoof", "planks"], ["Barr*", "planks"], ["BunkMess*", "planks"],
 	["TowerBase", "concrete"], ["Closet*", "halite"],
+	["KaueRoof", "concrete"], ["Kaue*", "brick"],
 ]
 ## Greybox visuals replaced by dressing (colliders stay). Also the faces of walls that coincide with a
 ## neighbour's wall (the neighbour's visual is kept, and the hidden side gets a lining instead).
@@ -153,7 +213,7 @@ const HIDE: Array = [
 	"Rail", "TowerLeg", "TowerHead", "SnowMound?", "Drift", "Boxcar", "Locomotive", "LocoCab", "BufferStop", "SignalBox",
 	"Gate", "FilingA", "Bunk", "MessTable", "ServingLine", "Pews", "Altar", "AltarTop", "Bell", "Font", "ChandelierVis",
 	"Confessional", "Turbine", "Catwalk", "Tank", "NurseryBed", "AdminStairs", "FlightA", "FlightB", "FlightC",
-	"NavBlock_Ammo*", "NavBlock_ArmorersBench",
+	"NavBlock_Ammo*", "NavBlock_ArmorersBench", "NavBlock_Perk*", "CoreProp*", "KaueProp*",
 ]
 const SODIUM: Color = Color(1.0, 0.66, 0.36)
 const INCAND: Color = Color(1.0, 0.78, 0.55)
@@ -200,6 +260,8 @@ func _initialize() -> void:
 	build_closets()
 	build_ammo_blocks()
 	build_yard_prop_blocks()
+	build_perk_blocks()
+	build_core_prop_blocks()
 
 
 func _process(_delta: float) -> bool:
@@ -209,6 +271,11 @@ func _process(_delta: float) -> bool:
 	bake_regions()
 	get_root().remove_child(map_root)
 	build_dressing()
+	_dress_buy_lamps()
+	if _audit_wall_buys() > 0:   # T-227: never save a scene with a chalk hidden behind the dressing
+		push_error("gen_map01: a wall-buy is blocked; the scene was NOT saved")
+		map_root.free()
+		return true
 	var merged: int = merge_static_meshes()
 	print("merged %d static meshes into batches" % merged)
 	build_lights()
@@ -491,7 +558,8 @@ func build_surface() -> void:
 		box(geo, "TowerLeg", Vector3(corner.x - 0.4, 6, corner.y - 0.4), Vector3(corner.x + 0.4, 28, corner.y + 0.4), "metal", false)
 	box(geo, "TowerHead", Vector3(15, 26, 10), Vector3(25, 29, 20), "metal", false)
 	box(geo, "SnowMound1", Vector3(35, 0, 1), Vector3(39, 0.4, 5), "snow", false)
-	box(geo, "SnowMound2", Vector3(1, 0, 27), Vector3(5, 0.4, 31), "snow", false)
+	box(geo, "SnowMound2", Vector3(1, 0, 27), Vector3(3.7, 0.4, 31), "snow", false)   # (short of the Kaue's west wall, T-225)
+	build_kaue()
 	# C_ADMIN (x -16..0, z 8..32): ground floor 0..3.5, upper 3.8..7. Plaster + wainscot inside, a plinth outside.
 	room("AdminG", -16, 0, 8, 32, 0, 3.5, {
 		"n": [win(-8, 0)],
@@ -515,7 +583,7 @@ func build_surface() -> void:
 	box(geo, "AdminStairStringE", Vector3(-12.25, 0, 21.0), Vector3(-12.05, 3.5, 28.3), "furniture")
 	box(geo, "AdminStairStringW", Vector3(-15.35, 0, 21.0), Vector3(-15.15, 3.5, 28.3), "furniture")
 	box(geo, "Switchboard", Vector3(-6, 0, 29.5), Vector3(-1, 2.2, 31.6), "furniture")
-	box(geo, "FilingA", Vector3(-15.6, 0, 9), Vector3(-14.3, 1.6, 12), "furniture")
+	box(geo, "FilingA", Vector3(-15.6, 0, 9), Vector3(-14.3, 1.6, 10.45), "furniture")   # (T-226: one cabinet; Ledger Lager stood inside the second since T-141)
 	wall_x("AdminPart", 16.0, -16, -2.5, 3.8, 7.0, [door(-9, 3.8, 1.6)], "wall", [[1, "wainscot", 1.0, 0.025], [-1, "wainscot", 1.0, 0.025]])
 	box(geo, "RadioDesk", Vector3(-15.5, 3.8, 9), Vector3(-13, 4.6, 12), "furniture")
 	# balcony ledge in the yard (zombies climb onto it to reach the upper east window)
@@ -738,8 +806,41 @@ func build_closets() -> void:
 
 ## T-123: the yard props' hidden colliders (YARD_PROPS), in the Geometry the bake parses.
 func build_yard_prop_blocks() -> void:
-	for yp: Array in YARD_PROPS:
+	for yp: Array in YARD_PROPS + KAUE_PROPS:
 		box(geo, str(yp[0]), yp[1], yp[2], "furniture")
+
+
+## T-226: the perk machines' footprints as hidden colliders (they make their own runtime bodies after the bake), so the
+## navmesh goes round them instead of into them (T-027 on Map 0); capped under the agent height so no block leaves a
+## walkable island on top of itself (T-051).
+func build_perk_blocks() -> void:
+	var pdata: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/perks.json"))["perks"]
+	for pk: Array in PERKS:
+		var fp: Vector3 = MACHINE_FOOTPRINTS.get(str((pdata[str(pk[0])] as Dictionary).get("shape", "cabinet")), Vector3(1.0, 2.0, 0.7))
+		if absf(float(pk[2])) == 90.0:
+			fp = Vector3(fp.z, fp.y, fp.x)
+		var c: Vector3 = pk[1]
+		box(geo, "NavBlock_Perk_" + str(pk[0]), c - Vector3(fp.x * 0.5, 0, fp.z * 0.5), c + Vector3(fp.x * 0.5, minf(fp.y, 1.6), fp.z * 0.5), "metal")
+
+
+## T-226: the Core Vault's solid dressing (CORE_PROPS), baked.
+func build_core_prop_blocks() -> void:
+	for cp: Array in CORE_PROPS:
+		box(geo, str(cp[0]), cp[1], cp[2], "metal")
+
+
+## T-225: the WASCHKAUE's shell (see KAUE_*): brick walls west, east and north (two wide doorways either side of the pier,
+## under 0.5 m lintels) up to the flat roof below the yard wall's coping; the yard's own south wall is its back wall. Its
+## furniture is YARD_PROPS' hidden colliders (the benches, the lockers, the stove, the lamp rack), drawn by _dress_kaue.
+func build_kaue() -> void:
+	var zw: float = 32.0 - T * 0.5   # the yard wall's inner face
+	wall_z("KaueW", KAUE_X0, KAUE_Z0, zw, 0, KAUE_H, [], "brick")
+	wall_z("KaueE", KAUE_X1, KAUE_Z0, zw, 0, KAUE_H, [], "brick")
+	var ops: Array = []
+	for d: Array in KAUE_DOORS:
+		ops.append([float(d[0]), float(d[1]), 0.0, KAUE_H - 0.5])
+	wall_x("KaueN", KAUE_Z0, KAUE_X0 - T * 0.5, KAUE_X1 + T * 0.5, 0, KAUE_H, ops, "brick")
+	box(geo, "KaueRoof", Vector3(KAUE_X0 - T * 0.5, KAUE_H, KAUE_Z0 - T * 0.5), Vector3(KAUE_X1 + T * 0.5, KAUE_H + 0.2, zw), "concrete")
 
 
 ## The ammo boxes' footprints as hidden colliders, so the navmesh is cut round them (the boxes are placed in
@@ -1069,7 +1170,8 @@ func _dress_yard() -> void:
 	lamp(Vector3(37.2, 1.6, 13.0), Color(1.0, 0.5, 0.2), 2.0, 9.0, 0.35, 0.6)
 	# sodium goosenecks on the yard walls (dark until the sweep reaches the yard)
 	for gn: Array in [[Vector3(12.0, 3.5, 0.15), 180.0], [Vector3(28.0, 3.5, 0.15), 180.0], [Vector3(39.85, 3.5, 18.0), 90.0],
-			[Vector3(12.0, 3.4, 31.85), 0.0], [Vector3(31.0, 3.4, 31.85), 0.0], [Vector3(0.15, 3.0, 21.0), -90.0]]:
+			[Vector3(18.6, 3.4, 31.85), 0.0], [Vector3(31.0, 3.4, 31.85), 0.0], [Vector3(0.15, 3.0, 21.0), -90.0],
+			[Vector3(6.8, KAUE_H - 0.3, KAUE_Z0 - 0.15), 0.0], [Vector3(13.2, KAUE_H - 0.3, KAUE_Z0 - 0.15), 0.0]]:   # (T-225: the Kaue's front)
 		goose("A_MINEHEAD", gn[0], float(gn[1]))
 
 
@@ -1124,46 +1226,30 @@ func _dress_hoist_house() -> void:
 	Props.pipe(dress, Vector3(x1 + 0.06, 0.98, 15.3), Vector3(x1 + 0.06, 5.5, 15.3), 0.035, "iron")
 
 
-## T-123: the yard's south side, where the squad starts: it was bare snow and a blank wall. Along the south wall
-## (z 30..31.85, outside the headframe loop's ring, clear of the doors, the windows and the ground spawn at (3, 29)):
-## a fire barrel and a lantern so the spawn is not dark before the power, the miners' tag board and lamp rack, the
-## yard's ammo box (AMMO_BOXES "Yard"), a stack of pit props and a spare set, a workbench, a tipped ore cart in a
-## salt spill, crates and sacks. Each solid prop has a hidden YardProp* collider (YARD_PROPS), baked into the navmesh.
+## T-123 / T-225: the yard's south side, where the squad starts. T-123 dressed the bare wall (the tag board, the lamp
+## rack, pit props, a workbench, a tipped ore cart, crates); T-225 built the WASCHKAUE over the west half of it (see
+## KAUE_*, _dress_kaue) and moved the brazier out to the lane by the Administration door. East of the Kaue: the squad's
+## sled with its kit by the east doorway, the yard's ammo box under its lantern, the pit props and the spare set, the
+## workbench under the gooseneck, the tipped ore cart in its salt, crates and sacks in the corner. Every solid prop has a
+## hidden YardProp* collider (YARD_PROPS), baked into the navmesh.
 func _dress_yard_south() -> void:
 	var wz: float = 31.85   # the south wall's yard face
-	# the night shift's third brazier, by the spawn
-	Props.oil_drum(dress, Vector3(7.0, 0, 31.2), "rust")
-	Props.flames(dress, Vector3(7.0, 0.92, 31.2), 0.42, 0.55, 20)
-	Props.embers(dress, Vector3(7.0, 1.1, 31.2), 0.2, 8)
-	lamp(Vector3(7.3, 1.6, 30.8), Color(1.0, 0.5, 0.2), 2.2, 9.0, 0.35, 0.6)
-	Props.puddle(dress, Vector3(7.0, 0, 30.4), 1.6, 1.0, 10.0)
-	# a lantern on a bracket over the spawn (unpowered, like the gatehouse's)
-	Props.wall_lamp(dress, Vector3(10.0, 2.5, wz), 0.0)
-	lamp(Vector3(10.0, 2.3, 31.1), Color(1.0, 0.68, 0.38), 1.3, 9.0, 0.08)
-	# the miners' tag board: a brass tag on a hook per man; the empty hooks are the men still down there
-	B(Vector3(13.4, 1.15, wz - 0.06), Vector3(15.6, 2.3, wz), "planks")
-	B(Vector3(13.35, 2.3, wz - 0.1), Vector3(15.65, 2.38, wz), "beam")
-	_label("MARKENKONTROLLE", Vector3(14.5, 2.55, wz - 0.02), 180.0, 26, Color(0.85, 0.82, 0.72, 0.85))
-	var trng: RandomNumberGenerator = RandomNumberGenerator.new()
-	trng.seed = 1938
-	for row: int in 4:
-		for col: int in 10:
-			var tp: Vector3 = Vector3(13.6 + col * 0.2, 2.1 - row * 0.24, wz - 0.06)
-			B(tp + Vector3(-0.008, 0.02, -0.04), tp + Vector3(0.008, 0.05, 0.0), "iron")
-			if trng.randf() < 0.35:
-				continue
-			_noshadow(B(tp + Vector3(-0.035, -0.06, -0.035), tp + Vector3(0.035, 0.02, -0.02), "brass"))
-	# the lamp rack beside it: two shelves of miners' lamps
-	for rx: float in [15.95, 17.65]:
-		B(Vector3(rx - 0.04, 0, 31.47), Vector3(rx + 0.04, 1.9, wz), "beam")
-	for sy: float in [0.95, 1.55]:
-		B(Vector3(15.9, sy, 31.47), Vector3(17.7, sy + 0.04, wz), "planks")
-		for li: int in 6:
-			var lx: float = 16.15 + li * 0.27
-			if (li + int(sy * 10.0)) % 4 == 0:
-				continue   # a lamp gone with its man
-			CYL(Vector3(lx, sy + 0.14, 31.66), 0.06, 0.2, "brass")
-			_noshadow(CYL(Vector3(lx, sy + 0.27, 31.66), 0.045, 0.06, "lantern_glass"))
+	_dress_kaue()
+	# the squad's sled against the wall east of the Kaue (over YardPropSled): iron runners, slats, the kit crate from the
+	# inn, a rolled blanket and a coil of rope; their trail trodden in from the gate, down the gatehouse lane to the west
+	# doorway (the night shift's brazier in the lane by the Admin door is _dress_yard's)
+	for sx: float in [17.12, 17.68]:
+		OB(Vector3(sx, 0.08, 30.6), Vector3(0.05, 0.1, 1.5), "iron")
+	B(Vector3(17.05, 0.16, 30.0), Vector3(17.75, 0.21, 31.2), "planks")
+	Props.crate(dress, Vector3(17.4, 0.21, 30.65), 0.55, 5.0, "KREUZWEG")
+	OB(Vector3(17.4, 0.86, 31.0), Vector3(0.5, 0.2, 0.2), "cloth_red", Vector3(0, 8, 0))
+	Props.rope_coil(dress, Vector3(17.4, 0.21, 30.15), 0.14)
+	_noshadow(OB(Vector3(16.75, 0.006, 5.85), Vector3(1.3, 0.012, 11.3), "snow_trodden", Vector3(0, -34.95, 0)))
+	_noshadow(B(Vector3(12.85, 0.0, 10.4), Vector3(14.15, 0.012, 21.2), "snow_trodden", false))
+	_noshadow(OB(Vector3(10.15, 0.006, 23.4), Vector3(1.3, 0.012, 8.2), "snow_trodden", Vector3(0, -54.4, 0)))
+	# a lantern over the yard's ammo box (unpowered, like the gatehouse's)
+	Props.wall_lamp(dress, Vector3(20.0, 2.4, wz), 0.0)
+	lamp(Vector3(20.0, 2.2, 31.1), Color(1.0, 0.68, 0.38), 1.2, 8.0, 0.08)
 	# a stack of pit props (timber for the roof sets below) and a spare set stood against the wall
 	for layer: int in 3:
 		var n: int = 4 - layer
@@ -1191,8 +1277,147 @@ func _dress_yard_south() -> void:
 	Props.crate(dress, Vector3(37.4, 0.85, 31.25), 0.6, 18.0)
 	Props.sack(dress, Vector3(36.9, 0, 30.55), 30.0)
 	Props.sack(dress, Vector3(37.6, 0, 30.6), -20.0, 0.9)
-	# a trodden strip along the wall: the squad's way between the spawn, the board and the box
-	_noshadow(B(Vector3(6.0, 0.0, 28.6), Vector3(36.5, 0.012, 30.6), "snow_trodden", false))
+	# a trodden strip along the wall: the squad's way from the Kaue's east door to the box and the bench
+	_noshadow(B(Vector3(16.3, 0.0, 28.6), Vector3(36.5, 0.012, 30.6), "snow_trodden", false))
+
+
+## T-225: the Waschkaue inside and out (its shell is build_kaue's, its furniture's colliders YARD_PROPS'): the concrete
+## floor with its drain, the boarded roof underside on its joists, the doorways' lintels and the roof's coping under the
+## snow; the benches with boots and a lunch pail under them, the lockers (two doors hanging open, a jacket in one), the
+## stove with its flue through the roof and its ember glow, the coal scuttle and the poker; the tag board (a brass tag per
+## man, the empty hooks the men still down there) and the lamp rack; the clothes baskets on their chains under the roof,
+## the high ones hauled up (their men below), a jacket or boots in the low ones; the wash trough and the shift board on
+## the pier; the broom and bucket in the corner; two hurricane lanterns on the benches, the lantern over the lockers (so
+## the spawn is lit before the power), and two enamel pendants that come on with the yard. Outside: WASCHKAUE over the
+## pier, and the two goosenecks on the front (_dress_yard).
+func _dress_kaue() -> void:
+	var x0: float = KAUE_X0 + 0.15
+	var x1: float = KAUE_X1 - 0.15
+	var z0: float = KAUE_Z0 + 0.15
+	var wz: float = 31.85
+	_noshadow(B(Vector3(x0, 0.0, z0), Vector3(x1, 0.012, wz), "concrete_floor", false))
+	_noshadow(CYL(Vector3(10.15, 0.014, 29.2), 0.3, 0.004, "steel_grate"))
+	_noshadow(B(Vector3(x0, KAUE_H - 0.012, z0), Vector3(x1, KAUE_H, wz), "planks", false))
+	for jx: float in [5.5, 7.5, 9.5, 11.5, 13.5]:
+		B(Vector3(jx - 0.08, KAUE_H - 0.3, z0), Vector3(jx + 0.08, KAUE_H - 0.012, wz), "beam")
+	for d: Array in KAUE_DOORS:
+		B(Vector3(float(d[0]) - 0.2, KAUE_H - 0.5, KAUE_Z0 - 0.2), Vector3(float(d[1]) + 0.2, KAUE_H - 0.26, KAUE_Z0 + 0.2), "concrete")
+	B(Vector3(KAUE_X0 - 0.22, KAUE_H + 0.2, KAUE_Z0 - 0.25), Vector3(KAUE_X1 + 0.22, KAUE_H + 0.32, wz), "concrete")
+	_noshadow(B(Vector3(KAUE_X0 - 0.15, KAUE_H + 0.32, KAUE_Z0 - 0.2), Vector3(KAUE_X1 + 0.15, KAUE_H + 0.4, wz), "snow", false))
+	_label("WASCHKAUE", Vector3(10.0, KAUE_H - 0.95, KAUE_Z0 - 0.17), 180.0, 40, Color(0.85, 0.82, 0.72, 0.85))
+	# the benches (over YardPropBenchW / E), boots and a lunch pail under the west one, clogs under the east one
+	for bx: Array in [[x0, x0 + 0.45], [x1 - 0.45, x1]]:
+		B(Vector3(float(bx[0]), 0.4, 27.2), Vector3(float(bx[1]), 0.45, 30.9), "planks")
+		for bz: float in [27.4, 29.05, 30.7]:
+			B(Vector3(float(bx[0]) + 0.05, 0, bz - 0.03), Vector3(float(bx[1]) - 0.05, 0.4, bz + 0.03), "beam")
+	for k: int in 2:
+		OB(Vector3(x0 + 0.22, 0.12, 28.1 + k * 0.16), Vector3(0.3, 0.24, 0.11), "leather", Vector3(0, -8 + k * 16, 0))
+	CYL(Vector3(x0 + 0.25, 0.1, 29.6), 0.09, 0.2, "zinc")
+	for k2: int in 2:
+		OB(Vector3(x1 - 0.22, 0.06, 30.1 + k2 * 0.15), Vector3(0.28, 0.12, 0.1), "beam", Vector3(0, 5, 0))
+	# the lockers (over YardPropLockers): eleven steel doors, vents and handles, two hanging open, a jacket in one
+	B(Vector3(4.7, 0, 31.35), Vector3(9.1, 1.9, wz), "machine_grey")
+	for k3: int in 11:
+		var lx: float = 4.7 + k3 * 0.4
+		if k3 == 3 or k3 == 8:
+			B(Vector3(lx + 0.03, 0.08, 31.36), Vector3(lx + 0.37, 1.84, 31.4), "black_paint")
+			OB(Vector3(lx + 0.37, 0.96, 31.15), Vector3(0.03, 1.76, 0.36), "machine_green", Vector3(0, 70, 0))
+			if k3 == 3:
+				OB(Vector3(lx + 0.2, 1.3, 31.5), Vector3(0.28, 0.7, 0.12), "feldgrau")
+		else:
+			B(Vector3(lx + 0.02, 0.05, 31.33), Vector3(lx + 0.38, 1.85, 31.35), "machine_green")
+			for vy: float in [0.3, 0.38, 1.6, 1.68]:
+				B(Vector3(lx + 0.1, vy, 31.325), Vector3(lx + 0.3, vy + 0.03, 31.33), "black_paint")
+		B(Vector3(lx + 0.3, 0.95, 31.31), Vector3(lx + 0.34, 1.05, 31.33), "steel")
+	# the stove (over YardPropStove): a cast-iron drum on its plate, the flue up through the roof, the fire door's glow,
+	# the coal scuttle and the poker; its warm light is the one the spawn has before the power
+	CYL(Vector3(10.15, 0.04, 30.7), 0.4, 0.08, "iron")
+	CYL(Vector3(10.15, 0.68, 30.7), 0.3, 1.0, "iron")
+	CYL(Vector3(10.15, 1.21, 30.7), 0.34, 0.06, "iron")
+	CYL(Vector3(10.15, 2.3, 30.7), 0.08, 2.2, "iron")
+	CYL(Vector3(10.15, KAUE_H + 0.5, 30.7), 0.09, 0.9, "iron")
+	CYL(Vector3(10.15, KAUE_H + 0.98, 30.7), 0.16, 0.08, "iron")
+	Props.smoke(dress, Vector3(10.15, KAUE_H + 1.05, 30.7), 0.15, 0.6, 10)
+	_noshadow(B(Vector3(10.0, 0.35, 30.385), Vector3(10.3, 0.55, 30.4), "ember"))
+	for gy: float in [0.4, 0.47]:
+		B(Vector3(10.0, gy, 30.38), Vector3(10.3, gy + 0.015, 30.385), "iron")
+	Props.embers(dress, Vector3(10.15, 0.5, 30.3), 0.1, 6)
+	lamp(Vector3(10.15, 0.9, 29.9), Color(1.0, 0.5, 0.2), 2.0, 9.0, 0.3, 0.5)
+	CYL(Vector3(9.3, 0.2, 30.65), 0.16, 0.4, "iron")
+	Props.ball(dress, Vector3(9.3, 0.4, 30.65), Vector3(0.26, 0.1, 0.26), "coal")
+	Props.strut(dress, Vector3(10.75, 0.0, 31.8), Vector3(10.9, 1.1, 31.6), 0.02, "iron", true)
+	# the miners' tag board: a brass tag on a hook per man; the empty hooks are the men still down there
+	B(Vector3(11.0, 1.15, wz - 0.06), Vector3(13.2, 2.3, wz), "planks")
+	B(Vector3(10.95, 2.3, wz - 0.1), Vector3(13.25, 2.38, wz), "beam")
+	_label("MARKENKONTROLLE", Vector3(12.1, 2.55, wz - 0.02), 180.0, 26, Color(0.85, 0.82, 0.72, 0.85))
+	var trng: RandomNumberGenerator = RandomNumberGenerator.new()
+	trng.seed = 1938
+	for row: int in 4:
+		for col: int in 10:
+			var tp: Vector3 = Vector3(11.2 + col * 0.2, 2.1 - row * 0.24, wz - 0.06)
+			B(tp + Vector3(-0.008, 0.02, -0.04), tp + Vector3(0.008, 0.05, 0.0), "iron")
+			if trng.randf() < 0.35:
+				continue
+			_noshadow(B(tp + Vector3(-0.035, -0.06, -0.035), tp + Vector3(0.035, 0.02, -0.02), "brass"))
+	# the lamp rack (over YardPropRack): two shelves of miners' lamps
+	for rx: float in [13.65, 15.25]:
+		B(Vector3(rx - 0.04, 0, 31.47), Vector3(rx + 0.04, 1.9, wz), "beam")
+	for sy: float in [0.95, 1.55]:
+		B(Vector3(13.6, sy, 31.47), Vector3(15.3, sy + 0.04, wz), "planks")
+		for li: int in 6:
+			var lx2: float = 13.8 + li * 0.27
+			if (li + int(sy * 10.0)) % 4 == 0:
+				continue   # a lamp gone with its man
+			CYL(Vector3(lx2, sy + 0.14, 31.66), 0.06, 0.2, "brass")
+			_noshadow(CYL(Vector3(lx2, sy + 0.27, 31.66), 0.045, 0.06, "lantern_glass"))
+	# the clothes baskets on their chains under the roof: two rows over a bar each; the high ones are still down there
+	for row2: Array in [[28.1, 0], [29.9, 1]]:
+		var bz2: float = float(row2[0])
+		B(Vector3(x0, KAUE_H - 0.1, bz2 - 0.04), Vector3(x1, KAUE_H - 0.02, bz2 + 0.04), "iron")
+		for k4: int in 9:
+			var bx2: float = 5.2 + k4 * 1.3
+			if absf(bx2 - 10.15) < 0.75 and bz2 > 29.0:
+				continue   # the stove's flue
+			var high: bool = (k4 + int(row2[1])) % 3 == 0
+			var by: float = KAUE_H - 0.55 if high else 2.6
+			Props.strut(dress, Vector3(bx2, KAUE_H - 0.06, bz2), Vector3(bx2, by, bz2), 0.02, "iron", true)
+			CYL(Vector3(bx2, by - 0.15, bz2), 0.22, 0.3, "rust")
+			CYL(Vector3(bx2, by - 0.3, bz2), 0.2, 0.02, "iron")
+			if high:
+				continue
+			if k4 % 2 == 0:
+				OB(Vector3(bx2 + 0.12, by - 0.45, bz2), Vector3(0.26, 0.4, 0.1), "feldgrau" if k4 % 4 == 0 else "cloth_navy", Vector3(0, 20, 6))
+			else:
+				OB(Vector3(bx2, by - 0.02, bz2 + 0.05), Vector3(0.12, 0.26, 0.3), "leather", Vector3(0, 30, 0))
+	for k5: int in 6:   # the chains' cleats along the west wall
+		B(Vector3(x0, 1.55, 27.4 + k5 * 0.6), Vector3(x0 + 0.08, 1.65, 27.5 + k5 * 0.6), "iron")
+	# the wash trough on the pier, its taps and pipe; the shift board over it
+	B(Vector3(9.1, 0.78, z0), Vector3(10.9, 0.86, z0 + 0.42), "zinc")
+	B(Vector3(9.12, 0.8, z0 + 0.02), Vector3(10.88, 0.9, z0 + 0.4), "puddle")
+	for lz2: float in [9.2, 10.8]:
+		B(Vector3(lz2 - 0.03, 0, z0 + 0.1), Vector3(lz2 + 0.03, 0.78, z0 + 0.16), "iron")
+	B(Vector3(9.1, 1.18, z0), Vector3(10.9, 1.22, z0 + 0.04), "iron")
+	for tx2: float in [9.5, 10.0, 10.5]:
+		CYL(Vector3(tx2, 1.08, z0 + 0.08), 0.02, 0.22, "brass")
+		OB(Vector3(tx2, 0.98, z0 + 0.14), Vector3(0.03, 0.03, 0.14), "brass")
+	B(Vector3(9.4, 1.6, z0), Vector3(10.6, 2.3, z0 + 0.04), "black_paint")
+	B(Vector3(9.36, 1.56, z0), Vector3(10.64, 1.6, z0 + 0.06), "beam")
+	B(Vector3(9.36, 2.3, z0), Vector3(10.64, 2.34, z0 + 0.06), "beam")
+	_label("SCHICHT III - 23. XII.", Vector3(10.0, 2.1, z0 + 0.05), 0.0, 20, Color(0.9, 0.9, 0.86, 0.85))
+	_label("Seilfahrt 6.00 / 14.00 / 22.00", Vector3(10.0, 1.8, z0 + 0.05), 0.0, 14, Color(0.9, 0.9, 0.86, 0.75))
+	# the broom and the bucket in the north-east corner, a coat on the wall
+	Props.strut(dress, Vector3(15.55, 0.02, 26.6), Vector3(15.75, 1.45, 26.35), 0.025, "pine", true)
+	OB(Vector3(15.5, 0.03, 26.7), Vector3(0.3, 0.06, 0.1), "straw_floor", Vector3(0, -30, 0))
+	CYL(Vector3(15.35, 0.15, 27.0), 0.14, 0.3, "zinc")
+	OB(Vector3(x1 - 0.08, 1.5, 28.4), Vector3(0.1, 0.9, 0.42), "cloth_navy", Vector3(0, 0, 0))
+	# light: two hurricane lanterns on the benches, the lantern over the lockers, the two pendants that come on with the yard
+	_hurricane(Vector3(x0 + 0.22, 0.45, 27.4), 0.9)
+	_hurricane(Vector3(x1 - 0.22, 0.45, 30.7), 0.9)
+	Props.wall_lamp(dress, Vector3(7.0, 2.5, wz), 0.0)
+	lamp(Vector3(7.0, 2.3, 31.1), Color(1.0, 0.68, 0.38), 1.3, 9.0, 0.08)
+	for pxx: float in [7.0, 13.0]:
+		pendant("A_MINEHEAD", Vector3(pxx, KAUE_H - 0.95, 29.0), KAUE_H, "enamel_green")
+		power("A_MINEHEAD", Vector3(pxx, KAUE_H - 1.05, 29.0), 8.0, 1.1, INCAND)
 
 
 func _dress_headframe() -> void:
@@ -1320,7 +1545,7 @@ func _dress_admin() -> void:
 		B(Vector3(x0, 3.28, bz3 - 0.12), Vector3(-0.15, 3.5, bz3 + 0.12), "beam")
 		B(Vector3(-15.85, 6.78, bz3 - 0.1), Vector3(-0.15, 7.0, bz3 + 0.1), "beam")
 	B(Vector3(-1.62, 6.65, 8.15), Vector3(-1.38, 7.0, 15.85), "beam")   # rafter for the balcony bell
-	for fz: Array in [[9.0, 10.45], [10.55, 12.0]]:
+	for fz: Array in [[9.0, 10.45]]:   # (T-226: the second cabinet, z 10.55..12, was drawn through Ledger Lager's register)
 		B(Vector3(-15.6, 0, float(fz[0])), Vector3(-14.3, 1.6, float(fz[1])), "machine_grey")
 		for k2: int in 4:
 			var dy: float = 0.15 + k2 * 0.38
@@ -2414,6 +2639,84 @@ func _dress_core() -> void:
 	# power: the vault's violet floods come on with the sweep
 	power("I_CORE", Vector3(34.0, y + 9.0, 116.0), 30.0, 2.4, Color(0.62, 0.26, 1.0), false, {}, 1.0)
 	power("I_CORE", Vector3(44.0, y + 4.0, 124.0), 8.0, 1.2, Color(1.0, 0.6, 0.35))
+	_dress_core_installers(y)
+
+
+## T-226 (the owner: "the pack a punch area in map 2 needs work, more details and a perk machine down there"): the Core
+## Vault's working detail round the Crucible and Skyhook's cabinet. The installers' corner on the east wall south of the
+## Crucible's setting (CORE_PROPS colliders): the bench with its vice, a gauge and the tool board, the crates of retained
+## items, a hose coil; oil drums in the north-east corner, the cable drum by the G ramp door; the resonance instruments:
+## four brass gauge stands on the pit rim, cabled up to the cage; the conduit from the F ramp door along the north wall
+## past the junction box over the cabinet and on down the east wall to the Crucible's plate; caged lamps on the four
+## pillars and over the cabinet (power) and a red emergency lamp at each of the four doors (always on); a jib crane on
+## the east wall with its chain and hook over the Crucible's apron; salt crust and puddles at the wall feet; and
+## luminous-paint guide lines on the floor from every door round the pit to the Crucible (_dress_core_guides).
+func _dress_core_installers(y: float) -> void:
+	Props.workbench(dress, Vector3(48.5, y, 128.5), 90.0, 1.8, 0.7)
+	B(Vector3(48.7, y + 1.3, 127.7), Vector3(48.84, y + 2.2, 129.3), "planks")
+	for tz: float in [127.9, 128.25, 128.6, 128.95, 129.2]:
+		Props.strut(dress, Vector3(48.66, y + 1.4, tz), Vector3(48.66, y + 2.05, tz), 0.03, "iron", true)
+	B(Vector3(48.55, y + 2.1, 127.8), Vector3(48.7, y + 2.15, 129.2), "iron")
+	B(Vector3(48.25, y + 0.95, 127.75), Vector3(48.55, y + 1.2, 128.0), "iron")
+	Props.gauge(dress, Vector3(48.6, y + 1.05, 128.8), 90.0, 0.1)
+	Props.crate(dress, Vector3(48.3, y, 130.15), 0.95, 4.0, "R-E 7")
+	Props.crate(dress, Vector3(48.35, y + 0.95, 130.1), 0.6, -12.0, "RETAINED")
+	Props.rope_coil(dress, Vector3(47.5, y, 130.55), 0.3)
+	Props.oil_drum(dress, Vector3(48.35, y, 105.75), "rust")
+	Props.oil_drum(dress, Vector3(48.35, y, 106.55), "machine_grey")
+	CYL(Vector3(40.65, y + 0.6, 101.95), 0.6, 0.5, "beam", Vector3(90, 0, 0))
+	CYL(Vector3(40.65, y + 0.6, 101.95), 0.46, 0.44, "rubber", Vector3(90, 0, 0))
+	# the resonance instruments on the pit rim
+	for gp: Vector2 in [Vector2(31.5, 111.2), Vector2(36.5, 111.2), Vector2(31.5, 120.8), Vector2(36.5, 120.8)]:
+		var base: Vector3 = Vector3(gp.x, y + 1.1, gp.y)
+		for k: int in 3:
+			var a: float = TAU * float(k) / 3.0
+			Props.strut(dress, base + Vector3(cos(a) * 0.3, 0, sin(a) * 0.3), base + Vector3(0, 1.0, 0), 0.03, "iron", true)
+		CYL(base + Vector3(0, 1.05, 0), 0.08, 0.1, "brass")
+		Props.gauge(dress, base + Vector3(0, 1.25, 0), 0.0 if gp.y < 116.0 else 180.0, 0.13)
+		var toward: Vector3 = (Vector3(gp.x, 0, gp.y) - Vector3(34.0, 0, 116.0)).normalized()
+		Props.cable(dress, base + Vector3(0, 1.3, 0), Vector3(34.0, y + 8.0, 116.0) + toward * 2.6, 0.5, 0.025, 8, "rubber")
+	# conduit: the north wall from the F ramp door to the east wall (over the G ramp door), the junction box over Skyhook's
+	# cabinet, then down the east wall to the Crucible's plate
+	Props.pipe(dress, Vector3(22.2, y + 2.8, 101.3), Vector3(48.7, y + 2.8, 101.3), 0.04, "iron")
+	Props.pipe(dress, Vector3(48.7, y + 2.8, 101.3), Vector3(48.7, y + 2.8, 121.0), 0.04, "iron")
+	Props.pipe(dress, Vector3(48.7, y + 2.8, 121.0), Vector3(48.7, y + 4.8, 121.35), 0.04, "iron")
+	Props.fuse_box(dress, Vector3(36.2, y + 2.2, 101.16), 180.0, 0.45, 0.6)
+	Props.pipe(dress, Vector3(36.2, y + 2.5, 101.3), Vector3(36.2, y + 2.8, 101.3), 0.03, "iron")
+	Props.pipe(dress, Vector3(36.0, y + 2.2, 101.4), Vector3(34.9, y + 2.42, 101.5), 0.03, "iron")
+	# caged lamps on the pillars and over the cabinet (power), red lamps at the four doors (always on)
+	for bl: Array in [[Vector3(24.02, y + 2.5, 105.0), -90.0], [Vector3(43.98, y + 2.5, 105.0), 90.0], [Vector3(24.02, y + 2.5, 127.0), -90.0],
+			[Vector3(43.98, y + 2.5, 127.0), 90.0], [Vector3(34.5, y + 2.75, 101.17), 180.0]]:
+		bulkhead("I_CORE", bl[0], float(bl[1]))
+		var o: Vector3 = Basis(Vector3.UP, deg_to_rad(float(bl[1]))) * Vector3(0, 0, -0.3)
+		power("I_CORE", (bl[0] as Vector3) + o, 7.0, 1.0, INCAND)
+	emergency(Vector3(23.4, y + 2.7, 101.4), 180.0)
+	emergency(Vector3(41.2, y + 2.7, 101.4), 180.0)
+	emergency(Vector3(48.6, y + 2.7, 112.3), 90.0)
+	emergency(Vector3(31.4, y + 2.7, 130.6), 0.0)
+	# the jib crane over the Crucible's apron
+	CYL(Vector3(48.45, y + 2.9, 119.3), 0.14, 5.8, "iron")
+	Props.strut(dress, Vector3(48.45, y + 5.5, 119.3), Vector3(44.2, y + 5.5, 122.8), 0.16, "iron")
+	Props.strut(dress, Vector3(48.45, y + 6.3, 119.3), Vector3(44.4, y + 5.55, 122.65), 0.08, "iron")
+	Props.strut(dress, Vector3(44.4, y + 5.45, 122.65), Vector3(44.4, y + 3.4, 122.65), 0.03, "iron", true)
+	OB(Vector3(44.4, y + 3.25, 122.65), Vector3(0.14, 0.3, 0.1), "iron")
+	Props.strut(dress, Vector3(44.4, y + 3.1, 122.65), Vector3(44.55, y + 2.95, 122.65), 0.04, "iron", true)
+	# salt crust at the wall feet, puddles
+	for sp: Vector2 in [Vector2(26.0, 101.9), Vector2(47.9, 110.0), Vector2(20.4, 124.0), Vector2(30.0, 130.3)]:
+		_noshadow(Props.ball(dress, Vector3(sp.x, y, sp.y), Vector3(1.8, 0.22, 1.0), "halite"))
+	Props.puddle(dress, Vector3(26.0, y, 112.0), 1.6, 1.1, 20.0)
+	Props.puddle(dress, Vector3(42.0, y, 128.0), 1.4, 1.0, -15.0)
+	_dress_core_guides(y)
+
+
+## T-226: luminous-paint guide lines (the readability pass's Leuchtfarbe, _lumi_line) on the Core's floor from each of the
+## four doors, round the pit, to the Crucible's apron.
+func _dress_core_guides(y: float) -> void:
+	var f: float = y + 0.035
+	for seg: Array in [[Vector3(21.5, f, 102.8), Vector3(41.0, f, 109.0)], [Vector3(41.0, f, 109.0), Vector3(42.0, f, 120.5)],
+			[Vector3(43.0, f, 103.0), Vector3(42.5, f, 121.4)], [Vector3(47.9, f, 117.0), Vector3(45.2, f, 122.2)],
+			[Vector3(34.0, f, 130.4), Vector3(42.0, f, 126.0)], [Vector3(42.0, f, 126.0), Vector3(44.0, f, 123.0)]]:
+		_lumi_line(seg[0], seg[1], 0.07)
 
 
 var _amber: StandardMaterial3D
@@ -2805,6 +3108,64 @@ func _dress_weather() -> void:
 	motes.set_meta("keep", true)
 
 
+# ================================================================== the wall-buy audit (T-227)
+
+## T-227: a bracket lamp over every chalk outline (its light is the BuyLight build_gameplay makes).
+func _dress_buy_lamps() -> void:
+	for b: Array in BUYS:
+		var out: Vector3 = Basis(Vector3.UP, deg_to_rad(float(b[2]))) * Vector3(0, 0, -1)
+		Props.wall_lamp(dress, (b[1] as Vector3) + Vector3(0, 0.95, 0) - out * 0.03, float(b[2]))
+
+
+## T-227 (the owner: "make sure all wall weapon buys look good on both maps"): before the batching, every wall-buy's front
+## is checked against everything drawn: nothing may stand in the 1.8 x 1.2 m window in front of the chalk out to 1 m (the
+## board, the gun and its label are WallBuy's own, built at load), and the chalk must hang on a collider (a world box
+## within 0.1 m behind its plane), never float. The lamps are by construction (one BuyLight per entry). One line per buy;
+## returns the number of blocked or floating ones. (The same check is gen_map00's.)
+func _audit_wall_buys() -> int:
+	var bad: int = 0
+	var meshes: Array = []
+	for root: Node3D in [dress, geo]:
+		meshes.append_array(root.find_children("*", "MeshInstance3D", true, false))
+	var bodies: Array = geo.find_children("*", "StaticBody3D", true, false)
+	for b: Array in BUYS:
+		var pos: Vector3 = b[1]
+		var basis: Basis = Basis(Vector3.UP, deg_to_rad(float(b[2])))
+		var out: Vector3 = basis * Vector3(0, 0, -1)
+		var side: Vector3 = basis * Vector3(1, 0, 0)
+		var c1: Vector3 = pos + out * 0.03 - side * 0.9 + Vector3(0, -0.6, 0)
+		var c2: Vector3 = pos + out * 1.0 + side * 0.9 + Vector3(0, 0.6, 0)
+		var win: AABB = AABB(c1.min(c2), (c2 - c1).abs())
+		var hits: PackedStringArray = []
+		for n: Node in meshes:
+			var mi: MeshInstance3D = n as MeshInstance3D
+			if mi.mesh == null or not mi.visible:
+				continue
+			var ab: AABB = _xform_to_root(mi) * mi.get_aabb()
+			if ab.intersects(win) and ab.intersection(win).get_volume() > 0.0005:
+				hits.append("%s(%s @ %s)" % [mi.name, mi.get_parent().name, str(ab.get_center().snapped(Vector3(0.01, 0.01, 0.01)))])
+		var behind: Vector3 = pos - out * 0.08
+		var on_wall: bool = false
+		for n2: Node in bodies:
+			var body: StaticBody3D = n2 as StaticBody3D
+			for c: Node in body.get_children():
+				var cs: CollisionShape3D = c as CollisionShape3D
+				if cs == null or not (cs.shape is BoxShape3D):
+					continue
+				var lp: Vector3 = (_xform_to_root(body) * cs.transform).affine_inverse() * behind
+				var half: Vector3 = (cs.shape as BoxShape3D).size * 0.5
+				if absf(lp.x) <= half.x and absf(lp.y) <= half.y and absf(lp.z) <= half.z:
+					on_wall = true
+					break
+			if on_wall:
+				break
+		var ok: bool = hits.is_empty() and on_wall
+		print("WALLBUY_AUDIT %-12s %s%s%s" % [str(b[0]), "clear" if ok else "BLOCKED", "" if on_wall else " (nothing behind the chalk)", "" if hits.is_empty() else ": " + ", ".join(hits)])
+		if not ok:
+			bad += 1
+	return bad
+
+
 # ================================================================== batching
 
 ## Merges every static primitive mesh (collision visuals + dressing) into one ArrayMesh per
@@ -3184,7 +3545,8 @@ func build_gameplay() -> void:
 	map_root.add_child(gameplay)
 
 	var i: int = 1
-	for p: Vector3 in [Vector3(9, 0, 25), Vector3(11, 0, 25), Vector3(9, 0, 27), Vector3(11, 0, 27)]:
+	# T-225: the squad starts in the Waschkaue, facing north out of its two doorways at the headframe
+	for p: Vector3 in [Vector3(7, 0, 28.3), Vector3(13, 0, 28.3), Vector3(7, 0, 29.7), Vector3(13, 0, 29.7)]:
 		_node("res://gravelight/maps/player_spawn.gd", "PlayerSpawn%d" % i, {}, p, 0.0, true)
 		i += 1
 	# zone volumes
@@ -3238,25 +3600,20 @@ func build_gameplay() -> void:
 			"also_opens": PackedStringArray(d[3]), "link_group": StringName(d[4]), "cost": int(d[5]), "label": d[6],
 			"size": Vector3(float(d[9]), DOOR_H, 0.25), "requires_power": d[10]}, d[7], float(d[8]))
 
-	# wall-buys
+	# wall-buys, each with a small warm lamp over its chalk so the buys read at a glance before the power (T-227, as Map 0's;
+	# the lamp's bracket is drawn by _dress_buy_lamps)
 	for b: Array in BUYS:
 		_node("res://gravelight/world/wall_buy.gd", "WallBuy_" + str(b[0]), {"weapon_id": StringName(b[0])}, b[1], float(b[2]))
+		var bl: OmniLight3D = OmniLight3D.new()
+		bl.name = "BuyLight_" + str(b[0])
+		bl.light_color = Color(1.0, 0.8, 0.55)
+		bl.light_energy = 0.6
+		bl.omni_range = 1.8
+		bl.position = (b[1] as Vector3) + Basis(Vector3.UP, deg_to_rad(float(b[2]))) * Vector3(0, 0.75, -0.5)
+		gameplay.add_child(bl)
 
-	# perk machines: [perk, pos (floor), yaw]
-	var perks: Array = [
-		["second_wind", Vector3(-15.2, 0, 14), -90.0], ["ironhide_stout", Vector3(24, 0, 32.8), 180.0],
-		["marathon_malt", Vector3(2, DY, 60.8), 180.0], ["twin_barrel", Vector3(34, DY, 60.8), 180.0],
-		["trigger_tonic", Vector3(68, DY, 81.2), 0.0],
-		["hawkeye_brandy", Vector3(55, DY, 88.8), 180.0], ["packmule_porter", Vector3(96, DY, 88.8), 180.0],
-		["blastproof_bock", Vector3(64, DY, 97.2), 0.0],
-		# Overclock Cordial (T-034): in the Generator Hall, wired into the north-wall switchgear in the gap between
-		# the first two panel sections (x 59.5-61), facing the turbines. The hall's own bus feeds the coil.
-		["overclock_cordial", Vector3(60.25, DY, 60.45), 180.0],
-		# Ledger Lager (T-141): the pay office's original cabinet, bolted beside Fenske's desk wall, 3 m north of
-		# Second Wind and the Bergmannskasse's counter (the bank branch is at z 15.75..20.75)
-		["ledger_lager", Vector3(-15.2, 0, 11.0), -90.0],
-	]
-	for p: Array in perks:
+	# perk machines (PERKS; their footprints are baked, build_perk_blocks)
+	for p: Array in PERKS:
 		_node("res://gravelight/world/perk_machine.gd", "Perk_" + str(p[0]), {"perk_id": StringName(p[0])}, p[1], float(p[2]))
 
 	# crate spots: [name, pos, yaw, can_start]

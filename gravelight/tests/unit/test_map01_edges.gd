@@ -116,30 +116,55 @@ func test_map01_routes_name_the_doors_they_need() -> void:
 ## T-123: the spawn yard's south side is dressed with solid props (YardProp* colliders) along the south wall. They
 ## stay out of the way: nothing within 2.5 m of a player spawn or the yard's ground spawn, nothing inside the
 ## headframe loop's ring, nothing in front of the yard's doors; and the yard has its own ammo box.
+## T-225: the squad starts inside the Waschkaue (gen_map01 KAUE_*): the spawns are its four, a prop inside the Kaue
+## (its lockers, stove and lamp rack along the back wall) keeps 1.5 m from them (a changing room is tight by nature;
+## the yard rule stays 2.5 m outside), and the Kaue's own benches (KaueProp*) stand inside its walls, clear of its two
+## doorways (z >= 27) and of the spawns, exempt from the wall and pylon rules (its own wall is nearer the pylon).
 func test_yard_props_keep_clear_of_spawns_doors_and_the_loop() -> void:
+	var spawns: Array = [Vector3(7, 0, 28.3), Vector3(13, 0, 28.3), Vector3(7, 0, 29.7), Vector3(13, 0, 29.7)]
+	var kaue: Rect2 = Rect2(4.0, 26.0, 12.0, 6.0)   # x, z of the Kaue's shell
 	var keep_clear: Array = [   # [point, radius]
-		[Vector3(9, 0, 25), 2.5], [Vector3(11, 0, 25), 2.5], [Vector3(9, 0, 27), 2.5], [Vector3(11, 0, 27), 2.5],
 		[Vector3(3, 0, 29), 2.5],   # the ground spawn
 		[Vector3(0, 0, 25), 3.0], [Vector3(40, 0, 25), 3.0],   # the doors to the Admin Block and the Rail Yard
 		[Vector3(20, 0, 21.5), 8.0],   # Pylon A's ring
 	]
 	var props: int = 0
+	var kaue_props: int = 0
 	for n: Dictionary in _nodes:
-		if not str(n["name"]).begins_with("YardProp"):
+		var nm: String = str(n["name"])
+		var in_kaue: bool = nm.begins_with("KaueProp")
+		if not nm.begins_with("YardProp") and not in_kaue:
 			continue
-		props += 1
 		var bx: Dictionary = _body_box(n)
-		assert_false(bx.is_empty(), "%s is a box collider" % n["name"])
+		assert_false(bx.is_empty(), "%s is a box collider" % nm)
 		if bx.is_empty():
 			continue
 		var lo: Vector3 = bx["lo"]
 		var hi: Vector3 = bx["hi"]
-		assert_gt(lo.z, 29.5, "%s stands along the south wall, outside the headframe loop (z <= 25.5)" % n["name"])
+		var inside: bool = kaue.encloses(Rect2(lo.x, lo.z, hi.x - lo.x, hi.z - lo.z))
+		for sp: Vector3 in spawns:
+			var qs: Vector2 = Vector2(clampf(sp.x, lo.x, hi.x), clampf(sp.z, lo.z, hi.z))
+			assert_gt(qs.distance_to(Vector2(sp.x, sp.z)), 1.5 if inside else 2.5, "%s keeps clear of the spawn at %s" % [nm, str(sp)])
+		if in_kaue:
+			kaue_props += 1
+			assert_true(inside, "%s stands inside the Kaue" % nm)
+			assert_gt(lo.z, 27.0, "%s is clear of the Kaue's doorways" % nm)
+			continue
+		props += 1
+		assert_gt(lo.z, 29.5, "%s stands along the south wall, outside the headframe loop (z <= 25.5)" % nm)
 		for kc: Array in keep_clear:
 			var p: Vector3 = kc[0]
 			var q: Vector2 = Vector2(clampf(p.x, lo.x, hi.x), clampf(p.z, lo.z, hi.z))
-			assert_gt(q.distance_to(Vector2(p.x, p.z)), float(kc[1]), "%s keeps %.1f m from %s" % [n["name"], float(kc[1]), str(p)])
+			assert_gt(q.distance_to(Vector2(p.x, p.z)), float(kc[1]), "%s keeps %.1f m from %s" % [nm, float(kc[1]), str(p)])
 	assert_gt(props, 5, "the yard's props are in the scene")
+	assert_eq(kaue_props, 2, "the Kaue's two benches are in the scene")
+	for sp2: Vector3 in spawns:
+		var ps: Dictionary = _find("PlayerSpawn%d" % (spawns.find(sp2) + 1))
+		assert_false(ps.is_empty(), "PlayerSpawn%d exists" % (spawns.find(sp2) + 1))
+		if not ps.is_empty():
+			var pp: Dictionary = ps["props"]
+			var at: Vector3 = (pp["transform"] as Transform3D).origin if pp.has("transform") else (pp.get("position", Vector3.ZERO) as Vector3)
+			assert_true(at.distance_to(sp2) < 0.01, "PlayerSpawn%d is in the Kaue (at %s)" % [spawns.find(sp2) + 1, str(at)])
 	var ammo: Dictionary = _find("AmmoBox_Yard")
 	assert_false(ammo.is_empty(), "the spawn yard has an ammo box")
 
