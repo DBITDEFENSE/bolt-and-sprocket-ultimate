@@ -136,6 +136,29 @@ static func run(tree: SceneTree, map: Node, player: Player, ops: Array) -> void:
 				await tree.process_frame
 			"wait":
 				await tree.create_timer(float(op[1])).timeout
+			"hud_off":
+				# T-221 b (the trailer set): the HUD, crosshair and viewmodel gone (the console's `hud off` path)
+				TrailerCommands.hud(tree, PackedStringArray(["off"]))
+				await tree.process_frame
+			"noclip":
+				# T-221 b: the camera may hang anywhere (under the belly, in line with the sun), never falls
+				if player != null:
+					player.noclip = true
+					player.collision_mask = 0
+			"pos":
+				# T-221 b: "pos:x,y,z,yaw,pitch": stand the camera now (before the ops that follow: a clip's action plays
+				# in front of it; the cam's own pos is applied only after every op)
+				if player != null and op.size() > 1:
+					var v: PackedStringArray = op[1].split(",")
+					if v.size() >= 3:
+						player.global_position = Vector3(float(v[0]), float(v[1]), float(v[2]))
+						player.velocity = Vector3.ZERO
+					if v.size() >= 4:
+						player.rotation.y = deg_to_rad(float(v[3]))
+					if v.size() >= 5:
+						player.set("_pitch", deg_to_rad(float(v[4])))
+			"timescale":
+				Engine.time_scale = clampf(float(op[1]) if op.size() > 1 else 1.0, 0.05, 4.0)
 			_:
 				print("[capture] unknown do verb '%s'" % op[0])
 
