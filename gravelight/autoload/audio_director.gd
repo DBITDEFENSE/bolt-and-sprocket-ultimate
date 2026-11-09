@@ -231,7 +231,27 @@ func _is_playing(node: Node) -> bool:
 	return false
 
 
+## A pooled player someone else freed (a caller must never free one: use make_loop_2d for a player of its own)
+## is replaced by a fresh one, so one mistake can't break every later sound that lands on its slot.
+func _heal_pools() -> void:
+	for i: int in _pool3d.size():
+		if not is_instance_valid(_pool3d[i]):
+			push_warning("AudioDirector: a pooled 3D player was freed by its caller; replaced")
+			var p: AudioStreamPlayer3D = AudioStreamPlayer3D.new()
+			p.bus = &"SFX"
+			add_child(p)
+			_pool3d[i] = p
+	for i: int in _pool2d.size():
+		if not is_instance_valid(_pool2d[i]):
+			push_warning("AudioDirector: a pooled 2D player was freed by its caller; replaced")
+			var p2: AudioStreamPlayer = AudioStreamPlayer.new()
+			p2.bus = &"SFX"
+			add_child(p2)
+			_pool2d[i] = p2
+
+
 func _claim(sound_name: String, e: Dictionary, three_d: bool) -> Node:
+	_heal_pools()
 	var vid: String = sound_name + ("|3d" if three_d else "|2d")
 	var active: Array = _voice_list(vid)
 	var limit: int = maxi(1, int(_opt(e, "max_voices", 6)))

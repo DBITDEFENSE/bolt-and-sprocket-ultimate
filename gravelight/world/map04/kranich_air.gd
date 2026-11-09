@@ -174,8 +174,7 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	for p: AudioStreamPlayer in [_wind, _engine]:
 		if p != null and is_instance_valid(p):
-			p.stop()
-			p.queue_free()
+			p.stop()   # the players are this node's children: they go with it
 	_wind = null
 	_engine = null
 
@@ -201,12 +200,16 @@ func _apply_dawn_override() -> void:
 		_moon.light_energy = float(get_meta("moon_e")) * lerpf(1.0, float(amb.get("dawn_energy_mult", 1.6)), dawn_override)
 
 
+## A looping bed this node owns (AudioDirector.make_loop_2d: a player of its own, a child of this node). Never a
+## player from AudioDirector's shared pool: freeing one of those left a dead entry in the pool, and every later
+## play_2d that reached it failed ("previously freed instance", the unit suite's audio failures).
 func _loop(key: String) -> AudioStreamPlayer:
 	if not AudioDirector.has_sound(key):
 		return null
-	var p: AudioStreamPlayer = AudioDirector.play_2d(key, -60.0, 0.0)
+	var p: AudioStreamPlayer = AudioDirector.make_loop_2d(key, self, -60.0)
 	if p != null:
 		p.volume_db = -60.0
+		p.play()
 	return p
 
 
