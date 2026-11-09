@@ -23,6 +23,10 @@ Close-up/frame-sequence example (12 captures per second):
 until their bespoke rigs have their own viewer; they are never silently shown as Gangers.
 Labels face the camera. Single-kit previews use a close camera; the original wide captures remain.
 
+Add `--horde --emerge` to keep the real ground-emerge state before the first chase instead of
+skipping directly to walking. This exercises deferred gait phase initialization. With captures,
+the horde shot is delayed to six seconds to include the initial emerges and early strides.
+
 Run `res://tools/zombie_ragdoll_check.tscn` headless to stress nine deaths against the six-ragdoll
 budget. It fails if a new death is denied, the oldest keeps simulating, frozen corpses consume
 the budget, or cleanup leaves a live registration. This checks lifecycle, not visual death quality.

@@ -2132,6 +2132,7 @@ var _loco_x: float = 0.0
 var _loco_turn: float = 0.0
 var _turn_rate: float = 0.0
 var _cycle: float = 0.0
+var _step_phase_valid: bool = false
 var _cycle_len: float = 1.0
 var _attack_clip: String = "swipe_l"
 var _tear_clip: String = "tear_rip"
@@ -2786,6 +2787,7 @@ func _tree_play(st: String, clip: String, time_scale: float) -> void:
 	_playback.travel(st)
 	_tree_state = st
 	_cycle = 0.0
+	_step_phase_valid = false
 
 
 func _tree_attack(clip: String) -> void:
@@ -3132,8 +3134,17 @@ func _tree_locomotion(force: bool = false) -> void:
 
 
 func _random_phase() -> void:
-	if _tree_state == "Locomotion" or _tree_state == "Crawl":
-		_tree.advance(randf() * _cycle_len)
+	# Queue the phase until the state machine has actually entered its gait. Ground
+	# spawns begin in Emerge, so advancing the tree here used to consume the random
+	# offset on the emerge clip and leave every first chase gait in sync.
+	if _tree == null or not bool(_anim["random_phase"]):
+		return
+	var phase: float = randf()
+	_cycle = phase
+	_tree.set("parameters/SM/Locomotion/TimeSeek/seek_request", phase * _cycle_len)
+	var crawl_node: AnimationNodeAnimation = _crawl_bs.get_blend_point_node(1) as AnimationNodeAnimation
+	_tree.set("parameters/SM/Crawl/TimeSeek/seek_request", phase * ZombieClips.length_of(String(crawl_node.animation)))
+	_step_phase_valid = false
 
 
 func _pick_attack() -> String:
@@ -3211,11 +3222,6 @@ func _animate(dt: float) -> void:
 		# the clip's root motion is in rig space: the height scale on the pivot stretches every stride by that much
 		var scale: float = maxf(spd, 0.15) / maxf(0.1, _loco_speed * _pivot.scale.y) if _loco_x > 0.01 else 1.0
 		_tree.set("parameters/SM/Locomotion/TimeScale/scale", scale)
-		if _loco_x > 0.5:
-			var before: float = _cycle
-			_cycle = fmod(_cycle + dt * scale / _cycle_len, 1.0)
-			if (before < 0.5 and _cycle >= 0.5) or _cycle < before:
-				_footstep(_cycle < before)
 	elif _tree_state == "Crawl":
 		var cx: float = clampf(spd / float(_cfg["crawler_speed"]), 0.0, 1.0)
 		_tree.set("parameters/SM/Crawl/Anim/blend_position", cx)
@@ -3225,6 +3231,16 @@ func _animate(dt: float) -> void:
 	if _flinch > 0.0:
 		_flinch = maxf(0.0, _flinch - dt)
 	_tree.advance(dt)
+	# Use the evaluated state's clock, including seeks, idle blends and resumes after
+	# attacks. A separate integrated clock drifts away from the feet on those paths.
+	if _tree_state == "Locomotion" and String(_playback.get_current_node()) == "Locomotion" and _loco_x > 0.5:
+		var phase: float = fposmod(_playback.get_current_play_position() / _cycle_len, 1.0)
+		if _step_phase_valid and ((_cycle < 0.5 and phase >= 0.5) or phase < _cycle):
+			_footstep(phase < _cycle)
+		_cycle = phase
+		_step_phase_valid = true
+	else:
+		_step_phase_valid = false
 	# root motion bookkeeping for the foot-slide check: the clip's stride distance against the body's travel
 	# over the same window, only while fully in the gait (the idle blend scales the root motion down)
 	var rm: Vector3 = _tree.get_root_motion_position()

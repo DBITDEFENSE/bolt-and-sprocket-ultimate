@@ -1,5 +1,20 @@
 # PROGRESS
 
+RESUME HERE: Codex gait-phase pass, codex/zombie-overhaul in .wt/zombie-overhaul.
+Fixed deferred random stride start after ground emerge via AnimationNodeTimeSeek; crawl seek uses
+its own clip duration. Rig-less bodies are guarded. Footsteps now sample the evaluated locomotion
+state clock, suppress the initial seek event, and realign after attacks. No animation poses added.
+Verified 39/39 zombie tests, 1,906 assertions, including new equal-clip/equal-scale simultaneous
+ground-spawn phase regression and footstep alignment before/after attack. Gallery --horde --emerge
+exercises the real spawn transition. See docs/ZOMBIE_OVERHAUL_PLAN.md for fresh soak results.
+NEXT: finish Stage 0 special-body coverage, pop detection, CPU profile and per-type scores;
+then licensed clip intake. Licensed mocap pack remains absent; full overhaul is incomplete.
+Fresh 60 s headless gallery: 83,520 pose samples, no sampled rest poses/missing clips, no exit
+leak errors. Sustained 24-active requirement FAILED (minimum active 2). NEXT FIRST: instrument
+studio reclamation/state histories and replace reclaimed actors through a director before using
+the gallery as a soak. Contact-speed p95 5.985 m/s; sliding remains unresolved. Report in
+docs/captures/after/phase/horde.json. First guarded run ended early and was excluded.
+
 RESUME HERE: 2026-11-08 Codex resume pass on codex/zombie-overhaul (.wt/zombie-overhaul).
 NOT all done. Gallery now has --kit/--clip/--kind/--frames, camera-facing labels and close-ups;
 soldier walk capture/sequence rendered and inspected. Gallery exit frees unattached weapon

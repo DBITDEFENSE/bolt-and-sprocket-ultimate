@@ -115,7 +115,33 @@ from source inspection would misrepresent evidence. No visual/runtime overhaul c
 - Stage 0 remains incomplete. Stage 2 ragdoll lifecycle defect fixed opportunistically after its
   baseline test failed; no claim of completed animation overhaul or licensed motion integration.
 
+## Gait phase pass
+
+Ground spawns previously entered Emerge before _random_phase, which only handled zombies already
+in Locomotion/Crawl. Random stride offsets are now queued with AnimationNodeTimeSeek until those
+states evaluate. Crawlers use their own chosen clip length. The random_phase config switch and
+rig-less bodies are respected. No new bone keys or animation sources introduced.
+
+Footstep events now follow the evaluated locomotion state's playhead. This avoids the separate
+integrated phase clock drifting during idle blends, initial seeks and attack-to-walk resumes.
+The first evaluation synchronizes the event cursor without firing a false step.
+
+Headless GUT: all 39 zombie tests across six files passed, 1,906 assertions. New regression uses
+eight same-frame ground spawns with equal walk clips and equal height. It verifies Emerge stays
+at its start, queued seeks are consumed on first locomotion, first phases spread over more than
+a quarter cycle, and the event phase matches evaluated playback before and after attacks.
+Unicode/NUL startup warnings persist. Full motion-quality acceptance and scored improvement
+remain unproven. Gallery --horde --emerge now preserves the actual emerge-to-chase transition.
+
+Fresh 60 s headless emerge/horde run: no missing clips, 83,520 pose samples, zero sampled rest
+poses, p95 frame interval 6.944 ms. FAILED sustained active-count requirement: minimum active
+was 2, so this is not a valid 24-active performance acceptance run. The studio has no director
+to replace reclaimed zombies. Investigate state histories/reclamation before using it as a soak.
+Contact-foot speed p95 5.985 m/s remains high; this phase fix does not solve foot-sliding.
+Full report: docs/captures/after/phase/horde.json. Normal cleanup emitted no resource leak errors.
+
 RESUME HERE: Open .wt/zombie-overhaul on codex/zombie-overhaul. Complete bespoke enemy coverage,
 pop detection and per-zombie CPU profiling; finish before scores. The gallery framing, sequences,
 shutdown leak and ragdoll-budget lifecycle are now handled. Next substantive animation work:
-licensed-source intake and first-locomotion random phase/event synchronization. Pack still absent.
+licensed-source intake. First-locomotion random phase/event synchronization now has a tested fix.
+Pack still absent.

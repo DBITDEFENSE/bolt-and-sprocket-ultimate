@@ -185,9 +185,12 @@ static func _state_tree(state: String) -> AnimationNodeBlendTree:
 			var defaults: Dictionary = {"Spawn": "idle", "Emerge": "emerge_standard", "Climb": "vault_a", "Barricade": "tear_rip", "React": "stagger", "Death": "death_back"}
 			anim = _anim_node(str(defaults[state]))
 	bt.add_node("Anim", anim, Vector2(0, 0))
+	var seek: AnimationNodeTimeSeek = AnimationNodeTimeSeek.new()
+	bt.add_node("TimeSeek", seek, Vector2(125, 0))
+	bt.connect_node("TimeSeek", 0, "Anim")
 	var ts: AnimationNodeTimeScale = AnimationNodeTimeScale.new()
 	bt.add_node("TimeScale", ts, Vector2(250, 0))
-	bt.connect_node("TimeScale", 0, "Anim")
+	bt.connect_node("TimeScale", 0, "TimeSeek")
 	bt.connect_node("output", 0, "TimeScale")
 	return bt
 

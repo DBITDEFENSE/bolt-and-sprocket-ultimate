@@ -29,6 +29,7 @@ var only_kind: String = "ganger"
 var frame_sequence: bool = false
 var sequence_next: float = 0.0
 var sequence_frame: int = 0
+var emerge_together: bool = false
 
 func _ready() -> void:
 	seed(74119)
@@ -46,6 +47,7 @@ func _ready() -> void:
 		elif arg.begins_with("--kit="): only_kit = arg.substr(6)
 		elif arg.begins_with("--kind="): only_kind = arg.substr(7)
 		elif arg == "--frames": frame_sequence = true
+		elif arg == "--emerge": emerge_together = true
 	if capture and DisplayServer.get_name() == "headless":
 		push_error("Screenshots require a rendered run; omit --headless.")
 		get_tree().quit(2)
@@ -90,7 +92,8 @@ func _ready() -> void:
 		var kit: String = str(kits[i % kits.size()])
 		var at: Vector3 = Vector3((i % 8 - 3.5) * 1.6, 0, 3 + (i / 8) * 3) if horde or only_kit.is_empty() else Vector3.ZERO
 		var z: Zombie = _place_new({"enemy_id": only_kind, "variant": kit, "tier": TIERS[i % TIERS.size()], "health": 1000}, at)
-		z.call("_enter", Zombie.State.CHASE)
+		if not emerge_together or not horde:
+			z.call("_enter", Zombie.State.CHASE)
 		if not horde:
 			z.set_physics_process(false)
 			z.rotation.y = 0
@@ -127,7 +130,7 @@ func _process(delta: float) -> void:
 		min_active = mini(min_active, active_count)
 		_label.text = "LIVE AI BASELINE | 24 zombies | %.1f / %.1f s" % [elapsed, seconds]
 		if elapsed > 2.0: frames.append(delta * 1000.0)
-		if capture and elapsed > 3.0 and captures == 0:
+		if capture and elapsed > (6.0 if emerge_together else 3.0) and captures == 0:
 			captures = 1
 			_save_frame("horde_24")
 		for z: Zombie in _new:
