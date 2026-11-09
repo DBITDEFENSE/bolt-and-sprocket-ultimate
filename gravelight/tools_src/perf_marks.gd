@@ -73,6 +73,8 @@ func _ready() -> void:
 		elif a == "--no-plane":   # T-220: the A/B of der Kranich's plane pass (KranichExterior / KranichAir never build)
 			KranichExterior.disabled = true
 			KranichAir.disabled = true
+			KranichSunset.disabled = true
+			KranichInterior.disabled = true
 		elif a.begins_with("--pos="):
 			for v: String in a.substr(6).split(","):
 				_pos.append(float(v))

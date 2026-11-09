@@ -36,6 +36,13 @@ uniform vec4 deck_dark : source_color = vec4(0.07, 0.085, 0.125, 1.0);
 uniform vec4 sea_far : source_color = vec4(0.025, 0.032, 0.05, 1.0);
 uniform float sun_k : hint_range(0.0, 1.0) = 0.0;
 uniform vec4 sun_color : source_color = vec4(1.0, 0.72, 0.45, 1.0);
+// T-221: the golden hour of the bomb run (KranichSunset): a strong gradient, orange at the horizon behind the wing,
+// a pink band over it, deep blue overhead and ahead; the sun's glow wide; the far deck's tops gold over blue shadow
+uniform float golden : hint_range(0.0, 1.0) = 0.0;
+uniform vec4 gold_horizon : source_color = vec4(1.0, 0.44, 0.12, 1.0);
+uniform vec4 gold_pink : source_color = vec4(0.62, 0.26, 0.34, 1.0);
+uniform vec4 gold_zenith : source_color = vec4(0.04, 0.07, 0.2, 1.0);
+uniform vec4 gold_ahead : source_color = vec4(0.22, 0.2, 0.38, 1.0);
 
 float hash12d(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -88,7 +95,9 @@ void sky() {
 		}
 		float cl = smoothstep(1.0 - deck_cover - 0.12, 1.0 - deck_cover + 0.12, n);
 		float lit = clamp(n * 1.4 - 0.25, 0.0, 1.0);
-		vec3 tops = mix(deck_dark.rgb, deck_lit.rgb, lit);
+		vec3 tops = mix(mix(deck_dark.rgb, vec3(0.05, 0.07, 0.19), golden), deck_lit.rgb, lit);
+		float aftg = clamp(-d.z * 0.5 + 0.5, 0.0, 1.0);
+		tops = mix(tops, tops * vec3(1.5, 0.95, 0.75) + vec3(0.35, 0.14, 0.06) * lit, golden * pow(aftg, 0.6));
 		float aftk = clamp(-d.z * 0.5 + 0.5, 0.0, 1.0);
 		tops += sunrise_color.rgb * sunrise * pow(aftk, 2.0) * 0.35 * lit;
 		tops += east_color.rgb * east_glow * pow(clamp(d.x * 0.5 + 0.5, 0.0, 1.0), 3.0) * 0.4;
@@ -96,9 +105,16 @@ void sky() {
 		vec3 dk = mix(below, tops, cl);
 		// the air between: the haze thickens to the horizon; steeply down it hands over to the ground plane's rim
 		float air = 1.0 - exp(-t / 16000.0);
-		dk = mix(dk, horizon_color.rgb * 0.9, air);
+		dk = mix(dk, mix(horizon_color.rgb * 0.9, mix(gold_ahead.rgb, gold_horizon.rgb * 0.8, pow(aftg, 2.0)), golden), air);
 		float band = smoothstep(-0.62, -0.36, h) * deck;
 		col = mix(col, dk, band);
+	}
+	if (golden > 0.0) {
+		float aft2 = clamp(-d.z * 0.5 + 0.5, 0.0, 1.0);
+		float up = clamp(h, 0.0, 1.0);
+		vec3 gsky = mix(mix(gold_ahead.rgb, gold_horizon.rgb, pow(aft2, 2.2)), gold_zenith.rgb, pow(up, 0.45));
+		gsky += gold_pink.rgb * exp(-abs(h - 0.14) * 7.0) * pow(aft2, 1.4) * 0.8;
+		col = mix(col, gsky, golden * (h >= 0.0 ? 0.92 : 0.35));
 	}
 	if (!AT_CUBEMAP_PASS) {
 		// stars: one candidate per cell of a cube-ish grid on the sphere, twinkling
@@ -111,7 +127,7 @@ void sky() {
 				float dist = length(g - c);
 				float tw = 0.75 + 0.25 * sin(TIME * (1.5 + rnd * 4.0) + rnd * 40.0);
 				float s = smoothstep(0.42, 0.0, dist) * tw * (0.3 + 0.7 * fract(rnd * 17.0));
-				col += vec3(0.85, 0.9, 1.0) * s * star_gain * smoothstep(-0.05, 0.12, h) * (1.0 - dawn) * (1.0 - sunrise * 0.85);
+				col += vec3(0.85, 0.9, 1.0) * s * star_gain * smoothstep(-0.05, 0.12, h) * (1.0 - dawn) * (1.0 - sunrise * 0.85) * (1.0 - golden);
 			}
 		}
 		if (LIGHT0_ENABLED) {
@@ -124,6 +140,7 @@ void sky() {
 			disc = smoothstep(moon_size * disc_s, moon_size * disc_s * 0.92, a);
 			col = mix(col, mix(moon_color.rgb * 1.6 * maria, sun_color.rgb * 2.6, sun_k), disc);
 			col += sun_color.rgb * sun_k * 0.35 * exp(-a * 3.5);
+			col += gold_horizon.rgb * golden * (1.2 * exp(-a * 10.0) + 0.12 * exp(-a * 2.5));
 			col += moon_color.rgb * 0.3 * exp(-a * 6.0) * (1.0 - dawn);
 		}
 	}
