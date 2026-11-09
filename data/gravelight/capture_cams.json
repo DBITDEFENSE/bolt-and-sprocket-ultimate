@@ -751,6 +751,66 @@
         {"name": "Cloudbank", "pos": [-80.0, 3.4, 21.5], "yaw": 175.0, "pitch": 2.0, "note": "a cloud bank streaming over the wing", "do": ["callv:KranichAir:cloud_bank_now:300.0,-80.0:4"]}
       ]
     },
+    "kranich_interior": {
+      "_doc": "T-221 (the owner: 'too many dark areas, the textures on some hallways are messed up'): every Act II zone and the hallways between them, first unpowered (the act's start), then after the aux bus; tools/look/luma_stats.py measures the frames (mean / 10th-percentile luminance).",
+      "map": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {"name": "A_bay_dark", "pos": [0.0, 0.0, 22.0], "yaw": 0.0, "pitch": -4.0, "note": "A: the bomb bay aft, unpowered", "do": ["call:FlightSky:calm:0.1"], "settle_s": 2.0},
+        {"name": "A_hatch_dark", "pos": [-6.0, 0.0, 13.0], "yaw": 70.0, "pitch": -2.0, "note": "A: the port inspection hatch, unpowered"},
+        {"name": "B_body_dark", "pos": [0.0, 0.0, 26.0], "yaw": 180.0, "pitch": -2.0, "note": "B: the centre body forward, unpowered"},
+        {"name": "CL_crawl_dark", "pos": [-11.0, 0.0, 37.0], "yaw": 90.0, "pitch": 0.0, "note": "C_L: the port crawlway along the spar (a hallway), unpowered"},
+        {"name": "CR_crawl_dark", "pos": [11.0, 0.0, 37.0], "yaw": -90.0, "pitch": 0.0, "note": "C_R: the starboard crawlway (a hallway), unpowered"},
+        {"name": "D_engine_dark", "pos": [-54.0, 0.0, 36.0], "yaw": 90.0, "pitch": 0.0, "note": "D: the engine room from its door, unpowered"},
+        {"name": "DW_walk_dark", "pos": [-50.0, 0.0, 54.0], "yaw": -90.0, "pitch": 0.0, "note": "D: the port walkway to the flight deck (a hallway), unpowered"},
+        {"name": "E_blister_dark", "pos": [54.0, 0.0, 36.0], "yaw": -60.0, "pitch": 0.0, "note": "E: the gun blisters from the door, unpowered"},
+        {"name": "EW_walk_dark", "pos": [50.0, 0.0, 54.0], "yaw": 90.0, "pitch": 0.0, "note": "E: the starboard walkway (a hallway), unpowered"},
+        {"name": "F_cockpit_dark", "pos": [-20.0, 0.0, 57.0], "yaw": -120.0, "pitch": 0.0, "note": "F: the flight deck from the port door, unpowered"},
+        {"name": "A_bay_lit", "pos": [0.0, 0.0, 22.0], "yaw": 0.0, "pitch": -4.0, "note": "A: the bomb bay aft, the aux bus on", "do": ["power"], "settle_s": 2.0},
+        {"name": "A_hatch_lit", "pos": [-6.0, 0.0, 13.0], "yaw": 70.0, "pitch": -2.0, "note": "A: the port inspection hatch, powered"},
+        {"name": "B_body_lit", "pos": [0.0, 0.0, 26.0], "yaw": 180.0, "pitch": -2.0, "note": "B: the centre body forward, powered"},
+        {"name": "CL_crawl_lit", "pos": [-11.0, 0.0, 37.0], "yaw": 90.0, "pitch": 0.0, "note": "C_L: the port crawlway, powered"},
+        {"name": "CR_crawl_lit", "pos": [11.0, 0.0, 37.0], "yaw": -90.0, "pitch": 0.0, "note": "C_R: the starboard crawlway, powered"},
+        {"name": "D_engine_lit", "pos": [-54.0, 0.0, 36.0], "yaw": 90.0, "pitch": 0.0, "note": "D: the engine room, powered"},
+        {"name": "DW_walk_lit", "pos": [-50.0, 0.0, 54.0], "yaw": -90.0, "pitch": 0.0, "note": "D: the port walkway, powered"},
+        {"name": "E_blister_lit", "pos": [54.0, 0.0, 36.0], "yaw": -60.0, "pitch": 0.0, "note": "E: the gun blisters, powered"},
+        {"name": "EW_walk_lit", "pos": [50.0, 0.0, 54.0], "yaw": 90.0, "pitch": 0.0, "note": "E: the starboard walkway, powered"},
+        {"name": "F_cockpit_lit", "pos": [-20.0, 0.0, 57.0], "yaw": -120.0, "pitch": 0.0, "note": "F: the flight deck, powered"}
+      ]
+    },
+    "kranich_sunset": {
+      "_doc": "T-221: the bomb run late in the act (the act's dawn held at the run's 0.68 with KranichAir.preview_dawn, the real run started by FlightController.start_bomb_run: rack 1 drops 3 s in), before / after the golden-hour pass. docs/captures/fernflug/lighting/.",
+      "map": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {"name": "Run_bay", "pos": [0.0, 0.0, 23.0], "yaw": 0.0, "pitch": -10.0, "note": "A: the bay as rack 1 drops", "do": ["power", "call:FlightSky:calm:0.1", "callv:KranichAir:preview_dawn:0.68:1", "call:FlightController:start_bomb_run:3.6"], "settle_s": 0.4},
+        {"name": "Run_wing_sun", "pos": [-75.0, 3.4, 21.0], "yaw": 20.0, "pitch": -2.0, "note": "the wing walk into the low sun behind the wing"},
+        {"name": "Run_tip_back", "pos": [-112.0, 3.4, 24.0], "yaw": -100.0, "pitch": -3.0, "note": "the whole wing from the tip in the run's light"},
+        {"name": "Run_down", "pos": [-100.0, 3.4, 20.3], "yaw": 10.0, "pitch": -55.0, "note": "down past the trailing edge to the cloud deck"},
+        {"name": "Run_cockpit", "pos": [0.0, 0.0, 71.5], "yaw": 180.0, "pitch": -4.0, "note": "F: out of the glass, away from the sun"}
+      ]
+    },
+    "trailer_kranich": {
+      "_doc": "T-221, the owner's trailer: dramatic framings of der Kranich at the golden hour (KranichSunset.golden_now holds it), the bomb run (the real one started for the bay shot, KranichSunset.drop_fx for the falling casings outside), the formation's bombers against the low sun. docs/captures/fernflug/lighting/trailer/.",
+      "map": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {"name": "T01_bay_drop", "pos": [0.0, 0.0, 23.0], "yaw": 0.0, "pitch": -8.0, "note": "the bay at the golden hour as rack 1 drops: the ramp's sun shaft, the hatch glowing, the motes", "do": ["power", "call:FlightSky:calm:0.1", "call:KranichSunset:golden_now:2", "call:FlightController:start_bomb_run:3.7"], "settle_s": 0.3},
+        {"name": "T02_bay_shafts", "pos": [2.5, 0.0, 9.0], "yaw": 160.0, "pitch": 10.0, "note": "forward up the bay through the god rays from the ramp", "settle_s": 1.5},
+        {"name": "T03_wing_into_sun", "pos": [-75.0, 3.4, 21.0], "yaw": 25.0, "pitch": 1.0, "note": "the wing walk into the low sun behind the wing"},
+        {"name": "T04_bomber_silhouette", "pos": [-75.0, 3.4, 21.0], "yaw": 3.0, "pitch": -7.0, "note": "the formation's bomber aft and below, against the sun"},
+        {"name": "T05_tip_wide", "pos": [-114.0, 3.4, 24.0], "yaw": -95.0, "pitch": 2.0, "note": "the whole flying wing from the tip, gold on the skin"},
+        {"name": "T06_casing_falls", "pos": [-49.0, 3.4, 21.0], "yaw": -50.0, "pitch": -32.0, "note": "a casing falling away under the hull into the lit cloud", "do": ["callv:KranichSunset:drop_fx:2:2.4"], "settle_s": 0.2},
+        {"name": "T07_casing_deep", "pos": [-49.0, 3.4, 21.0], "yaw": -40.0, "pitch": -45.0, "note": "the casing tumbling into the cloud deck, its vapour trail", "do": ["callv:KranichSunset:drop_fx:4:4.2"], "settle_s": 0.2},
+        {"name": "T08_violet_flash", "pos": [-100.0, 3.4, 20.3], "yaw": 25.0, "pitch": -38.0, "note": "the violet flash under the clouds where a live casing came down", "do": ["callv:KranichSunset:drop_fx:3:8.9"], "settle_s": 0.2},
+        {"name": "T09_blister_clouds", "pos": [74.0, 0.0, 26.3], "yaw": 15.0, "pitch": -28.0, "note": "the aft blister: down at the cloud deck lit orange over blue"},
+        {"name": "T10_cockpit_gold", "pos": [0.0, 0.0, 71.5], "yaw": 180.0, "pitch": -5.0, "note": "the flight deck: the cloud ahead lit by the sun behind"},
+        {"name": "T11_hatch_gold", "pos": [-40.0, 3.4, 43.5], "yaw": 150.0, "pitch": -8.0, "note": "the hatch landing: the gold on the skin, the walk lines"}
+      ]
+    },
     "u10_map04a": {
       "_doc": "UPDATE 10 Act I (DECISIONS T-155): the air raid's aftermath, the rivet line, the wind tunnel and its hatch, the train, the watch post and its view of the Kranich, the living world. Shot through tools/wsl_godot.sh only.",
       "map": "res://gravelight/maps/map04_fernflug/map04a.tscn",

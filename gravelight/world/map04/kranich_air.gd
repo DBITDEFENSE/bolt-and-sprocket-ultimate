@@ -141,6 +141,12 @@ func _ready() -> void:
 		set_process(false)
 		return
 	process_priority = 50   # after MapAmbience (flight_sun) so preview_dawn holds
+	# T-221: the golden hour / the bomb run's light and drop (KranichSunset) and the readable interior (KranichInterior)
+	for sc: Array in [["KranichSunset", "res://gravelight/world/map04/kranich_sunset.gd"], ["KranichInterior", "res://gravelight/world/map04/kranich_interior.gd"]]:
+		var n: Node3D = Node3D.new()
+		n.set_script(load(str(sc[1])))
+		n.name = str(sc[0])
+		add_child(n)
 	_rng.randomize()
 	var d: Dictionary = GLData.load_json(DATA)
 	cfg = d.get("air", {})
