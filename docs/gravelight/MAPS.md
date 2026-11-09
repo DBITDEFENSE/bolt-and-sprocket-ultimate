@@ -140,7 +140,9 @@ were 4.2) so the gallery clears them; the exfil beacon still stands under it at 
 
 **The great doors and the carters' road (campaign exfil, T-033):** the doors (x 16–20 in the stable's south wall, 4 × 3 m since T-084) are dressing in a drawn opening that is filled with an invisible collider, so the navmesh and collision stay a solid wall; the exfil beacon stands just inside at (18, 0, 32) and the Map 0 → Map 1 cutscene tweens the `GreatDoors` group so they fall outward. Behind them, a trodden track south through the yard's gate (gateposts, a lantern, a signpost "Kaltenbrunn 9 km / Wilcza Góra 6 km / Gasthaus zum Kreuzweg"), bending south-east past dead trees and drifts toward low snowy rises on the horizon. Since T-080 the track up to the south edge (z 64) is part of the Grounds and the gate is a bought door (Door_Gate, 750); the great doors themselves stay barred for the cutscene.
 
-Window count: Taproom 4 (N×2, W, E), Stable 4 (N×2, S, the loft door over the yard), Yard 4 (fence gaps W, E, S×2), Old Cellar 2 (light wells). There are 16 windows in total, counting the 2 upstairs.
+**The bar (T-224, the owner: "the bar needs to be bigger with more space"):** the counter is a 9.5 m L now (it was 9): the front x 3.9–8.4 at z 7.5–8.3, the side x 7.6–8.4 from z 2.4 to 7.5, the back-bar (a cupboard base, three bays of shelving against a mirror, a carved cornice with two brass lamps, the wireless on its top board) on x 3.5–3.9. The whole block stands 1.1 m further west and 0.6 m further north than before, so the service walk behind it is 3.7 × 5.1 m (was 3.2 × 5) with the tapped cask on its cradle in the north corner, the floor east of the counter gained 0.6 m to the taproom loop (its line in `routes_map00.json` is unchanged), and the walkway to the Old Cellar door (T-120) grew to 1.55 m (z 8.3–9.85). On the service side: the lift-up flap at the north end, two beer taps over a zinc drip tray, the brass till and the bell; eight stools, a brass foot rail, a chalked price board on the north wall, steins hanging from a rack over the side counter. Trudi starts behind it and Sobotta at its end as before (`map00_opening.json`). The taproom's ammo box stands against the back-bar at z 6.6.
+
+Window count: Taproom 4 (N×2, W, E), Stable 4 (N×2, S, the loft door over the yard), Yard 4 (fence gaps W, E, S×2), Old Cellar 2 (light wells). There are 18 windows in total, counting the 2 upstairs and the attic's 2 gable windows (T-224).
 
 ## The Carters' Yard (YARD): level 0, outdoors (T-036 follow-up, "let them go outside")
 
@@ -180,6 +182,20 @@ The stairwell is the taproom's south-west corner, **6 × 6 m** (x 0–6, z 10–
 ```
 
 Hayloft (Stable upper, 182 m² since T-084: the west block and the gallery over the great doors, see the ground floor): the east-wall stair up, the bale drop down, the loft door's window behind you. It's a **position**, not a fortress: zombies climb the stair two abreast and come in at the loft door (see Choke points).
+
+## The attic (Dachboden): the third storey (T-224)
+
+```
+   ####W(hoist)#####chimney###############W(hoist)####      ATTIC  24 x 10 m over the guest rooms, floor y 7.1,
+   # ledge  .  trunks  apples ┃┃  trunk  wardrobe  $ BAR  ledge#   2.8 m to the boarded roof; zone UPSTAIRS (no door)
+   W  .  .  .  .  .  .  .  .  .  .  .  .  .  dummy  .  .  W      W gable windows (W_ATT_W / W_ATT_E, z 4.5) with hoist
+   #  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  # frag  ledges outside: the zombies stand on the ledges and vault in
+   #  xmas  horse cradle skis ┌─ well ─┐ .  .  bedsteads   #      $ BAR 1800 (N wall, x 18); frag 250 (E gable, z 7.8)
+   ######################vvvv###########################      vvvv the flight up from the upstairs hall (x 6.4-12.4 along
+                                                                the hall's south wall; the well x 7.3-12.4, railed N and W)
+```
+
+The owner: "add a third story to the main building". The attic is the roof space over the guest rooms (x 0–24, z 0–10), reached by a **straight flight along the upstairs hall's south wall** (foot at x 6.4, two steps east of where the main stair lands; head at x 12.4; 1.75 m wide, 15 treads of 0.4 m, 28.8°), which lands through a well in the attic floor railed on its north and west sides (three collider bars, balusters dressing, hidden panels for the bake only, like the hall's). The hall below keeps 1.95 m beside the flight; its lantern and first bulb moved to z 7. **Feeds:** the stair and the two gable windows at z 4.5, each over a hoist ledge outside the gable (navmesh islands, like the porch roofs: `smoke_map00` checks both ways up and that neither ledge connects). So the attic is a strong holdout with three ways in, not a free camp, and Map 0's first real holdout room (THE BAR row 10). **Buys:** the BAR (1800) chalked on the north wall east of the chimney breast and the Mk 2 frag box (250) on the east gable, both "off GRAVELIGHT ONE, hauled up through the hoist window" (`machine_lore.json` chalk lines); Map 0 had no grenade buy before. **Dressing** (`_dress_attic`): the roof's tie beams, purlins and rafters' feet under the boards, the chimney breast with the cousins' three chalk girls and the cat's basket, the husband's 1916 war trunk with his helmet, the apple racks and onion strings under the north eaves, a washing line of sheets, the rocking horse, the cradle, skis and the sledge, the Christmas boxes with their straw stars, the iron bedsteads, the dressmaker's dummy, pictures turned to the wall, the ladder to the roof hatch, the hoist beams with their pulleys and ropes down to the ledges, cobwebs, a leak. Lit by two lanterns, a sconce at the stair head and two bulbs that come on with the cellar lever (`cousins.json` guts them with the upstairs). Outside, the gable roof sits 3.1 m higher, the chimney stack with it, the half-timbering runs up the north face and the gable ends are boarded. Minimap floor "Attic" (`bake_config.json`).
 
 ## The Grounds (GROUNDS): level 0, outdoors (DECISIONS T-080)
 The user: "the outside area on the first map needs some work, can you make it bigger and make it so you can go around the whole building". All of it is `build_grounds` / `_dress_grounds` / `build_grounds_gameplay` in gen_map00.gd (the `OUT_*` tables).
@@ -467,6 +483,8 @@ Door cost ladder (economy.tres): 750 → 1000 → 1250 → 1500 → 2000. The **
 - **Training loop 1: Headframe Loop.** Circle the tower base (perimeter ~40 m) with the gatehouse and coal shed as outer walls that funnel the horde. A wide lane (6–8 m) on all four sides. It works because the tower blocks line of sight in a single solid block, and the wide lanes let a train trail behind you without cutting a corner.
 - **Story:** the mine's surface works. Miners rode the headframe cage down in shifts. The gatehouse was the SS guard post that logged forced laborers in and never logged them out. The coal shed fed the boilers before the Generator Hall was built.
 
+**The start (T-225, the owner: "rework the starting area on map 2"):** the squad starts inside the **WASCHKAUE**, the miners' changing house built against the yard's south wall (x 4–16, z 26–32; brick, a flat roof at 3.4 m under the wall's coping; `gen_map01 KAUE_*`), open to the yard through two 4.4 m doorways either side of a pier. The four spawns stand in it (x 7 and 13, z 28.3 and 29.7) facing north out of the doorways at the headframe: a roofed, lantern-lit room to arrive in instead of bare snow, with the yard's four windows out of sight until you step out. Inside: the benches along the west and east walls (KaueProp* colliders), the lockers, the stove with its flue through the roof (its firelight is the spawn's light before the power), the tag board and the lamp rack on the back wall (T-123's, moved in), the clothes baskets on their chains under the roof (the high ones hauled up are the men still below), the wash trough and the shift board on the pier, two hurricane lanterns and two enamel pendants that come on with the yard. Outside: the squad's sled with its kit from the inn against the wall east of the Kaue, their trail trodden from the gate down the gatehouse lane to the west doorway, two goosenecks on the Kaue's front. The headframe loop's south lane (z 20–26) is untouched; the lane west of the Kaue (x 0–4) keeps the ground spawn at (3, 29) and the way to the Administration door; Pylon A's 8 m ring reaches the Kaue's north-east corner (a wall at your back during the holdout). `test_map01_edges` holds the T-123 prop rules outside the Kaue and the Kaue's own inside it.
+
 ## B. Rail Yard: level 0
 
 **Size:** 48 × 20 m. Two parallel tracks and a dead-end siding. A boxcar (12 × 3 m) and a locomotive (14 × 3 m, cold boiler).
@@ -644,6 +662,8 @@ D  .  .  .  .  .  .  Q(part:frame)  .  W     C* crate spot (mess hall serving li
 - **Entrances:** 3 ramps (from F, G, H), all sealed by blast doors until **all 3 pylons are attuned**.
 - **Spawns:** 3 ground emerge points (rim), plus fog portals on Heartstorm.
 - **Story:** the reason the facility exists. The strike site. The cage was built around the crystal, not the other way around. The Ledger sits in the ante-room because the resonance readings had to be taken within 30 m.
+- **Skyhook Sekt (T-226, the owner: "the pack a punch area in map 2 needs work, more details and a perk machine down there"):** the ELEVATION cabinet (Werk Thalbach's second unordered consignment, `machine_lore.json`) stands under the north wall between the F and G ramp doors (34.5, −18, 101.6), a junction box over it wired into the conduit that runs along the north wall and down the east wall to the Crucible's plate. Every perk machine on the map has its footprint baked into the navmesh now (`build_perk_blocks`, as Map 0 since T-027).
+- **The Crucible's working detail (T-226, `_dress_core_installers`):** the installers' corner on the east wall south of the Crucible's setting (the bench with its vice and gauge, the tool board, crates of retained items "R-E 7", a hose coil; CoreProp* colliders), oil drums in the north-east corner, the cable drum by the G ramp door, four brass gauge stands on the pit rim cabled up to the cage (the resonance instruments), caged lamps on the four pillars and over the cabinet (power), a red emergency lamp at each of the four doors (always on), a jib crane on the east wall with its chain and hook over the Crucible's apron, salt crust and puddles at the wall feet, and luminous-paint guide lines on the floor from every door round the pit to the Crucible.
 
 ## Map 1 extra people (T-143, UPDATE 09 section 4)
 
@@ -670,7 +690,7 @@ Three more people on Kaltenbrunn plus the quartermaster's trade card (people_ext
 
 | Zone | Wall-buys | Perks | Trap | Quest |
 |---|---|---|---|---|
-| A_MINEHEAD | Kar98k 200, M1 Carbine 600 | — | — | Pylon 1 |
+| A_MINEHEAD | Kar98k 200, M1 Carbine 600 | — | — | Pylon 1 (the squad starts in the Waschkaue, T-225) |
 | B_RAILYARD | MP40 1000, Frag 250 | — | Runaway Ore Cart | Part: Bell |
 | C_ADMIN | Gewehr 43 900 | Second Wind | — | Switchboard, Fasbender's radio room |
 | D_BARRACKS | Trench Gun 1500 | Ironhide | — | Part: Frame |
@@ -678,7 +698,7 @@ Three more people on Kaltenbrunn plus the quartermaster's trade card (people_ext
 | F_CHAPEL | BAR 1800 | Twin Barrel, Marathon | Chandelier Drop | Pylon 2, THE BELL, altar, Part: Crank |
 | G_GENERATOR | STG-44 1200 | Trigger Tonic, **Overclock Cordial** (north wall, in the switchgear gap at x 60; T-034) | Live Wire Fence | Hauptschalter, Totenglocke workbench |
 | H_LAB | — | Hawkeye, Packmule, Blastproof | — | Pylon 3, nursery, Intake (tag) |
-| I_CORE | — | — | — | Heart, Crucible, Ledger |
+| I_CORE | — | **Skyhook Sekt** (north wall, between the ramp doors; T-226) | — | Heart, Crucible, Ledger |
 
 The Sharpened E-Tool (3000) wall-buy is in **G_GENERATOR**, on the tool rack by the workbench (a decision: logged in DECISIONS.md).
 

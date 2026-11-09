@@ -2,6 +2,17 @@
 
 Short, phone-readable. Nothing here blocks the build.
 
+## MAPS 1-2 PRODUCTION PASS (2026-11-09): look before merging. Nothing blocks the build.
+- [ ] **Eyeball the four new areas** (I had no renderer: everything was checked by geometry, navmesh and smokes only).
+  `DevLauncher.bat` into Map 0 / Map 1, or capture them: `tools_src/capture.gd --set=u05 --only=attic_stairhead,attic_east,bar_counter,bar_service`
+  and `--set=u10_map01 --only=A_kaue_inside,A_kaue_front,I_skyhook,I_crucible_corner`. What to judge: the attic's
+  scale and clutter, the bar's proportions (is it "bigger" enough?), the Kaue's baskets and light before the power, the
+  Core corner's density. Tell me what to push further.
+- [ ] **Merge `claude/maps-1-2-production` to master** when happy (it carries the Fernflug plane pass; the full unit
+  suite passed on this branch after two test updates). `git checkout master && git merge claude/maps-1-2-production && git push`.
+- [ ] **Perf glance on your GPU:** the attic adds ~60 colliders and ~600 dressing primitives to the Inn, the Kaue and the
+  Core about 300 to Kaltenbrunn. `tools/perf_census.sh` or just the FPS counter in the taproom and the Kaue.
+
 ## UPDATE 12 (2026-11-08): only you can do these. Nothing blocks the game: each has a stand-in.
 - [ ] **The real C-47 for GRAVELIGHT ONE:** on Sketchfab, download "C47" by manilov.ap (CC-BY 4.0), https://sketchfab.com/3d-models/c47-c4fb0f24d55f4866a9669aa952dceaf3 , as **glTF Binary (.glb)**. Save it as `assets/user_supplied/u12/c47/c47-manilov-ap/model.glb` with a `SOURCE.txt` holding that link. Optional: "Douglas C-47B Dakota IV KN645" by mgg8 (CC0), https://sketchfab.com/3d-models/35da2958566f421593bcc2dac9c3b762 , into `assets/user_supplied/u12/c47/c47-dakota-kn645-mgg8/` the same way. Then run `sh tools/c47/build.sh`. It builds the crashed and intact planes and adds the artist to the credits. Until then the game uses our own C-47 built from the real dimensions. After the swap, check the model's own markings (it may carry USAAF stars or a real serial).
 - [ ] **Higgsfield commercial terms:** check that your Higgsfield plan allows commercial use of the clips. Write the plan and the date you checked into each `assets/user_supplied/cutscenes/<scene>/LICENSE.txt`, and the model and dates into each `SOURCE.txt`. Until then, treat the clips as private and development use only.
