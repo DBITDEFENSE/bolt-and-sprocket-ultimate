@@ -7,6 +7,9 @@
 			"bones": 19,
 			"clip": "mco_walk",
 			"duration": 4.5,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 9.06249648135343,
+			"sampled_frames_60hz": 270,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -38,6 +41,9 @@
 			"bones": 19,
 			"clip": "mco_chase",
 			"duration": 2.63333344459534,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 11.0502744826712,
+			"sampled_frames_60hz": 159,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -69,6 +75,9 @@
 			"bones": 19,
 			"clip": "mco_fast_chase",
 			"duration": 1.89999997615814,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 22.2126579828317,
+			"sampled_frames_60hz": 114,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -100,6 +109,9 @@
 			"bones": 19,
 			"clip": "mco_crawl",
 			"duration": 9.03333377838135,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 25.2182878497377,
+			"sampled_frames_60hz": 543,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -131,6 +143,9 @@
 			"bones": 19,
 			"clip": "mco_idle",
 			"duration": 12.5,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 4.64291756473819,
+			"sampled_frames_60hz": 750,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -162,6 +177,9 @@
 			"bones": 19,
 			"clip": "mco_idle_2",
 			"duration": 13.6666669845581,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 19.2194539375732,
+			"sampled_frames_60hz": 821,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -193,6 +211,9 @@
 			"bones": 19,
 			"clip": "mco_reach",
 			"duration": 5.86666679382324,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 15.5837681480376,
+			"sampled_frames_60hz": 353,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -224,6 +245,9 @@
 			"bones": 19,
 			"clip": "mco_attack_loop",
 			"duration": 6.40000009536743,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 8.13672837238167,
+			"sampled_frames_60hz": 385,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -255,6 +279,9 @@
 			"bones": 19,
 			"clip": "mco_attack_arms",
 			"duration": 1.70000004768372,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 24.9109105540669,
+			"sampled_frames_60hz": 103,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -286,6 +313,9 @@
 			"bones": 19,
 			"clip": "mco_fast_attack",
 			"duration": 2.20000004768372,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 26.2715781518345,
+			"sampled_frames_60hz": 133,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -317,6 +347,9 @@
 			"bones": 19,
 			"clip": "mco_fast_attack_idle",
 			"duration": 1.89999997615814,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 3.39072852547259,
+			"sampled_frames_60hz": 114,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -348,6 +381,9 @@
 			"bones": 19,
 			"clip": "mco_death_back",
 			"duration": 2.76666665077209,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 17.9036316543486,
+			"sampled_frames_60hz": 166,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -379,6 +415,9 @@
 			"bones": 19,
 			"clip": "mco_death_hit_back",
 			"duration": 1.70000004768372,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 28.2568699642944,
+			"sampled_frames_60hz": 103,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -410,6 +449,9 @@
 			"bones": 19,
 			"clip": "mco_turn_l_45",
 			"duration": 1.26666665077209,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 6.27747916331792,
+			"sampled_frames_60hz": 76,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -441,6 +483,9 @@
 			"bones": 19,
 			"clip": "mco_turn_r_45",
 			"duration": 1.26666665077209,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 6.1165116682614,
+			"sampled_frames_60hz": 76,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -472,6 +517,9 @@
 			"bones": 19,
 			"clip": "mco_turn_l_90",
 			"duration": 5.40000009536743,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 8.30269428525017,
+			"sampled_frames_60hz": 325,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -503,6 +551,9 @@
 			"bones": 19,
 			"clip": "mco_turn_r_90",
 			"duration": 5.13333320617676,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 8.29938249727636,
+			"sampled_frames_60hz": 308,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -534,6 +585,9 @@
 			"bones": 19,
 			"clip": "mco_walk_knockback",
 			"duration": 5.5,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 11.4718465648491,
+			"sampled_frames_60hz": 330,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -565,6 +619,9 @@
 			"bones": 19,
 			"clip": "mco_chase_knockback",
 			"duration": 4.93333339691162,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 25.6702944010835,
+			"sampled_frames_60hz": 297,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -596,6 +653,9 @@
 			"bones": 19,
 			"clip": "mco_stand_walk",
 			"duration": 1.83333337306976,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 4.40406627634967,
+			"sampled_frames_60hz": 111,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -627,6 +687,9 @@
 			"bones": 19,
 			"clip": "mco_stand_chase",
 			"duration": 1.03333330154419,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 9.88266303556763,
+			"sampled_frames_60hz": 62,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -658,6 +721,9 @@
 			"bones": 19,
 			"clip": "mco_stand_attack",
 			"duration": 4.43333339691162,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 10.268625072734,
+			"sampled_frames_60hz": 267,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -689,6 +755,9 @@
 			"bones": 19,
 			"clip": "mco_stand_crawl",
 			"duration": 4.63333320617676,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 18.2536344530822,
+			"sampled_frames_60hz": 278,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -720,6 +789,9 @@
 			"bones": 19,
 			"clip": "mco_on_fire",
 			"duration": 4.13333320617676,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 19.3529619377322,
+			"sampled_frames_60hz": 248,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -751,6 +823,9 @@
 			"bones": 19,
 			"clip": "mco_idle_to_stand",
 			"duration": 1.53333330154419,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 2.38999140639712,
+			"sampled_frames_60hz": 92,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",
@@ -782,6 +857,9 @@
 			"bones": 19,
 			"clip": "mco_stand_to_idle",
 			"duration": 1.53333330154419,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 1.12813209992725,
+			"sampled_frames_60hz": 92,
 			"tracks": [
 				"ZombieMocap/Skeleton3D:Root",
 				"ZombieMocap/Skeleton3D:Root",

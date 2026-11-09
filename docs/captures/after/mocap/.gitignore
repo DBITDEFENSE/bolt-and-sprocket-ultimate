@@ -1,0 +1,8 @@
+# Iteration evidence stays local. Final acceptance reports are committed.
+native_fast/
+native_fast.mp4
+*_sheet.jpg
+candidate_*/
+contact_probe/
+fixed_contact/
+locked_contact*/

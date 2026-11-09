@@ -1,5 +1,26 @@
 # PROGRESS
 
+RESUME HERE: 2026-11-09 Codex verified delivery checkpoint. Worktree .wt/zombie-overhaul,
+branch codex/zombie-overhaul. Pipeline commit 4177e459; runtime locomotion eabd2799. Current
+gameplay speeds/jitter preserved. The supplied Starter pack is already copied locally and built;
+never ask Devin to download it again. Source FBXs and converted GLBs/manifest are ignored licensed
+files; rebuild with tools/zombie_mocap_build.ps1. Before/after videos for all six tiers are in
+docs/captures/after/mocap_compare (left legacy/right current); run/sprint were refreshed after
+the lean-direction fix. Final reports: docs/captures/after/mocap/acceptance_{motion,rendered,headless}.
+Motion: 24 active / 60 s, near-player modifiers, drift p95 0.01321 m/s, root mismatch 2.38% PASS.
+Real-time rendered/headless frame p95 4.167 / 6.944 ms; callback CPU 0.149 / 0.152 ms per actor
+per frame on this PC. Both kept 24 active; no missing clips or sampled rest poses. 42 zombie tests
+/ 2,550 asserts, 858-script scan, 26 imported clips, clean Map 2 animation smoke and ragdoll cap
+9 admitted / peak 6 verified. Unicode/NUL startup warnings remain; no final script/leak errors.
+Upright locomotion review 2 -> 3/5; model 2 -> 2; appearance variety 3 -> 3. Full premium target
+NOT MET. Stage 1 done; Stage 2 locomotion slice done; remaining states/Stage 3 art and full Stage 4
+special-body/pop/stair/per-type review unfinished. No merge, push or main build replacement.
+NEXT: on this branch, review and trim the supplied attack loops and two deaths; integrate through
+data while preserving hit timings, network death indices and ragdoll handoff. Then missing source
+performances and artist-authored soldier/PBR/LOD sample per shopping list. See the plan's TOP
+2026-11-09 delivery section; older absence claims below are dated history, not current status.
+
+
 RESUME HERE: 2026-11-09 Codex Stage 2 locomotion checkpoint, codex/zombie-overhaul,
 .wt/zombie-overhaul ONLY. Licensed motion is NOW ACTIVE: mco_chase for shamble/walk,
 mco_fast_chase for jog/run/sprint, two mocap idles. enemies.json speeds and existing jitter

@@ -3,6 +3,94 @@
 Base: master e96a0188; branch codex/zombie-overhaul in .wt/zombie-overhaul.
 The owner approved master because main does not exist. No new animation poses or assets authored.
 
+## 2026-11-09 delivery checkpoint — licensed locomotion active, full overhaul incomplete
+
+`4177e459` adds the repeatable licensed source pipeline. `eabd2799` enables upright mocap and
+contact cleanup. Work remains isolated in `.wt/zombie-overhaul`; main/builds were not replaced.
+**All existing gameplay tier speeds and speed jitter are preserved.** No gameplay hit timings,
+navigation rules or hitbox sizes changed.
+
+| Runtime tier/state | Current recording | Status |
+|---|---|---|
+| Shamble 1.3 m/s / walk 2.0 m/s | `mco_chase` | Active; source cadence retimed to actual navigation speed and body height |
+| Jog 3.4 / run 4.8 / sprint 5.6 m/s | `mco_fast_chase` | Active; random phase, contact-aligned footsteps, upper-body turn lean |
+| Upright idle | `mco_idle`, `mco_idle_2` | Active; selected per activation |
+| Crawl 0.8 m/s | Existing crawl clips | Unchanged; supplied crawl's 0.085 m/s stride would need about 9x retiming |
+| Attacks, reacts, deaths, interactions | Existing clips | Source alternatives previewable; event trims/root-yaw/ragdoll handoff review still required |
+
+There are **two distinct active recorded gaits**, not five new performances or the full per-tier
+variant count. The supplied slow walk remains preview-only. Starter supplies two deaths, not eight.
+All 26 original recordings are available in the gallery with their `mco_` names and provenance.
+Original model meshes/materials are unchanged; they do not meet the requested premium art bar.
+
+Posture blends initially reintroduced foot drift. The runtime now pins source-annotated toe
+contacts after the additive layer using a bounded analytic two-bone correction. Release blends
+back into swing; transitions, shoves/teleports and pooled reuse clear the anchors. Precision in
+the existing IK arc solve was tightened to avoid discarding small corrective rotations. Footsteps
+use each recording's contact onsets, including multi-stride loops, instead of two equal phases.
+
+### Executed verification
+
+| Check | Result / scope |
+|---|---|
+| Blender 5.1.2 headless conversion | 26/26 FBXs converted; finite poses, loop seam <0.002 rad, source hashes retained |
+| Godot imported rig/animation evaluation | 26/26, identical 19-bone rests; 60 Hz pose samples finite, zero identity poses; largest adjacent bone step 28.26 degrees |
+| Zombie GUT regressions | 42/42 tests, 2,550 assertions; includes all five preserved speed tiers, source footsteps, contact IK with additive limp and pool reset |
+| Script scan | 858 scripts, zero failures |
+| License tests / asset manifest | 4/4 tests, 367 assertions; manifest current (108 folders) |
+| Near-player 24-active motion acceptance, 60 seconds, fixed 60 Hz | PASS: toe drift p95 **0.01321 m/s** against 0.10 limit, 51,058 source-contact samples; root/body mismatch p95 **2.38%** against 5% limit |
+| Near-player 24-active rendered real-time soak, 60 seconds | PASS: frame interval p95 **4.167 ms**, callback CPU p95 **0.149 ms/actor/frame** |
+| Near-player 24-active headless real-time soak, 60 seconds | PASS: frame interval p95 **6.944 ms**, callback CPU p95 **0.152 ms/actor/frame** |
+| Population / missing clips / sampled rest poses | All three 60-second runs: minimum 24 active, no losses, zero missing clips/rest samples; 83,520 pose samples each |
+| Actual Map 2 integration smoke | PASS: nine sampled walkers within 2.6% median root/body speed error in the first run; climb links, IK/look-at gates, sever caps/Gore Off, knockdown/get-up, deaths, capped ragdolls and corpse return checked |
+| Ragdoll saturation regression | PASS: 9 admitted, peak 6; frozen/freed slots release their budget |
+
+Hardware: Ryzen 7 7800X3D / RTX 5090. Callback timing wraps the zombie's synchronous process and
+physics callbacks; it excludes deferred engine work/GPU cost and other map systems. Full-rate
+animation and nearby modifiers were enabled. These are local studio measurements, **not** a
+mid-range-machine or full-map GPU performance certification. Fixed-step captures measure motion,
+not performance. Old low-foot/low-vertical-speed heuristics remain in reports for comparison and
+are not the source-contact acceptance metric. Phase-bin peaks include the emerge transition;
+the equal-clip simultaneous-emerge unit regression is the direct synchronization check.
+
+The map smoke previously quit with its map and cached weapon/arm template Nodes alive. Its
+finish coroutine now runs once, frees the map, and releases those tool-owned caches. Final rerun:
+RESULT PASS, exit 0, zero SCRIPT ERROR/ERROR/leak warnings. Existing Unicode/NUL startup warnings
+remain. Earlier validation-only failures (checking consumed engine CLI flags, ffmpeg's missing
+font configuration, preview's first unevaluated frame) were corrected and rerun. A full semantic
+T-pose/pop detector and every special body's state coverage remain open; identity tests alone
+do not certify them.
+
+### What to review / scores
+
+Open `docs/captures/after/mocap_compare/walk_comparison.mp4` and `sprint_comparison.mp4`.
+Left is legacy, right is current; same camera/seed/kit/speed. Six tier comparisons and frame
+sheets are included. The crawl comparison documents that it is unchanged. Gallery scene:
+`res://tools/zombie_gallery.tscn`; use the commands in `docs/captures/after/mocap/README.md`.
+
+Review scale remains 1 placeholder, 2 visibly unfinished, 3 competent motion, 4 premium target,
+5 exceptional. **Ganger/soldier upright locomotion: 2 -> 3; appearance variety: 3 -> 3;
+model quality: 2 -> 2.** Crawl is unchanged. Reaction and death visual scores are not yet assigned;
+their gameplay regressions pass but this pass does not add licensed reactions/deaths. Other enemy
+types share the rig but have not received comparable per-type close-ups; they remain unscored.
+Do not copy the soldier rating to Foreman/Screamer or claim the full requested scorecard complete.
+
+### Remaining stages / RESUME HERE
+
+Stage 1 is runnable and verified. Stage 2 upright locomotion is delivered; remaining Stage 2
+state replacements and most Stage 3 art remain open. Stage 4 now proves the tested motion slice,
+not the entire requested overhaul. Next: review/trim the supplied attack loops and two deaths,
+preserve attack hit events/network death indices, validate their transitions and ragdoll key-pose
+handoff; then implement missing recordings as they arrive. Add special-body captures and real
+stairs/rubble tests. Keep all work on this branch and leave main untouched.
+
+ASSETS STILL NEEDED: more distinct compatible-speed gaits (including crawl), missing barricade
+tear/vault and climb/emerge performances, directional reactions/knockdown-getup pairs, crawler
+bite/armless attacks, and at least six more death performances. Review supplied attack loops
+before buying attack gap fillers. Model work needs an original artist-authored soldier head/body
+and distressed WW2 clothing sample with albedo/normal/roughness, deformation weights and LOD0-2;
+fictional markings only. The supplied Starter pack is already received; do not buy it again.
+
 ## 2026-11-09 supplied mocap / Stage 1 checkpoint (supersedes absence below)
 
 Devin supplied `Downloads/FBX_Zombie_27_Starter` and chose **preserve current speeds**.
