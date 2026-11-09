@@ -100,6 +100,29 @@ static func contact_lock_config() -> Dictionary:
 	return _mocap.config.get("contact_lock", {})
 
 
+## Keep gameplay names/indices stable, swapping only the reviewed visual performance.
+static func visual_clip(legacy: String) -> String:
+	library()
+	if not mocap_enabled(): return legacy
+	var candidate: String = str(_mocap.config.get("visual_aliases", {}).get(legacy, legacy))
+	return candidate if _mocap.animations.has(candidate) else legacy
+
+
+static func hit_event_time(clip: String) -> float:
+	library()
+	return float(_mocap.metadata.get(visual_clip(clip), {}).get("events", {}).get("hit", -1.0))
+
+
+static func death_key_pose_time(clip: String) -> float:
+	library()
+	return float(_mocap.config.get("death_key_pose_seconds", {}).get(visual_clip(clip), cfg()["ragdoll"]["key_pose_seconds"]))
+
+
+static func death_motion_config() -> Dictionary:
+	library()
+	return _mocap.config.get("death_motion", {})
+
+
 ## Recorded loops may contain several strides. Events are source contact onsets, not even halves.
 static func footstep_events(clip: String) -> Array:
 	if _contact_events.has(clip): return _contact_events[clip]
@@ -271,7 +294,7 @@ static func _state_tree(state: String) -> AnimationNodeBlendTree:
 
 static func _anim_node(clip: String) -> AnimationNodeAnimation:
 	var n: AnimationNodeAnimation = AnimationNodeAnimation.new()
-	n.animation = StringName(clip)
+	n.animation = StringName(visual_clip(clip))
 	return n
 
 

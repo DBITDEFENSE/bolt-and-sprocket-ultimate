@@ -3,6 +3,158 @@
   "source": "MoCap Online Zombie Starter 2.7",
   "license_url": "https://mocaponline.com/pages/standard-license",
   "clips": {
+    "mco_swipe_r": {
+      "file": "mco_swipe_r.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Atk_Arms_3_SHORT_Loop.fbx",
+      "sha256": "b8842fd0dc107333a26409df67940e926fc677ad997e89c0ba09fd20f17d0562",
+      "duration": 0.8,
+      "frames": 49,
+      "loop": false,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "speed_mps": 0.0,
+      "loop_seam_radians": null,
+      "source_contact_before": {
+        "samples": 96,
+        "mean_mps": 0.0371880821939909,
+        "p95_mps": 0.08741084121547715
+      },
+      "source_contact_after": {
+        "samples": 96,
+        "mean_mps": 9.130611285654459e-15,
+        "p95_mps": 2.0139534410903142e-14
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            0.8
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            0.8
+          ]
+        ]
+      },
+      "foot_lock": true,
+      "timing": {
+        "source_seconds": [
+          0,
+          0.2,
+          0.6
+        ],
+        "target_seconds": [
+          0,
+          0.45,
+          0.8
+        ]
+      },
+      "events": {
+        "hit": 0.45
+      }
+    },
+    "mco_swipe_l": {
+      "file": "mco_swipe_l.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Atk_Arms_3_SHORT_Loop.fbx",
+      "sha256": "b8842fd0dc107333a26409df67940e926fc677ad997e89c0ba09fd20f17d0562",
+      "duration": 0.8,
+      "frames": 49,
+      "loop": false,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "speed_mps": 0.0,
+      "loop_seam_radians": null,
+      "source_contact_before": {
+        "samples": 96,
+        "mean_mps": 0.035203290244497476,
+        "p95_mps": 0.07104489687441415
+      },
+      "source_contact_after": {
+        "samples": 96,
+        "mean_mps": 9.555849078742316e-15,
+        "p95_mps": 2.003551972804686e-14
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            0.8
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            0.8
+          ]
+        ]
+      },
+      "foot_lock": true,
+      "timing": {
+        "source_seconds": [
+          0.6,
+          0.9666666666666667,
+          1.5
+        ],
+        "target_seconds": [
+          0,
+          0.45,
+          0.8
+        ]
+      },
+      "events": {
+        "hit": 0.45
+      }
+    },
     "mco_walk": {
       "file": "mco_walk.glb",
       "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Walk_F_1_Loop.fbx",
@@ -82,7 +234,9 @@
           ]
         ]
       },
-      "foot_lock": true
+      "foot_lock": true,
+      "timing": null,
+      "events": {}
     },
     "mco_chase": {
       "file": "mco_chase.glb",
@@ -155,7 +309,9 @@
           ]
         ]
       },
-      "foot_lock": true
+      "foot_lock": true,
+      "timing": null,
+      "events": {}
     },
     "mco_fast_chase": {
       "file": "mco_fast_chase.glb",
@@ -232,7 +388,9 @@
           ]
         ]
       },
-      "foot_lock": true
+      "foot_lock": true,
+      "timing": null,
+      "events": {}
     },
     "mco_crawl": {
       "file": "mco_crawl.glb",
@@ -301,7 +459,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_idle": {
       "file": "mco_idle.glb",
@@ -362,7 +522,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_idle_2": {
       "file": "mco_idle_2.glb",
@@ -423,7 +585,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_reach": {
       "file": "mco_reach.glb",
@@ -504,7 +668,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_attack_loop": {
       "file": "mco_attack_loop.glb",
@@ -577,7 +743,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_attack_arms": {
       "file": "mco_attack_arms.glb",
@@ -638,7 +806,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_fast_attack": {
       "file": "mco_fast_attack.glb",
@@ -715,7 +885,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_fast_attack_idle": {
       "file": "mco_fast_attack_idle.glb",
@@ -776,7 +948,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_death_back": {
       "file": "mco_death_back.glb",
@@ -841,7 +1015,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_death_hit_back": {
       "file": "mco_death_hit_back.glb",
@@ -906,7 +1082,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_turn_l_45": {
       "file": "mco_turn_l_45.glb",
@@ -975,7 +1153,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_turn_r_45": {
       "file": "mco_turn_r_45.glb",
@@ -1044,7 +1224,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_turn_l_90": {
       "file": "mco_turn_l_90.glb",
@@ -1129,7 +1311,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_turn_r_90": {
       "file": "mco_turn_r_90.glb",
@@ -1206,7 +1390,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_walk_knockback": {
       "file": "mco_walk_knockback.glb",
@@ -1311,7 +1497,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_chase_knockback": {
       "file": "mco_chase_knockback.glb",
@@ -1412,7 +1600,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_stand_walk": {
       "file": "mco_stand_walk.glb",
@@ -1477,7 +1667,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_stand_chase": {
       "file": "mco_stand_chase.glb",
@@ -1542,7 +1734,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_stand_attack": {
       "file": "mco_stand_attack.glb",
@@ -1627,7 +1821,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_stand_crawl": {
       "file": "mco_stand_crawl.glb",
@@ -1688,7 +1884,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_on_fire": {
       "file": "mco_on_fire.glb",
@@ -1769,7 +1967,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_idle_to_stand": {
       "file": "mco_idle_to_stand.glb",
@@ -1830,7 +2030,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     },
     "mco_stand_to_idle": {
       "file": "mco_stand_to_idle.glb",
@@ -1891,7 +2093,9 @@
           ]
         ]
       },
-      "foot_lock": false
+      "foot_lock": false,
+      "timing": null,
+      "events": {}
     }
   },
   "errors": []

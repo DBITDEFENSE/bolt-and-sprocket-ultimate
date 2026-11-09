@@ -1,5 +1,25 @@
 # PROGRESS
 
+RESUME HERE: 2026-11-09 Codex Stage 2 swipe/death checkpoint. Branch codex/zombie-overhaul;
+work ONLY in .wt/zombie-overhaul. Now 28 converted clips from 26 supplied FBXs (two swipe trims).
+Live swipe_l/r use reviewed recording strikes; original windups, 0.35 s recovery, damage and
+network names remain. Shared visual synchronization also covers puppets. death_sit/back now
+use the two recorded falls, per-clip handoff times, visual root travel and recorded momentum
+into capped ragdolls; pool reuse resets displacement. All tier speeds and jitter unchanged.
+Blender/import 28/28; GUT 44/44, 2,670 asserts; script scan 858/0; Map 2 smoke PASS, 9 walkers
+worst median root/body discrepancy 1.4%, ragdoll peak 6, corpse return/severs/climb/KD verified.
+Four real-state before/after comparisons + event reports: docs/captures/after/mocap/states/.
+Both death handoffs <=1.089 cm instant bone movement. Fixed the capture-only freeze timer
+being advanced by slow PNG writes; rerendered. Final captures have no script/engine/leak errors.
+Known Unicode/NUL warnings remain. Two swipes/two deaths reviewed 2 -> 3/5; model stays 2/5.
+NOT FULL OVERHAUL COMPLETE. Missing performances and artist model sample remain on shopping list.
+NEXT: zombie-only PBR material pass using existing fabric/leather normal/ORM maps (currently
+unused by kit shader), then rerun rendered quality/performance. Keep people materials unchanged.
+Still open: turn-yaw/phase matching, remaining source states, stairs and special-body coverage.
+No merge, push, main replacement or export. Source/converted motion files remain ignored/local;
+rebuild with tools/zombie_mocap_build.ps1. Earlier checkpoints below are history.
+
+
 RESUME HERE: 2026-11-09 Codex verified delivery checkpoint. Worktree .wt/zombie-overhaul,
 branch codex/zombie-overhaul. Pipeline commit 4177e459; runtime locomotion eabd2799. Current
 gameplay speeds/jitter preserved. The supplied Starter pack is already copied locally and built;

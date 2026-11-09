@@ -11,6 +11,9 @@
   and at least six more distinct death performances. The Starter pack has two death clips.
 - Archive the purchase receipt/license with the local pack when available; the official Standard
   License and owner-supplied provenance are recorded in ASSETS.md. Do not buy this pack again.
+- The supplied arm loop now covers two reviewed single swipes; both supplied deaths are integrated.
+  Two additional distinct swipes, a runner lunge and sprinter grab remain source gaps. The supplied
+  rapid multi-swipe barrage is preview-only: it is not a single hit at the game's existing windup.
 - Close-up review found the current soldier head and uniform too simplified for the art bible.
   Needed: an original artist-authored zombie head/body and distressed WW2-style clothing set
   (or a commercially licensed source with editable meshes), PBR albedo/normal/roughness, clean

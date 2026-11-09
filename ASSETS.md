@@ -27,11 +27,11 @@ free-asset intake rule. The Motus demonstration body/textures are not used in th
 | `Zombie_Idle_2.fbx` | `mco_idle_2` / live upright idle blend, gallery |
 | `Zombie_Reach_1_Loop.fbx` | `mco_reach` / gallery |
 | `Zombie_Atk_Loop_1.fbx` | `mco_attack_loop` / gallery |
-| `Zombie_Atk_Arms_3_SHORT_Loop.fbx` | `mco_attack_arms` / gallery |
+| `Zombie_Atk_Arms_3_SHORT_Loop.fbx` | `mco_attack_arms` / gallery; `mco_swipe_l` and `mco_swipe_r` / trimmed, retimed left/right live swipes at the unchanged gameplay hit time |
 | `Zombie_HyperAttack_1_SHORT_Loop.fbx` | `mco_fast_attack` / gallery |
 | `Zombie_HyperAttack_1_SHORT_Idle_Loop.fbx` | `mco_fast_attack_idle` / gallery |
-| `Zombie_Death_Back_Mid_1.fbx` | `mco_death_back` / gallery |
-| `Zombie_Death_Hit_Back_1.fbx` | `mco_death_hit_back` / gallery |
+| `Zombie_Death_Back_Mid_1.fbx` | `mco_death_back` / live `death_sit` visual, recorded root travel and momentum into ragdoll; gallery |
+| `Zombie_Death_Hit_Back_1.fbx` | `mco_death_hit_back` / live `death_back` visual, recorded root travel and momentum into ragdoll; gallery |
 | `Zombie_Turn_L_45_Loop.fbx` | `mco_turn_l_45` / gallery, nonlooping facing change |
 | `Zombie_Turn_R_45_Loop.fbx` | `mco_turn_r_45` / gallery, nonlooping facing change |
 | `Zombie_Turn_L_90_1.fbx` | `mco_turn_l_90` / gallery |
@@ -49,3 +49,5 @@ free-asset intake rule. The Motus demonstration body/textures are not used in th
 `tools/zombie_mocap_build.ps1` repeats conversion and import. Config/source hashes, measured
 speeds and contacts are in `docs/captures/after/mocap/conversion.json`; those measurements
 are not animation files. Runtime promotion is recorded separately in the overhaul plan.
+There are 28 converted clips from 26 distinct source FBXs; the two swipe trims are not new
+performances. Timing maps sample the licensed recording; they do not author replacement poses.

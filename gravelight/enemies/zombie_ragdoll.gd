@@ -33,7 +33,7 @@ static func _prune() -> void:
 
 ## Builds the physical bones under `skel` and starts simulating, launched by `impulse` (m/s on every bone).
 ## Returns the simulator (null when ragdolls are off).
-static func start(skel: Skeleton3D, impulse: Vector3 = Vector3.ZERO) -> PhysicalBoneSimulator3D:
+static func start(skel: Skeleton3D, impulse: Vector3 = Vector3.ZERO, recorded_velocity: Dictionary = {}) -> PhysicalBoneSimulator3D:
 	if not enabled() or skel == null:
 		return null
 	_prune()
@@ -101,6 +101,14 @@ static func start(skel: Skeleton3D, impulse: Vector3 = Vector3.ZERO) -> Physical
 	# the simulator's own modifier pass is switched off: it writes the rest pose over the skeleton once the
 	# AnimationTree is inactive; sync() copies the bodies into the bones instead (Zombie._update_dead)
 	sim.active = false
+	for child: Node in sim.get_children():
+		var physical: PhysicalBone3D = child as PhysicalBone3D
+		if physical == null or not recorded_velocity.has(String(physical.bone_name)): continue
+		var motion: Dictionary = recorded_velocity[String(physical.bone_name)]
+		var angular: Vector3 = motion["angular"]
+		physical.angular_velocity = angular
+		# Recorded velocity is at the bone origin; the collider's centre has an offset.
+		physical.linear_velocity = (motion["linear"] as Vector3) + angular.cross(physical.global_basis * physical.body_offset.origin)
 	if impulse.length_squared() > 0.01:
 		# the blast throws the trunk; the limbs follow through the joints (an impulse on every bone tears the
 		# joints apart and launches the rig)

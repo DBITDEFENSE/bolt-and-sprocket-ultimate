@@ -1,0 +1,41 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+Godot_v4.7.2-stable_win64_console.exe : Unicode parsing error, some characters were replaced with ï¿½ (U+FFFD):
+Unexpected NUL character
+At line:2 char:1
++ & 'C:/Users/Devin/PROJECTS/bolt-and-sprocket-ultimate/tools/dl_godot/ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Unicode parsing...d NUL character:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+Unicode parsing error, some characters were replaced with ï¿½ (U+FFFD): Unexpected NUL character
+Unicode parsing error, some characters were replaced with ï¿½ (U+FFFD): Unexpected NUL character
+[LookMaterials] map02_totenhafen: 345 materials, 156 fixed, 86 exempt, 91 skipped, 88.2 ms
+[bounds] map02_totenhafen: kill -11.0, ceiling 21.6, rect [P: (-44.5, -14.5), S: (121.0, 114.75)], longest fall 3.7 s
+[vo_rooms] dry -> hall_large (map map02_totenhafen, zone D_PENHALL)
+[za] link Ladder_CatwalkW  start off-mesh 0.45 m, end off-mesh 0.45 m, rise 4.0 m
+[za] link Ladder_CatwalkE  start off-mesh 0.75 m, end off-mesh 0.45 m, rise 4.0 m
+[za] link Ladder_CatwalkN  start off-mesh 0.45 m, end off-mesh 0.45 m, rise 4.0 m
+[za] ok: 3 climb links
+[za] spawned 10 (10 active), kits: ["soldier/heavy", "sailor/thin", "dockworker/medium", "dockworker/medium", "sailor/medium", "sailor/medium", "soldier/medium", "sailor/medium", "sailor/thin", "soldier/medium"]
+[za] foot-slide shamble  soldier        samples=294 median anim/nav=0.993
+[za] foot-slide walk     sailor         samples=301 median anim/nav=0.998
+[za] foot-slide jog      dockworker     samples=278 median anim/nav=0.991
+[za] foot-slide run      dockworker     samples=255 median anim/nav=1.014
+[za] foot-slide sprint   sailor         samples=294 median anim/nav=0.988
+[za] foot-slide shamble  sailor         samples=272 median anim/nav=0.993
+[za] foot-slide walk     soldier        samples=297 median anim/nav=0.995
+[za] foot-slide jog      sailor         samples=301 median anim/nav=0.999
+[za] foot-slide run      sailor         samples=249 median anim/nav=0.993
+[za] ok: foot-slide: 9 zombies checked, worst deviation 1.4%
+[za] ok: body modifier ran on 9 zombies, look-at active on 9
+[za] climb: shamble on the west ladder from (-16.2, 0.0, 60.0) to (-19.0, 4.0, 60.0)
+[za] ok: climb link traversed in 3.9 s, ended 0.00 m from the top (y 4.0)
+[za] ok: forearm severed: piece thrown (1 live), attack set now swipe_r
+[za] ok: Gore Off: limb stays on, attack set still changes
+[za] ok: knockdown -> get-up -> chase in 1.9 s
+[za] deaths: ["death_crawl", "death_sit", "death_back", "death_headless", "death_spin", "death_gut"]
+[za] ok: 8 deaths (6 distinct clips), ragdoll peak 6 (cap 6), corpses returned
+[za] ok: IK and look-at off at 40 m
+[za] floor surface under a zombie: stone
+[za] RESULT: PASS

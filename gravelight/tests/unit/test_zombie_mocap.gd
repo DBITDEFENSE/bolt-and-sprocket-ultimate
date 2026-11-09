@@ -1,5 +1,104 @@
 extends GutTest
 
+func test_recorded_swipes_keep_gameplay_windup_and_recovery() -> void:
+	if not ZombieClips.has_clip("mco_swipe_l"):
+		pending("Local licensed pack required")
+		return
+	var host := Node3D.new()
+	add_child_autofree(host)
+	var spawn := ZombieSpawn.new()
+	host.add_child(spawn)
+	var z := Zombie.new()
+	host.add_child(z)
+	z.activate({"enemy_id":"ganger", "variant":"soldier", "tier":"walk"}, spawn, null)
+	z.set_physics_process(false)
+	z.set_process(false)
+	z._cfg = z._cfg.duplicate(true)
+	for clip: String in ["swipe_l", "swipe_r"]:
+		assert_eq(ZombieClips.visual_clip(clip), "mco_" + clip)
+		assert_almost_eq(ZombieClips.length_of("mco_" + clip), 0.8, 0.0001)
+		assert_eq(ZombieClips.library().get_animation("mco_" + clip).loop_mode, Animation.LOOP_NONE)
+		assert_almost_eq(ZombieClips.hit_event_time(clip), 0.45, 0.0001)
+		for windup: float in [0.3, 0.45, 0.65]:
+			z._cfg["attack_windup"] = windup
+			z._enter(Zombie.State.CHASE)
+			z._animate(0.3)
+			z._enter(Zombie.State.ATTACK)
+			z._attack_clip = clip
+			z._tree_attack(clip)
+			for tick: int in int(round(windup * 60.0)) - 1:
+				z._state_t = float(tick + 1) / 60.0
+				z._update_attack(1.0/60.0)
+				z._animate(1.0/60.0)
+			assert_false(z._attack_hit_done, "no early damage " + clip)
+			z._state_t = windup
+			z._update_attack(1.0/60.0)
+			assert_true(z._attack_hit_done, "original windup reaches damage")
+			z._animate(0.0)
+			assert_almost_eq(z._playback.get_current_play_position(), 0.45, 0.0001, "source strike evaluated at damage")
+			assert_eq(z._attack_clip, clip, "network/gameplay name unchanged")
+			assert_almost_eq(float(z._tree.get("parameters/SM/Attack/TimeScale/scale")), 1.0, 0.0001)
+			z._state_t = windup + 0.34
+			z._update_attack(1.0/60.0)
+			assert_eq(z.state, Zombie.State.ATTACK, "original recovery retained")
+			z._state_t = windup + 0.35
+			z._update_attack(1.0/60.0)
+			assert_eq(z.state, Zombie.State.CHASE)
+	# Client puppets only advance presentation; no host hit callback is required.
+	z._cfg["attack_windup"] = 0.65
+	z._enter(Zombie.State.ATTACK)
+	z._attack_clip = "swipe_l"
+	z._tree_attack("swipe_l")
+	z._state_t = 0.65
+	z._animate(0.0)
+	assert_almost_eq(z._playback.get_current_play_position(), 0.45, 0.0001)
+	assert_false(z._attack_hit_done, "visual strike does not deal or authorize damage")
+
+func test_recorded_deaths_keep_network_names_and_reset_pooled_root_offset() -> void:
+	if not ZombieClips.has_clip("mco_death_back"):
+		pending("Local licensed pack required")
+		return
+	var host := Node3D.new()
+	add_child_autofree(host)
+	var spawn := ZombieSpawn.new()
+	host.add_child(spawn)
+	var z := Zombie.new()
+	host.add_child(z)
+	for clip: String in ["death_sit", "death_back"]:
+		z.activate({"enemy_id":"ganger", "variant":"soldier", "tier":"walk"}, spawn, null)
+		z.set_physics_process(false)
+		z.set_process(false)
+		z._enter(Zombie.State.CHASE)
+		z._animate(0.3)
+		var here: Vector3 = z.global_position
+		z._death_clip = clip
+		z._start_death()
+		assert_eq(z._death_clip, clip, "network death index continues to use original name")
+		assert_eq(String((z._anim_nodes["Death"] as AnimationNodeAnimation).animation), ZombieClips.visual_clip(clip))
+		assert_eq(float(z._tree.get("parameters/Posture/add_amount")), 0.0)
+		var handoff: float = ZombieClips.death_key_pose_time(clip)
+		for tick: int in int(round(handoff * 60.0)) - 1:
+			z._state_t = float(tick + 1) / 60.0
+			z._update_dead(1.0/60.0)
+			z._animate(1.0/60.0)
+		assert_false(z._ragdoll_started, "recording reaches its reviewed key pose")
+		assert_gt(z._pivot.position.z, 0.05, "recorded backward travel reaches presentation root")
+		assert_eq(z.global_position, here, "corpse animation does not move gameplay body")
+		z._state_t = handoff
+		z._update_dead(1.0/60.0)
+		assert_true(z._ragdoll_started)
+		assert_not_null(z._ragdoll)
+		var hips: PhysicalBone3D = z._ragdoll.get_node("PB_Hips")
+		assert_true(hips.linear_velocity.is_finite())
+		assert_gt(hips.linear_velocity.length(), 0.05, "ragdoll inherits the evaluated fall's momentum")
+		z.deactivate()
+		z.activate({"enemy_id":"ganger", "variant":"soldier", "tier":"walk"}, spawn, null)
+		assert_eq(z._pivot.position, Vector3.ZERO, "pool reuse clears corpse root displacement")
+		z.deactivate()
+	# stop() frees detached physics bodies deferred, as it does in gameplay.
+	await get_tree().process_frame
+	await get_tree().process_frame
+
 func test_contact_event_crossings_include_wrap_without_duplicate_boundaries() -> void:
 	assert_true(ZombieClips.crossed_phase(0.9, 0.1, 0.0))
 	assert_true(ZombieClips.crossed_phase(0.9, 0.1, 0.95))
@@ -13,7 +112,7 @@ func test_local_licensed_clips_keep_targets_and_multiple_step_events() -> void:
 	if (info["loaded"] as Array).is_empty():
 		pending("Licensed source files are local; run zombie_mocap_build.ps1 to exercise imports")
 		return
-	assert_eq((info["loaded"] as Array).size(), 26)
+	assert_eq((info["loaded"] as Array).size(), (GLData.load_json("res://data/gravelight/zombie_mocap.json")["clips"] as Array).size())
 	assert_eq((info["errors"] as Array).size(), 0)
 	for name: String in info["loaded"]:
 		var a: Animation = ZombieClips.library().get_animation(name)

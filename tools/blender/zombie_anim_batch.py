@@ -54,12 +54,39 @@ def source_contacts(m, clip, cfg):
         p = m["pos"][:, mp[side + "Toe"]] * clip["scale"]
         height = p[:, 1] - np.percentile(p[:, 1], 5)
         found = ml.contacts(p, height, rate, h_max=cfg["height_m"], v_max=cfg["speed_mps"], min_frames=cfg["minimum_frames"])
-        times = np.arange(len(clip["hips"])) / clip["fps"]
+        times = clip.get("source_times", np.arange(len(clip["hips"])) / clip["fps"])
         mask = np.zeros(len(times), bool)
         for a, b in found:
             mask |= (times >= a / rate) & (times <= b / rate)
         result[side] = mask
     return result
+
+
+def retime_recording(c, row):
+    """Trim/time-warp an existing performance around a reviewed impact; never create poses."""
+    timing = row.get("timing")
+    if not timing:
+        return c
+    src, dst = np.array(timing["source_seconds"]), np.array(timing["target_seconds"])
+    length = (len(c["hips"])-1) / c["fps"]
+    if len(src) != len(dst) or len(src) < 2 or src[0] < 0 or src[-1] > length + 1e-5 or dst[0] != 0 or np.any(np.diff(src) <= 0) or np.any(np.diff(dst) <= 0):
+        raise ValueError("Invalid timing map: " + row["name"])
+    fps = float(row.get("sample_fps", c["fps"]))
+    times = np.arange(round(dst[-1]*fps)+1) / fps
+    source_times = np.interp(times, dst, src)
+    original_times = np.arange(len(c["hips"])) / c["fps"]
+    out = dict(c, fps=fps, source_times=source_times,
+               hips=np.stack([np.interp(source_times, original_times, c["hips"][:, j]) for j in range(3)], axis=1), local={})
+    for bone, qs in c["local"].items():
+        result = []
+        for t in source_times:
+            x = t*c["fps"]
+            a = min(len(qs)-1, int(np.floor(x)))
+            b = min(len(qs)-1, a+1)
+            result.append(ml.qnorm(ml.qslerp(qs[a], qs[b], x-a)))
+        out["local"][bone] = np.array(result)
+    ml._hemi(out["local"])
+    return out
 
 
 def close_loop(c, root, seconds):
@@ -239,8 +266,8 @@ def main():
         # Motus has BOTH Root and Hips. The generic importer aliases Root as Hips; prevent that.
         if "Root" in m["names"] and "Hips" in m["names"]:
             m["names"][m["names"].index("Root")] = "MotionRoot"
-        c = ml.resample(ml.retarget(m, rig), float(cfg["fps"]))
-        trajectory = np.outer(np.linspace(0, 1, len(c["hips"])), (c["hips"][-1]-c["hips"][0]) * [1, 0, 1])
+        c = retime_recording(ml.resample(ml.retarget(m, rig), float(cfg["fps"])), row)
+        trajectory = np.outer(np.linspace(0, 1, len(c["hips"])), (c["hips"][-1]-c["hips"][0]) * [1, 0, 1]) if row.get("extract_root", True) else np.zeros_like(c["hips"])
         # Straight gait root faces -Z; rotate recording and trajectory together (no pose invention).
         if row.get("foot_lock") or name == "mco_crawl":
             yaw = ml.yaw_to_minus_z(trajectory[-1]) if np.linalg.norm(trajectory[-1]) > 1e-5 else np.array([1., 0, 0, 0])
@@ -263,7 +290,8 @@ def main():
                 "root_displacement": trajectory[-1].tolist(), "speed_mps": float(np.linalg.norm(trajectory[-1]) / duration),
                 "loop_seam_radians": seam if row["loop"] else None, "source_contact_before": before, "source_contact_after": after,
                 "contact_windows": {s: [[a/c["fps"], b/c["fps"]] for a, b in spans(mask)] for s, mask in contact.items()},
-                "foot_lock": bool(row.get("foot_lock") and not args.no_foot_lock)}
+                "foot_lock": bool(row.get("foot_lock") and not args.no_foot_lock),
+                "timing": row.get("timing"), "events": row.get("events", {})}
         if not np.isfinite(c["hips"]).all() or not all(np.isfinite(q).all() for q in c["local"].values()):
             raise RuntimeError("Non-finite retarget: " + name)
         if row["loop"] and seam > 0.002:

@@ -3,7 +3,42 @@
 Base: master e96a0188; branch codex/zombie-overhaul in .wt/zombie-overhaul.
 The owner approved master because main does not exist. No new animation poses or assets authored.
 
-## 2026-11-09 delivery checkpoint — licensed locomotion active, full overhaul incomplete
+## 2026-11-09 next checkpoint — recorded swipes and deaths active
+
+This section supersedes the earlier locomotion-only state inventory below. The bank now has
+**28 converted clips from 26 source FBXs**. Two single-swipe trims sample the supplied arm loop;
+no poses were authored. `swipe_l/r` keep their gameplay identities, original enemy windups and
+0.35 s recovery. The shared animation path synchronizes the recorded strike for host and puppet
+presentation without dealing damage. Existing attack selection still respects severed arms.
+
+Two death visuals are active: logical `death_sit` -> `mco_death_back`, `death_back` ->
+`mco_death_hit_back`. Network indices are unchanged. Per-clip key-pose times are data (1.0/0.4 s).
+Root travel stays on the visual pivot, resets on pooling, and the evaluated per-bone momentum
+continues into ragdoll. Velocity limits are data. The existing explosive impulse and cap remain.
+
+Verification run: Blender/Godot 28/28 imports, **44/44 zombie tests / 2,670 assertions**,
+858-script scan with zero failures, Map 2 integration smoke PASS (9 walkers, worst median
+root/body discrepancy 1.4%; climbs, severs/Gore Off, knockdown/get-up, deaths, corpse return,
+ragdoll peak 6). Four rendered state comparisons and event reports are under
+`docs/captures/after/mocap/states/`; both ragdoll handoffs moved bones at most 1.089 cm instantly.
+The capture-only early freeze caused by slow PNG writes was corrected by normalizing its clock
+to simulated time and rerendering both deaths. Console input is disabled in this silent tool;
+final renders have no script/engine/leak errors. Known Unicode/NUL warnings remain.
+
+Soldier visual review: the two swipes **2 -> 3/5**, the two recorded deaths **2 -> 3/5**.
+Upright locomotion **2 -> 3**, variety **3 -> 3**, model **2 -> 2** remain the previous ratings.
+Reactions/other types are not newly scored. This is still **not** full premium acceptance.
+Gameplay speeds, jitter, damage timing, attack ranges and navigation data remain unchanged.
+
+RESUME HERE: finish the remaining state/per-type/stair coverage and Stage 3. The existing
+licensed fabric/leather normal and ORM maps are present but the kit shader currently consumes
+only their albedo detail: investigate a zombie-only material pass before requesting new art.
+An artist-authored soldier head/body/clothing sample is still required for the model target.
+Turn recordings are available: 45-degree clips are 1.267 s and 90-degree clips over 5 s;
+they require yaw extraction/phase matching to the existing fast facing changes before promotion.
+Do not blindly alias them and double the turn. Remaining source gaps are in the shopping list.
+
+## 2026-11-09 earlier delivery checkpoint — licensed locomotion active, full overhaul incomplete
 
 `4177e459` adds the repeatable licensed source pipeline. `eabd2799` enables upright mocap and
 contact cleanup. Work remains isolated in `.wt/zombie-overhaul`; main/builds were not replaced.

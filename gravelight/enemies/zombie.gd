@@ -1291,7 +1291,7 @@ func _update_dead(delta: float) -> void:
 				director.call("on_zombie_returned", self)
 		return
 	var rd: Dictionary = _anim["ragdoll"]
-	if not _ragdoll_started and _state_t >= float(rd.get("key_pose_seconds", 0.55)):
+	if not _ragdoll_started and _state_t >= ZombieClips.death_key_pose_time(_death_clip):
 		_ragdoll_started = true
 		_begin_ragdoll()
 	if _ragdoll != null:
@@ -2051,19 +2051,45 @@ func _start_death() -> void:
 	state = State.DEAD
 	_state_t = 0.0
 	_ragdoll_started = false
+	_death_previous_pose.clear()
+	_death_velocity.clear()
 	var rd: Array = _anim["ragdoll"].get("corpse_seconds", [8.0, 12.0])
 	_corpse_seconds = randf_range(float(rd[0]), float(rd[1]))
 	if has_rig():
 		_look.active = false
 		_modifier.ik_weight = 0.0
+		if ZombieClips.visual_clip(_death_clip).begins_with("mco_"):
+			_tree.set("parameters/Posture/add_amount", 0.0)
 	_enter(State.DEAD)
+
+
+var _death_previous_pose: Dictionary = {}
+var _death_velocity: Dictionary = {}
+
+
+## Velocity of the evaluated recorded fall, including its presentation root displacement.
+## Physics starts from the same pose and momentum; no additional death poses are authored.
+func _record_death_velocity(dt: float) -> void:
+	var settings: Dictionary = ZombieClips.death_motion_config()
+	if not bool(settings.get("inherit_velocity", false)) or dt <= 0.0: return
+	for bone: String in _anim["ragdoll"]["bones"]:
+		var index: int = _skel.find_bone(bone)
+		if index < 0: continue
+		var pose: Transform3D = _skel.global_transform * _skel.get_bone_global_pose(index)
+		if _death_previous_pose.has(bone):
+			var previous: Transform3D = _death_previous_pose[bone]
+			var rotation_delta: Quaternion = (pose.basis.orthonormalized().get_rotation_quaternion() * previous.basis.orthonormalized().get_rotation_quaternion().inverse()).normalized()
+			if rotation_delta.w < 0.0: rotation_delta = -rotation_delta
+			var angular: Vector3 = rotation_delta.get_axis() * rotation_delta.get_angle() / dt
+			_death_velocity[bone] = {"linear": ((pose.origin - previous.origin) / dt).limit_length(float(settings["max_linear_mps"])), "angular": angular.limit_length(float(settings["max_angular_rps"]))}
+		_death_previous_pose[bone] = pose
 
 
 func _begin_ragdoll() -> void:
 	var launch: Vector3 = Vector3.ZERO
 	if _death_explosive:
 		launch = _away_from_target() * float(_anim["ragdoll"].get("explosive_launch", 5.0)) + Vector3.UP * 3.0
-	_ragdoll = ZombieRagdoll.start(_skel, launch)
+	_ragdoll = ZombieRagdoll.start(_skel, launch, _death_velocity)
 	# the tree stays active (deactivating an AnimationTree resets the rendered skin to rest); it simply is not
 	# advanced any more while the ragdoll writes the bones (_animate)
 
@@ -2785,7 +2811,7 @@ func _tree_play(st: String, clip: String, time_scale: float) -> void:
 	if _tree == null or _playback == null:
 		return
 	if _anim_nodes.has(st):
-		(_anim_nodes[st] as AnimationNodeAnimation).animation = StringName(clip)
+		(_anim_nodes[st] as AnimationNodeAnimation).animation = StringName(ZombieClips.visual_clip(clip))
 	_tree.set("parameters/SM/%s/TimeScale/scale" % st, maxf(0.01, time_scale))
 	# One-shot states share one AnimationNodeAnimation per state; travel() to the state already playing restarts
 	# it from 0 in Godot 4.7 (reset_on_teleport), so a swapped clip (knockdown -> get-up, climb loop -> mantle)
@@ -2796,9 +2822,14 @@ func _tree_play(st: String, clip: String, time_scale: float) -> void:
 	_step_phase_valid = false
 
 
+var _attack_visual_hit_done: bool = false
+
+
 func _tree_attack(clip: String) -> void:
+	_attack_visual_hit_done = false
 	_tree.set("parameters/SM/Attack/Anim/blend_position", ZombieClips.attack_index(clip))
-	_tree_play("Attack", clip, ZombieClips.ATTACK_WINDUP / maxf(0.05, float(_cfg["attack_windup"])))
+	var hit: float = ZombieClips.hit_event_time(clip)
+	_tree_play("Attack", clip, (hit if hit >= 0.0 else ZombieClips.ATTACK_WINDUP) / maxf(0.05, float(_cfg["attack_windup"])))
 
 
 func _tree_emerge() -> void:
@@ -3236,7 +3267,20 @@ func _animate(dt: float) -> void:
 	_turn_rate = move_toward(_turn_rate, 0.0, dt * 8.0)
 	if _flinch > 0.0:
 		_flinch = maxf(0.0, _flinch - dt)
+	if state == State.ATTACK and not _attack_visual_hit_done and _state_t >= float(_cfg["attack_windup"]):
+		_attack_visual_hit_done = true
+		var recorded_hit: float = ZombieClips.hit_event_time(_attack_clip)
+		if recorded_hit >= 0.0:
+			# Shared host/puppet presentation: strike at the existing windup, then retain the
+			# existing 0.35 s recovery. Gameplay damage remains in the physics state callback.
+			_tree.set("parameters/SM/Attack/TimeSeek/seek_request", recorded_hit)
+			_tree.set("parameters/SM/Attack/TimeScale/scale", 1.0)
 	_tree.advance(dt)
+	if state == State.DEAD and _tree_state == "Death" and ZombieClips.visual_clip(_death_clip).begins_with("mco_"):
+		# The corpse presentation follows the recorded fall before physics takes over. The pooled
+		# body's nav position/hit timings are unchanged; activate()/make_puppet() reset the pivot.
+		_pivot.position += _tree.get_root_motion_position() * _pivot.scale
+		_record_death_velocity(dt)
 	var contact_cfg: Dictionary = ZombieClips.contact_lock_config()
 	if _loco_clip.begins_with("mco_") and _tree_state == "Locomotion":
 		# Upper-body turn lean is additive to the recording and leaves planted leg motion intact.
