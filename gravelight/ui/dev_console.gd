@@ -12,7 +12,7 @@ var _prev_mouse: Input.MouseMode = Input.MOUSE_MODE_VISIBLE
 ## Co-op: commands that act on "you" act on this player (a client's commands run on the host for them).
 var _ctx_pid: int = 1
 ## Co-op: these run on the client itself; everything else is sent to the host (quest skips included).
-const LOCAL_CMDS: PackedStringArray = ["help", "god", "noclip", "goto", "fps", "zombies", "navdebug", "hp", "traits", "timescale", "net"]
+const LOCAL_CMDS: PackedStringArray = ["help", "god", "noclip", "goto", "fps", "zombies", "navdebug", "hp", "traits", "timescale", "net", "hud", "flyspeed", "tod"]
 
 
 func _init() -> void:
@@ -188,6 +188,7 @@ func _register_builtins() -> void:
 	register("bell_lit", _cmd_bell_lit, "Light the Chapel bell (as if shot with an upgraded weapon)")
 	register("net", _cmd_net, "Co-op status: mode, your slot, the squad")
 	MapDevCommands.register_all(self)   # bake_minimap / minimap (Update 04, T-065)
+	TrailerCommands.register_all(self)   # T-221: hud / flyspeed / tod / bombrun (the owner's trailer)
 
 
 func _cmd_help(_a: PackedStringArray) -> String:

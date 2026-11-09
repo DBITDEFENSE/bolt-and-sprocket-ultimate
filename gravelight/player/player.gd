@@ -80,6 +80,9 @@ var crouching: bool = false
 var sliding: bool = false
 var sprinting: bool = false
 var noclip: bool = false
+var noclip_speed: float = 12.0          # T-221 (flyspeed): m/s, eased; flies in real time under `timescale` unless noclip_realtime is off
+var noclip_realtime: bool = true
+var _fly_v: Vector3 = Vector3.ZERO
 
 var interact_target: Interactable = null
 var interact_progress: float = 0.0   # 0..1 for the HUD
@@ -475,10 +478,15 @@ func _update_movement(delta: float) -> void:
 	if wish.length_squared() > 1.0:
 		wish = wish.normalized()
 	if noclip:
-		var fly: Vector3 = (camera.global_basis * Vector3(input.x, 0, input.y)) * 12.0
+		# T-221: eased, crouch to sink, and real time under a slow-motion timescale (cinematic fly-throughs)
+		var dt: float = delta / maxf(0.05, Engine.time_scale) if noclip_realtime else delta
+		var fly: Vector3 = (camera.global_basis * Vector3(input.x, 0, input.y)) * noclip_speed
 		if _mi.jump_held:
-			fly.y += 8.0
-		global_position += fly * delta
+			fly.y += noclip_speed * 0.66
+		if _mi.crouch_held:
+			fly.y -= noclip_speed * 0.66
+		_fly_v = _fly_v.lerp(fly, 1.0 - exp(-4.0 * dt))
+		global_position += _fly_v * dt
 		velocity = Vector3.ZERO
 		return
 	if mantling:

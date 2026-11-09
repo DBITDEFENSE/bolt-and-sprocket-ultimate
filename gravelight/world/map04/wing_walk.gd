@@ -262,7 +262,7 @@ func _physics_process(delta: float) -> void:
 			# (below the deck, anywhere but the hatch's foot); in the air above the deck for a moment is neither
 			var off: float = float(_off_t.get(pid, 0.0)) + delta
 			_off_t[pid] = off
-			if not p.is_alive() or _near_hatch_foot(p.global_position):
+			if not p.is_alive() or p.noclip or _near_hatch_foot(p.global_position):   # T-221: a noclip fly-through is never a fall
 				_set_state(pid, ClipState.OFF_WING)
 				_off_t.erase(pid)
 			elif p.global_position.y < deck_y - 1.2 and _near_deck(segs, p.global_position):
@@ -387,7 +387,7 @@ func on_turbulence(_seconds: float) -> void:
 ## Over the side (host decides): the tether line that is not clipped is the safety line at the hatch's foot. The
 ## body ends at the foot of the hatch, downed; never dead and never out of the match.
 func throw_off(p: Player, why: String) -> void:
-	if p == null or not Net.is_authority():
+	if p == null or p.noclip or not Net.is_authority():   # T-221: never throws a noclip camera
 		return
 	_set_state(p.player_id, ClipState.OFF_WING)
 	knocked += 1
