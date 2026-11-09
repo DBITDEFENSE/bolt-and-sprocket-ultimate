@@ -108,7 +108,7 @@ Full table: `docs/captures/fernflug/facing_other_maps.md`.
   transforms changed.
 - Fernflug smokes, 0 script errors: map04_egg, map04_flow, map04_full, map04a/b/c/d and their _world variants,
   turbulence, wing_walk: **all PASS**. Unit tests: test_interactable_facing 15/15, test_kranich_plane 14/14,
-  test_ui_polish_t218 9/9 (incl. the Settings row), test_capture_cams, test_map04b_data; full suite: SUITE_RESULT.
+  test_ui_polish_t218 9/9 (incl. the Settings row), test_capture_cams, test_map04b_data. Full suite after every merge: 2137 passed, 5 failed, 1 risky: test_reload_sprint, test_scrip_bonuses and test_wonder_models hit "Trying to assign invalid previously freed instance" in AudioDirector._claim (a freed player left in the shared 2D sound pool by an earlier test; AudioDirector is not changed on this branch); open, being traced.
 - Soaks (bots, headless, x3 speed; `tools/ai_soak.sh --scenario=fernflug`): before (master's scenes) and after,
   interleaved per seed so both saw the same machine load (other sessions held the CPU at ~70 %):
 
