@@ -3,6 +3,39 @@
 Base: master e96a0188; branch codex/zombie-overhaul in .wt/zombie-overhaul.
 The owner approved master because main does not exist. No new animation poses or assets authored.
 
+## 2026-11-09 supplied mocap / Stage 1 checkpoint (supersedes absence below)
+
+Devin supplied `Downloads/FBX_Zombie_27_Starter` and chose **preserve current speeds**.
+The local worktree now contains 26 original root-motion FBXs and 26 IPC duplicates, plus unused
+Motus demo-model files. They are ignored under `assets/user_supplied/mocap_online/zombie_starter_2_7`.
+The manifest-driven Blender converter retargets every source to the 19-bone ZombieRig, preserves
+identity rests, closes loop residuals, extracts horizontal root travel and cleans source-detected
+upright foot contacts. No locomotion/attack/death performance is invented in code. Turn yaw
+remains on the hips; turns are preview-only until root-yaw gameplay handling is validated.
+The two 45-degree files are deliberately nonlooping because their end facing differs.
+
+Executed: one-command build, all 26 GLBs imported/checked in Godot with shared Humanoid BoneMap,
+856-script scan (zero failures), four license tests (367 assertions), current assets manifest,
+and native fast-gait rendered sequence on the soldier. Paid binaries remain local/ignored;
+committed hashes/measurements allow reproduction without distributing animation data.
+See `docs/captures/after/mocap/` and `tools/zombie_mocap_build.ps1`.
+
+Offline source-contact horizontal toe speed p95: walk 0.119 -> ~0, chase 0.240 -> ~0,
+fast chase 0.329 -> ~0 m/s at 30 Hz. Same source masks before/after. These numbers do not
+establish runtime foot locking: interpolation, modifiers, blends and navigation need measurement.
+The slow crawl is not foot-locked (hand/knee contacts require a different solve). Native target
+stride speeds: walk 0.210, chase 0.477, fast chase 2.885, crawl 0.085 m/s. Gameplay tiers stay
+1.3 / 2 / 3.4 / 4.8 / 5.6; crawl stays 0.8.
+
+Stage 1 pipeline is runnable. Runtime promotion, event integration and quality review are NEXT.
+Stage 3 model quality and full Stage 4 acceptance remain open. Existing verdicts below are dated
+baseline history, not a statement that the supplied pack is still absent.
+
+ASSETS STILL NEEDED: additional distinct gaits at compatible speeds, barricade tears/vaults,
+climbs, ground emerges, directional flinches, knockdown/get-up pairs, bite/armless attacks and
+six or more further death performances (Starter has two); an artist-authored soldier quality
+sample with distressed clothing, PBR maps, deformation weights and LOD0-2. See shopping list.
+
 ## Final check verdict — not ready for premium-quality sign-off
 
 The branch contains tested phase/footstep and ragdoll-budget fixes, plus reproducible review tools.

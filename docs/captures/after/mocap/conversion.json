@@ -1,0 +1,1898 @@
+{
+  "blender": "5.1.2",
+  "source": "MoCap Online Zombie Starter 2.7",
+  "license_url": "https://mocaponline.com/pages/standard-license",
+  "clips": {
+    "mco_walk": {
+      "file": "mco_walk.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Walk_F_1_Loop.fbx",
+      "sha256": "d70d0144b73772e0cc77445a43cb5322227ffadbe54cfa20455cef74d6697b80",
+      "duration": 4.5,
+      "frames": 136,
+      "loop": true,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        -2.4818065354551e-19,
+        0.0,
+        -0.9453734548207874
+      ],
+      "speed_mps": 0.21008298996017497,
+      "loop_seam_radians": 2.9802322387695312e-08,
+      "source_contact_before": {
+        "samples": 222,
+        "mean_mps": 0.03993531839321835,
+        "p95_mps": 0.11852555280434664
+      },
+      "source_contact_after": {
+        "samples": 222,
+        "mean_mps": 0.00011427129898218956,
+        "p95_mps": 6.8586915947425725e-15
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            1.2666666666666666
+          ],
+          [
+            1.5,
+            2.7666666666666666
+          ],
+          [
+            3.066666666666667,
+            3.933333333333333
+          ],
+          [
+            4.2,
+            4.5
+          ]
+        ],
+        "Right": [
+          [
+            0.26666666666666666,
+            2.0
+          ],
+          [
+            2.2,
+            3.3666666666666667
+          ],
+          [
+            3.7,
+            4.5
+          ]
+        ]
+      },
+      "foot_lock": true
+    },
+    "mco_chase": {
+      "file": "mco_chase.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Chase_1_Loop.fbx",
+      "sha256": "8a1eb153ac4507f2d2e7f1a15d99b259c09f9c32f755d0dae7be7d314f6a3372",
+      "duration": 2.6333333333333333,
+      "frames": 80,
+      "loop": true,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        -3.577867169202165e-18,
+        0.0,
+        -1.2569005243514755
+      ],
+      "speed_mps": 0.4773039965891679,
+      "loop_seam_radians": 0.0,
+      "source_contact_before": {
+        "samples": 121,
+        "mean_mps": 0.06423517829426931,
+        "p95_mps": 0.2395141064925344
+      },
+      "source_contact_after": {
+        "samples": 121,
+        "mean_mps": 3.65957940058199e-15,
+        "p95_mps": 7.126483889934181e-15
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            0.5333333333333333
+          ],
+          [
+            0.7666666666666667,
+            1.8333333333333333
+          ],
+          [
+            2.1333333333333333,
+            2.6333333333333333
+          ]
+        ],
+        "Right": [
+          [
+            0.2,
+            1.1333333333333333
+          ],
+          [
+            1.5333333333333334,
+            2.533333333333333
+          ]
+        ]
+      },
+      "foot_lock": true
+    },
+    "mco_fast_chase": {
+      "file": "mco_fast_chase.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_HyperChase_1_Loop.fbx",
+      "sha256": "034055c8821b4fca7f214c5ca4b9fb5edf00ad5c1b91362726db007cf71e314c",
+      "duration": 1.9,
+      "frames": 58,
+      "loop": true,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        2.1510571102112408e-16,
+        0.0,
+        -5.481481240472693
+      ],
+      "speed_mps": 2.8849901265645754,
+      "loop_seam_radians": 0.0,
+      "source_contact_before": {
+        "samples": 23,
+        "mean_mps": 0.20184231999458568,
+        "p95_mps": 0.32934711696933877
+      },
+      "source_contact_after": {
+        "samples": 23,
+        "mean_mps": 7.914181201748588e-15,
+        "p95_mps": 2.665705911712542e-14
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            0.06666666666666667
+          ],
+          [
+            0.43333333333333335,
+            0.6
+          ],
+          [
+            1.1,
+            1.2333333333333334
+          ],
+          [
+            1.7666666666666666,
+            1.9
+          ]
+        ],
+        "Right": [
+          [
+            0.7333333333333333,
+            0.8666666666666667
+          ],
+          [
+            1.4,
+            1.5333333333333334
+          ]
+        ]
+      },
+      "foot_lock": true
+    },
+    "mco_crawl": {
+      "file": "mco_crawl.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Crawl_1_Loop.fbx",
+      "sha256": "83e25550de0112a7c62bba7044e0c7cb06996eedccfcb9c113307b5d6f95f05d",
+      "duration": 9.033333333333333,
+      "frames": 272,
+      "loop": true,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        2.1060680140090127e-19,
+        0.0,
+        -0.7682601167053534
+      ],
+      "speed_mps": 0.08504724539173654,
+      "loop_seam_radians": 0.0,
+      "source_contact_before": {
+        "samples": 29,
+        "mean_mps": 0.0898075260726829,
+        "p95_mps": 0.16250032892775582
+      },
+      "source_contact_after": {
+        "samples": 29,
+        "mean_mps": 0.0898075260726829,
+        "p95_mps": 0.16250032892775582
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            1.7,
+            1.8333333333333333
+          ],
+          [
+            2.066666666666667,
+            2.3333333333333335
+          ],
+          [
+            2.8333333333333335,
+            3.1666666666666665
+          ]
+        ],
+        "Right": [
+          [
+            1.0666666666666667,
+            1.3
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_idle": {
+      "file": "mco_idle.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Idle_1_v2.fbx",
+      "sha256": "6e89032a83170cb720e8a8a9238c5ab1cc9539f92e6c4e93f4dc182afbe4e252",
+      "duration": 12.5,
+      "frames": 376,
+      "loop": true,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        -2.3293392779167352e-08,
+        -0.0,
+        5.6113864014677154e-08
+      ],
+      "speed_mps": 4.8605170963244606e-09,
+      "loop_seam_radians": 0.0,
+      "source_contact_before": {
+        "samples": 748,
+        "mean_mps": 0.015942149724922704,
+        "p95_mps": 0.03284599229917424
+      },
+      "source_contact_after": {
+        "samples": 748,
+        "mean_mps": 0.015942149724922704,
+        "p95_mps": 0.03284599229917424
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            12.5
+          ]
+        ],
+        "Right": [
+          [
+            0.06666666666666667,
+            12.5
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_idle_2": {
+      "file": "mco_idle_2.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Idle_2.fbx",
+      "sha256": "d783c95685ec9cc03af479239dc27fc388db701e19f0c190f2a2f20b1d803038",
+      "duration": 13.666666666666666,
+      "frames": 411,
+      "loop": true,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        -1.2625609021983186e-06,
+        0.0,
+        -4.827472462777623e-07
+      ],
+      "speed_mps": 9.89052040753218e-08,
+      "loop_seam_radians": 5.16191365590357e-08,
+      "source_contact_before": {
+        "samples": 820,
+        "mean_mps": 0.04297987024295928,
+        "p95_mps": 0.09293200181562195
+      },
+      "source_contact_after": {
+        "samples": 820,
+        "mean_mps": 0.04297987024295928,
+        "p95_mps": 0.09293200181562195
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            13.666666666666666
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            13.666666666666666
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_reach": {
+      "file": "mco_reach.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Reach_1_Loop.fbx",
+      "sha256": "98206210cd078ec950f506805a90cf1395f46a87057a80ab928c2a3ccd63b406",
+      "duration": 5.866666666666666,
+      "frames": 177,
+      "loop": true,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        -2.610819364557724e-07,
+        0.0,
+        -7.738701356760609e-07
+      ],
+      "speed_mps": 1.3921438833375205e-07,
+      "loop_seam_radians": 0.0,
+      "source_contact_before": {
+        "samples": 301,
+        "mean_mps": 0.03595201127973711,
+        "p95_mps": 0.1472570064095361
+      },
+      "source_contact_after": {
+        "samples": 301,
+        "mean_mps": 0.03595201127973711,
+        "p95_mps": 0.1472570064095361
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            5.866666666666666
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            2.0
+          ],
+          [
+            2.1333333333333333,
+            2.6333333333333333
+          ],
+          [
+            2.933333333333333,
+            3.533333333333333
+          ],
+          [
+            4.533333333333333,
+            4.6
+          ],
+          [
+            4.666666666666667,
+            5.533333333333333
+          ],
+          [
+            5.733333333333333,
+            5.866666666666666
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_attack_loop": {
+      "file": "mco_attack_loop.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Atk_Loop_1.fbx",
+      "sha256": "d646912793123e80f04ae55a1af8ac6dfeb112e1836c3b18b5ae5a43f0fa01f1",
+      "duration": 6.4,
+      "frames": 193,
+      "loop": true,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        -9.715679340037508e-09,
+        0.0,
+        -8.025887839189348e-09
+      ],
+      "speed_mps": 1.9690556598392287e-09,
+      "loop_seam_radians": 0.0,
+      "source_contact_before": {
+        "samples": 373,
+        "mean_mps": 0.03291329093906763,
+        "p95_mps": 0.09748891669603478
+      },
+      "source_contact_after": {
+        "samples": 373,
+        "mean_mps": 0.03291329093906763,
+        "p95_mps": 0.09748891669603478
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            0.3333333333333333
+          ],
+          [
+            0.4666666666666667,
+            3.1333333333333333
+          ],
+          [
+            3.3,
+            6.4
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            0.43333333333333335
+          ],
+          [
+            0.5,
+            6.4
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_attack_arms": {
+      "file": "mco_attack_arms.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Atk_Arms_3_SHORT_Loop.fbx",
+      "sha256": "b8842fd0dc107333a26409df67940e926fc677ad997e89c0ba09fd20f17d0562",
+      "duration": 1.7,
+      "frames": 52,
+      "loop": true,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        9.878628650471238e-08,
+        -0.0,
+        -4.7093682070803566e-08
+      ],
+      "speed_mps": 6.437494325559912e-08,
+      "loop_seam_radians": 0.0,
+      "source_contact_before": {
+        "samples": 102,
+        "mean_mps": 0.04004715076259826,
+        "p95_mps": 0.08126423733217156
+      },
+      "source_contact_after": {
+        "samples": 102,
+        "mean_mps": 0.04004715076259826,
+        "p95_mps": 0.08126423733217156
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            1.7
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            1.7
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_fast_attack": {
+      "file": "mco_fast_attack.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_HyperAttack_1_SHORT_Loop.fbx",
+      "sha256": "51b86334aeae835557afaba8a213886c9c6f61ce445982a82fec122dcaace5bd",
+      "duration": 2.2,
+      "frames": 67,
+      "loop": true,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        -5.239445188097467e-07,
+        -0.0,
+        -7.271394886692588e-07
+      ],
+      "speed_mps": 4.073827202253632e-07,
+      "loop_seam_radians": 2.9802322387695312e-08,
+      "source_contact_before": {
+        "samples": 123,
+        "mean_mps": 0.10950811712036658,
+        "p95_mps": 0.20497193519551996
+      },
+      "source_contact_after": {
+        "samples": 123,
+        "mean_mps": 0.10950811712036658,
+        "p95_mps": 0.20497193519551996
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            0.1
+          ],
+          [
+            0.16666666666666666,
+            2.2
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            0.7
+          ],
+          [
+            0.8,
+            1.0
+          ],
+          [
+            1.0666666666666667,
+            1.7666666666666666
+          ],
+          [
+            1.8333333333333333,
+            2.2
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_fast_attack_idle": {
+      "file": "mco_fast_attack_idle.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_HyperAttack_1_SHORT_Idle_Loop.fbx",
+      "sha256": "c5a581839802c83cb4e3754a7e59f55e5ad00f47569930ae8740ed70ac1ee80c",
+      "duration": 1.9,
+      "frames": 58,
+      "loop": true,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        -8.082703065917768e-08,
+        0.0,
+        -2.961082018150331e-08
+      ],
+      "speed_mps": 4.530539509433737e-08,
+      "loop_seam_radians": 0.0,
+      "source_contact_before": {
+        "samples": 114,
+        "mean_mps": 0.02665500587943234,
+        "p95_mps": 0.04661978530915927
+      },
+      "source_contact_after": {
+        "samples": 114,
+        "mean_mps": 0.02665500587943234,
+        "p95_mps": 0.04661978530915927
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            1.9
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            1.9
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_death_back": {
+      "file": "mco_death_back.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Death_Back_Mid_1.fbx",
+      "sha256": "10a9e89fd77bb1f91fbf2e911d10509053c42b5cebf05e8cf2252edd1fca6ce7",
+      "duration": 2.7666666666666666,
+      "frames": 84,
+      "loop": false,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        0.08370923362323131,
+        -0.0,
+        1.8638340510124032
+      ],
+      "speed_mps": 0.6743540583308459,
+      "loop_seam_radians": null,
+      "source_contact_before": {
+        "samples": 31,
+        "mean_mps": 0.0576549209872799,
+        "p95_mps": 0.16890231929087482
+      },
+      "source_contact_after": {
+        "samples": 31,
+        "mean_mps": 0.0576549209872799,
+        "p95_mps": 0.16890231929087482
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            0.36666666666666664
+          ],
+          [
+            0.6333333333333333,
+            0.8
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            0.5
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_death_hit_back": {
+      "file": "mco_death_hit_back.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Death_Hit_Back_1.fbx",
+      "sha256": "69b79aba5dccc185e58ba3e968145d8bfff5a1ed4d940bded8db9319867a32e3",
+      "duration": 1.7,
+      "frames": 52,
+      "loop": false,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        0.09947235094632716,
+        -0.0,
+        1.4452445079053422
+      ],
+      "speed_mps": 0.8521551015136617,
+      "loop_seam_radians": null,
+      "source_contact_before": {
+        "samples": 20,
+        "mean_mps": 0.06150041742598324,
+        "p95_mps": 0.1549876589126631
+      },
+      "source_contact_after": {
+        "samples": 20,
+        "mean_mps": 0.06150041742598324,
+        "p95_mps": 0.1549876589126631
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            1.5,
+            1.7
+          ]
+        ],
+        "Right": [
+          [
+            1.1666666666666667,
+            1.2333333333333334
+          ],
+          [
+            1.3,
+            1.7
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_turn_l_45": {
+      "file": "mco_turn_l_45.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Turn_L_45_Loop.fbx",
+      "sha256": "3105e754cb806432bf27db1d54359cd539dfa13ec6dc487dbf7b9b17c3a0f39e",
+      "duration": 1.2666666666666666,
+      "frames": 39,
+      "loop": false,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        0.05931839381683902,
+        0.0,
+        -0.008910366737371236
+      ],
+      "speed_mps": 0.04735569882050261,
+      "loop_seam_radians": null,
+      "source_contact_before": {
+        "samples": 52,
+        "mean_mps": 0.02909497533814778,
+        "p95_mps": 0.06881832949482118
+      },
+      "source_contact_after": {
+        "samples": 52,
+        "mean_mps": 0.02909497533814778,
+        "p95_mps": 0.06881832949482118
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            0.6666666666666666
+          ],
+          [
+            1.2,
+            1.2666666666666666
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            0.23333333333333334
+          ],
+          [
+            0.5,
+            1.2666666666666666
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_turn_r_45": {
+      "file": "mco_turn_r_45.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Turn_R_45_Loop.fbx",
+      "sha256": "76d306d4b9c3ac1115c98cb9f009950732e3595465662a01656893cbe658d31a",
+      "duration": 1.2666666666666666,
+      "frames": 39,
+      "loop": false,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        -0.04824487664199406,
+        0.0,
+        -0.03564355373466708
+      ],
+      "speed_mps": 0.047355465629885456,
+      "loop_seam_radians": null,
+      "source_contact_before": {
+        "samples": 53,
+        "mean_mps": 0.02979115008938825,
+        "p95_mps": 0.07162497514221842
+      },
+      "source_contact_after": {
+        "samples": 53,
+        "mean_mps": 0.02979115008938825,
+        "p95_mps": 0.07162497514221842
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            0.23333333333333334
+          ],
+          [
+            0.5,
+            1.2666666666666666
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            0.7
+          ],
+          [
+            1.2,
+            1.2666666666666666
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_turn_l_90": {
+      "file": "mco_turn_l_90.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Turn_L_90_1.fbx",
+      "sha256": "7fe3eba38288a2c18ebbc89b9a8ce717cfe9f372807440b5e754c1fbdbcc2e5d",
+      "duration": 5.4,
+      "frames": 163,
+      "loop": false,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        0.09496201480642319,
+        -0.0,
+        -0.05715551007312432
+      ],
+      "speed_mps": 0.02052511642466454,
+      "loop_seam_radians": null,
+      "source_contact_before": {
+        "samples": 289,
+        "mean_mps": 0.022770730239756974,
+        "p95_mps": 0.06492977219745645
+      },
+      "source_contact_after": {
+        "samples": 289,
+        "mean_mps": 0.022770730239756974,
+        "p95_mps": 0.06492977219745645
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            0.9666666666666667
+          ],
+          [
+            1.2,
+            1.9666666666666666
+          ],
+          [
+            2.066666666666667,
+            2.2666666666666666
+          ],
+          [
+            2.466666666666667,
+            3.5
+          ],
+          [
+            3.6,
+            5.4
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            1.5666666666666667
+          ],
+          [
+            1.9,
+            2.9
+          ],
+          [
+            3.1,
+            5.4
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_turn_r_90": {
+      "file": "mco_turn_r_90.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Turn_R_90_1.fbx",
+      "sha256": "90c8d1fbce8339d688204708c3b1cff1c7bbd7c8b124c8529572840513dfc87b",
+      "duration": 5.133333333333334,
+      "frames": 155,
+      "loop": false,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        -0.057155324210624525,
+        0.0,
+        -0.09496182889213516
+      ],
+      "speed_mps": 0.021591306537641252,
+      "loop_seam_radians": null,
+      "source_contact_before": {
+        "samples": 270,
+        "mean_mps": 0.024487967834381764,
+        "p95_mps": 0.057067278051918
+      },
+      "source_contact_after": {
+        "samples": 270,
+        "mean_mps": 0.024487967834381764,
+        "p95_mps": 0.057067278051918
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            1.2
+          ],
+          [
+            1.4666666666666666,
+            2.433333333333333
+          ],
+          [
+            2.7,
+            5.133333333333334
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            1.6666666666666667
+          ],
+          [
+            2.1666666666666665,
+            3.066666666666667
+          ],
+          [
+            3.3,
+            5.133333333333334
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_walk_knockback": {
+      "file": "mco_walk_knockback.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Walk_F_1_KnockBack_Walk.fbx",
+      "sha256": "52257156ccfeefed0acd250be9d9dbbe7d55e39f423e38de50b73406569aaeb7",
+      "duration": 5.5,
+      "frames": 166,
+      "loop": false,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        0.03522603969510093,
+        0.0,
+        1.6920133020627637
+      ],
+      "speed_mps": 0.30770544508217773,
+      "loop_seam_radians": null,
+      "source_contact_before": {
+        "samples": 199,
+        "mean_mps": 0.06081118852835927,
+        "p95_mps": 0.1779201299330854
+      },
+      "source_contact_after": {
+        "samples": 199,
+        "mean_mps": 0.06081118852835927,
+        "p95_mps": 0.1779201299330854
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            0.13333333333333333
+          ],
+          [
+            0.4666666666666667,
+            0.7
+          ],
+          [
+            1.1,
+            1.5
+          ],
+          [
+            1.9333333333333333,
+            2.3666666666666667
+          ],
+          [
+            2.8,
+            3.433333333333333
+          ],
+          [
+            3.6333333333333333,
+            4.666666666666667
+          ],
+          [
+            4.966666666666667,
+            5.5
+          ]
+        ],
+        "Right": [
+          [
+            0.2,
+            0.4
+          ],
+          [
+            0.7666666666666667,
+            1.1
+          ],
+          [
+            1.5,
+            1.9
+          ],
+          [
+            2.3666666666666667,
+            2.9
+          ],
+          [
+            3.2666666666666666,
+            4.166666666666667
+          ],
+          [
+            4.4,
+            5.266666666666667
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_chase_knockback": {
+      "file": "mco_chase_knockback.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Chase_1_KnockBack_Chase.fbx",
+      "sha256": "223ccac119f49054e18e0a577784039b7c1709a802819e550212a852c1b552f5",
+      "duration": 4.933333333333334,
+      "frames": 149,
+      "loop": false,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        0.002166005155520855,
+        -0.0,
+        -0.032002931714585604
+      ],
+      "speed_mps": 0.006501921721723351,
+      "loop_seam_radians": null,
+      "source_contact_before": {
+        "samples": 153,
+        "mean_mps": 0.08344302665737827,
+        "p95_mps": 0.24209563071140533
+      },
+      "source_contact_after": {
+        "samples": 153,
+        "mean_mps": 0.08344302665737827,
+        "p95_mps": 0.24209563071140533
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.13333333333333333,
+            0.5
+          ],
+          [
+            0.9,
+            1.0
+          ],
+          [
+            1.5,
+            1.9333333333333333
+          ],
+          [
+            2.3,
+            3.1
+          ],
+          [
+            3.566666666666667,
+            4.133333333333334
+          ],
+          [
+            4.666666666666667,
+            4.933333333333334
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            0.1
+          ],
+          [
+            0.5666666666666667,
+            0.7333333333333333
+          ],
+          [
+            1.1666666666666667,
+            1.4666666666666666
+          ],
+          [
+            1.9333333333333333,
+            2.6666666666666665
+          ],
+          [
+            2.933333333333333,
+            3.566666666666667
+          ],
+          [
+            4.066666666666666,
+            4.7
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_stand_walk": {
+      "file": "mco_stand_walk.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Stand_Walk_F_1.fbx",
+      "sha256": "46b25e091e480c32e02e8ac29d89ed49ccf2f49641335bfd32eae2e3358844a8",
+      "duration": 1.8333333333333333,
+      "frames": 56,
+      "loop": false,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        0.009792432757332598,
+        -0.0,
+        -0.27640660643817544
+      ],
+      "speed_mps": 0.15086182550040603,
+      "loop_seam_radians": null,
+      "source_contact_before": {
+        "samples": 96,
+        "mean_mps": 0.018210534901285026,
+        "p95_mps": 0.059155568089168525
+      },
+      "source_contact_after": {
+        "samples": 96,
+        "mean_mps": 0.018210534901285026,
+        "p95_mps": 0.059155568089168525
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            0.9
+          ],
+          [
+            1.1333333333333333,
+            1.8333333333333333
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            1.6
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_stand_chase": {
+      "file": "mco_stand_chase.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Stand_To_Chase_1.fbx",
+      "sha256": "7408b67c5a0fa41ba9650eb11361cb0925160b52267b0ac33abaab1864235b5a",
+      "duration": 1.0333333333333334,
+      "frames": 32,
+      "loop": false,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        0.00902964619640391,
+        0.0,
+        -0.30093254427592997
+      ],
+      "speed_mps": 0.2913561131064001,
+      "loop_seam_radians": null,
+      "source_contact_before": {
+        "samples": 53,
+        "mean_mps": 0.035201999825483825,
+        "p95_mps": 0.15672389330472014
+      },
+      "source_contact_after": {
+        "samples": 53,
+        "mean_mps": 0.035201999825483825,
+        "p95_mps": 0.15672389330472014
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            0.5333333333333333
+          ],
+          [
+            0.7666666666666667,
+            1.0333333333333334
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            0.9666666666666667
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_stand_attack": {
+      "file": "mco_stand_attack.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Stand_To_Atk_1.fbx",
+      "sha256": "74ba020c119028adced77669d56a55cd95d5839803e25f6fa056df00230fafdc",
+      "duration": 4.433333333333334,
+      "frames": 134,
+      "loop": false,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        -0.07878236280791451,
+        -0.0,
+        -2.051033091757091
+      ],
+      "speed_mps": 0.462980208553315,
+      "loop_seam_radians": null,
+      "source_contact_before": {
+        "samples": 187,
+        "mean_mps": 0.05970006386284962,
+        "p95_mps": 0.18474511582292655
+      },
+      "source_contact_after": {
+        "samples": 187,
+        "mean_mps": 0.05970006386284962,
+        "p95_mps": 0.18474511582292655
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            0.4666666666666667
+          ],
+          [
+            0.7,
+            1.6333333333333333
+          ],
+          [
+            1.9333333333333333,
+            2.966666666666667
+          ],
+          [
+            3.3333333333333335,
+            4.166666666666667
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            1.0333333333333334
+          ],
+          [
+            1.3666666666666667,
+            2.1
+          ],
+          [
+            2.5,
+            3.4
+          ],
+          [
+            4.133333333333334,
+            4.433333333333334
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_stand_crawl": {
+      "file": "mco_stand_crawl.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Stand to_Crawl_1.fbx",
+      "sha256": "b1e7516b7e0053ec259af947b24d29418cc3c4d1e41f1c4b02c51fc6b5e08041",
+      "duration": 4.633333333333334,
+      "frames": 140,
+      "loop": false,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        -0.065649910937457,
+        -0.0,
+        -2.1433200905966023
+      ],
+      "speed_mps": 0.4628040180268048,
+      "loop_seam_radians": null,
+      "source_contact_before": {
+        "samples": 41,
+        "mean_mps": 0.057502659337777665,
+        "p95_mps": 0.25170492253215465
+      },
+      "source_contact_after": {
+        "samples": 41,
+        "mean_mps": 0.057502659337777665,
+        "p95_mps": 0.25170492253215465
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            0.9
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            0.4666666666666667
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_on_fire": {
+      "file": "mco_on_fire.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_OnFire_2A_SHORT.fbx",
+      "sha256": "85271b494e390dbc689ad025a66f263786b1a9b17f6c849cf388cc613bd44ab5",
+      "duration": 4.133333333333334,
+      "frames": 125,
+      "loop": false,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        0.1578124523989576,
+        -0.0,
+        1.36949841070068
+      ],
+      "speed_mps": 0.3335228433178066,
+      "loop_seam_radians": null,
+      "source_contact_before": {
+        "samples": 90,
+        "mean_mps": 0.06962323718575332,
+        "p95_mps": 0.18044411544997374
+      },
+      "source_contact_after": {
+        "samples": 90,
+        "mean_mps": 0.06962323718575332,
+        "p95_mps": 0.18044411544997374
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            0.8333333333333334
+          ],
+          [
+            1.0666666666666667,
+            1.7666666666666666
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            0.26666666666666666
+          ],
+          [
+            0.5333333333333333,
+            1.3666666666666667
+          ],
+          [
+            1.5666666666666667,
+            1.6666666666666667
+          ],
+          [
+            1.8,
+            2.0
+          ],
+          [
+            2.2666666666666666,
+            2.3333333333333335
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_idle_to_stand": {
+      "file": "mco_idle_to_stand.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Idle_1_v2_to_MOB_Stand.fbx",
+      "sha256": "24868463ee980ca70dace8ce15d557a5174c3af7fac2164574594af9a574d35b",
+      "duration": 1.5333333333333334,
+      "frames": 47,
+      "loop": false,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        -7.24786918154265e-05,
+        0.0,
+        -0.0013865562529017479
+      ],
+      "speed_mps": 0.0009055104000224741,
+      "loop_seam_radians": null,
+      "source_contact_before": {
+        "samples": 90,
+        "mean_mps": 0.008371673775972572,
+        "p95_mps": 0.017903246249212933
+      },
+      "source_contact_after": {
+        "samples": 90,
+        "mean_mps": 0.008371673775972572,
+        "p95_mps": 0.017903246249212933
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            1.5333333333333334
+          ]
+        ],
+        "Right": [
+          [
+            0.06666666666666667,
+            1.5333333333333334
+          ]
+        ]
+      },
+      "foot_lock": false
+    },
+    "mco_stand_to_idle": {
+      "file": "mco_stand_to_idle.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/MOB_Stand_to_Zombie_Idle_1_v2.fbx",
+      "sha256": "1c27be10d6263d4a60c8a57b929acb812b32656f56e28033654dbed426c49ae0",
+      "duration": 1.5333333333333334,
+      "frames": 47,
+      "loop": false,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        -6.248978008480673e-05,
+        -0.0,
+        0.0013870409699748936
+      ],
+      "speed_mps": 0.0009055095126798288,
+      "loop_seam_radians": null,
+      "source_contact_before": {
+        "samples": 92,
+        "mean_mps": 0.008626225577212831,
+        "p95_mps": 0.021079980865643846
+      },
+      "source_contact_after": {
+        "samples": 92,
+        "mean_mps": 0.008626225577212831,
+        "p95_mps": 0.021079980865643846
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            1.5333333333333334
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            1.5333333333333334
+          ]
+        ]
+      },
+      "foot_lock": false
+    }
+  },
+  "errors": []
+}

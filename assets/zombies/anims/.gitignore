@@ -1,0 +1,4 @@
+# Licensed source/derivative animation data stays local; rebuild from the owner's pack.
+*.glb
+*.glb.import
+mocap_manifest.json

@@ -1,0 +1,812 @@
+{
+	"clips": [
+		{
+			"animations": [
+				"mco_walk"
+			],
+			"bones": 19,
+			"clip": "mco_walk",
+			"duration": 4.5,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_chase"
+			],
+			"bones": 19,
+			"clip": "mco_chase",
+			"duration": 2.63333344459534,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_fast_chase"
+			],
+			"bones": 19,
+			"clip": "mco_fast_chase",
+			"duration": 1.89999997615814,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_crawl"
+			],
+			"bones": 19,
+			"clip": "mco_crawl",
+			"duration": 9.03333377838135,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_idle"
+			],
+			"bones": 19,
+			"clip": "mco_idle",
+			"duration": 12.5,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_idle_2"
+			],
+			"bones": 19,
+			"clip": "mco_idle_2",
+			"duration": 13.6666669845581,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_reach"
+			],
+			"bones": 19,
+			"clip": "mco_reach",
+			"duration": 5.86666679382324,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_attack"
+			],
+			"bones": 19,
+			"clip": "mco_attack_loop",
+			"duration": 6.40000009536743,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_attack_arms"
+			],
+			"bones": 19,
+			"clip": "mco_attack_arms",
+			"duration": 1.70000004768372,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_fast_attack"
+			],
+			"bones": 19,
+			"clip": "mco_fast_attack",
+			"duration": 2.20000004768372,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_fast_attack_idle"
+			],
+			"bones": 19,
+			"clip": "mco_fast_attack_idle",
+			"duration": 1.89999997615814,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_death_back"
+			],
+			"bones": 19,
+			"clip": "mco_death_back",
+			"duration": 2.76666665077209,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_death_hit_back"
+			],
+			"bones": 19,
+			"clip": "mco_death_hit_back",
+			"duration": 1.70000004768372,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_turn_l_45"
+			],
+			"bones": 19,
+			"clip": "mco_turn_l_45",
+			"duration": 1.26666665077209,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_turn_r_45"
+			],
+			"bones": 19,
+			"clip": "mco_turn_r_45",
+			"duration": 1.26666665077209,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_turn_l_90"
+			],
+			"bones": 19,
+			"clip": "mco_turn_l_90",
+			"duration": 5.40000009536743,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_turn_r_90"
+			],
+			"bones": 19,
+			"clip": "mco_turn_r_90",
+			"duration": 5.13333320617676,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_walk_knockback"
+			],
+			"bones": 19,
+			"clip": "mco_walk_knockback",
+			"duration": 5.5,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_chase_knockback"
+			],
+			"bones": 19,
+			"clip": "mco_chase_knockback",
+			"duration": 4.93333339691162,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_stand_walk"
+			],
+			"bones": 19,
+			"clip": "mco_stand_walk",
+			"duration": 1.83333337306976,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_stand_chase"
+			],
+			"bones": 19,
+			"clip": "mco_stand_chase",
+			"duration": 1.03333330154419,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_stand_attack"
+			],
+			"bones": 19,
+			"clip": "mco_stand_attack",
+			"duration": 4.43333339691162,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_stand_crawl"
+			],
+			"bones": 19,
+			"clip": "mco_stand_crawl",
+			"duration": 4.63333320617676,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_on_fire"
+			],
+			"bones": 19,
+			"clip": "mco_on_fire",
+			"duration": 4.13333320617676,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_idle_to_stand"
+			],
+			"bones": 19,
+			"clip": "mco_idle_to_stand",
+			"duration": 1.53333330154419,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_stand_to_idle"
+			],
+			"bones": 19,
+			"clip": "mco_stand_to_idle",
+			"duration": 1.53333330154419,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		}
+	],
+	"expected": 26,
+	"failures": []
+}

@@ -1,10 +1,10 @@
 class_name ZombieClips
 extends RefCounted
-## Procedural pose library baked to Animation resources, and the AnimationTree every zombie runs (ZOMBIE_ANIM_SPEC
-## §1-§4, T-041). Nothing is imported: every clip is a pose function sampled at anim.json skeleton.sample_hz into
-## rotation / position tracks on the shared ZombieRig skeleton, cached once and shared by the whole pool.
+## Shared AnimationTree and cached legacy / licensed motion library (ZOMBIE_ANIM_SPEC §1-§4, T-041).
+## Existing pose functions are retained as fallback. Owner-supplied mco_ clips are imported from GLB;
+## tools/blender/zombie_anim_batch.py retargets them offline onto the same ZombieRig.
 ## Locomotion clips carry root motion on the Root bone (forward = -Z) whose speed at time scale 1 equals the
-## tier speed, so Zombie matches the clip to its nav velocity by time scale and the feet never slide.
+## tier speed. Zombie matches playback to nav velocity; foot planting needs contact checks too.
 ##
 ## Tree layout (one per zombie, graph duplicated per instance so clip picks are per zombie):
 ##   SM (state machine: Spawn / Emerge / Climb / Barricade / Locomotion / Attack / React / Crawl / Death)
@@ -18,11 +18,13 @@ const ATTACK_WINDUP: float = 0.45     # the baked attack timing; Zombie rescales
 const ATTACK_SWING: float = 0.35
 const TEAR_CYCLE: float = 1.2         # baked tear cycle; rescaled to the tear interval
 const DEATH_SECONDS: float = 1.3
+const MocapBank: GDScript = preload("res://gravelight/enemies/zombie_mocap.gd")
 
 static var _lib: AnimationLibrary = null
 static var _lengths: Dictionary = {}
 static var _cfg: Dictionary = {}
 static var _bones: PackedStringArray = []
+static var _mocap: RefCounted
 
 
 static func cfg() -> Dictionary:
@@ -48,7 +50,18 @@ static func library() -> AnimationLibrary:
 			_lib.add_animation(n2 + "_lean_l", generate(n2 + "_lean_l"))
 			_lib.add_animation(n2 + "_lean_r", generate(n2 + "_lean_r"))
 	_lib.add_animation("posture_none", generate("posture_none"))
+	_mocap = MocapBank.new()
+	_mocap.load_bank()
+	for name: String in _mocap.animations:
+		var clip: Animation = _mocap.animations[name]
+		_lib.add_animation(name, clip)
+		_lengths[name] = clip.length
 	return _lib
+
+
+static func mocap_info() -> Dictionary:
+	library()
+	return {"loaded": _mocap.metadata.keys(), "errors": _mocap.errors, "runtime_enabled": _mocap.config.get("runtime_enabled", false)}
 
 
 static func length_of(clip: String) -> float:

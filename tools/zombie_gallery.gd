@@ -134,10 +134,10 @@ func _ready() -> void:
 			get_tree().quit(2)
 			return
 		clips = [only_clip]
-	var inventory: Dictionary = {"bones": Array(ZombieRig.bone_names()), "kits": kits, "clips": [], "source": "Existing procedural ZombieClips library; NOT mocap"}
+	var inventory: Dictionary = {"bones": Array(ZombieRig.bone_names()), "kits": kits, "clips": [], "source": "Existing procedural library plus locally converted licensed clips (mco_ prefix)", "mocap": ZombieClips.mocap_info()}
 	for clip: String in clips:
 		var anim: Animation = ZombieClips.library().get_animation(clip)
-		inventory["clips"].append({"name": clip, "seconds": anim.length, "tracks": anim.get_track_count(), "loop": anim.loop_mode})
+		inventory["clips"].append({"name": clip, "seconds": anim.length, "tracks": anim.get_track_count(), "loop": anim.loop_mode, "source": anim.get_meta("source", "existing procedural library")})
 	_write_json("runtime_inventory.json", inventory)
 	ready_gallery = true
 
@@ -186,6 +186,11 @@ func _process(delta: float) -> void:
 		if elapsed >= seconds: _finish()
 		return
 	clip_time += delta
+	if follow_actor and not _new.is_empty():
+		var sk: Skeleton3D = _new[0].get("_skel")
+		var origin: Vector3 = sk.global_transform * sk.get_bone_global_pose(sk.find_bone("Root")).origin
+		_cam.position = origin + Vector3(2.2, 1.5, -4.0)
+		_cam.look_at(origin + Vector3.UP)
 	if clip_index < 0 or clip_time >= maxf(1.0, ZombieClips.length_of(clips[clip_index])):
 		clip_index += 1
 		clip_time = 0
@@ -201,7 +206,9 @@ func _process(delta: float) -> void:
 			tree.active = false
 			var ap: AnimationPlayer = z.get("_ap")
 			if not ap.has_animation(clip): missing.append(clip)
-			else: ap.play(clip)
+			else:
+				ap.play(clip)
+				ap.advance(0.0) # Evaluate before capture, avoiding a tool-only rest frame.
 	if capture and frame_sequence and clip_time >= sequence_next:
 		sequence_next += 1.0 / 12.0
 		_save_frame("sequence_%03d_%s_%04d" % [clip_index, clips[clip_index], sequence_frame])
@@ -276,7 +283,7 @@ func _finish() -> void:
 	result["state_samples"] = state_samples
 	result["capture_affects_timing"] = capture and frame_sequence
 	result["validation_scope"] = "Active population, missing resources/captures, sampled rest poses only. Not art or foot-contact acceptance."
-	result["quality_acceptance"] = "NOT CERTIFIED: procedural source clips; planted-contact annotations and full state coverage still missing"
+	result["quality_acceptance"] = "NOT CERTIFIED: mixed legacy/mocap library; full state and planted-contact runtime acceptance still required"
 	if horde and min_active < actor_count:
 		validation_failures.append("Expected %d active zombies throughout; minimum was %d" % [actor_count, min_active])
 	if not missing.is_empty(): validation_failures.append("Missing clips or failed captures")

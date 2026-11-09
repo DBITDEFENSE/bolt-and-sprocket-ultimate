@@ -1,5 +1,23 @@
 # PROGRESS
 
+RESUME HERE: 2026-11-09 Codex Stage 1 intake/pipeline checkpoint, branch codex/zombie-overhaul,
+work ONLY in .wt/zombie-overhaul. Devin supplied Downloads/FBX_Zombie_27_Starter and explicitly
+said PRESERVE CURRENT SPEEDS. Copied originals to ignored assets/user_supplied/mocap_online/
+zombie_starter_2_7. Do not buy/download again. 26 unique motions (26 IPC duplicates, unused demo
+body). Repeatable tools/zombie_mocap_build.ps1 ran installed Blender 5.1.2 + Godot 4.7.2: all 26
+converted/imported, 19 identity-rest bones match, zero import-check failures. Script scan 856/0;
+license tests 4/4 (367 asserts); assets manifest current. Licensed binaries remain ignored/local.
+Runtime bank loads for gallery; gameplay selection intentionally still disabled at this checkpoint.
+Native fast-gait rendered preview completed; first preview rest-frame capture subsequently fixed
+by immediate AnimationPlayer evaluation. Offline source-contact IK reduces planted toe drift,
+but that is not a runtime acceptance result. Shared license gate minimally accepts the owner's
+specific paid pack only in assets/zombies/anims. Official terms + per-clip ledger in ASSETS.md.
+NEXT: wire reviewed mocap gaits into real AI without changing enemies.json speeds, derive footstep
+events from source contacts, compare live tier recordings and run 24-active headless/rendered soaks.
+Slow source walk/chase/crawl must be judged at the preserved speeds before runtime promotion.
+Continue missing states/model work honestly; no premium/model quality sign-off, merge or export.
+
+
 RESUME HERE: 2026-11-08 Codex final-check checkpoint, codex/zombie-overhaul in .wt/zombie-overhaul.
 QUALITY TARGET NOT MET; do not describe this branch as a completed new-zombie asset overhaul.
 Delivered/tested fixes: deferred random gait phase, evaluated-playhead footsteps, ragdoll live

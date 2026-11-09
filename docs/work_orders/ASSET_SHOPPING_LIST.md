@@ -2,11 +2,15 @@
 
 ## Zombie overhaul additions (2026-11-08)
 
-- MoCap Online zombie source FBX pack plus license/receipt permitting use in Godot. Not present in
-  `assets/user_supplied/` at audit time. Place purchased sources there, never unofficial mirrors.
-- Coverage needed: shamble/walk/jog/run/sprint variants, crawls, turns, swipes/lunge/grab/bite,
-  barricade tears/reach/vault, climbs, directional reactions, knockdowns/getups and eight or more deaths.
-  Audit the supplied pack before buying gap fillers; no exact pack contents assumed.
+- RECEIVED 2026-11-09: MoCap Online Zombie Starter 2.7 from Devin's Downloads folder;
+  26 root-motion clips plus 26 in-place versions of the same recordings. These are not 52
+  distinct motions. Source files are now in the zombie worktree's ignored `assets/user_supplied/`.
+- Remaining motion coverage: additional distinct locomotion variants (especially upright walks
+  suited to the preserved 1.3/2.0 m/s tiers and a 0.8 m/s crawl), barricade tears/vaults, climbs,
+  ground emerges, directional hit reacts, knockdown/get-up pairs, crawler bite/armless attacks,
+  and at least six more distinct death performances. The Starter pack has two death clips.
+- Archive the purchase receipt/license with the local pack when available; the official Standard
+  License and owner-supplied provenance are recorded in ASSETS.md. Do not buy this pack again.
 - Close-up review found the current soldier head and uniform too simplified for the art bible.
   Needed: an original artist-authored zombie head/body and distressed WW2-style clothing set
   (or a commercially licensed source with editable meshes), PBR albedo/normal/roughness, clean
