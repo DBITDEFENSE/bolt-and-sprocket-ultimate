@@ -91,11 +91,12 @@
   "golden": {
     "_doc": "T-221: the golden hour of the bomb run (KranichSunset, gravelight/world/map04/kranich_sunset.gd). The act's own clock runs night -> dawn (MapAmbience flight_sun, FlightSky.sunrise up to dawn_max); golden rises from from_sunrise to to_sunrise (act round 4 into 5) and is held at run_hold while the bomb run is on (eased over run_ease_s). It reads as a sunset on screen; in the story it is still the dawn behind the wing. key_*: the key light (the act's DirectionalLight Moon) deepened to gold, brighter, glinting, laid low at sun_dir (toward the sun: aft, a few degrees up). clouds: the sheets below lit / shadowed. bay: the ramp seam's low sun shaft (a shadowed spot: god rays through the racks in the volumetric fog) at energy x golden while the run or the bay doors are on (idle share otherwise), the dust motes; hatch_hold_s: how long a dropped rack's release hatch glows. drop: the casing under the hull (from_y), its aft drift (m/s2), vapour until cloud_y, gone after life_s; a live (not dud) casing ends in a violet flash flash_m wide at flash_y, flash_back m aft, after flash_after_s.",
     "from_sunrise": 0.45, "to_sunrise": 0.7, "dawn_max": 0.85, "run_hold": 1.0, "run_ease_s": 6.0,
-    "key_color": "#ff8a34", "key_energy": 2.4, "key_specular": 2.2, "sun_dir": [0.24, 0.05, -1.0],
-    "clouds": {"lit": "#ff9a5c", "dark": "#1b2546"},
+    "key_color": "#ff8030", "key_energy": 3.2, "key_specular": 3.2, "sun_dir": [0.24, 0.05, -1.0],
+    "clouds": {"lit": "#ff8a3a", "dark": "#2a1d52", "softness": 0.1, "opacity_mult": 1.15, "coverage_mult": 0.82},
+    "fog": {"density_mult": 0.18, "volumetric_mult": 0.3, "color": "#2a2030"},
     "flash_color": "#8a4dff",
     "bay": {"color": "#ffb066", "energy": 6.0, "range": 30.0, "angle": 30.0, "fog": 3.5, "ramp_at": [0.0, 2.6, 0.3], "idle": 0.35, "motes": 260, "hatch_hold_s": 14.0},
-    "drop": {"from_y": -1.4, "drift": 6.5, "cloud_y": -95.0, "life_s": 7.0, "flash_after_s": 8.5, "flash_m": 140.0, "flash_y": -240.0, "flash_back": 160.0, "hatch_energy": 5.0, "hatch_fog": 5.0}
+    "drop": {"from_y": -1.4, "drift": 6.5, "cloud_y": -95.0, "life_s": 7.0, "flash_after_s": 8.5, "flash_m": 300.0, "flash_y": -170.0, "flash_back": 120.0, "hatch_energy": 5.0, "hatch_fog": 5.0, "glint_m": 6.0, "trail_m": 1.6, "trail_amount": 240, "trail_life_s": 4.0}
   },
   "interior": {
     "_doc": "T-221: the interior made readable (KranichInterior, gravelight/world/map04/kranich_interior.gd): lamps [x, y, z, kind, zone] of the kinds (colour, energy off = before the aux bus / on = after, range, fog, bare = no fixture mesh, flicker), none shadowed; zone_scale: the generator's lights per zone x [energy, range]; subfloors [x0, z0, x1, z1, y]: dark plates under the walkway gratings.",

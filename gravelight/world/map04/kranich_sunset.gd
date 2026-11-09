@@ -39,6 +39,8 @@ var _t: float = 0.0
 var _run_k: float = 0.0
 var _env: Environment = null
 var _fog_g: float = 0.0
+var _flash_k: float = 0.0
+var _frame: Dictionary = {}
 
 
 # ---------------------------------------------------------------- pure rules
@@ -150,9 +152,9 @@ func _build_drop_assets() -> void:
 	st.generate_normals()
 	_casing_mesh = st.commit()
 	_casing_mat = StandardMaterial3D.new()
-	_casing_mat.albedo_color = Color(0.3, 0.31, 0.28)
-	_casing_mat.metallic = 0.6
-	_casing_mat.roughness = 0.4
+	_casing_mat.albedo_color = Color(0.46, 0.46, 0.43)
+	_casing_mat.metallic = 0.85
+	_casing_mat.roughness = 0.28
 	_flash_mat = StandardMaterial3D.new()
 	_flash_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	_flash_mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
@@ -193,6 +195,47 @@ func hold_tod(k: float) -> void:
 ## Capture hook ("call:KranichSunset:golden_now"): the full golden hour, held.
 func golden_now() -> void:
 	hold_tod(1.0)
+
+
+## Capture / trailer hook ("call:KranichSunset:frame_bomber_sun"): stands the local (noclip) camera so formation
+## bomber `index` crosses the low sun: on the line from the sun through the bomber, `dist` m short of it.
+func frame_bomber_sun(index: int = 3, dist: float = 55.0) -> void:
+	if _moon == null:
+		return
+	var b: Node3D = null
+	var root: Node = get_parent()
+	while root != null and root.get_parent() != null and not (root is MapRoot):
+		root = root.get_parent()
+	if root != null:
+		b = root.find_child("Formation%d" % index, true, false) as Node3D
+	var p: Player = null
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		if n is Player and (n as Player).is_local:
+			p = n as Player
+	if b == null or p == null:
+		return
+	p.noclip = true
+	p.collision_mask = 0
+	_frame = {"bomber": b, "player": p, "dist": dist, "left": float(cfg.get("frame_hold_s", 1.15))}
+	_apply_frame()
+	var cam3: Camera3D = get_viewport().get_camera_3d()
+	print("[sunset] bomber %d crosses the sun: to_sun %s, bomber %s, camera fov %s keep %s" % [index, str(_moon.global_basis.z), str(b.global_position), str(cam3.fov if cam3 != null else -1.0), str(cam3.keep_aspect if cam3 != null else -1)])
+
+
+## Holds the framing a moment (the capture tool places its camera after the hook runs; this wins for hold seconds).
+func _apply_frame() -> void:
+	var b: Node3D = _frame.get("bomber") as Node3D
+	var p: Player = _frame.get("player") as Player
+	if b == null or p == null or not is_instance_valid(b) or not is_instance_valid(p) or _moon == null:
+		_frame = {}
+		return
+	var to_sun: Vector3 = _moon.global_basis.z.normalized()
+	# a little under the line: the sun glares over the wing's upper edge
+	var eye: Vector3 = b.global_position - to_sun * float(_frame.get("dist", 55.0)) + Vector3(0, -1.2, 0)
+	p.global_position = eye - Vector3(0, 1.62, 0)
+	p.velocity = Vector3.ZERO
+	p.rotation.y = atan2(-to_sun.x, -to_sun.z)
+	p.set("_pitch", asin(clampf(to_sun.y, -1.0, 1.0)))
 
 
 ## A purely visual drop (no gameplay): rack `index` (1..6) lets a casing go through the hull (captures, `bombrun fx`).
@@ -267,8 +310,8 @@ func _spawn_drop(at: Vector3, hit: bool) -> void:
 	gl.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	n.add_child(gl)
 	var trail: GPUParticles3D = GPUParticles3D.new()
-	trail.amount = 140
-	trail.lifetime = 3.4
+	trail.amount = int(dc.get("trail_amount", 240))
+	trail.lifetime = float(dc.get("trail_life_s", 4.0))
 	trail.local_coords = false
 	trail.visibility_aabb = AABB(Vector3(-400, -400, -400), Vector3(800, 800, 800))
 	var tp: ParticleProcessMaterial = ParticleProcessMaterial.new()
@@ -291,7 +334,7 @@ func _spawn_drop(at: Vector3, hit: bool) -> void:
 	tp.color_ramp = agt
 	trail.process_material = tp
 	var pq: QuadMesh = QuadMesh.new()
-	pq.size = Vector2(1.1, 1.1)
+	pq.size = Vector2.ONE * float(dc.get("trail_m", 2.4))
 	var pmat: StandardMaterial3D = StandardMaterial3D.new()
 	pmat.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
 	pmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
@@ -340,6 +383,12 @@ func _process(delta: float) -> void:
 	_apply_sky()
 	_tick_bay(delta, run_on)
 	_tick_drops(delta)
+	if not _frame.is_empty():
+		_frame["left"] = float(_frame["left"]) - delta
+		if float(_frame["left"]) <= 0.0:
+			_frame = {}
+		else:
+			_apply_frame()
 
 
 func _apply_light() -> void:
@@ -413,7 +462,19 @@ func _apply_sky() -> void:
 			if lit0 is Color:
 				m2.set_shader_parameter("lit_color", (lit0 as Color).lerp(Color(str(c.get("lit", "#ffb27e"))), g))
 			if dark0 is Color:
-				m2.set_shader_parameter("dark_color", (dark0 as Color).lerp(Color(str(c.get("dark", "#1b2546"))), g * 0.85))
+				m2.set_shader_parameter("dark_color", (dark0 as Color).lerp(Color(str(c.get("dark", "#1b2546"))), g * 0.9))
+			# T-221 b: crisp cloud shapes (sharper edges, a little less cover) instead of a uniform haze
+			if not m2.has_meta("gold_base"):
+				m2.set_meta("gold_base", [m2.get_shader_parameter("softness"), m2.get_shader_parameter("coverage"), m2.get_shader_parameter("opacity")])
+			var gb: Array = m2.get_meta("gold_base")
+			if gb[0] != null:
+				m2.set_shader_parameter("softness", lerpf(float(gb[0]), float(c.get("softness", 0.1)), g))
+			if gb[1] != null and g > 0.0:
+				m2.set_shader_parameter("coverage", float(gb[1]) * lerpf(1.0, float(c.get("coverage_mult", 0.82)), g))
+			if gb[2] != null and g > 0.0:
+				m2.set_shader_parameter("opacity", clampf(float(gb[2]) * lerpf(1.0, float(c.get("opacity_mult", 1.15)), g), 0.0, 0.97))
+			# a violet flash under the deck lights the cloud violet; FlightSky's flak keeps its orange otherwise
+			m2.set_shader_parameter("flash_color", Color(str(cfg.get("flash_color", "#8a4dff"))) * 1.6 if _flash_k > 0.0 else Color(1.0, 0.75, 0.45))
 
 
 func _tick_bay(delta: float, run_on: bool) -> void:
@@ -454,7 +515,7 @@ func _tick_drops(delta: float) -> void:
 		n.rotation = Vector3(-p.w, sin(t * 0.9) * 0.15, sin(t * 1.3) * 0.25)
 		tr.position = n.position
 		tr.emitting = t > 0.25 and p.y > float(dc.get("cloud_y", -95.0))
-		(f["glint"] as StandardMaterial3D).albedo_color = Color(1, 1, 1, clampf(maxf(golden, 0.35) * (0.75 + 0.25 * sin(t * 9.0)) * (1.0 - smoothstep(4.0, 6.5, t)), 0.0, 1.0))
+		(f["glint"] as StandardMaterial3D).albedo_color = Color(1.6, 1.4, 1.1, clampf(maxf(golden, 0.4) * (0.7 + 0.3 * absf(sin(t * 7.0))) * (1.0 - smoothstep(4.5, 6.8, t)), 0.0, 1.0))
 		if bool(f["hit"]) and not bool(f["flashed"]) and t > float(dc.get("flash_after_s", 8.5)):
 			f["flashed"] = true
 			_flash_under(n.position)
@@ -464,11 +525,16 @@ func _tick_drops(delta: float) -> void:
 			n.queue_free()
 			tr.queue_free()
 			_falls.erase(f)
+	_flash_k = 0.0
 	for fl: Dictionary in _flashes.duplicate():
 		fl["t"] = float(fl["t"]) + delta
 		var ft: float = float(fl["t"])
 		var q: MeshInstance3D = fl["node"] as MeshInstance3D
 		var k: float = smoothstep(0.0, 0.25, ft) * (1.0 - smoothstep(0.6, 3.5, ft))
+		_flash_k = maxf(_flash_k, k)
+		if _sky != null:
+			_sky.set("_flash", maxf(float(_sky.get("_flash")), k * 1.6))
+			_sky.set("_flash_pos", q.global_position)
 		q.scale = Vector3.ONE * (1.0 + ft * 0.8)
 		(q.material_override as StandardMaterial3D).albedo_color = Color(1, 1, 1, k)
 		if ft > 3.6:
@@ -488,7 +554,7 @@ func _flash_under(last: Vector3) -> void:
 	q.material_override = m
 	q.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(q)
-	q.global_position = Vector3(last.x, float(dc.get("flash_y", -240.0)), last.z - float(dc.get("flash_back", 160.0)))
+	q.global_position = Vector3(last.x, float(dc.get("flash_y", -240.0)), clampf(last.z - float(dc.get("flash_back", 160.0)), -230.0, 100.0))   # inside the camera's far plane (400 m)
 	_flashes.append({"node": q, "t": 0.0})
 	if _sky != null:
 		_sky.set("_flash", 0.6)
