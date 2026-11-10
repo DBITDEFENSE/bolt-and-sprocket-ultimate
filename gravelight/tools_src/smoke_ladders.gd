@@ -62,11 +62,21 @@ func _climb_and_check(l: LadderClimb, label: String) -> void:
 	_p.velocity = Vector3.ZERO
 	await _frames(3)
 	_check(l.can_interact(_p), label + ": usable (" + l.get_prompt(_p) + ")")
+	var total: float = l.ride_seconds(_p.global_position.y)
+	var y_start: float = _p.global_position.y
 	l.climb(_p)
-	await _secs(l.ride_seconds(_p.global_position.y) + 0.9)
+	await _secs(total * 0.5)
+	# T-230: mid-climb the body is carried, between the ends, on the ladder's line, hands on the rungs, gun away
+	var mid: Vector3 = _p.global_position
+	_check(_p.carry == l and l.is_climbing(_p), label + ": mid-climb the player is carried by the ladder")
+	_check(absf(mid.y - y_start) > 0.3 and absf(mid.y - l.to_pos.y) > 0.3, label + ": mid-climb the body is between the ends (y %.2f)" % mid.y)
+	_check(Vector2(mid.x, mid.z).distance_to(l.line_pos()) < 0.05, label + ": mid-climb the body is on the ladder's line")
+	_check(_p.weapons.hands_mode == &"climb", label + ": mid-climb the hands are on the rungs (%s)" % _p.weapons.hands_mode)
+	await _secs(total * 0.5 + 0.9)
 	_check(_p.global_position.distance_to(l.to_pos) < 0.3, label + ": the climb ended at to_pos (at %s, wanted %s)" % [str(_p.global_position), str(l.to_pos)])
 	_check(_on_nav(_p.global_position, 0.7), label + ": the climb's end is on the navmesh")
-	_check(_p.is_physics_processing(), label + ": the player moves again after it")
+	_check(_p.is_physics_processing() and _p.carry == null, label + ": the player moves again after it")
+	_check(_p.weapons.hands_mode == &"", label + ": the gun is back after it")
 	if _p.global_position.distance_to(l.to_pos) >= 0.3:
 		for c: Node in _p.get_children():   # what overlaps the body at to_pos
 			if c is CollisionShape3D:
@@ -94,10 +104,18 @@ func _run() -> void:
 		if zip != null:
 			_check(_on_nav(zip.to_pos, 0.7), "zip: the landing is on the navmesh")
 			_check(zip.can_interact(_p), "zip: usable from the deck (" + zip.get_prompt(_p) + ")")
+			var zt: float = zip.ride_seconds()
+			_check(zt > 2.5 and zt < 8.0, "zip: the ride takes a few seconds (%.1f s: the roll gains speed under gravity, capped at %.1f m/s)" % [zt, zip.speed])
 			zip.ride(_p)
-			await _secs(zip.ride_seconds() + 0.9)
+			await _secs(zt * 0.5)
+			var zm: Vector3 = _p.global_position
+			_check(_p.carry == zip and zip.is_riding(_p), "zip: mid-ride the player is carried by the line")
+			_check(zm.y < zip.global_position.y - 1.0 and zm.y > zip.to_pos.y + 0.5, "zip: mid-ride the body hangs between the deck and the yard (y %.2f)" % zm.y)
+			_check(_p.weapons.hands_mode == &"hang", "zip: mid-ride the hands are on the bar (%s)" % _p.weapons.hands_mode)
+			await _secs(zt * 0.5 + 0.9)
 			_check(_p.global_position.distance_to(zip.to_pos) < 0.3, "zip: the ride ended at the landing")
-			_check(_p.is_physics_processing(), "zip: the player moves again after it")
+			_check(_p.is_physics_processing() and _p.carry == null, "zip: the player moves again after it")
+			_check(_p.weapons.hands_mode == &"", "zip: the gun is back after it")
 		await _climb_and_check(down, "tower down")
 	var links: Node = _map.get_node_or_null("ClimbLinks")
 	_check(links != null and links.has_node("Climb_Tower") and links.has_node("Climb_CellarHatch"), "map00: the zombies' climb links (tower, hatch) exist")

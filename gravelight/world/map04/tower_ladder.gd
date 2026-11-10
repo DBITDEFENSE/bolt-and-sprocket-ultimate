@@ -6,6 +6,7 @@ extends LadderClimb
 ## TowerLadder with `down` set) climbs them back down. The zombies get up there too, by their own climb link
 ## (map04c.json climb_links "TowerPerch"), so the perch is a good spot, not a safe one.
 ## T-229: a LadderClimb (every map's ladders work the same way now); this keeps its name, group and prompt.
+## T-230: the climb is animated like every LadderClimb (hands on the rungs, the pulls); the 3.0 s stays.
 
 
 func _init() -> void:

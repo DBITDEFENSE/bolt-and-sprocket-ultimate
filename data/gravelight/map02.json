@@ -998,7 +998,12 @@
       ],
       "zone": "E_UBOAT",
       "target": "to the deck",
-      "_doc": "T-229: U-1047's engine room escape hatch: the ladder on the stern bulkhead up through the deck"
+      "_doc": "T-229: U-1047's engine room escape hatch: the ladder on the stern bulkhead up through the deck",
+      "line": [
+        7.0,
+        82.85
+      ],
+      "surface": "metal"
     },
     {
       "name": "EngineHatch_Down",
@@ -1015,7 +1020,12 @@
         82.2
       ],
       "zone": "E_UBOAT",
-      "target": "into the engine room"
+      "target": "into the engine room",
+      "line": [
+        7.0,
+        82.85
+      ],
+      "surface": "metal"
     }
   ]
 }

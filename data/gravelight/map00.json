@@ -42,7 +42,12 @@
         44.0
       ],
       "target": "the tower",
-      "_doc": "T-229: the sniper tower's ladder, up its north face to the deck"
+      "_doc": "T-229 the Hochsitz; T-230: the body climbs the ladder line 0.4 m off the rungs (line), facing the tower (face, default yaw + 180)",
+      "line": [
+        5.4,
+        42.55
+      ],
+      "surface": "wood"
     },
     {
       "name": "TowerLadder_Top",
@@ -58,7 +63,13 @@
         0.0,
         42.4
       ],
-      "target": "the tower"
+      "target": "the tower",
+      "line": [
+        5.4,
+        42.55
+      ],
+      "surface": "wood",
+      "face": 180.0
     },
     {
       "name": "CellarHatch_Up",
@@ -76,7 +87,12 @@
       "zone": "OLD_CELLAR",
       "target": "to the bar",
       "locked_text": "The hatch is bolted from above",
-      "_doc": "T-229: the aunt's ladder under the cellar hatch behind the bar"
+      "_doc": "T-229: the aunt's ladder under the cellar hatch behind the bar",
+      "line": [
+        6.6,
+        5.68
+      ],
+      "surface": "wood"
     },
     {
       "name": "CellarHatch_Down",
@@ -94,7 +110,12 @@
       ],
       "zone": "OLD_CELLAR",
       "target": "into the Old Cellar",
-      "locked_text": "A bolted trapdoor"
+      "locked_text": "A bolted trapdoor",
+      "line": [
+        6.6,
+        5.68
+      ],
+      "surface": "wood"
     }
   ],
   "ziplines": [
@@ -117,10 +138,10 @@
       ],
       "yaw": 135.0,
       "speed": 7.5,
-      "hang": 2.0,
+      "hang": 2.7,
       "sag": 0.3,
       "target": "down to the stable wall",
-      "_doc": "T-229: from the sniper tower's roof post down to the landing post by the yard door's lamp"
+      "_doc": "T-229 the yard's zip line; T-230: hang 2.7 = the rider's feet under the cable with the arms up (the bar is 0.56 under it): standing on the deck the bar is at shoulder height, stepping off they drop 0.7 m into the hang"
     }
   ],
   "climb_links": [

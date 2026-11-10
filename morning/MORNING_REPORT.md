@@ -1,33 +1,31 @@
-# Morning report: SNIPER TOWER, ZIP LINE, LADDERS, 2026-11-09 (night)
+# Morning report: THE CLIMB AND THE RIDE MOVE, 2026-11-09 (late)
 
-**The Inn's yard has a sniper tower with a zip line, and ladders are a real mechanic now: every drawn ladder on every
-map either climbs (hold Use) or is visibly shut.** Branch `claude/maps-1-2-production` (with the two earlier passes),
-not merged: look first.
+**The ladder climbs and the zip line ride are animated now, and the stray wood in the Inn's first room is gone.**
+Branch `claude/maps-1-2-production` (with the three earlier passes), not merged: look first.
 
-## Map 1 (the Inn): the Hochsitz
-- A timber watch tower in the Carters' Yard's south-west corner: 3.8 m boarded deck 6.2 m up, a closed rail, a roof with
-  a lantern, sandbags on the field side. Hold Use at the ladder's foot to climb, again at the top to come down.
-- Zombies climb the same ladder (their own climb link), so you hold the deck, you do not hide on it.
-- The zip line leaves the roof post and lands you by the yard door's lamp on the stable wall: hold Use at the trolley.
-  Two seconds, the trolley rides with you and winds back.
-- The cellar hatch behind the bar is real: the floor is cut, a plank leaf covers it until you buy the Old Cellar, then it
-  falls back and the aunt's ladder climbs both ways (zombies come up it too).
+## The ladder (every map)
+- Hold Use at the foot: you step onto the ladder, turn to the rungs, the gun goes away and both hands come up. You go
+  up in pulls, rung by rung, the view bobbing and tipping toward the pulling hand, a hand letting go and reaching for
+  the next rung while the other holds; a rung sound per rung (wood on the tower and the cellar hatch, metal on the
+  U-boat). At the top you swing over the rail onto the deck and the gun comes back up. Down is the same, mirrored.
+- You keep the mouse, within a wide cone of the ladder. The radar tower's ladder (Act III) moves the same way.
 
-## Ladders on every map (audited against the baked navmesh, `probe_ladder_tops.gd`)
-- **Work:** the tower, the cellar hatch (Map 1); U-1047's engine room escape hatch to the deck (Map 3, new: the deck is
-  cut, coaming, lid thrown back, NOTAUSSTIEG); the radar tower and the Kranich's wing hatch as before.
-- **Shut, and look it:** Map 3's crane-leg ladder (locked guard plate), both U-boats' bridge ladders (GESPERRT chain),
-  Thalbach's signal-post ladder (anti-climb guard) and the hung office's ladder (chain under its own sign).
-- **Stowed:** the Inn attic's hatch ladder and Thalbach's four jig ladders hang on hooks: nothing to climb to.
-- **Left as drawn:** Map 3's landing-stage and lower-pen ladders go down into the water.
+## The zip line (Map 1)
+- Hold Use at the trolley: you step under the anchor, grab the bar at shoulder height, step off and drop into the hang.
+  The trolley starts slow and gains speed down the slope (gravity, capped at 7.5 m/s), you hang and swing under it,
+  lagging as it pulls, the wheels spin, the wind rises, the view opens; at the post you let go and land.
+  3.6 seconds instead of a 2-second slide.
+
+## The piece of wood
+- The Inn's first room is the taproom. Seven camera renders of it showed one odd upright: the fire poker, a bare block
+  standing on the floor a step from the hearth. It is a proper set of fire irons on the hearthstone now (stand, poker,
+  tongs, brush, the bellows on the jamb). The Waschkaue (Map 1's first room) was checked too: the one odd thing in its renders, a tan rectangle at the top of the right doorway seen from the back wall, is a lit window of the yard building north-east (x 15, 3.9 m up, on that sight line; two closer doorway cameras, u10_map01 A_kaue_door_r / A_kaue_door_r2, show nothing there); the probe (extended to the generators' geometry boxes, Props.probe_geo) lists nothing wooden in the corridor.
 
 ## Checked
-- `smoke_ladders`: every climb and the ride end where they should, on the navmesh, the body moves again; the hatch is
-  bolted then opens with its zone; the climb links exist. Facing runner, invisible-wall probe unchanged on Maps 1, 3, 4a.
-- Unit: Map 0 (navmesh fingerprint re-set for the deck and the hatch cut), Map 2, Thalbach, capture cams PASS.
-- Smokes: smoke_ladders, map00, map00_alive, map00_cellar_bay, map00_loop (failed once under load, PASS alone), inn_opening_paths, inn_survivors, story_props, interact, cousins, map02 (failed twice under load with the rounds running 3x slow, PASS alone in 142 s), map02_art (after the hatch's deck pieces were tagged to draw from the hall), map02_world, map04a, map04a_world PASS; letzte_fahrt hit the runner's 20-minute cap as before (no result, no error)
-- Minimap for Map 1 re-baked (the tower and hatch are connectors).
+- `smoke_ladders`: smoke_ladders PASS (73 checks, four runs through the iterations), smoke_map04c_world PASS (the radar tower's climb, 3.0 s + the mount and dismount, still inside the smoke's 4.2 s wait), unit test_ladders_data 3, test_capture_cams 3, test_world_objects 16, test_map00 60, test_map02 18, test_map04c 8 PASS, check_scripts 877 scripts 0 failed; map00 regenerated (598 collision boxes, unchanged; the fire irons are dressing); renders here under WSL: morning/screenshots/u05/anim4 (ride_zip: the yard below the raised arms, the stable wall ahead; ride_zip_up: the arms up to the trolley), anim3 (ride_climb: the right glove on the lower rung), anim1 (taproom_hearth: the fire irons), u10_map01/anim1 (the Kaue doorway cameras).
+- Renders here under WSL: `morning/screenshots/u05/anim1/` (mid-climb, mid-ride, the hearth) and `u10_map01/anim1/`.
 
 ## Please look
-`tools_src/capture.gd --set=u05 --only=yard_tower,tower_deck,bar_hatch` or DevLauncher into Map 1, out of the yard door,
-turn left. My own renders: `morning/screenshots/u05/t229b/` (the deck) and `t229c/` (the tower from the well, the bar hatch).
+`tools_src/capture.gd --set=u05 --only=ride_climb,ride_zip,ride_zip_late,taproom_hearth` or DevLauncher into Map 1:
+buy the yard door, climb the tower, ride the line. Say if the climb should be faster or slower (one number, PACE in
+`gravelight/world/ladder_climb.gd`) or the line faster (speed in `data/gravelight/map00.json`).

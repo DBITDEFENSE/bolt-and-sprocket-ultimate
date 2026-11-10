@@ -211,6 +211,7 @@ func box(parent: Node3D, name_: String, a: Vector3, b: Vector3, mat_key: String,
 		parent.add_child(mi)
 		return mi
 	_count += 1
+	Props.probe_geo(name_, a, b, mat_key)   # (T-230: GL_PROBE_BOX names a piece seen in a render)
 	var body: StaticBody3D = StaticBody3D.new()
 	body.name = name_
 	body.position = center
@@ -2477,7 +2478,24 @@ func _dress_hearth() -> void:
 	Props.block(g, Vector3(13.4, 0, 0.6), Vector3(14.0, 0.5, 1.2), "planks")          # log box
 	for i: int in 4:
 		Props.cyl(g, Vector3(13.7, 0.55 + i * 0.09, 0.9), 0.06, 0.55, "beam", Vector3(90, 0, 10.0 * i))
-	Props.block(g, Vector3(10.2, 0, 0.3), Vector3(10.3, 0.9, 0.4), "iron")            # poker
+	# the fire irons (T-230: the owner saw "a random piece of wood" by the hearth: the old poker, a bare upright block on
+	# the floor a step from the jamb): a stand on the hearthstone against the left jamb, the poker, tongs and brush
+	# hanging from its ring, the bellows leant on the jamb
+	var irons: Node3D = Props.group(g, "FireIrons", Vector3(10.52, 0.12, 1.22))
+	Props.cyl(irons, Vector3(0, 0.01, 0), 0.13, 0.02, "iron")                        # the base
+	Props.cyl(irons, Vector3(0, 0.4, 0), 0.012, 0.8, "iron")                         # the upright
+	Props.cyl(irons, Vector3(0, 0.8, 0), 0.07, 0.02, "iron")                         # the ring the irons hang from
+	Props.ball(irons, Vector3(0, 0.83, 0), Vector3(0.05, 0.05, 0.05), "brass")       # the knob
+	for a: Array in [[0.0, 0.78], [120.0, 0.7], [240.0, 0.62]]:                      # poker, tongs, brush on their hooks
+		var r: float = deg_to_rad(float(a[0]))
+		var off: Vector3 = Vector3(sin(r), 0, cos(r)) * 0.075
+		var h: float = a[1]
+		Props.cyl(irons, off + Vector3(0, 0.79 - h * 0.5, 0), 0.007, h, "iron", Vector3(2.5 * cos(r), 0, 2.5 * sin(r)))
+		Props.obox(irons, off + Vector3(0, 0.8, 0), Vector3(0.03, 0.012, 0.012), "iron", Vector3(0, float(a[0]), 0))   # the hook
+	Props.obox(irons, Vector3(0.0, 0.03, 0.105), Vector3(0.012, 0.012, 0.07), "iron")                                   # the poker's bent tip
+	Props.obox(irons, Vector3(0.075 * sin(deg_to_rad(240.0)), 0.21, 0.075 * cos(deg_to_rad(240.0))), Vector3(0.05, 0.08, 0.03), "straw")   # the brush's head
+	Props.obox(g, Vector3(10.84, 0.4, 1.05), Vector3(0.16, 0.5, 0.05), "furniture", Vector3(-12, 0, 0))                 # the bellows, leant on the jamb
+	Props.cyl(g, Vector3(10.84, 0.72, 0.985), 0.012, 0.16, "brass", Vector3(-12, 0, 0))                                 # its nozzle
 
 
 ## Glassware that breaks when shot (T-053): collected per set here, built as ShatterSets by build_reactive().

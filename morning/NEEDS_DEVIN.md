@@ -2,6 +2,17 @@
 
 Short, phone-readable. Nothing here blocks the build.
 
+## THE CLIMB AND THE RIDE MOVE (2026-11-09 late): ride it, then merge. Nothing blocks the build.
+- [ ] **Climb and ride.** Map 1, yard door, the tower: hold Use at the ladder (you go up hand over hand), up top hold
+  Use at the trolley (you grab the bar, step off, roll down and swing). Renders of both mid-way:
+  `morning/screenshots/u05/anim1/` or `tools_src/capture.gd --set=u05 --only=ride_climb,ride_zip,ride_zip_late`.
+  Say if the climb pace (1.4 m/s, `PACE` in `gravelight/world/ladder_climb.gd`) or the line's cap (7.5 m/s, `speed` in
+  `data/gravelight/map00.json`) should change.
+- [ ] **The piece of wood.** I took it to be the poker by the hearth (now fire irons). If you meant something else in the
+  taproom, say where you stood and where it was; `GL_PROBE_BOX` on the generator names any piece by its box.
+- [ ] **Merge `claude/maps-1-2-production` to master** when happy:
+  `git checkout master && git merge claude/maps-1-2-production && git push`.
+
 ## SNIPER TOWER + ZIP LINE + LADDERS (2026-11-09 night): look, then merge. Nothing blocks the build.
 - [ ] **Ride it.** Map 1, buy the yard door (1250), the tower is in the south-west corner: hold Use at the ladder, up top
   hold Use at the trolley. Then buy the Old Cellar and watch the hatch behind the bar fall open; climb it both ways.

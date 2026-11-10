@@ -147,6 +147,13 @@ var _hold_node: Interactable = null   # the interactable a hold is in progress o
 # Update 02 §1 feel (numbers: data/gravelight/movement.json, see _mv)
 var prone: bool = false
 var mantling: bool = false
+## T-230: a ladder or a zip line carries the body (begin_carry): it sets the position every physics frame and these
+## camera extras; movement, interaction, fire and ADS are off meanwhile. The hands are the WeaponHolder's (set_hands).
+var carry: Node = null
+var carry_head: Vector3 = Vector3.ZERO    # head position offset (the climb's bob, the ride's sway), body space
+var carry_pitch: float = 0.0              # radians added to the view pitch (looking up the ladder)
+var carry_roll: float = 0.0               # radians of camera roll (the reach, the swing)
+var carry_fov: float = 0.0                # degrees added to the FOV (the rush of the line)
 var mantles: int = 0                     # mantles / vaults started this match (tools)
 var _mv: Dictionary = {}
 var _sprint_toggled: bool = false        # Toggle sprint mode: on until cancelled / you stop moving forward
@@ -316,7 +323,7 @@ func _process(delta: float) -> void:
 		var interp: Vector3 = _tick_prev.lerp(_tick_cur, Engine.get_physics_interpolation_fraction())
 		var off: Vector3 = global_basis.inverse() * (interp - global_position)
 		head.position += Vector3(off.x, off.y, 0.0)
-		head.position.z = off.z
+		head.position.z = off.z + carry_head.z
 
 
 func _apply_look(rel: Vector2) -> void:
@@ -378,8 +385,8 @@ func _gather_intent() -> Dictionary:
 		"slot": slot,
 		"sprinting": sprinting,
 		"look_delta": _look_delta,
-		"fire_block": mantling or (sliding and not slide_fire_ok()),   # mantle / first half of a slide: fire is buffered
-		"mantle": mantling,
+		"fire_block": mantling or carry != null or (sliding and not slide_fire_ok()),   # mantle / first half of a slide: fire is buffered; a climb, a ride: no fire
+		"mantle": mantling or carry != null,
 	}
 	_look_delta = Vector2.ZERO
 	return intent
@@ -411,9 +418,14 @@ func _physics_process(delta: float) -> void:
 		_update_health(delta)   # keep regen + heartbeat in step while a radio/switchboard UI is open
 		return
 	_pad_look(delta)
-	_update_movement(delta)
-	_update_health(delta)
-	_update_interaction(delta)
+	if carry != null and not is_instance_valid(carry):
+		end_carry(carry)
+	if carry != null:
+		_update_health(delta)   # T-230: a ladder / zip line moves the body (begin_carry): no movement, no interaction
+	else:
+		_update_movement(delta)
+		_update_health(delta)
+		_update_interaction(delta)
 	weapons.tick(delta, _gather_intent())
 	_view_live = true
 	if smooth_view:
@@ -959,6 +971,50 @@ func mantle_k() -> float:
 	return sin(clampf(_mantle_t / dur, 0.0, 1.0) * PI)
 
 
+## T-230: a ladder or a zip line takes the body. `by` sets global_position every physics frame until end_carry; the
+## camera adds carry_head / carry_pitch / carry_roll / carry_fov meanwhile; fire, ADS, melee, interaction and the
+## movement are off. The mouse stays the player's (the controller may clamp the yaw to the ladder).
+func begin_carry(by: Node) -> void:
+	carry = by
+	velocity = Vector3.ZERO
+	sprinting = false
+	sliding = false
+	_sprint_toggled = false
+	mantling = false
+	interact_target = null
+	prompt_text = ""
+	interact_progress = 0.0
+	_hold_t = 0.0
+	_set_hold_node(null)
+	_hold_locked = true   # the Use that started it is released before the next hold counts
+	carry_head = Vector3.ZERO
+	carry_pitch = 0.0
+	carry_roll = 0.0
+	carry_fov = 0.0
+
+
+func end_carry(by: Node) -> void:
+	if carry != null and is_instance_valid(carry) and carry != by:
+		return
+	carry = null
+	carry_head = Vector3.ZERO
+	carry_pitch = 0.0
+	carry_roll = 0.0
+	carry_fov = 0.0
+	if head != null:
+		head.position.z = 0.0
+	velocity = Vector3.ZERO
+	_was_on_floor = false
+	_floor_y = global_position.y
+	if weapons != null:
+		weapons.set_hands(&"")
+
+
+## A landing's head dip and footfall after a scripted drop (the zip line's end, the last rung).
+func land_dip(fall_speed: float) -> void:
+	_on_landed(fall_speed)
+
+
 ## One footstep on whatever is underfoot (a short ray down, only when a step lands).
 func _footstep(volume_db: float) -> void:
 	if not is_local:
@@ -1418,15 +1474,16 @@ func _update_camera(delta: float) -> void:
 	var bob_roll: float = sw * deg_to_rad(float(C.get("bob_roll_deg", 0.35))) * (_bob_k / maxf(0.001, float(C.get("bob_walk", 0.012)))) * 0.5 * bob_scale
 	_sprint_k = lerpf(_sprint_k, 1.0 if sprinting else 0.0, 1.0 - exp(-float(_mv.get("sprint_fov_rate", 7.0)) * delta))
 	var mk: float = mantle_k()
-	head.position.y = _eye - dip + bob_y + _land_dip - mk * 0.08
-	head.rotation.x = _pitch + _rk.x - mk * 0.06
+	head.position.y = _eye - dip + bob_y + _land_dip - mk * 0.08 + carry_head.y
+	head.rotation.x = _pitch + _rk.x - mk * 0.06 + carry_pitch
 	head.rotation.y = _rk.y
 	# lean (and the slide's roll: the body leans into the slide direction)
 	var lean_in: float = 0.0
 	if bool(GLSettings.values.get("lean_enabled", true)):
 		lean_in = Input.get_action_strength(&"lean_right") - Input.get_action_strength(&"lean_left")
 	_lean = move_toward(_lean, lean_in, delta * 5.0)
-	head.position.x = _lean * 0.35 + bob_x
+	head.position.x = _lean * 0.35 + bob_x + carry_head.x
+	head.position.z = carry_head.z
 	var side: float = 0.0
 	if _slide_k > 0.001:
 		side = global_basis.x.dot(_slide_dir)                      # +1 sliding to the right
@@ -1437,7 +1494,7 @@ func _update_camera(delta: float) -> void:
 	_punch_roll = move_toward(_punch_roll, 0.0, delta * maxf(0.2, absf(_punch_roll) * 6.0))
 	# T-220: the flight's roll obeys the Camera Sway / Turbulence comfort setting (ext_roll_deg itself is the gameplay value)
 	_ext_roll = lerpf(_ext_roll, deg_to_rad(CameraSway.roll_deg(ext_roll_deg)), 1.0 - exp(-3.0 * delta))
-	camera.rotation.z = -_lean * 0.12 - _slide_k * (deg_to_rad(float(S.get("cam_tilt_deg", 3.5))) * (0.6 + 0.4 * side)) + _roll + bob_roll + _punch_roll + mk * 0.05 + _ext_roll
+	camera.rotation.z = -_lean * 0.12 - _slide_k * (deg_to_rad(float(S.get("cam_tilt_deg", 3.5))) * (0.6 + 0.4 * side)) + _roll + bob_roll + _punch_roll + mk * 0.05 + _ext_roll + carry_roll
 	# shake (smooth pseudo-noise rather than per-frame white noise, scaled by the Screen Shake setting)
 	_shake = maxf(0.0, _shake - delta * 1.8)
 	_shake_t += delta * 38.0
@@ -1446,7 +1503,7 @@ func _update_camera(delta: float) -> void:
 	camera.v_offset = (sin(_shake_t * 1.37 + 1.9) + sin(_shake_t * 3.07) * 0.5) * 0.67 * sk
 	# fov (+ a short punch on heavy shots, + the eased sprint kick)
 	_fov_punch = move_toward(_fov_punch, 0.0, delta * maxf(8.0, absf(_fov_punch) * 14.0))
-	var fov: float = GLSettings.get_f("fov") * weapons.fov_mult() + float(_mv.get("sprint_fov_deg", 6.0)) * _sprint_k
+	var fov: float = GLSettings.get_f("fov") * weapons.fov_mult() + float(_mv.get("sprint_fov_deg", 6.0)) * _sprint_k + carry_fov
 	fov *= lerpf(1.0, float(S.get("fov_mult", 1.09)), _slide_k)
 	if _fov_base <= 0.0:
 		_fov_base = camera.fov

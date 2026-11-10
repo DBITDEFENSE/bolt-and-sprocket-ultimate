@@ -51,7 +51,52 @@ static func block(parent: Node3D, a: Vector3, b: Vector3, key: String, shadows: 
 	if not shadows:
 		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	parent.add_child(mi)
+	_probe(mi, "block", key)
 	return mi
+
+
+## T-230: "what is that piece?" With the environment variable GL_PROBE_BOX="x0,y0,z0,x1,y1,z1" set when a generator
+## runs, every block / obox / cyl whose world box touches that box is printed (kind, material key, the group path, the
+## box), so a stray piece seen in a render can be traced to its line without guessing from coordinates.
+static var _probe_box: Variant = null   # AABB once read; false when unset
+
+
+static func _probe(mi: MeshInstance3D, kind: String, key: String) -> void:
+	if _probe_box == null:
+		var env: String = OS.get_environment("GL_PROBE_BOX")
+		var v: PackedFloat64Array = []
+		for part: String in env.split(","):
+			if part.strip_edges().is_valid_float():
+				v.append(float(part))
+		_probe_box = AABB(Vector3(v[0], v[1], v[2]), Vector3(v[3] - v[0], v[4] - v[1], v[5] - v[2])) if v.size() == 6 else false
+	if _probe_box is bool:
+		return
+	# the world transform without a tree: walk the parents' local transforms
+	var xf: Transform3D = mi.transform
+	var path: String = ""
+	var n: Node = mi.get_parent()
+	while n != null:
+		if n is Node3D:
+			xf = (n as Node3D).transform * xf
+		path = n.name + "/" + path
+		n = n.get_parent()
+	var box: AABB = xf * AABB(Vector3(-0.5, -0.5, -0.5), Vector3.ONE)   # unit box / cylinder bounds
+	if box.intersects(_probe_box as AABB):
+		print("[probe] %s %-14s %-40s at %s size %s" % [kind, key, path, str(box.position + box.size * 0.5), str(box.size)])
+
+
+## The same probe for a generator's geometry box (gen_mapNN box(): a collider with drawn faces), by its corners.
+static func probe_geo(n: String, a: Vector3, b: Vector3, key: String) -> void:
+	if _probe_box == null:
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		_probe(mi, "", "")   # reads the environment once
+		mi.free()
+	if _probe_box is bool:
+		return
+	var lo: Vector3 = Vector3(minf(a.x, b.x), minf(a.y, b.y), minf(a.z, b.z))
+	var hi: Vector3 = Vector3(maxf(a.x, b.x), maxf(a.y, b.y), maxf(a.z, b.z))
+	if AABB(lo, hi - lo).intersects(_probe_box as AABB):
+		print("[probe] geo  %-14s %-40s at %s size %s" % [key, n, str((lo + hi) * 0.5), str(hi - lo)])
 
 
 ## Oriented box: centre, size, yaw/pitch/roll in degrees.
@@ -63,6 +108,7 @@ static func obox(parent: Node3D, center: Vector3, size: Vector3, key: String, ro
 	mi.rotation = rot_deg * (PI / 180.0)
 	mi.scale = size
 	parent.add_child(mi)
+	_probe(mi, "obox", key)
 	return mi
 
 
@@ -74,6 +120,7 @@ static func cyl(parent: Node3D, center: Vector3, radius: float, height: float, k
 	mi.rotation = rot_deg * (PI / 180.0)
 	mi.scale = Vector3(radius * 2.0, height, radius * 2.0)
 	parent.add_child(mi)
+	_probe(mi, "cyl", key)
 	return mi
 
 

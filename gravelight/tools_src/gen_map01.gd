@@ -321,6 +321,7 @@ func box(parent: Node3D, n: String, a: Vector3, b: Vector3, mat_key: String, col
 	if size.x < 0.001 or size.y < 0.001 or size.z < 0.001:
 		return null
 	_count += 1
+	Props.probe_geo(n, a, b, mat_key)   # (T-230: GL_PROBE_BOX names a piece seen in a render)
 	var mi: MeshInstance3D = null
 	if not _hidden(n):
 		mi = MeshInstance3D.new()
