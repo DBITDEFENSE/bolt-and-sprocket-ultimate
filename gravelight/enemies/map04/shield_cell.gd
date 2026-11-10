@@ -6,6 +6,8 @@ extends Zombie
 ## own (enemies.json shield_cell), it never crawls, staggers or falls; shot to pieces it dies (and she regrows it);
 ## carried or flung into the vacuum shaft over the console (`in_shaft`) it is gone for good. While it is not
 ## lifted or pushed it is placed on its orbit every physics step.
+## T-234 (docs/boss_rework/w4_fernflug.md): it hums (`manager_field_hum`, its own loop) and every hit sparks on the
+## glass (`boss_hit_glass`); the sphere's own material carries a violet emission that flares with a hit.
 
 var boss: Node3D = null
 var orbit_phase: float = 0.0
@@ -18,6 +20,9 @@ var gone_for_good: bool = false
 var _sphere: MeshInstance3D
 var _glow: OmniLight3D
 var _orbit_t: float = 0.0
+var _hum: AudioStreamPlayer3D = null
+var _flare: float = 0.0
+var hits_sparked: int = 0
 
 
 ## True when `p` is inside the shaft's throat: within `r` of its axis and above its mouth.
@@ -71,7 +76,12 @@ func spawn_cell(at: Vector3, health: float) -> void:
 		_glow.omni_range = 5.0
 		_glow.shadow_enabled = false
 		_sphere.add_child(_glow)
+		_hum = AudioDirector.make_loop_3d("manager_field_hum", _sphere, -12.0)
 	_sphere.visible = true
+	_flare = 0.0
+	if _hum != null:
+		_hum.pitch_scale = 1.0 + 0.08 * float(int(orbit_phase * 10.0) % 3)
+		_hum.play()
 	show()
 	process_mode = Node.PROCESS_MODE_INHERIT
 	collision_layer = LAYER_ZBODY
@@ -110,6 +120,25 @@ func _physics_process(delta: float) -> void:
 	_update_burn(delta)
 	if _frost_t > 0.0:
 		_frost_t -= delta
+	if _flare > 0.0:
+		_flare = maxf(0.0, _flare - delta * 3.0)
+		if _glow != null:
+			_glow.light_energy = 1.6 + 3.0 * _flare
+
+
+## T-234: a hit sparks on the glass and flares the glow (presentation; the damage is the Zombie's).
+func take_damage(amount: float, limb: StringName, weapon_id: StringName, by_player: int, kind: StringName = &"bullet", armor_piercing: bool = false) -> bool:
+	var was_active: bool = is_active()
+	var r: bool = super.take_damage(amount, limb, weapon_id, by_player, kind, armor_piercing)
+	if was_active and kind != &"world":
+		hits_sparked += 1
+		_flare = 1.0
+		BossFx.burst("sparks", global_position, get_tree(), 0.7, 0.9)
+		BossFx.burst("motes", global_position, get_tree(), 0.5, 0.8)
+		AudioDirector.play_3d("boss_hit_glass", global_position, -4.0, 0.1)
+		if r and _hum != null:
+			_hum.stop()
+	return r
 
 
 ## Into the shaft: no death, no Scrip; the round count lets it go (it was an extra spawn).
@@ -119,7 +148,10 @@ func vanish_for_good() -> void:
 	gone_for_good = true
 	_push_t = 0.0
 	_push_v = Vector3.ZERO
-	AudioDirector.play_3d("zombie_gib", global_position, -4.0, 0.4)
+	if _hum != null:
+		_hum.stop()
+	AudioDirector.play_3d("boss_hit_glass", global_position, 2.0, 0.1)
+	BossFx.burst("motes", global_position, get_tree(), 2.0, 1.5)
 	Effects.explosion(global_position, 1.5)
 	if boss != null and is_instance_valid(boss) and boss.has_method("on_cell_lost"):
 		boss.call("on_cell_lost", self)
