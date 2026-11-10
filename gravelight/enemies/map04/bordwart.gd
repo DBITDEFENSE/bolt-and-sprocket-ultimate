@@ -176,7 +176,7 @@ func _build_costume() -> void:
 	dial.albedo_color = Color(0.1, 0.12, 0.1)
 	dial.emission_enabled = true
 	dial.emission = Color(0.6, 1.0, 0.7)
-	dial.emission_energy_multiplier = 1.4
+	dial.emission_energy_multiplier = 0.5
 	_gauge_mats.append(dial)
 	var hips: Node3D = bone_attachment("Hips")
 	if hips != null:
@@ -189,8 +189,8 @@ func _build_costume() -> void:
 		hips.add_child(panel)
 		for x: float in [-0.12, 0.12]:
 			var cm: CylinderMesh = CylinderMesh.new()
-			cm.top_radius = 0.07
-			cm.bottom_radius = 0.07
+			cm.top_radius = 0.05
+			cm.bottom_radius = 0.05
 			cm.height = 0.02
 			cm.radial_segments = 14
 			cm.material = dial
@@ -236,11 +236,11 @@ func _build_tether() -> void:
 		dial.albedo_color = Color(0.1, 0.12, 0.1)
 		dial.emission_enabled = true
 		dial.emission = Color(1.0, 0.75, 0.35) if i % 2 == 0 else Color(0.6, 1.0, 0.7)
-		dial.emission_energy_multiplier = 1.2
+		dial.emission_energy_multiplier = 0.45   # the render showed them as headlights at 1.2: dim dials, not lamps
 		_gauge_mats.append(dial)
 		var cm: CylinderMesh = CylinderMesh.new()
-		cm.top_radius = 0.11
-		cm.bottom_radius = 0.11
+		cm.top_radius = 0.08
+		cm.bottom_radius = 0.08
 		cm.height = 0.03
 		cm.radial_segments = 14
 		cm.material = dial
@@ -255,8 +255,8 @@ func _build_tether() -> void:
 		st.emitting = true
 		_vent_steam.append(st)
 	var boom_tip: Vector3 = cab_c - side * 1.6 + Vector3(0, 2.7, 0)
-	Props.cable(_cable, boom_tip, Vector3(0, 1.75, 0), 0.08, 0.04, 4, "nachtglas")
-	Props.cable(_cable, boom_tip + Vector3(0, -0.1, 0.12), Vector3(0.1, 1.7, 0.1), 0.1, 0.025, 4, "nachtglas")
+	Props.cable(_cable, boom_tip, Vector3(0, 1.75, 0), 0.08, 0.04, 4, "nachtglas_dim")
+	Props.cable(_cable, boom_tip + Vector3(0, -0.1, 0.12), Vector3(0.1, 1.7, 0.1), 0.1, 0.025, 4, "nachtglas_dim")
 	Props.cable(_cable, cab_c + Vector3(0, 2.7, 0), to_core + Vector3(0, 1.4, 0), 0.3, 0.05, 6, "nachtglas")
 	var glow: OmniLight3D = OmniLight3D.new()
 	glow.light_color = VIOLET
@@ -288,7 +288,7 @@ func _process(_delta: float) -> void:
 	var k: float = 0.5 + 0.5 * sin(_clock * 2.3)
 	var boost: float = 1.0 + (0.6 if wstate == W.PULL else 0.0) + (0.8 if overspeed_on else 0.0)
 	for m: StandardMaterial3D in _gauge_mats:
-		m.emission_energy_multiplier = (0.9 + 0.7 * k) * boost
+		m.emission_energy_multiplier = (0.35 + 0.25 * k) * boost
 	if _core_light != null and overspeed_on and (_flash_tw == null or not _flash_tw.is_valid()):
 		_core_light.light_energy = float(wcfg.get("overspeed", {}).get("core_energy", 3.0)) * (0.9 + 0.1 * sin(_clock * 9.0))
 

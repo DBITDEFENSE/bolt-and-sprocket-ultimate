@@ -117,7 +117,36 @@ the arms' idle pose (it reads as a lid; a sideways door would need the arms move
 - `smoke_act_bosses` alone: see below.
 - Renders: `morning/screenshots/u14_act_bosses/w4/` (WSL, software GL, `override.cfg` copied from the main checkout).
 
-RESULTS_PLACEHOLDER
+| Check | Result |
+|---|---|
+| `check_scripts` | 881 scripts, 0 failed (every pass) |
+| `smoke_act_bosses` (alone, headless; three runs) | PASS, 71 checks ok, 0 script errors in the last two runs (the first run passed with 266 kit errors from a captured light freed mid-fight: the shield-cells' glows; fixed by capturing the Account's lamps before the cells spawn and marking the cells' glows and the trial tray's lamp `no_dim`) |
+| GUT `test_fernflug_rework` | 6 / 6, 79 asserts |
+| GUT `test_kranfuehrer` / `test_testpilot` / `test_account_manager` | 4 / 4 / 6 tests, all passed |
+| GUT `test_flight`, `test_bot_u10`, `test_map04a..d`, `test_boss_fx`, `test_suited`, `test_marke`, `test_kuendigung` | 18, 55, 13 + 8 + 8 + 8, 4, 3, 12, 26 tests, all passed |
+
+What the smoke saw: the Kranführer's phase 2 queues the work-light drops and brings the hook down for the sweep
+within 20 s (the hangar's work lights are 0 with the power off, so the drop itself runs only in play with the power
+on); the Bordwart's Overspeed captured 30 lights within 28 m, the core came up and flared twice; the Test Pilot
+stalled on his next landing with the lights dimmed, 1 floor crack and 3 Burrowers raised, and rose with the lights
+restored; the Account Manager's COLLECTIONS darkened the Account, and with the player 10 m off (outside her light)
+the squad pricing fired after 6 s and cut the account 2500 -> 2137 (a 5 % cut on 2500 plus the stamp's 90-damage
+path through god mode: the Scrip is the visible consequence).
+
+Renders (pass 1, kept in `morning/screenshots/u14_act_bosses/w4_pass1/`; pass 2 in `w4/`): pass 1 showed the cab
+15 m off and unlit from the catwalk and 25 m off from the floor (too far, the hangar dark with the power's lights
+off), a second boss summoned by every second camera (the map persists between cameras on the same map, so the
+second camera of each pair now reuses the posed boss with `"do": []`), the Bordwart's station reading right in the
+violet (the man at the cabinet, the boom, the trunk to the core) but its dials blooming into headlights (emission
+1.2 -> 0.45, radius 0.11 -> 0.08; the hip dials 1.4 -> 0.5) and the thin boom cables too bright (`nachtglas` ->
+`nachtglas_dim`), the Pilot 8 m off in the lab's bright wash with his embers visible, and the Manager's plate and
+cabinet blooming white in the Account's hard light (plate emission 0.5 -> 0.12, the face lines 2.2 -> 1.2, her spot
+3.0 -> 1.8). Pass 2 moved every camera to 4-8 m and lit the hangar frames with the work light. RENDER2_PLACEHOLDER
+
+Kit note for the lead: `boss_fx.gd` lines 106 and 229 assign `e[0]` to a typed `Light3D` before `is_instance_valid`
+runs, so a captured light freed mid-fight (a shot shield-cell's glow, a trial tray freed at a phase change, in
+general anything transient within the dim radius) prints "Trying to assign invalid previously freed instance" every
+frame of a flicker or fade. A `Variant` local or the validity check first would make the kit safe for every boss.
 
 ## Sound ids wanted from the lead
 - `kran_rail_loop` (a seamless rail screech loop; the one-shot `kran_rail_screech` is looped by `make_loop_3d` for now).

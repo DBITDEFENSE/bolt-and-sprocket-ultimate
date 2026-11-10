@@ -207,7 +207,7 @@ func _mesh_box(parent: Node3D, center: Vector3, size: Vector3, m: Material) -> M
 
 func _build_costume() -> void:
 	var brass_m: StandardMaterial3D = HomageBoss.mat_ex(BRASS, 0.35, 0.9)
-	var violet_m: StandardMaterial3D = HomageBoss.mat_ex(VIOLET, 0.3, 0.4, 0.5, VIOLET_LIT)
+	var violet_m: StandardMaterial3D = HomageBoss.mat_ex(VIOLET, 0.3, 0.4, 0.12, VIOLET_LIT)   # the first render bloomed the plate white at 0.5
 	# the ledger face: a tall plate over the head, brass rulings and lit signature lines (her script), the lenses lit
 	costume("Head", [HomageBoss.boxp(Vector3(0.3, 0.42, 0.06), Vector3(0, 0.1, -0.12), VIOLET)], 0.6)
 	var head: Node3D = bone_attachment("Head")
@@ -220,7 +220,7 @@ func _build_costume() -> void:
 		_face_mat.albedo_color = VIOLET_LIT
 		_face_mat.emission_enabled = true
 		_face_mat.emission = VIOLET_LIT
-		_face_mat.emission_energy_multiplier = 2.2
+		_face_mat.emission_energy_multiplier = 1.2
 		for i: int in 9:
 			var y: float = -0.06 + 0.045 * float(i % 5) + rng.randf_range(0.0, 0.03)
 			var len_: float = rng.randf_range(0.05, 0.16)
@@ -271,7 +271,7 @@ func _build_costume() -> void:
 	# her light: a violet spot from over the console onto the floor in front of her
 	_spot = SpotLight3D.new()
 	_spot.light_color = VIOLET_LIT
-	_spot.light_energy = 3.0
+	_spot.light_energy = 1.8
 	_spot.spot_range = 10.0
 	_spot.spot_angle = 38.0
 	_spot.spot_attenuation = 0.9
@@ -609,7 +609,7 @@ func _stamp_all() -> void:
 		_field_hum.volume_db = float(rcfg().get("field_hum_db", -10.0))
 	if _spot != null:
 		var tw: Tween = create_tween()
-		tw.tween_property(_spot, "light_energy", 3.0, 1.0)
+		tw.tween_property(_spot, "light_energy", 1.8, 1.0)
 	fx.shake_all(global_position, 0.3, 30.0)
 
 
