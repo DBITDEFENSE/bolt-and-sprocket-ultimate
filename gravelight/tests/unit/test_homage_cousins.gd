@@ -2,6 +2,9 @@ extends GutTest
 ## HB1, the Cousins (docs/HOMAGE_BOSSES.md sections 3-4, 12): HP by player count, the enrage chain, the 6:00
 ## fail-safe and the round-15 return, the clear's rewards, the Homage toggle (Off = a normal round 10, the
 ## campaign beacon unchanged), Homage Names, boss damage terms, ObservedFreeze's view test, reserved rounds.
+## T-232 (the boss rework): the dread blocks, the crack tiers, the Hammer's hurt-player aim, the Reach's lone-player
+## grab terms and Through-the-Window rule, Alix's lengthening grief and harder hits and the look-away rule, the
+## dark hunt's trigger.
 
 var cfg: Dictionary
 var _settings: Dictionary
@@ -331,3 +334,113 @@ func test_bots_alone_thins_the_queued_horde() -> void:
 	assert_eq(CousinsRound.cut_horde(0, ba), 0)
 	ba["horde_mult"] = 1.5
 	assert_eq(CousinsRound.cut_horde(10, ba), 10, "never adds zombies")
+
+
+# ---------------------------------------------------------------- T-232: the boss rework
+
+func test_every_cousin_has_a_porcelain_dread_block() -> void:
+	for k: String in CousinsRound.KEYS:
+		var b: Dictionary = (cfg["bosses"] as Dictionary)[k]
+		assert_true(b.has("dread"), k + " has a dread block")
+		assert_eq(str((b["dread"] as Dictionary).get("surface", "")), "porcelain", k + " is porcelain")
+	assert_almost_eq(float(cfg["bosses"]["alix"]["dread"]["step_shake"]), 0.0, 0.0001, "Alix's steps make no sound and no shake")
+	assert_gt(float(cfg["bosses"]["hammer"]["dread"]["step_shake"]), 0.0, "the Hammer has weight")
+	assert_eq((cfg["crack_tiers"] as Array).size(), 3)
+
+
+func test_crack_tiers_open_with_the_damage() -> void:
+	var tiers: Array = [0.75, 0.5, 0.25]
+	assert_eq(CousinHammer.crack_tier(1.0, tiers), 0)
+	assert_eq(CousinHammer.crack_tier(0.75, tiers), 0, "at the edge: not yet")
+	assert_eq(CousinHammer.crack_tier(0.7, tiers), 1)
+	assert_eq(CousinHammer.crack_tier(0.4, tiers), 2)
+	assert_eq(CousinHammer.crack_tier(0.1, tiers), 3)
+	assert_eq(CousinHammer.crack_tier(0.0, tiers), 3)
+
+
+func test_hammer_aims_at_the_hurt_player() -> void:
+	assert_eq(CousinHammer.pick_hurt([1.0, 0.9, 0.8], 0.5), -1, "nobody hurt enough: the nearest as before")
+	assert_eq(CousinHammer.pick_hurt([1.0, 0.3, 0.8], 0.5), 1)
+	assert_eq(CousinHammer.pick_hurt([0.45, 0.3, 0.8], 0.5), 1, "the most hurt of the hurt")
+	assert_eq(CousinHammer.pick_hurt([], 0.5), -1)
+	assert_almost_eq(float(cfg["bosses"]["hammer"]["hurt"]["fraction"]), 0.5, 0.0001)
+
+
+func test_reach_grab_terms_read_a_lone_player() -> void:
+	var gc: Dictionary = cfg["bosses"]["reach"]["grab"]
+	var lone: Dictionary = cfg["bosses"]["reach"]["lone"]
+	var squad: Dictionary = CousinReach.grab_need(gc, 5000.0, false, lone)
+	assert_almost_eq(float(squad["max"]), 6.0, 0.001, "a squad: the full hold")
+	assert_almost_eq(float(squad["weak"]), 400.0, 0.001, "the wrist break: 8% of her HP")
+	assert_eq(int(squad["mash"]), 6)
+	var alone: Dictionary = CousinReach.grab_need(gc, 5000.0, true, lone)
+	assert_almost_eq(float(alone["max"]), 4.5, 0.001, "a lone player is held for less (x0.75)")
+	assert_eq(int(alone["mash"]), int(squad["mash"]), "the mash break is the same: every grab breaks in solo")
+	assert_almost_eq(CousinReach.drag_speed(2.5, true, lone), 2.0, 0.001, "and dragged slower (x0.8)")
+	assert_almost_eq(CousinReach.drag_speed(2.5, false, lone), 2.5, 0.001)
+	assert_lt(float(lone["wall_cooldown_mult"]), 1.0, "but the walls come alive sooner")
+
+
+func test_reach_window_grab_rule() -> void:
+	var wc: Dictionary = cfg["bosses"]["reach"]["window"]
+	assert_true(CousinReach.window_applies(2.0, 3, false, 5.0, wc), "near a boarded window, out of her sight")
+	assert_true(CousinReach.window_applies(4.0, 1, true, 9.0, wc), "in sight but far off")
+	assert_false(CousinReach.window_applies(2.0, 0, false, 5.0, wc), "no boards: no window to come through")
+	assert_false(CousinReach.window_applies(6.0, 3, false, 5.0, wc), "too far from the window")
+	assert_false(CousinReach.window_applies(2.0, 3, true, 4.0, wc), "in sight and close: the Long Reach instead")
+	assert_gte(float(wc["telegraph"]), 0.5, "the boards creak for a readable telegraph")
+	assert_lte(float(wc["telegraph"]), 1.0)
+
+
+func test_alix_grief_lengthens_and_she_hits_harder() -> void:
+	var g: Dictionary = cfg["bosses"]["alix"]["grieve"]
+	assert_almost_eq(CousinAlix.grief_seconds(float(g["seconds"]), float(g["seconds_step"]), 1), 3.0, 0.001, "the first grief: 3 s as before")
+	assert_almost_eq(CousinAlix.grief_seconds(float(g["seconds"]), float(g["seconds_step"]), 2), 4.5, 0.001, "the second: longer")
+	assert_almost_eq(CousinAlix.grief_seconds(3.0, 1.5, 0), 3.0, 0.001, "never under the base")
+	assert_almost_eq(CousinAlix.grief_damage_mult(float(g["damage_step"]), 0), 1.0, 0.001)
+	assert_almost_eq(CousinAlix.grief_damage_mult(float(g["damage_step"]), 1), 1.15, 0.001, "+15% after the first rise")
+	assert_almost_eq(CousinAlix.grief_damage_mult(float(g["damage_step"]), 2), 1.3, 0.001)
+	var cr: CousinsRound = _event()
+	var alx: CousinAlix = _boss(CousinAlix, cr) as CousinAlix
+	alx.grief_rises = 1
+	assert_almost_eq(alx.grief_damage_mult(0.15, alx.grief_rises) * float(alx.bcfg.get("damage_mult", 1.0)), 2.3, 0.001, "on top of her double damage")
+
+
+func test_alix_look_away_rule() -> void:
+	var to_boss: Vector3 = Vector3(0, 0, -5)   # she is north of the player
+	assert_false(CousinAlix.looking_away(Vector3(0, 0, -1), to_boss, 100.0), "looking at her")
+	assert_false(CousinAlix.looking_away(Vector3(1, 0, -1), to_boss, 100.0), "45 deg off: still watching")
+	assert_true(CousinAlix.looking_away(Vector3(0, 0, 1), to_boss, 100.0), "back turned")
+	assert_true(CousinAlix.looking_away(Vector3(1, 0, 0.3), to_boss, 100.0), "more than 100 deg off")
+	assert_false(CousinAlix.looking_away(Vector3(0, -1, 0), to_boss, 100.0), "looking straight down counts as nothing (flat test)")
+	var sc: Dictionary = cfg["bosses"]["alix"]["step"]
+	assert_gt(float(sc["stop_at"]), float(cfg["bosses"]["alix"]["hold"]["range"]), "the step stops short of her grab range: no step into a grab")
+
+
+func test_dark_hunt_when_one_cousin_is_left() -> void:
+	assert_false(CousinsRound.dark_hunt_due(0, 3, cfg))
+	assert_false(CousinsRound.dark_hunt_due(1, 3, cfg))
+	assert_true(CousinsRound.dark_hunt_due(2, 3, cfg), "two dead of three: the last one puts the lamps out")
+	assert_false(CousinsRound.dark_hunt_due(3, 3, cfg), "all dead: the clear relights")
+	var off: Dictionary = cfg.duplicate(true)
+	(off["dark_hunt"] as Dictionary)["enabled"] = false
+	assert_false(CousinsRound.dark_hunt_due(2, 3, off), "the block can be switched off")
+	assert_gte(float(cfg["dark_hunt"]["after"]), 2.0, "a beat after the second death, not on it")
+
+
+func test_dark_hunt_is_scheduled_on_the_second_death() -> void:
+	var cr: CousinsRound = _event()
+	var ham: HomageBoss = _boss(CousinHammer, cr)
+	var rch: HomageBoss = _boss(CousinReach, cr)
+	var alx: CousinAlix = _boss(CousinAlix, cr) as CousinAlix
+	cr.bosses = {"hammer": ham, "reach": rch, "alix": alx}
+	cr.phase = CousinsRound.Phase.ACTIVE
+	cr.reserved_left = 3
+	ham.state = Zombie.State.DEAD
+	cr.on_cousin_died(ham)
+	assert_eq(cr._sched.size(), 0, "one death: no dark hunt yet")
+	rch.state = Zombie.State.DEAD
+	cr.on_cousin_died(rch)
+	assert_eq(cr._sched.size(), 1, "two dead: the dark hunt beat is scheduled")
+	assert_false(cr.dark_hunt, "not before its beat")
+	assert_almost_eq(alx.grief_seconds_now(), 4.5, 0.001, "her second grief window is longer")

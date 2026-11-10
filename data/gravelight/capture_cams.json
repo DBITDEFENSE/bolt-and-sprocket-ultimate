@@ -8816,6 +8816,126 @@
           "note": "the concourse: the Crucible 001, the model under glass, the slogans"
         }
       ]
+    },
+    "u14_cousins": {
+      "_doc": "T-232 (W1, the boss rework): the Cousins posed in the taproom with the new CaptureDo op boss:<id>:x,y,z[:yaw[:wait_s]]. The taproom floor is y 0 around x 10-20, z 5-14; the hearth at (12, 0, 0.6). bright adds a flat work light (a night taproom reads dark under the WSL renderer).",
+      "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+      "settle_s": 6.0,
+      "cams": [
+        {
+          "name": "trio_hearth",
+          "note": "the three cousins before the hearth: the Hammer with the maul, the Reach hunched with her long arms, Alix upright with the Third Hand",
+          "pos": [
+            16.5,
+            0.0,
+            11.5
+          ],
+          "yaw": 28.0,
+          "pitch": -2.0,
+          "settle_s": 3.0,
+          "bright": true,
+          "do": [
+            "boss:hammer:13.0,0,5.0::0.7",
+            "boss:reach:10.6,0,6.6::0.5",
+            "boss:alix:15.4,0,4.6::2.0"
+          ]
+        },
+        {
+          "name": "hammer_close",
+          "note": "the Hammer at 4 m facing the camera: the glaze, the glass eyes, the braid strips, the maul head and its sparks emitter",
+          "pos": [
+            14.5,
+            0.0,
+            9.5
+          ],
+          "yaw": 0.0,
+          "pitch": -3.0,
+          "settle_s": 3.0,
+          "bright": true,
+          "do": [
+            "boss:hammer:14.5,0,5.5::0.7"
+          ]
+        },
+        {
+          "name": "hammer_braid",
+          "note": "the Hammer from behind: the braid strips down her back over the coat, the maul dragged at her side",
+          "pos": [
+            14.5,
+            0.0,
+            9.5
+          ],
+          "yaw": 0.0,
+          "pitch": -2.0,
+          "settle_s": 3.0,
+          "bright": true,
+          "do": [
+            "boss:hammer:14.5,0,6.5:0:0.7"
+          ]
+        },
+        {
+          "name": "reach_close",
+          "note": "the Reach at 4 m: hunched, the stretched arms with the dark veins below the torn elbows, the glass eyes",
+          "pos": [
+            18.0,
+            0.0,
+            10.0
+          ],
+          "yaw": 0.0,
+          "pitch": -4.0,
+          "settle_s": 3.0,
+          "bright": true,
+          "do": [
+            "boss:reach:18.0,0,6.0::0.5"
+          ]
+        },
+        {
+          "name": "reach_arms",
+          "note": "the Reach's arms close: the veins, the sleeve strips at the elbow, the knuckles low",
+          "pos": [
+            17.0,
+            0.0,
+            8.2
+          ],
+          "yaw": 0.0,
+          "pitch": -10.0,
+          "settle_s": 3.0,
+          "bright": true,
+          "do": [
+            "boss:reach:17.0,0,5.6::0.5"
+          ]
+        },
+        {
+          "name": "alix_close",
+          "note": "Alix at 3.6 m, full figure at eye level: upright, the Third Hand palm up toward the camera with its motes, the ribbon tails, eyes that never blink",
+          "pos": [
+            12.0,
+            0.0,
+            9.0
+          ],
+          "yaw": 0.0,
+          "pitch": -3.0,
+          "settle_s": 3.0,
+          "bright": true,
+          "do": [
+            "boss:alix:12.0,0,5.4::2.0"
+          ]
+        },
+        {
+          "name": "alix_hearth_dark",
+          "note": "Alix by the hearth with no work light: the room as the player sees it at night, her drip and the fire the lights",
+          "pos": [
+            16.0,
+            0.0,
+            6.0
+          ],
+          "yaw": 36.0,
+          "pitch": -2.0,
+          "settle_s": 3.0,
+          "do": [
+            "boss:alix:13.4,0,3.0::2.0"
+          ]
+        }
+      ]
     }
   }
 }
