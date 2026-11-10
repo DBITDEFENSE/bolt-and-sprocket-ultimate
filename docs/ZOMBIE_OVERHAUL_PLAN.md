@@ -3,6 +3,26 @@
 Base: master e96a0188; branch codex/zombie-overhaul in .wt/zombie-overhaul.
 The owner approved master because main does not exist. No new animation poses or assets authored.
 
+## 2026-11-09 push and local playtest
+
+Devin explicitly requested pushing the current work. `codex/zombie-overhaul` is now on origin;
+this supersedes older no-push notes. Main and its exported build remain unchanged. Run
+`tools/zombie_playtest.ps1` from this worktree for the game, or add `-Mode Gallery` for a
+ten-minute live 24-zombie studio. See `tools/ZOMBIE_PLAYTEST.md` for audio and rebuild details.
+Licensed sources and converted GLBs remain local and are already built in this worktree.
+
+Both launcher headless checks passed using automatic Godot discovery: actual menu startup
+loaded 28/28 clips; the short gallery maintained 24 active with no missing clips, sampled
+rest poses or validation failures. Fixed the launcher's wait for the Windows GUI executable
+and explicit test-menu teardown; final logs have only the known Unicode/NUL warnings.
+These startup checks do not replace the 60-second acceptance reports below. No new visual
+scores are assigned for a launcher change. Full overhaul remains incomplete.
+The visible Forward+ Claude Zombies menu was inspected and left open for Devin. Rendered
+startup additionally reports the existing shared Settings SSR deprecation warning.
+
+RESUME HERE: source root-yaw extraction/phase matching for the supplied 45-degree turns,
+then stairs/rubble and special-body verification, preserving existing gameplay speeds.
+
 ## 2026-11-09 latest checkpoint — zombie clothing detail and final local acceptance
 
 State work is committed as `baa71d96`. The next Stage 3 slice activates the repo's existing

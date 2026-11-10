@@ -1,5 +1,31 @@
 # PROGRESS
 
+RESUME HERE: 2026-11-09 Codex push/playtest checkpoint. Work ONLY in .wt/zombie-overhaul,
+branch codex/zombie-overhaul. Devin explicitly requested PUSH and to try the current work;
+this supersedes the older no-push notes below. origin/codex/zombie-overhaul now contains
+the licensed locomotion, recorded swipes/two deaths and clothing-detail checkpoints through
+e8bc3d67. Main and the exported build remain unchanged. Paid FBXs/derived GLBs stay local;
+all 28 clips are already built here. Do not request the Starter pack again.
+Launch this checkout with tools/zombie_playtest.ps1 (-Sound for audio), or -Mode Gallery for
+a ten-minute 24-zombie studio. Normal Play.bat targets main, not this branch. Launcher checks
+the bank and locates Godot in the main checkout; no install or copy of the main build needed.
+Verified both launcher -HeadlessCheck modes with automatic engine discovery: actual Claude
+Zombies menu loaded 28/28 clips; 3-second gallery kept 24 active, no missing/rest samples,
+zero validation failures. Fixed Windows GUI-executable waiting and tool teardown; final
+headless logs have no script/engine/leak errors. Existing Unicode/NUL warnings remain.
+The visible Forward+ playtest reached the Claude Zombies menu and was inspected on screen;
+it remains open for Devin. Rendered startup also logs the existing deprecated SSR-setting
+warning from shared Settings. No match or fresh visual-quality score was claimed from this.
+These are startup checks, not new performance/quality acceptance; e8bc3d67's 60-second reports
+remain the latest acceptance evidence. Speeds and jitter remain unchanged. Full overhaul
+is NOT complete: motion/swipes/two deaths 2->3/5, model 2->2, variety 3->3.
+NEXT: review/clean the supplied 45-degree turns, extract root yaw and match visual phase
+without changing gameplay facing/speeds or double-applying rotation. Then stairs/rubble and
+special-body coverage. Missing recordings, six more deaths and artist-authored model/PBR/LOD
+sample remain in the shopping list. Push further completed checkpoints when ready; no merge,
+main replacement or export has been requested. Older RESUME entries below are history.
+
+
 RESUME HERE: 2026-11-09 Codex Stage 3 material/final-local-check checkpoint. Work ONLY in
 .wt/zombie-overhaul on codex/zombie-overhaul. State commit baa71d96 adds the two recorded swipes
 and two recorded deaths with momentum into ragdoll. New material slice uses existing CC0 fabric/
