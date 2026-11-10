@@ -282,6 +282,7 @@ func damage_taken_mult() -> float:
 
 
 func _on_damaged(amount: float, _limb: StringName, _by: int, _kind: StringName) -> void:
+	super._on_damaged(amount, _limb, _by, _kind)
 	if bstate == B.SPECIAL and _grief_kneeling:
 		_grief_dmg += amount
 		if _grief_dmg >= max_hp * float(bcfg["grieve"]["break_fraction"]):

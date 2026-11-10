@@ -576,6 +576,7 @@ func _hitboxes_on(on: bool) -> void:
 
 ## The glass goes on the hit that takes him past helmet_break_fraction (not a frame later).
 func _on_damaged(_amount: float, _limb: StringName, _by_player: int, _kind: StringName) -> void:
+	super._on_damaged(_amount, _limb, _by_player, _kind)
 	if not helmet_broken and helmet_breaks(max_hp - hp, max_hp, kcfg):
 		_break_helmet()
 

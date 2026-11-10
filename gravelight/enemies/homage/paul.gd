@@ -1214,6 +1214,7 @@ func _attacker_pos(pid: int) -> Vector3:
 
 
 func _on_damaged(amount: float, _limb: StringName, _by_player: int, kind: StringName) -> void:
+	super._on_damaged(amount, _limb, _by_player, kind)
 	_quiet_t = 0.0
 	var before: int = rage.stage
 	rage.on_damage(amount, max_hp)

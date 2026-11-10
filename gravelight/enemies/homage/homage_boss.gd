@@ -51,6 +51,7 @@ var _cds: Dictionary = {}
 var _hit_done: bool = false
 var _pose: HomagePoseMod
 var _tele_light: OmniLight3D
+var fx: BossFx = null                    # T-231: the shared effects kit (dread, footfalls, lights, emitters, hits)
 var _grabs: Array[Dictionary] = []
 var _regrab: Dictionary = {}       # pid -> clock time until which that player can't be grabbed again
 var _hum_t: float = 2.0
@@ -122,6 +123,172 @@ static func speaker_name(slot: String, real: bool) -> String:
 	return real_name(slot).to_upper() if real else in_world_name(slot).to_upper()
 
 
+## T-231 (docs/BOSS_REWORK.md section 2.3): a cached material with metal, roughness and its own emission colour (rust,
+## wet brass, porcelain glaze, a violet crack).
+static func mat_ex(c: Color, rough: float = 0.6, metal: float = 0.0, emit: float = 0.0, emit_color: Color = Color.BLACK) -> StandardMaterial3D:
+	var ec: Color = emit_color if emit_color != Color.BLACK else c
+	var key: String = "x|%s|%.2f|%.2f|%.2f|%s" % [c.to_html(true), rough, metal, emit, ec.to_html(true)]
+	if _mat_cache.has(key):
+		return _mat_cache[key]
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.albedo_color = c
+	m.roughness = rough
+	m.metallic = metal
+	m.metallic_specular = 0.6
+	if emit > 0.0:
+		m.emission_enabled = true
+		m.emission = ec
+		m.emission_energy_multiplier = emit
+	_mat_cache[key] = m
+	return m
+
+
+## A run of chain links between two points on one bone attachment (torus links alternating their turn), as a
+## costume piece. `radius` is a link's outer radius.
+func chain(bone: String, from: Vector3, to: Vector3, links: int, radius: float, c: Color, metal: float = 0.8) -> MeshInstance3D:
+	var at: Node3D = bone_attachment(bone)
+	if at == null or links <= 0:
+		return null
+	var tor: TorusMesh = TorusMesh.new()
+	tor.inner_radius = radius * 0.55
+	tor.outer_radius = radius
+	tor.rings = 8
+	tor.ring_segments = 10
+	var d: Vector3 = to - from
+	var mesh: ArrayMesh = ArrayMesh.new()
+	var st: SurfaceTool = SurfaceTool.new()
+	var basis0: Basis = Basis.looking_at(d.normalized(), Vector3.UP if absf(d.normalized().dot(Vector3.UP)) < 0.95 else Vector3.RIGHT)
+	for i: int in links:
+		var t: float = (float(i) + 0.5) / float(links)
+		var b: Basis = basis0 * Basis(Vector3.FORWARD, PI * 0.5 * float(i % 2)) * Basis(Vector3.RIGHT, PI * 0.5)
+		st.append_from(tor, 0, Transform3D(b, from + d * t))
+	st.commit(mesh)
+	mesh.surface_set_material(0, mat_ex(c, 0.45, metal))
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.mesh = mesh
+	at.add_child(mi)
+	return mi
+
+
+## A tube through `points` (local to the attachment): a cable, an IV line, a hose. `emit` lights it.
+func cable(bone: String, points: Array, radius: float, c: Color, emit: float = 0.0, emit_color: Color = Color.BLACK) -> MeshInstance3D:
+	var at: Node3D = bone_attachment(bone)
+	if at == null or points.size() < 2:
+		return null
+	var mesh: ArrayMesh = ArrayMesh.new()
+	var st: SurfaceTool = SurfaceTool.new()
+	var cm: CylinderMesh = CylinderMesh.new()
+	cm.top_radius = radius
+	cm.bottom_radius = radius
+	cm.height = 1.0
+	cm.radial_segments = 8
+	cm.rings = 1
+	var sp: SphereMesh = SphereMesh.new()
+	sp.radius = radius
+	sp.height = radius * 2.0
+	sp.radial_segments = 8
+	sp.rings = 4
+	for i: int in points.size() - 1:
+		var a: Vector3 = points[i]
+		var b: Vector3 = points[i + 1]
+		var seg: Vector3 = b - a
+		if seg.length() < 0.001:
+			continue
+		var up: Vector3 = seg.normalized()
+		var side: Vector3 = up.cross(Vector3.UP if absf(up.dot(Vector3.UP)) < 0.95 else Vector3.RIGHT).normalized()
+		var basis: Basis = Basis(side, up, side.cross(up)).scaled(Vector3(1.0, seg.length(), 1.0))
+		st.append_from(cm, 0, Transform3D(basis, (a + b) * 0.5))
+		st.append_from(sp, 0, Transform3D(Basis.IDENTITY, b))
+	st.commit(mesh)
+	mesh.surface_set_material(0, mat_ex(c, 0.5, 0.2, emit, emit_color))
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.mesh = mesh
+	at.add_child(mi)
+	return mi
+
+
+## Hanging strips of cloth / bandage / weed on a bone (`count` of them in a `spread` m wide fan under `pos`), each
+## a thin box that sways with the body's motion (BossFx.SwayStrips). Returns the sway node.
+func strips(bone: String, pos: Vector3, count: int, length: float, width: float, c: Color, spread: float = 0.3, seed_v: int = 1) -> Node3D:
+	var at: Node3D = bone_attachment(bone)
+	if at == null:
+		return null
+	var sw: BossFx.SwayStrips = BossFx.SwayStrips.new()
+	sw.name = "Strips"
+	sw.position = pos
+	at.add_child(sw)
+	sw.build(count, length, width, mat_ex(c, 0.95, 0.0), spread, seed_v)
+	return sw
+
+
+## Hairline cracks on a limb: `count` thin emissive lines scattered over a cylinder of `radius` round the bone's
+## axis from `y0` to `y1` (local), `c` their glow. Returns the mesh so a subclass can grow them (scale / show more).
+func cracks(bone: String, count: int, radius: float, y0: float, y1: float, c: Color, emit: float = 1.6, seed_v: int = 3) -> MeshInstance3D:
+	var at: Node3D = bone_attachment(bone)
+	if at == null or count <= 0:
+		return null
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = seed_v
+	var mesh: ArrayMesh = ArrayMesh.new()
+	var st: SurfaceTool = SurfaceTool.new()
+	var bm: BoxMesh = BoxMesh.new()
+	bm.size = Vector3.ONE
+	for i: int in count:
+		var a: float = rng.randf_range(0.0, TAU)
+		var y: float = rng.randf_range(y0, y1)
+		var len_: float = rng.randf_range(0.04, 0.14)
+		var tilt: float = rng.randf_range(-1.1, 1.1)
+		var p: Vector3 = Vector3(cos(a) * radius, y, sin(a) * radius)
+		var out: Vector3 = Vector3(cos(a), 0.0, sin(a))
+		var along: Vector3 = (Vector3.UP * cos(tilt) + out.cross(Vector3.UP) * sin(tilt)).normalized()
+		var b: Basis = Basis(out.cross(along), along, out).scaled(Vector3(0.006, len_, 0.004))
+		st.append_from(bm, 0, Transform3D(b, p))
+	st.commit(mesh)
+	mesh.surface_set_material(0, mat_ex(c, 0.4, 0.0, emit, c))
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.mesh = mesh
+	at.add_child(mi)
+	return mi
+
+
+## Eyes that read: two emissive beads at the sockets and a weak light between them. `blink_s` > 0 blinks them
+## (BossFx.EyeGlow does the timing; 0 = never, Alix). Returns the node (set .lit / .color to change).
+func eye_glow(c: Color, energy: float = 1.2, blink_s: float = 0.0, sockets: Array = [Vector3(-0.035, 0.09, -0.11), Vector3(0.035, 0.09, -0.11)]) -> Node3D:
+	var at: Node3D = bone_attachment("Head")
+	if at == null:
+		return null
+	var eg: BossFx.EyeGlow = BossFx.EyeGlow.new()
+	eg.name = "EyeGlow"
+	at.add_child(eg)
+	eg.build(c, energy, blink_s, sockets)
+	return eg
+
+
+## A wet sheen on the skin (rain, the harbour, sweat): the infection shader's dirt down and its roughness lowered
+## through the instance tint's alpha? no: the shader has no roughness uniform; the sheen is a thin glossy shell on
+## the chest and head (two costume pieces) at `amount` opacity. Returns the shell.
+func wet(amount: float = 0.35) -> MeshInstance3D:
+	var at: Node3D = bone_attachment("Chest")
+	if at == null:
+		return null
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.albedo_color = Color(0.6, 0.65, 0.7, clampf(amount, 0.0, 1.0) * 0.5)
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.roughness = 0.08
+	m.metallic = 0.2
+	m.cull_mode = BaseMaterial3D.CULL_BACK
+	var sp: SphereMesh = SphereMesh.new()
+	sp.radius = 0.235
+	sp.height = 0.44
+	sp.material = m
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.mesh = sp
+	mi.position = Vector3(0, 0.12, 0)
+	mi.scale = Vector3(1.0, 0.8, 0.6)
+	at.add_child(mi)
+	return mi
+
+
 ## A cached greybox material for a costume colour.
 static func mat(c: Color, emit: float = 0.0, rough: float = 0.9) -> StandardMaterial3D:
 	var key: String = "%s|%.2f|%.2f" % [c.to_html(true), emit, rough]
@@ -157,6 +324,8 @@ func _ready() -> void:
 	_tele_light.shadow_enabled = false
 	_tele_light.position = Vector3(0, 0.1, -0.25)
 	bone_attachment("Chest").add_child(_tele_light)
+	# T-231: the shared effects kit (docs/BOSS_REWORK.md section 2): dread, footfalls, arena lights, emitters, hits
+	fx = BossFx.make(self, bcfg.get("dread", {}), StringName(str(bcfg.get("boss_id", boss_key))))
 
 
 ## Brings the boss in at `at` with `health` (already scaled). Subclasses call this, then dress themselves.
@@ -484,6 +653,9 @@ func _tick_retreat(delta: float) -> void:
 ## Out of the match without a kill event (retreated, or the round's cleanup of a body).
 func _vanish() -> void:
 	gone = true
+	if fx != null:
+		fx.release_dread()
+		fx.lights_restore(1.5)
 	sync_fight_flag(get_tree(), self)
 	_release_all_grabs("gone")
 	bstate = B.GONE
@@ -568,8 +740,10 @@ func take_damage(amount: float, limb: StringName, weapon_id: StringName, by_play
 	return false
 
 
-func _on_damaged(_amount: float, _limb: StringName, _by_player: int, _kind: StringName) -> void:
-	pass
+func _on_damaged(amount: float, limb: StringName, _by_player: int, _kind: StringName) -> void:
+	# T-231: the kit's hit feedback (a subclass that overrides this calls super)
+	if fx != null:
+		fx.hit(limb, amount, limb_mult(limb) * damage_taken_mult(), max_hp)
 
 
 func hp_fraction() -> float:
@@ -614,6 +788,8 @@ func _boss_die(limb: StringName, weapon_id: StringName, by_player: int, _kind: S
 	_safe_vel = Vector3.ZERO
 	_release_all_grabs("death")
 	_tele_light.light_energy = 0.0
+	if fx != null:
+		fx.death_burst(global_position, _tele_light.light_color)
 	var scrip: int = int(bcfg.get("kill_scrip_per_player", 0))
 	if scrip > 0:
 		for pid: int in GameState.player_ids:
@@ -781,9 +957,13 @@ func _hum_pitch() -> float:
 	return 1.0
 
 
-## Bosses never play the horde's footsteps on stairs etc. through the base (each one decides).
+## Bosses never play the horde's footsteps on stairs etc. through the base (each one decides). T-231: a boss whose
+## dread block names step_sound / step_shake gets the kit's footfall (dust, the thud, the view shake) at the foot.
 func _footstep(left: bool) -> void:
 	super._footstep(left)
+	if fx != null and fx.has_footfalls() and is_active():
+		var foot: Node3D = bone_attachment("LeftFoot" if left else "RightFoot")
+		fx.stomp(foot.global_position if foot != null else global_position)
 
 
 # ================================================================== co-op (host simulates; HB1 has no boss puppet)

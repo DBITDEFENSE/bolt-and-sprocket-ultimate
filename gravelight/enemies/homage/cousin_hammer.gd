@@ -264,6 +264,7 @@ func damage_taken_mult() -> float:
 
 
 func _on_damaged(_amount: float, _limb: StringName, _by: int, kind: StringName) -> void:
+	super._on_damaged(_amount, _limb, _by, kind)
 	# unarmed: a melee hit staggers her and the maul drops where she stands
 	if kind == &"melee" and maul_out and bstate != B.STAGGER and is_active():
 		_pose.hold = false
