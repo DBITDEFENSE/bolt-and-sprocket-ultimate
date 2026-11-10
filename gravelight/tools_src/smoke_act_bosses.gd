@@ -161,6 +161,8 @@ func _beat(id: String, boss: HomageBoss, p: Player) -> void:
 			kf.hp = kf.max_hp * 0.55
 			var queued: bool = await _until(func() -> bool: return kf.lights_phase_done >= 2, 8.0)
 			_check(queued and kf.phase == 2, "phase 2 queues the hangar's work lights to die (phase %d, step %d)" % [kf.phase, kf.lights_phase_done])
+			var swept: bool = await _until(func() -> bool: return kf.hook_down or kf.sweeps_done > 0 or kf.drops_done > 0, 20.0)
+			_check(swept, "phase 2: the hook comes down for a sweep (or a casing fell; hook down %s, %s)" % [str(kf.hook_down), _counts(kf, ["drops_done", "sweeps_done"])])
 			_note("the hangar has %d lit work lights" % kf.work_lights.size())
 			if kf.work_lights.size() > 0:
 				var dropped: bool = await _until(func() -> bool: return kf.lights_dropped > 0, 6.0)

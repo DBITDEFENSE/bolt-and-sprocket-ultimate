@@ -75,6 +75,7 @@ func spawn_cell(at: Vector3, health: float) -> void:
 		_glow.light_energy = 1.6
 		_glow.omni_range = 5.0
 		_glow.shadow_enabled = false
+		_glow.set_meta("no_dim", true)   # a cell is shot and freed mid-fight: never one of the kit's captured lamps
 		_sphere.add_child(_glow)
 		_hum = AudioDirector.make_loop_3d("manager_field_hum", _sphere, -12.0)
 	_sphere.visible = true

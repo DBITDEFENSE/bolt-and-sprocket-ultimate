@@ -433,9 +433,9 @@ func _enter_phase(ph: int) -> void:
 		3:
 			_remove_trial()
 			GameState.set_flag(&"manager_field_down")
-			_spawn_cells()
-			_crew_t = 4.0
-			# T-234: the field drops (its hum with it) and the Account's lamps go out; her light stays
+			# T-234: the field drops (its hum with it) and the Account's lamps go out; her light stays. The lamps are
+			# captured before the cells spawn (their glows are no_dim too): a captured light that is freed later would
+			# trip the kit's flicker.
 			if _field_hum != null:
 				_field_hum.stop()
 			collections_dark = true
@@ -443,6 +443,8 @@ func _enter_phase(ph: int) -> void:
 			fx.lights_flicker(2.0, 0.8)
 			BossFx.burst("motes", station + Vector3.UP * 1.8, get_tree(), 2.0, 1.6)
 			dark_t = 0.0
+			_spawn_cells()
+			_crew_t = 4.0
 	_present(ph)
 
 
@@ -500,6 +502,8 @@ func _offer_trial() -> void:
 
 func _remove_trial() -> void:
 	if trial != null and is_instance_valid(trial):
+		for l: Node in trial.find_children("*", "Light3D", true, false):
+			l.set_meta("no_dim", true)   # about to be freed: never one of the kit's captured lamps
 		trial.queue_free()
 	trial = null
 
