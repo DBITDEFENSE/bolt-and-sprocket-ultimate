@@ -2,9 +2,9 @@ class_name PaulRage
 extends RefCounted
 ## PAUL's rage meter (HB2, docs/HOMAGE_BOSSES.md section 5.3; DECISIONS T-159). Pure maths, no nodes, so the unit
 ## tests drive it directly. The meter runs 0..100 and shows on his boss bar as a stout bottle filling.
-## Fills: damage dealt to him (+1 per 1% of his max HP), players fleeing him (+4 / s each), a player going down in
-## his sight (+10 at once, then +1 / s per downed player he can see). Cools: no damage for `cool_after` s
-## (-0.5 / s), a broken IV bottle (-20), the tin-cup idle (-5).
+## Fills: damage dealt to him (+1 per 1% of his max HP), players fleeing him (+4 / s each), a player who runs out of
+## his sight (+6 at once, T-232 `flee_break`), a player going down in his sight (+10 at once, then +1 / s per downed
+## player he can see). Cools: no damage for `cool_after` s (-0.5 / s), a broken IV bottle (-20), the tin-cup idle (-5).
 ## Stages: Calm 0..33, Angry 34..66, BERSERK 67..100, with a 5-point hysteresis on the way down (he shrinks back only
 ## when the meter drops 5 below the stage's floor), so he never flickers between sizes on a threshold.
 
@@ -27,8 +27,9 @@ func _init(rage_cfg: Dictionary = {}) -> void:
 
 
 static func defaults() -> Dictionary:
-	return {"per_pct_damage": 1.0, "flee_per_s": 4.0, "down_burst": 10.0, "down_per_s": 1.0, "cool_after": 8.0,
-		"cool_per_s": 0.5, "bottle_cool": 20.0, "cup_dip": 5.0, "angry_at": 34.0, "berserk_at": 67.0, "hysteresis": 5.0}
+	return {"per_pct_damage": 1.0, "flee_per_s": 4.0, "flee_break": 6.0, "flee_break_every": 3.0, "down_burst": 10.0,
+		"down_per_s": 1.0, "cool_after": 8.0, "cool_per_s": 0.5, "bottle_cool": 20.0, "cup_dip": 5.0, "angry_at": 34.0,
+		"berserk_at": 67.0, "hysteresis": 5.0}
 
 
 ## Rage from one hit of `amount` on a boss with `max_hp` (+1 per 1% of max HP).
@@ -77,6 +78,11 @@ func on_bottle() -> void:
 ## A player went down where he could see.
 func on_player_down() -> void:
 	add(float(cfg["down_burst"]))
+
+
+## T-232: a player he could see sprinted out of his sight (round a corner, through a door): the spike.
+func on_flee_break() -> void:
+	add(float(cfg["flee_break"]))
 
 
 ## The tin-cup idle: he almost remembers something.
