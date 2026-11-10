@@ -11,7 +11,11 @@
   "exfil": {
     "round": 10,
     "target": "map01_kaltenbrunn",
-    "position": [18.0, 0.0, 32.0],
+    "position": [
+      18.0,
+      0.0,
+      32.0
+    ],
     "yaw": 0.0,
     "zone": "STABLE",
     "opens_zone": true,
@@ -22,5 +26,135 @@
     "vo_open": "OPR_EXFIL_OPEN_M0_01",
     "vo_wait": "OPR_EXFIL_WAIT_01",
     "vo_missed": "OPR_EXFIL_MISSED_M0_01"
-  }
+  },
+  "ladders": [
+    {
+      "name": "TowerLadder_Foot",
+      "pos": [
+        5.4,
+        0.0,
+        42.6
+      ],
+      "yaw": 0.0,
+      "to": [
+        5.4,
+        6.2,
+        44.0
+      ],
+      "target": "the tower",
+      "_doc": "T-229: the sniper tower's ladder, up its north face to the deck"
+    },
+    {
+      "name": "TowerLadder_Top",
+      "pos": [
+        5.4,
+        6.2,
+        43.7
+      ],
+      "yaw": 180.0,
+      "down": true,
+      "to": [
+        5.4,
+        0.0,
+        42.4
+      ],
+      "target": "the tower"
+    },
+    {
+      "name": "CellarHatch_Up",
+      "pos": [
+        6.6,
+        -3.2,
+        5.95
+      ],
+      "yaw": 180.0,
+      "to": [
+        6.6,
+        0.0,
+        6.45
+      ],
+      "zone": "OLD_CELLAR",
+      "target": "to the bar",
+      "locked_text": "The hatch is bolted from above",
+      "_doc": "T-229: the aunt's ladder under the cellar hatch behind the bar"
+    },
+    {
+      "name": "CellarHatch_Down",
+      "pos": [
+        6.6,
+        0.0,
+        6.35
+      ],
+      "yaw": 180.0,
+      "down": true,
+      "to": [
+        6.6,
+        -3.2,
+        6.1
+      ],
+      "zone": "OLD_CELLAR",
+      "target": "into the Old Cellar",
+      "locked_text": "A bolted trapdoor"
+    }
+  ],
+  "ziplines": [
+    {
+      "name": "YardZip",
+      "pos": [
+        7.35,
+        8.2,
+        43.1
+      ],
+      "end": [
+        18.6,
+        2.75,
+        36.2
+      ],
+      "to": [
+        17.9,
+        0.0,
+        36.7
+      ],
+      "yaw": 135.0,
+      "speed": 7.5,
+      "hang": 2.0,
+      "sag": 0.3,
+      "target": "down to the stable wall",
+      "_doc": "T-229: from the sniper tower's roof post down to the landing post by the yard door's lamp"
+    }
+  ],
+  "climb_links": [
+    {
+      "name": "Climb_Tower",
+      "zone": "YARD",
+      "from": [
+        5.4,
+        0.0,
+        42.6
+      ],
+      "to": [
+        5.4,
+        6.2,
+        44.0
+      ],
+      "bidirectional": false,
+      "_doc": "T-229: the zombies climb the sniper tower's ladder to the deck"
+    },
+    {
+      "name": "Climb_CellarHatch",
+      "zone": "OLD_CELLAR",
+      "from": [
+        6.6,
+        -3.2,
+        5.95
+      ],
+      "to": [
+        6.6,
+        0.0,
+        6.45
+      ],
+      "bidirectional": true,
+      "_doc": "T-229: the cellar hatch behind the bar, both ways (down it is a drop)"
+    }
+  ]
 }

@@ -797,7 +797,11 @@ func build_uboat() -> void:
 	box(geo, "HullDeck1", Vector3(4, 0.6, z0), Vector3(10, DECK, 61), "deck")
 	box(geo, "HullDeck2", Vector3(4, 0.6, 61), Vector3(5, DECK, 66), "deck")
 	box(geo, "HullDeck3", Vector3(7, 0.6, 61), Vector3(10, DECK, 66), "deck")
-	box(geo, "HullDeck4", Vector3(4, 0.6, 66), Vector3(10, DECK, z1), "deck")
+	# T-229: the deck aft is cut round the engine room's escape hatch (x 6.55..7.45, z 82.4..83.3) over its ladder (the
+	# deck aft of z 84 is under the pen's curtain: no standing room there)
+	for seg: Array in [[Vector3(4, 0.6, 66), Vector3(6.55, DECK, z1)], [Vector3(7.45, 0.6, 66), Vector3(10, DECK, z1)],
+			[Vector3(6.55, 0.6, 66), Vector3(7.45, DECK, 82.4)], [Vector3(6.55, 0.6, 83.3), Vector3(7.45, DECK, z1)]]:
+		box(geo, "HullDeck4", seg[0], seg[1], "deck")
 	box(geo, "BowCap", Vector3(4, SY - 0.5, z0 - 0.6), Vector3(10, DECK + 1.2, z0), "hull")
 	box(geo, "SternCap", Vector3(4, SY - 0.5, z1), Vector3(10, DECK + 1.2, z1 + 0.6), "hull")
 	# the conning tower over the hatch, with its door to the deck on the gangway side
@@ -1865,8 +1869,21 @@ func _dress_uboat() -> void:
 			Props.cyl(dress, Vector3(dx, SY + 1.8, 71.0 + k4 * 2.0), 0.3, 0.4, "machine_grey")
 			B(Vector3(dx - 0.5, SY + 0.6, 70.4 + k4 * 2.0), Vector3(dx + 0.5, SY + 0.7, 71.6 + k4 * 2.0), "iron")
 	Props.stencil(dress, Vector3(7.0, 0.2, 68.42), 0.0, "MASCHINENRAUM", 22, Color(0.85, 0.82, 0.7, 0.7))
-	Props.ladder(dress, Vector3(7.0, SY, 85.6), 0.0, 2.5, "iron")
-	Props.cyl(dress, Vector3(7.0, 0.65, 84.5), 0.45, 0.1, "iron", Vector3(0, 0, 0))
+	# the escape hatch's ladder on the stern bulkhead, up through the cut in the deck (T-229: a LadderClimb at each end,
+	# map02.json ladders; the zombies' climb link Ladder_EngineHatch), the coaming round the hatch and its lid thrown back
+	Props.ladder(dress, Vector3(7.0, SY, 83.15), 180.0, DECK - SY + 0.35, "iron")   # the trunk ladder, stayed to the stern bulkhead
+	for sx: float in [6.8, 7.2]:
+		Props.strut(dress, Vector3(sx, SY + 2.6, 83.3), Vector3(sx, SY + 2.6, 85.9), 0.025, "iron", true)
+		Props.strut(dress, Vector3(sx, SY + 1.0, 83.3), Vector3(sx, SY + 1.0, 85.9), 0.025, "iron", true)
+	# (the hatch's deck-level pieces draw with DH: seen from the hall as well as from inside, like the companionway, T-180)
+	for e: Array in [[Vector3(6.47, DECK, 82.32), Vector3(7.53, DECK + 0.3, 82.4)], [Vector3(6.47, DECK, 83.3), Vector3(7.53, DECK + 0.3, 83.38)],
+			[Vector3(6.47, DECK, 82.4), Vector3(6.55, DECK + 0.3, 83.3)], [Vector3(7.45, DECK, 82.4), Vector3(7.53, DECK + 0.3, 83.3)]]:
+		B(e[0], e[1], "iron").set_meta("vis", "DH")
+	Props.obox(dress, Vector3(7.0, DECK + 0.72, 83.5), Vector3(0.96, 0.05, 0.96), "machine_grey", Vector3(-105, 0, 0)).set_meta("vis", "DH")   # the lid, thrown back aft
+	Props.strut(dress, Vector3(6.6, DECK + 0.3, 82.35), Vector3(6.6, DECK + 1.1, 82.35), 0.03, "iron", true).set_meta("vis", "DH")   # the grab bar
+	Props.strut(dress, Vector3(6.6, DECK + 1.1, 82.35), Vector3(7.4, DECK + 1.1, 82.35), 0.03, "iron", true).set_meta("vis", "DH")
+	Props.strut(dress, Vector3(7.4, DECK + 1.1, 82.35), Vector3(7.4, DECK + 0.3, 82.35), 0.03, "iron", true).set_meta("vis", "DH")
+	Props.stencil(dress, Vector3(7.0, DECK + 0.18, 82.31), 0.0, "NOTAUSSTIEG", 12, Color(0.85, 0.82, 0.7, 0.8)).set_meta("vis", "DH")
 	# lights inside: red battle lanterns (always), white bulkheads (powered)
 	for lz: float in [42.0, 48.0, 54.0, 60.0, 66.0, 74.0, 82.0]:
 		Props.bulkhead_lamp(dress, Vector3(9.44, 0.3, lz), 90.0, "lamp_red_lit")
@@ -2177,6 +2194,7 @@ func _dress_u09_penhall() -> void:
 		Props.block(cab, Vector3(-0.1, 2.2, sz - 0.1), Vector3(0.1, 2.6, sz + 0.1), "iron")
 	Props.stencil(cab, Vector3(0, 1.95, -2.63), 0.0, "KRAN 2 · 8 t", 26, Color(0.1, 0.08, 0.05, 0.9))
 	Props.ladder(dress, Vector3(50.25, 0.0, 56.7), -90.0, 9.4, "iron")
+	Props.ladder_guard(dress, Vector3(50.25, 0.0, 56.7), -90.0, 2.3)   # (T-229: the cab is nobody's floor; the crane's ladder is locked off the way they are)
 	DetailMap02.hook(dress, Vector3(40.0, 3.45, 60.0), 1.4)
 	for sx: float in [-0.12, 0.12]:
 		Props.cable(dress, Vector3(40.0 + sx, 8.9, 60.0), Vector3(40.0 + sx, 3.6, 60.0), 0.0, 0.02, 2, "iron")

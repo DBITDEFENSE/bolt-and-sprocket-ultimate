@@ -32,6 +32,21 @@ const ASTAIR_HOLE_X0: float = 7.3   # the attic well starts where the headroom u
 const ASTAIR_STEP: float = 0.4     # tread depth: 15 treads over the 6 m run, the attic floor the 16th rise (0.206 m each)
 const ASTAIR_STEPS: int = 15
 const ATT_WIN_Z: float = 4.5   # the gable windows' centre (z) on the west and east walls
+## T-229 (the owner: "include a sniper tower with a zipline in map one"): a timber Hochsitz in the Carters' Yard's
+## south-west corner, its deck 6 m up behind a closed boarded rail, a ladder up its north face (LadderClimbs, map00.json
+## "ladders"; the zombies' climb link up the same face), and a zip line from its roof post down to a landing post by the
+## stable's south wall (ZipLine, "ziplines"). The cellar hatch behind the bar (HATCH_*) is the Old Cellar's ladder's way
+## up: the taproom floor is cut there, a Trapdoor leaf fills it until the Old Cellar opens.
+const TOWER_X: float = 5.4
+const TOWER_Z: float = 45.0
+const TOWER_DECK: float = 6.2       # the deck's top
+const TOWER_HALF: float = 1.9       # the deck's half width (3.8 m: inside its rail the walkable square must stay over the 4 m2 the bake keeps, T-106)
+const ZIP_ANCHOR: Vector3 = Vector3(7.35, 8.2, 43.1)    # the cable's top, a bracket on the north-east roof post
+const ZIP_POST: Vector3 = Vector3(18.6, 0, 36.2)        # the landing post's foot by the stable wall; the cable ends 2.75 m up it
+const HATCH_X0: float = 6.15
+const HATCH_X1: float = 7.05
+const HATCH_Z0: float = 5.15
+const HATCH_Z1: float = 6.05
 ## T-224 (the owner: "the bar needs to be bigger with more space"): the bar is an L of counter 10.1 m long now (it was
 ## 9): the front x BAR_X0..BAR_X1 at z BAR_Z1..BAR_Z1+0.8, the side x BAR_X1-0.8..BAR_X1 from z BAR_Z0 to BAR_Z1, the back-bar (the
 ## shelving, a mirror, the till and the taps) on x SHELF_X0..SHELF_X1. The whole block moved 1.1 m west and grew
@@ -840,6 +855,84 @@ func build_yard() -> void:
 	box(geo, "Woodpile", Vector3(13.3, 0, 34.15), Vector3(15.9, 1.3, 35.4), "furniture", true, false)   # east of the window W_STB_S (x 11.2..12.8), which the zombies need clear (T-040)
 	box(geo, "YardCart", Vector3(27.0, 0, 37.0), Vector3(29.6, 1.1, 39.2), "furniture", true, false)
 	box(geo, "YardTrough", Vector3(30.5, 0, 44.0), Vector3(33.5, 0.7, 45.0), "furniture", true, false)
+	# T-229: the sniper tower (TOWER_*): four legs, the deck slab, three collider bars round its edge (a closed rail:
+	# the climbs and the zombies' link carry over it, nobody walks off), and the zip line's landing post by the stable wall
+	for lx: float in [TOWER_X - 1.6, TOWER_X + 1.6]:
+		for lz: float in [TOWER_Z - 1.6, TOWER_Z + 1.6]:
+			box(geo, "TowerLeg", Vector3(lx - 0.11, 0, lz - 0.11), Vector3(lx + 0.11, TOWER_DECK - 0.2, lz + 0.11), "beam")
+	box(geo, "TowerDeck", Vector3(TOWER_X - TOWER_HALF, TOWER_DECK - 0.2, TOWER_Z - TOWER_HALF), Vector3(TOWER_X + TOWER_HALF, TOWER_DECK, TOWER_Z + TOWER_HALF), "planks")
+	var tc: Array = [Vector3(TOWER_X - TOWER_HALF + 0.05, 0, TOWER_Z - TOWER_HALF + 0.05), Vector3(TOWER_X + TOWER_HALF - 0.05, 0, TOWER_Z - TOWER_HALF + 0.05),
+		Vector3(TOWER_X + TOWER_HALF - 0.05, 0, TOWER_Z + TOWER_HALF - 0.05), Vector3(TOWER_X - TOWER_HALF + 0.05, 0, TOWER_Z + TOWER_HALF - 0.05)]
+	for k: int in 4:
+		for r: Array in [[0.06, 0.06, 0.12], [0.55, 0.035, 0.04], [1.05, 0.07, 0.07]]:   # [centre height over the deck, width, height]
+			var hy: float = TOWER_DECK + float(r[0])
+			bar(geo, "TowerRail", tc[k] + Vector3(0, hy, 0), tc[(k + 1) % 4] + Vector3(0, hy, 0), float(r[1]), float(r[2]), "beam")
+	box(geo, "ZipPost", ZIP_POST + Vector3(-0.12, 0, -0.12), ZIP_POST + Vector3(0.12, 2.9, 0.12), "beam")
+
+
+## T-229: the sniper tower, a carters' Hochsitz over the yard's south-west corner: the legs' braces and ring beams, the
+## deck's boards, the boarded parapet on its rail bars with a plank cap, four roof posts under a little gable roof with
+## its snow, the ladder up the north face (the LadderClimbs stand at its foot and head), a lantern under the roof, a row
+## of sandbags on the field side, a cartridge crate and an upturned bucket for a seat, the zip line's cable from the
+## bracket on the north-east roof post down to the landing post by the stable wall (the trolley is the ZipLine's own),
+## the post's stay, a coil of rope and the trodden snow where you land.
+func _dress_tower(g: Node3D) -> void:
+	var cx: float = TOWER_X
+	var cz: float = TOWER_Z
+	var h: float = TOWER_HALF
+	var dy: float = TOWER_DECK
+	var legs: Array = [Vector3(cx - 1.6, 0, cz - 1.6), Vector3(cx + 1.6, 0, cz - 1.6), Vector3(cx + 1.6, 0, cz + 1.6), Vector3(cx - 1.6, 0, cz + 1.6)]
+	for tier: Array in [[0.5, 3.0], [3.2, 5.7]]:
+		var y0: float = float(tier[0])
+		var y1: float = float(tier[1])
+		for k: int in 4:
+			var a: Vector3 = legs[k]
+			var b: Vector3 = legs[(k + 1) % 4]
+			Props.strut(g, a + Vector3(0, y0, 0), b + Vector3(0, y1, 0), 0.09, "beam")
+			Props.strut(g, a + Vector3(0, y1, 0), b + Vector3(0, y0, 0), 0.09, "beam")
+			Props.strut(g, a + Vector3(0, y1 + 0.06, 0), b + Vector3(0, y1 + 0.06, 0), 0.13, "beam")   # the ring beam
+	for k2: int in 4:   # the deck's bearers under its edges
+		var a2: Vector3 = legs[k2]
+		var b2: Vector3 = legs[(k2 + 1) % 4]
+		Props.strut(g, a2 + Vector3(0, dy - 0.3, 0), b2 + Vector3(0, dy - 0.3, 0), 0.16, "beam")
+	Props.block(g, Vector3(cx - h, dy, cz - h), Vector3(cx + h, dy + 0.012, cz + h), "floorboards")
+	# the boarded parapet: two boards between the rail bars each side, a plank cap on the top bar, corner posts up to the roof
+	for side: int in 4:
+		var n: Vector3 = [Vector3(0, 0, -1), Vector3(1, 0, 0), Vector3(0, 0, 1), Vector3(-1, 0, 0)][side]   # outward
+		var t: Vector3 = Vector3(n.z, 0, -n.x)
+		var c: Vector3 = Vector3(cx, 0, cz) + n * (h - 0.03)
+		for by: Array in [[0.18, 0.5], [0.62, 0.95]]:
+			var a3: Vector3 = c - t * (h - 0.06) + Vector3(0, dy + float(by[0]), 0) - n * 0.02
+			var b3: Vector3 = c + t * (h - 0.06) + Vector3(0, dy + float(by[1]), 0) + n * 0.02
+			Props.block(g, Vector3(minf(a3.x, b3.x), a3.y, minf(a3.z, b3.z)), Vector3(maxf(a3.x, b3.x), b3.y, maxf(a3.z, b3.z)), "planks")
+		var a4: Vector3 = c - t * (h + 0.02) + Vector3(0, dy + 1.09, 0) - n * 0.08
+		var b4: Vector3 = c + t * (h + 0.02) + Vector3(0, dy + 1.14, 0) + n * 0.06
+		Props.block(g, Vector3(minf(a4.x, b4.x), a4.y, minf(a4.z, b4.z)), Vector3(maxf(a4.x, b4.x), b4.y, maxf(a4.z, b4.z)), "beam")
+	for px: float in [cx - h + 0.1, cx + h - 0.1]:
+		for pz: float in [cz - h + 0.1, cz + h - 0.1]:
+			Props.block(g, Vector3(px - 0.08, dy, pz - 0.08), Vector3(px + 0.08, dy + 2.25, pz + 0.08), "beam")
+	for pz2: float in [cz - h + 0.1, cz + h - 0.1]:
+		Props.block(g, Vector3(cx - h + 0.02, dy + 2.1, pz2 - 0.07), Vector3(cx + h - 0.02, dy + 2.25, pz2 + 0.07), "beam")   # the plates
+	Props.gable_roof(g, Vector3(cx - h - 0.35, dy + 2.2, cz - h - 0.35), Vector3(cx + h + 0.35, dy + 2.2, cz + h + 0.35), 0.8, true)
+	# the ladder up the north face, a lantern under the roof, sandbags on the field side, a crate and a bucket
+	Props.ladder(g, Vector3(cx, 0, cz - h - 0.02), 0.0, dy + 0.9, "beam")
+	Props.wall_lamp(g, Vector3(cx + 1.6, 2.3, cz - 1.6 - 0.11), 0.0)   # a lantern on the north-east leg over the ladder's foot
+	Props.lantern(g, Vector3(cx, dy + 1.55, cz), dy + 2.2)
+	Props.sandbags(g, Vector3(cx - h + 0.3, dy + 1.14, cz + h - 0.2), Vector3(cx + h - 0.3, dy + 1.14, cz + h - 0.2), 1)
+	Props.sandbags(g, Vector3(cx - h + 0.2, dy + 1.14, cz - h + 0.4), Vector3(cx - h + 0.2, dy + 1.14, cz + h - 0.5), 1)
+	Props.crate(g, Vector3(cx + 0.95, dy, cz + 0.95), 0.5, 12.0, "7.92")
+	Props.cyl(g, Vector3(cx - 0.95, dy + 0.16, cz + 0.3), 0.15, 0.32, "zinc")
+	# the zip line: the bracket on the roof post, the cable down to the post (its stay, a snow cap, a coil of rope), the trodden landing
+	Props.block(g, ZIP_ANCHOR + Vector3(-0.08, -0.1, -0.08), ZIP_ANCHOR + Vector3(0.08, 0.1, 0.08), "iron")
+	Props.block(g, ZIP_ANCHOR + Vector3(-0.3, -0.06, -0.12), ZIP_ANCHOR + Vector3(0.0, 0.06, 0.0), "iron")
+	var post_top: Vector3 = ZIP_POST + Vector3(0, 2.75, 0)
+	Props.cable(g, ZIP_ANCHOR, post_top, 0.3, 0.018, 14, "iron")
+	Props.block(g, post_top + Vector3(-0.09, -0.08, -0.09), post_top + Vector3(0.09, 0.08, 0.09), "iron")
+	Props.strut(g, post_top + Vector3(0, -0.2, 0), ZIP_POST + Vector3(1.6, 0.0, 0.0), 0.02, "iron")   # the stay to its ground anchor
+	Props.block(g, ZIP_POST + Vector3(1.5, 0, -0.1), ZIP_POST + Vector3(1.7, 0.25, 0.1), "iron")
+	Props._noshadow(Props.block(g, ZIP_POST + Vector3(-0.14, 2.9, -0.14), ZIP_POST + Vector3(0.14, 2.97, 0.14), "snow"))
+	Props.rope_coil(g, ZIP_POST + Vector3(-0.4, 0, 0.35), 0.14)
+	Props._noshadow(Props.block(g, Vector3(17.1, 0.0, 35.9), Vector3(18.9, 0.012, 37.5), "snow_trodden"))
 
 
 ## T-125: a blocking fence's collider: the world layer up to FENCE_SOLID_H (zombies and shots stop at the drawn
@@ -1437,7 +1530,10 @@ func build_old_cellar() -> void:
 	for f: Array in [[Vector3(-0.15, cy - 0.5, -0.15), Vector3(24.15, cy, 16.15)], [Vector3(-0.15, cy - 0.5, 16.0), Vector3(11.05, cy, 18.65)],
 			[Vector3(20.7, cy - 0.5, 16.0), Vector3(24.0, cy, 21.45)]]:
 		box(geo, "OCFloor", f[0], f[1], "cellar_floor").set_meta("surface", "stone")
-	box(geo, "OCRoof", Vector3(-T * 0.5, top, -T * 0.5), Vector3(24 + T * 0.5, 0.0, 16.0), "planks").set_meta("surface", "wood")   # the taproom's floor
+	# the taproom's floor, cut round the cellar hatch behind the bar (T-229: HATCH_*; the Trapdoor leaf fills the hole until the Old Cellar opens)
+	for seg: Array in [[Vector3(-T * 0.5, top, -T * 0.5), Vector3(HATCH_X0, 0.0, 16.0)], [Vector3(HATCH_X1, top, -T * 0.5), Vector3(24 + T * 0.5, 0.0, 16.0)],
+			[Vector3(HATCH_X0, top, -T * 0.5), Vector3(HATCH_X1, 0.0, HATCH_Z0)], [Vector3(HATCH_X0, top, HATCH_Z1), Vector3(HATCH_X1, 0.0, 16.0)]]:
+		box(geo, "OCRoof", seg[0], seg[1], "planks").set_meta("surface", "wood")
 	for r: Array in [[Vector3(-0.15, top, 16.0), Vector3(11.05, 0.0, 18.65)], [Vector3(20.7, top, 16.0), Vector3(24.0, 0.0, 21.45)]]:
 		box(geo, "OCRoofOut", r[0], Vector3((r[1] as Vector3).x, -0.04, (r[1] as Vector3).z), "brick_cellar")
 		box(geo, "OCRoofSnow", Vector3((r[0] as Vector3).x, -0.04, (r[0] as Vector3).z), r[1], "snow").set_meta("surface", "snow")
@@ -1552,7 +1648,9 @@ func build_dressing() -> void:
 
 
 func _dress_floors_and_ceilings() -> void:
-	Props.block(dress, Vector3(0.15, 0.0, 0.15), Vector3(23.85, 0.012, 15.85), "floorboards")
+	for seg: Array in [[Vector3(0.15, 0.0, 0.15), Vector3(HATCH_X0, 0.012, 15.85)], [Vector3(HATCH_X1, 0.0, 0.15), Vector3(23.85, 0.012, 15.85)],   # (cut round the cellar hatch, T-229)
+			[Vector3(HATCH_X0, 0.0, 0.15), Vector3(HATCH_X1, 0.012, HATCH_Z0)], [Vector3(HATCH_X0, 0.0, HATCH_Z1), Vector3(HATCH_X1, 0.012, 15.85)]]:
+		Props.block(dress, seg[0], seg[1], "floorboards")
 	Props.block(dress, Vector3(STB_X0 + 0.15, 0.0, STB_Z0 + 0.15), Vector3(STB_X1 - 0.15, 0.012, STB_Z1 - 0.15), "dirt")
 	Props.block(dress, Vector3(18.15, 0.0, 16.0), Vector3(21.85, 0.012, 22.0), "dirt")
 	# taproom ceiling beams (north-south) and a summer beam
@@ -2174,7 +2272,6 @@ func _dress_old_cellar() -> void:
 	for e: Array in [[Vector3(-0.5, -0.06, -0.5), Vector3(0.5, 0, -0.42)], [Vector3(-0.5, -0.06, 0.42), Vector3(0.5, 0, 0.5)],
 			[Vector3(-0.5, -0.06, -0.42), Vector3(-0.42, 0, 0.42)], [Vector3(0.42, -0.06, -0.42), Vector3(0.5, 0, 0.42)]]:
 		Props.block(g, hz + (e[0] as Vector3), hz + (e[1] as Vector3), "beam")
-	Props.block(g, hz + Vector3(-0.42, -0.03, -0.42), hz + Vector3(0.42, 0, 0.42), "window_dark")
 	for k2: int in 3:
 		_chalk_figure(g, Vector3(8.14, cy + 0.8, 6.0 + k2 * 0.3), 90.0, 0.5)
 	_chalk_figure(g, Vector3(8.14, cy + 0.75, 7.6), 90.0, 0.75)
@@ -2786,7 +2883,7 @@ func _dress_attic() -> void:
 		Props.obox(g, Vector3(23.6 - pi_ * 0.08, y + 0.45, 7.2 + pi_ * 0.2), Vector3(0.03, 0.8, 0.6), "frame_gold" if pi_ == 1 else "furniture", Vector3(0, 0, 12.0 + pi_ * 2.0))
 	Props.mirror(g, Vector3(23.75, y + 0.9, 2.2), 90.0, 0.5, 0.7)
 	# the ladder to the roof hatch in the north-east corner, the hatch in the boards
-	Props.ladder(g, Vector3(22.6, y, 0.3), 180.0, 2.7, "beam")
+	Props.ladder_stowed(g, Vector3(15.5, y + 1.3, 0.18), 180.0, 2.7, "beam")   # (T-229: stowed on its hooks over the third trunk; the hatch stays shut)
 	Props.block(g, Vector3(22.1, ATT_TOP - 0.03, 0.4), Vector3(23.1, ATT_TOP - 0.012, 1.3), "furniture")
 	# the hoists through the gables: the beam, the pulley and the rope down to the ledge, a sack waiting out there;
 	# the ledges' brackets and braces on the wall outside
@@ -3415,6 +3512,7 @@ func _dress_carters_road() -> void:
 ## woodpile, the snowed cart and trough, a lit lantern on the gatepost, a lamp over the yard door, paths, drifts.
 func _dress_yard() -> void:
 	var g: Node3D = Props.group(dress, "Yard", Vector3.ZERO)
+	_dress_tower(g)
 	Props.fence(g, Vector3(2, 0, 34), Vector3(2, 0, 40.2), 11, true)
 	Props.fence(g, Vector3(2, 0, 41.8), Vector3(2, 0, 48), 12, true)
 	Props.fence(g, Vector3(34, 0, 34), Vector3(34, 0, 40.2), 13, true)
@@ -3475,6 +3573,8 @@ func _dress_yard() -> void:
 	_lamp("YardDoorLamp", Vector3(8.0, 2.6, 34.9), Color(1.0, 0.62, 0.32), 7.5, 16.0, true, true, 0.15)
 	Props.wall_lamp(g, Vector3(19.2, 2.75, 34.2), 180.0)   # (west of the hoist ledge over the Thompson since T-084)
 	_lamp("YardWallLamp", Vector3(19.2, 2.6, 34.9), Color(1.0, 0.62, 0.32), 6.5, 15.0, false, true, 0.15)
+	_lamp("YardTowerLamp", Vector3(TOWER_X, TOWER_DECK + 1.45, TOWER_Z), Color(1.0, 0.62, 0.32), 3.0, 11.0, false, true, 0.2)   # the lantern under the tower's roof (T-229)
+	_lamp("YardTowerFootLamp", Vector3(TOWER_X + 1.6, 2.1, TOWER_Z - 2.0), Color(1.0, 0.62, 0.32), 2.2, 10.0, false, true, 0.2)   # the lantern on its leg over the ladder's foot
 	# the hoist over the loft door (T-084): the beam out of the gable, its pulley and rope down to the ledge, the
 	# ledge's brackets, snow on its boards
 	Props.block(g, Vector3(21.85, 5.9, 33.6), Vector3(22.15, 6.15, 36.3), "beam")
@@ -4559,6 +4659,7 @@ func build_gameplay() -> void:
 		[&"STABLE", Vector3((STB_X0 + STB_X1) * 0.5, 0, 28), Vector3(STB_X1 - STB_X0, 7, 12)],
 		[&"STABLE", Vector3(20, 0, 19), Vector3(4, 3, 6)],
 		[&"YARD", Vector3(18, 0, 41), Vector3(32, 4, 14)],
+		[&"YARD", Vector3(TOWER_X, TOWER_DECK, TOWER_Z), Vector3(5, 5, 5)],   # the sniper tower's deck (T-229)
 	]
 	for r: Array in OUT_ZONE_RECTS:   # T-080: the grounds, open ground (roam)
 		var a: Vector2 = r[0]
@@ -4743,6 +4844,12 @@ func build_old_cellar_gameplay() -> void:
 	d5.position = Vector3(0.0, 0, 9.05)
 	d5.rotation.y = deg_to_rad(90)
 	gameplay.add_child(d5)
+	# T-229: the cellar hatch behind the bar, over the aunt's ladder: its leaf is bolted until this zone opens; the climbs
+	# through it are map00.json's ladders, the zombies' way its climb link
+	var td: Node3D = _scripted(Node3D.new(), "res://gravelight/world/trapdoor.gd", "CellarTrapdoor",
+		{"zone": &"OLD_CELLAR", "size": Vector2(HATCH_X1 - HATCH_X0, HATCH_Z1 - HATCH_Z0)})
+	td.position = Vector3((HATCH_X0 + HATCH_X1) * 0.5, 0, (HATCH_Z0 + HATCH_Z1) * 0.5)
+	gameplay.add_child(td)
 	# the installers' breach to the Helvetia cellar: bricked up again until both cellars are open (Door 3 and Door 5),
 	# then it falls in by itself. The map's navmesh ("Navigation") is baked with the breach shut; when it opens it
 	# swaps to "NavigationBreachOpen" (the same bake with the breach open), so no path ever runs through the breach

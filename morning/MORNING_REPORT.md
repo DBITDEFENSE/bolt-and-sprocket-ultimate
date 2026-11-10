@@ -1,33 +1,33 @@
-# Morning report: TOUCH-UP after your look, 2026-11-09 (evening)
+# Morning report: SNIPER TOWER, ZIP LINE, LADDERS, 2026-11-09 (night)
 
-**You said the stairs looked bad and the new building on Map 2 looked bad. I rendered the same views here (under WSL,
-off your screen) and saw it: the attic flight's under-stair was open to the hall and its panels had gaps, the attic
-was nearly unlit, and the Waschkaue was a black brick box with two black holes.** All three are redone on branch
-`claude/maps-1-2-production`; the shots below are from this machine, so I have now seen them.
+**The Inn's yard has a sniper tower with a zip line, and ladders are a real mechanic now: every drawn ladder on every
+map either climbs (hold Use) or is visibly shut.** Branch `claude/maps-1-2-production` (with the two earlier passes),
+not merged: look first.
 
-## What changed
-**The Inn's attic flight.** Solid steps with a nosing on every tread, a footboard at the ramp's start, a closed string
-over a panelled under-stair whose panels now tuck behind the string, the little cupboard door framed, and the
-under-stair's east end, which was never drawn (you looked straight into the cavity from the hall), is a wainscoted
-wall floor to ceiling with skirting, chair rail and cornice. Fascia boards cap the attic floor's cut edges round the
-well. The wainscot, a wall rail and a sconce follow the flight up the south wall. The hall runner and the ceiling beam
-that crossed the open well are cut back. The attic's lamps are stronger and three more hang (over the well, mid-room,
-mid-flight): the room reads now.
+## Map 1 (the Inn): the Hochsitz
+- A timber watch tower in the Carters' Yard's south-west corner: 3.8 m boarded deck 6.2 m up, a closed rail, a roof with
+  a lantern, sandbags on the field side. Hold Use at the ladder's foot to climb, again at the top to come down.
+- Zombies climb the same ladder (their own climb link), so you hold the deck, you do not hide on it.
+- The zip line leaves the roof post and lands you by the yard door's lamp on the stable wall: hold Use at the trolley.
+  Two seconds, the trolley rides with you and winds back.
+- The cellar hatch behind the bar is real: the floor is cut, a plank leaf covers it until you buy the Old Cellar, then it
+  falls back and the aunt's ladder climbs both ways (zombies come up it too).
 
-**Kaltenbrunn's Waschkaue.** A lean-to roof against the yard wall (zinc sheets under snow, rafter tails, a fascia, a
-gutter and downpipes, barge boards, the stove's brick stack through it), a plinth and corner pilasters, one lintel band
-with WASCHKAUE on a board over the pier, steel sliding doors slid back over the pier on their rail, a lantern on a
-bracket at each corner, the night shift's brazier in front of the pier, a lit barred window in each gable end. Inside:
-the boarded underside of the lean-to on its rafters, wire baskets on the chains, numbered lockers, duckboards.
-
-## Shots (this machine, software renderer: darker than your GPU, no fog or bounce light)
-- `morning/screenshots/u05/touchup2/` attic_stairhead, attic_flight (the flight from the hall), attic_well (down it).
-- `morning/screenshots/u10_map01/touchup2/` A_kaue_front (from the headframe), A_kaue_corner (from the north-east);
-  `touchup1/00_A_kaue_inside.png` for the inside.
-- The `touchup0` folders are the "before" renders of the same cameras.
+## Ladders on every map (audited against the baked navmesh, `probe_ladder_tops.gd`)
+- **Work:** the tower, the cellar hatch (Map 1); U-1047's engine room escape hatch to the deck (Map 3, new: the deck is
+  cut, coaming, lid thrown back, NOTAUSSTIEG); the radar tower and the Kranich's wing hatch as before.
+- **Shut, and look it:** Map 3's crane-leg ladder (locked guard plate), both U-boats' bridge ladders (GESPERRT chain),
+  Thalbach's signal-post ladder (anti-climb guard) and the hung office's ladder (chain under its own sign).
+- **Stowed:** the Inn attic's hatch ladder and Thalbach's four jig ladders hang on hooks: nothing to climb to.
+- **Left as drawn:** Map 3's landing-stage and lower-pen ladders go down into the water.
 
 ## Checked
-- Both generators save, WALLBUY_AUDIT clear (7 + 9). Facing runner unchanged (Map 0 63 OK; Map 1 70 OK + the 3 desk
-  pickups as before). probe_invisible_walls unchanged.
-- Unit: test_map00 (60), test_map01 (24), test_map01_edges, test_capture_cams PASS.
-- Smokes: map01, map01_systems, map01_world, map00, map00_alive, map00_cellar_bay, map00_loop PASS.
+- `smoke_ladders`: every climb and the ride end where they should, on the navmesh, the body moves again; the hatch is
+  bolted then opens with its zone; the climb links exist. Facing runner, invisible-wall probe unchanged on Maps 1, 3, 4a.
+- Unit: Map 0 (navmesh fingerprint re-set for the deck and the hatch cut), Map 2, Thalbach, capture cams PASS.
+- Smokes: smoke_ladders, map00, map00_alive, map00_cellar_bay, map00_loop (failed once under load, PASS alone), inn_opening_paths, inn_survivors, story_props, interact, cousins, map02 (failed twice under load with the rounds running 3x slow, PASS alone in 142 s), map02_art (after the hatch's deck pieces were tagged to draw from the hall), map02_world, map04a, map04a_world PASS; letzte_fahrt hit the runner's 20-minute cap as before (no result, no error)
+- Minimap for Map 1 re-baked (the tower and hatch are connectors).
+
+## Please look
+`tools_src/capture.gd --set=u05 --only=yard_tower,tower_deck,bar_hatch` or DevLauncher into Map 1, out of the yard door,
+turn left. My own renders: `morning/screenshots/u05/t229b/` (the deck) and `t229c/` (the tower from the well, the bar hatch).

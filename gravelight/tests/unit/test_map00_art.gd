@@ -21,8 +21,8 @@ const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 ## and 0.6 m further north, the cask behind it). Nothing else moved: the taproom loop, the Old Cellar door walkway, the
 ## stable, the yard, the grounds and the cellars bake the same polygons.
 const NAV_FP: Dictionary = {
-	"Navigation": "dc5d1972354bd932d8f6b0bb2d44db6d4177c176",
-	"NavigationBreachOpen": "894b20696a44f369ee411c270095a8f84c56588d",
+	"Navigation": "de45f9a6e3c50542111a6af4213ce57950b66f68",
+	"NavigationBreachOpen": "dd7f660a5ed11aab8646f09198398c6cd75b1ca6",
 }
 ## Library-prop triangles within CAM_RADIUS of any capture camera (data/gravelight/capture_cams.json).
 const CAM_RADIUS: float = 12.0
@@ -55,7 +55,7 @@ func test_navmesh_unchanged_by_the_art_pass() -> void:
 		assert_not_null(r, rn)
 		if r == null:
 			continue
-		assert_eq(nav_fingerprint(r.navigation_mesh), str(NAV_FP[rn]), "%s is byte-for-byte the T-136 bake (T-093 art pass; T-106 dropped furniture-top islands; T-120 the bar walkway; T-126 the wreck's cabin; T-136 the bank in the old woodshed; T-179 the cellar's late-delivery bay; T-211 the C-47)" % rn)
+		assert_eq(nav_fingerprint(r.navigation_mesh), str(NAV_FP[rn]), "%s is byte-for-byte the T-136 bake (T-093 art pass; T-106 dropped furniture-top islands; T-120 the bar walkway; T-126 the wreck's cabin; T-136 the bank in the old woodshed; T-179 the cellar's late-delivery bay; T-211 the C-47; T-229 the sniper tower's deck and the cellar hatch cut)" % rn)
 
 
 ## T-120: the walkway between the bar's west end and the stairwell wall (the way to the Old Cellar door) is open.

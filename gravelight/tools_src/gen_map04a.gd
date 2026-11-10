@@ -789,8 +789,8 @@ func _jig(g: Node3D, z0: float, z1: float, skin: float, n: int) -> void:
 	# plank work decks along both long edges and a ladder at each end
 	for dz: Array in [[z0 + 0.05, z0 + 0.75], [z1 - 0.75, z1 - 0.05]]:
 		Props.block(g, Vector3(x0 + 0.05, 2.4, float(dz[0])), Vector3(x1 - 0.05, 2.5, float(dz[1])), "planks")
-	Props.ladder(g, Vector3(x0 + 0.15, 0, (z0 + z1) * 0.5), -90.0, 2.5)
-	Props.ladder(g, Vector3(x1 - 0.15, 0, (z0 + z1) * 0.5), 90.0, 2.5)
+	Props.ladder_stowed(g, Vector3(x0 - 0.02, 1.5, (z0 + z1) * 0.5), 90.0, 2.5)    # (T-229: stowed on the jigs' end faces; the work decks are no floor)
+	Props.ladder_stowed(g, Vector3(x1 + 0.02, 1.5, (z0 + z1) * 0.5), -90.0, 2.5)
 	# the wing: two half-wings meeting at x -26, leading edge along z1 - 0.6, chord running south
 	var le_z: float = z1 - 0.6
 	GenDetail.wing_skeleton(g, Vector3(-19.5, 3.0, le_z), 0.0, 13.0, 6.6, 2.4, skin, 1.1, "machine_grey", "chrome_worn", 0.24, false)
@@ -931,6 +931,7 @@ func _dress_bahnhof() -> void:
 	GenDetail._ns(Props.ball(sg, Vector3(-0.28, 4.5, 0.0), Vector3(0.12, 0.12, 0.12), "lamp_red_lit"))
 	GenDetail._ns(Props.ball(sg, Vector3(-0.28, 4.5, -0.15), Vector3(0.12, 0.12, 0.12), "lamp_green"))
 	Props.ladder(sg, Vector3(0.0, 0, 0.18), 0.0, 4.2)
+	Props.ladder_guard(sg, Vector3(0.0, 0, 0.18), 0.0, 2.1)   # (T-229: a signal post's anti-climb guard)
 	# weathering: soot from the locomotives on the walls, puddles between the sleepers, coal spill
 	for i: int in 5:
 		GenDetail.card(g, "soot", Vector3(39.84, 2.6, 36.0 + float(i) * 4.5), Vector3.LEFT, Vector2(2.4, 2.2))
@@ -1370,6 +1371,7 @@ func _dress_windkanal() -> void:
 	GenDetail.silhouette(g, Vector3(33.2, 2.75, 118.5), 0.0, 1.78)
 	GenDetail.enamel_sign(g, Vector3(37.0, 3.1, 118.3), 0.0, "BÜRO MAURER  ·  ZUTRITT NUR MIT ERLAUBNIS", 2.6, 0.24)
 	Props.ladder(g, Vector3(43.7, 0, 125.4), -90.0, 2.75)
+	Props.ladder_chain(g, Vector3(43.7, 0, 125.4), -90.0, 1.1, "GESPERRT")   # (T-229: the office is hung glass, not a floor; its sign says so)
 	# the hatch under the office on the east wall (the JetteHatch interactable stands in front of it)
 	GenDetail.door(g, Vector3(43.85, 0.0, 124.0), 90.0, 0.9, 1.4, {"blind": true, "steel": true, "leaf": "machine_grey", "step": false, "frame": "steel"})
 	# signs, pipes, the control desk by the fan control

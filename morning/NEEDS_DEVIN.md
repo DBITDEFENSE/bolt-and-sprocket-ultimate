@@ -2,6 +2,17 @@
 
 Short, phone-readable. Nothing here blocks the build.
 
+## SNIPER TOWER + ZIP LINE + LADDERS (2026-11-09 night): look, then merge. Nothing blocks the build.
+- [ ] **Ride it.** Map 1, buy the yard door (1250), the tower is in the south-west corner: hold Use at the ladder, up top
+  hold Use at the trolley. Then buy the Old Cellar and watch the hatch behind the bar fall open; climb it both ways.
+  Cameras: `tools_src/capture.gd --set=u05 --only=yard_tower,tower_deck,bar_hatch`. Say if the deck should be higher
+  or the line faster (ZipLine speed is one number in `data/gravelight/map00.json`).
+- [ ] **Say which "shut" ladders should work instead.** I made climbable every ladder that leads to a floor; the rest got
+  guards, chains or were stowed (the list is in `docs/DECISIONS.md` T-229). If you want the crane cab or the U-boat
+  bridge as perches, that is new floor, navmesh and zombie routes: a section of its own.
+- [ ] **Merge `claude/maps-1-2-production` to master** when happy:
+  `git checkout master && git merge claude/maps-1-2-production && git push`.
+
 ## TOUCH-UP after your look (2026-11-09 evening): look again, then merge. Nothing blocks the build.
 - [ ] **Look at the attic flight and the Waschkaue again.** `DevLauncher.bat` into Map 0 (upstairs hall, east along
   the south wall) and Map 1 (you spawn inside the Kaue; step out and turn round), or

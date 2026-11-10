@@ -1219,6 +1219,40 @@ static func ladder(parent: Node3D, pos: Vector3, yaw: float, height: float, key:
 		cyl(g, Vector3(0, 0.15 + k * 0.3, -0.115), 0.016, 0.4, key, Vector3(0, 0, 90))
 
 
+## A ladder stowed on hooks along a wall (T-229: a ladder nobody is meant to climb lies down). pos is on the wall
+## face at the ladder's centre, local -Z out of the wall; the ladder runs along local X at that height.
+static func ladder_stowed(parent: Node3D, pos: Vector3, yaw: float, length: float, key: String = "iron") -> void:
+	var g: Node3D = group(parent, "LadderStowed", pos, yaw)
+	for sy: float in [-0.2, 0.2]:
+		block(g, Vector3(-length * 0.5, sy - 0.025, -0.16), Vector3(length * 0.5, sy + 0.025, -0.11), key)
+	var n: int = int(length / 0.3)
+	for k: int in n:
+		cyl(g, Vector3(-length * 0.5 + 0.15 + k * 0.3, 0.0, -0.135), 0.016, 0.4, key)
+	for hx: float in [-length * 0.3, length * 0.3]:
+		block(g, Vector3(hx - 0.02, -0.26, -0.2), Vector3(hx + 0.02, -0.22, 0.0), "iron")   # the hooks
+		block(g, Vector3(hx - 0.02, -0.26, -0.2), Vector3(hx + 0.02, -0.14, -0.17), "iron")
+
+
+## A locked ladder guard (T-229: a ladder that leads nowhere a player may go is barred the way real ones are): a
+## steel plate over the rungs from knee height to `h`, hasp and padlock. Same frame as Props.ladder (pos at the foot).
+static func ladder_guard(parent: Node3D, pos: Vector3, yaw: float, h: float = 2.2, key: String = "machine_grey") -> void:
+	var g: Node3D = group(parent, "LadderGuard", pos, yaw)
+	block(g, Vector3(-0.3, 0.35, -0.21), Vector3(0.3, h, -0.18), key)
+	for sy: float in [0.4, h - 0.05]:
+		block(g, Vector3(-0.27, sy - 0.02, -0.17), Vector3(0.27, sy + 0.02, -0.14), "iron")   # the hinge straps
+	block(g, Vector3(0.24, h * 0.5 - 0.04, -0.235), Vector3(0.3, h * 0.5 + 0.04, -0.21), "iron")   # the hasp
+	cyl(g, Vector3(0.3, h * 0.5 - 0.08, -0.225), 0.035, 0.02, "brass", Vector3(90, 0, 0))          # the padlock
+
+
+## A chain across a ladder with a tag (T-229): the ladder is closed, not broken. pos as Props.ladder's, y_chain up it.
+static func ladder_chain(parent: Node3D, pos: Vector3, yaw: float, y_chain: float = 1.1, tag: String = "GESPERRT") -> void:
+	var g: Node3D = group(parent, "LadderChain", pos, yaw)
+	cable(g, Vector3(-0.2, y_chain, -0.2), Vector3(0.2, y_chain, -0.2), 0.06, 0.012, 6, "iron")
+	block(g, Vector3(-0.09, y_chain - 0.19, -0.215), Vector3(0.09, y_chain - 0.07, -0.205), "enamel_white")
+	block(g, Vector3(-0.004, y_chain - 0.08, -0.212), Vector3(0.004, y_chain - 0.03, -0.208), "iron")
+	stencil(g, Vector3(0, y_chain - 0.13, -0.216), 0.0, tag, 10, Color(0.6, 0.08, 0.06, 0.95))
+
+
 ## A stack of tinned cans (cannery): rows of small cylinders on a board.
 static func can_stack(parent: Node3D, pos: Vector3, cols: int, rows: int, layers: int) -> void:
 	var g: Node3D = group(parent, "Cans", pos)

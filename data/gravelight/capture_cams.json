@@ -10,6 +10,9 @@
         {"name": "attic_east", "pos": [15.0, 7.1, 5.5], "yaw": -70.0, "pitch": 2.0, "note": "T-224: the attic's east end: the BAR chalk, the wardrobe, the dummy, the east hoist window and its ledge"},
         {"name": "attic_flight", "pos": [3.6, 3.8, 6.9], "yaw": -112.0, "pitch": 10.0, "note": "T-224 touch-up: the attic flight from the hall: the closed string and panelled under-stair, the newels, the well's fascia, the sconce mid-flight"},
         {"name": "attic_well", "pos": [13.6, 7.1, 9.0], "yaw": 90.0, "pitch": -18.0, "note": "T-224 touch-up: down the flight from the attic: the treads, the rail round the well, the hall below"},
+        {"name": "yard_tower", "pos": [12.5, 0.0, 40.5], "yaw": 127.0, "pitch": 9.0, "settle_s": 9.0, "note": "T-229: the sniper tower from the well: the legs and braces, the boarded deck, the roof, the ladder up its north face, the zip line leaving the roof post"},
+        {"name": "tower_deck", "pos": [5.6, 6.2, 45.6], "yaw": -40.0, "pitch": -6.0, "settle_s": 9.0, "note": "T-229: on the tower's deck: the parapet and sandbags, the trolley on the line, the yard and the stable below"},
+        {"name": "bar_hatch", "pos": [6.6, 0.0, 7.15], "yaw": 0.0, "pitch": -32.0, "settle_s": 9.0, "note": "T-229: the cellar hatch behind the bar, shut (its leaf opens with the Old Cellar)"},
         {"name": "bar_counter", "pos": [10.5, 0.0, 9.3], "yaw": 55.0, "pitch": 0.0, "note": "T-224: the bigger bar from the taproom: the long front, the side counter, the taps, the back-bar and its mirror"},
         {"name": "bar_service", "pos": [5.6, 0.0, 6.4], "yaw": -34.0, "pitch": -2.0, "note": "T-224: behind the bar: the flap, the till, the cask on its cradle, the wireless on the top board"},
         {
