@@ -12,3 +12,7 @@ Columns worth reading first: `playback_rate_p50` (how far from its recorded cade
 lane is the control), `slip_p95_mps` (a planted toe's horizontal speed; values near 11 are the contact lock's
 one-frame release), `pose_steps_over_30_deg` with `pose_steps_over_30_by_bone_and_phase`, `stuck_s`, `trips`.
 Numbers only: nothing here was looked at rendered.
+- `terrain_lock_last.json`: after the contact lock was moved to run last (inside the body modifier), with the
+  toe-ray foot tilt and the steadied knee plane. Compare with `terrain_baseline.json`.
+- `horde_contact_final_pose.json`: the gallery's 60 s, 24-zombie motion acceptance read on the final pose, on the
+  runtime before and after that change. Both are over the 0.10 m/s limit.

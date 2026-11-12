@@ -1,0 +1,33 @@
+{
+  "runtime_before_this_slice": {
+    "mode": "horde",
+    "seconds": 60.0166666666645,
+    "zombies": 24,
+    "mocap_contact_speed_p95_mps": 0.171315595507622,
+    "mocap_contact_speed_relative_p95": 0.0928860679607889,
+    "mocap_contact_samples": 50980,
+    "mocap_contact_method": "Source toe contact intervals; toe world displacement of the FINAL pose (read at Skeleton3D.skeleton_updated, after the body modifier's terrain IK and the contact lock); excludes blends, transitions and track wraps",
+    "validation_failures": [
+      "Recorded contact p95 exceeds configured foot drift limit"
+    ],
+    "callback_cpu_ms_per_actor_frame_p95": 0.219,
+    "min_active": 24,
+    "root_body_speed_relative_error_p95": 0.00516725148713354
+  },
+  "runtime_with_lock_last": {
+    "mode": "horde",
+    "seconds": 60.0166666666645,
+    "zombies": 24,
+    "mocap_contact_speed_p95_mps": 0.144702062010765,
+    "mocap_contact_speed_relative_p95": 0.0831826891143991,
+    "mocap_contact_samples": 50980,
+    "mocap_contact_method": "Source toe contact intervals; toe world displacement of the FINAL pose (read at Skeleton3D.skeleton_updated, after the body modifier's terrain IK and the contact lock); excludes blends, transitions and track wraps",
+    "validation_failures": [
+      "Recorded contact p95 exceeds configured foot drift limit"
+    ],
+    "callback_cpu_ms_per_actor_frame_p95": 0.225,
+    "min_active": 24,
+    "root_body_speed_relative_error_p95": 0.00516725148713354
+  },
+  "note": "Both runs: tools/zombie_gallery --horde --full-rate --near-player --seconds=60 --verify-motion at a fixed 60, headless, with the gallery reading toes from the FINAL pose (Skeleton3D.skeleton_updated). The limit is 0.10 m/s (zombie_mocap.json validation). The 0.012 m/s recorded at the turn checkpoint was read from the pose before the body modifier."
+}

@@ -38,6 +38,8 @@ mid-range hardware or full maps; the moving horde is not a 24-simultaneous-turn 
 Captured soldier stationary turns rate **2 -> 3/5**; locomotion/swipes/two deaths stay3,
 model stays2, variety stays3. Other types are not newly scored. Full premium target is unmet.
 
+**2026-11-12: the foot corrections are reordered** (contact lock last inside the body modifier, toe-ray foot tilt, steadied knee plane; see the newest PROGRESS entry and `docs/captures/after/mocap/terrain/terrain_lock_last.json`). **Open and failing:** read on the final pose, the 24-horde recorded-contact p95 is 0.145 m/s against the 0.10 limit (`horde_contact_final_pose.json`); the earlier 0.012 was read before the modifier. Contact acceptance is NOT met.
+
 **2026-11-12: the terrain / body matrix is measured** (`tools/zombie_terrain_check.tscn`, 22 cases x 5 lanes; `docs/captures/after/mocap/terrain/terrain_baseline.json`; the newest PROGRESS entry has the findings). Three limits are now numbers: the recorded shuffle is played at x2.8 (shamble) and x4.3 (walk) of its recorded cadence; toes go 11 cm into a stair-angle slope because feet stay level; the contact lock releases with an 18 cm one-frame snap on rough ground at speed. Earlier toe-drift evidence read poses without the foot IK (a modifier's result is only visible at `Skeleton3D.skeleton_updated`). No runtime change was kept from this slice.
 
 **2026-11-12: co-op turn triggering is closed** (`ZombieTurnMotion.observe`, verified over real host/client traffic by `tools/zombie_turn_net_check.tscn`: 6 of 6 turns on both machines; see the newest PROGRESS entry). Next is the terrain / special-body matrix. The text below is the plan as it stood before that slice.

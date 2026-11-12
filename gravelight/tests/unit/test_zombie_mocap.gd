@@ -11,6 +11,12 @@ func test_recorded_turns_keep_gameplay_facing_and_release_on_interrupt() -> void
 	var z := Zombie.new()
 	host.add_child(z)
 	var drift: Array[float] = []
+	# The contact lock runs last, inside the body modifier, so the planted toe is read from the final pose
+	# (Skeleton3D.skeleton_updated) with a real frame per tick: bones read straight after _animate() show the
+	# pose before the modifier.
+	var final_toes: Array[Vector3] = [Vector3.ZERO, Vector3.ZERO]
+	var final_serial: Array[int] = [0]
+	var hooked: Array[bool] = [false]
 	for degrees: float in [35.0, 45.0, 60.0, -35.0, -45.0, -60.0]:
 		z.activate({"enemy_id":"ganger", "variant":"soldier", "tier":"walk"}, spawn, null)
 		z.set_physics_process(false)
@@ -27,19 +33,29 @@ func test_recorded_turns_keep_gameplay_facing_and_release_on_interrupt() -> void
 		var entered: bool = false
 		var here: Vector3 = z.position
 		var speed: float = z.speed
+		if not hooked[0]:
+			hooked[0] = true
+			z._skel.skeleton_updated.connect(func() -> void:
+				final_serial[0] += 1
+				for s: int in 2:
+					var fb: int = z._skel.find_bone("LeftFoot" if s == 0 else "RightFoot")
+					final_toes[s] = z._skel.global_transform * (z._skel.get_bone_global_pose(fb) * Vector3(0, -0.06, -0.15)))
+		var seen_serial: int = final_serial[0]
 		for tick: int in 120:
 			expected = lerp_angle(expected, yaw, 0.25)
 			z._face(target)
 			z._animate(1.0/60.0)
+			await get_tree().process_frame
 			assert_almost_eq(wrapf(z.rotation.y - expected, -PI, PI), 0.0, 0.00001, "gameplay facing response unchanged")
 			if z._tree_state == "Turn":
 				entered = true
 				assert_lt(z._skel.get_bone_pose_rotation(z._skel.find_bone("Root")).angle_to(Quaternion.IDENTITY), 0.001, "tree extracts yaw instead of double rotating skeleton")
+			var fresh: bool = final_serial[0] > seen_serial   # a final pose was built for this tick
+			seen_serial = final_serial[0]
 			for side: int in 2:
-				var foot: int = z._skel.find_bone("LeftFoot" if side == 0 else "RightFoot")
-				var toe: Vector3 = z._skel.global_transform * (z._skel.get_bone_global_pose(foot) * Vector3(0, -0.06, -0.15))
+				var toe: Vector3 = final_toes[side]
 				var id: int = z._contact_lock.intervals[side]
-				if id >= 0 and id == old_ids[side] and z._tree_state == "Turn":
+				if fresh and id >= 0 and id == old_ids[side] and z._tree_state == "Turn":
 					var d: Vector3 = toe - old_toes[side]
 					drift.append(Vector2(d.x, d.z).length() * 60.0)
 				old_toes[side] = toe
@@ -218,14 +234,26 @@ func test_live_gaits_keep_speed_and_match_root_travel_after_random_seek() -> voi
 		z.velocity = Vector3(0, 0, -z.speed)
 		var old_toes: Array[Vector3] = [Vector3.ZERO, Vector3.ZERO]
 		var old_ids: Array[int] = [-1, -1]
+		# the planted toe of the FINAL pose (the lock runs last, inside the body modifier): a frame per tick, read
+		# at skeleton_updated
+		var final_toes: Array[Vector3] = [Vector3.ZERO, Vector3.ZERO]
+		var final_serial: Array[int] = [0]
+		var sk: Skeleton3D = z._skel
+		sk.skeleton_updated.connect(func() -> void:
+			final_serial[0] += 1
+			for s: int in 2:
+				final_toes[s] = sk.global_transform * (sk.get_bone_global_pose(sk.find_bone("LeftFoot" if s == 0 else "RightFoot")) * Vector3(0, -0.06, -0.15)))
+		var seen_serial: int = 0
 		for frame: int in 240:
 			z.position += z.velocity / 60.0
 			z._animate(1.0/60.0)
+			await get_tree().process_frame
+			var fresh: bool = final_serial[0] > seen_serial   # a final pose was built for this tick
+			seen_serial = final_serial[0]
 			for side: int in 2:
-				var foot: int = z._skel.find_bone("LeftFoot" if side == 0 else "RightFoot")
-				var toe: Vector3 = z._skel.global_transform * (z._skel.get_bone_global_pose(foot) * Vector3(0, -0.06, -0.15))
+				var toe: Vector3 = final_toes[side]
 				var interval: int = z._contact_lock.intervals[side]
-				if frame > 60 and interval >= 0 and interval == old_ids[side]:
+				if fresh and frame > 60 and interval >= 0 and interval == old_ids[side]:
 					var d: Vector3 = toe - old_toes[side]
 					held_speeds.append(Vector2(d.x, d.z).length() * 60.0)
 				old_ids[side] = interval

@@ -11,6 +11,16 @@ func reset() -> void:
 	correction = [Vector3.ZERO, Vector3.ZERO]
 	previous_clip = ""
 
+## The corrections of the last apply() again, on a pose that has been rebuilt since (a frame on which the zombie's
+## animation did not advance but its skeleton pass ran).
+func reapply(sk: Skeleton3D, solver: ZombieBodyModifier) -> void:
+	for i: int in 2:
+		if correction[i].length_squared() <= 0.00000001: continue
+		var side: String = "Left" if i == 0 else "Right"
+		var fi: int = sk.find_bone(side + "Foot")
+		if fi < 0: continue
+		solver.solve_foot_target(sk, side, sk.to_local(sk.to_global(sk.get_bone_global_pose(fi).origin) + correction[i]))
+
 func apply(sk: Skeleton3D, solver: ZombieBodyModifier, clip: String, time: float, dt: float, config: Dictionary) -> void:
 	if clip != previous_clip: reset()
 	previous_clip = clip

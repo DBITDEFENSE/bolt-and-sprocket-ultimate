@@ -1,17 +1,57 @@
 # PROGRESS
 
-RESUME HERE: 2026-11-12 Claude Fable 5.2, the terrain / body matrix is MEASURED (tools/zombie_terrain_check.tscn,
-baseline in docs/captures/after/mocap/terrain/) and NOTHING in the runtime was changed by it: two trial fixes were
-measured, did not hold up and were reverted (see the entry below). Work ONLY in .wt/zombie-overhaul, branch
-codex/zombie-overhaul; rules and commands in docs/CLAUDE_FABLE_5_2_ZOMBIE_HANDOFF.md. NEXT, in this order:
-(1) move the contact lock to run LAST, inside ZombieBodyModifier after the terrain IK (today it runs in _animate
-before the modifier, so it pins a toe the IK then moves; keep the _animate call for bodies whose modifier is off),
-and give the IK a second ray at the toe so the foot can be tilted between ankle and toe ground (ignore a difference
-over about 0.12 m: a step edge); re-measure against terrain_baseline.json and keep only what the numbers support.
-(2) Re-run the existing contact acceptance reading poses at Skeleton3D.skeleton_updated (the gallery and the unit
-drift test read bones in _process / _animate, which shows the pose WITHOUT the modifier's foot IK). (3) The rest of
-handoff item 2 not done here: turn-to-move / attack / death on terrain, rapid target changes, the animation LOD
-distances (--lod), a rendered look at feet. Then items 3-6. Preserve all gameplay speeds.
+RESUME HERE: 2026-11-12 Claude Fable 5.2, the foot corrections are reordered (the contact lock runs last, inside
+ZombieBodyModifier; a toe ray tilts the foot; the knee's bend plane is steadied) and committed. Work ONLY in
+.wt/zombie-overhaul, branch codex/zombie-overhaul; rules and commands in docs/CLAUDE_FABLE_5_2_ZOMBIE_HANDOFF.md.
+ONE GATE NOW FAILS AND MUST NOT BE LOOSENED: `zombie_gallery --horde ... --verify-motion` reports a recorded-contact
+p95 of 0.145 m/s against the 0.10 limit (0.171 on the runtime before this slice; the 0.012 of the turn checkpoint was
+read from the pose before the modifier). NEXT: (1) find where the horde's planted feet move: split the gallery's
+contact samples by cause (a lock release, a body turning in place, a shove from another zombie, the first frames of
+a contact while the terrain IK eases in) and fix the largest; (2) the toe still goes 10 cm into a stair-angle slope
+at the 5th percentile (the IK's `blend` 12 lags a landing foot; 24 helped at a walk and hurt at a run: needs a
+per-foot landing rule, not one number); (3) the lock's one-frame release on rubble and real steps at a jog and
+faster; (4) the rest of handoff item 2: turn-to-move / attack / death on terrain, rapid target changes, the LOD
+distances (--lod), a rendered look. Then items 3-6. Preserve all gameplay speeds.
+
+## 2026-11-12, the foot corrections in the right order (handoff item 2, the fixing half, part 1)
+
+Three runtime changes, all presentation (no speed, timing, hitbox or navigation value touched), each kept because
+the terrain matrix supports it against `terrain_baseline.json` (`terrain_lock_last.json`, same 22 cases x 5 lanes):
+
+- **The contact lock runs last.** `Zombie._lock_feet` hands the frame's lock request to `ZombieBodyModifier`, which
+  applies it after the terrain IK and the foot tilt (a body whose modifier is off still locks in `_animate`). It
+  used to pin a toe that the IK then moved. Planted-foot slip p95, median over the slow-gait cases: 20 degree ramp
+  0.014 -> 0.008 m/s, stair-angle ramp 0.044 -> 0.010.
+- **The foot tilts to the ground under it.** A second ray at the toe (same step as the ankle's); the foot is
+  pitched about the ankle by the rise between the two, capped at 35 degrees, and left level where they differ by
+  more than 0.12 m (a step's edge). Toe over the surface at the 95th percentile: 7.0 -> 3.9 cm (20 degrees),
+  8.8 -> 3.7 cm (stair angle). Toe INTO the surface at the 5th percentile barely moved (11.0 -> 10.3 cm): that is
+  the IK easing in after a foot lands, not the foot's angle (see NEXT).
+- **The knee's bend plane is steadied.** `_solve_leg_target` took the plane from the animated knee even when the
+  leg was almost straight toward a raised target, where that offset is millimetres of noise: the solved knee
+  swapped sides between frames. The thigh's own forward takes over as the offset shrinks under 8 cm, and the knee
+  never bends behind it. Largest bone step in a frame, 99th percentile, median over the upright cases: stair-angle
+  ramp 69 -> 40 degrees (worst case 126 -> 57), 20 degree ramp worst 111 -> 43, real steps worst 112 -> 61, rubble
+  worst 89 -> 41. The flat lane is unchanged (39 -> 39): what is left there is the x4.3 retimed wrist of the walk.
+
+Worse, and said plainly: on the REAL STEP lane the fast tiers' slip p95 rose (median 1.7 -> 11.8 m/s): with the
+lock last, a step-up's jump of the body now always costs a one-frame release there. The maps build stairs as ramps,
+so that lane is the stress case; rubble at speed is unchanged (11.1 -> 12.8). Nobody lost, nobody stuck, trips as
+before. Per-actor callback CPU in the 24-horde 0.219 -> 0.225 ms p95 (the modifier's own pass is not in that
+number, before or after).
+
+**The readers were fixed with it.** `tools/zombie_gallery`, `tools/zombie_turn_check` and the two unit drift tests
+read toes from the final pose now (`Skeleton3D.skeleton_updated`, a real frame per tick in the tests). On that
+reading: the stationary-turn studio passes (contact p95 0.0063 m/s, 175 samples; it was 0.0082 on the old reading),
+49/49 zombie tests / 4,600 asserts pass, and **the 24-horde motion acceptance does not**:
+`docs/captures/after/mocap/terrain/horde_contact_final_pose.json`: 0.171 m/s on the runtime before this slice,
+0.145 with it, limit 0.10. The acceptance row in the handoff file ("toe drift p95 .01245 m/s") is therefore not
+supported for the drawn pose.
+
+Verified after the change: check_scripts 860 / 0; zombie_mocap_check 30 clips; zombie_turn_check and its attack
+interruption; zombie_turn_net_check PASS (6 / 6); smoke_zombie_anim PASS; zombie_ragdoll_check exit 0; smoke_coop
+PASS; license gate 4 / 4; no script errors in any log. Not run: the rendered performance gallery and any capture
+(no window opened); scores unchanged, nothing was looked at.
 
 ## 2026-11-12, terrain and body matrix (handoff item 2, the measuring half)
 

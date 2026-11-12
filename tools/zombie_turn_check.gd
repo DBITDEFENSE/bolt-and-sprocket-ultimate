@@ -40,6 +40,9 @@ func _ready() -> void:
 	actor.set_posture("hunch", 0.5)
 	actor._enter(Zombie.State.CHASE)
 	actor._animate(0.3)
+	# the final pose (after the body modifier's terrain IK and the contact lock, which runs inside it) is only
+	# readable here: by the next _process a modifier's result has been rolled back
+	actor._skel.skeleton_updated.connect(_on_final_pose)
 	_cam.position = Vector3(3.6, 1.5, -3.0)
 	_cam.look_at(Vector3(2, 0.9, 0))
 	_cam.fov = 48.0
@@ -75,15 +78,7 @@ func _process(delta: float) -> void:
 	if frames > 1: worst_visual_step = maxf(worst_visual_step, absf(wrapf(visual_yaw - old_visual_yaw, -PI, PI)))
 	old_visual_yaw = visual_yaw
 	if actor._tree_state == "Turn": played[actor._turn_motion.clip] = true
-	for side: int in 2:
-		var foot: int = actor._skel.find_bone("LeftFoot" if side == 0 else "RightFoot")
-		var toe: Vector3 = actor._skel.global_transform * (actor._skel.get_bone_global_pose(foot) * Vector3(0, -0.06, -0.15))
-		var id: int = actor._contact_lock.intervals[side]
-		if actor._tree_state == "Turn" and id >= 0 and id == old_ids[side]:
-			var d: Vector3 = toe - old_toes[side]
-			contacts.append(Vector2(d.x, d.z).length() / maxf(delta, 0.0001))
-		old_toes[side] = toe
-		old_ids[side] = id
+	_frame_delta = delta
 	var mode: String = "AFTER / recorded turn" if ZombieClips.recorded_turns_enabled() else "BEFORE / existing turn"
 	_label.text = "%s  |  %.2f s  |  %s" % [mode, elapsed, actor._tree_state]
 	if frames % 5 == 0:
@@ -92,6 +87,20 @@ func _process(delta: float) -> void:
 			await RenderingServer.frame_post_draw
 			if get_viewport().get_texture().get_image().save_png("%s/frame_%05d.png" % [_out, frames/5]) != OK: failures.append("capture failed")
 	if elapsed >= 6.0: _finish_turn()
+
+var _frame_delta: float = 1.0 / 60.0
+
+func _on_final_pose() -> void:
+	if not started or finished: return
+	for side: int in 2:
+		var foot: int = actor._skel.find_bone("LeftFoot" if side == 0 else "RightFoot")
+		var toe: Vector3 = actor._skel.global_transform * (actor._skel.get_bone_global_pose(foot) * Vector3(0, -0.06, -0.15))
+		var id: int = actor._contact_lock.intervals[side]
+		if actor._tree_state == "Turn" and id >= 0 and id == old_ids[side]:
+			var d: Vector3 = toe - old_toes[side]
+			contacts.append(Vector2(d.x, d.z).length() / maxf(_frame_delta, 0.0001))
+		old_toes[side] = toe
+		old_ids[side] = id
 
 func _finish_turn() -> void:
 	finished = true

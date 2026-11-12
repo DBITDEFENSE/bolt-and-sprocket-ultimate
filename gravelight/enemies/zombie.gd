@@ -3237,6 +3237,22 @@ func _play_flinch(limb: StringName, side: String) -> void:
 	_flinch_dir = -1.0 if side == "l" else 1.0
 
 
+## The contact lock for this frame. With the body modifier running it is handed to it and applied LAST, on the pose
+## after the terrain IK and the foot tilt (ZombieBodyModifier); with the modifier off (a far body) it runs here.
+func _lock_feet(clip: String, time: float, dt: float, cfg: Dictionary) -> void:
+	if _modifier.active and _modifier.is_inside_tree():
+		_modifier.lock = _contact_lock
+		_modifier.lock_clip = clip
+		_modifier.lock_time = time
+		_modifier.lock_dt = dt
+		_modifier.lock_cfg = cfg
+		_modifier.lock_fresh = true
+		_modifier.lock_on = true
+	else:
+		_modifier.lock_on = false
+		_contact_lock.apply(_skel, _modifier, clip, time, dt, cfg)
+
+
 ## Only stationary upright locomotion can yield presentation to a recorded turn.
 func _can_recorded_turn() -> bool:
 	return has_rig() and not is_crawler and not hopping and state in [State.CHASE, State.TO_WINDOW] and _tree_state in ["Locomotion", "Turn"] and Vector2(velocity.x, velocity.z).length() < float(_anim["turn"].get("in_place_below_mps", 0.5))
@@ -3305,14 +3321,15 @@ func _animate(dt: float) -> void:
 			var idx: int = _skel.find_bone(bone)
 			_skel.set_bone_pose_rotation(idx, _skel.get_bone_pose_rotation(idx) * Quaternion(Vector3.BACK, lean_angle * 0.5))
 	if _tree_state == "Turn" and _playback.get_fading_from_node() == &"" and bool(contact_cfg.get("enabled", false)):
-		_contact_lock.apply(_skel, _modifier, _turn_motion.clip, turn_time, dt, contact_cfg)
+		_lock_feet(_turn_motion.clip, turn_time, dt, contact_cfg)
 		for event: Dictionary in ZombieClips.footstep_events(_turn_motion.clip):
 			var at: float = float(event["phase"]) * ZombieClips.length_of(_turn_motion.clip)
 			if at > _turn_motion.previous_clock and at <= _turn_motion.clock: _footstep(bool(event["left"]))
 	elif _loco_clip.begins_with("mco_") and _tree_state == "Locomotion" and _playback.get_fading_from_node() == &"" and _loco_x >= 0.99 and spd > 0.4 and bool(contact_cfg.get("enabled", false)):
-		_contact_lock.apply(_skel, _modifier, _loco_clip, fposmod(_playback.get_current_play_position(), _cycle_len), dt, contact_cfg)
+		_lock_feet(_loco_clip, fposmod(_playback.get_current_play_position(), _cycle_len), dt, contact_cfg)
 	else:
 		_contact_lock.reset()
+		_modifier.lock_on = false
 	# Use the evaluated state's clock, including seeks, idle blends and resumes after
 	# attacks. A separate integrated clock drifts away from the feet on those paths.
 	if _tree_state == "Locomotion" and String(_playback.get_current_node()) == "Locomotion" and _loco_x > 0.5:
@@ -3361,6 +3378,7 @@ func _update_senses(delta: float) -> void:
 			var fidx: int = _foot_idx[i]
 			if fidx < 0:
 				_modifier.foot_ground_y[i] = NAN
+				_modifier.toe_ground_y[i] = NAN
 				continue
 			var foot_g: Vector3 = _skel.to_global(_skel.get_bone_global_pose(fidx).origin)
 			var from: Vector3 = Vector3(foot_g.x, global_position.y + float(fi["ray_up"]), foot_g.z)
@@ -3368,6 +3386,11 @@ func _update_senses(delta: float) -> void:
 			var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, to, LAYER_WORLD, [get_rid()])
 			var hit: Dictionary = space.intersect_ray(q)
 			_modifier.foot_ground_y[i] = (_skel.to_local(hit["position"] as Vector3).y) if not hit.is_empty() else NAN
+			# the ground under the toe too: the foot is tilted by the rise between the two (ZombieBodyModifier)
+			var toe_g: Vector3 = _skel.to_global(_skel.get_bone_global_pose(fidx) * Vector3(0, -0.06, -0.15))
+			var tq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(Vector3(toe_g.x, from.y, toe_g.z), Vector3(toe_g.x, to.y, toe_g.z), LAYER_WORLD, [get_rid()])
+			var toe_hit: Dictionary = space.intersect_ray(tq)
+			_modifier.toe_ground_y[i] = (_skel.to_local(toe_hit["position"] as Vector3).y) if not toe_hit.is_empty() else NAN
 		_modifier.ik_weight = move_toward(_modifier.ik_weight, 1.0, delta * 4.0)
 	else:
 		_modifier.ik_weight = move_toward(_modifier.ik_weight, 0.0, delta * 4.0)

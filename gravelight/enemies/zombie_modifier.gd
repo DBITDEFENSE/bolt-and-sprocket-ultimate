@@ -3,14 +3,30 @@ extends SkeletonModifier3D
 ## Post-animation skeleton pass for one zombie (ZOMBIE_ANIM_SPEC §2 and §4, T-041):
 ##   - foot IK: the zombie feeds the ground height under each foot (two raycasts in its physics step, within
 ##     anim.json foot_ik.range_m); this drops the hips to the lower foot and bends each leg (analytic two-bone IK)
-##     so both feet meet the ground on stairs, slopes and rubble; the feet keep their animated orientation.
+##     so both feet meet the ground on stairs, slopes and rubble; each foot is then tilted from its animated
+##     orientation by the rise of the ground from its ankle to its toe (a second ray at the toe; a difference
+##     past tilt_step_limit is a step's edge and leaves the foot level), so a toe does not sink into a slope.
+##   - the contact lock runs LAST, here, when the zombie has asked for it this frame (lock_*): it pins the toe
+##     of the final pose. (It used to run in Zombie._animate before this pass, so it pinned a toe the terrain
+##     IK then moved: measured as sliding planted feet on every slope.)
 ##   - hit springs: the partial-ragdoll feel on flinches without physical bones: each arm chain and the head
 ##     carry a damped angular spring the zombie kicks on every hit (anim.json flinch.spring), applied on top of
 ##     the animated pose and settling in ~0.3 s.
 ## Off beyond foot_ik.off_m (the zombie sets `active`).
 
 var foot_ground_y: PackedFloat32Array = [NAN, NAN]   # skeleton-space ground y under L / R foot, NAN = no hit
+var toe_ground_y: PackedFloat32Array = [NAN, NAN]    # the same under each toe
+var max_foot_tilt: float = deg_to_rad(35.0)
+var tilt_step_limit: float = 0.12
 var ik_weight: float = 0.0
+# the contact lock's request for this frame (Zombie._lock_feet)
+var lock: RefCounted = null
+var lock_on: bool = false
+var lock_fresh: bool = false
+var lock_clip: String = ""
+var lock_time: float = 0.0
+var lock_dt: float = 0.0
+var lock_cfg: Dictionary = {}
 var max_hip_drop: float = 0.32
 var blend_rate: float = 12.0
 var spring_k: float = 70.0
@@ -20,6 +36,7 @@ var ticks: int = 0
 
 var _hip_drop: float = 0.0
 var _foot_lift: PackedFloat32Array = [0.0, 0.0]
+var _foot_pitch: PackedFloat32Array = [0.0, 0.0]
 var _off: Array[Vector3] = [Vector3.ZERO, Vector3.ZERO, Vector3.ZERO]   # arm L, arm R, head
 var _vel: Array[Vector3] = [Vector3.ZERO, Vector3.ZERO, Vector3.ZERO]
 var _idx: Dictionary = {}
@@ -30,6 +47,8 @@ var _len_shin: float = 0.4
 func setup(cfg: Dictionary, spring: Dictionary) -> void:
 	max_hip_drop = float(cfg.get("max_hip_drop", 0.32))
 	blend_rate = float(cfg.get("blend", 12.0))
+	max_foot_tilt = deg_to_rad(float(cfg.get("max_foot_tilt_deg", 35.0)))
+	tilt_step_limit = float(cfg.get("tilt_step_limit_m", 0.12))
 	spring_k = float(spring.get("stiffness", 70.0))
 	spring_c = float(spring.get("damping", 9.0))
 	_len_thigh = absf(ZombieRig.rest_offset("LeftLowerLeg").y)
@@ -67,6 +86,12 @@ func _process_modification_with_delta(delta: float) -> void:
 	if springs_on and springs_active():
 		_apply_springs(sk, dt)
 	_apply_foot_ik(sk, dt)
+	if lock_on and lock != null:
+		if lock_fresh:
+			lock_fresh = false
+			lock.call("apply", sk, self, lock_clip, lock_time, lock_dt, lock_cfg)
+		else:
+			lock.call("reapply", sk, self)   # a frame the zombie's animation skipped (LOD): the last correction stands
 
 
 func _apply_springs(sk: Skeleton3D, dt: float) -> void:
@@ -115,12 +140,43 @@ func _apply_foot_ik(sk: Skeleton3D, dt: float) -> void:
 	_hip_drop = lerpf(_hip_drop, want_drop, a)
 	for i: int in 2:
 		_foot_lift[i] = lerpf(_foot_lift[i], lifts[i], a)
-	if absf(_hip_drop) < 0.001 and _foot_lift[0] < 0.001 and _foot_lift[1] < 0.001:
+		# the foot's tilt: the rise of the ground from the ankle to the toe (TOE_REACH ahead of it)
+		var rise: float = toe_ground_y[i] - foot_ground_y[i]
+		var want_pitch: float = 0.0
+		if ik_weight > 0.001 and not is_nan(rise) and absf(rise) <= tilt_step_limit:
+			want_pitch = clampf(atan2(rise, TOE_REACH), -max_foot_tilt, max_foot_tilt) * ik_weight
+		_foot_pitch[i] = lerpf(_foot_pitch[i], want_pitch, a)
+	if absf(_hip_drop) >= 0.001 or _foot_lift[0] >= 0.001 or _foot_lift[1] >= 0.001:
+		var hips: int = int(_idx["Hips"])
+		sk.set_bone_pose_position(hips, sk.get_bone_pose_position(hips) + Vector3(0, _hip_drop, 0))
+		_solve_leg(sk, "LeftUpperLeg", "LeftLowerLeg", "LeftFoot", _foot_lift[0])
+		_solve_leg(sk, "RightUpperLeg", "RightLowerLeg", "RightFoot", _foot_lift[1])
+	_tilt_foot(sk, "LeftFoot", _foot_pitch[0])
+	_tilt_foot(sk, "RightFoot", _foot_pitch[1])
+
+
+## Knee offset from the hip-to-target line under which the animated bend plane is not trusted (see _solve_leg_target).
+const POLE_FIRM_M: float = 0.08
+
+
+## The toe's distance ahead of the ankle (the toe point every contact measure uses: foot * (0, -0.06, -0.15)).
+const TOE_REACH: float = 0.15
+
+
+## Pitches a foot about its ankle from its animated orientation: positive lifts the toe.
+func _tilt_foot(sk: Skeleton3D, foot: String, pitch: float) -> void:
+	if absf(pitch) < 0.004:
 		return
-	var hips: int = int(_idx["Hips"])
-	sk.set_bone_pose_position(hips, sk.get_bone_pose_position(hips) + Vector3(0, _hip_drop, 0))
-	_solve_leg(sk, "LeftUpperLeg", "LeftLowerLeg", "LeftFoot", _foot_lift[0])
-	_solve_leg(sk, "RightUpperLeg", "RightLowerLeg", "RightFoot", _foot_lift[1])
+	var fi: int = int(_idx[foot])
+	if fi < 0:
+		return
+	var f: Transform3D = sk.get_bone_global_pose(fi)
+	var fwd: Vector3 = f.basis * Vector3(0, 0, -1)
+	fwd.y = 0.0
+	if fwd.length_squared() < 1e-6:
+		return
+	var axis: Vector3 = fwd.normalized().cross(Vector3.UP)
+	sk.set_bone_global_pose(fi, Transform3D(Basis(axis.normalized(), pitch) * f.basis, f.origin))
 
 
 ## Two-bone IK: raises the ankle by `lift` (skeleton space) keeping the knee in its animated bend plane and the
@@ -156,8 +212,18 @@ func _solve_leg_target(sk: Skeleton3D, thigh: String, shin: String, foot: String
 	# bend plane from the animated knee; knees bend forward (-Z) if the leg is straight
 	var kn: Vector3 = k.origin - h.origin
 	var pole: Vector3 = kn - u * kn.dot(u)
-	if pole.length_squared() < 1e-5:
-		pole = (-h.basis.z) - u * (-h.basis.z).dot(u)
+	# The animated knee gives the bend plane only while it stands clear of the hip-to-target line. With the leg
+	# near straight toward a raised target (a fast stride up a stair-angle slope) that offset is a few millimetres
+	# of noise and the solved knee swapped sides from one frame to the next: shin steps of 120-170 degrees in a
+	# frame, measured at a jog and faster. The thigh's own forward takes over as the offset shrinks (under
+	# POLE_FIRM_M), and the knee never bends behind it.
+	var front: Vector3 = (-h.basis.z) - u * (-h.basis.z).dot(u)
+	if front.length_squared() > 1e-6:
+		front = front.normalized()
+		var firm: float = clampf(pole.length() / POLE_FIRM_M, 0.0, 1.0)
+		pole = (pole.normalized() * firm + front * (1.0 - firm)) if pole.length_squared() > 1e-10 else front
+		if pole.dot(front) < 0.0:
+			pole = front
 	if pole.length_squared() < 1e-6:
 		return
 	pole = pole.normalized()

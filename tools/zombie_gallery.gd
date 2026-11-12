@@ -48,6 +48,7 @@ var played_gaits: Dictionary = {}
 var verify_motion: bool = false
 var verify_performance: bool = false
 var near_player: bool = false
+var final_poses: Dictionary = {}     # instance id -> the last final pose's toes, clip, cycle time and serial
 var material_closeup: bool = false
 
 func _place_new(spec: Dictionary, pos: Vector3, window: Barricade = null) -> Zombie:
@@ -60,6 +61,18 @@ func _place_new(spec: Dictionary, pos: Vector3, window: Barricade = null) -> Zom
 	z.global_position = pos
 	(z.get("_agent") as NavigationAgent3D).avoidance_enabled = false
 	_new.append(z)
+	# The final pose (terrain IK, then the contact lock inside the body modifier) is only readable at
+	# skeleton_updated: a modifier's result is rolled back before the next _process.
+	var sk: Skeleton3D = z.get("_skel")
+	if sk != null:
+		var id: int = z.get_instance_id()
+		sk.skeleton_updated.connect(func() -> void:
+			var clip: String = str(z.get("_loco_clip"))
+			var snap: Dictionary = {"clip": clip, "serial": int(final_poses.get(id, {}).get("serial", 0)) + 1,
+				"time": fposmod((z.get("_playback") as AnimationNodeStateMachinePlayback).get_current_play_position(), maxf(0.001, ZombieClips.length_of(clip)))}
+			for side: String in ["Left", "Right"]:
+				snap[side] = sk.global_transform * (sk.get_bone_global_pose(sk.find_bone(side + "Foot")) * Vector3(0, -0.06, -0.15))
+			final_poses[id] = snap)
 	return z
 
 func _ready() -> void:
@@ -275,16 +288,15 @@ func _sample_mocap(delta: float) -> void:
 		if body_speed > 0.4: root_errors.append(absf(float(z.get("_rm_speed")) - body_speed) / body_speed)
 		var windows: Dictionary = ZombieClips.contact_windows(clip)
 		if windows.is_empty(): continue
-		var playback: AnimationNodeStateMachinePlayback = z.get("_playback")
-		var time: float = fposmod(playback.get_current_play_position(), ZombieClips.length_of(clip))
-		var sk: Skeleton3D = z.get("_skel")
-		var now: Dictionary = {"time": time, "clip": clip}
+		var snap: Dictionary = final_poses.get(id, {})
+		if snap.is_empty() or str(snap.get("clip", "")) != clip: continue
+		var time: float = float(snap["time"])
+		var now: Dictionary = {"time": time, "clip": clip, "serial": int(snap["serial"])}
 		var old: Dictionary = source_feet.get(id, {})
 		for side: String in windows:
-			var pose: Transform3D = sk.get_bone_global_pose(sk.find_bone(side + "Foot"))
-			var toe: Vector3 = sk.global_transform * (pose * Vector3(0, -0.06, -0.15))
+			var toe: Vector3 = snap[side]
 			now[side] = toe
-			if not old.has(side) or old.get("clip") != clip: continue
+			if not old.has(side) or old.get("clip") != clip or int(old.get("serial", -9)) != int(now["serial"]) - 1: continue
 			for interval: Array in windows[side]:
 				if time >= float(interval[0]) and time <= float(interval[1]) and float(old["time"]) >= float(interval[0]) and float(old["time"]) <= float(interval[1]) and time >= float(old["time"]):
 					var v: Vector3 = (toe - (old[side] as Vector3)) / maxf(delta, 0.00001)
@@ -361,7 +373,7 @@ func _finish() -> void:
 	result["mocap_contact_samples"] = source_slips.size()
 	result["mocap_contact_speed_relative_p95"] = _percentile(source_relative_slips, 0.95)
 	result["mocap_contact_timing_caveat"] = "Use fixed-fps 60 for contact acceptance: unsynchronized render/physics clocks create sampling jitter, especially headless. Do not use fixed-fps runs for performance."
-	result["mocap_contact_method"] = "Source toe contact intervals; actual rendered toe world displacement; excludes blends, transitions and track wraps"
+	result["mocap_contact_method"] = "Source toe contact intervals; toe world displacement of the FINAL pose (read at Skeleton3D.skeleton_updated, after the body modifier's terrain IK and the contact lock); excludes blends, transitions and track wraps"
 	result["root_body_speed_relative_error_p95"] = _percentile(root_errors, 0.95)
 	result["callback_cpu_ms_per_actor_frame_p95"] = _percentile(actor_cpu_ms, 0.95)
 	result["cpu_scope"] = "Gallery wrapper around Zombie physics/process callbacks, includes synchronous calls; excludes deferred engine/GPU work and other game systems. Render FPS affects calls/frame. Not mid-range certification."
