@@ -251,6 +251,8 @@ The ids are `ARC_HB_COUSINS`, `ARC_HB_PAUL`, `ARC_HB_SLENDER`, and the cards are
   - the humming turns to **whispering** after the first death.
 - **The last one standing sings alone, and it is awful.** Her line is sung full voice, too slow, a little sharp, and **she leaves a gap where each dead cousin's verse should be**. In the gap there is only her clapping, waiting for hands that don't come.
 - **Lamps:** one lamp group relights at each death (taproom first), and all of them relight when the round clears. The fight gets more readable as it goes.
+- **The dark hunt (T-232):** 3 s after the second death the **last cousin standing puts the lamps out again**: the lit lamps gutter for 1.6 s, every group goes out, and **only the hearth relights** (`cousins.json "dark_hunt"`). She hunts in the dark until the clear relights everything; each cousin carries her own moving light for readability (the maul head's violet glow, the Reach's wrist glow, Alix's drip), and the hum she hums alone is the flat one (`boss_hum_wrong`). The fail-safe and the clear relight as before.
+- **The doll register, pushed (T-232):** every cousin wears a porcelain glaze, glass eyes that catch the light (the Hammer blinks every 9 s, the Reach every 7 s, Alix never), and **hairline cracks that spread as she takes damage**: a tier opens under 75 / 50 / 25 % HP (`crack_tiers`), each with the porcelain-splitting sound and chips off the limb that was hit; her death opens every crack. Every hit on a cousin sounds like porcelain (`boss_hit_porcelain`, the kit); giggles stop too suddenly; once a cousin is enraged her hum goes flat.
 - **Horde:** normal Gängers keep spawning at **40% of round 10's count**, so the round stays chaotic but readable. The round ends when all three cousins are dead and the reduced horde is cleared.
 
 **Fail-safe: the Cousins get bored.** If the round runs past **6:00**, they retreat laughing (`CSN_BORED_01`):
@@ -292,6 +294,9 @@ The ids are `ARC_HB_COUSINS`, `ARC_HB_PAUL`, `ARC_HB_SLENDER`, and the cards are
 - **The locked head:** her head stays locked on the nearest player even while her body walks away. It is an additive head-look with a **180° limit**, and the neck and shoulder joints visibly over-rotate past what a neck should do.
 - **The catch:** when she catches the maul she **giggles and her whole body freezes for 0.3 s**, perfectly still, mid-pose, even the braid. Then she moves on as if nothing happened.
 - **The hitch step:** her skipping walk **hitches, every third step missing a frame** (AnimJitter, 12 fps for one step). She drags the maul one-handed and its head scrapes **sparks** off the floorboards (a positional scrape loop and a spark trail).
+- **The braid swings** (T-232): three blonde strips from the nape sway with her skip and whip round on the throw's spin.
+- **She picks the one who is bleeding** (T-232, the squad rule, `hurt.fraction` 0.5): the Mallet Throw aims at the **most hurt player in range** (under 50 % HP, with a clear line) instead of the nearest. The tell is fair: her locked head turns to them first and a short giggle comes with the wind-up. With nobody hurt enough it goes to the nearest as before.
+- **Enrage** (T-232): the lamps near her gutter for a breath and something in her splits (`boss_doll_crack`); from here her hum is the flat one. The Ricochet's banks ring iron off the walls with sparks.
 
 **Animation list:**
 - Locomotion: skip-walk (hitched), skip-walk enraged, idle (rocking heel-toe), turn-in-place ×2.
@@ -326,6 +331,7 @@ The ids are `ARC_HB_COUSINS`, `ARC_HB_PAUL`, `ARC_HB_SLENDER`, and the cards are
 | **Both Hands** (enraged, after the first death) | The same telegraph, both arms coil at once | Two grabs at two players (or one player, twice as fast) | as above | 10 s | Spread out |
 | **Through-the-Wall** | **0.6 s: dust falls and the boards creak** at the spot (ceiling dust from above, floorboards bowing from below, a window board bulging) | An arm punches through floorboards or window boards **from the next room or the floor below**: a 1.5 m column | 60 + slowed ×0.7 for 0.8 s | 7 s | Watch the dust and move off the spot |
 | **Window Spider** | **1.0 s: every barricade in the zone rattles at once** and every window's frost cracks | She hangs **outside** the building and **reaches through every window of the target's zone at once** for 6 s: a 2 m swipe area inside each window. Each barricade loses one board. | 40 per swipe | 25 s | Get away from the windows; while she hangs outside she is exposed through the glass (shoot her body) |
+| **Through-the-Window** (T-232, built) | **1.0 s: the boards of one window creak twice and rattle in their frame**, a violet glow grows outside the glass | When the target stands within 4.5 m of a **boarded** window of their zone and she has no line to them (or is 7 m+ off), her arm **punches through the boards from outside** (one board torn), takes the player and **drags them to the window** at 2.0 m/s for the Hug-Crush against the sill (120 over 1.5 s) | as the Long Reach | 14 s (10 s enraged) | The same breaks as the Long Reach: shoot the glowing wrist (x2, 8 % of her HP), melee-mash 6, teammates' 250 damage, or the time limit. Bots shoot the wrist. Step away from boarded windows when you hear the creak. |
 
 **Movement:**
 - She walks hunched, knuckles dragging, arms folded and coiled against her chest like a spring.
@@ -339,6 +345,8 @@ The ids are `ARC_HB_COUSINS`, `ARC_HB_PAUL`, `ARC_HB_SLENDER`, and the cards are
 **Creepy layers:**
 - **Her fingers are never still.** They keep counting, one-two-three, and clapping silently, even when the rest of her is frozen. This is an additive finger layer on every state.
 - **Her arms retract slowly and wrongly:** the joints fold backward, segment by segment (AnimJitter on the retract).
+- **The veins** (T-232): dark red veins run down the stretched arms below the torn elbows and **stand out wider when she enrages**; the flannel sleeve is torn at the elbow only (short strips hang from the tear; nothing else). Her **breath frosts** in the cold taproom every few seconds (`boss_breath`). Every stretch, shoot and retract cracks like bone (`boss_bone_crack`); a grab that lands gets the giggle, stopped short.
+- **A lone player** (T-232, the squad rule, `lone`): with one player on their feet (nobody to shoot the wrist for them) a grab **holds for 4.5 s instead of 6** and **drags at x0.8**, so the solo break stays fair; in return **her walls come alive sooner** (Through-the-Wall's cooldown x0.7).
 
 **Animation list:**
 - Locomotion: hunched walk with knuckle drag, ceiling crawl (arms only, body hanging), ceiling-to-floor drop.
@@ -374,13 +382,16 @@ The ids are `ARC_HB_COUSINS`, `ARC_HB_PAUL`, `ARC_HB_SLENDER`, and the cards are
 
 **When a cousin dies:**
 - Alix walks to the body and **holds its hand for 3 s**, kneeling, the Third Hand folded over both. This is an **interruptible window in which she takes ×2 damage** (`ALX_COUSIN_01`). 20% of her max HP in the window ends it early.
-- Then she **rises enraged**. **Her third arm now drips Nachtglas light**: an emissive drip trail that lights the floor, a readability gift in the dark inn. **Lash becomes Double Lash.**
+- **The window lengthens with each dead cousin** (T-232, `grieve.seconds_step` 1.5): 3.0 s for the first, **4.5 s for the second**. She hesitates longer, and **then hits harder**: every rise adds +15 % to all her hits (`grieve.damage_step`, on top of her double damage: a swipe 100 → 115 → 130).
+- Then she **rises enraged**. **Her third arm now drips Nachtglas light**: an emissive drip trail that lights the floor, a readability gift in the dark inn. **Lash becomes Double Lash.** Something in her splits as she rises (`boss_doll_crack`), the lamps near her gutter, and her hum goes flat.
 - If Alix arrives after a cousin is already dead, she goes to that body first.
+
+**The look-away step** (T-232, the squad rule, `step`): inside her 8 m walking band, a player who **turns their back on her** (more than 100° off) for 0.6 s hears the dress rustle behind them and she **takes a step**: a 0.45 s glide at her unseen speed that **stops 2.6 m short** (outside her 2 m grab range, so it never chains into Holding Hand). No damage: the consequence of looking away is that she is closer. 5 s cooldown.
 
 **Weak point:** the **palm of the Third Hand while it is extended: ×2**. It is extended almost always; it folds away only during Lash's wind-up.
 
 **Creepy layers:**
-- **She never blinks.**
+- **She never blinks** (the glass eyes catch the light and stay open; T-232). The red ribbon's two tails swing from the bow; **Nachtglas motes rise off the Third Hand** whenever it opens for someone (the hold's telegraph and the hold, and always once she drips). She rises out of the hatch in dust and old ice with the lamps guttering.
 - **Her steps make no sound;** only the dress rustles.
 - **She moves only while no player is looking at her** (ObservedFreeze, the Grand Galleria mannequin rule as a nod):
   - beyond 8 m, her animation runs at full speed only while she is unseen, then **snaps to a frozen pose** the instant someone looks;

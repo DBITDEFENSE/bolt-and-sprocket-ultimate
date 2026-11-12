@@ -1,6 +1,7 @@
 {
  "_doc": "HB1 The Cousins (docs/HOMAGE_BOSSES.md section 4): tuning for the Cousins Round on Map 0 and the three bosses. Loaded as GLData.table(\"bosses/cousins\"). Times in seconds, distances in metres, damage in HP (player 100, Ironhide 250). hp_base is solo; HP = hp_base x (1 + hp_player_step x (players - 1)) with players = RoundManager.players (MapRoot.scaled_player_count, bots at their weight). Speeds get +enrage_speed_step per dead cousin (stacking), and move cooldowns shrink by the same factor. Spoken lines have no baked audio yet (VO_SCRIPT section 12 is not extracted): 'lines' holds their subtitle text and the code falls back to subtitles silently.",
- "version": 1,
+ "version": 2,
+ "_doc_u14": "T-232 (docs/BOSS_REWORK.md 4.1, docs/boss_rework/w1_cousins.md): the boss rework. Each cousin has a dread block for the BossFx kit (surface porcelain, soft footfalls, Alix none), crack_tiers (hairline cracks that spread at these hp fractions), and the new beats: the Hammer aims her throw at a hurt player (hurt.fraction); the Reach grabs through a boarded window of the target's zone (window) and reads a lone player (lone); Alix's grief window lengthens with each dead cousin (grieve.seconds_step) and she hits harder after each (grieve.damage_step), and she takes a step when the player stops looking (step); the last cousin standing puts the lamps out again and hunts in the dark with only the hearth relit (dark_hunt). Numbers changed from v1: none of the v1 numbers moved; everything new is additive.",
  "map": "map00_crossroads",
  "round": 10,
  "return_after_rounds": 5,
@@ -9,6 +10,14 @@
  "failsafe_seconds": 360.0,
  "enrage_speed_step": 0.2,
  "observers_include_bots": true,
+ "crack_tiers": [0.75, 0.5, 0.25],
+ "dark_hunt": {
+  "_doc": "The last cousin standing: after seconds the lamps that came back gutter (a flicker_seconds flicker first), every group goes out again and only the hearth relights (to hearth_mult of its base); she hunts in the dark until the clear relights everything.",
+  "enabled": true,
+  "after": 3.0,
+  "flicker_seconds": 1.6,
+  "hearth_mult": 1.0
+ },
  "bots_alone": {
   "_doc": "Squad scaling (user call 2026-10-22: the Cousins scale for bot-only squads). While no human is on their feet (solo with bots and the human down or bled out, or bots alone) the three take hp_mult of their health (the bar keeps its fraction), deal damage_mult damage, wait cooldown_mult as long between moves and move at speed_mult; the horde still queued is cut to horde_mult once per fight (the horde, not the three, downs bots while they focus the bosses). On after engage_after s without a human up, off release_after s after one is back.",
   "enabled": true,
@@ -73,6 +82,8 @@
    "height": 1.0,
    "kill_scrip_per_player": 400,
    "limb_mult": {"head": 2.0, "neck": 1.0, "torso": 1.0, "arms": 0.8, "legs": 1.0},
+   "dread": {"radius": 18.0, "near": 5.0, "surface": "porcelain", "step_sound": "", "step_shake": 0.08, "step_radius": 10.0, "look_cone_deg": 35.0},
+   "hurt": {"fraction": 0.5},
    "swipe": {"telegraph": 0.5, "range": 2.4, "damage": 50, "cooldown": 1.4},
    "throw": {"telegraph": 0.9, "hum_stop": 0.65, "speed": 14.0, "range": 25.0, "min_range": 4.0, "turn_deg": 90.0, "damage": 45, "max_targets": 3, "hit_radius": 1.0, "cooldown": 6.0, "airborne_mult": 1.5, "catch_freeze": 0.3, "stagger": 1.2, "stoop": 1.0, "max_flight": 6.0},
    "ricochet": {"telegraph": 1.55, "bounces": 2, "cooldown": 7.0},
@@ -91,6 +102,10 @@
    "drop_scrip_per_player": 500,
    "limb_mult": {"head": 2.0, "neck": 1.0, "torso": 1.0, "arms": 0.8, "legs": 1.0, "wrist": 2.0},
    "arm_extra": 0.22,
+   "dread": {"radius": 18.0, "near": 5.0, "surface": "porcelain", "step_sound": "", "step_shake": 0.05, "step_radius": 9.0, "look_cone_deg": 35.0},
+   "veins": {"count": 10, "enrage_scale": 1.5},
+   "lone": {"hold_mult": 0.75, "drag_mult": 0.8, "wall_cooldown_mult": 0.7},
+   "window": {"telegraph": 1.0, "zone": "TAPROOM", "near_window": 4.5, "min_dist": 7.0, "speed": 20.0, "drag": 2.0, "crush_range": 1.4, "tear_boards": 1, "cooldown": 14.0, "enraged_cooldown": 10.0},
    "swipe": {"telegraph": 0.5, "range": 3.0, "damage": 45, "cooldown": 1.3},
    "grab": {"telegraph": 0.7, "range": 12.0, "min_range": 3.5, "speed": 24.0, "drag": 2.5, "enraged_drag": 5.0, "crush_range": 1.6, "crush_damage": 120, "crush_seconds": 1.5, "break_wrist_fraction": 0.08, "break_mash": 6, "break_team_damage": 250, "max_hold": 6.0, "cooldown": 8.0, "both_cooldown": 10.0, "regrab_lock": 4.0},
    "wall": {"telegraph": 0.6, "radius": 0.75, "damage": 60, "slow_mult": 0.7, "slow_seconds": 0.8, "cooldown": 7.0, "min_range": 4.0, "max_range": 24.0}
@@ -107,10 +122,12 @@
    "kill_scrip_per_player": 500,
    "damage_mult": 2.0,
    "limb_mult": {"head": 2.0, "neck": 1.0, "torso": 1.0, "arms": 1.0, "legs": 1.0, "palm": 2.0},
+   "dread": {"radius": 20.0, "near": 6.0, "surface": "porcelain", "step_sound": "", "step_shake": 0.0, "look_cone_deg": 25.0},
+   "step": {"away_deg": 100.0, "away_seconds": 0.6, "glide_seconds": 0.45, "stop_at": 2.6, "cooldown": 5.0},
    "swipe": {"telegraph": 0.55, "range": 2.2, "damage": 50, "cooldown": 1.6},
    "hold": {"telegraph": 0.5, "range": 2.0, "dps": 15, "max_hold": 6.0, "drag": 1.0, "break_melee": 3, "break_team_damage": 300, "cooldown": 10.0, "regrab_lock": 4.0},
    "lash": {"telegraph": 0.9, "range": 5.0, "arc_deg": 120.0, "damage": 45, "cooldown": 6.0, "double_gap": 0.4, "double_cooldown": 7.0},
-   "grieve": {"seconds": 3.0, "mult": 2.0, "break_fraction": 0.2, "reach": 1.4},
+   "grieve": {"seconds": 3.0, "seconds_step": 1.5, "mult": 2.0, "break_fraction": 0.2, "reach": 1.4, "damage_step": 0.15},
    "emerge_seconds": 1.6
   }
  },
@@ -129,6 +146,7 @@
   "CSN_WHISPER_01": {"speaker": "cousins", "text": "[the rhyme, whispered by two voices]"},
   "CSN_BORED_01": {"speaker": "cousins", "text": "Langweilig! Morgen wieder! (Boring! Again tomorrow!)"},
   "CSN_RETURN_01": {"speaker": "cousins", "text": "Bereit oder nicht, wir kommen! (Ready or not, here we come!)"},
+  "CSN_DARK_01": {"speaker": "cousins", "text": "[the lamps go out again, one by one; a single voice hums in the dark]"},
   "HAM_THROW_01": {"speaker": "hammer", "text": "Fang! (Catch!)"},
   "HAM_CATCH_01": {"speaker": "hammer", "text": "[a giggle, cut off dead]"},
   "HAM_WOOD_01": {"speaker": "hammer", "text": "Holz für Tante! (Wood for Auntie!)"},

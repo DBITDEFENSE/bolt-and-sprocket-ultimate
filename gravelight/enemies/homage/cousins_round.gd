@@ -24,6 +24,13 @@ extends Node3D
 ## slower moves and cooldowns. It switches on after engage_after seconds without a human up and off again
 ## release_after seconds after one is back up, so a quick down and revive doesn't flip it.
 ## Lines: cousins.json "lines" (no baked audio yet): the subtitle shows silently when lines.json lacks the line.
+## T-232 (the boss rework, docs/BOSS_REWORK.md 4.1): the dark hunt. The lamps come back one group per dead cousin as
+## before, but dark_hunt.after seconds after the second death the LAST cousin standing puts them out again: the lit
+## lamps gutter (the kit's flicker on her BossFx), every group goes out, only the hearth relights, and she hunts in
+## the dark (each cousin's `set_dark_hunt`: the maul head's glow, the wrists' glow, Alix's drip are the moving
+## lights). The clear (or the fail-safe) relights everything as before. The setup's own lamp code stays; the kit is
+## used for the new beats. Sounds: the pack's (the hatch, the maul tumble, the arms at the windows, the lamps'
+## breath-out).
 
 enum Phase { IDLE, ACTIVE, CLEARED, BORED }
 
@@ -60,12 +67,20 @@ var bots_alone_switches: int = 0      # times it switched on (tests / the soak)
 var _no_human_t: float = 0.0
 var _horde_cut: bool = false          # the bots-alone horde cut is once per encounter
 var _human_t: float = 0.0
+var dark_hunt: bool = false           # T-232: the last cousin has put the lamps out again
+var dark_hunts: int = 0
 
 
 # ================================================================== pure rules (unit-tested)
 
 static func applies(map_id: StringName, c: Dictionary) -> bool:
 	return String(map_id) == str(c.get("map", ""))
+
+
+## T-232: the dark hunt is due when exactly one cousin is left standing (`dead` of `total`) and the block is on.
+static func dark_hunt_due(dead: int, total: int, c: Dictionary) -> bool:
+	var d: Dictionary = c.get("dark_hunt", {})
+	return bool(d.get("enabled", true)) and total >= 2 and dead == total - 1
 
 
 static func is_event_round(r: int, the_round: int, on: bool) -> bool:
@@ -253,6 +268,7 @@ func begin(r: int) -> void:
 	_fallen.clear()
 	rewards_given = false
 	bots_alone = false
+	dark_hunt = false
 	_horde_cut = false
 	_no_human_t = 0.0
 	_human_t = 0.0
@@ -432,7 +448,9 @@ func _open_door(id: String) -> void:
 	var d: BuyDoor = _door(id)
 	if d != null and not d.is_open:
 		d.open(0)
-		AudioDirector.play_3d("board_break", d.global_position + Vector3.UP * 1.2, 6.0)
+		AudioDirector.play_3d("boss_stomp", d.global_position + Vector3.UP * 1.0, 4.0)      # the maul into the door
+		AudioDirector.play_3d("board_break", d.global_position + Vector3.UP * 1.2, 4.0)     # the door's own wood splitting
+		BossFx.burst("chips", d.global_position + Vector3.UP * 1.2, get_tree(), 1.6, 1.2)
 
 
 func _window(id: String) -> Barricade:
@@ -458,13 +476,14 @@ func on_cousin_died(b: HomageBoss) -> void:
 	_fallen.append(b)
 	if hud != null:
 		hud.strike(key, true)
-	_relight_next_group()
+	# the survivors enrage first (their kit flickers the lamps that are lit now), then the next group relights
 	for k: Variant in bosses.keys():
 		var s: HomageBoss = boss(str(k))
 		if s != null and s.is_active():
 			s.enrage()
 			if s is CousinAlix:
 				(s as CousinAlix).on_cousin_fell(b)
+	_relight_next_group()
 	match dead.size():
 		1:
 			say("OPR_BOSS_COUSINS_DEAD_M0_01")
@@ -474,9 +493,63 @@ func on_cousin_died(b: HomageBoss) -> void:
 			var last: HomageBoss = _last_standing()
 			if last is CousinHammer:
 				_later(2.5, "HAM_ALONE_01")
+	if dark_hunt_due(dead.size(), KEYS.size(), cfg):
+		_at(t + float((cfg.get("dark_hunt", {}) as Dictionary).get("after", 3.0)), _begin_dark_hunt)
 	print("[cousins] %s died (t=%.1f); %d dead (round alive %d, queued %d)" % [key, t, dead.size(), RoundManager.alive, RoundManager.to_spawn])
 	if dead.size() >= KEYS.size():
 		_clear()
+
+
+## T-232: the last cousin standing puts the lamps out again. The lit lamps gutter (her kit's flicker), then every
+## group goes out and only the hearth comes back; she hunts in the dark until the clear.
+func _begin_dark_hunt() -> void:
+	if phase != Phase.ACTIVE or dark_hunt:
+		return
+	var last: HomageBoss = _last_standing()
+	if last == null or alive_count() != 1:
+		return
+	var dh: Dictionary = cfg.get("dark_hunt", {})
+	var flick: float = float(dh.get("flicker_seconds", 1.6))
+	if last.fx != null:
+		last.fx.lights_dim(last.global_position, 40.0, 1.0, 0.05)
+		last.fx.lights_flicker(flick, 0.85)
+	say("CSN_DARK_01")
+	_at(t + flick, func() -> void:
+		if is_instance_valid(last) and last.fx != null:
+			last.fx.lights_restore(0.05)   # the kit lets the lamps go; the round's own lamp code takes them out
+	)
+	_at(t + flick + 0.2, func() -> void:
+		if phase != Phase.ACTIVE:
+			return
+		var l2: HomageBoss = _last_standing()
+		if l2 == null:
+			return
+		dark_hunt = true
+		dark_hunts += 1
+		for g: Variant in cfg["setup"]["group_order"]:
+			_gutter_group(str(g))
+		var f: String = str(cfg["setup"]["fire"])
+		if _lamps.has(f):
+			var e: Array = _lamps[f]
+			_tween_energy(e[0] as Light3D, float(e[1]) * float(dh.get("hearth_mult", 1.0)), 1.5, 0.6)   # the hearth, relit
+		if l2.has_method("set_dark_hunt"):
+			l2.call("set_dark_hunt", true)
+		print("[cousins] the dark hunt: %s puts the lamps out again (t=%.1f, %d out)" % [l2.boss_key, t, lamps_out]))
+
+
+## A lit lamp group gutters out again (quick: the whole group in about a second).
+func _gutter_group(g: String) -> void:
+	if not bool(_group_lit.get(g, false)):
+		return
+	_group_lit[g] = false
+	var at: float = 0.0
+	for n: Variant in (cfg["setup"]["lamp_groups"] as Dictionary).get(g, []):
+		if _lamps.has(str(n)):
+			var l: Light3D = (_lamps[str(n)] as Array)[0] as Light3D
+			if l != null and is_instance_valid(l) and l.is_visible_in_tree():
+				lamps_out += 1
+				_tween_energy(l, 0.0, 0.5, at)
+				at += 0.08
 
 
 func _later(seconds: float, line: String) -> void:
@@ -509,6 +582,7 @@ func nearest_other_cousin(me: HomageBoss) -> Node3D:
 func _clear() -> void:
 	phase = Phase.CLEARED
 	cleared_count += 1
+	dark_hunt = false
 	grant_rewards(reward_at, true)
 	_relight_all()
 	say("OPR_BOSS_COUSINS_DEAD_M0_03")
@@ -559,6 +633,7 @@ func retreat() -> void:
 	returning = true
 	RoundManager.reserve_round(event_round)
 	_close_hatch()
+	dark_hunt = false
 	_relight_all()
 	print("[cousins] bored at t=%.1f: back on round %d" % [t, event_round])
 
@@ -689,7 +764,7 @@ func _gutter_lamp(n: String, delay: float) -> void:
 	_tween_energy(l, 0.0, 0.6, delay)
 	get_tree().create_timer(delay + 0.1).timeout.connect(func() -> void:
 		if is_instance_valid(l):
-			AudioDirector.play_3d("powerup_expire", l.global_position, -14.0))   # a breath-out
+			AudioDirector.play_3d("boss_breath", l.global_position, -16.0, 0.08))   # a breath-out
 
 
 func _tween_energy(l: Light3D, to: float, secs: float, delay: float) -> void:
@@ -785,11 +860,14 @@ func _maul_tumble() -> void:
 	var tw: Tween = m.create_tween()
 	tw.tween_property(m, "global_position", foot, 0.7).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	tw.parallel().tween_property(m, "rotation:x", TAU * 3.0, 0.7)
-	tw.tween_callback(func() -> void: AudioDirector.play_3d("board_slam", foot, 2.0))
+	tw.tween_callback(func() -> void:
+		AudioDirector.play_3d("boss_hit_iron", foot, 2.0)   # the iron head off the vestibule wall
+		AudioDirector.play_3d("boss_stomp", foot, -2.0)
+		BossFx.burst("sparks", foot, get_tree(), 0.8, 0.8))
 	tw.tween_property(m, "global_position", top + Vector3(0, 0.6, -1.0), 0.6).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tw.parallel().tween_property(m, "rotation:x", TAU * 5.0, 0.6)
 	tw.tween_callback(m.queue_free)
-	AudioDirector.play_3d("board_break", top, 0.0, 0.0)
+	AudioDirector.play_3d("boss_stomp", top, -4.0, 0.0)   # it leaves her hand at the stair head
 
 
 ## Before her body, two arms snake in through two taproom windows, feel along the sills, withdraw.
@@ -815,7 +893,8 @@ func _arms_through_windows() -> void:
 		tw.tween_property(arm, "tip", inside + w.global_basis.x * 0.6, 0.8)
 		tw.tween_property(arm, "tip", out, 0.9).set_trans(Tween.TRANS_SINE)
 		tw.tween_callback(arm.queue_free)
-		AudioDirector.play_3d("board_break", w.global_position + Vector3.UP * 1.2, -6.0)
+		AudioDirector.play_3d("stable_creak", w.global_position + Vector3.UP * 1.2, -2.0)     # the frame creaks
+		AudioDirector.play_3d("boss_bone_crack", w.global_position + Vector3.UP * 1.2, -6.0)  # the arm's joints
 
 
 ## The trapdoor behind the bar: a hatch the map never showed before (runtime; it stays open after the round).
@@ -859,7 +938,8 @@ func _open_hatch(at: Vector3) -> void:
 		dust.emitting = true
 	var tw: Tween = _hatch_lid.create_tween()
 	tw.tween_property(_hatch_lid, "rotation:x", deg_to_rad(105.0), 0.5).set_trans(Tween.TRANS_BACK)
-	AudioDirector.play_3d("door_open", at + Vector3.UP * 0.3, 2.0)
+	AudioDirector.play_3d("door_creak", at + Vector3.UP * 0.3, 2.0)   # the hatch nobody has opened since the war began
+	BossFx.burst("frost", at + Vector3.UP * 0.4, get_tree(), 1.2, 1.2)   # old ice off the lid
 
 
 func _close_hatch() -> void:
@@ -867,7 +947,7 @@ func _close_hatch() -> void:
 		var tw: Tween = _hatch_lid.create_tween()
 		tw.tween_interval(2.0)
 		tw.tween_property(_hatch_lid, "rotation:x", 0.0, 0.4)
-		tw.tween_callback(func() -> void: AudioDirector.play_3d("board_slam", _hatch_lid.global_position, 0.0))
+		tw.tween_callback(func() -> void: AudioDirector.play_3d("boss_stomp", _hatch_lid.global_position, -2.0))
 
 
 func hatch_open() -> bool:
@@ -900,4 +980,4 @@ func status() -> String:
 	for k: String in KEYS:
 		var b: HomageBoss = boss(k)
 		parts.append("%s %s" % [k, "dead" if dead.has(k) else ("-" if b == null else "%d/%d hp, enrage %d" % [int(b.hp), int(b.max_hp), b.enrage_steps])])
-	return "Cousins: %s, round %d, t=%.0f s%s | %s" % [Phase.keys()[phase], event_round, t, ", bots alone" if bots_alone else "", ", ".join(parts)]
+	return "Cousins: %s, round %d, t=%.0f s%s%s | %s" % [Phase.keys()[phase], event_round, t, ", bots alone" if bots_alone else "", ", dark hunt" if dark_hunt else "", ", ".join(parts)]

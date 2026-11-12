@@ -15,6 +15,16 @@ extends HomageBoss
 ## Creepy layers: the head locked on the nearest player with a 175 deg look limit, the hitch in her skip (every
 ## third step skips frames), the catch-freeze. Death: she sits, lays the maul across her lap, stops; 2 s later she
 ## topples over like a doll, stiff, in one piece (authored, no ragdoll).
+## T-232 (the boss rework, docs/BOSS_REWORK.md 4.1, docs/boss_rework/w1_cousins.md): the doll register pushed. A
+## porcelain glaze on the face, glass eyes that blink too slowly (9 s), hairline cracks that spread over the head and
+## arms as she takes damage (cousins.json crack_tiers: a tier at 75 / 50 / 25 % HP, each with the porcelain splitting
+## sound), the braid as swinging strips, sparks off the floorboards where the maul head drags. The kit: a dread block
+## (surface porcelain, soft footfalls), fx.tele on every telegraph, the pack's sounds on every move (the giggle
+## stopped short at the catch, the hum gone flat once she is enraged, iron off the walls on a ricochet bank, the
+## floor's thud on the Split), the taproom's lamps guttering as she enrages. Battle: her throw reads the squad: it
+## aims at the most hurt player in range (under hurt.fraction) instead of the nearest, her head turning to them
+## first; as the last cousin standing she hunts in the dark (CousinsRound.dark_hunt) with the maul head's glow the
+## only moving light.
 
 const BLONDE: Color = Color(0.86, 0.74, 0.46)
 const COAT: Color = Color(0.25, 0.23, 0.21)
@@ -25,6 +35,8 @@ const MITTEN_GREY: Color = Color(0.56, 0.56, 0.57)
 const IRON: Color = Color(0.22, 0.22, 0.24)
 const HAFT: Color = Color(0.4, 0.29, 0.18)
 const VIOLET: Color = Color(0.7, 0.35, 1.0)
+const CRACK: Color = Color(0.42, 0.2, 0.62)        # a hairline crack lit from inside (Nachtglas)
+const GLASS_EYE: Color = Color(0.78, 0.84, 1.0)    # glass eyes that catch the light
 
 var maul_out: bool = false
 var maul: Maul = null
@@ -32,17 +44,51 @@ var maul_hits: int = 0              # players hit by the maul (out + back), for 
 var ricochets: int = 0
 var catches: int = 0
 var splits: int = 0
+var crack_tier_now: int = 0          # how many crack tiers show (0..3)
+var doll_cracks: int = 0             # times a tier split open (tests / the smoke)
+var hurt_aims: int = 0               # throws aimed at a hurt player over the nearest
+var dark_hunt: bool = false          # the last cousin standing, hunting in the dark (CousinsRound)
 var _prop: Node3D
 var _flare: MeshInstance3D
+var _ember: OmniLight3D              # the maul head's faint glow in the dark hunt
 var _maul_dropped: bool = false
 var _special: String = ""
 var _steps: int = 0
 var _jitter_t: float = 0.0
 var _scrape: AudioStreamPlayer3D
+var _aim: Player = null              # who the throw is for (the hurt one, else the nearest)
+var _crack_tiers: Array = []         # per tier: Array[MeshInstance3D]
+var _sparks: GPUParticles3D = null
+var _hum_loop: AudioStreamPlayer3D = null
+var _eyes: Node3D = null
 
 
 func _init() -> void:
 	boss_key = "hammer"
+
+
+# ---------------------------------------------------------------- pure rules (unit-tested)
+
+## How many crack tiers show at `hp_frac` (tiers = the hp fractions each opens under, e.g. [0.75, 0.5, 0.25]).
+static func crack_tier(hp_frac: float, tiers: Array) -> int:
+	var n: int = 0
+	for t: Variant in tiers:
+		if hp_frac < float(t):
+			n += 1
+	return n
+
+
+## The squad rule: the index of the most hurt player (hp fraction under `hurt_fraction`) among `fractions`, or -1
+## when nobody is hurt enough (then the throw goes to the nearest as before).
+static func pick_hurt(fractions: Array, hurt_fraction: float) -> int:
+	var best: int = -1
+	var bf: float = hurt_fraction
+	for i: int in fractions.size():
+		var f: float = float(fractions[i])
+		if f < bf:
+			bf = f
+			best = i
+	return best
 
 
 func _on_spawned() -> void:
@@ -53,12 +99,21 @@ func _on_spawned() -> void:
 	_flare.hide()
 	_special = ""
 	_hum_t = 1.0
+	dark_hunt = false
+	crack_tier_now = 0
+	_set_crack_tier(0)
+	if _ember != null:
+		_ember.light_energy = 0.0
 
 
 # ---------------------------------------------------------------- brain
 
 func _tick(delta: float) -> void:
 	var c: Dictionary = bcfg
+	if _sparks != null:
+		_sparks.emitting = not maul_out and bstate == B.MOVE and velocity.length() > 0.6
+	if fx != null and dark_hunt:
+		fx.extra_dread = maxf(fx.extra_dread, 0.25)
 	match bstate:
 		B.ARRIVE:
 			stand(delta)
@@ -120,10 +175,32 @@ func _think(delta: float) -> void:
 		_begin("split", float(c["split"]["telegraph"]))
 	elif d <= float(c["swipe"]["range"]) and dy < 1.3 and cd_ready("swipe") and _clear_to(target):
 		_begin("swipe", float(c["swipe"]["telegraph"]))
-	elif d >= float(c["throw"]["min_range"]) and d <= float(c["throw"]["range"]) and cd_ready("throw") and has_los(target):
+	elif cd_ready("throw") and _throw_aim() != null:
 		_begin("throw", float(c["ricochet"]["telegraph"]) if enrage_steps >= 1 else float(c["throw"]["telegraph"]))
 	else:
 		walk_to(target.global_position, delta)
+
+
+## Who the throw is for: the squad rule picks the most hurt player in range with a clear line (under hurt.fraction);
+## otherwise the nearest, if in range. Sets `_aim`; null when nobody is throwable.
+func _throw_aim() -> Player:
+	var c: Dictionary = bcfg["throw"]
+	var in_range: Array[Player] = []
+	var fr: Array = []
+	for p: Player in alive_players():
+		var d: float = dist_to(p)
+		if d >= float(c["min_range"]) and d <= float(c["range"]) and has_los(p):
+			in_range.append(p)
+			fr.append(p.hp / maxf(1.0, p.max_hp))
+	_aim = null
+	if in_range.is_empty():
+		return null
+	var hurt: int = pick_hurt(fr, float((bcfg.get("hurt", {}) as Dictionary).get("fraction", 0.5)))
+	if hurt >= 0 and in_range[hurt] != target:
+		_aim = in_range[hurt]
+	else:
+		_aim = target if in_range.has(target) else in_range[0]
+	return _aim
 
 
 var _tele_total: float = 0.5
@@ -136,31 +213,51 @@ func _begin(id: String, telegraph: float) -> void:
 		"swipe":
 			attack_anim("swipe_r", _tele_total)
 			sfx("board_place", -6.0, 0.6)   # the maul lifted off the floor: the scrape stops
+			fx.tele(VIOLET, 1.5, _tele_total, false)
 		"slap":
 			attack_anim("swipe_l", _tele_total)
+			fx.tele(VIOLET, 1.0, _tele_total, false)
 		"split":
 			pose_anim()
 			_pose.set_bone("LeftUpperArm", Vector3(2.9, 0, 0.25))
 			_pose.set_bone("RightUpperArm", Vector3(2.9, 0, -0.25))
 			_pose.set_bone("Spine", Vector3(-0.25, 0, 0))
-			sfx("board_break", -2.0, 0.45)   # the creak of the haft
+			sfx("boss_bone_crack", -6.0, 0.7)   # the creak of the haft
+			fx.tele(VIOLET, 3.5, _tele_total)
 		"throw":
 			pose_anim()
 			_hum_mute = _tele_total + 0.4   # she stops humming: one beat (two when enraged) is the tell
 			_pose.set_bone("RightUpperArm", Vector3(2.2, 0, -0.6))
 			_pose.set_bone("Spine", Vector3(0, 0.6, 0))
 			_flare.show()
+			fx.tele(VIOLET, 3.5, _tele_total)
+			if _aim != null and _aim != target:
+				hurt_aims += 1
+				giggle_short(-6.0)   # she has picked the one who is bleeding: her head turns to them first
+
+
+## The doll's giggle, stopped short (the register's rule: it ends too suddenly).
+func giggle_short(db: float = -2.0) -> void:
+	var p: AudioStreamPlayer3D = sfx("boss_doll_giggle", db, _hum_pitch())
+	if p != null:
+		get_tree().create_timer(randf_range(0.32, 0.5)).timeout.connect(func() -> void:
+			if is_instance_valid(p) and p.playing:
+				p.stop())
 
 
 func _telegraph(delta: float) -> void:
-	stand(delta)
+	if move_id == "throw" and _aim != null and is_instance_valid(_aim) and _aim.is_alive():
+		_halt(delta)
+		_face(_aim.global_position)
+	else:
+		stand(delta)
 	var c: Dictionary = bcfg
 	if move_id == "throw":
 		# the last 0.25 s is the wind-up spin, braid swinging
 		var spin_from: float = _tele_total - 0.25
 		if _bt >= spin_from and not _hit_done:
 			_hit_done = true
-			sfx("knife_swing", 2.0, 0.55)
+			sfx("boss_breath", -8.0, 1.3)   # the breath she takes before the spin
 		if _bt >= spin_from:
 			_pivot.rotation.y = lerpf(0.0, TAU, clampf((_bt - spin_from) / 0.25, 0.0, 1.0))
 	if _bt < _tele_total:
@@ -210,8 +307,11 @@ func _split() -> void:
 	z.boss = self
 	get_parent().add_child(z)
 	z.global_position = global_position + fwd * 1.4
-	sfx("board_break", 6.0, 0.7)
-	sfx("grenade_explode", -8.0, 1.6)
+	sfx("boss_stomp", 4.0, 0.8, z.global_position)        # the maul head into the floor
+	sfx("boss_bone_crack", 2.0, 0.6, z.global_position)   # the boards splitting
+	BossFx.burst("chips", z.global_position + Vector3.UP * 0.2, get_tree(), 1.6, 1.2)
+	BossFx.burst("dust", z.global_position + Vector3.UP * 0.1, get_tree(), 1.4, 1.3)
+	fx.shake_all(z.global_position, 0.35, 9.0)
 	GLBus.explosion.emit(z.global_position, 0.1)
 	if randf() < 0.4:
 		say("HAM_WOOD_01")
@@ -219,15 +319,16 @@ func _split() -> void:
 
 func _release_maul() -> void:
 	var c: Dictionary = bcfg["throw"]
+	var at_whom: Player = _aim if _aim != null and is_instance_valid(_aim) and _aim.is_alive() else target
 	maul = Maul.new()
 	maul.boss = self
 	maul.cfg = c
-	maul.aim = target
+	maul.aim = at_whom
 	maul.bounces = int(bcfg["ricochet"]["bounces"]) if enrage_steps >= 1 else 0
 	get_parent().add_child(maul)
 	var hand: Vector3 = global_position + Vector3.UP * 1.35 - global_basis.z * 0.45   # let go at shoulder height, in front
 	maul.global_position = hand
-	var to: Vector3 = (target.global_position + Vector3.UP * 1.25 - hand) if target != null else -global_basis.z
+	var to: Vector3 = (at_whom.global_position + Vector3.UP * 1.25 - hand) if at_whom != null else -global_basis.z
 	maul.out_limit = minf(float(c["range"]), to.length() + 2.5)
 	maul.vel = to.normalized() * float(c["speed"])
 	maul_out = true
@@ -253,6 +354,7 @@ func on_maul_caught() -> void:
 		return
 	if randf() < 0.35:
 		say("HAM_CATCH_01")
+	giggle_short()   # the giggle, cut dead with the freeze
 	_special = "catch"
 	_pose.clear()
 	_pose.hold = true
@@ -265,6 +367,7 @@ func damage_taken_mult() -> float:
 
 func _on_damaged(_amount: float, _limb: StringName, _by: int, kind: StringName) -> void:
 	super._on_damaged(_amount, _limb, _by, kind)
+	_grow_cracks(_limb)
 	# unarmed: a melee hit staggers her and the maul drops where she stands
 	if kind == &"melee" and maul_out and bstate != B.STAGGER and is_active():
 		_pose.hold = false
@@ -282,12 +385,89 @@ func _on_damaged(_amount: float, _limb: StringName, _by: int, kind: StringName) 
 
 func _on_enraged() -> void:
 	say("HAM_ENRAGE_01")
+	# the hum goes flat (the loop takes over in _update_audio); the lamps near her gutter for a breath
+	_flicker_room(1.4, 0.8)
+	sfx("boss_doll_crack", -4.0, 1.1)
 
 
+## A beat on the room's lights through the kit: the lamps within `radius` gutter for `seconds`, then the kit lets
+## them go (lights_restore right after, so a later relight by the CousinsRound is never undone at cleanup).
+func _flicker_room(seconds: float, depth: float, radius: float = 16.0) -> void:
+	if fx == null or not is_inside_tree():
+		return
+	fx.lights_dim(global_position, radius, 1.0, 0.05)
+	fx.lights_flicker(seconds, depth)
+	var k: BossFx = fx
+	get_tree().create_timer(seconds + 0.1).timeout.connect(func() -> void:
+		if is_instance_valid(k):
+			k.lights_restore(0.2))
+
+
+## fx.tele owns the telegraph light (its rise, hold and snap); the base's move-toward is a no-op.
 func _tele_glow() -> float:
-	if bstate == B.TELEGRAPH:
-		return 3.5 if move_id == "throw" or move_id == "split" else 1.5
-	return 0.0
+	return _tele_light.light_energy
+
+
+## The hum: the shared lullaby while the three live; once enraged, the lullaby hummed a quarter-tone flat
+## (boss_hum_wrong, a loop that stops dead for the throw's beat).
+func _update_audio(delta: float) -> void:
+	if enrage_steps >= 1 and is_active():
+		if _hum_loop == null:
+			_hum_loop = AudioDirector.make_loop_3d("boss_hum_wrong", self, -9.0)
+			if _hum_loop != null:
+				_hum_loop.pitch_scale = _hum_pitch()
+		if _hum_loop != null:
+			var want: bool = _hum_mute <= 0.0
+			if want and not _hum_loop.playing:
+				_hum_loop.play()
+			elif not want and _hum_loop.playing:
+				_hum_loop.stop()
+		return
+	super._update_audio(delta)
+
+
+func _stop_hum() -> void:
+	if _hum_loop != null and is_instance_valid(_hum_loop) and _hum_loop.playing:
+		_hum_loop.stop()
+
+
+func _vanish() -> void:
+	_stop_hum()
+	super._vanish()
+
+
+func _on_retreat() -> void:
+	_stop_hum()
+	if _sparks != null:
+		_sparks.emitting = false
+
+
+## The hairline cracks spread with the damage: a tier opens at each crack_tiers fraction, with the porcelain
+## splitting sound and chips off the limb that was hit.
+func _grow_cracks(limb: StringName) -> void:
+	var tier: int = crack_tier(hp_fraction(), ecfg.get("crack_tiers", [0.75, 0.5, 0.25]) as Array)
+	if tier <= crack_tier_now:
+		return
+	_set_crack_tier(tier)
+	doll_cracks += 1
+	if is_inside_tree() and fx != null:
+		sfx("boss_doll_crack", 0.0, 1.0 + 0.08 * float(tier))
+		BossFx.burst("chips", fx.limb_pos(limb), get_tree(), 1.2, 1.0)
+
+
+func _set_crack_tier(tier: int) -> void:
+	crack_tier_now = tier
+	for i: int in _crack_tiers.size():
+		for mi: MeshInstance3D in _crack_tiers[i]:
+			if is_instance_valid(mi):
+				mi.visible = i < tier
+
+
+## The last cousin standing: the lamps are out again; the maul head's faint glow is the only moving light.
+func set_dark_hunt(on: bool) -> void:
+	dark_hunt = on
+	if _ember != null:
+		_ember.light_energy = 0.9 if on else 0.0
 
 
 # ---------------------------------------------------------------- presentation
@@ -314,6 +494,11 @@ func _hum_pitch() -> float:
 
 
 func _start_authored_death() -> void:
+	_stop_hum()
+	if _sparks != null:
+		_sparks.emitting = false
+	if _ember != null:
+		_ember.light_energy = 0.0
 	_tree_play("Death", "death_sit", 1.0)
 	_pose.clear()
 	_pose.set_bone("LeftUpperArm", Vector3(0.7, 0, 0.2))
@@ -321,6 +506,8 @@ func _start_authored_death() -> void:
 	if maul != null and is_instance_valid(maul):
 		maul.drop_at(global_position + global_basis.x * 0.6)
 	_prop.show()
+	_set_crack_tier(_crack_tiers.size())   # every crack open
+	sfx("boss_doll_crack", 2.0, 0.9)
 	say("HAM_DEATH_01")
 
 
@@ -384,6 +571,61 @@ func _build_costume() -> void:
 	_flare.position = Vector3(0, -0.8, 0)
 	_flare.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_prop.add_child(_flare)
+	# T-232: the maul head's glow for the dark hunt, and the sparks it scrapes off the floorboards
+	_ember = OmniLight3D.new()
+	_ember.light_color = VIOLET
+	_ember.omni_range = 2.6
+	_ember.light_energy = 0.0
+	_ember.shadow_enabled = false
+	_ember.position = Vector3(0, -0.8, 0)
+	_prop.add_child(_ember)
+	_sparks = BossFx.emitter("sparks", _prop, Vector3(0, -0.86, 0.0), 0.45)
+	_doll_pass()
+
+
+## T-232: the doll register on top of the modelled body: the glaze, the glass eyes (a slow blink), the braid that
+## swings, and the crack tiers (hidden until the damage opens them).
+func _doll_pass() -> void:
+	var glaze: StandardMaterial3D = StandardMaterial3D.new()
+	glaze.albedo_color = Color(0.92, 0.9, 0.9, 0.16)
+	glaze.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	glaze.roughness = 0.05
+	glaze.metallic = 0.15
+	glaze.metallic_specular = 0.9
+	glaze.cull_mode = BaseMaterial3D.CULL_BACK
+	var head: Node3D = bone_attachment("Head")
+	if head != null:
+		var sp: SphereMesh = SphereMesh.new()
+		sp.radius = 0.132
+		sp.height = 0.264
+		sp.material = glaze
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		mi.mesh = sp
+		mi.position = Vector3(0, 0.1, -0.005)
+		mi.scale = Vector3(0.98, 1.08, 1.02)
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		head.add_child(mi)
+	_eyes = eye_glow(GLASS_EYE, 0.55, 9.0)
+	# the braid: three blonde strips from the nape that swing with her skip (the modelled braid stays under them)
+	strips("Head", Vector3(0, 0.0, 0.13), 3, 0.4, 0.03, BLONDE, 0.05, 11)
+	# the crack tiers: the head and both arms, more and brighter per tier
+	var tiers: Array = ecfg.get("crack_tiers", [0.75, 0.5, 0.25]) as Array
+	for i: int in tiers.size():
+		var set_i: Array = []
+		var emit: float = 0.9 + 0.6 * float(i)
+		var c1: MeshInstance3D = cracks("Head", 4 + 3 * i, 0.128, 0.0, 0.2, CRACK, emit, 31 + i)
+		if c1 != null:
+			set_i.append(c1)
+		for side: String in ["Left", "Right"]:
+			var c2: MeshInstance3D = cracks(side + "UpperArm", 2 + 2 * i, 0.07, -0.3, -0.02, CRACK, emit, 41 + i + (7 if side == "Left" else 0))
+			if c2 != null:
+				set_i.append(c2)
+			var c3: MeshInstance3D = cracks(side + "LowerArm", 2 + i, 0.064, -0.25, -0.02, CRACK, emit, 51 + i + (7 if side == "Left" else 0))
+			if c3 != null:
+				set_i.append(c3)
+		for mi2: MeshInstance3D in set_i:
+			mi2.visible = false
+		_crack_tiers.append(set_i)
 
 
 static func _mesh_of(parts: Array) -> ArrayMesh:
@@ -460,7 +702,8 @@ class Maul extends Node3D:
 					boss.ricochets += 1
 					vel = vel.bounce((hit["normal"] as Vector3).normalized())
 					global_position = (hit["position"] as Vector3) + (hit["normal"] as Vector3) * 0.15
-					AudioDirector.play_3d("board_slam", global_position, -2.0)
+					AudioDirector.play_3d("boss_hit_iron", global_position, 2.0)   # the iron head off the wall
+					BossFx.burst("sparks", global_position, get_tree(), 0.8, 0.8)
 					_hit_out.clear()   # a fresh line after each bank
 				else:
 					_begin_return()
@@ -506,7 +749,7 @@ class Maul extends Node3D:
 		var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(q)
 		_floor_y = (hit["position"] as Vector3).y if not hit.is_empty() else pos.y
 		global_position = Vector3(pos.x, maxf(global_position.y, _floor_y + 0.3), pos.z)
-		AudioDirector.play_3d("board_slam", global_position, -4.0)
+		AudioDirector.play_3d("boss_stomp", global_position, -6.0)   # the maul on the boards
 
 	func _caught() -> void:
 		if _loop != null:
