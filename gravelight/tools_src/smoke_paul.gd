@@ -330,11 +330,22 @@ func _case_bots() -> void:
 		body.down()
 		# (he may be mid-move: the Headframe Climb & Dive he picks the moment he turns BERSERK runs ~5 s; the guard
 		# is checked whenever he is back to choosing)
-		var guarding: bool = await _until(func() -> bool: return p.guard_pid == body.player_id, 14.0)
+		# He walks on between moves, so the body laid 3 m from him can be 15 m off and behind a wall by the time he
+		# is choosing again: it is kept in his sight (3 m in front of him) until he takes the guard.
+		var tries: Array = [0]
+		var guarding: bool = await _until(func() -> bool:
+			if p.guard_pid == body.player_id:
+				return true
+			if p.bstate != HomageBoss.B.SPECIAL and p.bstate != HomageBoss.B.TELEGRAPH and (p.dist_to(body) > 6.0 or not p.has_los(body, 2.2, 0.4)):
+				# a spot 3 m from him on the navmesh, a new bearing each try (the one in front may be a wall)
+				tries[0] = int(tries[0]) + 1
+				var f: Vector3 = Vector3.FORWARD.rotated(Vector3.UP, float(tries[0]) * PI * 0.25)
+				body.global_position = NavigationServer3D.map_get_closest_point(p.get_world_3d().navigation_map, p.global_position + f * 3.0)
+			return false, 30.0)
 		_check(guarding and p.bstate == HomageBoss.B.SPECIAL, "BERSERK + a downed bot in sight: he goes to guard the body (downed %s, los %s, state %d/%s, %.1f m)" % [str(body.downed), str(p.has_los(body, 2.2, 0.4)), p.bstate, p._special_id, p.dist_to(body)])
 		_check(enc.lines_said.has("PAU_CALM_03"), "'Nobody gets left. Nobody.'")
 		var over: bool = await _until(func() -> bool: return p.guard_pid == body.player_id and p.dist_to(body) <= 1.3 * p.stage_scale + 0.3, 10.0)
-		_check(over, "he stands over the body (%.1f m)" % p.dist_to(body))
+		_check(over, "he stands over the body (%.2f m, scale %.2f, guard_pid %d, bstate %d, guard_t %.1f, posed %s, speed %.2f, vel %s, y %.1f body y %.1f, climbing %s, state %d, tele %.2f)" % [p.dist_to(body), p.stage_scale, p.guard_pid, p.bstate, p.guard_t, str(p._guard_posed), p.move_speed(), str(p.velocity), p.global_position.y, body.global_position.y, str(p.climbing), p.state, p._guard_tele])
 		if over:
 			comer.global_position = p.global_position + p.basis_fwd() * 2.2
 			var slammed: bool = await _until(func() -> bool: return p.guard_slams >= 1, 5.0)

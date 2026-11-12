@@ -793,6 +793,17 @@ Three levels, three grades. `gravelight/maps/map01_kaltenbrunn/depth_grade.gd` (
 - Power-light helpers in `gen_map01.gd`: `power(... fog)` sets a light's halo in the volumetric fog; `goose()` is the yard gooseneck.
 - Shots: `data/gravelight/lighting/shots_map01.json` (18 views, power off and on), `tools_src/light_shots.gd -- --fps` for a frame-time probe.
 
+## Map 1 solid dressing and smoothness (T-239)
+
+The final pass (`docs/u15/t239_kaltenbrunn_pass.md`). Rules a later edit of `gen_map01.gd` keeps:
+
+- **A floor prop that reads solid is solid.** `SOLID_PROPS` (boxes) and `SOLID_ROUND` (cylinders: braziers, the water crane, the three pylons' feet) are hidden `Prop_*` colliders built before the bake; the bunks' foot lockers and the mess benches are built from their loops in `build_solid_props`. Small things (lanterns, buckets, chairs pushed under a desk, crystals at a wall foot) stay drawn only.
+- **Nothing stands loose in a lane.** A solid prop stands against a wall with its collider carried to the wall face, in a corner, or as one flush block with its neighbour; no slot a body fits (0.5 to 1 m) is left behind or beside it. The Kaue's benches run to its back wall for that reason (PAUL, 1.3 x a man, wedged in the pocket behind one).
+- **No ankle or hip-high surprise.** The Hauptschalter's dais has a ramp skirt (`DaisSkirt`, `DAIS_SKIRT`); the gatehouse's shelf is drawn only.
+- **Door trims are the doorway's width** (`DW`), wall rails and plinths stop at doorways.
+- **Noise textures carry content ids** (`_name_noise_textures`): after a change to a procedural material run the material audit for the map (`material_audit.tscn -- --map=map01_kaltenbrunn --out=<dir>`) and merge its fixes (`tools/look/material_audit.py <dir> --write-fixes data/look/_materials.json`); a plain regeneration keeps the ids. `test_map01_edges` fails when a `tex_fix` key names a texture the scene no longer has.
+- Tools: `gravelight/tools_src/probe_snags.tscn -- --map=map01` (capsule sweeps: LOW / OVERHANG / CATCH / SMALL colliders, and GHOST art with no collider), `audit_map_art.tscn -- --map=map01`; cameras `u15_*` (before the power), `u15p_*` (power on), `u15b_*` (work light) in the `u10_map01` capture set.
+
 ---
 
 # HELVETIA WORKS (§11 amendment, new full map)
