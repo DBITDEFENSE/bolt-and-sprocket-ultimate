@@ -501,6 +501,315 @@
           "shot_after_s": 1.4,
           "bright": true,
           "note": "T-230: mid-ride looking up: the hands on the trolley's bar, the arms, the wheels on the cable"
+        },
+        {
+          "name": "cellar_vault_n",
+          "pos": [
+            30.9,
+            -3.2,
+            25.6
+          ],
+          "yaw": 5.0,
+          "pitch": -4.0,
+          "note": "T-238: the Helvetia vault looking north from between the pillars: the Crucible's alcove, the lever, the north-east corner",
+          "bright": true
+        },
+        {
+          "name": "cellar_vault_ne",
+          "pos": [
+            27.7,
+            -3.2,
+            27.6
+          ],
+          "yaw": -48.0,
+          "pitch": -5.0,
+          "note": "T-238: the vault's north-east quarter from the south-west aisle",
+          "bright": true
+        },
+        {
+          "name": "cellar_vault_sw",
+          "pos": [
+            32.3,
+            -3.2,
+            22.2
+          ],
+          "yaw": 135.0,
+          "pitch": -6.0,
+          "note": "T-238: the vault's south-west quarter from the north-east aisle",
+          "bright": true
+        },
+        {
+          "name": "cellar_bay",
+          "pos": [
+            36.9,
+            -3.2,
+            25.95
+          ],
+          "yaw": -90.0,
+          "pitch": -3.0,
+          "note": "T-238: the late-delivery bay from its arch: the apron, both machines",
+          "bright": true
+        },
+        {
+          "name": "cellar_bay_back",
+          "pos": [
+            39.2,
+            -3.2,
+            28.6
+          ],
+          "yaw": 62.0,
+          "pitch": -6.0,
+          "note": "T-238: the bay looking back at the arch and the two delivery crates",
+          "bright": true
+        },
+        {
+          "name": "old_cellar_vault",
+          "pos": [
+            12.2,
+            -3.2,
+            14.6
+          ],
+          "yaw": -52.0,
+          "pitch": -4.0,
+          "note": "T-238: the barrel vault from its south-west: the stack, the pillars, the racks",
+          "bright": true
+        },
+        {
+          "name": "old_cellar_vault_ne",
+          "pos": [
+            22.6,
+            -3.2,
+            1.4
+          ],
+          "yaw": 150.0,
+          "pitch": -5.0,
+          "note": "T-238: the barrel vault from its north-east corner",
+          "bright": true
+        },
+        {
+          "name": "old_cellar_root",
+          "pos": [
+            9.8,
+            -3.2,
+            6.6
+          ],
+          "yaw": 48.0,
+          "pitch": -4.0,
+          "note": "T-238: the root cellar: shelves, sacks, the hams",
+          "bright": true
+        },
+        {
+          "name": "old_cellar_wine_e",
+          "pos": [
+            9.3,
+            -3.2,
+            10.2
+          ],
+          "yaw": 118.0,
+          "pitch": -5.0,
+          "note": "T-238: the wine cellar from its east end: piers, racks, the stair arch",
+          "bright": true
+        },
+        {
+          "name": "old_cellar_foot",
+          "pos": [
+            -1.5,
+            -3.2,
+            17.3
+          ],
+          "yaw": -75.0,
+          "pitch": -3.0,
+          "note": "T-238: into the wine cellar from the foot of the lean-to stairs",
+          "bright": true
+        },
+        {
+          "name": "old_cellar_coal",
+          "pos": [
+            4.3,
+            -3.2,
+            1.2
+          ],
+          "yaw": 140.0,
+          "pitch": -6.0,
+          "note": "T-238: the coal room: the cage, the guard's stool, the chute heap",
+          "bright": true
+        },
+        {
+          "name": "stable_hay",
+          "pos": [
+            18.7,
+            0.0,
+            28.3
+          ],
+          "yaw": -38.0,
+          "pitch": -8.0,
+          "note": "T-238: the hay pile and the floor bales under the open bay",
+          "bright": true
+        },
+        {
+          "name": "stable_hay_close",
+          "pos": [
+            20.6,
+            0.0,
+            26.6
+          ],
+          "yaw": -25.0,
+          "pitch": -14.0,
+          "note": "T-238: the hay pile from two metres",
+          "bright": true
+        },
+        {
+          "name": "stable_west",
+          "pos": [
+            14.5,
+            0.0,
+            29.5
+          ],
+          "yaw": 62.0,
+          "pitch": -5.0,
+          "note": "T-238: the stalls, the tack wall and the bench from the great doors",
+          "bright": true
+        },
+        {
+          "name": "loft_stack",
+          "pos": [
+            9.6,
+            3.5,
+            28.8
+          ],
+          "yaw": 148.0,
+          "pitch": -12.0,
+          "note": "T-238: the loft's bale stack in the south-west corner",
+          "bright": true
+        },
+        {
+          "name": "loft_stack_close",
+          "pos": [
+            8.6,
+            3.5,
+            30.0
+          ],
+          "yaw": 120.0,
+          "pitch": -18.0,
+          "note": "T-238: the bale stack from the pitchfork's side",
+          "bright": true
+        },
+        {
+          "name": "loft_rail_bales",
+          "pos": [
+            11.6,
+            3.5,
+            26.2
+          ],
+          "yaw": -85.0,
+          "pitch": -12.0,
+          "note": "T-238: the cover bales along the west block's rail",
+          "bright": true
+        },
+        {
+          "name": "loft_gallery_bales",
+          "pos": [
+            19.9,
+            3.5,
+            32.4
+          ],
+          "yaw": 25.0,
+          "pitch": -16.0,
+          "note": "T-238: the cover bales along the gallery's rail and the bale drop",
+          "bright": true
+        },
+        {
+          "name": "cellar_vault_s",
+          "pos": [
+            30.9,
+            -3.2,
+            22.0
+          ],
+          "yaw": 180.0,
+          "pitch": -5.0,
+          "note": "T-238: the vault looking south from the Crucible: the south row, the coal chute corner",
+          "bright": true
+        },
+        {
+          "name": "cellar_vault_e",
+          "pos": [
+            28.0,
+            -3.2,
+            25.0
+          ],
+          "yaw": -90.0,
+          "pitch": -4.0,
+          "note": "T-238: the east row and the arch to the bay from the west aisle",
+          "bright": true
+        },
+        {
+          "name": "cellar_vault_w",
+          "pos": [
+            32.0,
+            -3.2,
+            25.0
+          ],
+          "yaw": 90.0,
+          "pitch": -4.0,
+          "note": "T-238: the west row and its wall from the east aisle",
+          "bright": true
+        },
+        {
+          "name": "tap_ne_corner",
+          "pos": [
+            20.6,
+            0.0,
+            3.4
+          ],
+          "yaw": -70.0,
+          "pitch": -8.0,
+          "note": "T-238: the taproom's north-east corner: the signals crates against the east wall under the portrait"
+        },
+        {
+          "name": "tap_west_walk",
+          "pos": [
+            2.0,
+            0.0,
+            4.6
+          ],
+          "yaw": 180.0,
+          "pitch": -4.0,
+          "note": "T-238: the walk between the back-bar and the west wall: the spare planks leaning on the wall, Door 5"
+        },
+        {
+          "name": "bar_till",
+          "pos": [
+            9.7,
+            0.0,
+            3.5
+          ],
+          "yaw": 90.0,
+          "pitch": -6.0,
+          "note": "T-238: the till on the bar's north end from the customers' side"
+        },
+        {
+          "name": "yard_door_corner",
+          "pos": [
+            8.6,
+            0.1,
+            37.4
+          ],
+          "yaw": 42.0,
+          "pitch": -6.0,
+          "note": "T-238: the yard door and the chopping block in the corner west of it",
+          "bright": true
+        },
+        {
+          "name": "yard_sledge",
+          "pos": [
+            22.6,
+            0.1,
+            43.6
+          ],
+          "yaw": 180.0,
+          "pitch": -10.0,
+          "note": "T-238: the sledge pulled up along the south fence, the open yard",
+          "bright": true
         }
       ]
     },

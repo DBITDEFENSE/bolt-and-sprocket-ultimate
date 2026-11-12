@@ -138,6 +138,14 @@ navmesh island under the hoist beam and its rope) and vault in, like the porch-r
 strong position with two feeds, the stair and the loft door, not a free camp. The great doors are 3 m high now (they
 were 4.2) so the gallery clears them; the exfil beacon still stands under it at (18, 0, 32).
 
+**The hay (T-238, "the haystacks feel half baked in the barn"):** hay is drawn by `PropsHay` (`gravelight/world/props_hay.gd`):
+bales with bevelled edges, two twine bands and darker cut ends, stacks laid in courses that fill their collider, a
+loose heap as a mound with wisps, stalks on the boards. Downstairs the bales are a 1.8 x 0.9 x 0.52 m stack against the
+north wall east of the north door (`StableBales`, solid; they used to stand, drawn but not solid, in the door's lane)
+with the forked-open heap in front of it (no collider: the ground spawn rises out of it) and the fork left in it. The
+loft's stack is two full courses over `HayBales` (3.2 x 3.2 x 0.9 m) and three bales of a third in the corner
+(`LoftBaleTop1..3`, solid); the cover bales along the rails are drawn at their colliders' size. See docs/u15/t238_inn_pass.md.
+
 **The great doors and the carters' road (campaign exfil, T-033):** the doors (x 16–20 in the stable's south wall, 4 × 3 m since T-084) are dressing in a drawn opening that is filled with an invisible collider, so the navmesh and collision stay a solid wall; the exfil beacon stands just inside at (18, 0, 32) and the Map 0 → Map 1 cutscene tweens the `GreatDoors` group so they fall outward. Behind them, a trodden track south through the yard's gate (gateposts, a lantern, a signpost "Kaltenbrunn 9 km / Wilcza Góra 6 km / Gasthaus zum Kreuzweg"), bending south-east past dead trees and drifts toward low snowy rises on the horizon. Since T-080 the track up to the south edge (z 64) is part of the Grounds and the gate is a bought door (Door_Gate, 750); the great doors themselves stay barred for the cutscene.
 
 **The bar (T-224, the owner: "the bar needs to be bigger with more space"):** the counter is a 9.5 m L now (it was 9): the front x 3.9–8.4 at z 7.5–8.3, the side x 7.6–8.4 from z 2.4 to 7.5, the back-bar (a cupboard base, three bays of shelving against a mirror, a carved cornice with two brass lamps, the wireless on its top board) on x 3.5–3.9. The whole block stands 1.1 m further west and 0.6 m further north than before, so the service walk behind it is 3.7 × 5.1 m (was 3.2 × 5) with the tapped cask on its cradle in the north corner, the floor east of the counter gained 0.6 m to the taproom loop (its line in `routes_map00.json` is unchanged), and the walkway to the Old Cellar door (T-120) grew to 1.55 m (z 8.3–9.85). On the service side: the lift-up flap at the north end, two beer taps over a zinc drip tray, the brass till and the bell; eight stools, a brass foot rail, a chalked price board on the north wall, steins hanging from a rack over the side counter. Trudi starts behind it and Sobotta at its end as before (`map00_opening.json`). The taproom's ammo box stands against the back-bar at z 6.6.
@@ -377,6 +385,11 @@ Door 3 (**1500**, zone `CELLAR`) is in the taproom's east wall at z 10.7–12.3.
 - **The cellar lever** (north wall, x 32.5): Map 0's power. Throwing it lights the cellar, then the taproom, upstairs and stable in sequence, plays the Operator's first fumbling power line, and emerges 3 zombies at the coal chute.
 - **The Crucible** (T-032): in a brick alcove on the vault's north wall at x 29.5, between the stair mouth and the lever, facing south. Map 0's weapon upgrades (5000; it sells no ammo since T-083: a taught gun refills at any ammo box, 2500). It is dark and refuses until the lever is thrown ("Power must be activated"), like the machines.
 - **Coal chute** (SE corner): a ground spawn from round 6.
+- **Dressing (thinned in T-238, "the cellar ... is too cluttered"):** the walls behind the west and east rows are bare
+  (the back-panel walks keep their full width), the north wall between the Crucible and the lever is bare, the
+  north-east corner holds the installers' bench with their two crates at its end (0.75 m deep, so the walk behind Twin
+  Barrel is open at both ends), the wine rack stays on the south wall's west half, the coal heap is the south-east
+  corner's (1.3 m, behind Ledger Lager), one puddle at the drain. Nothing else stands on the floor.
 - Machine and crate footprints are baked into the navmesh, so zombies path round them.
 
 Pacing intent: the cellar is the first big spend (round 3–5 for a careful player). Ironhide (5 hits) and Second Wind (solo self-revive) are what make rounds 10–15 survivable; the remaining machines and the 4-perk cap give scrip a purpose for the rest of the match.
