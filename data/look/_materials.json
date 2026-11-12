@@ -411,44 +411,54 @@
    "sat": 0.483,
    "val": 1.0
   },
-  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_0854q|ffffff": {
-   "eff": "4e442e",
-   "sat": 0.633,
+  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_m16d794db1|ffffff": {
+   "eff": "1a1c2f",
+   "sat": 0.475,
    "val": 1.0
   },
-  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_ekstv|ffffff": {
-   "eff": "41190f",
-   "sat": 0.229,
-   "val": 1.0
-  },
-  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_n86te|ffffff": {
-   "eff": "192d1d",
-   "sat": 0.547,
-   "val": 1.0
-  },
-  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_pcgxe|ffffff": {
-   "eff": "4b1d10",
-   "sat": 0.222,
-   "val": 1.0
-  },
-  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_px55r|ffffff": {
-   "eff": "431f0e",
-   "sat": 0.235,
-   "val": 1.0
-  },
-  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_sxo47|ffffff": {
+  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_m18507c8a9|ffffff": {
    "eff": "553d23",
    "sat": 0.395,
    "val": 1.0
   },
-  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_ty51d|ffffff": {
+  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_m193252d3f|ffffff": {
+   "eff": "4b1d10",
+   "sat": 0.222,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_m1ac07de43|ffffff": {
+   "eff": "431f0e",
+   "sat": 0.235,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_m1ad9136e2|ffffff": {
    "eff": "24301e",
    "sat": 0.695,
    "val": 1.0
   },
-  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_ysdef|ffffff": {
+  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_m1b8455c08|ffffff": {
    "eff": "4c120d",
    "sat": 0.073,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_m1c2d8bd61|ffffff": {
+   "eff": "5d4c2e",
+   "sat": 0.483,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_m1de21916c|ffffff": {
+   "eff": "41190f",
+   "sat": 0.229,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_m1e315bdb2|ffffff": {
+   "eff": "192d1d",
+   "sat": 0.547,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_m1e8c7c378|ffffff": {
+   "eff": "4e442e",
+   "sat": 0.633,
    "val": 1.0
   },
   "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_3k1jm|ffffff": {

@@ -1013,6 +1013,2461 @@
           "pitch": 14.0,
           "settle_s": 2.0,
           "note": "T-230: the right doorway's top-left corner from under it"
+        },
+        {
+          "name": "u15_A_yard_from_se",
+          "pos": [
+            38.5,
+            0.0,
+            28.5
+          ],
+          "yaw": 50.0,
+          "pitch": 4.0,
+          "note": "T-239, before the power: the Minehead Yard from its south-east corner: the headframe, the coal shed, the gate",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_A_yard_from_nw",
+          "pos": [
+            2.0,
+            0.0,
+            13.0
+          ],
+          "yaw": -125.0,
+          "pitch": 3.0,
+          "note": "T-239, before the power: the yard from the west wall: the headframe base, the Kaue, the south wall",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_A_south_wall_e",
+          "pos": [
+            31.0,
+            0.0,
+            26.0
+          ],
+          "yaw": 180.0,
+          "pitch": -6.0,
+          "note": "T-239, before the power: the south wall east of the Kaue: the mine timber, the timber set, the bench, the cart, the crates",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_A_south_wall_w",
+          "pos": [
+            19.0,
+            0.0,
+            27.0
+          ],
+          "yaw": -115.0,
+          "pitch": -4.0,
+          "note": "T-239, before the power: the south wall from the Kaue's corner: the sled, the ammo box, the timber",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_A_gatehouse_lane",
+          "pos": [
+            13.5,
+            0.0,
+            3.0
+          ],
+          "yaw": 175.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the lane between the gatehouse and the headframe: the Armorer's Bench, the shelf",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_A_kar98k",
+          "pos": [
+            8.0,
+            0.0,
+            14.5
+          ],
+          "yaw": 0.0,
+          "pitch": 4.0,
+          "note": "T-239, before the power: the gatehouse's south face: the Kar98k chalk",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_A_coalshed",
+          "pos": [
+            33.0,
+            0.0,
+            15.0
+          ],
+          "yaw": 0.0,
+          "pitch": 4.0,
+          "note": "T-239, before the power: the coal shed's south face: the M1 Carbine chalk",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_A_gate",
+          "pos": [
+            20.0,
+            0.0,
+            8.0
+          ],
+          "yaw": 0.0,
+          "pitch": 6.0,
+          "note": "T-239, before the power: the north gate between the gatehouse and the coal shed",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_A_headframe_s",
+          "pos": [
+            20.0,
+            0.0,
+            25.0
+          ],
+          "yaw": 0.0,
+          "pitch": 14.0,
+          "note": "T-239, before the power: the headframe from the loop's south lane: Pylon A",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_A_west_lane",
+          "pos": [
+            2.0,
+            0.0,
+            31.0
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the lane west of the Kaue toward the Administration door",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_A_east_lane",
+          "pos": [
+            38.0,
+            0.0,
+            12.0
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the yard's east lane toward the Rail Yard door",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_A_ne_corner",
+          "pos": [
+            30.0,
+            0.0,
+            2.5
+          ],
+          "yaw": -80.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the yard's north-east corner behind the coal shed",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_A_kaue_west",
+          "pos": [
+            14.6,
+            0.0,
+            28.6
+          ],
+          "yaw": 90.0,
+          "pitch": 0.0,
+          "note": "T-239, before the power: the Waschkaue's inside looking west: the lockers, the stove, the west bench",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_B_from_door",
+          "pos": [
+            41.6,
+            0.0,
+            25.0
+          ],
+          "yaw": -90.0,
+          "pitch": 5.0,
+          "note": "T-239, before the power: the Rail Yard from the yard door: the locomotive, the boxcar",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_B_tracks_s",
+          "pos": [
+            47.5,
+            0.0,
+            16.0
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the Rail Yard from its north end down the tracks",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_B_east_lane",
+          "pos": [
+            56.2,
+            0.0,
+            43.5
+          ],
+          "yaw": -8.0,
+          "pitch": 3.0,
+          "note": "T-239, before the power: the lane east of the locomotive: the MP40 and frag chalks, the boxcar's end",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_B_west_lane",
+          "pos": [
+            42.0,
+            0.0,
+            46.3
+          ],
+          "yaw": 0.0,
+          "pitch": 3.0,
+          "note": "T-239, before the power: the Rail Yard's west lane: the ore-cart lever, the ammo box, both doors",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_B_boxcar_n",
+          "pos": [
+            50.0,
+            0.0,
+            16.0
+          ],
+          "yaw": -110.0,
+          "pitch": 4.0,
+          "note": "T-239, before the power: the boxcar's north end and the north-east corner",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_C_lobby_se",
+          "pos": [
+            -1.5,
+            0.0,
+            23.5
+          ],
+          "yaw": 60.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the Administration lobby from the yard door: the counter, the stairs",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_C_lobby_ne",
+          "pos": [
+            -1.5,
+            0.0,
+            9.5
+          ],
+          "yaw": 140.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the lobby from its north-east corner: the bank, the perk cabinets, the stairs",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_C_lobby_s",
+          "pos": [
+            -9.0,
+            0.0,
+            30.5
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the lobby from the Barracks door north",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_C_switchboard",
+          "pos": [
+            -3.5,
+            0.0,
+            26.0
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the switchboard and Marta Seidl's corner",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_C_perks",
+          "pos": [
+            -10.0,
+            0.0,
+            12.5
+          ],
+          "yaw": 90.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: Second Wind and Ledger Lager on the west wall, the filing cabinet",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_C_upper_s",
+          "pos": [
+            -6.0,
+            3.8,
+            30.5
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the upper floor from its south end: the office",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_C_upper_n",
+          "pos": [
+            -9.0,
+            3.8,
+            17.5
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the upper floor from the partition door south: the stair well, the phonograph",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_C_radio_room",
+          "pos": [
+            -3.0,
+            3.8,
+            14.5
+          ],
+          "yaw": 80.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: Fasbender's radio room",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_C_balcony_win",
+          "pos": [
+            -6.0,
+            3.8,
+            20.0
+          ],
+          "yaw": -90.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the upper east wall and the balcony window",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_D_bunks_e",
+          "pos": [
+            6.5,
+            0.0,
+            38.0
+          ],
+          "yaw": 90.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the bunk room from the mess opening west",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_D_bunks_w",
+          "pos": [
+            -14.5,
+            0.0,
+            35.0
+          ],
+          "yaw": -95.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the bunk room from its west end",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_D_bunks_s",
+          "pos": [
+            -13.5,
+            0.0,
+            44.8
+          ],
+          "yaw": -80.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the bunk room's south wall behind the bunks: the stairs door",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_D_mess_w",
+          "pos": [
+            9.5,
+            0.0,
+            34.0
+          ],
+          "yaw": -105.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the mess hall from its north-west corner",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_D_mess_e",
+          "pos": [
+            38.5,
+            0.0,
+            43.0
+          ],
+          "yaw": 80.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the mess hall from its east end: the serving line, the tables",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_D_stores",
+          "pos": [
+            27.0,
+            0.0,
+            44.5
+          ],
+          "yaw": -60.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the mess hall's south-east: the stores, the serving line, the crate",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_E_lifthouse",
+          "pos": [
+            21.5,
+            0.0,
+            47.5
+          ],
+          "yaw": -140.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the lift house from its door: the cage, the motor",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_E_lifthouse_s",
+          "pos": [
+            28.5,
+            0.0,
+            54.8
+          ],
+          "yaw": 55.0,
+          "pitch": 4.0,
+          "note": "T-239, before the power: the lift house from its south-east corner",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_E_liftbay",
+          "pos": [
+            25.0,
+            -12.0,
+            59.0
+          ],
+          "yaw": 0.0,
+          "pitch": 4.0,
+          "note": "T-239, before the power: the lift's arrival bay",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_M_top",
+          "pos": [
+            -13.5,
+            0.0,
+            47.2
+          ],
+          "yaw": 180.0,
+          "pitch": -28.0,
+          "note": "T-239, before the power: the maintenance stairs from the top",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_M_landing1",
+          "pos": [
+            -7.0,
+            -4.0,
+            55.6
+          ],
+          "yaw": 0.0,
+          "pitch": -22.0,
+          "note": "T-239, before the power: the first landing looking down the second flight",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_M_bottom",
+          "pos": [
+            -9.0,
+            -12.0,
+            58.0
+          ],
+          "yaw": 30.0,
+          "pitch": 6.0,
+          "note": "T-239, before the power: the stairs' foot: the last flight, the Chapel door",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_F_from_nw",
+          "pos": [
+            -14.0,
+            -12.0,
+            62.0
+          ],
+          "yaw": -135.0,
+          "pitch": 4.0,
+          "note": "T-239, before the power: the Salt Chapel from its north-west corner across the pews",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_F_from_ne",
+          "pos": [
+            38.0,
+            -12.0,
+            62.0
+          ],
+          "yaw": 135.0,
+          "pitch": 4.0,
+          "note": "T-239, before the power: the Salt Chapel from its north-east corner",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_F_west_aisle",
+          "pos": [
+            -13.0,
+            -12.0,
+            88.0
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the west aisle north: the confessional, the BAR chalk, the miners",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_F_altar",
+          "pos": [
+            12.0,
+            -12.0,
+            80.3
+          ],
+          "yaw": 180.0,
+          "pitch": 6.0,
+          "note": "T-239, before the power: the altar close",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_F_pylon",
+          "pos": [
+            3.0,
+            -12.0,
+            80.5
+          ],
+          "yaw": 120.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: Pylon F west of the altar and the south-west corner",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_F_east",
+          "pos": [
+            37.0,
+            -12.0,
+            86.5
+          ],
+          "yaw": 15.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the east wall: the side altar's crate, the ammo box, the Generator door",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_F_south_e",
+          "pos": [
+            30.0,
+            -12.0,
+            88.0
+          ],
+          "yaw": 90.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: behind the altar along the south wall: the crypt door",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_F_north_w",
+          "pos": [
+            14.0,
+            -12.0,
+            61.6
+          ],
+          "yaw": 88.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the north wall west: the font, Marathon Malt, the stairs door",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_F_north_e",
+          "pos": [
+            16.0,
+            -12.0,
+            61.6
+          ],
+          "yaw": -88.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the north wall east: the lift bay, Twin Barrel",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_G_north_lane",
+          "pos": [
+            41.5,
+            -12.0,
+            64.0
+          ],
+          "yaw": -95.0,
+          "pitch": 3.0,
+          "note": "T-239, before the power: the Generator Hall's north lane: the workbench, the Hauptschalter dais, the switchgear",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_G_south_lane",
+          "pos": [
+            41.5,
+            -12.0,
+            78.5
+          ],
+          "yaw": -88.0,
+          "pitch": 3.0,
+          "note": "T-239, before the power: the south lane: the E-tool and STG-44 chalks, Trigger Tonic, the Lab door",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_G_from_se",
+          "pos": [
+            82.5,
+            -12.0,
+            80.0
+          ],
+          "yaw": 60.0,
+          "pitch": 4.0,
+          "note": "T-239, before the power: the hall from its south-east corner: the crate, turbine 3",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_G_from_ne",
+          "pos": [
+            82.5,
+            -12.0,
+            64.0
+          ],
+          "yaw": 110.0,
+          "pitch": 4.0,
+          "note": "T-239, before the power: the hall from its north-east corner: the foreman's desk",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_G_gap12",
+          "pos": [
+            56.0,
+            -12.0,
+            77.0
+          ],
+          "yaw": 0.0,
+          "pitch": 4.0,
+          "note": "T-239, before the power: the gap between turbines 1 and 2",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_G_gap23",
+          "pos": [
+            69.0,
+            -12.0,
+            63.5
+          ],
+          "yaw": 180.0,
+          "pitch": 4.0,
+          "note": "T-239, before the power: the gap between turbines 2 and 3: the Live Wire fence, its lever",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_G_west_door",
+          "pos": [
+            43.0,
+            -12.0,
+            72.0
+          ],
+          "yaw": 90.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the Chapel door from inside the hall, turbine 1 behind",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_H_hall_w",
+          "pos": [
+            53.2,
+            -12.0,
+            90.0
+          ],
+          "yaw": -90.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the Lab's hall from its west end: Hawkeye, the jars",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_H_hall_e",
+          "pos": [
+            100.8,
+            -12.0,
+            90.0
+          ],
+          "yaw": 90.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the Lab's hall from its east end: Packmule",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_H_reinholt",
+          "pos": [
+            66.5,
+            -12.0,
+            87.0
+          ],
+          "yaw": 78.0,
+          "pitch": 3.0,
+          "note": "T-239, before the power: Reinholt's lab: the tanks",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_H_fasbender",
+          "pos": [
+            82.5,
+            -12.0,
+            87.0
+          ],
+          "yaw": 75.0,
+          "pitch": 3.0,
+          "note": "T-239, before the power: Fasbender's lab: the bench, the crate",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_H_nursery",
+          "pos": [
+            85.2,
+            -12.0,
+            87.0
+          ],
+          "yaw": -72.0,
+          "pitch": 3.0,
+          "note": "T-239, before the power: the nursery",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_H_specimen",
+          "pos": [
+            66.5,
+            -12.0,
+            93.0
+          ],
+          "yaw": 105.0,
+          "pitch": 3.0,
+          "note": "T-239, before the power: the specimen room: Pylon H, Blastproof Bock",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_H_intake",
+          "pos": [
+            82.5,
+            -12.0,
+            93.2
+          ],
+          "yaw": 100.0,
+          "pitch": 3.0,
+          "note": "T-239, before the power: Intake: the table, the tag board",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_H_coldstore",
+          "pos": [
+            100.5,
+            -12.0,
+            93.2
+          ],
+          "yaw": 100.0,
+          "pitch": 3.0,
+          "note": "T-239, before the power: the cold store: the morgue drawers",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_I_from_nw",
+          "pos": [
+            20.6,
+            -18.0,
+            109.0
+          ],
+          "yaw": -120.0,
+          "pitch": 4.0,
+          "note": "T-239, before the power: the Core Vault from the west wall: the pit, the heart, the Crucible beyond",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_I_from_se",
+          "pos": [
+            46.5,
+            -18.0,
+            121.0
+          ],
+          "yaw": 55.0,
+          "pitch": 4.0,
+          "note": "T-239, before the power: the Core Vault from the Crucible's apron north-west",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_I_from_sw",
+          "pos": [
+            21.0,
+            -18.0,
+            129.3
+          ],
+          "yaw": -50.0,
+          "pitch": 4.0,
+          "note": "T-239, before the power: the Core Vault from its south-west corner",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_I_ne_corner",
+          "pos": [
+            42.0,
+            -18.0,
+            110.0
+          ],
+          "yaw": -40.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the north-east corner: the oil drums, the cable drums, the G door",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_I_installers",
+          "pos": [
+            43.5,
+            -18.0,
+            128.5
+          ],
+          "yaw": -80.0,
+          "pitch": 0.0,
+          "note": "T-239, before the power: the installers' corner: the bench, the crates",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_I_ledger",
+          "pos": [
+            34.0,
+            -18.0,
+            132.0
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: the Ledger's ante-room",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_I_ledger_out",
+          "pos": [
+            34.0,
+            -18.0,
+            136.6
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "note": "T-239, before the power: from the Ledger back into the vault",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_R_f_foot",
+          "pos": [
+            20.0,
+            -18.0,
+            102.4
+          ],
+          "yaw": 0.0,
+          "pitch": 14.0,
+          "note": "T-239, before the power: the F ramp from its foot",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_R_g_foot",
+          "pos": [
+            44.5,
+            -18.0,
+            102.4
+          ],
+          "yaw": 0.0,
+          "pitch": 14.0,
+          "note": "T-239, before the power: the G ramp from its foot",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_R_h_corridor",
+          "pos": [
+            51.0,
+            -18.0,
+            115.0
+          ],
+          "yaw": -90.0,
+          "pitch": 3.0,
+          "note": "T-239, before the power: the H corridor east from the Core's door",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15_R_h_foot",
+          "pos": [
+            74.0,
+            -18.0,
+            115.0
+          ],
+          "yaw": 0.0,
+          "pitch": 14.0,
+          "note": "T-239, before the power: the H ramp from its foot",
+          "do": [
+            "hud_off"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15p_A_yard_from_se",
+          "pos": [
+            38.5,
+            0.0,
+            28.5
+          ],
+          "yaw": 50.0,
+          "pitch": 4.0,
+          "note": "T-239, power on: the Minehead Yard from its south-east corner: the headframe, the coal shed, the gate",
+          "do": [
+            "hud_off",
+            "power"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15p_A_south_wall_e",
+          "pos": [
+            31.0,
+            0.0,
+            26.0
+          ],
+          "yaw": 180.0,
+          "pitch": -6.0,
+          "note": "T-239, power on: the south wall east of the Kaue: the mine timber, the timber set, the bench, the cart, the crates",
+          "do": [
+            "hud_off",
+            "power"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15p_A_kaue_west",
+          "pos": [
+            14.6,
+            0.0,
+            28.6
+          ],
+          "yaw": 90.0,
+          "pitch": 0.0,
+          "note": "T-239, power on: the Waschkaue's inside looking west: the lockers, the stove, the west bench",
+          "do": [
+            "hud_off",
+            "power"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15p_B_from_door",
+          "pos": [
+            41.6,
+            0.0,
+            25.0
+          ],
+          "yaw": -90.0,
+          "pitch": 5.0,
+          "note": "T-239, power on: the Rail Yard from the yard door: the locomotive, the boxcar",
+          "do": [
+            "hud_off",
+            "power"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15p_B_east_lane",
+          "pos": [
+            56.2,
+            0.0,
+            43.5
+          ],
+          "yaw": -8.0,
+          "pitch": 3.0,
+          "note": "T-239, power on: the lane east of the locomotive: the MP40 and frag chalks, the boxcar's end",
+          "do": [
+            "hud_off",
+            "power"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15p_C_lobby_ne",
+          "pos": [
+            -1.5,
+            0.0,
+            9.5
+          ],
+          "yaw": 140.0,
+          "pitch": 2.0,
+          "note": "T-239, power on: the lobby from its north-east corner: the bank, the perk cabinets, the stairs",
+          "do": [
+            "hud_off",
+            "power"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15p_C_upper_s",
+          "pos": [
+            -6.0,
+            3.8,
+            30.5
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "note": "T-239, power on: the upper floor from its south end: the office",
+          "do": [
+            "hud_off",
+            "power"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15p_D_bunks_e",
+          "pos": [
+            6.5,
+            0.0,
+            38.0
+          ],
+          "yaw": 90.0,
+          "pitch": 2.0,
+          "note": "T-239, power on: the bunk room from the mess opening west",
+          "do": [
+            "hud_off",
+            "power"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15p_D_mess_w",
+          "pos": [
+            9.5,
+            0.0,
+            34.0
+          ],
+          "yaw": -105.0,
+          "pitch": 2.0,
+          "note": "T-239, power on: the mess hall from its north-west corner",
+          "do": [
+            "hud_off",
+            "power"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15p_E_lifthouse",
+          "pos": [
+            21.5,
+            0.0,
+            47.5
+          ],
+          "yaw": -140.0,
+          "pitch": 2.0,
+          "note": "T-239, power on: the lift house from its door: the cage, the motor",
+          "do": [
+            "hud_off",
+            "power"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15p_M_bottom",
+          "pos": [
+            -9.0,
+            -12.0,
+            58.0
+          ],
+          "yaw": 30.0,
+          "pitch": 6.0,
+          "note": "T-239, power on: the stairs' foot: the last flight, the Chapel door",
+          "do": [
+            "hud_off",
+            "power"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15p_F_from_nw",
+          "pos": [
+            -14.0,
+            -12.0,
+            62.0
+          ],
+          "yaw": -135.0,
+          "pitch": 4.0,
+          "note": "T-239, power on: the Salt Chapel from its north-west corner across the pews",
+          "do": [
+            "hud_off",
+            "power"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15p_F_east",
+          "pos": [
+            37.0,
+            -12.0,
+            86.5
+          ],
+          "yaw": 15.0,
+          "pitch": 2.0,
+          "note": "T-239, power on: the east wall: the side altar's crate, the ammo box, the Generator door",
+          "do": [
+            "hud_off",
+            "power"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15p_G_north_lane",
+          "pos": [
+            41.5,
+            -12.0,
+            64.0
+          ],
+          "yaw": -95.0,
+          "pitch": 3.0,
+          "note": "T-239, power on: the Generator Hall's north lane: the workbench, the Hauptschalter dais, the switchgear",
+          "do": [
+            "hud_off",
+            "power"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15p_G_from_se",
+          "pos": [
+            82.5,
+            -12.0,
+            80.0
+          ],
+          "yaw": 60.0,
+          "pitch": 4.0,
+          "note": "T-239, power on: the hall from its south-east corner: the crate, turbine 3",
+          "do": [
+            "hud_off",
+            "power"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15p_H_hall_w",
+          "pos": [
+            53.2,
+            -12.0,
+            90.0
+          ],
+          "yaw": -90.0,
+          "pitch": 2.0,
+          "note": "T-239, power on: the Lab's hall from its west end: Hawkeye, the jars",
+          "do": [
+            "hud_off",
+            "power"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15p_H_specimen",
+          "pos": [
+            66.5,
+            -12.0,
+            93.0
+          ],
+          "yaw": 105.0,
+          "pitch": 3.0,
+          "note": "T-239, power on: the specimen room: Pylon H, Blastproof Bock",
+          "do": [
+            "hud_off",
+            "power"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15p_I_from_nw",
+          "pos": [
+            20.6,
+            -18.0,
+            109.0
+          ],
+          "yaw": -120.0,
+          "pitch": 4.0,
+          "note": "T-239, power on: the Core Vault from the west wall: the pit, the heart, the Crucible beyond",
+          "do": [
+            "hud_off",
+            "power"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15p_I_installers",
+          "pos": [
+            43.5,
+            -18.0,
+            128.5
+          ],
+          "yaw": -80.0,
+          "pitch": 0.0,
+          "note": "T-239, power on: the installers' corner: the bench, the crates",
+          "do": [
+            "hud_off",
+            "power"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15p_I_ledger",
+          "pos": [
+            34.0,
+            -18.0,
+            132.0
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "T-239, power on: the Ledger's ante-room",
+          "do": [
+            "hud_off",
+            "power"
+          ],
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_A_yard_from_se",
+          "pos": [
+            38.5,
+            0.0,
+            28.5
+          ],
+          "yaw": 50.0,
+          "pitch": 4.0,
+          "note": "T-239, work light (bright), to judge the props: the Minehead Yard from its south-east corner: the headframe, the coal shed, the gate",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_A_yard_from_nw",
+          "pos": [
+            2.0,
+            0.0,
+            13.0
+          ],
+          "yaw": -125.0,
+          "pitch": 3.0,
+          "note": "T-239, work light (bright), to judge the props: the yard from the west wall: the headframe base, the Kaue, the south wall",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_A_south_wall_e",
+          "pos": [
+            31.0,
+            0.0,
+            26.0
+          ],
+          "yaw": 180.0,
+          "pitch": -6.0,
+          "note": "T-239, work light (bright), to judge the props: the south wall east of the Kaue: the mine timber, the timber set, the bench, the cart, the crates",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_A_south_wall_w",
+          "pos": [
+            19.0,
+            0.0,
+            27.0
+          ],
+          "yaw": -115.0,
+          "pitch": -4.0,
+          "note": "T-239, work light (bright), to judge the props: the south wall from the Kaue's corner: the sled, the ammo box, the timber",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_A_gatehouse_lane",
+          "pos": [
+            13.5,
+            0.0,
+            3.0
+          ],
+          "yaw": 175.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the lane between the gatehouse and the headframe: the Armorer's Bench, the shelf",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_A_gate",
+          "pos": [
+            20.0,
+            0.0,
+            8.0
+          ],
+          "yaw": 0.0,
+          "pitch": 6.0,
+          "note": "T-239, work light (bright), to judge the props: the north gate between the gatehouse and the coal shed",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_A_east_lane",
+          "pos": [
+            38.0,
+            0.0,
+            12.0
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the yard's east lane toward the Rail Yard door",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_A_ne_corner",
+          "pos": [
+            30.0,
+            0.0,
+            2.5
+          ],
+          "yaw": -80.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the yard's north-east corner behind the coal shed",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_A_kaue_west",
+          "pos": [
+            14.6,
+            0.0,
+            28.6
+          ],
+          "yaw": 90.0,
+          "pitch": 0.0,
+          "note": "T-239, work light (bright), to judge the props: the Waschkaue's inside looking west: the lockers, the stove, the west bench",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_B_from_door",
+          "pos": [
+            41.6,
+            0.0,
+            25.0
+          ],
+          "yaw": -90.0,
+          "pitch": 5.0,
+          "note": "T-239, work light (bright), to judge the props: the Rail Yard from the yard door: the locomotive, the boxcar",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_B_tracks_s",
+          "pos": [
+            47.5,
+            0.0,
+            16.0
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the Rail Yard from its north end down the tracks",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_B_east_lane",
+          "pos": [
+            56.2,
+            0.0,
+            43.5
+          ],
+          "yaw": -8.0,
+          "pitch": 3.0,
+          "note": "T-239, work light (bright), to judge the props: the lane east of the locomotive: the MP40 and frag chalks, the boxcar's end",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_B_west_lane",
+          "pos": [
+            42.0,
+            0.0,
+            46.3
+          ],
+          "yaw": 0.0,
+          "pitch": 3.0,
+          "note": "T-239, work light (bright), to judge the props: the Rail Yard's west lane: the ore-cart lever, the ammo box, both doors",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_B_boxcar_n",
+          "pos": [
+            50.0,
+            0.0,
+            16.0
+          ],
+          "yaw": -110.0,
+          "pitch": 4.0,
+          "note": "T-239, work light (bright), to judge the props: the boxcar's north end and the north-east corner",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_C_lobby_se",
+          "pos": [
+            -1.5,
+            0.0,
+            23.5
+          ],
+          "yaw": 60.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the Administration lobby from the yard door: the counter, the stairs",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_C_lobby_ne",
+          "pos": [
+            -1.5,
+            0.0,
+            9.5
+          ],
+          "yaw": 140.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the lobby from its north-east corner: the bank, the perk cabinets, the stairs",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_C_lobby_s",
+          "pos": [
+            -9.0,
+            0.0,
+            30.5
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the lobby from the Barracks door north",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_C_perks",
+          "pos": [
+            -10.0,
+            0.0,
+            12.5
+          ],
+          "yaw": 90.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: Second Wind and Ledger Lager on the west wall, the filing cabinet",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_C_upper_s",
+          "pos": [
+            -6.0,
+            3.8,
+            30.5
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the upper floor from its south end: the office",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_C_upper_n",
+          "pos": [
+            -9.0,
+            3.8,
+            17.5
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the upper floor from the partition door south: the stair well, the phonograph",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_C_radio_room",
+          "pos": [
+            -3.0,
+            3.8,
+            14.5
+          ],
+          "yaw": 80.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: Fasbender's radio room",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_D_bunks_e",
+          "pos": [
+            6.5,
+            0.0,
+            38.0
+          ],
+          "yaw": 90.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the bunk room from the mess opening west",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_D_bunks_w",
+          "pos": [
+            -14.5,
+            0.0,
+            35.0
+          ],
+          "yaw": -95.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the bunk room from its west end",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_D_bunks_s",
+          "pos": [
+            -13.5,
+            0.0,
+            44.8
+          ],
+          "yaw": -80.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the bunk room's south wall behind the bunks: the stairs door",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_D_mess_w",
+          "pos": [
+            9.5,
+            0.0,
+            34.0
+          ],
+          "yaw": -105.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the mess hall from its north-west corner",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_D_mess_e",
+          "pos": [
+            38.5,
+            0.0,
+            43.0
+          ],
+          "yaw": 80.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the mess hall from its east end: the serving line, the tables",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_D_stores",
+          "pos": [
+            27.0,
+            0.0,
+            44.5
+          ],
+          "yaw": -60.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the mess hall's south-east: the stores, the serving line, the crate",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_E_lifthouse",
+          "pos": [
+            21.5,
+            0.0,
+            47.5
+          ],
+          "yaw": -140.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the lift house from its door: the cage, the motor",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_E_lifthouse_s",
+          "pos": [
+            28.5,
+            0.0,
+            54.8
+          ],
+          "yaw": 55.0,
+          "pitch": 4.0,
+          "note": "T-239, work light (bright), to judge the props: the lift house from its south-east corner",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_E_liftbay",
+          "pos": [
+            25.0,
+            -12.0,
+            59.0
+          ],
+          "yaw": 0.0,
+          "pitch": 4.0,
+          "note": "T-239, work light (bright), to judge the props: the lift's arrival bay",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_M_bottom",
+          "pos": [
+            -9.0,
+            -12.0,
+            58.0
+          ],
+          "yaw": 30.0,
+          "pitch": 6.0,
+          "note": "T-239, work light (bright), to judge the props: the stairs' foot: the last flight, the Chapel door",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_F_from_nw",
+          "pos": [
+            -14.0,
+            -12.0,
+            62.0
+          ],
+          "yaw": -135.0,
+          "pitch": 4.0,
+          "note": "T-239, work light (bright), to judge the props: the Salt Chapel from its north-west corner across the pews",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_F_from_ne",
+          "pos": [
+            38.0,
+            -12.0,
+            62.0
+          ],
+          "yaw": 135.0,
+          "pitch": 4.0,
+          "note": "T-239, work light (bright), to judge the props: the Salt Chapel from its north-east corner",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_F_west_aisle",
+          "pos": [
+            -13.0,
+            -12.0,
+            88.0
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the west aisle north: the confessional, the BAR chalk, the miners",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_F_altar",
+          "pos": [
+            12.0,
+            -12.0,
+            80.3
+          ],
+          "yaw": 180.0,
+          "pitch": 6.0,
+          "note": "T-239, work light (bright), to judge the props: the altar close",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_F_east",
+          "pos": [
+            37.0,
+            -12.0,
+            86.5
+          ],
+          "yaw": 15.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the east wall: the side altar's crate, the ammo box, the Generator door",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_F_south_e",
+          "pos": [
+            30.0,
+            -12.0,
+            88.0
+          ],
+          "yaw": 90.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: behind the altar along the south wall: the crypt door",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_F_north_w",
+          "pos": [
+            14.0,
+            -12.0,
+            61.6
+          ],
+          "yaw": 88.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the north wall west: the font, Marathon Malt, the stairs door",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_G_north_lane",
+          "pos": [
+            41.5,
+            -12.0,
+            64.0
+          ],
+          "yaw": -95.0,
+          "pitch": 3.0,
+          "note": "T-239, work light (bright), to judge the props: the Generator Hall's north lane: the workbench, the Hauptschalter dais, the switchgear",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_G_south_lane",
+          "pos": [
+            41.5,
+            -12.0,
+            78.5
+          ],
+          "yaw": -88.0,
+          "pitch": 3.0,
+          "note": "T-239, work light (bright), to judge the props: the south lane: the E-tool and STG-44 chalks, Trigger Tonic, the Lab door",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_G_from_se",
+          "pos": [
+            82.5,
+            -12.0,
+            80.0
+          ],
+          "yaw": 60.0,
+          "pitch": 4.0,
+          "note": "T-239, work light (bright), to judge the props: the hall from its south-east corner: the crate, turbine 3",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_G_from_ne",
+          "pos": [
+            82.5,
+            -12.0,
+            64.0
+          ],
+          "yaw": 110.0,
+          "pitch": 4.0,
+          "note": "T-239, work light (bright), to judge the props: the hall from its north-east corner: the foreman's desk",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_G_west_door",
+          "pos": [
+            43.0,
+            -12.0,
+            72.0
+          ],
+          "yaw": 90.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the Chapel door from inside the hall, turbine 1 behind",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_H_hall_w",
+          "pos": [
+            53.2,
+            -12.0,
+            90.0
+          ],
+          "yaw": -90.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the Lab's hall from its west end: Hawkeye, the jars",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_H_reinholt",
+          "pos": [
+            66.5,
+            -12.0,
+            87.0
+          ],
+          "yaw": 78.0,
+          "pitch": 3.0,
+          "note": "T-239, work light (bright), to judge the props: Reinholt's lab: the tanks",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_H_fasbender",
+          "pos": [
+            82.5,
+            -12.0,
+            87.0
+          ],
+          "yaw": 75.0,
+          "pitch": 3.0,
+          "note": "T-239, work light (bright), to judge the props: Fasbender's lab: the bench, the crate",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_H_nursery",
+          "pos": [
+            85.2,
+            -12.0,
+            87.0
+          ],
+          "yaw": -72.0,
+          "pitch": 3.0,
+          "note": "T-239, work light (bright), to judge the props: the nursery",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_H_specimen",
+          "pos": [
+            66.5,
+            -12.0,
+            93.0
+          ],
+          "yaw": 105.0,
+          "pitch": 3.0,
+          "note": "T-239, work light (bright), to judge the props: the specimen room: Pylon H, Blastproof Bock",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_H_intake",
+          "pos": [
+            82.5,
+            -12.0,
+            93.2
+          ],
+          "yaw": 100.0,
+          "pitch": 3.0,
+          "note": "T-239, work light (bright), to judge the props: Intake: the table, the tag board",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_H_coldstore",
+          "pos": [
+            100.5,
+            -12.0,
+            93.2
+          ],
+          "yaw": 100.0,
+          "pitch": 3.0,
+          "note": "T-239, work light (bright), to judge the props: the cold store: the morgue drawers",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_I_from_nw",
+          "pos": [
+            20.6,
+            -18.0,
+            109.0
+          ],
+          "yaw": -120.0,
+          "pitch": 4.0,
+          "note": "T-239, work light (bright), to judge the props: the Core Vault from the west wall: the pit, the heart, the Crucible beyond",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_I_from_se",
+          "pos": [
+            46.5,
+            -18.0,
+            121.0
+          ],
+          "yaw": 55.0,
+          "pitch": 4.0,
+          "note": "T-239, work light (bright), to judge the props: the Core Vault from the Crucible's apron north-west",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_I_from_sw",
+          "pos": [
+            21.0,
+            -18.0,
+            129.3
+          ],
+          "yaw": -50.0,
+          "pitch": 4.0,
+          "note": "T-239, work light (bright), to judge the props: the Core Vault from its south-west corner",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_I_ne_corner",
+          "pos": [
+            42.0,
+            -18.0,
+            110.0
+          ],
+          "yaw": -40.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the north-east corner: the oil drums, the cable drums, the G door",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_I_installers",
+          "pos": [
+            43.5,
+            -18.0,
+            128.5
+          ],
+          "yaw": -80.0,
+          "pitch": 0.0,
+          "note": "T-239, work light (bright), to judge the props: the installers' corner: the bench, the crates",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_I_ledger",
+          "pos": [
+            34.0,
+            -18.0,
+            132.0
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "T-239, work light (bright), to judge the props: the Ledger's ante-room",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_C_upper_door",
+          "pos": [
+            -9.0,
+            3.8,
+            19.5
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "note": "T-239, work light: the partition's doorway upstairs and its trim, the waiting bench",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_C_stair_wall",
+          "pos": [
+            -7.0,
+            0.0,
+            24.5
+          ],
+          "yaw": 90.0,
+          "pitch": 4.0,
+          "note": "T-239, work light: the boxed staircase's wall from the lobby",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_G_door_open",
+          "pos": [
+            44.5,
+            -12.0,
+            72.0
+          ],
+          "yaw": 90.0,
+          "pitch": 2.0,
+          "note": "T-239, work light: the Generator Hall's door bought: the trim on the jambs",
+          "do": [
+            "hud_off",
+            "open:Door_Generator"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_H_hall_doors",
+          "pos": [
+            62.5,
+            -12.0,
+            90.0
+          ],
+          "yaw": -90.0,
+          "pitch": 2.0,
+          "note": "T-239, work light: the lab hall's doorways: the trims, the dado rail stopping at them",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_F_votive",
+          "pos": [
+            -11.5,
+            -12.0,
+            71.5
+          ],
+          "yaw": 60.0,
+          "pitch": 0.0,
+          "note": "T-239, work light: a votive rack between two pilasters on the Chapel's west wall",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_A_kaue_doorway",
+          "pos": [
+            7.0,
+            0.0,
+            22.5
+          ],
+          "yaw": 180.0,
+          "pitch": -4.0,
+          "note": "T-239, work light: the Kaue's west doorway: the plinth stops at it",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_D_trunks",
+          "pos": [
+            -3.0,
+            0.0,
+            37.0
+          ],
+          "yaw": 150.0,
+          "pitch": -10.0,
+          "note": "T-239, work light: the bunks' foot lockers",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
+        },
+        {
+          "name": "u15b_I_crucible_gap",
+          "pos": [
+            41.0,
+            -18.0,
+            126.0
+          ],
+          "yaw": -75.0,
+          "pitch": 0.0,
+          "note": "T-239, work light: the crates between the Crucible and the pillar",
+          "do": [
+            "hud_off"
+          ],
+          "bright": true,
+          "settle_s": 1.5
         }
       ]
     },
