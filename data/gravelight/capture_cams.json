@@ -8816,6 +8816,170 @@
           "note": "the concourse: the Crucible 001, the model under glass, the slogans"
         }
       ]
+    },
+    "u14_paul": {
+      "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "T-232 (docs/BOSS_REWORK.md 4.1, W2): PAUL in the Minehead Yard. The CaptureDo 'boss:paul' op returns his encounter (a round director, not a body) so these cams pose him through PaulEncounter.pose(x, y, z, yaw, rage) with callv; later cams re-pose the same Paul (Paul.debug_pose). Night frames without 'bright' show the real light: the floods, his glow and the eyes; the 'bright' twins show the surfaces.",
+      "cams": [
+        {
+          "name": "paul_calm_front",
+          "pos": [
+            21.0,
+            0.0,
+            30.5
+          ],
+          "yaw": 0.0,
+          "pitch": 14.0,
+          "settle_s": 3.0,
+          "bright": true,
+          "do": [
+            "power",
+            "callv:PaulEncounter:pose:21,0,25.5,180,10:2.5"
+          ],
+          "note": "T-232: PAUL Calm from the yard's south side, 6.5 m: the iron-red skin and its sheen, the rust plates and rivets, the beard and cap, the dog tags and the tin cup, the amber eyes"
+        },
+        {
+          "name": "paul_calm_night",
+          "pos": [
+            21.0,
+            0.0,
+            30.5
+          ],
+          "yaw": 0.0,
+          "pitch": 14.0,
+          "settle_s": 2.0,
+          "do": [],
+          "note": "T-232: the same frame under the yard's own light: the floods on him, the eyes and the bottles' glow reading at night"
+        },
+        {
+          "name": "paul_rack_back",
+          "pos": [
+            21.0,
+            0.0,
+            20.8
+          ],
+          "yaw": 180.0,
+          "pitch": 14.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "do": [],
+          "note": "T-232: his back from the headframe side: the rack, the six bottles lit from inside, the IV lines over the shoulders into the neck, the spine plate"
+        },
+        {
+          "name": "paul_berserk_night",
+          "pos": [
+            28.5,
+            0.0,
+            29.5
+          ],
+          "yaw": 62.0,
+          "pitch": 10.0,
+          "settle_s": 3.0,
+          "do": [
+            "callv:Paul:debug_pose:210,85:2.5"
+          ],
+          "note": "T-232: BERSERK (rage 85): grown x1.3, the plates pushed out, steam, the red glow, the eyes gone rage-amber; the yard's floods died under his roar (BossFx.lights_dim), so he is lit by his own glow"
+        },
+        {
+          "name": "paul_berserk_bright",
+          "pos": [
+            28.5,
+            0.0,
+            29.5
+          ],
+          "yaw": 62.0,
+          "pitch": 10.0,
+          "settle_s": 1.5,
+          "bright": true,
+          "do": [],
+          "note": "T-232: the BERSERK surfaces under a work light"
+        }
+      ]
+    },
+    "u14_foreman": {
+      "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "T-232 (W2): THE FOREMAN in the Minehead Yard, posed by the CaptureDo 'boss:foreman:x,y,z:yaw:wait' op (the 4 s tell and the rise, 5.7 s), then ENRAGED and the Core Vent through callv on the node 'Foreman'.",
+      "cams": [
+        {
+          "name": "foreman_front",
+          "pos": [
+            20.0,
+            0.0,
+            30.5
+          ],
+          "yaw": 0.0,
+          "pitch": 9.0,
+          "settle_s": 2.5,
+          "bright": true,
+          "do": [
+            "power",
+            "boss:foreman:20,0,24.5:180:5.7"
+          ],
+          "note": "T-232: the Foreman from the south, 7.5 m: the welded cap on the helmet and its weld beads, the headlamp lit, the greatcoat strips, the drill with its violet core and veins, rust and oil on the metal"
+        },
+        {
+          "name": "foreman_front_night",
+          "pos": [
+            20.0,
+            0.0,
+            30.5
+          ],
+          "yaw": 0.0,
+          "pitch": 9.0,
+          "settle_s": 2.0,
+          "do": [],
+          "note": "T-232: the same under the yard's light: the core's pulse and the headlamp's beam reading"
+        },
+        {
+          "name": "foreman_drill_side",
+          "pos": [
+            26.5,
+            0.0,
+            28.5
+          ],
+          "yaw": 62.0,
+          "pitch": 8.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "do": [],
+          "note": "T-232: from his drill side: the pauldron's rust, the piston's oil, the housing's veins, the core cage; the ore chain dragging behind"
+        },
+        {
+          "name": "foreman_enraged_night",
+          "pos": [
+            15.5,
+            0.0,
+            28.5
+          ],
+          "yaw": -48.0,
+          "pitch": 9.0,
+          "settle_s": 2.5,
+          "do": [
+            "callv:Foreman:debug_enrage::2.0"
+          ],
+          "note": "T-232: ENRAGED: the yard's lamps went out round him; he is the light: the core at 13x and the headlamp doubled"
+        },
+        {
+          "name": "foreman_vent",
+          "pos": [
+            15.5,
+            0.0,
+            28.5
+          ],
+          "yaw": -48.0,
+          "pitch": 9.0,
+          "settle_s": 0.3,
+          "do": [
+            "callv:Foreman:set_physics_process:true:0.0",
+            "callv:Foreman:debug_vent::0.7"
+          ],
+          "note": "T-232: Core Vent, 0.9 s in: the drill planted, the core flaring to 24x before the Nachtglas burst"
+        }
+      ]
     }
   }
 }

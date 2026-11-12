@@ -19,17 +19,41 @@ extends HomageBoss
 ## at the nearest player, knows them for one of ours, says his last line, presses the tin cup into their hand and
 ## falls forward like a tree. Never undone (PaulEncounter: gone for the match).
 ## Pure rules are static for the tests (moves_for_stage, neck_mult, staggers, cooldowns, last_line_for).
+##
+## T-232 (docs/BOSS_REWORK.md 4.1, the boss rework): the model on the kit's helpers: iron-red skin with a wet sheen
+## (`wet`), the plates rust-rough metal with a darker rim and rivet shadows (`mat_ex`), the six bottles lit from inside
+## (emissive glass and an amber rack light that dim as each breaks), the IV lines as `cable`s with a faint violet
+## emission and stout `drips` at the neck, `steam` on every exhale (the breath clock; constant at BERSERK), eyes that
+## read (`eye_glow`, warm amber, a slow blink), the tin cup and dog tags catching light. Effects: the "dread" block
+## (boss_stomp footfalls with a shake that grows per stage), `fx.tele` on every telegraph, paul_roar / paul_plate_grind
+## / paul_bottle_break / boss_breath, a ground crack decal under each BERSERK footfall, the yard's floods dying under
+## his BERSERK roar (BossFx.lights_dim + flicker; the encounter swings the headframe's floods). Battle: the third-stage
+## "protect my guys" turn (`guard`: he stands over a downed player's body and slams anyone who comes near, in front of
+## him only, so the body can be revived from behind), the rage spike when a player runs out of his sight
+## (PaulRage.on_flee_break), and the squad rules (a hurt player becomes his target; a lone player gets pressure but a
+## shorter, easier grab). Every existing move, the rage system, the fail-safe and the death are unchanged.
 
 const IRON_RED: Color = Color(1.55, 0.6, 0.48, 1.0)   # inst_tint over the grey-green skin: iron-red like the stout
 const HUMAN_TINT: Color = Color(1.18, 0.92, 0.84, 1.0)
 const PLATE: Color = Color(0.36, 0.17, 0.13)
-const RIVET: Color = Color(0.62, 0.5, 0.36)
+const PLATE_RIM: Color = Color(0.16, 0.08, 0.06)
+const RUST: Color = Color(0.46, 0.2, 0.09)
+const RIVET: Color = Color(0.66, 0.54, 0.38)
 const GLASS: Color = Color(0.32, 0.2, 0.1)
+const GLASS_LIT: Color = Color(0.5, 0.28, 0.12)
+const STOUT_GLOW: Color = Color(1.0, 0.5, 0.16)
 const STOUT: Color = Color(0.12, 0.05, 0.03)
+const IV_LINE: Color = Color(0.16, 0.09, 0.12)
+const IV_GLOW: Color = Color(0.62, 0.36, 0.92)
 const TIN: Color = Color(0.6, 0.6, 0.58)
 const BEARD: Color = Color(0.22, 0.14, 0.09)
 const WOOL: Color = Color(0.3, 0.3, 0.22)
+const LABEL: Color = Color(0.78, 0.7, 0.52)
 const VIOLET: Color = Color(0.7, 0.35, 1.0)
+const EYE_AMBER: Color = Color(1.0, 0.72, 0.36)
+const EYE_RAGE: Color = Color(1.0, 0.5, 0.22)
+const TELE_COLOR: Color = Color(1.0, 0.46, 0.2)       # his telegraph light: the stout's glow, not the Nachtglas violet
+const MAX_CRACKS: int = 24
 const LAST_LINES: Dictionary = {&"dutch": "PAU_LAST_DUT_01", &"peg": "PAU_LAST_PEG_01", &"deacon": "PAU_LAST_DEA_01",
 	&"wren": "PAU_LAST_WRN_01", &"bolt": "PAU_LAST_BLT_01", &"vendelin": "PAU_LAST_VEN_01"}
 
@@ -82,15 +106,39 @@ var _charge_hit: Dictionary = {}
 var _cup: Node3D = null
 var _plates: Array[Node3D] = []
 var _steam: GPUParticles3D = null
+var _drips: GPUParticles3D = null
 var _glow: OmniLight3D = null
+var _rack_light: OmniLight3D = null
+var _bottle_mat: StandardMaterial3D = null
+var _eyes: BossFx.EyeGlow = null
 var _death_phase: int = 0
 var _death_from_tint: Color = IRON_RED
 var _held_lift: Dictionary = {}       # the grab being lifted
 var _shaft_t: float = 0.0
 var _shaft_from: Vector3
 var _shaft_to: Vector3
-var _stomp_t: float = 0.0
 var _cleanup_after: float = -1.0
+# T-232: the breath clock, the floods beat, the crack decals, the guard, the flee spike and the squad read
+var _breath_t: float = 1.5
+var _steam_until: float = 0.0
+var _floods_out: bool = false
+var _floods_t: float = 0.0
+var _cracks: Array[Node3D] = []
+var guard_pid: int = -1               # the downed player he stands over (-1: not guarding)
+var guard_t: float = 0.0
+var guard_slams: int = 0
+var guards_done: int = 0
+var _guard_cd: float = 0.0
+var _guard_tele: float = -1.0
+var _guard_posed: bool = false
+var flee_breaks: int = 0
+var _was_seen: Dictionary = {}        # pid -> he had line of sight last tick
+var _flee_break_t: Dictionary = {}    # pid -> clock time of the last spike
+var squad_state: Dictionary = {"alone": false, "hurt": null, "downed": 0}
+var _squad_t: float = 0.0
+var _hurt_say_t: float = -99.0
+var _guard_log_t: float = -99.0
+var _retreat_roared: bool = false
 
 
 func _init() -> void:
@@ -103,6 +151,10 @@ func _ready() -> void:
 	bcfg = HomageEncounter.block(ecfg, "paul")
 	_arena = bcfg.get("arena", {})
 	rage = PaulRage.new(bcfg.get("rage", {}))
+	# T-232: the base built the kit from the Cousins' table (his block lives in map01.json): give it his dread block
+	if fx != null:
+		for k: Variant in (bcfg.get("dread", {}) as Dictionary).keys():
+			fx.cfg[k] = bcfg["dread"][k]
 
 
 func modelled() -> bool:
@@ -210,11 +262,25 @@ func _on_spawned() -> void:
 	_taunt_cd = 8.0
 	_downed_seen.clear()
 	_fleeing_t.clear()
+	_was_seen.clear()
+	_flee_break_t.clear()
+	guard_pid = -1
+	_guard_tele = -1.0
+	_floods_out = false
+	_breath_t = 1.5
+	_steam_until = 0.0
+	_retreat_roared = false
 	_regrow_bottles()
 	if _steam != null:
 		_steam.emitting = false
+	if _drips != null:
+		_drips.emitting = true
 	if _glow != null:
 		_glow.light_energy = 0.0
+	if _eyes != null:
+		_eyes.lit = true
+		_eyes.color = EYE_AMBER
+	_apply_stage_look(PaulRage.CALM)
 
 
 func _apply_scale(s: float) -> void:
@@ -243,6 +309,16 @@ func _regrow_bottles() -> void:
 		n.show()
 	for hb: Hitbox in bottle_boxes:
 		hb.collision_layer = Hitbox.LAYER_HITBOX
+	_update_bottle_glow()
+
+
+## T-232: the bottles are lit from inside; the glass and the rack's amber light dim as the rack empties.
+func _update_bottle_glow() -> void:
+	var k: float = float(bottles_left()) / maxf(1.0, float(bottles_hp.size()))
+	if _bottle_mat != null:
+		_bottle_mat.emission_energy_multiplier = 1.6 * (0.3 + 0.7 * k)
+	if _rack_light != null:
+		_rack_light.light_energy = 0.9 * k
 
 
 func bottles_left() -> int:
@@ -253,42 +329,89 @@ func bottles_left() -> int:
 	return n
 
 
+## One costume piece in one material (T-232: the kit's `mat_ex` surfaces, where `costume()` gives the greybox matte).
+## `parts` are [primitive, Transform3D, colour] like costume()'s; the colour is ignored for `m`.
+func _piece(parent: Node3D, parts: Array, m: Material) -> MeshInstance3D:
+	if parent == null or parts.is_empty():
+		return null
+	var mesh: ArrayMesh = ArrayMesh.new()
+	var st: SurfaceTool = SurfaceTool.new()
+	for p: Array in parts:
+		st.append_from(p[0] as Mesh, 0, p[1] as Transform3D)
+	st.commit(mesh)
+	mesh.surface_set_material(0, m)
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.mesh = mesh
+	parent.add_child(mi)
+	return mi
+
+
 func _build_costume() -> void:
-	# the beard and the torn wool cap
+	# the beard (wet at the tips) and the torn wool cap
 	costume("Head", [
 		sph(0.13, Vector3(0, -0.06, -0.07), BEARD, Vector3(1.0, 1.05, 0.75)),
 		sph(0.11, Vector3(0, -0.12, -0.05), BEARD, Vector3(0.9, 0.9, 0.7)),
 		cyl(0.125, 0.13, 0.08, Vector3(0, 0.15, 0.0), WOOL),
 		boxp(Vector3(0.06, 0.03, 0.05), Vector3(0.09, 0.19, -0.02), WOOL, Vector3(0, 0, 0.4)),   # the torn edge
 	])
-	# dog tags on their chain
-	costume("Neck", [
-		cyl(0.075, 0.075, 0.01, Vector3(0, -0.02, 0), Color(0.4, 0.4, 0.38)),
+	_piece(bone_attachment("Head"), [sph(0.1, Vector3(0, -0.17, -0.06), BEARD, Vector3(0.8, 0.5, 0.6))], mat_ex(Color(0.14, 0.09, 0.06), 0.25, 0.1))
+	# the dog tags on their chain: tin that catches the light
+	_piece(bone_attachment("Neck"), [cyl(0.075, 0.075, 0.01, Vector3(0, -0.02, 0), TIN)], mat_ex(Color(0.36, 0.36, 0.35), 0.45, 0.8))
+	_piece(bone_attachment("Neck"), [
 		boxp(Vector3(0.025, 0.04, 0.004), Vector3(0.0, -0.13, -0.12), TIN),
 		boxp(Vector3(0.025, 0.04, 0.004), Vector3(0.012, -0.14, -0.125), TIN, Vector3(0, 0, 0.3)),
-	])
-	# riveted bone plates (they extrude further per stage: see _apply_stage_look)
+	], mat_ex(TIN, 0.28, 0.9))
+	# the riveted bone plates: rust-rough iron, a darker rim where they push out of the skin, rivets with their
+	# shadows, rust streaks running down from the rivets (each plate one group that extrudes per stage)
+	var m_plate: StandardMaterial3D = mat_ex(PLATE, 0.78, 0.35)
+	var m_rim: StandardMaterial3D = mat_ex(PLATE_RIM, 0.9, 0.25)
+	var m_rivet: StandardMaterial3D = mat_ex(RIVET, 0.36, 0.9)
+	var m_shadow: StandardMaterial3D = mat_ex(Color(0.1, 0.05, 0.04), 0.95, 0.0)
+	var m_rust: StandardMaterial3D = mat_ex(RUST, 0.95, 0.15)
+	_plates.clear()
 	for spec: Array in [["Chest", Vector3(0.0, 0.18, -0.15), Vector3(0.34, 0.16, 0.05)], ["Chest", Vector3(0.0, 0.06, -0.16), Vector3(0.3, 0.1, 0.05)],
 			["LeftUpperArm", Vector3(0.0, -0.06, 0.0), Vector3(0.15, 0.18, 0.15)], ["RightUpperArm", Vector3(0.0, -0.06, 0.0), Vector3(0.15, 0.18, 0.15)],
 			["Spine", Vector3(0.0, 0.1, 0.15), Vector3(0.3, 0.14, 0.05)], ["LeftLowerArm", Vector3(0.0, -0.12, -0.02), Vector3(0.12, 0.16, 0.12)],
 			["RightLowerArm", Vector3(0.0, -0.12, -0.02), Vector3(0.12, 0.16, 0.12)]]:
-		var parts: Array = [boxp(spec[2] as Vector3, spec[1] as Vector3, PLATE)]
+		var at: Node3D = bone_attachment(str(spec[0]))
+		if at == null:
+			continue
+		var pos: Vector3 = spec[1]
 		var sz: Vector3 = spec[2]
+		var n: Vector3 = Vector3(0, 0, signf(pos.z)) if pos.z != 0.0 else Vector3(0, 0, -1)   # the plate's outward face
+		var grp: Node3D = Node3D.new()
+		grp.name = "Plate"
+		at.add_child(grp)
+		_piece(grp, [boxp(sz, pos, PLATE)], m_plate)
+		_piece(grp, [boxp(Vector3(sz.x * 1.12, sz.y * 1.12, sz.z * 0.5), pos - n * sz.z * 0.3, PLATE_RIM)], m_rim)
+		var rivets: Array = []
+		var shadows: Array = []
+		var streaks: Array = []
 		for rx: float in [-0.4, 0.4]:
 			for ry: float in [-0.35, 0.35]:
-				parts.append(sph(0.012, (spec[1] as Vector3) + Vector3(sz.x * rx, sz.y * ry, -sz.z * 0.55 * signf((spec[1] as Vector3).z if (spec[1] as Vector3).z != 0.0 else -1.0)), RIVET))
-		var mi: MeshInstance3D = costume(str(spec[0]), parts)
-		if mi != null:
-			_plates.append(mi)
-	# the cracked rack of six Helvetia bottles on his back, each its own hitbox, with IV lines to the neck
+				var rp: Vector3 = pos + Vector3(sz.x * rx, sz.y * ry, 0.0) + n * (sz.z * 0.5 + 0.004)
+				rivets.append(sph(0.012, rp, RIVET))
+				shadows.append(sph(0.017, rp - n * 0.006 + Vector3(0, -0.004, 0), PLATE_RIM, Vector3(1.0, 0.8, 0.3)))
+				if ry < 0.0:
+					streaks.append(boxp(Vector3(0.008, sz.y * 0.35, 0.003), rp + Vector3(0.0, -sz.y * 0.2, 0.0) + n * 0.001, RUST))
+		_piece(grp, rivets, m_rivet)
+		_piece(grp, shadows, m_shadow)
+		_piece(grp, streaks, m_rust)
+		_plates.append(grp)
+	# the cracked rack of six Helvetia bottles on his back, each its own hitbox, lit from inside, IV lines over the
+	# shoulders into the back of the neck
 	var rack_at: BoneAttachment3D = bone_attachment("Chest")
-	costume("Chest", [
+	_piece(rack_at, [
 		boxp(Vector3(0.46, 0.05, 0.12), Vector3(0, 0.3, 0.2), Color(0.3, 0.22, 0.14)),
 		boxp(Vector3(0.46, 0.05, 0.12), Vector3(0, -0.02, 0.2), Color(0.3, 0.22, 0.14)),
 		boxp(Vector3(0.04, 0.36, 0.1), Vector3(-0.23, 0.14, 0.2), Color(0.3, 0.22, 0.14)),
 		boxp(Vector3(0.04, 0.36, 0.1), Vector3(0.23, 0.14, 0.2), Color(0.3, 0.22, 0.14)),
-		boxp(Vector3(0.5, 0.03, 0.03), Vector3(0, 0.14, 0.14), Color(0.25, 0.25, 0.25), Vector3(0, 0, 0.15)),   # the strap
-	])
+	], mat_ex(Color(0.3, 0.22, 0.14), 0.85, 0.0))
+	_piece(rack_at, [boxp(Vector3(0.5, 0.03, 0.03), Vector3(0, 0.14, 0.14), Color(0.25, 0.25, 0.25), Vector3(0, 0, 0.15))], mat_ex(Color(0.22, 0.2, 0.19), 0.7, 0.3))   # the strap
+	_piece(rack_at, [boxp(Vector3(0.05, 0.02, 0.13), Vector3(-0.2, 0.33, 0.2), RUST), boxp(Vector3(0.03, 0.02, 0.09), Vector3(0.21, 0.0, 0.2), RUST)], m_rust)   # the rack's rust
+	_bottle_mat = mat_ex(GLASS_LIT, 0.22, 0.0, 1.6, STOUT_GLOW).duplicate() as StandardMaterial3D   # his own: it dims
+	var m_cap: StandardMaterial3D = mat_ex(TIN, 0.4, 0.85)
+	var m_label: StandardMaterial3D = mat_ex(LABEL, 0.9, 0.0)
 	bottle_nodes.clear()
 	bottle_boxes.clear()
 	var i: int = 0
@@ -299,15 +422,9 @@ func _build_costume() -> void:
 			b.name = "Bottle%d" % i
 			b.position = Vector3(col, row, 0.21)
 			rack_at.add_child(b)
-			var m: MeshInstance3D = MeshInstance3D.new()
-			var st: SurfaceTool = SurfaceTool.new()
-			var mesh: ArrayMesh = ArrayMesh.new()
-			for p: Array in [cyl(0.035, 0.035, 0.12, Vector3(0, 0, 0), GLASS), cyl(0.015, 0.025, 0.05, Vector3(0, 0.08, 0), GLASS)]:
-				st.append_from(p[0] as Mesh, 0, p[1] as Transform3D)
-			st.commit(mesh)
-			mesh.surface_set_material(0, mat(GLASS, 0.0, 0.25))
-			m.mesh = mesh
-			b.add_child(m)
+			_piece(b, [cyl(0.035, 0.035, 0.12, Vector3(0, 0, 0), GLASS), cyl(0.015, 0.025, 0.05, Vector3(0, 0.08, 0), GLASS)], _bottle_mat)
+			_piece(b, [cyl(0.016, 0.016, 0.012, Vector3(0, 0.108, 0), TIN)], m_cap)
+			_piece(b, [cyl(0.037, 0.037, 0.04, Vector3(0, -0.01, 0), LABEL)], m_label)
 			var hb: Hitbox = Hitbox.new()
 			hb.name = "BottleHit"
 			hb.setup(self, StringName("bottle%d" % i), Vector3(0.09, 0.15, 0.09))
@@ -316,48 +433,37 @@ func _build_costume() -> void:
 			_hitboxes.append(hb)
 			bottle_boxes.append(hb)
 			bottle_nodes.append(b)
-			# its IV line, up over the shoulder into the back of the neck
-			var line: MeshInstance3D = costume("Chest", [cyl(0.006, 0.006, 0.32, Vector3(col * 0.5, row + 0.2, 0.17), Color(0.15, 0.1, 0.1), Vector3(-0.4, 0, col * 1.5))])
-			if line != null:
-				line.reparent(b, true)
-	# the crushed tin cup in his left hand
-	_cup = costume("LeftHand", [cyl(0.045, 0.04, 0.07, Vector3(0.0, -0.08, -0.03), TIN, Vector3(0.2, 0, 0.3)),
-		boxp(Vector3(0.01, 0.04, 0.03), Vector3(0.05, -0.08, -0.03), TIN)])
-	# steam and the BERSERK glow
-	_steam = GPUParticles3D.new()
-	_steam.amount = 24
-	_steam.lifetime = 1.4
-	_steam.emitting = false
-	var pm: ParticleProcessMaterial = ParticleProcessMaterial.new()
-	pm.direction = Vector3(0, 1, 0)
-	pm.spread = 35.0
-	pm.initial_velocity_min = 0.6
-	pm.initial_velocity_max = 1.4
-	pm.gravity = Vector3(0, 0.6, 0)
-	pm.scale_min = 0.3
-	pm.scale_max = 0.7
-	pm.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-	pm.emission_sphere_radius = 0.35
-	_steam.process_material = pm
-	var qm: QuadMesh = QuadMesh.new()
-	qm.size = Vector2(0.35, 0.35)
-	var sm: StandardMaterial3D = StandardMaterial3D.new()
-	sm.albedo_color = Color(0.9, 0.9, 0.9, 0.25)
-	sm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	sm.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
-	sm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	qm.material = sm
-	_steam.draw_pass_1 = qm
-	bone_attachment("Chest").add_child(_steam)
+			# its IV line: out of the bottle's neck, up over the shoulder, into the back of the neck (a faint violet
+			# runs in it: the Nachtglas in the stout)
+			cable("Chest", [Vector3(col, row + 0.12, 0.21), Vector3(col * 0.7, row + 0.26, 0.19), Vector3(col * 0.35, 0.44, 0.11),
+				Vector3(col * 0.12, 0.5, 0.05)], 0.007, IV_LINE, 0.45, IV_GLOW)
+	_rack_light = OmniLight3D.new()
+	_rack_light.light_color = STOUT_GLOW
+	_rack_light.omni_range = 2.6
+	_rack_light.omni_attenuation = 1.4
+	_rack_light.light_energy = 0.9
+	_rack_light.shadow_enabled = false
+	_rack_light.position = Vector3(0, 0.14, 0.3)
+	rack_at.add_child(_rack_light)
+	# the crushed tin cup in his left hand (tin that catches light)
+	_cup = _piece(bone_attachment("LeftHand"), [cyl(0.045, 0.04, 0.07, Vector3(0.0, -0.08, -0.03), TIN, Vector3(0.2, 0, 0.3)),
+		boxp(Vector3(0.01, 0.04, 0.03), Vector3(0.05, -0.08, -0.03), TIN)], mat_ex(TIN, 0.38, 0.85))
+	# the kit's emitters: steam off the plates on every exhale, stout drips where the lines go into the neck
+	_steam = BossFx.emitter("steam", bone_attachment("Chest"), Vector3(0, 0.24, -0.04), 1.1)
+	_drips = BossFx.emitter("drips", bone_attachment("Neck"), Vector3(0, -0.04, 0.09), 0.5)
+	# the BERSERK glow, the eyes (warm amber, a slow blink), the wet sheen
 	_glow = OmniLight3D.new()
 	_glow.light_color = Color(1.0, 0.35, 0.2)
 	_glow.omni_range = 5.0
 	_glow.light_energy = 0.0
 	_glow.shadow_enabled = false
 	bone_attachment("Chest").add_child(_glow)
+	_eyes = eye_glow(EYE_AMBER, 1.0, 4.5) as BossFx.EyeGlow
+	wet(0.35)
 
 
-## The plates push out and the glow per stage (growth itself is the pivot scale in _tick_growth).
+## The plates push out and the glow per stage (growth itself is the pivot scale in _tick_growth). T-232: the kit's
+## footfall shake and radius grow with him, the eyes burn harder and redder, the steam runs at BERSERK.
 func _apply_stage_look(s: int) -> void:
 	for p: Node3D in _plates:
 		p.scale = Vector3.ONE * (1.0 + 0.12 * float(s))
@@ -366,6 +472,13 @@ func _apply_stage_look(s: int) -> void:
 	if _glow != null:
 		_glow.light_energy = 1.6 if s == PaulRage.BERSERK else 0.0
 	_set_inst("inst_tint", IRON_RED * Color(1.0 + 0.12 * float(s), 1.0, 1.0, 1.0) if s == PaulRage.BERSERK else IRON_RED)
+	if _eyes != null:
+		_eyes.energy = 1.0 + 0.6 * float(s)
+		_eyes.color = EYE_AMBER.lerp(EYE_RAGE, float(s) * 0.5)
+	if fx != null:
+		var d: Dictionary = bcfg.get("dread", {})
+		fx.cfg["step_shake"] = float(d.get("step_shake", 0.45)) + float(d.get("stage_step_shake", 0.2)) * float(s)
+		fx.cfg["step_radius"] = float(d.get("step_radius", 16.0)) + float(d.get("stage_step_radius", 4.0)) * float(s)
 
 
 # ================================================================== the brain
@@ -377,13 +490,19 @@ func move_speed() -> float:
 
 
 func _tick(delta: float) -> void:
+	_tick_squad(delta)
 	_tick_rage(delta)
 	_tick_growth(delta)
 	_tick_projectile(delta)
 	_tick_ring(delta)
 	_tick_lift(delta)
+	_tick_breath(delta)
+	_tick_floods(delta)
 	_quiet_t += delta
 	_taunt_cd = maxf(0.0, _taunt_cd - delta)
+	_guard_cd = maxf(0.0, _guard_cd - delta)
+	if guard_pid >= 0 and not (bstate == B.SPECIAL and _special_id == "guard"):
+		guard_pid = -1   # a stagger or a stun broke the guard
 	if knee_t > 0.0:
 		knee_t -= delta
 		stand(delta, false)
@@ -420,6 +539,8 @@ func _tick(delta: float) -> void:
 func _tick_rage(delta: float) -> void:
 	var fleeing: int = 0
 	var downed_seen: int = 0
+	var rc: Dictionary = bcfg.get("rage", {})
+	var flee_r: float = float(rc.get("flee_radius", 20.0))
 	for n: Node in get_tree().get_nodes_in_group(&"players"):
 		var p: Player = n as Player
 		if p == null:
@@ -434,13 +555,24 @@ func _tick_rage(delta: float) -> void:
 			continue
 		_downed_seen.erase(p.player_id)
 		if not p.is_alive():
+			_was_seen.erase(p.player_id)
 			continue
 		if p == target:
 			_fleeing_t[p.player_id] = float(_fleeing_t.get(p.player_id, 0.0)) + delta
 		var d: Vector3 = p.global_position - global_position
 		d.y = 0.0
-		if p.sprinting and d.length() < float((bcfg["rage"] as Dictionary).get("flee_radius", 20.0)) and float(_fleeing_t.get(p.player_id, 0.0)) > 0.0 and p.velocity.dot(d) > 0.5:
+		var running_off: bool = p.sprinting and d.length() < flee_r and p.velocity.dot(d) > 0.5
+		if running_off and float(_fleeing_t.get(p.player_id, 0.0)) > 0.0:
 			fleeing += 1
+		# T-232: the spike. He could see them a moment ago; now they have sprinted out of his sight.
+		var seen: bool = d.length() < flee_r + 6.0 and has_los(p, 2.2, 1.2)
+		if bool(_was_seen.get(p.player_id, false)) and not seen and running_off and _clock - float(_flee_break_t.get(p.player_id, -99.0)) >= float(rc.get("flee_break_every", 3.0)):
+			_flee_break_t[p.player_id] = _clock
+			flee_breaks += 1
+			rage.on_flee_break()
+			say("PAU_FLEE_01")
+			sfx("boss_roar_low", 0.0, 0.9)
+		_was_seen[p.player_id] = seen
 	var before: int = rage.stage
 	rage.tick(delta, fleeing, downed_seen)
 	if fleeing > 0 and randf() < delta * 0.05:
@@ -449,25 +581,132 @@ func _tick_rage(delta: float) -> void:
 		_on_stage_changed(before, rage.stage)
 
 
-## A stage change: the growth (or the shrink back, with a hiss of steam), the speed and the moves follow.
+## T-232: reads the squad every quarter second: alone (one player on their feet), the hurt one (the lowest health
+## fraction under the threshold, within range, in his sight) and how many are down. A hurt player becomes his target
+## while he is choosing a move, and the dread layer reads him looking at them.
+func _tick_squad(delta: float) -> void:
+	_squad_t -= delta
+	var sq: Dictionary = bcfg.get("squad", {})
+	if _squad_t <= 0.0:
+		_squad_t = 0.25
+		squad_state = read_squad(alive_players(), sq)
+	var hurt: Player = squad_state.get("hurt") as Player
+	if hurt != null and is_instance_valid(hurt) and hurt.is_alive():
+		if bstate == B.MOVE:
+			target = hurt
+			if _clock - _hurt_say_t >= float(sq.get("hurt_say_every", 20.0)):
+				_hurt_say_t = _clock
+				say("PAU_CALM_03")
+		if fx != null and hurt.is_local and not hurt.is_bot:
+			fx.extra_dread = maxf(fx.extra_dread, float(sq.get("hurt_dread", 0.25)))
+	else:
+		squad_state["hurt"] = null
+
+
+## The squad read, pure for the tests: {"alone": one player standing, "hurt": the hurt player (or null), "downed": n}.
+## `los` decides sight (the live boss passes its ray; a test passes a lambda).
+func read_squad(alive: Array, sq: Dictionary, los: Callable = Callable()) -> Dictionary:
+	var hurt: Player = null
+	var hurt_k: float = float(sq.get("hurt_fraction", 0.35))
+	var rng_m: float = float(sq.get("hurt_range", 25.0))
+	var downed: int = 0
+	if is_inside_tree():
+		for n: Node in get_tree().get_nodes_in_group(&"players"):
+			var p: Player = n as Player
+			if p != null and p.downed and not p.spectating:
+				downed += 1
+	for v: Variant in alive:
+		var p: Player = v as Player
+		if p == null or p.max_hp <= 0.0:
+			continue
+		var k: float = p.hp / p.max_hp
+		if k < hurt_k and dist_to(p) <= rng_m and (los.call(p) if los.is_valid() else has_los(p, 2.2, 1.2)):
+			if hurt == null or k < hurt.hp / hurt.max_hp:
+				hurt = p
+	return {"alone": alive.size() == 1, "hurt": hurt, "downed": downed}
+
+
+## T-232: the breath clock: a low breath and a puff of steam off the plates on every exhale (faster and harder as he
+## rages; at BERSERK the steam never stops).
+func _tick_breath(delta: float) -> void:
+	_breath_t -= delta
+	if _breath_t <= 0.0:
+		var s: int = stage()
+		_breath_t = randf_range(2.2, 3.4) / (1.0 + 0.35 * float(s))
+		sfx("boss_breath", -10.0 + 2.5 * float(s), 0.9 - 0.08 * float(s))
+		_steam_puff(0.45 + 0.15 * float(s))
+	if _steam != null and stage() != PaulRage.BERSERK:
+		_steam.emitting = _clock < _steam_until
+
+
+## Steam off the plates for `seconds` (constant at BERSERK).
+func _steam_puff(seconds: float) -> void:
+	_steam_until = maxf(_steam_until, _clock + seconds)
+	if _steam != null:
+		_steam.emitting = true
+
+
+## T-232: the arena beat. The yard's lights die under his BERSERK roar and gutter again every `again_s` while he stays
+## BERSERK; they come back when he shrinks, leaves or dies.
+func _tick_floods(delta: float) -> void:
+	if not _floods_out or fx == null:
+		return
+	_floods_t -= delta
+	if _floods_t <= 0.0:
+		var fl: Dictionary = bcfg.get("floods", {})
+		_floods_t = float(fl.get("again_s", 18.0))
+		fx.lights_flicker(float(fl.get("flicker_s", 2.5)) * 0.6, 0.7)
+		sfx("paul_roar", -2.0, 0.85)
+
+
+func _floods_die() -> void:
+	var fl: Dictionary = bcfg.get("floods", {})
+	if fx != null:
+		fx.lights_dim(global_position, float(fl.get("radius", 32.0)), float(fl.get("level", 0.12)), 1.0)
+		fx.lights_flicker(float(fl.get("flicker_s", 2.5)), 0.85)
+	_floods_out = true
+	_floods_t = float(fl.get("again_s", 18.0))
+	print("[paul] BERSERK: the yard's floods die under his roar (%d lights)" % (fx.dimmed_count() if fx != null else 0))
+
+
+func _floods_back(seconds: float = -1.0) -> void:
+	if not _floods_out:
+		return
+	_floods_out = false
+	if fx != null:
+		fx.lights_restore(float((bcfg.get("floods", {}) as Dictionary).get("restore_s", 5.0)) if seconds < 0.0 else seconds)
+
+
+## A stage change: the growth (or the shrink back, with a hiss of steam), the speed and the moves follow. T-232: the
+## plates grind as they push out, his own roar, the telegraph light flares through the growth; BERSERK kills the
+## yard's floods (the encounter swings the headframe's lamps); shrinking out of BERSERK brings the light back.
 func _on_stage_changed(from: int, to: int) -> void:
 	var st: Array = bcfg.get("stages", [])
 	_grow_from = stage_scale
 	_grow_to = float((st[to] as Dictionary).get("scale", 1.0)) if to < st.size() else 1.0
 	_grow_t = float(bcfg.get("grow_seconds", 1.2))
 	_apply_stage_look(to)
+	if fx != null:
+		fx.tele(TELE_COLOR, 3.0 + float(to), _grow_t, false)
 	if to > from:
-		sfx("foreman_roar", 2.0, 0.8 - 0.1 * float(to))
+		sfx("paul_roar", 2.0, 1.0 - 0.08 * float(to))
+		sfx("paul_plate_grind", 0.0, 1.0 - 0.1 * float(to))
+		_steam_puff(1.2)
 		if to == PaulRage.ANGRY:
 			say("PAU_ANGRY_01")
 			if event != null and event.has_method("on_paul_stage"):
 				event.call("on_paul_stage", to)
 		elif to == PaulRage.BERSERK:
+			berserk_seen = true
 			say("PAU_BERSERK_01")
+			_floods_die()
 			if event != null and event.has_method("on_paul_stage"):
 				event.call("on_paul_stage", to)
 	else:
-		sfx("steam_hiss" if AudioDirector.has_sound("steam_hiss") else "door_creak", 0.0, 0.7)
+		sfx("boss_breath", 2.0, 0.6)   # the hiss of steam as he shrinks
+		_steam_puff(1.5)
+		if from == PaulRage.BERSERK:
+			_floods_back()
 	print("[paul] stage %s -> %s (rage %.0f)" % [PaulRage.STAGE_NAMES[from], PaulRage.STAGE_NAMES[to], rage.value])
 
 
@@ -483,7 +722,18 @@ func _think(delta: float) -> void:
 	if target == null:
 		stand(delta, false)
 		return
-	_stomp_t -= delta
+	# T-232: "protect my guys". At BERSERK a downed player in his sight pulls him to the body.
+	if stage() == PaulRage.BERSERK and cd_ready("guard"):
+		var body: Player = _downed_to_guard()
+		if body != null:
+			_start_guard(body)
+			return
+		if int(squad_state.get("downed", 0)) > 0 and _clock - _guard_log_t > 2.0:
+			_guard_log_t = _clock
+			for n: Node in get_tree().get_nodes_in_group(&"players"):
+				var dp: Player = n as Player
+				if dp != null and dp.downed:
+					print("[paul] a body he will not guard: player %d at %.1f m, los %s, spectating %s" % [dp.player_id, dist_to(dp), str(has_los(dp, 2.2, 0.4)), str(dp.spectating)])
 	# the arena: never into the Core Vault (he waits in G, roaring)
 	if _in_vault(target.global_position):
 		var wait: Vector3 = _v(_arena.get("wait_point", [0, 0, 0]))
@@ -493,7 +743,7 @@ func _think(delta: float) -> void:
 			stand(delta)
 			if _taunt_cd <= 0.0:
 				_taunt_cd = 6.0
-				sfx("foreman_roar", 0.0, 0.85)
+				sfx("paul_roar", 0.0, 0.85)
 				say("PAU_CALM_01")
 		return
 	# down the lift shaft when the target is in the depths and he is on the surface (or back up)
@@ -510,9 +760,122 @@ func _think(delta: float) -> void:
 		_start(pick)
 		return
 	walk_to(target.global_position, delta)
-	if _stomp_t <= 0.0:
-		_stomp_t = 0.55 / maxf(0.5, move_speed() / 2.6)
-		_stomp_fx()
+
+
+# ================================================================== T-232: the guard ("protect my guys")
+
+## The downed player he goes to stand over: the nearest one down (not bled out) within `search` m in his sight.
+func _downed_to_guard() -> Player:
+	var g: Dictionary = bcfg.get("guard", {})
+	var best: Player = null
+	var bd: float = float(g.get("search", 30.0))
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		var p: Player = n as Player
+		if p == null or not p.downed or p.spectating:
+			continue
+		var d: float = dist_to(p)
+		if d < bd and has_los(p, 2.2, 0.4):
+			bd = d
+			best = p
+	return best
+
+
+func _start_guard(body: Player) -> void:
+	guard_pid = body.player_id
+	guard_t = 0.0
+	_guard_cd = 0.6
+	_guard_tele = -1.0
+	_guard_posed = false
+	guards_done += 1
+	_special_id = "guard"
+	_go(B.SPECIAL, "guard")
+	say("PAU_CALM_03")
+	sfx("paul_roar", 0.0, 0.9)
+	print("[paul] guards player %d's body (BERSERK)" % guard_pid)
+
+
+func _player_by_id(pid: int) -> Player:
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		var p: Player = n as Player
+		if p != null and p.player_id == pid:
+			return p
+	return null
+
+
+## Standing over the body: anyone who comes within `approach` m gets the slam, a telegraph (pose + roar + light), then
+## damage and a knockdown in the half-circle in FRONT of him. He faces the comer only when a slam starts, so a
+## teammate can revive from the far side between slams. Not a grab: nothing chains.
+func _tick_guard(delta: float) -> void:
+	var g: Dictionary = bcfg.get("guard", {})
+	var body: Player = _player_by_id(guard_pid)
+	guard_t += delta
+	if body == null or not body.downed or body.spectating or guard_t >= float(g.get("max", 12.0)):
+		_end_guard("revived" if body != null and not body.downed else "done")
+		return
+	if dist_to(body) > 1.3 * stage_scale and _guard_tele < 0.0:
+		walk_to(body.global_position, delta)
+		return
+	stand(delta, false)
+	if not _guard_posed:
+		_guard_posed = true
+		pose_anim()
+		_pose.set_bone("LeftUpperArm", Vector3(0.9, 0, 1.3))    # arms spread over the body
+		_pose.set_bone("RightUpperArm", Vector3(0.9, 0, -1.3))
+		_pose.set_bone("Spine", Vector3(0.35, 0, 0))
+	if _guard_tele >= 0.0:
+		_guard_tele -= delta
+		if _guard_tele <= 0.0:
+			_guard_tele = -1.0
+			_guard_slam(g)
+		return
+	if _guard_cd > 0.0:
+		return
+	var near: Player = null
+	var nd: float = float(g.get("approach", 4.5)) * stage_scale
+	for p: Player in alive_players():
+		var d: float = dist_to(p)
+		if d < nd:
+			nd = d
+			near = p
+	if near != null:
+		_face(near.global_position)
+		_guard_tele = tele_len(float(g.get("telegraph", 0.6)))
+		_pose.set_bone("LeftUpperArm", Vector3(2.9, 0, 0.2))     # both fists up
+		_pose.set_bone("RightUpperArm", Vector3(2.9, 0, -0.2))
+		if fx != null:
+			fx.tele(TELE_COLOR, 3.5, _guard_tele)
+		sfx("paul_roar", -2.0, 1.05)
+
+
+func _guard_slam(g: Dictionary) -> void:
+	guard_slams += 1
+	moves_used["guard"] = int(moves_used.get("guard", 0)) + 1
+	var r: float = float(g.get("radius", 3.5)) * stage_scale
+	var half: float = float(g.get("arc_deg", 180.0)) * 0.5
+	for p: Player in alive_players():
+		if p.player_id != guard_pid and _in_arc(p, r, half):
+			hit_player(p, float(g.get("damage", 60)))
+			p.apply_status(&"knockdown", 0.8)
+			p.apply_knockback(_away(p) * 4.0)
+	var at: Vector3 = global_position + basis_fwd() * 1.2 * stage_scale
+	sfx("boss_stomp", 6.0, 0.6, at)
+	sfx("boss_bone_crack", -2.0, 0.8, at)
+	BossFx.burst("dust", at, get_tree(), 2.5, 1.8)
+	_crack_decal(_snap_floor(at), 1.6)
+	if fx != null:
+		fx.shake_all(at, 0.7, 14.0)
+	_guard_cd = float(g.get("cooldown", 2.5))
+	_pose.set_bone("LeftUpperArm", Vector3(0.9, 0, 1.3))
+	_pose.set_bone("RightUpperArm", Vector3(0.9, 0, -1.3))
+
+
+func _end_guard(why: String) -> void:
+	print("[paul] guard over (%s, %d slams)" % [why, guard_slams])
+	guard_pid = -1
+	_guard_tele = -1.0
+	_pose.clear()
+	set_cd("guard", float((bcfg.get("guard", {}) as Dictionary).get("again_after", 8.0)))
+	_go(B.RECOVER)
 
 
 func _pick_move(dist: float) -> String:
@@ -556,12 +919,14 @@ func _start(id: String) -> void:
 	pose_anim()
 	if target != null:
 		_face(target.global_position)
+	if id != "taunt" and id != "headframe_dive" and fx != null:
+		fx.tele(TELE_COLOR, 3.5, tele_len(_tele_len))   # T-232: the kit's one telegraph shape, with its rising sound
 	match id:
 		"haymaker":
 			_pose.set_bone("RightUpperArm", Vector3(0.6, 0.0, -1.6))   # the arm drawn all the way back
 			_pose.set_bone("Spine", Vector3(0.0, 0.7, 0.0))
 			sfx("dog_tags" if AudioDirector.has_sound("dog_tags") else "shell_ping", -2.0, 1.3)
-			sfx("foreman_grunt" if AudioDirector.has_sound("foreman_grunt") else "foreman_roar", -6.0, 1.2)
+			sfx("boss_roar_low", -6.0, 1.2)   # the grunt
 		"zombie_throw":
 			var z: Zombie = _nearest_horde(float(m.get("grab_radius", 6.0)))
 			if z == null:
@@ -574,39 +939,44 @@ func _start(id: String) -> void:
 			say("PAU_THROW_01")
 		"grab":
 			_pose.set_bone("RightUpperArm", Vector3(1.5, 0, -0.2))
-			sfx("foreman_roar", 0.0, 1.1)
+			sfx("paul_roar", 0.0, 1.1)
 		"ground_pound":
 			_pose.set_bone("LeftUpperArm", Vector3(3.0, 0, 0.1))
 			_pose.set_bone("RightUpperArm", Vector3(3.0, 0, -0.1))
-			_steam_burst()
+			sfx("boss_breath", -2.0, 0.75)
+			_steam_puff(1.0)
 		"rip_throw":
 			_proj_kind = "cart" if randf() < 0.6 else "rail"
 			_pose.set_bone("Spine", Vector3(0.9, 0, 0))
 			_pose.set_bone("LeftUpperArm", Vector3(1.2, 0, 0.2))
 			_pose.set_bone("RightUpperArm", Vector3(1.2, 0, -0.2))
 			sfx("metal_wrench" if AudioDirector.has_sound("metal_wrench") else "door_creak", 2.0, 0.6)
+			sfx("paul_plate_grind", -4.0, 0.8)
 		"leap_slam":
 			_pose.set_bone("Spine", Vector3(0.5, 0, 0))
 			_pose.set_bone("LeftUpperLeg", Vector3(-0.9, 0, 0))
 			_pose.set_bone("RightUpperLeg", Vector3(-0.9, 0, 0))
 			_leap_to = _landing_near(target.global_position)
 			_show_shadow(_leap_to, 2.0)
+			sfx("boss_bone_crack", -6.0, 0.8)
+			sfx("boss_breath", -4.0, 0.7)
 		"thunderclap":
 			_pose.set_bone("LeftUpperArm", Vector3(1.4, 0, 1.4))
 			_pose.set_bone("RightUpperArm", Vector3(1.4, 0, -1.4))
-			sfx("breath_in" if AudioDirector.has_sound("breath_in") else "foreman_roar", 0.0, 0.6)
-			_steam_burst()
+			sfx("boss_breath", 3.0, 0.55)   # the huge inhale
+			_steam_puff(1.2)
 		"charge":
 			_pose.set_bone("Spine", Vector3(0.7, 0, 0))
 			_pose.set_bone("Head", Vector3(0.4, 0, 0))
-			sfx("foreman_stomp" if AudioDirector.has_sound("foreman_stomp") else "impact_flesh", 2.0, 0.7)
+			sfx("boss_stomp", 2.0, 0.7)   # the knuckles paw the ground (twice: the second in _telegraph)
 		"headframe_dive":
 			_special_id = "climb"
 			_go(B.SPECIAL, id)
 			climbing = true
 			_bt = 0.0
 			_leap_from = global_position
-			sfx("foreman_roar", 4.0, 0.7)
+			set_cd(id, float(m.get("cooldown", 30.0)))   # T-232: the dive skips _on_active_start; without this he looped climb-dive at BERSERK in the yard
+			sfx("paul_roar", 4.0, 0.8)
 		"taunt":
 			_pose.set_bone("LeftUpperArm", Vector3(1.5, 0, 0.6))
 			_pose.set_bone("RightUpperArm", Vector3(1.5, 0, -0.6))
@@ -614,11 +984,20 @@ func _start(id: String) -> void:
 			_taunt_cd = float((bcfg.get("taunt", {}) as Dictionary).get("every", 20.0))
 
 
+## T-232: the kit's tele() drives the light with its own shape during a telegraph (and the climb's perch); the base
+## eases toward this each frame, so returning the light's own energy leaves the shape alone.
+func _tele_glow() -> float:
+	if bstate == B.TELEGRAPH or (bstate == B.SPECIAL and (_special_id == "climb" or _guard_tele >= 0.0)):
+		return _tele_light.light_energy
+	return 0.0
+
+
 func _telegraph(delta: float) -> void:
 	stand(delta, move_id != "leap_slam")
-	_tele_light.light_energy = 3.0
 	if move_id == "zombie_throw" and _proj != null:
 		_proj.global_position = global_position + Vector3.UP * (2.6 * stage_scale * float(bcfg.get("height", 1.38)) / 1.38)
+	if move_id == "charge" and _bt >= 0.45 and _bt - delta < 0.45:
+		sfx("boss_stomp", 2.0, 0.75)
 	if move_id == "taunt":
 		# the chest beat, then the tin-cup look (the meter dips 5)
 		if _bt > 1.4 and _bt - delta <= 1.4:
@@ -628,7 +1007,8 @@ func _telegraph(delta: float) -> void:
 			rage.on_cup()
 			say("PAU_CUP_01")
 		elif _bt < 1.4 and fmod(_bt, 0.35) < delta:
-			sfx("impact_flesh", -2.0, 0.6)
+			sfx("boss_stomp", -10.0, 1.4)   # the chest beat
+			sfx("dog_tags" if AudioDirector.has_sound("dog_tags") else "shell_ping", -8.0, 1.2)
 		if _bt >= _tele_len:
 			_pose.clear()
 			_go(B.RECOVER)
@@ -644,10 +1024,12 @@ func _on_active_start() -> void:
 	match move_id:
 		"haymaker":
 			attack_anim("swipe_r", 0.15)
+			sfx("boss_roar_low", -3.0, 1.1)
 			for p: Player in alive_players():
 				if _in_arc(p, float(m.get("range", 2.8)) * stage_scale, 70.0):
 					hit_player(p, float(m["damage"]))
 					p.apply_knockback(_away(p) * float(m.get("knockback", 6.0)))
+					sfx("boss_bone_crack", -4.0, 0.9, p.global_position + Vector3.UP)
 		"zombie_throw":
 			_throw_proj(target.global_position if target != null else global_position - basis_fwd() * 10.0, float(m.get("speed", 14.0)), false)
 			throws_done += 1
@@ -656,14 +1038,24 @@ func _on_active_start() -> void:
 			if target != null and dist_to(target) <= float(m.get("range", 2.5)) * stage_scale and can_grab(target):
 				var need: Dictionary = {"mash": int(m.get("mash", 8)), "team": max_hp * float(m.get("team_fraction", 0.06)),
 					"max": float(m.get("max", 5.0))}
+				if bool(squad_state.get("alone", false)):
+					# T-232: a lone player's grab is shorter and breaks sooner (fair in solo; the pressure is elsewhere)
+					var sq: Dictionary = bcfg.get("squad", {})
+					need["max"] = float(sq.get("alone_grab_max", 3.5))
+					need["mash"] = int(sq.get("alone_grab_mash", 6))
 				var g: Dictionary = grab_start(target, "squeeze", need, _bottle_limbs())
 				g["weak_need"] = 1.0   # breaking a bottle frees the held player
 				_held_lift = g
 				grabs_done += 1
 				say("PAU_GRAB_01")
 		"ground_pound":
-			sfx("explosion_small" if AudioDirector.has_sound("explosion_small") else "impact_flesh", 4.0, 0.6)
-			Effects.call("shake", global_position, 0.6, 14.0) if Effects.has_method("shake") else null
+			sfx("explosion_small" if AudioDirector.has_sound("explosion_small") else "boss_stomp", 4.0, 0.6)
+			sfx("boss_stomp", 6.0, 0.65)
+			var fists: Vector3 = global_position + basis_fwd() * 1.4 * stage_scale
+			BossFx.burst("dust", fists, get_tree(), 3.0, 2.0)
+			_crack_decal(_snap_floor(fists), 1.8)
+			if fx != null:
+				fx.shake_all(global_position, 0.8, 16.0)
 			_ring_r = 0.0
 			_ring_hit.clear()
 		"rip_throw":
@@ -711,7 +1103,10 @@ func _tick_lift(delta: float) -> void:
 		p.velocity = Vector3.ZERO
 	hit_player(p, float(m.get("damage", 25.0)) * delta)
 	if fmod(float(_held_lift["t"]), 1.2) < delta:
-		sfx("foreman_roar", -4.0, 1.15)
+		sfx("boss_roar_low", -4.0, 1.05)   # he roars in your face
+		_steam_puff(0.4)
+	if fx != null and p.is_local and not p.is_bot:
+		fx.extra_dread = 1.0
 
 
 func _on_grab_released(g: Dictionary, reason: String) -> void:
@@ -743,6 +1138,9 @@ func _special(delta: float) -> void:
 				global_position = _leap_to
 				_hide_shadow()
 				_pose.clear()
+				sfx("paul_roar", 4.0, 0.9)
+				BossFx.burst("dust", _leap_to, get_tree(), 4.0, 2.6)
+				_steam_puff(1.5)
 				if event != null and event.has_method("on_arrived"):
 					event.call("on_arrived", _leap_to)
 				_go(B.ARRIVE)
@@ -770,7 +1168,12 @@ func _special(delta: float) -> void:
 				stun_t = float((bcfg.get("wall_stun", {}) as Dictionary).get("seconds", 2.0))
 				wall_stuns += 1
 				_pose.set_bone("Head", Vector3(-0.4, 0, 0))
-				sfx("impact_flesh", 4.0, 0.5)
+				sfx("boss_stomp", 6.0, 0.5)
+				sfx("boss_bone_crack", 0.0, 0.7)
+				BossFx.burst("chips", col.get_position(), get_tree(), 2.0, 1.4)
+				BossFx.burst("dust", col.get_position(), get_tree(), 2.0, 1.6)
+				if fx != null:
+					fx.shake_all(global_position, 0.6, 12.0)
 				print("[paul] charge into a wall: stunned")
 				_go(B.RECOVER)
 				return
@@ -779,6 +1182,8 @@ func _special(delta: float) -> void:
 				_go(B.RECOVER)
 		"climb":
 			_tick_headframe(delta)
+		"guard":
+			_tick_guard(delta)
 		"shaft":
 			var k2: float = clampf(_shaft_t / 1.3, 0.0, 1.0)
 			_shaft_t += delta
@@ -830,7 +1235,14 @@ func _land(at: Vector3, m: Dictionary) -> void:
 	global_position = at
 	velocity = Vector3.ZERO
 	_hide_shadow()
-	sfx("explosion_small" if AudioDirector.has_sound("explosion_small") else "impact_flesh", 6.0, 0.55)
+	sfx("explosion_small" if AudioDirector.has_sound("explosion_small") else "boss_stomp", 6.0, 0.55)
+	sfx("boss_stomp", 8.0, 0.6)
+	BossFx.burst("dust", at, get_tree(), 4.0, 2.6)
+	BossFx.burst("chips", at + Vector3.UP * 0.2, get_tree(), 1.5, 1.5)
+	_crack_decal(at, 2.2)
+	_steam_puff(1.0)
+	if fx != null:
+		fx.shake_all(at, 1.0, 22.0)
 	for p: Player in alive_players():
 		var d: float = Vector2(p.global_position.x - at.x, p.global_position.z - at.z).length()
 		if d <= float(m.get("r_in", 3.0)):
@@ -843,7 +1255,12 @@ func _land(at: Vector3, m: Dictionary) -> void:
 
 ## The Thunderclap: a 60 deg cone 14 m long; 40 + knockback 6 m; every board torn off the barricades in the cone.
 func _thunderclap(m: Dictionary) -> void:
-	sfx("explosion_small" if AudioDirector.has_sound("explosion_small") else "foreman_roar", 6.0, 0.8)
+	sfx("paul_roar", 6.0, 0.9)
+	sfx("boss_roar_low", 4.0, 0.7)
+	_steam_puff(1.2)
+	BossFx.burst("steam", global_position + Vector3.UP * 1.8 * stage_scale + basis_fwd() * 1.0, get_tree(), 3.0, 2.0)
+	if fx != null:
+		fx.shake_all(global_position, 0.7, 16.0)
 	var half: float = float(m.get("cone_deg", 60.0)) * 0.5
 	var length: float = float(m.get("length", 14.0))
 	for p: Player in alive_players():
@@ -1001,7 +1418,13 @@ func _proj_impact(arc: bool) -> void:
 	_hide_shadow()
 	if arc:
 		var m: Dictionary = bcfg["moves"]["rip_throw"]
-		sfx("explosion_small" if AudioDirector.has_sound("explosion_small") else "impact_flesh", 6.0, 0.5, at)
+		sfx("explosion_small" if AudioDirector.has_sound("explosion_small") else "boss_stomp", 6.0, 0.5, at)
+		sfx("boss_stomp", 6.0, 0.55, at)
+		BossFx.burst("dust", at, get_tree(), 3.5, 2.4)
+		BossFx.burst("chips", at + Vector3.UP * 0.3, get_tree(), 1.5, 1.4)
+		_crack_decal(at, 2.0)
+		if fx != null:
+			fx.shake_all(at, 0.8, 16.0)
 		for p: Player in alive_players():
 			if Vector2(p.global_position.x - at.x, p.global_position.z - at.z).length() <= float(m.get("radius", 2.5)):
 				hit_player(p, float(m["damage"]))
@@ -1009,7 +1432,8 @@ func _proj_impact(arc: bool) -> void:
 	else:
 		# it explodes into shards at the end of its run
 		var m2: Dictionary = bcfg["moves"]["zombie_throw"]
-		sfx("glass_shatter" if AudioDirector.has_sound("glass_shatter") else "impact_flesh", 4.0, 0.8, at)
+		sfx("boss_bone_crack", 4.0, 0.8, at)
+		BossFx.burst("mist", at + Vector3.UP * 0.5, get_tree(), 2.5, 1.6)
 		for p: Player in alive_players():
 			if p.global_position.distance_to(at) <= float(m2.get("shard_radius", 2.0)):
 				hit_player(p, float(m2.get("shard_damage", 30.0)))
@@ -1079,7 +1503,7 @@ func _go_shaft(delta: float) -> void:
 	_shaft_t = 0.0
 	_special_id = "shaft"
 	_go(B.SPECIAL, "shaft")
-	sfx("foreman_roar", 4.0, 0.75)
+	sfx("paul_roar", 4.0, 0.8)
 	print("[paul] %s the lift shaft" % ("down" if down else "up"))
 
 
@@ -1125,21 +1549,61 @@ func _hide_shadow() -> void:
 		_shadow.hide()
 
 
-func _stomp_fx() -> void:
-	sfx("foreman_stomp" if AudioDirector.has_sound("foreman_stomp") else "impact_flesh", -2.0, 0.55 + 0.05 * float(stage()))
+## T-232: the kit's footfall (HomageBoss._footstep: dust, boss_stomp, the view shake by stage) plus, at BERSERK, the
+## ground cracking under each step: a dark decal at the foot.
+func _footstep(left: bool) -> void:
+	super._footstep(left)
+	if stage() == PaulRage.BERSERK and is_active() and bstate != B.SPECIAL:
+		var foot: Node3D = bone_attachment("LeftFoot" if left else "RightFoot")
+		_crack_decal(_snap_floor(foot.global_position if foot != null else global_position), 1.1)
 
 
-func _steam_burst() -> void:
-	if _steam != null:
-		_steam.restart()
-		_steam.emitting = true
-		if stage() != PaulRage.BERSERK:
-			get_tree().create_timer(1.0).timeout.connect(_steam_off)
-
-
-func _steam_off() -> void:
-	if _steam != null and stage() != PaulRage.BERSERK and state != State.DEAD:
-		_steam.emitting = false
+## A cracked-ground decal at `at`: a dark quad with four crack lines through it, fading out over 25 s (at most
+## MAX_CRACKS on the ground; the oldest goes first). Cosmetic: no collision, no gameplay.
+func _crack_decal(at: Vector3, size: float) -> void:
+	var host: Node = get_parent()
+	if host == null:
+		return
+	while _cracks.size() >= MAX_CRACKS:
+		var old: Node3D = _cracks.pop_front()
+		if is_instance_valid(old):
+			old.queue_free()
+	var root: Node3D = Node3D.new()
+	root.name = "PaulCrack"
+	root.top_level = true
+	host.add_child(root)
+	root.global_position = at + Vector3.UP * 0.025
+	root.rotation.y = randf() * TAU
+	var m: StandardMaterial3D = StandardMaterial3D.new()
+	m.albedo_color = Color(0.05, 0.045, 0.04, 0.62)
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.cull_mode = BaseMaterial3D.CULL_DISABLED
+	var q: MeshInstance3D = MeshInstance3D.new()
+	var qm: QuadMesh = QuadMesh.new()
+	qm.size = Vector2(size, size * randf_range(0.7, 0.95))
+	q.mesh = qm
+	q.rotation.x = -PI * 0.5
+	q.material_override = m
+	q.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	root.add_child(q)
+	for i: int in 4:
+		var c: MeshInstance3D = MeshInstance3D.new()
+		var bm: BoxMesh = BoxMesh.new()
+		bm.size = Vector3(0.04, 0.004, size * randf_range(0.7, 1.3))
+		c.mesh = bm
+		c.material_override = m
+		c.rotation.y = TAU * float(i) / 4.0 + randf_range(-0.4, 0.4)
+		c.position = Vector3(0, 0.003, 0)
+		c.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		root.add_child(c)
+	_cracks.append(root)
+	var tw: Tween = root.create_tween()
+	tw.tween_interval(8.0)
+	tw.tween_property(m, "albedo_color:a", 0.0, 17.0)
+	tw.tween_callback(func() -> void:
+		_cracks.erase(root)
+		root.queue_free())
 
 
 # ================================================================== geometry helpers
@@ -1234,6 +1698,10 @@ func _knee_down() -> void:
 	_pose.set_bone("LeftLowerLeg", Vector3(1.4, 0, 0))
 	_pose.set_bone("Spine", Vector3(0.4, 0, 0))
 	say("PAU_KNEE_01")
+	sfx("boss_bone_crack", 0.0, 0.75)
+	sfx("boss_stomp", 2.0, 0.7)
+	BossFx.burst("dust", global_position + basis_fwd() * 0.5, get_tree(), 2.0, 1.6)
+	_steam_puff(1.5)
 	print("[paul] knee-down stagger (x1.5 for %.1f s)" % knee_t)
 
 
@@ -1243,7 +1711,9 @@ func _hit_bottle(i: int, amount: float, by_player: int) -> bool:
 		return false
 	bottles_hp[i] -= amount
 	GLBus.enemy_damaged.emit(enemy_id, StringName("bottle%d" % (i + 1)), amount, by_player)
-	AudioDirector.play_3d("impact_glass" if AudioDirector.has_sound("impact_glass") else "impact_flesh", bottle_nodes[i].global_position if i < bottle_nodes.size() else global_position, -2.0, 0.05)
+	var at: Vector3 = bottle_nodes[i].global_position if i < bottle_nodes.size() else global_position + Vector3.UP * 1.6
+	AudioDirector.play_3d("boss_hit_glass", at, -2.0, 0.05)
+	BossFx.burst("motes", at, get_tree(), 0.4, 0.6)
 	if bottles_hp[i] > 0.0:
 		return false
 	break_bottle(i)
@@ -1263,7 +1733,14 @@ func break_bottle(i: int) -> void:
 	rage.on_bottle()
 	if rage.stage != before:
 		_on_stage_changed(before, rage.stage)
-	sfx("glass_shatter" if AudioDirector.has_sound("glass_shatter") else "impact_flesh", 2.0, 0.9)
+	var at: Vector3 = bottle_nodes[i].global_position if i < bottle_nodes.size() else global_position + Vector3.UP * 1.6
+	sfx("paul_bottle_break", 2.0, 1.0, at)
+	BossFx.burst("drips", at, get_tree(), 3.0, 1.6)   # the stout splash
+	BossFx.burst("motes", at, get_tree(), 1.2, 1.0)
+	_update_bottle_glow()
+	_steam_puff(0.8)
+	if fx != null:
+		fx.tele(VIOLET, 2.5, 0.35, false)
 	say("PAU_BOTTLE_01" if bottles_broken % 2 == 1 else "PAU_BOTTLE_02")
 	for g: Dictionary in grabs().duplicate():
 		grab_release(g, "bottle")
@@ -1285,12 +1762,45 @@ func set_rage(v: float) -> void:
 		_on_stage_changed(before, rage.stage)
 
 
+## T-232: the squad's state the brain read last (the smoke / tests): {"alone", "hurt", "downed"}.
+func squad_read() -> Dictionary:
+	return squad_state
+
+
+## T-232: a lone player feels the pressure: Haymaker and Zombie Throw come back sooner.
+func set_cd(id: String, seconds: float) -> void:
+	super.set_cd(id, seconds)
+	if bool(squad_state.get("alone", false)) and (id == "haymaker" or id == "zombie_throw"):
+		_cds[id] = float(_cds[id]) * float((bcfg.get("squad", {}) as Dictionary).get("alone_cd_mult", 0.8))
+
+
+## Dev / capture (T-232): stands him still at the stage that goes with `rage_v`, facing `yaw` degrees, the growth
+## applied at once; the brain is off so a camera can frame him.
+func debug_pose(yaw_deg: float, rage_v: float = 0.0) -> void:
+	set_rage(rage_v)
+	_grow_t = 0.0
+	_apply_scale(_grow_to if rage_v > 0.0 else 1.0)
+	rotation.y = deg_to_rad(yaw_deg)
+	_pivot.rotation = Vector3.ZERO
+	pose_anim()
+	_pose.set_bone("LeftUpperArm", Vector3(0.35, 0, 0.35))
+	_pose.set_bone("RightUpperArm", Vector3(0.35, 0, -0.35))
+	_pose.set_bone("Spine", Vector3(0.12, 0, 0))
+	if stage() == PaulRage.BERSERK and _steam != null:
+		_steam.emitting = true
+	set_physics_process(false)
+
+
 # ================================================================== retreat (the fail-safe) and death
 
 func _on_retreat() -> void:
 	say("PAU_LEAVE_01")
 	_hide_shadow()
 	_bt = 0.0
+	guard_pid = -1
+	_floods_back(3.0)
+	if _drips != null:
+		_drips.emitting = false
 
 
 ## He roars, climbs the headframe and leaps away north.
@@ -1300,6 +1810,9 @@ func _tick_retreat(delta: float) -> void:
 	var top: Vector3 = hf + Vector3.UP * float(_arena.get("headframe_height", 20.0))
 	if _bt < 1.0:
 		_halt(delta)
+		if not _retreat_roared and _bt > 0.3:
+			_retreat_roared = true
+			sfx("paul_roar", 4.0, 0.85)
 		return
 	if _bt < 3.5:
 		global_position = global_position.lerp(top, clampf(delta * 1.6, 0.0, 1.0))
@@ -1326,6 +1839,11 @@ func _start_authored_death() -> void:
 	if _steam != null:
 		_steam.restart()
 		_steam.emitting = true
+	guard_pid = -1
+	_floods_back(6.0)   # the yard's light comes back as the rage drains out of him
+	sfx("boss_breath", 0.0, 0.6)
+	sfx("boss_stomp", 2.0, 0.6)
+	BossFx.burst("dust", global_position, get_tree(), 2.0, 1.8)
 	print("[paul] to his knees: the rage drains")
 
 
@@ -1339,10 +1857,17 @@ func _death_tick(delta: float) -> void:
 	_set_inst("inst_tint", _death_from_tint.lerp(HUMAN_TINT, k))
 	if _glow != null:
 		_glow.light_energy = lerpf(_glow.light_energy, 0.0, clampf(delta * 2.0, 0.0, 1.0))
+	if _eyes != null:
+		_eyes.energy = lerpf(_eyes.energy, 0.5, clampf(delta * 1.0, 0.0, 1.0))
+		_eyes.color = _eyes.color.lerp(EYE_AMBER, clampf(delta * 1.5, 0.0, 1.0))
+	if _rack_light != null:
+		_rack_light.light_energy = lerpf(_rack_light.light_energy, 0.0, clampf(delta * 1.2, 0.0, 1.0))
 	if t >= 2.0 and _death_phase == 0:
 		_death_phase = 1
 		if _steam != null:
 			_steam.emitting = false
+		if _drips != null:
+			_drips.emitting = false
 		var p: Player = _nearest_player_any()
 		if p != null:
 			_face(p.global_position)
@@ -1373,7 +1898,12 @@ func _death_tick(delta: float) -> void:
 		_pivot.position.y = 0.0
 		if f >= 1.0 and not fallen:
 			fallen = true
-			sfx("explosion_small" if AudioDirector.has_sound("explosion_small") else "impact_flesh", 0.0, 0.4)
+			sfx("boss_stomp", 4.0, 0.5)
+			BossFx.burst("dust", global_position + basis_fwd() * 1.5, get_tree(), 3.0, 2.4)
+			if fx != null:
+				fx.shake_all(global_position, 0.5, 18.0)
+			if _eyes != null:
+				_eyes.lit = false
 			if event != null and event.has_method("on_paul_fallen"):
 				event.call("on_paul_fallen", global_position)
 

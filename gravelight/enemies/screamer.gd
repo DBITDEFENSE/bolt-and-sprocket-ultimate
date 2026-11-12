@@ -4,6 +4,9 @@ extends Zombie
 ## Reuses the Ganger body (Zombie) with a nurse's cape and winged headdress. She keeps her distance,
 ## winds up for 1.5 s with a rising tone, then screams down a 20 m line-of-sight cone:
 ## GLBus.player_status(player, &"scream", 3.0). She flees when a player gets within 5 m.
+## T-232 (the boss rework, effects only): her throat glow pulses with the lullaby and races as she winds up, Nachtglas
+## motes rise from the throat through the wind-up and burst out with the scream, and every player the scream reaches
+## takes a dread punch (DreadFx.of(player).punch: the colour split). Timings, the cone, the damage: unchanged.
 
 enum S { EMERGE, REPOSITION, WINDUP, CLAW }
 
@@ -14,6 +17,8 @@ var _scream_cd: float = 4.0
 var _hum_t: float = 1.0
 var _claw_cd: float = 0.0
 var _throat: OmniLight3D
+var _throat_motes: GPUParticles3D = null
+var _pulse_t: float = 0.0
 var _dress_built: bool = false
 
 
@@ -69,6 +74,7 @@ func _physics_process(delta: float) -> void:
 	if _frost_t > 0.0:
 		_frost_t -= delta
 	target = _nearest_player()
+	_tick_throat(delta)
 	match sstate:
 		S.EMERGE:
 			_halt(delta)
@@ -83,7 +89,6 @@ func _physics_process(delta: float) -> void:
 			if target != null:
 				_face(target.global_position)
 			var w: float = float(_sc["windup"])
-			_throat.light_energy = lerpf(0.4, 5.0, clampf(_st / w, 0.0, 1.0))
 			if _st >= w:
 				_scream()
 				_set_s(S.REPOSITION)
@@ -113,8 +118,28 @@ func _set_s(s: S) -> void:
 			var q: AudioStreamPlayer3D = AudioDirector.play_3d("zombie_sprint", global_position + Vector3.UP * 1.6, 4.0, 0.0)
 			if q != null:
 				q.pitch_scale = 2.1)
+		if _throat_motes != null:
+			_throat_motes.emitting = true
 	elif s == S.REPOSITION:
 		_throat.light_energy = 0.6
+		if _throat_motes != null:
+			_throat_motes.emitting = false
+
+
+## T-232: the throat glow breathes with the lullaby (a slow pulse) and races as she winds up (the pulse rate and the
+## glow climb together); the hum's throat lit from inside is the read at range.
+func _tick_throat(delta: float) -> void:
+	if _throat == null:
+		return
+	var hz: float = float(_sc.get("throat_pulse_hz", 1.4))
+	if sstate == S.WINDUP:
+		var k: float = clampf(_st / float(_sc["windup"]), 0.0, 1.0)
+		_pulse_t += delta * hz * (1.0 + 3.0 * k)
+		_throat.light_energy = lerpf(0.4, 5.0, k) + 0.6 * k * maxf(0.0, sin(_pulse_t * TAU))
+	else:
+		_pulse_t += delta * hz * 0.5
+		var base: float = 0.6 if sstate != S.EMERGE else 0.2
+		_throat.light_energy = base + 0.3 * pow(maxf(0.0, sin(_pulse_t * TAU)), 3.0)
 
 
 func _reposition(delta: float) -> void:
@@ -155,13 +180,27 @@ func _scream() -> void:
 			continue
 		GLBus.player_status.emit(p.player_id, &"scream", float(_sc["effect_seconds"]))
 		hit_any = true
+		var dfx: DreadFx = DreadFx.of(p)   # T-232: the dread punch (the colour split) on everyone the scream reaches
+		if dfx != null:
+			dfx.punch(float(_sc.get("scream_punch", 1.0)))
 	var s: AudioStreamPlayer3D = AudioDirector.play_3d("screamer_scream", global_position + Vector3.UP * 1.6, 4.0, 0.0)
 	if s != null:
 		s.max_distance = maxf(s.max_distance, 50.0)
+	_scream_fx()
 	if Net.replicating():
 		Net.session.zombie_event(self, &"fx", ["scream"])
 	if hit_any:
 		GLBus.explosion.emit(global_position, 0.1)
+
+
+## T-232: the scream's picture: the motes burst out of the throat and the glow snaps bright then falls.
+func _scream_fx() -> void:
+	var at: Vector3 = global_position + Vector3.UP * 1.55 - global_basis.z * 0.2
+	BossFx.burst("motes", at, get_tree(), 2.2, 1.5)
+	if _throat != null:
+		_throat.light_energy = 7.0
+	if _throat_motes != null:
+		_throat_motes.emitting = false
 
 
 func _los(p: Node3D) -> bool:
@@ -213,6 +252,8 @@ func _build_dress() -> void:
 	_throat.light_energy = 0.6
 	_throat.position = Vector3(0, 0.05, -0.12)
 	neck.add_child(_throat)
+	# T-232: Nachtglas motes rising out of the throat while she winds up
+	_throat_motes = BossFx.emitter("motes", neck, Vector3(0, 0.08, -0.08), 0.45)
 
 
 # ---------------------------------------------------------------- co-op puppet (M7)
@@ -245,8 +286,7 @@ func _puppet_visual_tick(delta: float) -> void:
 		_pivot.position.y = lerpf(-1.7, 0.0, clampf(_st / 1.4, 0.0, 1.0))
 	elif _pivot.position.y < 0.0:
 		_pivot.position.y = 0.0
-	if sstate == S.WINDUP:
-		_throat.light_energy = lerpf(0.4, 5.0, clampf(_st / float(_sc["windup"]), 0.0, 1.0))
+	_tick_throat(delta)
 
 
 func puppet_die(limb: StringName, kind: StringName, death_kind: int, side: float, pop: bool, pos: Vector3) -> void:
@@ -265,3 +305,10 @@ func puppet_fx(what: StringName, _args: Array) -> void:
 		var sp: AudioStreamPlayer3D = AudioDirector.play_3d("screamer_scream", global_position + Vector3.UP * 1.6, 4.0, 0.0)
 		if sp != null:
 			sp.max_distance = maxf(sp.max_distance, 50.0)
+		_scream_fx()
+		# the local player's punch, when the scream reaches them (the host decided the status; this is the picture)
+		var lp: Player = BossFx.local_human(get_tree())
+		if lp != null and lp.global_position.distance_to(global_position) <= float(_sc["scream_range"]) and _los(lp):
+			var dfx: DreadFx = DreadFx.of(lp)
+			if dfx != null:
+				dfx.punch(float(_sc.get("scream_punch", 1.0)))
