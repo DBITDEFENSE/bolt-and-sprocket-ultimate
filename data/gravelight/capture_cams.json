@@ -1,6 +1,43 @@
 {
   "_doc": "Same-camera before/after capture (UPDATE_05 section 1, T-088). tools_src/capture.gd --set=<set> --label=<label> places the Player at pos (feet, metres; Map 0 frame +X east, +Z south, +Y up) with yaw (degrees, 0 = north / -Z, positive turns west) and pitch (degrees, negative looks down), lets the view settle and saves NN_<name>.png. kind: view (default) | zombie (one Ganger spawned at `subject`, frozen facing the camera) | squad (the three bots: the camera turns to their centroid) | viewmodel (plain view, the gun is the subject). Every pos is on the navmesh or a floor the player can stand on (test_capture_cams checks).",
   "sets": {
+    "u16_fix": {
+      "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "2026-11-12 the owner's screenshots: hall, stairs, bar walkway, wall-buys, the extra people",
+      "cams": [
+        {"name": "widow", "pos": [21.0, 3.8, 9.3], "yaw": 0.0, "pitch": -4.0, "note": "the owner's screenshot: Hanne Ebert's white smears"},
+        {"name": "hall_east", "pos": [23.2, 3.8, 7.8], "yaw": 90.0, "pitch": -3.0, "note": "the upstairs hall west along the attic flight"},
+        {"name": "hall_west", "pos": [4.6, 3.8, 7.6], "yaw": -90.0, "pitch": -3.0, "note": "the upstairs hall east from the main stair head"},
+        {"name": "stair_vestibule", "pos": [5.3, 0.0, 15.4], "yaw": 15.0, "pitch": 12.0, "note": "the main flight from Door 1"},
+        {"name": "bar_walk", "pos": [12.0, 0.0, 9.1], "yaw": 90.0, "pitch": -6.0, "note": "the walkway between the bar front and the stair wall"},
+        {"name": "wallbuy_kar", "pos": [1.8, 0.0, 3.1], "yaw": 90.0, "pitch": 8.0, "note": "the Kar98k wall-buy"},
+        {"name": "wallbuy_garand", "pos": [22.0, 0.0, 4.0], "yaw": -90.0, "pitch": 8.0, "note": "the M1 Garand wall-buy"},
+        {"name": "vault_from_stairs", "pos": [28.6, -3.2, 20.2], "yaw": 180.0, "pitch": -4.0, "note": "the owner's screenshot: the Helvetia vault from the stair foot, Ironhide Stout on the right"},
+        {"name": "vault_ironhide_back", "pos": [27.6, -3.2, 21.0], "yaw": -150.0, "pitch": -2.0, "note": "behind Ironhide Stout: the beige board"},
+        {"name": "vault_north_west", "pos": [29.5, -3.2, 25.0], "yaw": 30.0, "pitch": -4.0, "note": "the vault's north end and the Crucible from the middle"},
+        {"name": "vault_ironhide_close", "pos": [27.2, -3.2, 24.4], "yaw": 50.0, "pitch": 4.0, "note": "the pale panel between Ironhide Stout and the west wall"}
+      ]
+    },
+    "u16_fix_m01": {
+      "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "2026-11-12 the owner's mine tunnel screenshot (a box of sky at its end)",
+      "cams": [
+        {"name": "rampF_up", "pos": [20.0, -18.0, 100.0], "yaw": 0.0, "pitch": 12.0},
+        {"name": "rampG_up", "pos": [44.5, -18.0, 100.0], "yaw": 0.0, "pitch": 12.0},
+        {"name": "corrH_east", "pos": [50.5, -18.0, 115.0], "yaw": -90.0, "pitch": 2.0},
+        {"name": "rampH_up", "pos": [74.0, -18.0, 116.0], "yaw": 0.0, "pitch": 12.0},
+        {"name": "rampF_down", "pos": [20.0, -12.0, 91.0], "yaw": 180.0, "pitch": -12.0},
+        {"name": "rampH_down", "pos": [74.0, -12.0, 99.0], "yaw": 180.0, "pitch": -12.0},
+        {"name": "corrH_mid", "pos": [62.0, -18.0, 115.0], "yaw": -90.0, "pitch": 3.0},
+        {"name": "corrH_end", "pos": [69.5, -18.0, 115.0], "yaw": -90.0, "pitch": 6.0},
+        {"name": "corrH_corner_up", "pos": [73.5, -18.0, 114.0], "yaw": 0.0, "pitch": 45.0},
+        {"name": "corrH_corner_e", "pos": [73.5, -18.0, 115.0], "yaw": -90.0, "pitch": 15.0}
+      ]
+    },
     "u05": {
       "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
       "bots": 3,

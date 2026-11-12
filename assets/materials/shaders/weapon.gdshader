@@ -148,11 +148,16 @@ void fragment() {
 	}
 
 	// ---- metal: bluing cast, edge wear to bright steel, scratches, roughness mottle
-	float edge = clamp(length(fwidth(NORMAL)) * 2.2, 0.0, 1.0);
+	// 2026-11-12 (the owner's screenshots: the M1911 and the MP40 "missing textures"): the palette guns are flat-shaded
+	// low-poly meshes, so fwidth(NORMAL) is high along every triangle edge, not just the real ones; the edge wear lit
+	// the whole gun in bright-steel facets and the mottle read as a broken texture. On a palette gun the facet term is
+	// a faint hint and the scratches half as strong; the PBR guns (smooth normals) keep the full wear.
+	float pal_k = palette > 0.5 ? 0.18 : 1.0;
+	float edge = clamp(length(fwidth(NORMAL)) * 2.2, 0.0, 1.0) * pal_k;
 	float scr = smoothstep(0.66, 0.72, fbm(vec3(q.x * 160.0, q.y * 160.0, q.z * 9.0) + 17.0));
 	float scr2 = smoothstep(0.7, 0.75, fbm(vec3(q.x * 14.0, q.y * 220.0, q.z * 220.0) + 29.0));
 	float patch = smoothstep(0.42, 0.72, n_mid * 0.7 + n_big * 0.3);
-	float worn = clamp(edge * wear * 1.2 * (0.4 + patch) + (scr + scr2 * 0.5) * scratches * 0.6 + patch * wear * 0.05, 0.0, 1.0);
+	float worn = clamp(edge * wear * 1.2 * (0.4 + patch) + (scr + scr2 * 0.5) * scratches * mix(0.3, 0.6, pal_k) + patch * wear * 0.05, 0.0, 1.0);
 	vec3 metal_col = col * bluing;
 	if (metal_tint.a > 0.0) {
 		float lum_m = dot(metal_col, vec3(0.3, 0.59, 0.11));
@@ -245,7 +250,7 @@ void fragment() {
 	vec3 tq = vec3(dot(t_obj, s), dot(t_obj, u), dot(t_obj, f));
 	vec3 bq = vec3(dot(b_obj, s), dot(b_obj, u), dot(b_obj, f));
 	float e = 0.0025;
-	float bump_k = mix(0.9, 1.6, wood) * (palette > 0.5 ? 1.0 : 0.45) * (1.0 - rime);
+	float bump_k = mix(0.9, 1.6, wood) * (palette > 0.5 ? 0.55 : 0.45) * (1.0 - rime);   // (palette 1.0 until 2026-11-12: the pitting read as noise)
 	float h0 = fbm(q * 70.0 + 2.0);
 	float ht = fbm((q + e * tq) * 70.0 + 2.0);
 	float hb = fbm((q + e * bq) * 70.0 + 2.0);

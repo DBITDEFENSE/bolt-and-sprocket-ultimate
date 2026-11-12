@@ -134,9 +134,15 @@ func build_greybox() -> void:
 		add_box(self, Vector3(1.3, 0.55, 0.04), Vector3(0, 0, 0.02), board)
 	# Chalk outline traced from the weapon's real model (a flattened, glowing white silhouette).
 	var d: Dictionary = _weapon_data()
-	var chalk_model: Node3D = WeaponModels.build_chalk(weapon_id, 1.15)
+	# 2026-11-12 (the owner: "wall guns all fucked up"): build_chalk lays the outline from the gun's grip, so its centre sat
+	# up to 0.45 m off the board's (a Kar98k's ran 0.25 m past the 1.3 m board's end, the mounted gun with it). The
+	# outline is kept inside the board now (1.05 m at most, 0.12 m of plank at each end) and centred on it.
+	var chalk_model: Node3D = WeaponModels.build_chalk(weapon_id, CHALK_MAX_LEN if board_mesh != null else 1.15)
 	chalk_model.position = Vector3(0, -0.02, -0.012)
 	add_child(chalk_model)
+	var ca: AABB = chalk_model.transform * WorldArt.local_aabb(chalk_model)
+	if ca.size.x > 0.01:
+		chalk_model.position += Vector3(-ca.get_center().x, -0.02 - ca.get_center().y, 0.0)
 	if board_mesh != null:
 		_mount_gun(chalk_model)
 	var lbl: Label3D = add_label(self, "%s  %d" % [d.get("name", weapon_id), price()], Vector3(0, 0.38, -0.03), 20, Color(0.8, 1, 0.8, 0.85))
@@ -151,6 +157,8 @@ func build_greybox() -> void:
 
 ## How much of the chalk outline the gun covers: a little smaller, so the chalk still frames it.
 const MOUNT_FILL: float = 0.92
+## The longest chalk outline on the painted board (1.3 m wide): its ends stay on the planks.
+const CHALK_MAX_LEN: float = 1.05
 static var _dust: StandardMaterial3D = null
 static var _clean: Dictionary = {}   # a downloaded material -> its opaque, non-glowing copy
 
