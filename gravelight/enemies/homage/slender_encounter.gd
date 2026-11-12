@@ -169,6 +169,18 @@ func boss_seconds() -> float:
 	return t - spawn_t if arrival_done else 0.0
 
 
+## T-233: the capture cameras (CaptureDo `callv:SlenderEncounter:capture_spawn:x,y,z,yaw`): him standing at a point
+## outside any round (the capture tool stops the rounds, so summon_boss's start_now would only reserve one): no title
+## card, no arrival, no fail-safe clock; he holds the pose (Slender.capture_pose).
+func capture_spawn(x: float, y: float, z: float, yaw: float = 0.0) -> void:
+	if slender() == null or not slender().is_active():
+		var s: Slender = Slender.new()
+		s.name = "TheSlender"
+		adopt(s, HomageEncounter.visit_hp(cfg, RoundManager.players, 0), Vector3(x, y, z))
+		arrival_done = true
+	slender().capture_pose(x, y, z, yaw)
+
+
 func _on_weapon_fired(pid: int, _weapon: StringName, _up: bool, origin: Vector3, _dir: Vector3) -> void:
 	var s: Slender = slender()
 	if s != null and s.is_active():

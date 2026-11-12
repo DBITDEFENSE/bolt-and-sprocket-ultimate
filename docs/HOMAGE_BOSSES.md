@@ -505,10 +505,16 @@ Not a homage boss (no likeness). He is a story boss on the HB1 framework. The Co
 - **What taking it does:** sets the flag `boat_key` (the quest's s6 `flag` step), emits `GLBus.item_picked_up(&"boat_key")` and gives `QuestManager.give_item`.
 - **Co-op:** the host decides and mirrors the pickup.
 
-**The look:**
-- The `drowned_diver` body (the sailor geometry in the drowned palette), ×1.12 tall.
-- Costume pieces: the brass helmet with a lit port and side ports, the corselet, rubber gloves, lead-soled boots, and an anchor chain from the left shoulder across the chest with a stock hanging behind.
-- A helmet SpotLight (the charge telegraph) and a glow at the port.
+**The look** (reworked in T-233, the boss rework, on the T-231 kit; `docs/boss_rework/w3_totenhafen.md`):
+- The `drowned_diver` body (the sailor geometry in the drowned palette), ×1.12 tall, with a wet sheen on the suit.
+- Costume pieces: the brass helmet, **wet metal with a verdigris bloom** round the rim and the ports (`mat_ex`, low roughness), its **glass port translucent with the violet Marke glow dim behind it** from the start and an **inner shell that fogs** as he takes damage toward the break (the glass and the fog go together, chips and motes, when it breaks and the glow comes up full); the corselet (brass), rubber gloves, lead-soled boots; the anchor chain as a **real link chain** (`chain`) from the left shoulder across the chest with the stock behind, and a **second chain dragging from the left hip** to the deck whose pivot trails his motion; **weed strips** off both shoulders and the helmet's back and **rope strips** at the belt (`strips`, they sway with him).
+- A helmet SpotLight (the charge telegraph) and the Marke's glow at the port.
+- **Water:** `drips` emitters on the head, chest and hips for `drip_seconds` (10) after every surfacing; a **wake ring** and spray where he comes up; `kielholer_water_rise` on surfacing (and low and slow as the ripple's own sound); `kielholer_chain_drag` as a 3D loop that rises with his walk; `kielholer_helmet_knock` on every glass hit before the break; the kit's dread block (iron: sparks on hits, `boss_stomp` footfalls with a 0.4 view shake within 14 m, felt from 20 m); `fx.tele` on the sweep, the charge and the swipe; the **dock lamps within 16 m dip** as he sinks and come back once he is under.
+
+**The fight, reworked (T-233):**
+- **Spring and high tide:** he was already ×1.3 faster and surfacing at the dock nearest his target; now he is also **under for 3.6–6 s instead of 6–10** (`tide_under_mult` 0.6) and the **ripple lasts 1.2 s instead of 1.6** (`tide_ripple_mult` 0.75, never under 1.0 s). The surfacing is faster, closer and quicker to read.
+- **The dunk (one new beat):** a player he holds **at the water's edge for 1.2 s** (`dunk_after`) is **pushed under for a breath-holding second** (`dunk_seconds` 1.0): 20 damage once (`dunk_damage`), the wading status for the second, the screen under water (the dread layer full, a punch), spray and a muffled splash; he leans over them. Every break-free keeps running through it (the mash, teammates' damage, the weak points) and `max_hold` is unchanged at 5 s, so **every grab still breaks in solo**. 1.2 + 1.0 < 5.
+- **The squad rule:** he **hunts the lone wader**: a player within 3 m of a water edge (`lone_edge_m`) with no teammate within 6 m (`lone_mate_m`), in sight and inside 18 m (`lone_range`), is his target over the nearest player. Stay off the edges, or stay together on them.
 
 **Title card and bar:** "DER KIELHOLER" over "Kapitänleutnant Arvid Lenz, U-1047", dated "JANUAR 1945 · TOTENHAFEN", through `BossHud`.
 
@@ -520,7 +526,7 @@ Not a homage boss (no likeness). He is a story boss on the HB1 framework. The Co
 - **The Operator:** `OPR_BOSS_KIELHOLER_SPAWN_01` and `_DEATH_01`.
 - **The squad:** `DUT/PEG/DEA/WRN_BOSS_KIELHOLER_01` (spawn) and `_02` (death). The first member present speaks.
 
-**Sounds:** `kielholer_surface`, `kielholer_roar`, `chain_sweep`, `hull_groan`, `water_splash` and `glass_break`.
+**Sounds:** `kielholer_surface`, `kielholer_roar`, `chain_sweep`, `hull_groan`, `water_splash` and `glass_break`; T-233 adds the kit's `kielholer_water_rise`, `kielholer_chain_drag` (loop), `kielholer_helmet_knock`, `boss_stomp`, `boss_hit_iron`, `boss_breath` (through the valve, under the groan), `boss_telegraph_rise`, `boss_death_toll`.
 
 **Tests:**
 - `gravelight/tests/unit/test_kielholer.gd`: 12 tests.
@@ -702,6 +708,7 @@ When the facility fell, **he kept his post.**
   - a heavy **ring of keys** at his hip that **jingles when he moves and goes silent when he is about to attack**;
   - the **watch-book** under his arm, its pages fluttering.
 - **He never runs. He never needs to.**
+- **As built after T-233 (the boss rework, on the T-231 kit; `docs/boss_rework/w3_totenhafen.md`):** the greatcoat's **hem and the scarf's ends sway** (`strips`, front, back and both sides of the hem); the **lantern hangs off its pole and swings** (a spring pendulum driven by the hand's motion) and **its violet light pools on the grating** under it (a radial decal that follows the lantern, since the lamp casts no shadows); the brass (**buttons, the cage, the badge band, the keys**) is metal that catches the lantern (`mat_ex`); the **eyes are the kit's EyeGlow, violet: they never blink while he watches you and blink slowly otherwise**; the face is the MZ body's own, pale and tired, nothing over it but the cap. The **lantern hums** (`slender_lantern_hum`, a 3D loop on the lantern, off while it is broken and after he blows it out). The decoys' hems sway like his.
 
 **Originality checklist** (a review gate for the HB3 model, animations and VO):
 
@@ -745,6 +752,8 @@ Each player has a hidden **LOGGED meter (0–100)**. It exists only while he is 
 | Standing in Kessel floodlight or flare light (real light hides you from *his* light) | −15 per second |
 | Within 6 m of a teammate (stacks with the above) | −4 per second |
 
+**The squad's state (T-233):** a player who is **alone (nobody within 6 m) and in the dark** fills every source above **×1.5** (`alone_dark_mult`); the drains are untouched. **The tiers are felt:** the local player's tier pushes the kit's dread layer (the vignette, the desaturation, the pulse, the violet edge while he looks at you): LOW 0.15, MEDIUM 0.35, HIGH 0.6, CRITICAL 0.95 (the layer is near full), and every silence of his adds 0.25 more. A **whisper** (`slender_whisper`, wordless, close behind the player) comes every 9 s at MEDIUM, 5.5 s at HIGH, 3 s at CRITICAL; a **hurt player (under half HP) hears it from LOW** every 8 s. **`boss_breath`** when he stands still over you (within 2.6 m), and when he appears behind you at CRITICAL. HIGH and CRITICAL each punch the dread layer once as they are reached.
+
 **Quarantine:**
 - **At 100 he "QUARANTINES" you.** The screen cuts to black, there is a key-turn sound, and you're pulled into **"The Watch Room"**, a small dark pocket room shaped like his observatory guard booth. It is a Nachtglas echo of the real one, built off-map below the playable space.
   - Inside: shelves of watch-books, a desk with a green-shaded lamp, a **clock stuck at 3:00 AM** that never ticks, and a **window showing your teammates fighting below**, a live render of the map from the booth's real summit position.
@@ -767,10 +776,13 @@ Each player has a hidden **LOGGED meter (0–100)**. It exists only while he is 
 | **Walk** (locomotion) | all | — | 1.6 m/s, a long-legged walk with almost no bob, perfectly smooth, the coat trailing | — | — | — |
 | **Teleport** | all | **Only while unobserved** (ObservedFreeze): a flicker and a key-jingle | **15 m closer**, behind a tree or a pillar | — | 4 s | Keep eyes on him; teammates watch each other's backs |
 | **Mirroring** | all | — | Within 30 m and in sight, he **mirrors your movement**: you stop, he stops; you turn, he turns | — | — | Unnerving, not damaging. It also gives you a clean shot when he stops. |
+| **The Mirroring step** (T-233) | all | **The keys go still** (`slender_keys_still`) for **0.8 s**, the telegraph light rises, his head turns to where you were | In sight, 6–30 m, while you are moving: he **stands where you stood one second ago** (your own trail, never within 1.5 m of you), facing you, and **holds still 0.6 s** | — | 14 s (10 in phase 2, 7 in phase 3) | **Silence is the telegraph** again: when the jingle stops, look behind you; the hold is a clean shot. `SLN_MIRROR_STEP_01` once. |
 | **Lantern Sweep** | all | **The lantern rises and the light brightens slowly over 1.0 s** (a rising glass-harmonic tone) | A **70° violet cone, 20 m**, sweeping 90° over 2 s | LOGGED +35 per second in the cone | 12 s | Break line of sight; get behind trees or into floodlight |
 | **Key Ring Lash** | all | **The keys fall silent (0.6 s)**, then a 0.4 s backswing | At close range (2–4 m) a long-armed backhand with the heavy ring of keys | **85 + a 0.6 s stagger** | 4 s | **Silence is the telegraph:** when the jingle stops, move |
 | **Shift Change** | **phase 2, below 50%** | "Change of shift." (`SLN_DECOY_01`) | He splits into **3 Watchmen**, only one of them real. **The decoys' lanterns flicker; the real one's lantern is steady.** Decoys walk, sweep and lash with the same timing, for 0 damage. | Shooting a decoy: +15 LOGGED to the shooter per hit (`SLN_DECOY_SHOT_01`) | They dissolve after 25 s, or when the real one takes 5% of max HP in light; recast every 40 s while in phase 2 | **Read the light, don't spray** |
 | **End of Shift** | **phase 3, below 20%**, once | "Lights out. Last round of the night." | **The forest goes totally dark except his lantern** (every light, the moon and sky, the truck's headlights) **for 30 s**, and **the Kessel floodlights fail** and stay off | — | once | **Restore one floodlight generator**: one of the three ring-road masts' levers, a **5 s hold**. That mast relights, and he can be hurt in its light again. Flares and close muzzle flash still work in the dark. |
+
+**At Totenhafen after T-233:** End of Shift goes through the kit: every lamp within 220 m is captured (`fx.lights_dim`) and **dies over 1.4 s, guttering as it goes** (`lights_flicker`); his lantern is the only light left; the **three fuse boxes spark** every ~3 s while the dark lasts (the way to the light); when the 30 s are up the lamps **come back over 2.5 s** (the pools still wait for their fuses), and they come back at once if he dies or walks off in the dark. **The phases escalate** (`phases` in the data, read by `Slender._mvf`): the Lantern Sweep's cooldown **12 → 9 → 7 s**, the Mirroring step's **14 → 10 → 7 s**, the Key Ring Lash's reach **4 → 4 → 5 m** and his walk **1.6 → 1.6 → 1.9 m/s** at End of Shift (a walk still: he never runs). Every telegraph (the sweep's rise, the Lash's silence, the step's silence) drives the kit's telegraph light (`fx.tele`) and plays its rise.
 
 **Creepy layers:**
 - His **head tilts** at a slow, curious, observing angle, like he's taking notes.

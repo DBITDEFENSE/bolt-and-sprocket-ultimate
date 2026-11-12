@@ -5,8 +5,12 @@ extends Node
 ##   3. a Ganger rising at a surface point is tagged a Kielholer (the drowned kit); a diver gets its helmet hitbox
 ##   4. a Kielholer grabs a player on pier 2 and pulls him toward the edge; 60 damage to arm_grab frees him
 ##   5. the diver's helmet soaks hits, then breaks: the glow takes x2.0
-##   6. DER KIELHOLER: the summon, the title card and bar; a quarter of his HP gone -> he sinks (no damage lands under
-##      water) and resurfaces at another dock; the helmet glass broke on the way
+##   6. DER KIELHOLER: the summon, the title card and bar; T-233 (the boss rework): the kit's dread block (iron, the
+##      lead-soled stomp), he drips after surfacing, the chain-drag loop and the dragging chain, the weed strips, the
+##      spring tide's quicker surfacing (under_range, ripple_for), a glass hit knocks and fogs the port; a quarter of
+##      his HP gone -> he sinks (the dock lamps dip through the kit, no damage lands under water) and resurfaces at
+##      another dock (the lamps back); the helmet glass broke on the way; the grab at the water's edge dunks the held
+##      player and still breaks in solo (max_hold); the lone-wader rule
 ##   7. his death drops the ignition key; taking it sets `boat_key` (and `kielholer_down`)
 ##   8. the fail-safe: a second summon with the clock at 420 s dives for good and the key floats up at the dock edge
 ##   9. dry docks: the surface points go off again
@@ -176,16 +180,57 @@ func _run() -> void:
 			hud = c
 	_check(hud != null and (hud.get("_rows") as Dictionary).has("der_kielholer"), "the title card and the boss bar")
 	_check(kc.boss == boss, "the controller tracks him (bots-alone scaling)")
+	# ---- T-233: the kit and the model
+	var kb: Dictionary = Kielholer.table()["bosses"]["der_kielholer"]
+	_check(boss.fx != null and is_equal_approx(boss.fx.c("step_shake"), 0.4) and str(boss.fx.cfg.get("surface", "")) == "iron" and boss.fx.has_footfalls(),
+		"the dread block: iron, boss_stomp with a 0.4 shake (lead soles)")
+	_check(boss.dripping(), "he drips after surfacing")
+	boss._drip_t = 0.05
+	await _frames(4)
+	_check(not boss.dripping(), "the drips stop after drip_seconds")
+	var strips_n: int = boss.find_children("Strips", "", true, false).size()
+	_check(strips_n >= 5 and boss._drag != null and boss._wake != null, "weed and rope strips (%d groups), the dragging chain, the wake ring" % strips_n)
+	_check(boss._chain_loop != null or not AudioDirector.has_sound("kielholer_chain_drag"), "kielholer_chain_drag rides on him as a 3D loop")
+	_check(boss._glow != null and boss._glow.visible and boss.fog_alpha() <= 0.001, "the Marke glows dim behind the clear glass")
+	_check(boss._fast_tide() and Kielholer.under_range(kb, true) == Vector2(3.6, 6.0) and is_equal_approx(Kielholer.ripple_for(kb, true), 1.2)
+		and Kielholer.under_range(kb, false) == Vector2(6.0, 10.0) and is_equal_approx(Kielholer.ripple_for(kb, false), 1.6),
+		"spring tide: under 3.6-6 s (not 6-10) and a 1.2 s ripple (not 1.6)")
+	_check(Kielholer.lone_wader([[10.0, 1.0, false, true], [5.0, 8.0, false, true], [4.0, 0.5, true, true]], kb["squad"]) == 0,
+		"the lone wader at the edge is hunted over the nearer players")
 	await _until(func() -> bool: return boss.kstate != Kielholer.K.RISE, 3.0)
+	boss.take_damage(200.0, &"helmet_glass", &"smoke", 1, &"bullet")
+	_check(boss.helmet_knocks >= 1 and boss.fog_alpha() > 0.0 and not boss.helmet_broken, "a glass hit knocks (kielholer_helmet_knock) and fogs the port from inside (%.2f)" % boss.fog_alpha())
 	boss.take_damage(boss.max_hp * 0.27, &"torso", &"smoke", 1, &"world")
 	_check(boss.helmet_broken, "a quarter gone: the helmet glass broke on the way (15%)")
+	# the lamps within 16 m dip as he sinks (the kit captures the lit ones; this counts what there is to capture)
+	var near_lights: int = 0
+	for ln: Node in _map.find_children("*", "Light3D", true, false):
+		var l: Light3D = ln as Light3D
+		if l != null and l.light_energy > 0.0 and not boss.is_ancestor_of(l) and not l.has_meta("no_dim") and l.global_position.distance_to(boss.global_position) <= 16.0:
+			near_lights += 1
+	var sinking: bool = await _until(func() -> bool: return boss.kstate == Kielholer.K.SINK, 4.0)
+	var dimmed: int = boss.fx.dimmed_count()
+	_check(sinking and (dimmed > 0 or near_lights == 0), "sinking: the dock lamps dip through the kit (%d of %d lit within 16 m)" % [dimmed, near_lights])
 	var sank: bool = await _until(func() -> bool: return boss.kstate == Kielholer.K.UNDER, 10.0)   # (4 s flaked under a loaded CPU)
 	_check(sank and boss.submerges == 1, "he sinks at 75%")
+	_check(boss.fx.dimmed_count() == 0, "under: the lamps come back")
+	_check(boss._under_for <= 6.0 + 0.001 and boss._under_for >= 3.6 - 0.001, "under for %.1f s (the spring tide's 3.6-6 s)" % boss._under_for)
 	var hp_under: float = boss.hp
 	boss.take_damage(5000.0, &"torso", &"smoke", 1, &"bullet")
 	_check(absf(boss.hp - hp_under) < 0.01, "nothing lands while he is under")
 	var up: bool = await _until(func() -> bool: return boss.kstate == Kielholer.K.WALK, 16.0)
 	_check(up and boss.dock != "dock2", "he resurfaces at another dock (%s)" % boss.dock)
+	_check(boss.dripping() and boss._wake != null and boss._wake.visible, "he comes up dripping, a wake ring where he rose")
+	# ---- T-233: the grab at the water's edge dunks the held player; in solo it still breaks (max_hold)
+	await _tp(Vector3(14.6, 0.2, 60.0))   # pier 2's west edge (x 14)
+	boss.global_position = Vector3(16.3, 0.0, 60.0)
+	boss.velocity = Vector3.ZERO
+	boss.debug_grab(_p)
+	_check(boss.kstate == Kielholer.K.GRAB and _p.has_status(&"kielholer_grab"), "he takes hold at the edge")
+	var dunked: bool = await _until(func() -> bool: return boss.dunks >= 1, 3.0)
+	_check(dunked and boss.kstate == Kielholer.K.GRAB, "held at the edge: he pushes you under for a breath (dunk after 1.2 s)")
+	var let_go: bool = await _until(func() -> bool: return boss.grabs().is_empty() and boss.kstate != Kielholer.K.GRAB, 6.5)
+	_check(let_go, "solo: the hold still breaks by itself (max_hold 5 s)")
 
 	# --- 7. the kill drops the key
 	boss.debug_kill(1)
