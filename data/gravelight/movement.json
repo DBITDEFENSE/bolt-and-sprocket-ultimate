@@ -2,7 +2,8 @@
   "_doc": "Movement + camera feel for the local Player (Update 02 §1, T-046). The brief's movement.tres is this JSON table (the project keeps gameplay numbers in data/gravelight/*.json). Speeds stay in player.json (walk_speed, sprint_speed, crouch_speed, jump_velocity, slide); everything about how they are reached lives here. Times in seconds, distances in metres, angles in degrees.",
   "accel_time": 0.12,
   "decel_time": 0.17,
-  "_accel_doc": "Ground: 0 -> full target speed in accel_time (the rate scales with the target, so walk and sprint both take ~0.12 s); letting go of the stick bleeds walk speed to 0 in decel_time (a slight slide on stop).",
+  "_accel_doc": "Ground: 0 -> full target speed in accel_time (the rate scales with the target, so walk and sprint both take ~0.12 s); letting go of the stick bleeds walk speed to 0 in decel_time (a slight slide on stop). turn_boost (T-236): the rate is multiplied by this while the stick points against the current motion, so a strafe reversal brakes faster than it starts (1 = off).",
+  "turn_boost": 1.6,
   "air_accel": 5.0,
   "air_speed_cap_mult": 1.0,
   "_air_doc": "Air control: m/s^2 toward the stick. Horizontal speed in the air never grows past max(take-off speed, target speed) x air_speed_cap_mult, and a landing above the target speed loses land_speed_loss of the excess: no bunny-hop gain.",
@@ -62,7 +63,19 @@
     "shake_per_m": 0.22,
     "shake_max": 0.7,
     "land_head_dip": 0.012,
-    "land_head_dip_max": 0.12
+    "land_head_dip_max": 0.12,
+    "_forgive_doc": "T-236. coyote_time: seconds after the feet leave a floor (walked off, not jumped) in which a jump press still jumps. buffer_time: seconds a jump press is remembered, so one pressed just before landing jumps on the landing. fall_gravity_mult: gravity x this on the way down only (1 = the same both ways; 1.3 lands a hop about 0.07 s sooner and shortens a sprint jump from 4.4 m to about 3.9 m; a launch plate's arc is never affected).",
+    "coyote_time": 0.1,
+    "buffer_time": 0.12,
+    "fall_gravity_mult": 1.0
+  },
+  "step": {
+    "_doc": "T-236 step assist (Player._step_assist). max_h: a kerb, sill or low prop up to this high (m) is walked up without a jump, and a drop up to this deep is walked down without a fall (0 = off; under the mantle's min_h). min_facing: how squarely you must walk into it (dot of the stick direction and the face; a grazed corner is slid round, not climbed). The body moves at once and the eye catches up at view_rate (1/s, exponential), never more than view_max m behind. bots: squad bots and companions use it too (off: their paths and timings were tuned on the plain slide).",
+    "max_h": 0.4,
+    "min_facing": 0.5,
+    "view_rate": 11.0,
+    "view_max": 0.6,
+    "bots": false
   },
   "camera": {
     "_doc": "Head bob on the footstep cadence (bob_* metres, crouch/ADS shrink it), strafe roll (deg at full walk strafe), weapon inertia (viewmodel lag in m per m/s of velocity change), damage punch (deg per 10 damage, capped).",
