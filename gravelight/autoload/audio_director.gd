@@ -50,6 +50,9 @@ var _crate_pos: Vector3 = Vector3.ZERO
 var _has_crate_pos: bool = false
 var _hums: Dictionary = {}         # machine instance id -> AudioStreamPlayer3D
 var _hum_t: float = 0.0
+## T-237: the bank's one-shot sounds loaded in the background from the start of a match (StreamWarm), so the first
+## shot of a gun, the first footstep on a floor or the first purchase doesn't load its file in that frame.
+var warm: StreamWarm = StreamWarm.new()
 
 
 func _ready() -> void:
@@ -72,6 +75,7 @@ func _ready() -> void:
 	_score = _make_player(&"Music")
 	_connect_events()
 	apply_volumes()
+	warm.in_flight_max = 6
 
 
 func _make_player(bus_name: StringName) -> AudioStreamPlayer:
@@ -125,6 +129,7 @@ func _streams(sound_name: String) -> Array:
 	if _cache.has(sound_name):
 		return _cache[sound_name]
 	var found: Array = []
+	var pt: int = BotProf.t()
 	var e: Dictionary = _entry(sound_name)
 	for f: Variant in e.get("files", []):
 		var path: String = str(f)
@@ -150,6 +155,7 @@ func _streams(sound_name: String) -> Array:
 		for s: Variant in found:
 			_make_looping(s as AudioStream)
 	_cache[sound_name] = found
+	BotProf.add(&"sfx.load", pt)
 	return found
 
 
@@ -535,6 +541,21 @@ func _on_match_started(map_id: StringName) -> void:
 	_last_round_special = false
 	intensity = 0.0
 	_clear_hums()
+	warm_bank()
+
+
+## T-237: queues every one-shot sound of the bank (the SFX and Jingles buses; not the music and the ambience beds,
+## which are long and start with the map anyway) for background loading. Sounds already played are cache hits.
+func warm_bank() -> void:
+	for key: Variant in _sounds.keys():
+		var e: Dictionary = _sounds[key]
+		if _cache.has(str(key)) or bool(_opt(e, "loop", false)):
+			continue
+		var bus: String = str(_opt(e, "bus", "SFX"))
+		if bus == "Music" or bus == "Ambience":
+			continue
+		for f: Variant in e.get("files", []):
+			warm.add(str(f))
 
 
 func _on_round_started(round_number: int, is_special: bool) -> void:
@@ -653,6 +674,8 @@ func hum_level() -> float:
 # ================================================================== perk-machine hums
 
 func _process(delta: float) -> void:
+	if warm.busy():
+		warm.tick()
 	_update_hum_envelope(delta)
 	_hum_t -= delta
 	if _hum_t > 0.0:

@@ -1129,7 +1129,7 @@ func _pose(delta: float, speed: float, flags: int) -> void:
 	player.net_flags = flags
 	if player.remote_body != null:
 		player.remote_body.calm = speed < 0.3 and state != State.BREAKOUT
-		player.remote_body.update_pose(delta, speed, 0.0, flags)
+		player.remote_body.update_pose_lod(delta, speed, 0.0, flags)   # T-237: by what the camera sees
 
 
 ## The nearest standing human within `r` m (bots and the companion excluded), or null.

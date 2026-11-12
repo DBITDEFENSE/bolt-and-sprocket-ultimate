@@ -638,7 +638,7 @@ func _snap(p: Vector3) -> Vector3:
 
 ## A nav path that doesn't cross a closed BuyDoor (doors aren't baked into the navmesh).
 func open_path(from: Vector3, dest: Vector3) -> PackedVector3Array:
-	var path: PackedVector3Array = NavigationServer3D.map_get_path(player.get_world_3d().navigation_map, from, dest, true, squad.nav_mask())
+	var path: PackedVector3Array = BotProf.nav_path(player.get_world_3d().navigation_map, from, dest, true, squad.nav_mask())
 	for d: BuyDoor in _doors:
 		if is_instance_valid(d) and not d.is_open and ZombieDirector.door_crossed(d, path):
 			return PackedVector3Array()

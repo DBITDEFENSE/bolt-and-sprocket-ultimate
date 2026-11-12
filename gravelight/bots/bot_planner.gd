@@ -36,6 +36,11 @@ var _t: float = 1.0
 var _failed: Dictionary = {}          # option id -> squad time until it may be picked again
 var _speak_t: float = 0.0
 var _announced: bool = false
+## T-237: what the model was last asked (the option ids and the built-in brain's pick then) and when (squad time).
+var _asked_ids: Array = []
+var _asked_fb: String = ""
+var _asked_t: float = -INF
+var asks_skipped: int = 0
 
 
 func setup(b: BotBrain, s: BotSquad, llm: bool) -> void:
@@ -86,8 +91,8 @@ func on_errand_finished(id: String, ok: bool) -> void:
 
 func status_line() -> String:
 	var src: String = ai.status_text() if ai != null else "scripted"
-	return "planner [%s] picks: %d LLM / %d scripted, objectives done %d: %s" % [src, llm_picks, scripted_picks,
-		brain.objectives_done, str(directive.get("label", "-"))]
+	return "planner [%s] picks: %d LLM / %d scripted, asks skipped %d, objectives done %d: %s" % [src, llm_picks, scripted_picks,
+		asks_skipped, brain.objectives_done, str(directive.get("label", "-"))]
 
 
 # ------------------------------------------------------------------ deciding
@@ -103,6 +108,19 @@ func _decide(force: bool) -> void:
 	var fb: int = learned_index(feats, learned())
 	if ai != null and ai.is_ready() and options.size() > 1:   # T-217: one option is no choice: no model call
 		var ids: Array = _ids(options)
+		# T-237: the model is asked when there is something new to decide, not every decide_every_s. Each call runs
+		# the model for about a second on the GPU the game is drawing with (the owner's log: 0.9 to 1.1 s an answer
+		# in a match against 0.5 s idle), every 4 s, mostly to hear the same pick again.
+		var now: float = squad.time()
+		if not ask_due(force or directive.is_empty(), ids, _asked_ids, str(options[fb]["id"]), _asked_fb, now - _asked_t, float(_cfg.get("reask_every_s", 20.0)),
+				float(_cfg.get("ask_gap_s", 8.0))):
+			asks_skipped += 1
+			if not ids.has(cur):
+				_set_directive(options[fb], "scripted (the objective is gone)", "")
+			return
+		_asked_ids = ids.duplicate()
+		_asked_fb = str(options[fb]["id"])
+		_asked_t = now
 		var row: Dictionary = _decision_row(feats, cur)
 		var sent: bool = ai.ask(_messages(cur), reply_schema(ids), func(reply: Variant, ms: int) -> void: _on_reply(reply, ms, ids, row))
 		if not sent and (force or directive.is_empty()):
@@ -111,6 +129,23 @@ func _decide(force: bool) -> void:
 			_set_directive(options[fb], "scripted (while the model thinks)", "")
 		return
 	_set_directive(options[fb], "scripted", "")
+
+
+## T-237 (pure, unit-tested): is the model asked at this decision? Yes when the bot has no objective (or lost
+## it). Otherwise not within `gap_s` of the last ask; after that, when the options on offer changed (an id came or
+## went), when the built-in brain's own pick changed since the last ask (the situation moved enough to change its
+## mind), or `reask_s` after the last ask. Between asks the model's last pick stands.
+static func ask_due(need_now: bool, ids: Array, asked_ids: Array, fb_id: String, asked_fb: String, since_s: float, reask_s: float, gap_s: float = 0.0) -> bool:
+	if need_now:
+		return true
+	if since_s < gap_s:
+		return false
+	if since_s >= reask_s or fb_id != asked_fb or ids.size() != asked_ids.size():
+		return true
+	for id: Variant in ids:
+		if not asked_ids.has(id):
+			return true
+	return false
 
 
 func _on_reply(reply: Variant, ms: int, ids: Array, row: Dictionary = {}) -> void:
