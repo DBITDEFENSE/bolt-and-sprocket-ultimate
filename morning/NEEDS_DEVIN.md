@@ -2,6 +2,25 @@
 
 Short, phone-readable. Nothing here blocks the build.
 
+## UPDATE 15 (2026-11-12): movement, bot lag, maps 1-2, horses, bosses. Look, then merge.
+- [ ] **Walk Map 1.** Kerbs and low props should carry you over, not stop you. If a spot lets you somewhere it
+  should not, tell me where (`step.max_h` in `data/gravelight/movement.json` is the knob).
+- [ ] **Ride the horse.** Map 1, buy the yard door, the horse is at the rail by the stable wall. Mount, trot a loop,
+  shoot from the saddle, gallop through a zombie, get down. Say if it should be faster, turn tighter, or sit lower.
+- [ ] **Fight the horses.** Dev console to round 20 and round 30 on Map 1. Is the charge fair to dodge? Is it
+  frightening or silly?
+- [ ] **Bot lag, with a window.** One match with 3 bots and one without, from the repo root:
+  `tools\dl_godot\Godot_v4.7.2-stable_win64.exe --path . --log-file logs\game_last.log res://gravelight/ui/main_menu.tscn -- --frame-log`
+  Send me the two frame logs. If it still stutters, try the AI-brain bot set to the built-in brain (Settings).
+- [ ] **The Inn's vault.** If the cellar still feels cluttered, the next step is moving perk machines out of it. Say
+  yes or no.
+- [ ] **Fall speed.** The jump is a little floaty. Falling faster feels snappier but shortens the sprint jump from
+  4.4 m to about 3.9 m. Say if you want it (`jump.fall_gravity_mult`).
+- [ ] **Merge to master** when happy (this branch carries the maps 1-2 pass and the boss rework too):
+  `git checkout master && git merge claude/boss-rework && git push`.
+- Not yours to do, for the record: the zombie overhaul's file lets a body's fall speed build without limit off a
+  floor (`Zombie._apply_gravity`), and its explosions cost 9-35 ms in a pack.
+
 ## THE CLIMB AND THE RIDE MOVE (2026-11-09 late): ride it, then merge. Nothing blocks the build.
 - [ ] **Climb and ride.** Map 1, yard door, the tower: hold Use at the ladder (you go up hand over hand), up top hold
   Use at the trolley (you grab the bar, step off, roll down and swing). Renders of both mid-way:

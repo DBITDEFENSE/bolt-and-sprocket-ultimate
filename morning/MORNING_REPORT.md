@@ -1,31 +1,71 @@
-# Morning report: THE CLIMB AND THE RIDE MOVE, 2026-11-09 (late)
+# Morning report: UPDATE 15, 2026-11-12
 
-**The ladder climbs and the zip line ride are animated now, and the stray wood in the Inn's first room is gone.**
-Branch `claude/maps-1-2-production` (with the three earlier passes), not merged: look first.
+**Your five asks are built on branch `claude/boss-rework`, with the boss rework from the night before finished on
+the same branch. Not merged to master: look first.** Nothing was seen on your screen; the pictures below are
+software renders.
 
-## The ladder (every map)
-- Hold Use at the foot: you step onto the ladder, turn to the rungs, the gun goes away and both hands come up. You go
-  up in pulls, rung by rung, the view bobbing and tipping toward the pulling hand, a hand letting go and reaching for
-  the next rung while the other holds; a rung sound per rung (wood on the tower and the cellar hatch, metal on the
-  U-boat). At the top you swing over the rail onto the deck and the gun comes back up. Down is the same, mirrored.
-- You keep the mouse, within a wide cone of the ladder. The radar tower's ladder (Act III) moves the same way.
+## 1. Movement
+- You walk up and down anything up to 40 cm (kerbs, sills, low props) instead of stopping dead. The view eases.
+- A jump pressed just after a ledge (0.1 s) or just before landing (0.12 s) counts.
+- Strafe reversals are quicker. Crouch, head bob and slide no longer step at 60 Hz on a fast display.
+- Walk and sprint speeds are unchanged. Bots do not use the step assist.
+- Numbers and knobs: `docs/u15/t236_movement.md` (`data/gravelight/movement.json`).
 
-## The zip line (Map 1)
-- Hold Use at the trolley: you step under the anchor, grab the bar at shoulder height, step off and drop into the hang.
-  The trolley starts slow and gains speed down the slope (gravity, capped at 7.5 m/s), you hang and swing under it,
-  lagging as it pulls, the wheels spin, the wind rises, the view opens; at the post you let go and land.
-  3.6 seconds instead of a 2-second slide.
+## 2. Lag with bots: better on hitches, barely on the average
+- Hitches on the Inn: frames over 16.7 ms 31 -> 11 of 1800, over 20 ms 9 -> 0 (headless, no renderer).
+- The average frame moved 0-3 %. A squad still costs about 3 ms of CPU a frame.
+- Fixed: sounds, voice lines and gun models loading on the frame that first used them; several bots thinking on
+  one tick; the bots asking the navmesh about every machine each second.
+- The AI-brain bot's model ran about a quarter of the time on your graphics card (your log: an answer in about 1 s
+  every 4 s). It is asked far less often now. This is the change you are most likely to feel; I could not measure it.
+- Not fixed: the biggest spikes left are in zombie code (an explosion in a pack 9-35 ms), which the zombie
+  overhaul owns. `docs/u15/t237_bot_perf.md`.
 
-## The piece of wood
-- The Inn's first room is the taproom. Seven camera renders of it showed one odd upright: the fire poker, a bare block
-  standing on the floor a step from the hearth. It is a proper set of fire irons on the hearthstone now (stand, poker,
-  tongs, brush, the bellows on the jamb). The Waschkaue (Map 1's first room) was checked too: the one odd thing in its renders, a tan rectangle at the top of the right doorway seen from the back wall, is a lit window of the yard building north-east (x 15, 3.9 m up, on that sight line; two closer doorway cameras, u10_map01 A_kaue_door_r / A_kaue_door_r2, show nothing there); the probe (extended to the generators' geometry boxes, Props.probe_geo) lists nothing wooden in the corridor.
+## 3. Map 1, the Inn
+- The crowded cellar was the Helvetia vault: floor-standing things 18 -> 8, the lever's approach 1.8 -> 2.6 m.
+  Twelve machines still stand there (their positions were off limits). If it still feels crowded, moving some
+  machines is the next step: say so.
+- Hay: real bales with twine, stacks laid in courses, a loose mound, straw on the boards, a pitchfork. The bales
+  you could walk through in the stable's doorway are a solid stack on the wall now.
+- Taproom crates against the wall, the till modelled, the yard's loose things out of the open ground.
+- Pictures: `morning/screenshots/u05/u15_before/` and `u15_after/` (same file names; start with `52_stable_hay`,
+  `55_loft_stack`, `41_cellar_vault_n`).
+
+## 4. Map 2, Kaltenbrunn
+- Not cluttered; the fault was the opposite. You could walk through most floor props (ore carts, drums, desks, the
+  lab's gurneys, the pylons). 65 are solid now.
+- Every pine piece was drawn bright green; brown again. Sixteen door trims hung in bought doorways; fixed.
+- The Admin stairs' bare black sides are a panelled wall with a shift board, a plan and a clock.
+- Lanterns in eight places that were black before the power.
+- Pictures: `morning/screenshots/u10_map01/u15_before/` and `u15_after/`.
+
+## 5. Horses
+- **The horse** stands tied in the Carters' Yard, east of the Thompson chalk. Hold Use to mount; forward urges it
+  on (walk, trot, gallop), back reins it in, left / right turn it; hold Use or Jump to get down. You can shoot from
+  the saddle up to a trot, not at a gallop. Zombies ignore it and it cannot die. A gallop flings an ordinary zombie
+  aside and costs the gallop. It stays in the yard (and the grounds once the gate is bought).
+- **Round 20, DAS TOTENROSS:** a dead dray horse, skull bare, violet light in the ribs. Charge (sidestep it: a wall
+  staggers it), stomp, a kick if you stand behind it, a trample of anyone knocked down.
+- **Round 30, DER FUHRMANN:** the same horse with its dead carter riding and lashing a whip; he is thrown at half
+  health and fights on foot.
+- On at the Inn (yard, grounds, stable) and on Kaltenbrunn's surface. Indoors it does not follow; it sends the
+  nearby dead at you.
+- Pictures: `morning/screenshots/t240_horse/v3/` (the model) and `morning/screenshots/u15_horse/a3/` (the bosses in
+  the yard).
+
+## The boss rework (from the 10th)
+- All ten bosses' reworks are merged, and the ten faults your /code-review found in the shared kit are fixed
+  (lights left dim after a fight, hit effects firing on burn ticks, blood ignoring the gore setting, and the rest).
+- PAUL was getting wedged in the Waschkaue's back corner; fixed on the map.
 
 ## Checked
-- `smoke_ladders`: smoke_ladders PASS (73 checks, four runs through the iterations), smoke_map04c_world PASS (the radar tower's climb, 3.0 s + the mount and dismount, still inside the smoke's 4.2 s wait), unit test_ladders_data 3, test_capture_cams 3, test_world_objects 16, test_map00 60, test_map02 18, test_map04c 8 PASS, check_scripts 877 scripts 0 failed; map00 regenerated (598 collision boxes, unchanged; the fire irons are dressing); renders here under WSL: morning/screenshots/u05/anim4 (ride_zip: the yard below the raised arms, the stable wall ahead; ride_zip_up: the arms up to the trolley), anim3 (ride_climb: the right glove on the lower rung), anim1 (taproom_hearth: the fire irons), u10_map01/anim1 (the Kaue doorway cameras).
-- Renders here under WSL: `morning/screenshots/u05/anim1/` (mid-climb, mid-ride, the hearth) and `u10_map01/anim1/`.
+- Scripts: 903, 0 failed. Unit suite: 2254 of 2255 pass, 1 risky (the old loudness test that asserts nothing).
+- A second code review of the new code found ten more faults, all fixed: the worst was a co-op horse left "ridden"
+  for everyone when a client rider went down.
+- Smokes: see the last section of `morning/NEEDS_DEVIN.md`.
 
-## Please look
-`tools_src/capture.gd --set=u05 --only=ride_climb,ride_zip,ride_zip_late,taproom_hearth` or DevLauncher into Map 1:
-buy the yard door, climb the tower, ride the line. Say if the climb should be faster or slower (one number, PACE in
-`gravelight/world/ladder_climb.gd`) or the line faster (speed in `data/gravelight/map00.json`).
+## Known and open
+- Co-op clients see a plain zombie where a boss horse is (the limit every homage boss has had).
+- Whether bots get out of a charge's line is not measured.
+- `smoke_npc_walls` fails on the Inn as it did before this work: a bot presses behind the bar toward the shut cellar.
+- Sixteen extra boss sounds the boss workers asked for are not made; stand-ins play.
