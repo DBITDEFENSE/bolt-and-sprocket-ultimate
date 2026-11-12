@@ -63,10 +63,20 @@ she takes a step, a 0.45 s glide at her unseen speed that stops 2.6 m short (out
 into a grab), no damage, 5 s cooldown. HOMAGE_BOSSES 1.2 holds: modest clothing intact, no suggestive framing,
 deaths authored (the sit-and-topple, the reach, the fist), dismemberment untouched.
 
-Verification (headless; see the report for the exact numbers): check_scripts 880 / 0 failed; smoke_cousins PASS;
-GUT test_homage_cousins (the v1 tests plus 9 new pure-rule tests: dread blocks, crack tiers, the hurt pick, the lone
-grab terms, the window rule, the grief length and damage, the look-away rule, the dark hunt trigger and its
-scheduling), test_boss_fx, test_map00*. Renders: `u14_cousins` (7 cams, WSL) in `morning/screenshots/u14_cousins/w1/`.
+Verification (headless, in the worktree): check_scripts 880 scripts / 0 failed; smoke_cousins PASS, 90 checks (69 in
+v1 + 21 new: the kit on the Hammer, the modelled doll with its tiers, a crack tier opening, Through-the-Window with
+the creak, the torn board, the held player and the wrist break, the arm withdrawing, the frost breath, the look-away
+step and that it never steps into a grab, the death opening every crack, the harder hits after the first rise, the
+flat hum loop playing on the enraged Reach, the longer second grief window, the dark hunt with the lamps out again
+and the hearth relit), no forced moves, no script errors; GUT test_homage_cousins 34 / 34 (198 asserts; 25 v1 tests
++ 9 new pure-rule tests: dread blocks, crack tiers, the hurt pick, the lone grab terms, the window rule, the grief
+length and damage, the look-away rule, the dark hunt trigger and its scheduling), test_boss_fx 4 / 4 (152),
+test_map00* 7 scripts, 60 / 60 (1149). A worktree note for the lead: a fresh `git worktree` has LFS pointers, not
+files, and the first headless import writes `valid=false` into ~2900 git-ignored `.import` files, which later import
+passes never retry; `git lfs checkout`, `git checkout -- assets` (the tracked `.import` files), deleting the
+`valid=false` ones and three more passes made the worktree whole (9574 imported). Renders: `u14_cousins` (7 cams,
+WSL, Compatibility renderer with the light-cap `override.cfg`) in `morning/screenshots/u14_cousins/w1/`; what the
+frames showed is in the report and below.
 
 Open issues / for the lead: (1) `HomageBoss.take_damage` still plays `impact_flesh` on every bullet (base class, not
 mine); the kit's porcelain hit plays over it, so the Cousins sound right but the flesh thud is under it; drop it for
