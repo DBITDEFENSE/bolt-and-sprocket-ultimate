@@ -13,7 +13,7 @@
   "death_key_pose_seconds": {"mco_death_back":1.0, "mco_death_hit_back":0.4},
   "death_motion": {"inherit_velocity":true, "max_linear_mps":4.0, "max_angular_rps":12.0},
   "contact_lock": {"enabled":true, "max_correction_m":0.18, "release_seconds":0.08},
-  "turn": {"enabled":true, "left":"mco_turn_l_45_yaw", "right":"mco_turn_r_45_yaw", "minimum_degrees":25.0, "maximum_degrees":65.0, "maximum_lag_degrees":70.0, "redirect_degrees":20.0, "settled_degrees":2.0, "release_seconds":0.06, "cooldown_seconds":0.25},
+  "turn": {"enabled":true, "left":"mco_turn_l_45_yaw", "right":"mco_turn_r_45_yaw", "minimum_degrees":25.0, "maximum_degrees":65.0, "maximum_lag_degrees":70.0, "redirect_degrees":20.0, "settled_degrees":2.0, "release_seconds":0.06, "cooldown_seconds":0.25, "observe_start_dps":180.0, "observe_settle_dps":40.0, "observe_settle_seconds":0.05, "observe_hold_seconds":0.3},
   "validation": {"root_relative_error":0.05, "contact_p95_mps":0.10, "minimum_contact_samples":100, "frame_p95_ms":16.667, "callback_cpu_p95_ms":0.35},
   "clips": [
     {"name":"mco_swipe_r", "source":"Zombie_Atk_Arms_3_SHORT_Loop", "loop":false, "foot_lock":true, "extract_root":false, "sample_fps":60, "timing":{"source_seconds":[0,0.2,0.6], "target_seconds":[0,0.45,0.8]}, "events":{"hit":0.45}},

@@ -1,5 +1,49 @@
 # PROGRESS
 
+RESUME HERE: 2026-11-12 Claude Fable 5.2, co-op turn slice committed. Work ONLY in .wt/zombie-overhaul,
+branch codex/zombie-overhaul; the handoff file docs/CLAUDE_FABLE_5_2_ZOMBIE_HANDOFF.md still holds the rules, the
+asset state and the commands. NEXT (handoff item 2): the terrain / special-body matrix: repeatable stairs and rubble
+cases on real collision with foot rays, all three builds / sexes / heights, crawler, Glasshide, Bellringer and the
+other special enemies, turn-to-move / attack / death, rapid target changes, large facings, animation LOD distances;
+capture evaluated feet and pose continuity, diagnose before tuning. Then items 3-6 (review the unused supplied
+states, the recording gaps, one artist-authored soldier, Stage 4 evidence). Preserve all gameplay speeds.
+
+## 2026-11-12, co-op stationary turns (handoff item 1)
+
+A client's copy of a zombie sees only the host's interpolated yaw, so the host-side trigger (one request of 25-65
+degrees) never fired there: over real traffic a 45 degree facing arrives as steps of at most 18 degrees a tick.
+`ZombieTurnMotion.observe()` is the puppet's trigger now: a fast observed yaw change (180 deg/s) from a settled
+heading starts a hold (the visual stays on the old heading), and when the yaw settles (under 40 deg/s for 0.05 s) or
+the hold has run 0.3 s, an accumulated angle inside the recorded range becomes one turn over that whole angle;
+anything else is released by the ordinary easing. Slow tracking of a moving target never reaches the start rate, so
+jitter cannot step a still body. Tuning: `zombie_mocap.json` turn.observe_*. Gameplay facing, snapshot contents and
+attack timing are untouched; the one shared-networking edit is `Zombie._puppet_apply_sample()` (the four lines of
+`_puppet_tick` that put the sample on the body, factored out so a test can drive them) calling `observe` in place
+of `request`.
+
+Host side, found by the same check: a facing past the recorded range (120 degrees) fell into range on its way and
+played a recorded step for the remainder after the body had already swung most of the angle, on the host only. An
+over-range request now latches until that facing has settled (`over_range`); the next in-range facing turns as before.
+
+Evidence:
+- `tools/zombie_turn_net_check.tscn` (new): a real host and client process on 127.0.0.1, Map 0, one Ganger held
+  still and faced through `_face()` to +45 / -45 / +35 / -60 / +60 / -35 / +15 / +120 degrees. RESULT PASS: host 6
+  recorded turns, client 6; the largest visual heading step on the client during the recorded turns 2.93 deg a
+  tick; the visual ends on the body's heading. The old trigger would have fired on 1 tick of 1,501, and that one is
+  the 120 degree facing (a 32 degree body step), none of the six real turns. Report:
+  `docs/captures/after/mocap/turns/turn_net.json`.
+- Unit: 49/49 zombie tests, 4,600 asserts (was 46 / 4,066). New: 18 client runs through the real InterpBuffer
+  (35 / 45 / 60 degrees both ways x clean, 18 ms jitter, 18 ms jitter with every fifth packet lost) each play
+  exactly one turn with no step over 6 degrees and settle; 18 runs of small (12, 20), large (110, 170) and slow
+  tracking (25, 60 deg/s) facings play none; the host's over-range latch; pool reuse clears the hold and the latch.
+- Scoped reruns: check_scripts 860 / 0 failed; zombie_mocap_check 30 clips, no failures; zombie_turn_check and its
+  attack interruption exit 0 with no failures; smoke_zombie_anim PASS; smoke_coop PASS. No script errors in any log.
+
+Not done here: the client's turn starts about 0.15-0.4 s after the host's (the interpolation delay plus the settle
+wait), which is not measured against a rendered pair; the check is headless, so the client's feet were not looked
+at; redirect and wraparound on the client are covered by the unit runs only through the shared cancel path, not by
+a dedicated two-process case. Scores unchanged (stationary turns 3/5, model 2/5).
+
 RESUME HERE: 2026-11-11 Claude Fable 5.2 handoff is ready at
 docs/CLAUDE_FABLE_5_2_ZOMBIE_HANDOFF.md. Continue from that file. Work ONLY in .wt/zombie-overhaul,
 branch codex/zombie-overhaul. Runtime checkpoint bf395bc3: two cleaned 45-degree turns use a visual Turn

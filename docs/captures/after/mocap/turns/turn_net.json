@@ -1,0 +1,52 @@
+{
+  "asked": [
+    [
+      45.0,
+      true
+    ],
+    [
+      -45.0,
+      true
+    ],
+    [
+      35.0,
+      true
+    ],
+    [
+      -60.0,
+      true
+    ],
+    [
+      60.0,
+      true
+    ],
+    [
+      -35.0,
+      true
+    ],
+    [
+      15.0,
+      false
+    ],
+    [
+      120.0,
+      false
+    ]
+  ],
+  "client": {
+    "end_pivot_deg": 0.00000000000000000000000000462748,
+    "entered": 6,
+    "fails": [],
+    "legacy_trigger_ticks": 1,
+    "max_body_step_deg": 32.2988683396285,
+    "max_visual_step_deg": 35.0986550879705,
+    "max_visual_step_in_range_deg": 2.92839238022419,
+    "ticks": 1501
+  },
+  "expected_turns": 6,
+  "fails": [],
+  "host_turns": 6,
+  "note": "legacy_trigger_ticks = ticks on which one tick's observed yaw change reached 25 degrees (the trigger the puppet used before)",
+  "pass": true,
+  "zombie_send_hz": 20
+}

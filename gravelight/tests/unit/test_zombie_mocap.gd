@@ -239,3 +239,139 @@ func test_live_gaits_keep_speed_and_match_root_travel_after_random_seek() -> voi
 	assert_gt(held_speeds.size(), 100, "planted-foot regression exercised actual contact windows")
 	if not held_speeds.is_empty():
 		assert_lt(held_speeds[int(held_speeds.size() * 0.95)], 0.1, "p95 planted foot drift with additive limp stays below 0.1 m/s")
+
+
+## Co-op: a client's copy sees only the host's interpolated yaw (20 snapshots a second, 100 ms behind, with jitter and
+## a lost packet now and then), never the destination. The real InterpBuffer carries a real host zombie's _face().
+func _puppet_turn_run(degrees: float, jitter_ms: float, drop_every: int, seed_v: int, track_dps: float = 0.0) -> Dictionary:
+	var root := Node3D.new()
+	add_child_autofree(root)
+	var spawn := ZombieSpawn.new()
+	root.add_child(spawn)
+	var host := Zombie.new()
+	root.add_child(host)
+	var pup := Zombie.new()
+	root.add_child(pup)
+	for z: Zombie in [host, pup]:
+		z.activate({"enemy_id":"ganger", "variant":"soldier", "tier":"walk"}, spawn, null)
+		z.set_physics_process(false)
+		z.set_process(false)
+		z.rotation.y = 0.0
+		z.set_posture("none", 0.0)
+		z._enter(Zombie.State.CHASE)
+		z._animate(0.3)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_v
+	pup.puppet = true
+	pup.interp = InterpBuffer.new()
+	pup.interp.snap(0.0, pup.global_position, 0.0)
+	var yaw: float = deg_to_rad(degrees)
+	var out: Dictionary = {"entered": 0, "max_step_deg": 0.0, "host_entered": false, "end_pivot": 0.0, "end_err": 0.0, "active_end": false}
+	var acc: float = 0.0
+	var sent: int = 0
+	var last_visual: float = 0.0
+	var was_turn: bool = false
+	for tick: int in 240:
+		var t_ms: float = float(tick + 1) * 1000.0 / 60.0
+		if tick >= 30:
+			if track_dps != 0.0:
+				yaw = deg_to_rad(track_dps) * float(tick - 30) / 60.0
+			host._face(host.position + Vector3(-sin(yaw), 0, -cos(yaw)) * 10.0)
+		host._animate(1.0 / 60.0)
+		if host._tree_state == "Turn": out["host_entered"] = true
+		acc += 1.0 / 60.0
+		if acc >= 1.0 / 20.0:
+			acc = 0.0
+			sent += 1
+			if drop_every <= 0 or sent % drop_every != 0:
+				# the wire's yaw is 16 bit; the arrival time wobbles
+				var q: float = roundf(wrapf(host.rotation.y, -PI, PI) / PI * 32767.0) / 32767.0 * PI
+				pup.interp.push(t_ms + rng.randf_range(0.0, jitter_ms), host.global_position, q, 0.0, int(Zombie.State.CHASE), 0)
+		if pup.interp.sample(t_ms - 100.0):
+			pup._puppet_apply_sample(1.0 / 60.0)
+		pup._animate(1.0 / 60.0)
+		var visual: float = pup.rotation.y + pup._pivot.rotation.y
+		out["max_step_deg"] = maxf(float(out["max_step_deg"]), rad_to_deg(absf(wrapf(visual - last_visual, -PI, PI))))
+		last_visual = visual
+		var is_turn: bool = pup._tree_state == "Turn"
+		if is_turn and not was_turn: out["entered"] = int(out["entered"]) + 1
+		was_turn = is_turn
+	out["end_pivot"] = rad_to_deg(absf(pup._pivot.rotation.y))
+	out["end_err"] = rad_to_deg(absf(wrapf(pup.rotation.y - host.rotation.y, -PI, PI)))
+	out["active_end"] = pup._turn_motion.active or pup._turn_motion.holding
+	pup.deactivate()
+	out["reset_ok"] = not pup._turn_motion.holding and pup._turn_motion.offset == 0.0
+	host.deactivate()
+	return out
+
+
+func test_a_clients_copy_plays_the_recorded_turn_from_observed_yaw() -> void:
+	if not ZombieClips.recorded_turns_enabled():
+		pending("Local licensed root-yaw clips required")
+		return
+	var seed_v: int = 1
+	for degrees: float in [35.0, 45.0, 60.0, -35.0, -45.0, -60.0]:
+		for net: Array in [[0.0, 0], [18.0, 0], [18.0, 5]]:
+			seed_v += 1
+			var r: Dictionary = _puppet_turn_run(degrees, float(net[0]), int(net[1]), seed_v)
+			var what: String = "%s deg, jitter %s ms, drop every %s" % [str(degrees), str(net[0]), str(net[1])]
+			assert_true(bool(r["host_entered"]), "the host turns: " + what)
+			assert_eq(int(r["entered"]), 1, "the client's copy plays one recorded turn: " + what)
+			assert_lt(float(r["max_step_deg"]), 6.0, "no visual heading pop: " + what)
+			assert_lt(float(r["end_pivot"]), 0.1, "it settles onto the gameplay heading: " + what)
+			assert_lt(float(r["end_err"]), 0.1, "the body faces as the host's does: " + what)
+			assert_false(bool(r["active_end"]), "nothing left running: " + what)
+			assert_true(bool(r["reset_ok"]), "pool reuse clears the hold: " + what)
+
+
+func test_a_clients_copy_does_not_step_on_small_or_slow_or_large_facing() -> void:
+	if not ZombieClips.recorded_turns_enabled():
+		pending("Local licensed root-yaw clips required")
+		return
+	# under the recorded range, over it, and slow tracking of a target walking round it
+	for c: Array in [[12.0, 0.0], [20.0, 0.0], [110.0, 0.0], [170.0, 0.0], [0.0, 25.0], [0.0, 60.0]]:
+		for seed_v: int in [3, 4, 5]:
+			var r: Dictionary = _puppet_turn_run(float(c[0]), 18.0, 5, seed_v, float(c[1]))
+			var what: String = "%s deg / tracking %s deg/s (seed %d)" % [str(c[0]), str(c[1]), seed_v]
+			assert_eq(int(r["entered"]), 0, "no recorded turn: " + what)
+			assert_lt(float(r["end_err"]), float(c[1]) * 0.13 + 0.1, "the body follows the host (a moving target is seen 100 ms late): " + what)
+
+
+func test_a_facing_past_the_recorded_range_plays_no_partial_turn_on_the_host() -> void:
+	if not ZombieClips.recorded_turns_enabled():
+		pending("Local licensed root-yaw clips required")
+		return
+	var root := Node3D.new()
+	add_child_autofree(root)
+	var spawn := ZombieSpawn.new()
+	root.add_child(spawn)
+	var z := Zombie.new()
+	root.add_child(z)
+	for degrees: float in [90.0, 120.0, 170.0, -120.0]:
+		z.activate({"enemy_id":"ganger", "variant":"soldier", "tier":"walk"}, spawn, null)
+		z.set_physics_process(false)
+		z.set_process(false)
+		z.rotation.y = 0.0
+		z.set_posture("none", 0.0)
+		z._enter(Zombie.State.CHASE)
+		z._animate(0.3)
+		var yaw: float = deg_to_rad(degrees)
+		var target: Vector3 = z.position + Vector3(-sin(yaw), 0, -cos(yaw)) * 10.0
+		var expected: float = 0.0
+		var entered: bool = false
+		for tick: int in 90:
+			expected = lerp_angle(expected, yaw, 0.25)
+			z._face(target)
+			z._animate(1.0 / 60.0)
+			assert_almost_eq(wrapf(z.rotation.y - expected, -PI, PI), 0.0, 0.00001, "gameplay facing response unchanged")
+			entered = entered or z._tree_state == "Turn"
+		assert_false(entered, "no recorded step for the remainder of a %s degree facing" % str(degrees))
+		# once that facing has settled, an in-range one turns as before
+		var yaw2: float = yaw + deg_to_rad(45.0)
+		for tick: int in 120:
+			z._face(z.position + Vector3(-sin(yaw2), 0, -cos(yaw2)) * 10.0)
+			z._animate(1.0 / 60.0)
+			entered = entered or z._tree_state == "Turn"
+		assert_true(entered, "the next in-range facing plays its recorded turn")
+		z.deactivate()
+		assert_false(z._turn_motion.over_range, "pool reuse clears the over-range latch")

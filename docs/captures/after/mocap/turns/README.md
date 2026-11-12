@@ -53,3 +53,7 @@ and stairs/rubble/special-body coverage remain open for the next owner.
 Visual review of the captured soldier sequence: stationary turns **2 -> 3/5**. The body/clothes
 remain simplified (**model 2/5**); this does not meet full premium acceptance. Raw frame PNGs
 and verbose logs remain local; compact videos and numerical reports are committed.
+
+## Co-op (2026-11-12)
+
+`turn_net.json`: `tools/zombie_turn_net_check.tscn`, a host and a client process on loopback. The client's copy played 6 recorded turns for the host's 6 (+45, -45, +35, -60, +60, -35 degrees) and none for +15 and +120; largest visual heading step during the recorded turns 2.93 degrees a tick; `legacy_trigger_ticks` 1 of 1,501 is the 120 degree facing, not one of the six turns. Headless: numbers only, no footage.

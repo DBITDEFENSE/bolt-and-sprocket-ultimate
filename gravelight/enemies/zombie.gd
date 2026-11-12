@@ -3558,14 +3558,7 @@ func _puppet_tick(delta: float) -> void:
 		_emerge_tick(delta)   # the rise's sprays, crunches and the head-out hitbox switch play on the client too
 	_pred_dmg *= exp(-delta * 4.0)
 	if Net.session != null and interp.sample(Net.session.render_time_ms()):
-		var prev: Vector3 = global_position
-		global_position = interp.pos
-		var before: float = rotation.y
-		rotation.y = interp.yaw
-		_turn_rate = wrapf(rotation.y - before, -PI, PI) / maxf(delta, 0.0001)
-		velocity = (global_position - prev) / maxf(delta, 0.0001)
-		velocity.y = 0.0
-		_turn_motion.request(before, interp.yaw, _can_recorded_turn())
+		_puppet_apply_sample(delta)
 		var zf: int = (interp.flags >> 8) & 0xFF
 		hp = max_hp * float((interp.aux >> 8) & 0xFF) / 255.0
 		is_last = (zf & NetMatch.ZF_LAST) != 0
@@ -3577,6 +3570,19 @@ func _puppet_tick(delta: float) -> void:
 	_puppet_visual_tick(delta)
 	_update_audio(delta)
 	_update_senses(delta)
+
+
+## The interpolated sample onto the body (interp.sample() was just taken): place, facing, the observed velocity,
+## and the recorded turn's presentation trigger (only the observed yaw is known here: ZombieTurnMotion.observe).
+func _puppet_apply_sample(delta: float) -> void:
+	var prev: Vector3 = global_position
+	global_position = interp.pos
+	var before: float = rotation.y
+	rotation.y = interp.yaw
+	_turn_rate = wrapf(rotation.y - before, -PI, PI) / maxf(delta, 0.0001)
+	velocity = (global_position - prev) / maxf(delta, 0.0001)
+	velocity.y = 0.0
+	_turn_motion.observe(before, interp.yaw, delta, _can_recorded_turn())
 
 
 func _puppet_visual_tick(_delta: float) -> void:
