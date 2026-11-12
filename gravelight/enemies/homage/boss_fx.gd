@@ -45,12 +45,23 @@ var _acc: float = 0.0
 var _lights: Array = []              # [Light3D, base, is_flicker]
 var _light_tw: Tween = null
 var _flicker_t: float = 0.0
+var _restoring: bool = false        # lights_restore is easing them back: no longer held dimmed
 var _flicker_depth: float = 0.0
 var _level_now: float = 1.0
 var _tele_tw: Tween = null
+var _flash_tw: Tween = null
 var _last_report: Player = null
+var _hit_ms: int = -100000           # the last hit burst / weak-point flash (throttled, see hit())
+var _weak_ms: int = -100000
+
+const HIT_GAP_MS: int = 70           # at most one hit burst + sound per boss in this time
+const WEAK_GAP_MS: int = 140
 
 static var _quad_cache: Dictionary = {}
+static var _pm_cache: Dictionary = {}          # "kind@scale" -> ParticleProcessMaterial (shared, never edited after)
+## Lights some kit holds dimmed: instance id -> [Light3D, true base energy, holders]. Two bosses dimming the same
+## lamp share the one true base, and the lamp goes back to it when the last holder lets go.
+static var _held: Dictionary = {}
 
 
 ## Builds the kit under `owner_boss` and returns it.
@@ -72,6 +83,25 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	release_dread()
+	# the boss is leaving the tree (freed after a kill, a retreat or the round's cleanup): a tween of this node dies
+	# with it, so the lights it still holds are eased back by the tree instead
+	if not _lights.is_empty():
+		var mine: Array = _take_lights()
+		_ease_back(mine, _level_now, 1.5, get_tree())
+		_level_now = 1.0
+		_flicker_t = 0.0
+
+
+## The id this kit reports under: the boss's id and this instance, so two bosses of one kind are two reporters.
+func report_id() -> StringName:
+	return StringName("%s#%d" % [dread_id, get_instance_id()])
+
+
+## The boss's own "dread" block (a subclass whose data is not the base's table calls this after super._ready()).
+func configure(dread_cfg: Dictionary) -> void:
+	cfg = DEFAULTS.duplicate()
+	for k: Variant in dread_cfg.keys():
+		cfg[k] = dread_cfg[k]
 
 
 func c(key: String) -> float:
@@ -102,15 +132,15 @@ func _physics_process(delta: float) -> void:
 	_acc += delta
 	if _flicker_t > 0.0:
 		_flicker_t -= delta
+		var ending: bool = _flicker_t <= 0.0   # the last frame writes the plain level back, not a guttered value
 		for e: Array in _lights:
-			var l: Light3D = e[0]
-			if not is_instance_valid(l):
+			if not is_instance_valid(e[0]):    # a lamp freed mid-fight (a shield-cell, a shot-out bulb)
 				continue
-			var g: float = 1.0 - _flicker_depth * maxf(0.0, FlickerLight.wobble(float(Time.get_ticks_msec()) * 0.013 + float(l.get_instance_id() % 97), 0.9, 0.3, 0.9) - 0.4)
-			if l is FlickerLight:
-				(l as FlickerLight).base_energy = float(e[1]) * _level_now * clampf(g, 0.0, 1.2)
-			else:
-				l.light_energy = float(e[1]) * _level_now * clampf(g, 0.0, 1.2)
+			var l: Light3D = e[0]
+			var g: float = 1.0
+			if not ending:
+				g = 1.0 - _flicker_depth * maxf(0.0, FlickerLight.wobble(float(Time.get_ticks_msec()) * 0.013 + float(l.get_instance_id() % 97), 0.9, 0.3, 0.9) - 0.4)
+			_write_light(e, _level_now * clampf(g, 0.0, 1.2))
 	if _acc < 0.1:
 		return
 	_acc = 0.0
@@ -138,16 +168,16 @@ func _physics_process(delta: float) -> void:
 	if dfx != null:
 		_last_report = p
 		if lvl > 0.0:
-			dfx.report(dread_id, lvl, facing and los)
+			dfx.report(report_id(), lvl, facing and los)
 		else:
-			dfx.release(dread_id)
+			dfx.release(report_id())
 
 
 func release_dread() -> void:
 	if _last_report != null and is_instance_valid(_last_report):
 		var dfx: DreadFx = _last_report.get_node_or_null("DreadFx") as DreadFx
 		if dfx != null:
-			dfx.release(dread_id)
+			dfx.release(report_id())
 
 
 # ================================================================== footfalls
@@ -196,7 +226,7 @@ func map_root() -> Node:
 		if n is MapRoot:
 			return n
 		n = n.get_parent()
-	return get_tree().current_scene
+	return get_tree().current_scene if get_tree().current_scene != null else get_tree().root
 
 
 ## Captures every light within `radius` of `center` (not the boss's own, not `no_dim`) and eases them to
@@ -208,13 +238,34 @@ func lights_dim(center: Vector3, radius: float, level: float, seconds: float = 1
 			return
 		for n: Node in root.find_children("*", "Light3D", true, false):
 			var l: Light3D = n as Light3D
-			if l == null or boss.is_ancestor_of(l) or l.has_meta("no_dim") or l.light_energy <= 0.0:
+			if l == null or boss.is_ancestor_of(l) or l.has_meta("no_dim"):
 				continue
 			if l.global_position.distance_to(center) > radius:
 				continue
+			var id: int = l.get_instance_id()
+			var held: Variant = _held.get(id)
+			if held is Array and is_instance_valid((held as Array)[0]) and (held as Array)[0] == l:
+				# another boss holds this lamp dimmed: its energy now is not its base
+				(held as Array)[2] = int((held as Array)[2]) + 1
+				_lights.append([l, float((held as Array)[1]), l is FlickerLight])
+				continue
+			if l.light_energy <= 0.0:
+				continue
 			var base: float = (l as FlickerLight).base_energy if l is FlickerLight else l.light_energy
+			_held[id] = [l, base, 1]
 			_lights.append([l, base, l is FlickerLight])
+	_restoring = false
 	_fade_lights(level, seconds)
+
+
+static func _write_light(e: Array, k: float) -> void:
+	if not is_instance_valid(e[0]):
+		return
+	var l: Light3D = e[0]
+	if bool(e[2]):
+		(l as FlickerLight).base_energy = float(e[1]) * k
+	else:
+		l.light_energy = float(e[1]) * k
 
 
 func _fade_lights(level: float, seconds: float) -> void:
@@ -226,13 +277,7 @@ func _fade_lights(level: float, seconds: float) -> void:
 		if _flicker_t > 0.0:
 			return
 		for e: Array in _lights:
-			var l: Light3D = e[0]
-			if not is_instance_valid(l):
-				continue
-			if bool(e[2]):
-				(l as FlickerLight).base_energy = float(e[1]) * k
-			else:
-				l.light_energy = float(e[1]) * k, _level_now, level, maxf(0.05, seconds))
+			_write_light(e, k), _level_now, level, maxf(0.05, seconds))
 
 
 ## The captured lights gutter for `seconds` (depth 0..1: how far they dip).
@@ -241,28 +286,77 @@ func lights_flicker(seconds: float, depth: float = 0.7) -> void:
 	_flicker_depth = clampf(depth, 0.0, 1.0)
 
 
-## Every captured light back to its base over `seconds`, then forgotten.
+## Every captured light back to its base over `seconds`, then forgotten. The lights stay captured while they ease,
+## so a lights_dim() during the restore turns the fade round from where it is and keeps the true bases.
 func lights_restore(seconds: float = 2.0) -> void:
 	if _lights.is_empty():
 		return
 	_flicker_t = 0.0
+	# a lamp another boss also holds is let go at once and left at that boss's level
+	var mine: Array = []
+	for e: Array in _lights:
+		if not is_instance_valid(e[0]):
+			continue
+		var held: Variant = _held.get((e[0] as Light3D).get_instance_id())
+		if held is Array and int((held as Array)[2]) > 1:
+			(held as Array)[2] = int((held as Array)[2]) - 1
+		else:
+			mine.append(e)
+	_lights = mine
+	if _lights.is_empty():
+		if _light_tw != null and _light_tw.is_valid():
+			_light_tw.kill()
+		_level_now = 1.0
+		return
 	_fade_lights(1.0, seconds)
-	var lights: Array = _lights
+	_restoring = true
+	var tw: Tween = _light_tw
+	tw.finished.connect(func() -> void:
+		if _light_tw != tw:
+			return   # a later dim or restore took over
+		for e: Array in _take_lights():
+			_write_light(e, 1.0)
+		_level_now = 1.0)
+
+
+## Lets go of every captured light and returns the ones nobody else holds (the caller writes those back).
+func _take_lights() -> Array:
+	var free_now: Array = []
+	for e: Array in _lights:
+		if not is_instance_valid(e[0]):
+			continue
+		var id: int = (e[0] as Light3D).get_instance_id()
+		var held: Variant = _held.get(id)
+		if held is Array and int((held as Array)[2]) > 1:
+			(held as Array)[2] = int((held as Array)[2]) - 1   # the other boss still holds it: its level stands
+			continue
+		_held.erase(id)
+		free_now.append(e)
 	_lights = []
-	if _light_tw != null:
-		_light_tw.finished.connect(func() -> void:
-			for e: Array in lights:
-				var l: Light3D = e[0]
-				if is_instance_valid(l):
-					if bool(e[2]):
-						(l as FlickerLight).base_energy = float(e[1])
-					else:
-						l.light_energy = float(e[1]))
+	_restoring = false
+	for id: Variant in _held.keys():   # lamps freed while held
+		if not is_instance_valid((_held[id] as Array)[0]):
+			_held.erase(id)
+	return free_now
+
+
+## Eases `lights` from `from` to their bases on a tween of the tree (no node owns it: it outlives the boss).
+static func _ease_back(lights: Array, from: float, seconds: float, tree: SceneTree) -> void:
+	if lights.is_empty():
+		return
+	if tree == null or seconds <= 0.0:
+		for e: Array in lights:
+			_write_light(e, 1.0)
+		return
+	var tw: Tween = tree.create_tween()
+	tw.tween_method(func(k: float) -> void:
+		for e: Array in lights:
+			_write_light(e, k), from, 1.0, seconds)
 
 
 ## How many lights the kit holds dimmed (tests / smokes).
 func dimmed_count() -> int:
-	return _lights.size()
+	return 0 if _restoring else _lights.size()
 
 
 # ================================================================== emitters
@@ -270,7 +364,7 @@ func dimmed_count() -> int:
 static func _quad(kind: String) -> QuadMesh:
 	if _quad_cache.has(kind):
 		return _quad_cache[kind]
-	var k: Array = KINDS[kind]
+	var k: Array = KINDS.get(kind, KINDS["dust"])
 	var q: QuadMesh = QuadMesh.new()
 	q.size = Vector2(float(k[1]), float(k[1]))
 	var m: StandardMaterial3D = StandardMaterial3D.new()
@@ -295,7 +389,10 @@ static func _quad(kind: String) -> QuadMesh:
 ## A continuous emitter of `kind` under `parent` at `pos` (local), scaled by `scale` (size and reach) and the VFX
 ## quality. Off until `.emitting = true`.
 static func emitter(kind: String, parent: Node3D, pos: Vector3 = Vector3.ZERO, scale: float = 1.0) -> GPUParticles3D:
-	var k: Array = KINDS.get(kind, KINDS["dust"])
+	if not KINDS.has(kind):
+		push_warning("BossFx: unknown emitter kind '%s' (dust instead)" % kind)
+		kind = "dust"
+	var k: Array = KINDS[kind]
 	var e: GPUParticles3D = GPUParticles3D.new()
 	e.name = "Fx_" + kind
 	e.position = pos
@@ -304,6 +401,18 @@ static func emitter(kind: String, parent: Node3D, pos: Vector3 = Vector3.ZERO, s
 	e.emitting = false
 	e.local_coords = false
 	e.draw_pass_1 = _quad(kind)
+	e.process_material = _process_mat(kind, scale)
+	e.visibility_aabb = AABB(Vector3(-4, -4, -4) * scale, Vector3(8, 8, 8) * scale)
+	parent.add_child(e)
+	return e
+
+
+## The process material of a kind at a scale: built once and shared (a hit burst is made many times a second).
+static func _process_mat(kind: String, scale: float) -> ParticleProcessMaterial:
+	var key: String = "%s@%.2f" % [kind, scale]
+	if _pm_cache.has(key):
+		return _pm_cache[key]
+	var k: Array = KINDS[kind]
 	var pm: ParticleProcessMaterial = ParticleProcessMaterial.new()
 	pm.direction = Vector3(0, 1, 0)
 	pm.spread = float(k[5])
@@ -324,10 +433,8 @@ static func emitter(kind: String, parent: Node3D, pos: Vector3 = Vector3.ZERO, s
 	var gt: GradientTexture1D = GradientTexture1D.new()
 	gt.gradient = ramp
 	pm.color_ramp = gt
-	e.process_material = pm
-	e.visibility_aabb = AABB(Vector3(-4, -4, -4) * scale, Vector3(8, 8, 8) * scale)
-	parent.add_child(e)
-	return e
+	_pm_cache[key] = pm
+	return pm
 
 
 ## A one-shot burst of `kind` at `at` (world), freed when done.
@@ -358,18 +465,30 @@ func limb_pos(limb: StringName) -> Vector3:
 	return boss.global_position + Vector3.UP * 1.3
 
 
+## The burst kind of a surface. Flesh is blood: only with the Gore setting on full (dust otherwise).
+static func hit_kind(surface: String, blood: bool) -> String:
+	var kind: String = {"porcelain": "chips", "iron": "sparks", "flesh": "mist", "glass": "motes", "cloth": "dust"}.get(surface, "mist")
+	if kind == "mist" and not blood:
+		kind = "dust"
+	return kind
+
+
 ## A hit landed: a burst by the boss's surface at the limb, its sound; a weak point flashes violet; a heavy hit
-## punches the dread layer. `mult` is the boss's limb multiplier for the hit (> weak_mult = a weak point).
+## punches the dread layer. `mult` is the boss's limb multiplier for the hit (>= weak_mult = a weak point).
+## Throttled per boss (HIT_GAP_MS / WEAK_GAP_MS): four automatics on one boss make one burst, not forty.
 func hit(limb: StringName, amount: float, mult: float = 1.0, max_hp: float = 1.0) -> void:
+	var now: int = Time.get_ticks_msec()
 	var at: Vector3 = limb_pos(limb)
 	var surface: String = str(cfg.get("surface", "flesh"))
-	var kind: String = {"porcelain": "chips", "iron": "sparks", "flesh": "mist", "glass": "motes", "cloth": "dust"}.get(surface, "mist")
-	burst(kind, at, get_tree(), 0.6, 0.8)
-	AudioDirector.play_3d("boss_hit_" + surface, at, -6.0)
-	if mult >= c("weak_mult"):
+	if now - _hit_ms >= HIT_GAP_MS:
+		_hit_ms = now
+		burst(hit_kind(surface, ZombieGore.blood_allowed()), at, get_tree(), 0.6, 0.8)
+		AudioDirector.play_3d("boss_hit_" + surface, at, -6.0)
+	if mult >= c("weak_mult") and now - _weak_ms >= WEAK_GAP_MS:
+		_weak_ms = now
 		burst("motes", at, get_tree(), 0.8, 1.0)
 		AudioDirector.play_3d("boss_weakpoint_hit", at, -2.0)
-		tele(Color(0.72, 0.42, 1.0), 3.0, 0.25, false)
+		_weak_flash()
 	if max_hp > 0.0 and amount / max_hp >= c("punch_fraction"):
 		var p: Player = local_human(get_tree())
 		if p != null:
@@ -378,13 +497,39 @@ func hit(limb: StringName, amount: float, mult: float = 1.0, max_hp: float = 1.0
 				dfx.punch(clampf(amount / max_hp * 12.0, 0.3, 1.0))
 
 
+## True while tele()'s shape (or the weak-point flash) runs: the boss's own telegraph glow leaves the light alone.
+func tele_active() -> bool:
+	return (_tele_tw != null and _tele_tw.is_valid() and _tele_tw.is_running()) or (_flash_tw != null and _flash_tw.is_valid() and _flash_tw.is_running())
+
+
+## The weak point's violet flash on the telegraph light. Never over a telegraph (the tell matters more), and the
+## light's colour is put back after.
+func _weak_flash() -> void:
+	var light: Variant = boss.get("_tele_light")
+	if not (light is Light3D) or tele_active():
+		return
+	var l: Light3D = light as Light3D
+	if l.light_energy > 0.05:
+		return   # the boss's own telegraph glow is up
+	var was: Color = l.light_color
+	l.light_color = Color(0.72, 0.42, 1.0)
+	_flash_tw = create_tween()
+	_flash_tw.tween_property(l, "light_energy", 3.0, 0.08)
+	_flash_tw.tween_property(l, "light_energy", 0.0, 0.17)
+	_flash_tw.tween_callback(func() -> void:
+		if is_instance_valid(l):
+			l.light_color = was)
+
+
 ## The telegraph light's shape: a rise to `energy` over a third of `seconds`, a hold, a snap out; `rise_sound`
-## plays boss_telegraph_rise with it.
+## plays boss_telegraph_rise with it. HomageBoss leaves the light to this shape while it runs (tele_active()).
 func tele(color: Color, energy: float, seconds: float, rise_sound: bool = true) -> void:
 	var light: Variant = boss.get("_tele_light")
 	if not (light is Light3D):
 		return
 	var l: Light3D = light as Light3D
+	if _flash_tw != null and _flash_tw.is_valid():
+		_flash_tw.kill()
 	l.light_color = color
 	if _tele_tw != null and _tele_tw.is_valid():
 		_tele_tw.kill()

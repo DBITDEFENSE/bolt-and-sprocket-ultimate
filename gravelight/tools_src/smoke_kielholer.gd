@@ -188,7 +188,7 @@ func _run() -> void:
 	boss._drip_t = 0.05
 	await _frames(4)
 	_check(not boss.dripping(), "the drips stop after drip_seconds")
-	var strips_n: int = boss.find_children("Strips", "", true, false).size()
+	var strips_n: int = boss.find_children("*Strips*", "", true, false).size()
 	_check(strips_n >= 5 and boss._drag != null and boss._wake != null, "weed and rope strips (%d groups), the dragging chain, the wake ring" % strips_n)
 	_check(boss._chain_loop != null or not AudioDirector.has_sound("kielholer_chain_drag"), "kielholer_chain_drag rides on him as a 3D loop")
 	_check(boss._glow != null and boss._glow.visible and boss.fog_alpha() <= 0.001, "the Marke glows dim behind the clear glass")
@@ -236,7 +236,8 @@ func _run() -> void:
 	boss.debug_kill(1)
 	await _frames(5)
 	var key: BoatKey = _map.get_node_or_null("Gameplay/BoatKey") as BoatKey
-	_check(key != null and not key.floating, "his death drops the ignition key at the body")
+	# the player he held stands at the body: the key may be walked over (auto-collect) before these frames pass
+	_check((key != null and not key.floating) or GameState.has_flag(BoatKey.ITEM), "his death drops the ignition key at the body (%s)" % ("on the pier" if key != null else "walked over at once"))
 	_check(GameState.has_flag(&"kielholer_down"), "the flag kielholer_down")
 	if key != null:
 		key.take(1)

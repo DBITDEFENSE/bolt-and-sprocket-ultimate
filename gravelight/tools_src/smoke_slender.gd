@@ -297,7 +297,7 @@ func _t233(s: Slender, enc: SlenderEncounter, m: WatchMeter) -> void:
 	# the kit's dread block and the model's moving parts
 	_check(s.fx != null and is_equal_approx(s.fx.c("radius"), 24.0) and str(s.fx.cfg.get("surface", "")) == "cloth" and not s.fx.has_footfalls(),
 		"the dread block: felt from 24 m, cloth, a quiet step (no stomp, no shake)")
-	var strips_n: int = s.find_children("Strips", "", true, false).size()
+	var strips_n: int = s.find_children("*Strips*", "", true, false).size()
 	_check(strips_n >= 5 and s._eyes != null and s._lantern_swing != null and s._pool != null,
 		"the coat and scarf sway (%d strip groups), the eyes glow, the lantern swings on its pole over its pool of light" % strips_n)
 	_check(s._hum != null or not AudioDirector.has_sound("slender_lantern_hum"), "the lantern hums (slender_lantern_hum as a 3D loop)")
@@ -356,7 +356,7 @@ func _t233(s: Slender, enc: SlenderEncounter, m: WatchMeter) -> void:
 	_check(is_equal_approx(Slender.phase_value(s.bcfg, 3, "sweep", "cooldown", 12.0), 7.0) and is_equal_approx(Slender.phase_value(s.bcfg, 1, "sweep", "cooldown", 12.0), 12.0)
 		and is_equal_approx(s._mvf("lash", "range", 4.0), 5.0) and is_equal_approx(s.move_speed(), 1.9),
 		"the last round escalates: the sweep 12 -> 7 s, the Lash reaches 5 m, he walks at 1.9 (never runs)")
-	s.dark_t = 0.05
+	s.dark_t = 0.02
 	await get_tree().physics_frame
 	await get_tree().physics_frame
 	_check(s.dark_t <= 0.0 and s.fx.dimmed_count() == 0, "when the 30 s are up the lights come back (the pools wait for the fuses)")

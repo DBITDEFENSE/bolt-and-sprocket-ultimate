@@ -214,7 +214,7 @@ func strips(bone: String, pos: Vector3, count: int, length: float, width: float,
 	if at == null:
 		return null
 	var sw: BossFx.SwayStrips = BossFx.SwayStrips.new()
-	sw.name = "Strips"
+	sw.name = "Strips_%d" % seed_v   # unique under one bone (a second "Strips" sibling is renamed "@Strips@N" and name searches skip it)
 	sw.position = pos
 	at.add_child(sw)
 	sw.build(count, length, width, mat_ex(c, 0.95, 0.0), spread, seed_v)
@@ -537,7 +537,8 @@ func _physics_process(delta: float) -> void:
 	target = _nearest_player()
 	_grab_tick(delta)
 	_tick(delta)
-	_tele_light.light_energy = move_toward(_tele_light.light_energy, _tele_glow(), delta * 12.0)
+	if fx == null or not fx.tele_active():   # fx.tele()'s shape owns the light while it runs
+		_tele_light.light_energy = move_toward(_tele_light.light_energy, _tele_glow(), delta * 12.0)
 	_update_audio(delta)
 	_update_senses(delta)
 
@@ -717,6 +718,9 @@ static func boss_damage(amount: float, limb: StringName, kind: StringName, boss_
 
 func take_damage(amount: float, limb: StringName, weapon_id: StringName, by_player: int, kind: StringName = &"bullet", armor_piercing: bool = false) -> bool:
 	if puppet:
+		# a client's own hit: the kit's feedback now (predicted, like the wound and the hit marker); the host decides
+		if fx != null and is_active() and Net.session != null and by_player == Net.local_player_id() and not Net.applying and hit_feedback_kind(kind):
+			fx.hit(limb, amount, limb_mult(limb), max_hp)
 		return _puppet_damage(amount, limb, weapon_id, by_player, kind, armor_piercing)
 	var side: String = _hit_side(limb)
 	last_hit_bone = ""
@@ -725,8 +729,8 @@ func take_damage(amount: float, limb: StringName, weapon_id: StringName, by_play
 	var dmg: float = boss_damage(amount, limb, kind, limb_mult(limb), damage_taken_mult(), GameState.has_flag(&"deaths_door"))
 	hp -= dmg
 	GLBus.enemy_damaged.emit(enemy_id, limb, dmg, by_player)
-	if kind == &"bullet":
-		AudioDirector.play_3d("impact_flesh", global_position + Vector3.UP * 1.2, 0.0, 0.0)
+	if kind == &"bullet" and (fx == null or str(fx.cfg.get("surface", "flesh")) == "flesh"):
+		AudioDirector.play_3d("impact_flesh", global_position + Vector3.UP * 1.2, 0.0, 0.0)   # porcelain, iron, glass and cloth have the kit's own hit sound
 	_grab_damage(dmg, limb, by_player, kind)
 	_on_damaged(dmg, limb, by_player, kind)
 	if hp <= 0.0:
@@ -740,10 +744,26 @@ func take_damage(amount: float, limb: StringName, weapon_id: StringName, by_play
 	return false
 
 
-func _on_damaged(amount: float, limb: StringName, _by_player: int, _kind: StringName) -> void:
-	# T-231: the kit's hit feedback (a subclass that overrides this calls super)
-	if fx != null:
-		fx.hit(limb, amount, limb_mult(limb) * damage_taken_mult(), max_hp)
+## Damage kinds that show as a hit on the boss: not a burn's ticks (four a second with nobody shooting), not the
+## world's (the blackout's quarter of its health).
+static func hit_feedback_kind(kind: StringName) -> bool:
+	return kind != &"fire" and kind != &"world"
+
+
+func _on_damaged(amount: float, limb: StringName, _by_player: int, kind: StringName) -> void:
+	# T-231: the kit's hit feedback (a subclass that overrides this calls super). A weak point is the limb's own
+	# multiplier: a state window (Alix's grief, the Hammer airborne) makes every hit hurt more, not every limb weak.
+	if fx != null and hit_feedback_kind(kind):
+		fx.hit(limb, amount, limb_mult(limb), max_hp)
+
+
+## A client's copy dies: the kit's death (the host's runs in _boss_die).
+func puppet_die(limb: StringName, kind: StringName, death_kind: int, side: float, pop: bool, pos: Vector3) -> void:
+	var was_dead: bool = state == State.DEAD or state == State.INACTIVE
+	super.puppet_die(limb, kind, death_kind, side, pop, pos)
+	if not was_dead and fx != null:
+		_tele_light.light_energy = 0.0
+		fx.death_burst(global_position, _tele_light.light_color)
 
 
 func hp_fraction() -> float:
