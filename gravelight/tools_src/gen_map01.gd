@@ -2510,7 +2510,7 @@ func _dress_chapel() -> void:
 	# timber frames at the doorways (crossbeam at 2.6: the lift-side bell hangs just above it)
 	Props.pit_prop(dress, Vector3(-12.0, y, 60.42), 0.0, 3.5, 2.5)
 	Props.pit_prop(dress, Vector3(25.0, y, 60.42), 0.0, 4.5, 2.5)
-	Props.pit_prop(dress, Vector3(39.55, y, 72.0), 90.0, 2.6, 2.5)
+	Props.pit_prop(dress, Vector3(39.55, y, 72.0), 90.0, DW + 0.6, 2.5)   # (T-239: its legs stand either side of the doorway; at 2.6 they stood in it)
 	Props.pit_prop(dress, Vector3(20.0, y, 89.55), 0.0, 4.6, 3.1)
 	emergency(Vector3(-9.6, y + 2.9, 60.36), 180.0, 1.0, 10.0)
 	emergency(Vector3(22.2, y + 2.9, 60.36), 180.0, 0.9, 9.0)
