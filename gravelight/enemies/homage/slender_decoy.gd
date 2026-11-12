@@ -39,6 +39,11 @@ func _ready() -> void:
 	cap.material_override = HomageBoss.mat(Slender.CAP)
 	cap.position = Vector3(0, 2.45, 0)
 	add_child(cap)
+	# T-233: the hem moves like his (the kit's SwayStrips), so a decoy reads as a whole watchman, not a post
+	var sw: BossFx.SwayStrips = BossFx.SwayStrips.new()
+	sw.position = Vector3(0, 0.32, -0.3)
+	add_child(sw)
+	sw.build(4, 0.3, 0.1, HomageBoss.mat_ex(Slender.COAT, 0.95, 0.0), 0.5, 21)
 	var lantern: MeshInstance3D = MeshInstance3D.new()
 	var lb: BoxMesh = BoxMesh.new()
 	lb.size = Vector3(0.12, 0.2, 0.12)

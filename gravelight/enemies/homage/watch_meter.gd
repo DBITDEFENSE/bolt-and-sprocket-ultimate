@@ -12,6 +12,8 @@ extends RefCounted
 ## teammate -4 (stacks).
 ## Limits: bots cap at HIGH (94, section 13 D8); while somebody is in the Watch Room a second player waits at
 ## CRITICAL (capped under 100); after an escape the meter is 0 with `immune_s` of immunity.
+## T-233 (the boss rework): the squad's state matters: a player who is alone (no teammate within teammate_m, the
+## sense "alone") and in the dark fills every positive source x `alone_dark_mult` (1.5). The drains are untouched.
 
 enum Tier { NONE, LOW, MEDIUM, HIGH, CRITICAL }
 const TIER_WORDS: PackedStringArray = ["", "Noted.", "Observed.", "Logged.", "Quarantined."]
@@ -39,7 +41,7 @@ static func defaults() -> Dictionary:
 	return {"pool_per_s": 12.0, "sweep_per_s": 35.0, "look_after": 1.5, "look_per_s": 8.0, "still_after": 2.0,
 		"still_per_s": 4.0, "shot": 2.0, "shot_cap_per_s": 10.0, "decoy_hit": 15.0, "unseen_per_s": -6.0,
 		"light_per_s": -15.0, "teammate_per_s": -4.0, "bot_cap": 94.0, "immune_s": 10.0,
-		"tiers": [10.0, 40.0, 70.0, 95.0]}
+		"alone_dark_mult": 1.5, "tiers": [10.0, 40.0, 70.0, 95.0]}
 
 
 static func tier_of(v: float, tiers: Array = [10.0, 40.0, 70.0, 95.0]) -> int:
@@ -53,7 +55,8 @@ static func tier_of(v: float, tiers: Array = [10.0, 40.0, 70.0, 95.0]) -> int:
 ## The rate for one step from the player's senses (pure; the tests use it):
 ##   pool: in his lantern's pool; sweep: in a sweep cone; seen: he has line of sight to the player;
 ##   looking: the player looks straight at him; moving: the player moved this step; dark: no light on the player;
-##   lit: standing in real light; teammate: a teammate within 6 m.
+##   lit: standing in real light; teammate: a teammate within 6 m; alone: nobody within 6 m (T-233: alone in the
+##   dark, the fill sources count x alone_dark_mult).
 func rate(s: Dictionary, look_t_now: float, still_t_now: float) -> float:
 	var r: float = 0.0
 	if bool(s.get("pool", false)):
@@ -64,6 +67,8 @@ func rate(s: Dictionary, look_t_now: float, still_t_now: float) -> float:
 		r += float(cfg["look_per_s"])
 	if bool(s.get("dark", false)) and still_t_now >= float(cfg["still_after"]):
 		r += float(cfg["still_per_s"])
+	if bool(s.get("alone", false)) and bool(s.get("dark", false)):
+		r *= float(cfg.get("alone_dark_mult", 1.0))
 	if not bool(s.get("seen", false)):
 		r += float(cfg["unseen_per_s"])
 	if bool(s.get("lit", false)):

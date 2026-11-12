@@ -8980,6 +8980,144 @@
           "note": "T-232: Core Vent, 0.9 s in: the drill planted, the core flaring to 24x before the Nachtglas burst"
         }
       ]
+    },
+    "u14_slender": {
+      "_doc": "T-233 (BOSS_REWORK W3): THE SLENDER reworked: the greatcoat's hem and scarf sway, the lantern swings on its pole over its violet pool on the grating, brass that catches the light, the kit's eyes; a close face (a kind, tired face under the cap: never faceless); End of Shift (his lantern the only light). The capture tool stops the rounds, so the kit's `boss:the_slender` op (summon_boss -> start_now) would only reserve a round: `callv:SlenderEncounter:capture_spawn:x,y,z,yaw` stands him outside a round instead, then TheSlender.capture_pose moves him for each camera and capture_dark plays End of Shift. Shot through tools/wsl_godot.sh only.",
+      "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {
+          "name": "west_catwalk",
+          "pos": [
+            -19.0,
+            4.0,
+            60.0
+          ],
+          "yaw": 180.0,
+          "pitch": 4.0,
+          "settle_s": 3.0,
+          "note": "the west catwalk at +4: the whole figure 8 m south of the camera, the lantern's pool on the grating, the hem strips, the keys",
+          "do": [
+            "power",
+            "callv:SlenderEncounter:capture_spawn:-19,4,68,0:2.5"
+          ]
+        },
+        {
+          "name": "face_close",
+          "pos": [
+            -19.0,
+            5.9,
+            63.6
+          ],
+          "yaw": 180.0,
+          "pitch": 12.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "head and shoulders under a work light: the cap, the brass band, the violet eyes, a real tired face; the scarf's ends",
+          "do": [
+            "callv:TheSlender:capture_pose:-19,4,66.2,0:1.0"
+          ]
+        },
+        {
+          "name": "pier_pool",
+          "pos": [
+            17.0,
+            0.0,
+            50.5
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "settle_s": 2.0,
+          "note": "pier 2 under the key light: the greatcoat full length, the lantern swung out, its violet pool on the deck",
+          "do": [
+            "callv:TheSlender:capture_pose:17,0,58,0:1.5"
+          ]
+        },
+        {
+          "name": "end_of_shift",
+          "pos": [
+            17.0,
+            0.0,
+            50.5
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "settle_s": 2.5,
+          "note": "End of Shift: the hall's lamps dead through the kit, his lantern the only light, the fuse boxes sparking",
+          "do": [
+            "callv:TheSlender:capture_dark::2.0"
+          ]
+        }
+      ]
+    },
+    "u14_kielholer": {
+      "_doc": "T-233 (BOSS_REWORK W3): DER KIELHOLER reworked: wet verdigris brass, the glass port with the Marke's glow behind it, weed and rope strips, the link chain across the chest and the one dragging behind him, the drips and the wake after surfacing. `boss:der_kielholer:x,y,z[:yaw]` poses him on pier 2 (the kit op); DerKielholer.debug_surface_fx shows the surfacing. Shot through tools/wsl_godot.sh only.",
+      "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {
+          "name": "pier2_front",
+          "pos": [
+            17.0,
+            0.0,
+            56.0
+          ],
+          "yaw": 180.0,
+          "pitch": 3.0,
+          "settle_s": 3.0,
+          "note": "pier 2, the whole figure 8 m off: the helmet, the corselet, the chain across the chest, the weed, the boots",
+          "do": [
+            "power",
+            "boss:der_kielholer:17,0,64"
+          ]
+        },
+        {
+          "name": "helmet_close",
+          "pos": [
+            17.0,
+            1.7,
+            62.4
+          ],
+          "yaw": 180.0,
+          "pitch": 8.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "the helmet close under a work light: wet brass, the verdigris, the glass port with the violet glow behind it, the air fitting",
+          "do": [
+            "callv:DerKielholer:debug_surface_fx::1.0"
+          ]
+        },
+        {
+          "name": "chain_back",
+          "pos": [
+            17.0,
+            0.6,
+            70.5
+          ],
+          "yaw": 0.0,
+          "pitch": 4.0,
+          "settle_s": 2.0,
+          "note": "from behind: the chain dragging from the hip to the deck, the stock, the weed off the shoulders and the helmet's back",
+          "do": []
+        },
+        {
+          "name": "surfacing",
+          "pos": [
+            17.0,
+            0.0,
+            56.0
+          ],
+          "yaw": 180.0,
+          "pitch": 1.0,
+          "settle_s": 0.6,
+          "note": "the surfacing's effects: the wake ring spreading, the spray, the drips off him",
+          "do": [
+            "callv:DerKielholer:debug_surface_fx::0.2"
+          ]
+        }
+      ]
     }
   }
 }
