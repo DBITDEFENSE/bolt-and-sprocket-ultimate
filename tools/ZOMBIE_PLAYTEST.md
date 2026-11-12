@@ -20,6 +20,10 @@ For a ten-minute live 24-zombie studio preview:
 `-HeadlessCheck` verifies startup and exits automatically. Pass `-Godot <path>` if needed.
 Logs live in `.mocap_work/zombies/playtest_game.log` or `playtest_gallery.log`.
 
+The new stationary-turn comparison is `docs/captures/after/mocap/turns/comparison.mp4`:
+prior turning on the left, recorded stepping turns on the right. Run
+`res://tools/zombie_turn_check.tscn` for its live six-second studio sequence.
+
 The branch on GitHub includes code, reports and comparison videos. Purchased FBXs and derived
 animation GLBs remain local under `assets/user_supplied/` and `assets/zombies/anims/`.
 They are already built in Devin's `.wt/zombie-overhaul` worktree. A fresh checkout needs the

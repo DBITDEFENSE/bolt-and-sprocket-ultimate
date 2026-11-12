@@ -38,7 +38,8 @@ mid-range hardware or full maps; the moving horde is not a 24-simultaneous-turn 
 Captured soldier stationary turns rate **2 -> 3/5**; locomotion/swipes/two deaths stay3,
 model stays2, variety stays3. Other types are not newly scored. Full premium target is unmet.
 
-RESUME HERE: hand off to Claude Fable 5.2 as requested. First finish co-op turn triggering:
+RESUME HERE: use docs/CLAUDE_FABLE_5_2_ZOMBIE_HANDOFF.md (runtime bf395bc3), prepared for the
+owner-requested Claude Fable 5.2 continuation. First finish co-op turn triggering:
 puppets receive observed yaw, so small interpolated increments can miss the 25-degree trigger.
 Host stationary turns are verified; network parity is not. Then stairs/rubble, special bodies,
 remaining licensed states and artist-authored model/PBR/LOD sample. No main merge or export.
