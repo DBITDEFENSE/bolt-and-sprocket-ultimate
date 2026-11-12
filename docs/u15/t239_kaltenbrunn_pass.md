@@ -68,7 +68,10 @@ lay on the Core's floor.
 ### C. Administration
 - **The stairs**: T-107's closed strings were drawn as two bare dark boards 7 m long and 3.5 m high, the black block in
   the middle of the lobby in every frame. They are the walls of a boxed staircase now: plaster over a wainscot like
-  the room's walls, skirting, chair rail, a post at each end. The colliders are untouched.
+  the room's walls, skirting, chair rail, a post at each end. The colliders are untouched. On its lobby face (the lead's
+  look at the first render: a blank 7 x 2 m slab) hang the shift board with a brass tally per man, the stopped clock
+  over the framed plan of the workings, the notice board and a lantern: drawn only, at most 8 cm off the face
+  (`164_u15b_C_stair_wall.png`).
 - The three clerks' desks stood loose in the lobby (one in front of the bank's counter), intangible. They stand against
   the walls with their chairs pushed in: one under the map on the north wall, two on the east wall. The safe is in its
   corner (it stood 0.85 m out of it). The coat rack is by the wall.
@@ -164,7 +167,7 @@ Run on the final scene, headless (`.smoke_logs/t239/`):
   capture_cams 3/3, world_objects 16/16, ladders_data 3/3, crucible_rooms 5/5.
 - Facing runner, map01: 70 OK, the 3 desk pickups UNREACHABLE as before (exit 3, unchanged).
 - `probe_invisible_walls` map01: one line, a pew block, as before.
-- MapArtAudit map01: 28 findings before, 46 after. The new ones are low colliders a little larger than what is drawn
+- MapArtAudit map01: 28 findings before, 41 on the final scene. The new ones are low colliders a little larger than what is drawn
   (desks with their chairs, the mess benches' block, the altar steps, the pylons' feet, the drum rows): the price of a
   smooth outline; none stands in a lane. The old 28 (turbines, pews, bunks, locomotive, tanks) are unchanged.
 - Generation: WALLBUY_AUDIT clear for all nine chalks.
@@ -174,8 +177,8 @@ Run on the final scene, headless (`.smoke_logs/t239/`):
   script errors from boss_fx.gd:106 that 3ad95961 fixes in boss_fx.gd, not taken here). bots_shop_m0 (Map 0, not
   touched here) FAILED once under load: "no squad bot did 'bench'".
 - Baseline on the untouched scene: map01 PASS, map01_world PASS, requiem PASS, ee_bots PASS.
-- Minimap: not re-baked. No wall, door or room moved; the bake draws props, so the image is slightly stale (desks,
-  carts). Left for the lead's WSL bake with the other map.
+- Minimap: re-baked on the final scene under WSL (`sh tools/wsl_godot.sh --path . res://tools_src/bake_minimap.tscn --
+  --map=map01_kaltenbrunn`: RESULT PASS, 4 floors, 50 POIs), test_mapdata 11/11.
 
 ## What is left, and why
 

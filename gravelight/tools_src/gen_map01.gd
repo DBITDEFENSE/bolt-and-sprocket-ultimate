@@ -1974,6 +1974,53 @@ func _dress_admin_stair_strings() -> void:
 		for pz: Array in [[28.22, 28.42], [20.95, 21.1]]:
 			B(Vector3(xa - 0.05, 0.0, float(pz[0])), Vector3(xb + 0.05, 3.5, float(pz[1])), "beam")
 	B(Vector3(-15.4, 3.3, 28.22), Vector3(-12.0, 3.5, 28.42), "beam")   # the head of the stair's opening at its foot
+	# T-239 follow-up: the lobby face of the east wall was 7 x 2 m of bare plaster. What a mine office hangs by its stairs
+	# (drawn only, at most 8 cm off the face): the shift board with a brass tally per man on its hook, the wall clock, the
+	# framed plan of the workings, the notice board with its pinned papers, and a lantern over the shift board.
+	var fx: float = -12.038
+	B(Vector3(fx, 1.45, 21.6), Vector3(fx + 0.03, 2.8, 24.0), "planks")
+	for fr: Array in [[1.41, 1.45], [2.8, 2.84], [2.5, 2.53]]:
+		B(Vector3(fx, float(fr[0]), 21.56), Vector3(fx + 0.045, float(fr[1]), 24.04), "beam")
+	for fz: float in [21.56, 24.0]:
+		B(Vector3(fx, 1.41, fz), Vector3(fx + 0.045, 2.84, fz + 0.04), "beam")
+	_label("SCHICHTTAFEL", Vector3(fx + 0.05, 2.66, 22.8), 90.0, 26, Color(0.9, 0.86, 0.74, 0.9))
+	for ci: int in 3:
+		_label(["FRÜH", "MITTAG", "NACHT"][ci], Vector3(fx + 0.05, 2.42, 22.0 + ci * 0.8), 90.0, 14, Color(0.9, 0.86, 0.74, 0.8))
+	var srng: RandomNumberGenerator = RandomNumberGenerator.new()
+	srng.seed = 1944
+	for col: int in 12:
+		for row: int in 5:
+			var hp: Vector3 = Vector3(fx + 0.03, 2.28 - row * 0.17, 21.78 + col * 0.19 + (0.06 if col >= 4 else 0.0) + (0.06 if col >= 8 else 0.0))
+			B(hp + Vector3(0, 0.0, -0.006), hp + Vector3(0.03, 0.02, 0.006), "iron")
+			if srng.randf() < (0.25 if col >= 8 else 0.7):   # the night shift's hooks are mostly bare: they went down
+				_noshadow(B(hp + Vector3(0.012, -0.075, -0.03), hp + Vector3(0.022, 0.0, 0.03), "brass"))
+	Props.wall_lamp(dress, Vector3(-12.03, 3.05, 22.8), -90.0)
+	lamp(Vector3(-11.4, 2.9, 22.8), Color(1.0, 0.68, 0.38), 0.8, 6.0, 0.1)
+	# the clock (stopped) over the plan
+	CYL(Vector3(fx + 0.04, 2.95, 25.3), 0.2, 0.07, "furniture", Vector3(0, 0, 90))
+	_noshadow(CYL(Vector3(fx + 0.078, 2.95, 25.3), 0.17, 0.006, "paper", Vector3(0, 0, 90)))
+	_noshadow(OB(Vector3(fx + 0.085, 3.0, 25.3), Vector3(0.004, 0.11, 0.012), "black_paint"))
+	_noshadow(OB(Vector3(fx + 0.085, 2.96, 25.345), Vector3(0.004, 0.012, 0.1), "black_paint", Vector3(20, 0, 0)))
+	# the plan of the workings: a frame, the sheet, the levels and the shafts inked on it
+	B(Vector3(fx, 1.55, 24.45), Vector3(fx + 0.04, 2.6, 26.15), "furniture")
+	_noshadow(B(Vector3(fx + 0.04, 1.62, 24.52), Vector3(fx + 0.046, 2.53, 26.08), "paper", false))
+	for lv: int in 3:
+		_noshadow(B(Vector3(fx + 0.046, 2.3 - lv * 0.25, 24.65), Vector3(fx + 0.049, 2.312 - lv * 0.25, 25.95 - lv * 0.2), "black_paint", false))
+	for sh: float in [24.9, 25.55]:
+		_noshadow(B(Vector3(fx + 0.046, 1.8, sh), Vector3(fx + 0.049, 2.45, sh + 0.012), "black_paint", false))
+	_noshadow(B(Vector3(fx + 0.046, 1.78, 25.2), Vector3(fx + 0.049, 1.9, 25.5), "red_paint", false))
+	_label("GRUBENRISS  ·  SOHLE I - III", Vector3(fx + 0.052, 1.7, 25.3), 90.0, 12, Color(0.15, 0.12, 0.1, 0.9))
+	# the notice board: orders, the ration list, a torn poster
+	B(Vector3(fx, 1.5, 26.6), Vector3(fx + 0.03, 2.55, 27.9), "linen")
+	for nf: Array in [[1.46, 1.5], [2.55, 2.59]]:
+		B(Vector3(fx, float(nf[0]), 26.56), Vector3(fx + 0.045, float(nf[1]), 27.94), "beam")
+	for nz: float in [26.56, 27.9]:
+		B(Vector3(fx, 1.46, nz), Vector3(fx + 0.045, 2.59, nz + 0.04), "beam")
+	for np: Array in [[26.72, 2.2, 0.26, 0.3, 4.0], [27.05, 2.25, 0.22, 0.28, -3.0], [27.4, 2.15, 0.3, 0.4, 2.0], [26.8, 1.8, 0.3, 0.22, -5.0],
+			[27.2, 1.78, 0.2, 0.26, 6.0], [27.62, 1.72, 0.2, 0.3, -2.0]]:
+		_noshadow(Props.obox(dress, Vector3(fx + 0.034, float(np[1]), float(np[0]) + float(np[2]) * 0.5), Vector3(0.004, float(np[3]), float(np[2])),
+			"paper", Vector3(float(np[4]), 0, 0)))
+	_label("BEKANNTMACHUNGEN", Vector3(fx + 0.05, 2.47, 27.25), 90.0, 12, Color(0.15, 0.12, 0.1, 0.9))
 
 
 ## T-239: the Administration's upper floor was a 16 x 16 m room with one desk on a rug, and the radio room an empty
