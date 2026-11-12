@@ -154,6 +154,7 @@ var carry_head: Vector3 = Vector3.ZERO    # head position offset (the climb's bo
 var carry_pitch: float = 0.0              # radians added to the view pitch (looking up the ladder)
 var carry_roll: float = 0.0               # radians of camera roll (the reach, the swing)
 var carry_fov: float = 0.0                # degrees added to the FOV (the rush of the line)
+var carry_fire: bool = false             # T-240: the carrier lets the rider shoot (a horse at a walk or a trot); off with every begin_carry / end_carry
 var mantles: int = 0                     # mantles / vaults started this match (tools)
 var _mv: Dictionary = {}
 var _sprint_toggled: bool = false        # Toggle sprint mode: on until cancelled / you stop moving forward
@@ -392,8 +393,8 @@ func _gather_intent() -> Dictionary:
 		"slot": slot,
 		"sprinting": sprinting,
 		"look_delta": _look_delta,
-		"fire_block": mantling or carry != null or (sliding and not slide_fire_ok()),   # mantle / first half of a slide: fire is buffered; a climb, a ride: no fire
-		"mantle": mantling or carry != null,
+		"fire_block": mantling or (carry != null and not carry_fire) or (sliding and not slide_fire_ok()),   # mantle / first half of a slide: fire is buffered; a climb, a ride: no fire (T-240: a horse's rider may, carry_fire)
+		"mantle": mantling or (carry != null and not carry_fire),
 	}
 	_look_delta = Vector2.ZERO
 	return intent
@@ -1130,6 +1131,7 @@ func mantle_k() -> float:
 func begin_carry(by: Node) -> void:
 	carry = by
 	_view_off = Vector3.ZERO   # T-236: no eased step offset under a carried body
+	carry_fire = false
 	velocity = Vector3.ZERO
 	sprinting = false
 	sliding = false
@@ -1151,6 +1153,7 @@ func end_carry(by: Node) -> void:
 	if carry != null and is_instance_valid(carry) and carry != by:
 		return
 	carry = null
+	carry_fire = false
 	carry_head = Vector3.ZERO
 	carry_pitch = 0.0
 	carry_roll = 0.0
