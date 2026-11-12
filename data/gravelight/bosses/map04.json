@@ -1,6 +1,6 @@
 {
-  "_doc": "Map 4 'Fernflug' bosses (UPDATE 07, docs/MAP4_FERNFLUG.md §3.8, §4.7, §5.7, §6.7, §9.3). Loaded as GLData.table(\"bosses/map04\"). hp_base is solo; HP = hp_base x (1 + hp_player_step x (players - 1)) like HB1. Each act's ActController reserves the boss's act round (RoundManager.reserve_round) and summons it (ZombieDirector.summon_boss) on that round's start; the horde keeps spawning at horde_fraction; failsafe_seconds after the spawn the boss retreats so a round can never softlock. bots_alone mirrors cousins.json (T-060).",
-  "version": 1,
+  "_doc": "Map 4 'Fernflug' bosses (UPDATE 07, docs/MAP4_FERNFLUG.md §3.8, §4.7, §5.7, §6.7, §9.3). Loaded as GLData.table(\"bosses/map04\"). hp_base is solo; HP = hp_base x (1 + hp_player_step x (players - 1)) like HB1. Each act's ActController reserves the boss's act round (RoundManager.reserve_round) and summons it (ZombieDirector.summon_boss) on that round's start; the horde keeps spawning at horde_fraction; failsafe_seconds after the spawn the boss retreats so a round can never softlock. bots_alone mirrors cousins.json (T-060). T-234 (docs/BOSS_REWORK.md, docs/boss_rework/w4_fernflug.md): every boss carries a `dread` block for the BossFx kit (surface decides the hit burst and sound; the Test Pilot's landings stomp through land_sound / land_shake, nobody else has footfalls), a `rework` block with the new beat's numbers (the Kranfuehrer's work lights dropped by phase and his alone rule; the Bordwart's Overspeed darkness, core light and hurt-pull rule; the Test Pilot's unwatching pick, the Stall's darkness and Burrowers, the floor cracks; the Account Manager's light, the squad pricing and the solo presentation). Every gameplay number that changed is listed in the doc with old -> new.",
+  "version": 2,
   "hp_player_step": 0.75,
   "horde_fraction": 0.5,
   "failsafe_seconds": 360.0,
@@ -74,7 +74,26 @@
         "zombie_damage": 4000,
         "impact_radius": 2.5
       },
-      "stagger_seconds": 0.8
+      "stagger_seconds": 0.8,
+      "dread": {
+        "radius": 26.0,
+        "near": 8.0,
+        "surface": "iron",
+        "step_sound": "",
+        "step_shake": 0.0,
+        "look_cone_deg": 40.0
+      },
+      "rework": {
+        "_doc": "T-234: the hangar's work lights (power_lights in H_HALLE) die one by one as his phases advance: lights_drop_fraction of them at phase 2, again at phase 3 (never the last keep_lit), one every drop_gap s with a gutter and a glass pop. alone: a living player more than alone_dist m from every teammate (or the only one standing) is found faster: the trolley at alone_speed_mult and the casing's cooldown at alone_cd_mult. breath_every: the man's breath between moves.",
+        "lights_drop_fraction": 0.35,
+        "keep_lit": 3,
+        "drop_gap": 1.1,
+        "alone_dist": 12.0,
+        "alone_speed_mult": 1.3,
+        "alone_cd_mult": 0.75,
+        "breath_every": 5.0,
+        "rail_loop_db": -6.0
+      }
     },
     "bordwart": {
       "boss_id": "bordwart",
@@ -118,7 +137,9 @@
         "seconds": 5.0,
         "radius": 8.0,
         "mps": 2.5,
-        "cooldown": 7.0
+        "cooldown": 7.0,
+        "hurt_below": 0.5,
+        "hurt_mult": 1.4
       },
       "vent": {
         "telegraph": 0.9,
@@ -136,9 +157,27 @@
       "overspeed": {
         "bank_every": 15.0,
         "climber_every": 10.0,
-        "off_gauge_mult": 0.15
+        "off_gauge_mult": 0.15,
+        "dark_radius": 28.0,
+        "dark_level": 0.0,
+        "core_energy": 3.0,
+        "vent_flash": 9.0
       },
-      "stagger_seconds": 0.6
+      "stagger_seconds": 0.6,
+      "dread": {
+        "radius": 16.0,
+        "near": 5.0,
+        "surface": "iron",
+        "step_sound": "",
+        "step_shake": 0.0,
+        "look_cone_deg": 45.0
+      },
+      "rework": {
+        "_doc": "T-234: Overspeed banks the engine room into darkness through the kit (every light within overspeed.dark_radius guttered for 2 s, then to dark_level) with only the core's white (a light at core_point at core_energy) and the vents' flashes (vent_flash for a moment at each vent and each bank); the impeller loop climbs to overspeed_pitch. hurt: the pull takes a player under pull.hurt_below health at pull.hurt_mult (the impeller takes the weak first; the pull is the tell). breath_every: his breath over the intercom between moves.",
+        "impeller_db": -8.0,
+        "overspeed_pitch": 1.35,
+        "breath_every": 6.0
+      }
     },
     "account_manager": {
       "boss_id": "account_manager",
@@ -203,7 +242,8 @@
           "WIV_M4D_PHASE_01",
           "WIV_M4D_PHASE_02",
           "WIV_M4D_PHASE_03"
-        ]
+        ],
+        "alone_mult": 1.5
       },
       "arms": {
         "telegraph": 1.2,
@@ -228,7 +268,14 @@
         "vo": [
           "WIV_M4D_PRICE_01",
           "WIV_M4D_PRICE_02"
-        ]
+        ],
+        "light_range": 7.0,
+        "light_cos": 0.35,
+        "dark_after": 6.0,
+        "all_telegraph": 1.4,
+        "all_damage": 60,
+        "all_scrip_fraction": 0.05,
+        "all_cooldown": 20.0
       },
       "crew": {
         "every": 25.0,
@@ -247,7 +294,22 @@
         "shielded_mult": 0.2,
         "vo_lost": "WIV_M4D_SHIELD_01"
       },
-      "stagger_seconds": 0.6
+      "stagger_seconds": 0.6,
+      "dread": {
+        "radius": 18.0,
+        "near": 6.0,
+        "surface": "glass",
+        "step_sound": "",
+        "step_shake": 0.0,
+        "look_cone_deg": 40.0
+      },
+      "rework": {
+        "_doc": "T-234: her light is a violet spot from the console (price.light_range m, within acos(price.light_cos) of her facing). COLLECTIONS: when nobody alive has stood in her light for price.dark_after s she prices the whole squad at once (price_all: a price.all_telegraph telegraph with the servo and the field hum rising, then price.all_damage and price.all_scrip_fraction of every living player's account, cooldown price.all_cooldown); the Account's lamps die at COLLECTIONS (the kit; her light stays). alone: with one human standing the presented contract stays open present.seconds x present.alone_mult. The shield-cells hum (manager_field_hum) and spark when hit; the stamp is manager_stamp; the servo on every move.",
+        "servo_db": -4.0,
+        "field_hum_db": -10.0,
+        "dark_radius": 22.0,
+        "dark_level": 0.1
+      }
     },
     "testpilot": {
       "boss_id": "testpilot",
@@ -304,7 +366,8 @@
         "vuln_seconds": 4.0,
         "air_mult": 0.5,
         "idle_mult": 0.25,
-        "ground_speed": 2.6
+        "ground_speed": 2.6,
+        "prefer_unwatching": true
       },
       "drag": {
         "reach": 2.5,
@@ -317,10 +380,32 @@
       "stall": {
         "seconds": 6.0,
         "speed_mult": 1.3,
-        "vuln_mult": 2.0
+        "vuln_mult": 2.0,
+        "dark_radius": 40.0,
+        "dark_level": 0.12,
+        "burrowers": 3,
+        "burrowers_per_extra": 1
       },
       "catch_mult": 3.0,
-      "stagger_seconds": 0.6
+      "stagger_seconds": 0.6,
+      "dread": {
+        "radius": 22.0,
+        "near": 6.0,
+        "surface": "flesh",
+        "step_sound": "",
+        "step_shake": 0.0,
+        "land_sound": "boss_stomp",
+        "land_shake": 0.5,
+        "land_radius": 22.0,
+        "look_cone_deg": 35.0
+      },
+      "rework": {
+        "_doc": "T-234: a landing stomps (dread.land_sound / land_shake through fx.stomp) and cracks the floor (a dark quad decal for crack_seconds s). leap.prefer_unwatching: he picks the nearest player whose camera does not face him when one exists (the rig's whine is the tell from behind). The Stall: the lights within stall.dark_radius die to stall.dark_level while he crawls (the one window, lit only by his rig) and stall.burrowers (+ burrowers_per_extra per extra player) come up round the squad when he is on the lakebed. breath_every: his breath through the dead radio.",
+        "crack_seconds": 40.0,
+        "crack_size": 2.6,
+        "whine_db": -6.0,
+        "breath_every": 5.0
+      }
     }
   }
 }

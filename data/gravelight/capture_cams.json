@@ -9118,6 +9118,141 @@
           ]
         }
       ]
+    },
+    "u14_act_bosses": {
+      "map": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "bots": 0,
+      "settle_s": 3.0,
+      "note": "T-234 (docs/boss_rework/w4_fernflug.md): the four Fernflug act bosses posed by the CaptureDo boss op, two frames each, on their own maps.",
+      "cams": [
+        {
+          "name": "kran_cab_catwalk",
+          "map": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+          "pos": [
+            28.2,
+            11.45,
+            178.5
+          ],
+          "yaw": 0.0,
+          "pitch": 0.0,
+          "settle_s": 3.0,
+          "do": [
+            "power",
+            "boss:kranfuehrer:28,12,156::5"
+          ],
+          "note": "T-234: the Kranfuehrer's cab from the east catwalk, 7 m up the rail (the trolley ran toward the camera for 5 s): the cab's back and side, rust, oil, the seat he is fused into, the chain and hook under the bridge",
+          "bright": true
+        },
+        {
+          "name": "kran_from_floor",
+          "map": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+          "pos": [
+            22.0,
+            0.2,
+            181.0
+          ],
+          "yaw": -31.0,
+          "pitch": 45.0,
+          "settle_s": 3.0,
+          "do": [],
+          "note": "T-234: the crane from the hangar floor under the rail, 12 m: the cab's underside and face with the gauge, the bridge, the hook on its chain (the same posed crane)",
+          "bright": true
+        },
+        {
+          "name": "bordwart_station",
+          "map": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+          "pos": [
+            -66.0,
+            0.2,
+            38.0
+          ],
+          "yaw": 90.0,
+          "pitch": 2.0,
+          "settle_s": 3.0,
+          "do": [
+            "power",
+            "boss:bordwart:-72,0,38"
+          ],
+          "note": "T-234: the Bordwart at his station from the rib frames: the cabinet he has grown into, the gauges, the vents' steam, the violet spine into the boom and on to the core"
+        },
+        {
+          "name": "bordwart_close",
+          "map": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+          "pos": [
+            -69.0,
+            0.2,
+            39.5
+          ],
+          "yaw": 64.0,
+          "pitch": 6.0,
+          "settle_s": 3.0,
+          "do": [],
+          "note": "T-234: close on the Bordwart (the same posed boss): the cracks where the cable enters, the eyes catching the gauges, the hip gauges, the cabinet's dials behind him",
+          "bright": true
+        },
+        {
+          "name": "pilot_hall",
+          "map": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+          "pos": [
+            -36.0,
+            -5.8,
+            129.0
+          ],
+          "yaw": 104.0,
+          "pitch": 2.0,
+          "settle_s": 3.0,
+          "do": [
+            "power",
+            "boss:testpilot:-40,-6,130"
+          ],
+          "note": "T-234: the Test Pilot in the lab's long hall, 4 m: the helmet and visor, the rig's nozzles breathing embers, the straps, the cracks on his arms"
+        },
+        {
+          "name": "pilot_rig_back",
+          "map": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+          "pos": [
+            -44.0,
+            -5.8,
+            131.0
+          ],
+          "yaw": -76.0,
+          "pitch": 2.0,
+          "settle_s": 3.0,
+          "do": [],
+          "note": "T-234: the jump rig from behind (the same posed Pilot): the pack, the two nozzles with their rings, the cables, the lamp"
+        },
+        {
+          "name": "manager_account",
+          "map": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+          "pos": [
+            28.0,
+            0.2,
+            -27.0
+          ],
+          "yaw": 0.0,
+          "pitch": 6.0,
+          "settle_s": 3.0,
+          "do": [
+            "power",
+            "boss:account_manager:28,0,-34"
+          ],
+          "note": "T-234: the Account Manager behind the console, 7 m: tall, the ledger face lit, her violet light on the floor, the cabinet's brass and script"
+        },
+        {
+          "name": "manager_face",
+          "map": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+          "pos": [
+            31.5,
+            0.2,
+            -30.5
+          ],
+          "yaw": 45.0,
+          "pitch": 22.0,
+          "settle_s": 3.0,
+          "do": [],
+          "note": "T-234: the ledger face from beside the console (the same posed Manager): the signature lines, the lit lenses, the chest plate and the signature line, the brass joints"
+        }
+      ]
     }
   }
 }
