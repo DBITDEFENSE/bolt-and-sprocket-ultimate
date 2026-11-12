@@ -1,0 +1,20 @@
+{
+  "_doc": "Zombie-only clothing detail from existing licensed maps. Living people retain their existing material. Scales are repeats per rest-space metre.",
+  "enabled": true,
+  "fabric": {
+    "normal": "res://assets/third_party/ambientcg/fabric-031/textures/Fabric031_normal.png",
+    "orm": "res://assets/third_party/ambientcg/fabric-031/textures/Fabric031_orm.png",
+    "normal_strength": 0.32,
+    "roughness_floor": 0.70,
+    "scale": 7.0
+  },
+  "leather": {
+    "normal": "res://assets/third_party/ambientcg/leather-014/textures/Leather014_normal.png",
+    "orm": "res://assets/third_party/ambientcg/leather-014/textures/Leather014_orm.png",
+    "normal_strength": 0.45,
+    "roughness_floor": 0.40,
+    "scale": 5.0
+  },
+  "roughness_amount": 0.75,
+  "ao_amount": 0.5
+}

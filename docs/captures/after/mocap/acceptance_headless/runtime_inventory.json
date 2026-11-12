@@ -1,0 +1,970 @@
+{
+	"bones": [
+		"Root",
+		"Hips",
+		"LeftUpperLeg",
+		"RightUpperLeg",
+		"LeftLowerLeg",
+		"RightLowerLeg",
+		"LeftFoot",
+		"RightFoot",
+		"Spine",
+		"Chest",
+		"Neck",
+		"Head",
+		"Jaw",
+		"LeftUpperArm",
+		"RightUpperArm",
+		"LeftLowerArm",
+		"RightLowerArm",
+		"LeftHand",
+		"RightHand"
+	],
+	"clips": [
+		{
+			"loop": 1,
+			"name": "broken_neck",
+			"seconds": 0.2,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "climb_loop",
+			"seconds": 1.0,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "climb_mantle",
+			"seconds": 0.45,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "crawl_bite",
+			"seconds": 0.8,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "crawl_drag",
+			"seconds": 1.125,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "crawl_idle",
+			"seconds": 2.4,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "crawl_scuttle",
+			"seconds": 1.125,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "death_back",
+			"seconds": 1.3,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "death_crawl",
+			"seconds": 1.3,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "death_faceplant",
+			"seconds": 1.3,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "death_gut",
+			"seconds": 1.3,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "death_head_snap",
+			"seconds": 1.3,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "death_headless",
+			"seconds": 1.3,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "death_knee",
+			"seconds": 1.3,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "death_sit",
+			"seconds": 1.3,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "death_spin",
+			"seconds": 1.3,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "death_tumble",
+			"seconds": 1.3,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "drag_foot_l",
+			"seconds": 0.2,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "drag_foot_r",
+			"seconds": 0.2,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "drop_down",
+			"seconds": 0.9,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "emerge_ceiling",
+			"seconds": 0.9,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "emerge_crawler",
+			"seconds": 2.4,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "emerge_fast",
+			"seconds": 1.4,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "emerge_portal",
+			"seconds": 0.7,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "emerge_roll",
+			"seconds": 2.3,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "emerge_slow",
+			"seconds": 3.0,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "emerge_standard",
+			"seconds": 2.1,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "emerge_wade",
+			"seconds": 1.6,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "fall_crawl",
+			"seconds": 0.7,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "flinch_arm_l",
+			"seconds": 0.25,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "flinch_arm_r",
+			"seconds": 0.25,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "flinch_head",
+			"seconds": 0.25,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "flinch_leg_l",
+			"seconds": 0.25,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "flinch_leg_r",
+			"seconds": 0.25,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "flinch_torso",
+			"seconds": 0.25,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "getup_back",
+			"seconds": 1.0,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "getup_front",
+			"seconds": 1.0,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "grab",
+			"seconds": 0.8,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "hang_arm_l",
+			"seconds": 0.2,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "hang_arm_r",
+			"seconds": 0.2,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "headbutt",
+			"seconds": 0.8,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "hunch",
+			"seconds": 0.2,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "idle",
+			"seconds": 2.4,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "jog_a",
+			"seconds": 0.5,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "jog_a_lean_l",
+			"seconds": 0.5,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "jog_a_lean_r",
+			"seconds": 0.5,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "jog_b",
+			"seconds": 0.5,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "jog_b_lean_l",
+			"seconds": 0.5,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "jog_b_lean_r",
+			"seconds": 0.5,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "knockdown_back",
+			"seconds": 0.9,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "knockdown_front",
+			"seconds": 0.9,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "limp_l",
+			"seconds": 0.2,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "limp_r",
+			"seconds": 0.2,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "lunge",
+			"seconds": 0.8,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "mco_attack_arms",
+			"seconds": 1.70000004768372,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Atk_Arms_3_SHORT_Loop.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "mco_attack_loop",
+			"seconds": 6.40000009536743,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Atk_Loop_1.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "mco_chase",
+			"seconds": 2.63333344459534,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Chase_1_Loop.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "mco_chase_knockback",
+			"seconds": 4.93333339691162,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Chase_1_KnockBack_Chase.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "mco_crawl",
+			"seconds": 9.03333377838135,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Crawl_1_Loop.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "mco_death_back",
+			"seconds": 2.76666665077209,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Death_Back_Mid_1.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "mco_death_hit_back",
+			"seconds": 1.70000004768372,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Death_Hit_Back_1.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "mco_fast_attack",
+			"seconds": 2.20000004768372,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_HyperAttack_1_SHORT_Loop.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "mco_fast_attack_idle",
+			"seconds": 1.89999997615814,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_HyperAttack_1_SHORT_Idle_Loop.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "mco_fast_chase",
+			"seconds": 1.89999997615814,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_HyperChase_1_Loop.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "mco_idle",
+			"seconds": 12.5,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Idle_1_v2.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "mco_idle_2",
+			"seconds": 13.6666669845581,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Idle_2.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "mco_idle_to_stand",
+			"seconds": 1.53333330154419,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Idle_1_v2_to_MOB_Stand.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "mco_on_fire",
+			"seconds": 4.13333320617676,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_OnFire_2A_SHORT.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "mco_reach",
+			"seconds": 5.86666679382324,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Reach_1_Loop.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "mco_stand_attack",
+			"seconds": 4.43333339691162,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Stand_To_Atk_1.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "mco_stand_chase",
+			"seconds": 1.03333330154419,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Stand_To_Chase_1.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "mco_stand_crawl",
+			"seconds": 4.63333320617676,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Stand to_Crawl_1.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "mco_stand_to_idle",
+			"seconds": 1.53333330154419,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/MOB_Stand_to_Zombie_Idle_1_v2.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "mco_stand_walk",
+			"seconds": 1.83333337306976,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Stand_Walk_F_1.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "mco_turn_l_45",
+			"seconds": 1.26666665077209,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Turn_L_45_Loop.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "mco_turn_l_90",
+			"seconds": 5.40000009536743,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Turn_L_90_1.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "mco_turn_r_45",
+			"seconds": 1.26666665077209,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Turn_R_45_Loop.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "mco_turn_r_90",
+			"seconds": 5.13333320617676,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Turn_R_90_1.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "mco_walk",
+			"seconds": 4.5,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Walk_F_1_Loop.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "mco_walk_knockback",
+			"seconds": 5.5,
+			"source": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Walk_F_1_KnockBack_Walk.fbx",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "posture_none",
+			"seconds": 0.2,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "run_a",
+			"seconds": 0.479166666666667,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "run_a_lean_l",
+			"seconds": 0.479166666666667,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "run_a_lean_r",
+			"seconds": 0.479166666666667,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "run_b",
+			"seconds": 0.479166666666667,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "run_b_lean_l",
+			"seconds": 0.479166666666667,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "run_b_lean_r",
+			"seconds": 0.479166666666667,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "run_c",
+			"seconds": 0.479166666666667,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "run_c_lean_l",
+			"seconds": 0.479166666666667,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "run_c_lean_r",
+			"seconds": 0.479166666666667,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "shamble_a",
+			"seconds": 0.646153846153846,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "shamble_a_lean_l",
+			"seconds": 0.646153846153846,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "shamble_a_lean_r",
+			"seconds": 0.646153846153846,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "shamble_b",
+			"seconds": 0.646153846153846,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "shamble_b_lean_l",
+			"seconds": 0.646153846153846,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "shamble_b_lean_r",
+			"seconds": 0.646153846153846,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "shamble_c",
+			"seconds": 0.646153846153846,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "shamble_c_lean_l",
+			"seconds": 0.646153846153846,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "shamble_c_lean_r",
+			"seconds": 0.646153846153846,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "sprint_a",
+			"seconds": 0.464285714285714,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "sprint_a_lean_l",
+			"seconds": 0.464285714285714,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "sprint_a_lean_r",
+			"seconds": 0.464285714285714,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "sprint_b",
+			"seconds": 0.464285714285714,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "sprint_b_lean_l",
+			"seconds": 0.464285714285714,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "sprint_b_lean_r",
+			"seconds": 0.464285714285714,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "stagger",
+			"seconds": 0.45,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "swipe_double",
+			"seconds": 0.8,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "swipe_l",
+			"seconds": 0.8,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "swipe_over",
+			"seconds": 0.8,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "swipe_r",
+			"seconds": 0.8,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "tear_rip",
+			"seconds": 1.2,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "tear_slam",
+			"seconds": 1.2,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "tear_wrench",
+			"seconds": 1.2,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "turn_l",
+			"seconds": 0.8,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "turn_r",
+			"seconds": 0.8,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "vault_a",
+			"seconds": 1.1,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "vault_b",
+			"seconds": 1.1,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "walk_a",
+			"seconds": 0.58,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "walk_a_lean_l",
+			"seconds": 0.58,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "walk_a_lean_r",
+			"seconds": 0.58,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "walk_b",
+			"seconds": 0.58,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "walk_b_lean_l",
+			"seconds": 0.58,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "walk_b_lean_r",
+			"seconds": 0.58,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "walk_c",
+			"seconds": 0.58,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "walk_c_lean_l",
+			"seconds": 0.58,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "walk_c_lean_r",
+			"seconds": 0.58,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 0,
+			"name": "window_swipe",
+			"seconds": 0.8,
+			"source": "existing procedural library",
+			"tracks": 21
+		},
+		{
+			"loop": 1,
+			"name": "window_wait",
+			"seconds": 2.4,
+			"source": "existing procedural library",
+			"tracks": 21
+		}
+	],
+	"kits": [
+		"soldier",
+		"villager",
+		"miner",
+		"labstaff",
+		"technician",
+		"sailor",
+		"drowned",
+		"drowned_diver",
+		"dockworker",
+		"bellringer",
+		"nurse",
+		"soviet",
+		"soviet_tunic",
+		"soviet_burial"
+	],
+	"mocap": {
+		"errors": [],
+		"loaded": [
+			"mco_walk",
+			"mco_chase",
+			"mco_fast_chase",
+			"mco_crawl",
+			"mco_idle",
+			"mco_idle_2",
+			"mco_reach",
+			"mco_attack_loop",
+			"mco_attack_arms",
+			"mco_fast_attack",
+			"mco_fast_attack_idle",
+			"mco_death_back",
+			"mco_death_hit_back",
+			"mco_turn_l_45",
+			"mco_turn_r_45",
+			"mco_turn_l_90",
+			"mco_turn_r_90",
+			"mco_walk_knockback",
+			"mco_chase_knockback",
+			"mco_stand_walk",
+			"mco_stand_chase",
+			"mco_stand_attack",
+			"mco_stand_crawl",
+			"mco_on_fire",
+			"mco_idle_to_stand",
+			"mco_stand_to_idle"
+		],
+		"runtime_enabled": true
+	},
+	"source": "Existing procedural library plus locally converted licensed clips (mco_ prefix)"
+}

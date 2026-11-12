@@ -1,0 +1,21 @@
+{
+	"contact_method": "y < 0.14m and abs(vertical velocity) < 0.2m/s; heuristic only",
+	"contact_requires_body_speed_mps": 0.4,
+	"contact_samples": 0,
+	"frame_ms_p50": null,
+	"frame_ms_p95": null,
+	"limitations": "Headless timing excludes GPU. Rest-pose heuristic does not prove zero T-poses or pops. Ragdolls are not exercised by horde mode. Preview bypasses gameplay transitions. No target-machine performance sign-off.",
+	"min_active": 24,
+	"missing": [],
+	"mode": "clip_preview",
+	"moving_pose_samples": 0,
+	"phase_bin_peak_occupancy": {},
+	"planted_foot_speed_mps_p50": null,
+	"planted_foot_speed_mps_p95": null,
+	"pose_samples": 0,
+	"ragdoll_peak": 0,
+	"rendered": true,
+	"rest_pose_samples": 0,
+	"seconds": 1.173966,
+	"zombies": 1
+}

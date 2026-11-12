@@ -1,10 +1,10 @@
 class_name ZombieClips
 extends RefCounted
-## Procedural pose library baked to Animation resources, and the AnimationTree every zombie runs (ZOMBIE_ANIM_SPEC
-## §1-§4, T-041). Nothing is imported: every clip is a pose function sampled at anim.json skeleton.sample_hz into
-## rotation / position tracks on the shared ZombieRig skeleton, cached once and shared by the whole pool.
+## Shared AnimationTree and cached legacy / licensed motion library (ZOMBIE_ANIM_SPEC §1-§4, T-041).
+## Existing pose functions are retained as fallback. Owner-supplied mco_ clips are imported from GLB;
+## tools/blender/zombie_anim_batch.py retargets them offline onto the same ZombieRig.
 ## Locomotion clips carry root motion on the Root bone (forward = -Z) whose speed at time scale 1 equals the
-## tier speed, so Zombie matches the clip to its nav velocity by time scale and the feet never slide.
+## tier speed. Zombie matches playback to nav velocity; foot planting needs contact checks too.
 ##
 ## Tree layout (one per zombie, graph duplicated per instance so clip picks are per zombie):
 ##   SM (state machine: Spawn / Emerge / Climb / Barricade / Locomotion / Attack / React / Crawl / Death)
@@ -12,17 +12,20 @@ extends RefCounted
 ## Each state is a nested blend tree "Anim -> TimeScale": Locomotion's Anim is a BlendSpace2D (speed x turn),
 ## Attack's and Crawl's a BlendSpace1D (variant / speed), the rest an Animation node whose clip is set per use.
 
-const STATES: PackedStringArray = ["Spawn", "Emerge", "Climb", "Barricade", "Locomotion", "Attack", "React", "Crawl", "Death"]
+const STATES: PackedStringArray = ["Spawn", "Emerge", "Climb", "Barricade", "Locomotion", "Attack", "React", "Crawl", "Death", "Turn"]
 const FORWARD: Vector3 = Vector3(0, 0, -1)
 const ATTACK_WINDUP: float = 0.45     # the baked attack timing; Zombie rescales it to its attack_windup
 const ATTACK_SWING: float = 0.35
 const TEAR_CYCLE: float = 1.2         # baked tear cycle; rescaled to the tear interval
 const DEATH_SECONDS: float = 1.3
+const MocapBank: GDScript = preload("res://gravelight/enemies/zombie_mocap.gd")
 
 static var _lib: AnimationLibrary = null
 static var _lengths: Dictionary = {}
 static var _cfg: Dictionary = {}
 static var _bones: PackedStringArray = []
+static var _mocap: RefCounted
+static var _contact_events: Dictionary = {}
 
 
 static func cfg() -> Dictionary:
@@ -48,7 +51,119 @@ static func library() -> AnimationLibrary:
 			_lib.add_animation(n2 + "_lean_l", generate(n2 + "_lean_l"))
 			_lib.add_animation(n2 + "_lean_r", generate(n2 + "_lean_r"))
 	_lib.add_animation("posture_none", generate("posture_none"))
+	_mocap = MocapBank.new()
+	_mocap.load_bank()
+	for name: String in _mocap.animations:
+		var clip: Animation = _mocap.animations[name]
+		_lib.add_animation(name, clip)
+		_lengths[name] = clip.length
 	return _lib
+
+
+static func mocap_info() -> Dictionary:
+	library()
+	return {"loaded": _mocap.metadata.keys(), "errors": _mocap.errors, "runtime_enabled": mocap_enabled()}
+
+
+static func mocap_enabled() -> bool:
+	library()
+	return bool(_mocap.config.get("runtime_enabled", false)) and not "--legacy-zombies" in OS.get_cmdline_user_args()
+
+
+## A fresh checkout without the licensed local files retains the existing playable fallback.
+static func locomotion_clips(tier: String) -> Array:
+	library()
+	var candidates: Array = _mocap.config.get("locomotion", {}).get(tier, []) if mocap_enabled() else []
+	var ready: Array = candidates.filter(func(n: String) -> bool: return _mocap.animations.has(n))
+	return ready if not ready.is_empty() else cfg()["clips"]["locomotion"][tier]
+
+
+static func idle_clips() -> Array:
+	library()
+	var candidates: Array = _mocap.config.get("idle", []) if mocap_enabled() else []
+	var ready: Array = candidates.filter(func(n: String) -> bool: return _mocap.animations.has(n))
+	return ready if not ready.is_empty() else [cfg()["clips"]["idle"]]
+
+
+static func stride_speed(clip: String, tier: String) -> float:
+	library()
+	return float(_mocap.metadata[clip]["speed_mps"]) if _mocap.metadata.has(clip) else float(cfg()["gait"][tier]["speed"])
+
+
+static func contact_windows(clip: String) -> Dictionary:
+	library()
+	return _mocap.metadata.get(clip, {}).get("contact_windows", {})
+
+
+static func contact_lock_config() -> Dictionary:
+	library()
+	return _mocap.config.get("contact_lock", {})
+
+
+## Keep gameplay names/indices stable, swapping only the reviewed visual performance.
+static func visual_clip(legacy: String) -> String:
+	library()
+	if not mocap_enabled(): return legacy
+	var candidate: String = str(_mocap.config.get("visual_aliases", {}).get(legacy, legacy))
+	return candidate if _mocap.animations.has(candidate) else legacy
+
+
+static func hit_event_time(clip: String) -> float:
+	library()
+	return float(_mocap.metadata.get(visual_clip(clip), {}).get("events", {}).get("hit", -1.0))
+
+
+static func death_key_pose_time(clip: String) -> float:
+	library()
+	return float(_mocap.config.get("death_key_pose_seconds", {}).get(visual_clip(clip), cfg()["ragdoll"]["key_pose_seconds"]))
+
+
+static func death_motion_config() -> Dictionary:
+	library()
+	return _mocap.config.get("death_motion", {})
+
+
+static func turn_config() -> Dictionary:
+	library()
+	return _mocap.config.get("turn", {})
+
+
+static func recorded_turns_enabled() -> bool:
+	var c: Dictionary = turn_config()
+	return mocap_enabled() and bool(c.get("enabled", false)) and not "--legacy-zombie-turns" in OS.get_cmdline_user_args() and _mocap.metadata.get(c.get("left", ""), {}).has("root_yaw") and _mocap.metadata.get(c.get("right", ""), {}).has("root_yaw")
+
+
+static func turn_progress(clip: String, seconds: float) -> float:
+	var curve: Array = _mocap.metadata.get(clip, {}).get("root_yaw", {}).get("radians", [])
+	if curve.size() < 2 or absf(float(curve.back())) < 0.001: return 0.0
+	var at: float = clampf(seconds / length_of(clip), 0.0, 1.0) * float(curve.size() - 1)
+	var i: int = int(at)
+	return lerpf(float(curve[i]), float(curve[mini(i + 1, curve.size() - 1)]), at - float(i)) / float(curve.back())
+
+
+## Recorded loops may contain several strides. Events are source contact onsets, not even halves.
+static func footstep_events(clip: String) -> Array:
+	if _contact_events.has(clip): return _contact_events[clip]
+	var windows: Dictionary = contact_windows(clip)
+	var events: Array = []
+	if windows.is_empty():
+		events = [{"phase": 0.0, "left": true}, {"phase": 0.5, "left": false}]
+	else:
+		var duration: float = length_of(clip)
+		for side: String in windows:
+			var intervals: Array = windows[side]
+			for interval: Array in intervals:
+				var start: float = float(interval[0])
+				# A stance continuing across the seam has only its original onset event.
+				if start < 0.0001 and float(intervals.back()[1]) >= duration - 0.0001: continue
+				events.append({"phase": start / duration, "left": side == "Left"})
+		events.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return float(a["phase"]) < float(b["phase"]))
+	_contact_events[clip] = events
+	return events
+
+
+static func crossed_phase(previous: float, current: float, event: float) -> bool:
+	return (event > previous and event <= current) if current >= previous else (event > previous or event <= current)
 
 
 static func length_of(clip: String) -> float:
@@ -182,19 +297,22 @@ static func _state_tree(state: String) -> AnimationNodeBlendTree:
 				bsa.add_blend_point(_anim_node(str(names[i])), float(i), -1, StringName(str(names[i])))
 			anim = bsa
 		_:
-			var defaults: Dictionary = {"Spawn": "idle", "Emerge": "emerge_standard", "Climb": "vault_a", "Barricade": "tear_rip", "React": "stagger", "Death": "death_back"}
+			var defaults: Dictionary = {"Spawn": "idle", "Emerge": "emerge_standard", "Climb": "vault_a", "Barricade": "tear_rip", "React": "stagger", "Death": "death_back", "Turn": "idle"}
 			anim = _anim_node(str(defaults[state]))
 	bt.add_node("Anim", anim, Vector2(0, 0))
+	var seek: AnimationNodeTimeSeek = AnimationNodeTimeSeek.new()
+	bt.add_node("TimeSeek", seek, Vector2(125, 0))
+	bt.connect_node("TimeSeek", 0, "Anim")
 	var ts: AnimationNodeTimeScale = AnimationNodeTimeScale.new()
 	bt.add_node("TimeScale", ts, Vector2(250, 0))
-	bt.connect_node("TimeScale", 0, "Anim")
+	bt.connect_node("TimeScale", 0, "TimeSeek")
 	bt.connect_node("output", 0, "TimeScale")
 	return bt
 
 
 static func _anim_node(clip: String) -> AnimationNodeAnimation:
 	var n: AnimationNodeAnimation = AnimationNodeAnimation.new()
-	n.animation = StringName(clip)
+	n.animation = StringName(visual_clip(clip))
 	return n
 
 

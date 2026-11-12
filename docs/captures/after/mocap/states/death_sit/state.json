@@ -1,0 +1,17 @@
+{
+	"case": "death_sit",
+	"failures": [],
+	"handoffs": [
+		{
+			"expected": 1.0,
+			"hips_velocity_mps": "Vector3(0.19879816, -1.1304903, 1.7528127)",
+			"immediate_bone_jump_m": 0.0108817145228386,
+			"pivot_offset": "Vector3(0.027284566, 0, 0.6075065)",
+			"time": 1.0
+		}
+	],
+	"hits": [],
+	"scope": "Actual state callbacks/tree/ragdoll in studio; forced clip selection; freeze clock normalized to simulated time; no player damage/range test",
+	"seconds": 6.01666666666665,
+	"visual_clip": "mco_death_back"
+}

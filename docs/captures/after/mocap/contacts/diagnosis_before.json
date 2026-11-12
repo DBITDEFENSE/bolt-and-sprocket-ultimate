@@ -1,0 +1,1955 @@
+{
+  "buckets": {
+    "lock_off": {
+      "max": 20.510103225708,
+      "over_limit": 2129,
+      "p50": 0.96671861410141,
+      "p95": 2.49407029151917,
+      "samples": 2143
+    },
+    "repin": {
+      "max": 45.7848167419434,
+      "over_limit": 127,
+      "p50": 12.8948364257813,
+      "p95": 21.5398368835449,
+      "samples": 127
+    },
+    "stable_pin": {
+      "max": 0.843833565711975,
+      "over_limit": 467,
+      "p50": 0.000855949183460325,
+      "p95": 0.0125042488798499,
+      "samples": 48710
+    }
+  },
+  "examples": {
+    "lock_off": [
+      {
+        "body_step": "(-0.009582, 0.007197, -0.091567)",
+        "clip": "mco_fast_chase",
+        "context": {
+          "actor": 14,
+          "body": "(0.455423, 0.01662, -0.647823)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.01555006424989,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            0
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 0.851475775241852,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(0.321682, 0.030548, 0.348033)",
+            "(0.895829, -0.018742, -0.699444)"
+          ],
+          "speed": 5.52400350570679,
+          "state": "CHASE",
+          "tier": "sprint",
+          "yaw": 0.0796700119972229
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 0.0494549870491028,
+        "old_time": 0.819800674915314,
+        "previous_context": {
+          "actor": 14,
+          "body": "(0.465004, 0.009423, -0.556256)",
+          "clip_state": "Locomotion",
+          "contact_clip": "",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0153134958248051,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            -1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": false,
+          "lock_time": 0.81894052028656,
+          "loco_x": 0.9,
+          "modifier_active": true,
+          "pins": [
+            "(0.321682, 0.030548, 0.348033)",
+            "(0.922531, -0.019252, -0.694867)"
+          ],
+          "speed": 0.0,
+          "state": "CHASE",
+          "tier": "sprint",
+          "yaw": 0.0714723318815231
+        },
+        "residual_xz": 0.0,
+        "side": "Right",
+        "speed": 1.43900215625763,
+        "time": 0.851475775241852,
+        "yaw_step": 0.00819768011569977
+      },
+      {
+        "body_step": "(0.001463, 0.007204, -0.091259)",
+        "clip": "mco_fast_chase",
+        "context": {
+          "actor": 4,
+          "body": "(-0.156845, 0.016619, 4.782487)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0170030695528221,
+          "ik_weight": 1.0,
+          "intervals": [
+            0,
+            -1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 0.0544496141374111,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-0.235721, -0.001237, 4.98895)",
+            "(0.469541, -0.001339, 5.925568)"
+          ],
+          "speed": 5.47627067565918,
+          "state": "CHASE",
+          "tier": "sprint",
+          "yaw": 0.0895328596234322
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 0.0206558518111706,
+        "old_time": 0.0212982315570116,
+        "previous_context": {
+          "actor": 4,
+          "body": "(-0.158308, 0.009416, 4.873747)",
+          "clip_state": "Locomotion",
+          "contact_clip": "",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.016900052450651,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            -1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": false,
+          "lock_time": 0.0203901845961809,
+          "loco_x": 0.9,
+          "modifier_active": true,
+          "pins": [
+            "(-0.240806, -0.001421, 4.989667)",
+            "(0.469541, -0.001339, 5.925568)"
+          ],
+          "speed": 0.0,
+          "state": "CHASE",
+          "tier": "sprint",
+          "yaw": 0.124721102416515
+        },
+        "residual_xz": 0.0,
+        "side": "Left",
+        "speed": 1.43411731719971,
+        "time": 0.0544496141374111,
+        "yaw_step": -0.0351882427930832
+      },
+      {
+        "body_step": "(-0.002049, 0.007195, -0.092044)",
+        "clip": "mco_fast_chase",
+        "context": {
+          "actor": 14,
+          "body": "(0.2994, 0.01662, 8.447737)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0154076925215437,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 1.52009427547455,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(0.288772, 0.021783, -1.723512)",
+            "(0.665782, -0.013808, 8.473548)"
+          ],
+          "speed": 5.52400350570679,
+          "state": "CHASE",
+          "tier": "sprint",
+          "yaw": 0.0367965549230576
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 0.0356627851724625,
+        "old_time": 1.48841905593872,
+        "previous_context": {
+          "actor": 14,
+          "body": "(0.30145, 0.009425, 8.539781)",
+          "clip_state": "Locomotion",
+          "contact_clip": "",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0151354520019534,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            -1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": false,
+          "lock_time": 1.48755896091461,
+          "loco_x": 0.9,
+          "modifier_active": true,
+          "pins": [
+            "(0.288772, 0.021783, -1.723512)",
+            "(0.664726, -0.014935, 8.451072)"
+          ],
+          "speed": 0.0,
+          "state": "CHASE",
+          "tier": "sprint",
+          "yaw": 0.041641965508461
+        },
+        "residual_xz": 0.0,
+        "side": "Right",
+        "speed": 2.02401256561279,
+        "time": 1.52009427547455,
+        "yaw_step": -0.00484541058540344
+      },
+      {
+        "body_step": "(0.004922, 0.007347, -0.095416)",
+        "clip": "mco_fast_chase",
+        "context": {
+          "actor": 9,
+          "body": "(-0.623696, 0.016601, 7.091681)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0146301476743562,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 1.49947142601013,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-0.733516, -0.001964, 7.810264)",
+            "(-0.216537, 0.001865, 7.083822)"
+          ],
+          "speed": 5.73255729675293,
+          "state": "CHASE",
+          "tier": "sprint",
+          "yaw": -0.0520765446126461
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 0.0225529596209526,
+        "old_time": 1.46559345722198,
+        "previous_context": {
+          "actor": 9,
+          "body": "(-0.628618, 0.009255, 7.187098)",
+          "clip_state": "Locomotion",
+          "contact_clip": "",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0140420089583525,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            -1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": false,
+          "lock_time": 1.46470701694489,
+          "loco_x": 0.9,
+          "modifier_active": true,
+          "pins": [
+            "(-0.733516, -0.001964, 7.810264)",
+            "(-0.212254, 0.001846, 7.07647)"
+          ],
+          "speed": 0.0,
+          "state": "CHASE",
+          "tier": "sprint",
+          "yaw": -0.0522570833563805
+        },
+        "residual_xz": 0.0,
+        "side": "Right",
+        "speed": 1.08309984207153,
+        "time": 1.49947142601013,
+        "yaw_step": 0.00018053874373436
+      },
+      {
+        "body_step": "(-0.002049, 0.007195, -0.092044)",
+        "clip": "mco_fast_chase",
+        "context": {
+          "actor": 14,
+          "body": "(0.276859, 0.01662, 7.435254)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0155305610816975,
+          "ik_weight": 1.0,
+          "intervals": [
+            3,
+            -1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 1.87024104595184,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(0.189918, 0.037317, 7.416044)",
+            "(0.665782, -0.013808, 8.473548)"
+          ],
+          "speed": 5.52400350570679,
+          "state": "CHASE",
+          "tier": "sprint",
+          "yaw": 0.0228742640465498
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 0.0264710318297148,
+        "old_time": 1.83856594562531,
+        "previous_context": {
+          "actor": 14,
+          "body": "(0.278908, 0.009425, 7.527298)",
+          "clip_state": "Locomotion",
+          "contact_clip": "",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0152890311828876,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            -1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": false,
+          "lock_time": 1.83770573139191,
+          "loco_x": 0.9,
+          "modifier_active": true,
+          "pins": [
+            "(0.196006, 0.032973, 7.418797)",
+            "(0.665782, -0.013808, 8.473548)"
+          ],
+          "speed": 0.0,
+          "state": "CHASE",
+          "tier": "sprint",
+          "yaw": 0.0230789110064507
+        },
+        "residual_xz": 0.0,
+        "side": "Left",
+        "speed": 1.20407271385193,
+        "time": 1.87024104595184,
+        "yaw_step": -0.000204646959900856
+      },
+      {
+        "body_step": "(0.001513, 0.007342, -0.091259)",
+        "clip": "mco_fast_chase",
+        "context": {
+          "actor": 4,
+          "body": "(-0.141047, 0.016596, 3.505018)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0148964673765464,
+          "ik_weight": 1.0,
+          "intervals": [
+            1,
+            -1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 0.525788187980652,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-0.366844, 0.001518, 3.541168)",
+            "(0.469541, -0.001339, 5.925568)"
+          ],
+          "speed": 5.47627115249634,
+          "state": "CHASE",
+          "tier": "sprint",
+          "yaw": -0.01146967895329
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 0.00808036793023348,
+        "old_time": 0.492636770009995,
+        "previous_context": {
+          "actor": 4,
+          "body": "(-0.142561, 0.009254, 3.596277)",
+          "clip_state": "Locomotion",
+          "contact_clip": "",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0142729385430568,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            -1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": false,
+          "lock_time": 0.491728723049164,
+          "loco_x": 0.9,
+          "modifier_active": true,
+          "pins": [
+            "(-0.366242, 0.000069, 3.539608)",
+            "(0.469541, -0.001339, 5.925568)"
+          ],
+          "speed": 0.0,
+          "state": "CHASE",
+          "tier": "sprint",
+          "yaw": -0.00976540427654982
+        },
+        "residual_xz": 0.0,
+        "side": "Left",
+        "speed": 0.385808229446411,
+        "time": 0.525788187980652,
+        "yaw_step": -0.00170427467674017
+      },
+      {
+        "body_step": "(0.001513, 0.007328, -0.091259)",
+        "clip": "mco_fast_chase",
+        "context": {
+          "actor": 4,
+          "body": "(-0.138021, 0.016598, 3.322501)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0150195770809886,
+          "ik_weight": 1.0,
+          "intervals": [
+            1,
+            -1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 0.59299898147583,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-0.366729, 0.001107, 3.542983)",
+            "(0.469541, -0.001339, 5.925568)"
+          ],
+          "speed": 5.47627115249634,
+          "state": "CHASE",
+          "tier": "sprint",
+          "yaw": -0.0137065388262272
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 0.00797601789236069,
+        "old_time": 0.559847593307495,
+        "previous_context": {
+          "actor": 4,
+          "body": "(-0.139534, 0.00927, 3.413759)",
+          "clip_state": "Locomotion",
+          "contact_clip": "",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0144262678113874,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            -1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": false,
+          "lock_time": 0.558939576148987,
+          "loco_x": 0.9,
+          "modifier_active": true,
+          "pins": [
+            "(-0.366844, 0.001518, 3.541168)",
+            "(0.469541, -0.001339, 5.925568)"
+          ],
+          "speed": 0.0,
+          "state": "CHASE",
+          "tier": "sprint",
+          "yaw": -0.0127478847280145
+        },
+        "residual_xz": 0.0,
+        "side": "Left",
+        "speed": 0.586832404136658,
+        "time": 0.59299898147583,
+        "yaw_step": -0.000958654098212719
+      },
+      {
+        "body_step": "(0.004922, 0.008061, -0.095416)",
+        "clip": "mco_fast_chase",
+        "context": {
+          "actor": 9,
+          "body": "(-0.569559, 0.016489, 6.042109)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0142293238498456,
+          "ik_weight": 1.0,
+          "intervals": [
+            3,
+            -1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 1.87833499908447,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-0.667826, 0.001724, 6.025659)",
+            "(-0.216537, 0.001865, 7.083822)"
+          ],
+          "speed": 5.73255729675293,
+          "state": "CHASE",
+          "tier": "sprint",
+          "yaw": -0.051557794213295
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 0.0140076382085681,
+        "old_time": 1.84445691108704,
+        "previous_context": {
+          "actor": 9,
+          "body": "(-0.57448, 0.008428, 6.137524)",
+          "clip_state": "Locomotion",
+          "contact_clip": "",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0135695898728676,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            -1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": false,
+          "lock_time": 1.84357047080994,
+          "loco_x": 0.9,
+          "modifier_active": true,
+          "pins": [
+            "(-0.667944, 0.001445, 6.02308)",
+            "(-0.216537, 0.001865, 7.083822)"
+          ],
+          "speed": 0.0,
+          "state": "CHASE",
+          "tier": "sprint",
+          "yaw": -0.0515654198825359
+        },
+        "residual_xz": 0.0,
+        "side": "Left",
+        "speed": 0.814659714698792,
+        "time": 1.87833499908447,
+        "yaw_step": 7.62566924095154e-06
+      }
+    ],
+    "repin": [
+      {
+        "body_step": "(0.001196, 0.000041, -0.00999)",
+        "clip": "mco_fast_chase",
+        "context": {
+          "actor": 18,
+          "body": "(0.118883, 0.018954, 6.573989)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0184583628120446,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 1.44867122173309,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(0.064867, 0.018899, 7.052696)",
+            "(0.520674, -0.012129, 6.62975)"
+          ],
+          "speed": 1.69220221042633,
+          "state": "CHASE",
+          "tier": "run",
+          "yaw": -0.575488328933716
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 1.78813934326172e-07,
+        "old_time": 1.43859839439392,
+        "previous_context": {
+          "actor": 18,
+          "body": "(0.117687, 0.018913, 6.583979)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(-0.028817, 0.0, -0.133265)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0181904618556827,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 1.43859839439392,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(0.064867, 0.018899, 7.052696)",
+            "(0.504816, -0.012133, 6.393189)"
+          ],
+          "speed": 1.6806902885437,
+          "state": "CHASE",
+          "tier": "run",
+          "yaw": -0.362156867980957
+        },
+        "residual_xz": 0.0,
+        "side": "Right",
+        "speed": 14.2254762649536,
+        "time": 1.44867122173309,
+        "yaw_step": -0.213331460952759
+      },
+      {
+        "body_step": "(0.052311, -0.000223, -0.032971)",
+        "clip": "mco_fast_chase",
+        "context": {
+          "actor": 3,
+          "body": "(0.386302, 0.01778, 6.274511)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0181884845552533,
+          "ik_weight": 1.0,
+          "intervals": [
+            2,
+            -1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 1.15027678012848,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(0.185749, -0.00239, 6.097365)",
+            "(1.05622, -0.000596, 6.811515)"
+          ],
+          "speed": 2.91682815551758,
+          "state": "CHASE",
+          "tier": "run",
+          "yaw": 0.557617485523224
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 8.64267349243164e-07,
+        "old_time": 1.13361537456512,
+        "previous_context": {
+          "actor": 3,
+          "body": "(0.333991, 0.018003, 6.307483)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(-0.031355, 0.0, -0.004912)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0183404774662964,
+          "ik_weight": 1.0,
+          "intervals": [
+            2,
+            -1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 1.13361537456512,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(0.000431, -0.001177, 6.213072)",
+            "(1.05622, -0.000596, 6.811515)"
+          ],
+          "speed": 2.38671493530273,
+          "state": "CHASE",
+          "tier": "run",
+          "yaw": 1.03078436851501
+        },
+        "residual_xz": 0.0,
+        "side": "Left",
+        "speed": 13.108455657959,
+        "time": 1.15027678012848,
+        "yaw_step": -0.473166882991791
+      },
+      {
+        "body_step": "(-0.038713, -0.000471, -0.045249)",
+        "clip": "mco_fast_chase",
+        "context": {
+          "actor": 3,
+          "body": "(0.124364, 0.01783, 5.674449)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0178986969226236,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 1.44566476345062,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(0.185749, -0.00239, 6.097365)",
+            "(0.473299, -0.002093, 5.369387)"
+          ],
+          "speed": 3.57300114631653,
+          "state": "CHASE",
+          "tier": "run",
+          "yaw": 0.290133476257324
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 4.91512480493839e-07,
+        "old_time": 1.42525517940521,
+        "previous_context": {
+          "actor": 3,
+          "body": "(0.163076, 0.018302, 5.719698)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.098486, 0.0, 0.069366)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0179658172197186,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 1.42525517940521,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(0.185749, -0.00239, 6.097365)",
+            "(0.643947, -0.000795, 5.475761)"
+          ],
+          "speed": 3.38588643074036,
+          "state": "CHASE",
+          "tier": "run",
+          "yaw": 0.150945201516151
+        },
+        "residual_xz": 0.0,
+        "side": "Right",
+        "speed": 12.0653238296509,
+        "time": 1.44566476345062,
+        "yaw_step": 0.139188274741173
+      },
+      {
+        "body_step": "(0.020516, 0.00042, -0.006172)",
+        "clip": "mco_fast_chase",
+        "context": {
+          "actor": 3,
+          "body": "(0.14488, 0.018251, 5.668277)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0179281547523447,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 1.45300769805908,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(0.185749, -0.00239, 6.097365)",
+            "(0.581662, -0.00177, 5.541078)"
+          ],
+          "speed": 1.28548407554626,
+          "state": "CHASE",
+          "tier": "run",
+          "yaw": -0.102043285965919
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 0.0,
+        "old_time": 1.44566476345062,
+        "previous_context": {
+          "actor": 3,
+          "body": "(0.124364, 0.01783, 5.674449)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0178986969226236,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 1.44566476345062,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(0.185749, -0.00239, 6.097365)",
+            "(0.473299, -0.002093, 5.369387)"
+          ],
+          "speed": 3.57300114631653,
+          "state": "CHASE",
+          "tier": "run",
+          "yaw": 0.290133476257324
+        },
+        "residual_xz": 0.0,
+        "side": "Right",
+        "speed": 12.181676864624,
+        "time": 1.45300769805908,
+        "yaw_step": -0.392176762223244
+      },
+      {
+        "body_step": "(0.022166, 0.000019, -0.008492)",
+        "clip": "mco_fast_chase",
+        "context": {
+          "actor": 12,
+          "body": "(-0.317592, 0.01776, 1.349102)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0181410452322488,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            0
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 0.749396681785584,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-0.381828, 0.030747, 2.029139)",
+            "(0.190355, -0.002133, 1.077225)"
+          ],
+          "speed": 1.42423164844513,
+          "state": "CHASE",
+          "tier": "jog",
+          "yaw": -0.0859895348548889
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 0.0,
+        "old_time": 0.740987777709961,
+        "previous_context": {
+          "actor": 12,
+          "body": "(-0.339758, 0.01774, 1.357594)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.018138714363963,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            0
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 0.740987777709961,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-0.381828, 0.030747, 2.029139)",
+            "(0.027536, -0.00152, 0.896572)"
+          ],
+          "speed": 3.49872446060181,
+          "state": "CHASE",
+          "tier": "jog",
+          "yaw": 0.286994338035584
+        },
+        "residual_xz": 0.0,
+        "side": "Right",
+        "speed": 14.591926574707,
+        "time": 0.749396681785584,
+        "yaw_step": -0.372983872890472
+      },
+      {
+        "body_step": "(-0.02706, -0.000004, -0.034516)",
+        "clip": "mco_fast_chase",
+        "context": {
+          "actor": 12,
+          "body": "(-0.372315, 0.017971, 1.284009)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0182228306662686,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            0
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 0.779540300369263,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-0.381828, 0.030747, 2.029139)",
+            "(0.03617, -0.001619, 0.939747)"
+          ],
+          "speed": 2.63155126571655,
+          "state": "CHASE",
+          "tier": "jog",
+          "yaw": 0.255747109651566
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 5.96046447753906e-08,
+        "old_time": 0.764003217220306,
+        "previous_context": {
+          "actor": 12,
+          "body": "(-0.345255, 0.017975, 1.318526)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.088749, 0.0, 0.087352)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0181869573868374,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            0
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 0.764003217220306,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-0.381828, 0.030747, 2.029139)",
+            "(0.190355, -0.002133, 1.077225)"
+          ],
+          "speed": 2.473956823349,
+          "state": "CHASE",
+          "tier": "jog",
+          "yaw": 0.11936391890049
+        },
+        "residual_xz": 0.0,
+        "side": "Right",
+        "speed": 12.3944873809814,
+        "time": 0.779540300369263,
+        "yaw_step": 0.136383190751076
+      },
+      {
+        "body_step": "(-0.037185, -0.000003, -0.023191)",
+        "clip": "mco_fast_chase",
+        "context": {
+          "actor": 9,
+          "body": "(-0.567165, 0.017761, 1.495763)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            3.49875026852211e-15,
+            3.49875026852211e-15
+          ],
+          "hip_drop": -0.0181674851237035,
+          "ik_weight": 1.0,
+          "intervals": [
+            1,
+            -1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 0.550409018993378,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-0.708083, -0.001462, 1.70876)",
+            "(-0.226907, -0.001673, 4.07768)"
+          ],
+          "speed": 2.62948107719421,
+          "state": "CHASE",
+          "tier": "sprint",
+          "yaw": 0.545771837234497
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 1.33280039449346e-07,
+        "old_time": 0.534869432449341,
+        "previous_context": {
+          "actor": 9,
+          "body": "(-0.529979, 0.017764, 1.518954)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.039315, 0.0, -0.140611)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            4.37343778271308e-15,
+            4.37343778271308e-15
+          ],
+          "hip_drop": -0.0181671350894243,
+          "ik_weight": 1.0,
+          "intervals": [
+            1,
+            -1
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 0.534869432449341,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-0.67955, -0.00003, 1.526486)",
+            "(-0.226907, -0.001673, 4.07768)"
+          ],
+          "speed": 2.79757261276245,
+          "state": "CHASE",
+          "tier": "sprint",
+          "yaw": 0.389977812767029
+        },
+        "residual_xz": 0.0,
+        "side": "Left",
+        "speed": 11.0696077346802,
+        "time": 0.550409018993378,
+        "yaw_step": 0.155794024467468
+      },
+      {
+        "body_step": "(0.01416, -0.000008, -0.094487)",
+        "clip": "mco_fast_chase",
+        "context": {
+          "actor": 9,
+          "body": "(-0.873156, 0.017752, 0.826381)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.0, 0.0, 0.0)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            2.40432287311603e-16,
+            2.40432287311603e-16
+          ],
+          "hip_drop": -0.0181678292956953,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            0
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 0.838345944881439,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-0.708083, -0.001462, 1.70876)",
+            "(-0.455604, -0.001154, 0.576877)"
+          ],
+          "speed": 5.73255729675293,
+          "state": "CHASE",
+          "tier": "sprint",
+          "yaw": 0.407733201980591
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 0.0,
+        "old_time": 0.804467916488647,
+        "previous_context": {
+          "actor": 9,
+          "body": "(-0.887316, 0.01776, 0.920869)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_fast_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(-0.092051, 0.0, -0.011515)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            3.00540365756949e-16,
+            3.00540365756949e-16
+          ],
+          "hip_drop": -0.018169754843787,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            0
+          ],
+          "lock_clip": "mco_fast_chase",
+          "lock_on": true,
+          "lock_time": 0.804467916488647,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-0.708083, -0.001462, 1.70876)",
+            "(-0.66824, -0.002104, 0.507755)"
+          ],
+          "speed": 4.98217344284058,
+          "state": "CHASE",
+          "tier": "sprint",
+          "yaw": 0.593229413032532
+        },
+        "residual_xz": 0.0,
+        "side": "Right",
+        "speed": 13.4153203964233,
+        "time": 0.838345944881439,
+        "yaw_step": -0.185496211051941
+      }
+    ],
+    "stable_pin": [
+      {
+        "body_step": "(0.002757, -0.0, -0.034249)",
+        "clip": "mco_chase",
+        "context": {
+          "actor": 11,
+          "body": "(-0.317367, 0.017696, -1.057291)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_chase",
+          "correction": [
+            "(-0.005311, 0.0, 0.002834)",
+            "(0.015721, 0.0, 0.005103)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0186069862659182,
+          "ik_weight": 1.0,
+          "intervals": [
+            2,
+            1
+          ],
+          "lock_clip": "mco_chase",
+          "lock_on": true,
+          "lock_time": 2.51337552070618,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-0.467093, 0.000035, -1.186213)",
+            "(-0.07514, -0.000218, -0.830253)"
+          ],
+          "speed": 2.06156706809998,
+          "state": "CHASE",
+          "tier": "walk",
+          "yaw": -0.049815658479929
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 0.00206062663346529,
+        "old_time": 2.43776869773865,
+        "previous_context": {
+          "actor": 11,
+          "body": "(-0.320124, 0.017697, -1.023043)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_chase",
+          "correction": [
+            "(-0.002618, 0.0, 0.001472)",
+            "(0.015336, 0.0, 0.007784)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0186121954725938,
+          "ik_weight": 1.0,
+          "intervals": [
+            2,
+            1
+          ],
+          "lock_clip": "mco_chase",
+          "lock_on": true,
+          "lock_time": 2.43776869773865,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-0.467093, 0.000035, -1.186213)",
+            "(-0.07514, -0.000218, -0.830253)"
+          ],
+          "speed": 2.06156706809998,
+          "state": "CHASE",
+          "tier": "walk",
+          "yaw": -0.0396470502018929
+        },
+        "residual_xz": 6.5987080688501e-07,
+        "side": "Right",
+        "speed": 0.123608805239201,
+        "time": 2.51337552070618,
+        "yaw_step": -0.0101686082780361
+      },
+      {
+        "body_step": "(0.000547, 0.0, -0.034355)",
+        "clip": "mco_chase",
+        "context": {
+          "actor": 11,
+          "body": "(-0.220148, 0.017696, 8.828224)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_chase",
+          "correction": [
+            "(0.00711, 0.0, -0.002628)",
+            "(0.003011, 0.0, 0.010738)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0185861501364022,
+          "ik_weight": 1.0,
+          "intervals": [
+            2,
+            1
+          ],
+          "lock_clip": "mco_chase",
+          "lock_on": true,
+          "lock_time": 2.37190747261047,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-0.358155, -0.000021, 8.632366)",
+            "(0.015684, -0.000027, 8.992107)"
+          ],
+          "speed": 2.0615668296814,
+          "state": "CHASE",
+          "tier": "walk",
+          "yaw": -0.029820503666997
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 5.5344575230265e-05,
+        "old_time": 2.29630064964294,
+        "previous_context": {
+          "actor": 11,
+          "body": "(-0.220695, 0.017696, 8.862579)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_chase",
+          "correction": [
+            "(0.005565, 0.0, -0.002063)",
+            "(0.003098, 0.0, 0.009653)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.01858616521186,
+          "ik_weight": 1.0,
+          "intervals": [
+            2,
+            1
+          ],
+          "lock_clip": "mco_chase",
+          "lock_on": true,
+          "lock_time": 2.29630064964294,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-0.358155, -0.000021, 8.632366)",
+            "(0.015684, -0.000027, 8.992107)"
+          ],
+          "speed": 2.0615668296814,
+          "state": "CHASE",
+          "tier": "walk",
+          "yaw": -0.0344543978571892
+        },
+        "residual_xz": 0.00212855869904161,
+        "side": "Right",
+        "speed": 0.124395549297333,
+        "time": 2.37190747261047,
+        "yaw_step": 0.00463389419019222
+      },
+      {
+        "body_step": "(0.003326, 0.0, -0.022219)",
+        "clip": "mco_chase",
+        "context": {
+          "actor": 0,
+          "body": "(-2.082373, 0.017613, 8.911125)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.005171, 0.0, 0.082581)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.018446489268547,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            1
+          ],
+          "lock_clip": "mco_chase",
+          "lock_on": true,
+          "lock_time": 2.05171728134155,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-2.280801, 0.000028, -1.928481)",
+            "(-1.849605, -0.00006, 9.063357)"
+          ],
+          "speed": 1.34797537326813,
+          "state": "CHASE",
+          "tier": "shamble",
+          "yaw": -0.294811278581619
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 9.83024960987677e-07,
+        "old_time": 2.00242114067078,
+        "previous_context": {
+          "actor": 0,
+          "body": "(-2.085699, 0.017613, 8.933344)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.004669, 0.0, 0.070397)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0184464890435409,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            1
+          ],
+          "lock_clip": "mco_chase",
+          "lock_on": true,
+          "lock_time": 2.00242114067078,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-2.280801, 0.000028, -1.928481)",
+            "(-1.849605, -0.00006, 9.063357)"
+          ],
+          "speed": 1.34797549247742,
+          "state": "CHASE",
+          "tier": "shamble",
+          "yaw": -0.343552380800247
+        },
+        "residual_xz": 0.00454398989677429,
+        "side": "Right",
+        "speed": 0.27269634604454,
+        "time": 2.05171728134155,
+        "yaw_step": 0.0487411022186279
+      },
+      {
+        "body_step": "(0.003326, 0.0, -0.022219)",
+        "clip": "mco_chase",
+        "context": {
+          "actor": 0,
+          "body": "(-2.079047, 0.017613, 8.888906)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.005269, 0.0, 0.091339)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0184464890760229,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            1
+          ],
+          "lock_clip": "mco_chase",
+          "lock_on": true,
+          "lock_time": 2.10101318359375,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-2.280801, 0.000028, -1.928481)",
+            "(-1.849605, -0.00006, 9.063357)"
+          ],
+          "speed": 1.34797549247742,
+          "state": "CHASE",
+          "tier": "shamble",
+          "yaw": -0.258255392313004
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 0.00454398989677429,
+        "old_time": 2.05171728134155,
+        "previous_context": {
+          "actor": 0,
+          "body": "(-2.082373, 0.017613, 8.911125)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.005171, 0.0, 0.082581)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.018446489268547,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            1
+          ],
+          "lock_clip": "mco_chase",
+          "lock_on": true,
+          "lock_time": 2.05171728134155,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-2.280801, 0.000028, -1.928481)",
+            "(-1.849605, -0.00006, 9.063357)"
+          ],
+          "speed": 1.34797537326813,
+          "state": "CHASE",
+          "tier": "shamble",
+          "yaw": -0.294811278581619
+        },
+        "residual_xz": 0.00888644065707922,
+        "side": "Right",
+        "speed": 0.26151368021965,
+        "time": 2.10101318359375,
+        "yaw_step": 0.0365558862686157
+      },
+      {
+        "body_step": "(0.003326, 0.0, -0.022219)",
+        "clip": "mco_chase",
+        "context": {
+          "actor": 0,
+          "body": "(-2.075721, 0.017613, 8.866688)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.004925, 0.0, 0.097995)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0184464889220036,
+          "ik_weight": 1.0,
+          "intervals": [
+            2,
+            1
+          ],
+          "lock_clip": "mco_chase",
+          "lock_on": true,
+          "lock_time": 2.15030908584595,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-2.156516, -0.000024, 8.549419)",
+            "(-1.849605, -0.00006, 9.063357)"
+          ],
+          "speed": 1.34797549247742,
+          "state": "CHASE",
+          "tier": "shamble",
+          "yaw": -0.230838552117348
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 0.00888644065707922,
+        "old_time": 2.10101318359375,
+        "previous_context": {
+          "actor": 0,
+          "body": "(-2.079047, 0.017613, 8.888906)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.005269, 0.0, 0.091339)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0184464890760229,
+          "ik_weight": 1.0,
+          "intervals": [
+            -1,
+            1
+          ],
+          "lock_clip": "mco_chase",
+          "lock_on": true,
+          "lock_time": 2.10101318359375,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-2.280801, 0.000028, -1.928481)",
+            "(-1.849605, -0.00006, 9.063357)"
+          ],
+          "speed": 1.34797549247742,
+          "state": "CHASE",
+          "tier": "shamble",
+          "yaw": -0.258255392313004
+        },
+        "residual_xz": 0.0107691930606961,
+        "side": "Right",
+        "speed": 0.117609336972237,
+        "time": 2.15030908584595,
+        "yaw_step": 0.0274168401956558
+      },
+      {
+        "body_step": "(0.003326, 0.0, -0.022219)",
+        "clip": "mco_chase",
+        "context": {
+          "actor": 0,
+          "body": "(-2.072395, 0.017613, 8.844469)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_chase",
+          "correction": [
+            "(0.007846, 0.0, -0.001598)",
+            "(0.004274, 0.0, 0.102667)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0184464891713171,
+          "ik_weight": 1.0,
+          "intervals": [
+            2,
+            1
+          ],
+          "lock_clip": "mco_chase",
+          "lock_on": true,
+          "lock_time": 2.19960522651672,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-2.156516, -0.000024, 8.549419)",
+            "(-1.849605, -0.00006, 9.063357)"
+          ],
+          "speed": 1.34797537326813,
+          "state": "CHASE",
+          "tier": "shamble",
+          "yaw": -0.210275903344154
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 0.0107691930606961,
+        "old_time": 2.15030908584595,
+        "previous_context": {
+          "actor": 0,
+          "body": "(-2.075721, 0.017613, 8.866688)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_chase",
+          "correction": [
+            "(0.0, 0.0, 0.0)",
+            "(0.004925, 0.0, 0.097995)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0184464889220036,
+          "ik_weight": 1.0,
+          "intervals": [
+            2,
+            1
+          ],
+          "lock_clip": "mco_chase",
+          "lock_on": true,
+          "lock_time": 2.15030908584595,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-2.156516, -0.000024, 8.549419)",
+            "(-1.849605, -0.00006, 9.063357)"
+          ],
+          "speed": 1.34797549247742,
+          "state": "CHASE",
+          "tier": "shamble",
+          "yaw": -0.230838552117348
+        },
+        "residual_xz": 0.0133076142519712,
+        "side": "Right",
+        "speed": 0.154355153441429,
+        "time": 2.19960522651672,
+        "yaw_step": 0.0205626487731934
+      },
+      {
+        "body_step": "(0.003326, 0.0, -0.022219)",
+        "clip": "mco_chase",
+        "context": {
+          "actor": 0,
+          "body": "(-2.069069, 0.017613, 8.82225)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_chase",
+          "correction": [
+            "(0.013417, 0.0, -0.002846)",
+            "(0.003546, 0.0, 0.106279)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.018446488998239,
+          "ik_weight": 1.0,
+          "intervals": [
+            2,
+            1
+          ],
+          "lock_clip": "mco_chase",
+          "lock_on": true,
+          "lock_time": 2.24890112876892,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-2.156516, -0.000024, 8.549419)",
+            "(-1.849605, -0.00006, 9.063357)"
+          ],
+          "speed": 1.34797549247742,
+          "state": "CHASE",
+          "tier": "shamble",
+          "yaw": -0.194853916764259
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 0.0133076142519712,
+        "old_time": 2.19960522651672,
+        "previous_context": {
+          "actor": 0,
+          "body": "(-2.072395, 0.017613, 8.844469)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_chase",
+          "correction": [
+            "(0.007846, 0.0, -0.001598)",
+            "(0.004274, 0.0, 0.102667)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0184464891713171,
+          "ik_weight": 1.0,
+          "intervals": [
+            2,
+            1
+          ],
+          "lock_clip": "mco_chase",
+          "lock_on": true,
+          "lock_time": 2.19960522651672,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-2.156516, -0.000024, 8.549419)",
+            "(-1.849605, -0.00006, 9.063357)"
+          ],
+          "speed": 1.34797537326813,
+          "state": "CHASE",
+          "tier": "shamble",
+          "yaw": -0.210275903344154
+        },
+        "residual_xz": 0.0164989475160837,
+        "side": "Right",
+        "speed": 0.191703036427498,
+        "time": 2.24890112876892,
+        "yaw_step": 0.015421986579895
+      },
+      {
+        "body_step": "(0.003326, 0.0, -0.022219)",
+        "clip": "mco_chase",
+        "context": {
+          "actor": 0,
+          "body": "(-2.065743, 0.017613, 8.800032)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_chase",
+          "correction": [
+            "(0.01729, 0.0, -0.003927)",
+            "(0.002757, 0.0, 0.108878)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.0184464888597764,
+          "ik_weight": 1.0,
+          "intervals": [
+            2,
+            1
+          ],
+          "lock_clip": "mco_chase",
+          "lock_on": true,
+          "lock_time": 2.29819703102112,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-2.156516, -0.000024, 8.549419)",
+            "(-1.849605, -0.00006, 9.063357)"
+          ],
+          "speed": 1.34797537326813,
+          "state": "CHASE",
+          "tier": "shamble",
+          "yaw": -0.183287426829338
+        },
+        "dt": 0.0166666666666667,
+        "old_residual_xz": 0.0164989475160837,
+        "old_time": 2.24890112876892,
+        "previous_context": {
+          "actor": 0,
+          "body": "(-2.069069, 0.017613, 8.82225)",
+          "clip_state": "Locomotion",
+          "contact_clip": "mco_chase",
+          "correction": [
+            "(0.013417, 0.0, -0.002846)",
+            "(0.003546, 0.0, 0.106279)"
+          ],
+          "fading_from": "",
+          "foot_lift": [
+            0.0,
+            0.0
+          ],
+          "hip_drop": -0.018446488998239,
+          "ik_weight": 1.0,
+          "intervals": [
+            2,
+            1
+          ],
+          "lock_clip": "mco_chase",
+          "lock_on": true,
+          "lock_time": 2.24890112876892,
+          "loco_x": 1.0,
+          "modifier_active": true,
+          "pins": [
+            "(-2.156516, -0.000024, 8.549419)",
+            "(-1.849605, -0.00006, 9.063357)"
+          ],
+          "speed": 1.34797549247742,
+          "state": "CHASE",
+          "tier": "shamble",
+          "yaw": -0.194853916764259
+        },
+        "residual_xz": 0.0195095390081406,
+        "side": "Right",
+        "speed": 0.181139513850212,
+        "time": 2.29819703102112,
+        "yaw_step": 0.0115664899349213
+      }
+    ]
+  },
+  "example_limit": 8,
+  "scope": "Exact gate samples. First eight over-limit examples per category; not random or worst-case. Negative control disables only contact retention in memory."
+}

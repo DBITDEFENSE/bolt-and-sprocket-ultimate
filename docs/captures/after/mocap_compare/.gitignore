@@ -1,0 +1,4 @@
+# Videos, comparison sheets and JSON reports are committed; raw frame sequences stay local.
+*/horde_frame_*.png
+*/horde_24.png
+*/runtime_inventory.json
