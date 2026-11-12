@@ -11,6 +11,7 @@ extends SceneTree
 ## Frame: +X east, +Z south, +Y up. The taproom's north wall is z = 0. 1 unit = 1 m.
 
 const OUT: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
+const Hay: Script = preload("res://gravelight/world/props_hay.gd")   # T-238: bales, heaps, loose straw, the pitchfork
 const T: float = 0.3          # wall thickness
 const TAP_H: float = 3.5      # taproom ceiling
 const UP_Y: float = 3.8       # upstairs floor top
@@ -180,10 +181,17 @@ func _process(_delta: float) -> bool:
 	var packed: PackedScene = PackedScene.new()
 	var err: int = packed.pack(map_root)
 	if err == OK:
-		err = ResourceSaver.save(packed, OUT)
-	print("Saved %s (%d collision boxes), err=%d" % [OUT, _count, err])
+		err = ResourceSaver.save(packed, _out())
+	print("Saved %s (%d collision boxes), err=%d" % [_out(), _count, err])
 	map_root.free()
 	return true
+
+
+## T-238: where the scene is saved. GL_GEN_OUT (e.g. "user://probe_map00.tscn") sends a probe or inventory run somewhere
+## else, so a GL_PROBE_BOX run never rewrites the map while a capture or a smoke is reading it.
+func _out() -> String:
+	var o: String = OS.get_environment("GL_GEN_OUT")
+	return o if o != "" else OUT
 
 
 # ================================================================== helpers
@@ -447,6 +455,9 @@ func build_geometry() -> void:
 		var c: Vector2 = t[0]
 		var hs: Vector2 = Vector2(float(t[1]), float(t[2])) * 0.5
 		box(geo, "Table", Vector3(c.x - hs.x, 0, c.y - hs.y), Vector3(c.x + hs.x, 0.75, c.y + hs.y), "furniture", true, false)
+	# T-238: the signals unit's crates in the north-east corner, against the east wall (drawn by _dress_taproom)
+	box(geo, "TapCrates", Vector3(23.08, 0, 0.92), Vector3(24 - T * 0.5, 0.7, 2.38), "furniture", true, false).set_meta("no_mantle", true)
+	box(geo, "TapCratesTop", Vector3(23.16, 0.7, 1.72), Vector3(24 - T * 0.5, 1.25, 2.32), "furniture", true, false).set_meta("no_mantle", true)
 
 	# ---------------- UPSTAIRS (y 3.8 .. 6.8, z 0..10)
 	var up_win: Array = [UP_Y + WIN_SILL, UP_Y + WIN_TOP]
@@ -704,6 +715,15 @@ func build_hayloft() -> void:
 	# cover up there: the bale stack in the south-west corner (PERSIST_HIDDEN: shots pit it), single bales along the
 	# gallery's rail to crouch behind, two crates (one the carter's salt-lamp crate, MAPS.md)
 	box(geo, "HayBales", Vector3(STB_X0 + 0.3, LOFT_TOP, 30.5), Vector3(STB_X0 + 3.5, LOFT_TOP + 0.9, 33.7), "hay", true, false)
+	var tbi: int = 0
+	for tb: Array in LOFT_TOP_BALES:   # T-238: the third course started in the corner, solid like the rest
+		tbi += 1
+		var tc: Vector3 = tb[0]
+		var th: Vector3 = Vector3(0.53, 0, 0.265) if absf(fmod(float(tb[1]), 180.0)) < 45.0 else Vector3(0.265, 0, 0.53)
+		box(geo, "LoftBaleTop%d" % tbi, tc - th, tc + th + Vector3(0, 0.45, 0), "hay", true, false).set_meta("decal_persist", true)
+	# T-238: the bales downstairs, two high against the north wall between the north door and the stair's approach
+	# (they stood, without a collider, in the door's lane)
+	box(geo, "StableBales", STABLE_BALES.position, STABLE_BALES.end, "hay", true, false).set_meta("decal_persist", true)
 	for hb: Array in LOFT_BALES:
 		var c: Vector3 = hb[0]
 		var yaw: float = float(hb[1])
@@ -720,6 +740,12 @@ func build_hayloft() -> void:
 ## Single bales on the loft that are cover (and drawn by _dress_stable): [floor position (y LOFT_TOP), yaw].
 const LOFT_BALES: Array = [[Vector3(17.2, LOFT_TOP, 29.95), 0.0], [Vector3(18.1, LOFT_TOP, 29.95), 0.0], [Vector3(21.6, LOFT_TOP, 30.0), 0.0],
 	[Vector3(LOFT_X1 - 0.65, LOFT_TOP, 24.4), 90.0], [Vector3(LOFT_X1 - 0.65, LOFT_TOP, 25.5), 90.0], [Vector3(LOFT_X1 - 1.1, LOFT_TOP, 27.4), 90.0]]
+## T-238: the stack's third course, started in the south-west corner on top of HayBales: [foot position, yaw].
+const LOFT_TOP_BALES: Array = [[Vector3(STB_X0 + 0.84, LOFT_TOP + 0.9, 33.42), 0.0], [Vector3(STB_X0 + 1.92, LOFT_TOP + 0.9, 33.42), 0.0],
+	[Vector3(STB_X0 + 0.58, LOFT_TOP + 0.9, 32.6), 90.0]]
+## T-238: the stable's bales on the ground floor: a 1.8 x 0.9 x 0.52 m stack against the north wall, east of the north
+## door (x 18.5..21.5) and west of the stair's approach (x 23.35+), behind the hay heap and its ground spawn (22.5, 23.7).
+const STABLE_BALES: AABB = AABB(Vector3(21.62, 0.0, STB_Z0 + 0.15), Vector3(1.8, 0.9, 0.52))
 ## Crates on the loft: [floor position, size, yaw, stencil] (the salt-lamp crate over the great doors, MAPS.md).
 const LOFT_CRATES: Array = [[Vector3(16.9, LOFT_TOP, 33.1), 0.9, 12.0, "SALZ"], [Vector3(6.2, LOFT_TOP, 23.0), 0.75, -8.0, ""]]
 
@@ -1410,8 +1436,12 @@ func build_cellar() -> void:
 	# big dressing with collision (baked into the navmesh; all against walls, outside the loops and the stair spill):
 	# the workbench + Helvetia crates on the north wall, the barrels in the NE corner, the kegs on the landing corner
 	box(geo, "NavBlock_Crucible", Vector3(28.5, cy, 19.15), Vector3(30.5, cy + NAV_SOLID_H, 20.75), "metal", true, false)   # the Crucible's footprint (T-032)
-	box(geo, "CellarCrateCol", Vector3(30.9, cy, 19.15), Vector3(31.5, cy + 1.1, 19.76), "metal", true, false)
-	box(geo, "CellarBarrelCol", Vector3(33.3, cy, 19.15), Vector3(35.95, cy + 1.0, 20.8), "metal", true, false)   # (T-051: to x 33.3, no dead-end pocket behind the lever)
+	# T-238 (the owner: "the cellar ... is too cluttered"): the north wall carried the installers' crates between the
+	# Crucible and the lever and a 2.65 x 1.65 m heap of barrels, a sack and a crate in the north-east corner. Now the
+	# wall between the Crucible and the lever is bare (the lever's approach is 3 m wide) and the corner holds the bench
+	# with the two Helvetia crates stacked at its end, 0.75 m deep: the walk behind Twin Barrel is open at both ends.
+	box(geo, "CellarCrateCol", Vector3(33.62, cy, 19.15), Vector3(34.3, cy + 1.1, 19.85), "metal", true, false)
+	box(geo, "CellarBenchCol", Vector3(34.38, cy, 19.15), Vector3(35.95, cy + 0.9, 19.88), "metal", true, false)
 	box(geo, "LandingKegCol", Vector3(27.0, 0.0, 10.15), Vector3(28.0, 0.8, 11.1), "metal", true, false)
 	build_cellar_bay()
 	build_old_cellar()
@@ -1917,20 +1947,14 @@ func _dress_cellar() -> void:
 		Props.block(g, Vector3(p.x - 0.4, cy + 0.42, p.y - 0.4), Vector3(p.x + 0.4, cy + 0.5, p.y + 0.4), "cellar_stone")
 		Props.block(g, Vector3(p.x - 0.46, spring - 0.3, p.y - 0.46), Vector3(p.x + 0.46, spring, p.y + 0.46), "cellar_stone")
 	# ---- floor: puddles, a drain in the SW corner, flag edges
-	Props.puddle(g, Vector3(25.9, cy, 20.7), 1.6, 1.0, 20.0)
-	Props.puddle(g, Vector3(30.1, cy, 25.0), 1.2, 0.8, -15.0)
-	Props.puddle(g, Vector3(27.4, cy, 30.0), 1.1, 0.7, 40.0)
-	Props.puddle(g, Vector3(34.6, cy, 29.0), 0.9, 0.6, 0.0)
+	Props.puddle(g, Vector3(26.9, cy, 30.1), 1.1, 0.7, 40.0)   # (T-238: one, at the drain; there were four, one between the pillars)
 	Props.block(g, Vector3(25.3, cy + 0.002, 29.6), Vector3(25.9, cy + 0.012, 30.2), "iron")
 	for i: int in 4:
 		Props.block(g, Vector3(25.36 + i * 0.14, cy + 0.012, 29.66), Vector3(25.42 + i * 0.14, cy + 0.016, 30.14), "char")
 	# ---- north wall: the Crucible's alcove (T-032) between the stair mouth and the lever, then the installers'
 	# crates under the fuse box, conduit to the lever and up to the bulbs
 	_crucible_setting(g)
-	Props.crate(g, Vector3(31.2, cy, 19.46), 0.6, 180.0)
-	Props.crate(g, Vector3(31.22, cy + 0.6, 19.48), 0.5, 172.0)
-	Props.stencil(g, Vector3(31.2, cy + 0.36, 19.77), 180.0, "HELVETIA\nAUTOMATEN AG", 30, Color(0.85, 0.82, 0.7, 0.75), 0.0017)
-	Props.stencil(g, Vector3(31.22, cy + 0.86, 19.74), 172.0, "ZERBRECHLICH", 30, Color(0.7, 0.2, 0.15, 0.8), 0.0016)
+	# (T-238: the installers' two crates stand at the bench's end in the north-east corner now, see below)
 	Props.fuse_box(g, Vector3(31.2, cy + 1.95, 19.15), 180.0, 0.5, 0.7)
 	Props.stencil(g, Vector3(31.2, cy + 2.62, 19.15), 180.0, "HELVETIA AUTOMATEN AG\nMONTAGE 7 · XI/44", 26, Color(0.8, 0.78, 0.68, 0.7), 0.0024)
 	Props.pipe(g, Vector3(31.2, cy + 2.3, 19.25), Vector3(31.2, top - 0.08, 19.25), 0.02)
@@ -1950,17 +1974,16 @@ func _dress_cellar() -> void:
 	for lit: Node in _cellar_lit.get_children():
 		lit.set_meta("keep", true)
 	# ---- NE corner: the installers' workbench, a barrel and a sack; a tally chalked on the wall above
+	# T-238: the bench against the north wall and the two crates the machines' glass came in, stacked at its end; the
+	# two barrels, the sack and the loose crate that filled the corner out to z 20.8 are gone
 	Props.workbench(g, Vector3(35.15, cy, 19.5), 180.0, 1.5, 0.7)
-	_lib_barrel(Vector3(35.5, cy, 20.4), -40.0, 0.3, 0.85)
-	Props.sack(g, Vector3(34.65, cy, 20.45), -30.0, 0.8)
-	_lib_barrel(Vector3(33.75, cy, 20.3), 15.0, 0.32, 0.9)   # over the corner's collider (T-051)
-	Props.crate(g, Vector3(33.8, cy, 19.62), 0.6, 4.0, "HELVETIA")
+	Props.crate(g, Vector3(33.96, cy, 19.5), 0.6, 180.0)
+	Props.crate(g, Vector3(33.98, cy + 0.6, 19.5), 0.5, 174.0)
+	Props.stencil(g, Vector3(33.96, cy + 0.36, 19.81), 180.0, "HELVETIA\nAUTOMATEN AG", 30, Color(0.85, 0.82, 0.7, 0.75), 0.0017)
+	Props.stencil(g, Vector3(33.98, cy + 0.86, 19.76), 174.0, "ZERBRECHLICH", 30, Color(0.7, 0.2, 0.15, 0.8), 0.0016)
 	Props.stencil(g, Vector3(35.2, cy + 1.9, 19.15), 180.0, "|||| |||| ||| ", 30, Color(0.85, 0.85, 0.8, 0.55), 0.004)
-	# ---- shelves of preserves and bottles between the machines (0.28 m deep, so the panel walk stays clear)
-	Props.shelves(g, Vector3(24.15, cy, 24.5), -90.0, 1.4, 1.9, 0.28, 3, 11)
-	Props.shelves(g, Vector3(24.15, cy, 27.15), -90.0, 1.5, 1.6, 0.28, 3, 12)
-	Props.shelves(g, Vector3(35.85, cy, 23.15), 90.0, 1.4, 1.9, 0.28, 3, 13)
-	# (T-179: the shelf that stood at z 26.1 on the east wall made way for the arch to the late-delivery bay)
+	# (T-238: the three shelves of preserves that stood in the machines' back-panel walks are gone: the walls behind
+	# the west and east rows are bare stone, the walk is its full 1.1 m, and the inn's stores are in the Old Cellar)
 	# ---- south wall, west half: a wine rack (bottles lying with their necks out)
 	var wr: Node3D = Props.group(g, "WineRack", Vector3(25.85, cy, 30.85), 0.0)
 	Props.block(wr, Vector3(-1.45, 0, -0.34), Vector3(-1.4, 1.5, 0.0), "planks")
@@ -1977,11 +2000,12 @@ func _dress_cellar() -> void:
 			var key: String = "bottle_green" if rrng.randf() < 0.7 else "bottle_amber"
 			Props.cyl(wr, Vector3(bx, ry + 0.045, -0.2), 0.035, 0.3, key, Vector3(90, 0, 0)).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	# ---- SE corner: the coal chute, the heap and a shovel
-	Props.ball(g, Vector3(35.2, cy, 30.15), Vector3(2.2, 0.8, 2.0), "coal")
+	# (T-238: the heap is the corner's now, 1.3 m across behind Ledger Lager; it was 2.2 m and ran under the machine)
+	Props.ball(g, Vector3(35.42, cy, 30.42), Vector3(1.3, 0.75, 1.3), "coal")
 	var crng: RandomNumberGenerator = RandomNumberGenerator.new()
 	crng.seed = 44
-	for i2: int in 9:
-		Props.ball(g, Vector3(34.3 + crng.randf_range(0, 1.5), cy + 0.04, 29.1 + crng.randf_range(0, 1.7)), Vector3(0.16, 0.1, 0.14) * crng.randf_range(0.7, 1.4), "coal")
+	for i2: int in 5:
+		Props.ball(g, Vector3(34.85 + crng.randf_range(0, 0.9), cy + 0.04, 29.45 + crng.randf_range(0, 0.5)), Vector3(0.16, 0.1, 0.14) * crng.randf_range(0.7, 1.4), "coal")
 	Props.obox(g, Vector3(35.35, cy + 1.9, 30.1), Vector3(1.5, 0.06, 0.6), "iron", Vector3(0, 0, 52))
 	for sz: float in [-0.3, 0.3]:
 		Props.obox(g, Vector3(35.35, cy + 1.95, 30.1 + sz), Vector3(1.5, 0.16, 0.03), "iron", Vector3(0, 0, 52))
@@ -2068,15 +2092,19 @@ func _dress_cellar_bay(parent: Node3D) -> void:
 	# ---- SW corner: Magpie's crate (over the south BayCrateCol), olive, open, straw in it; its lid against the wall
 	Props.block(g, Vector3(in0 + 0.05, cy, zs - 0.85), Vector3(in0 + 0.9, cy + 0.9, zs - 0.05), "olive_drab")
 	Props.block(g, Vector3(in0 + 0.11, cy + 0.86, zs - 0.79), Vector3(in0 + 0.84, cy + 0.92, zs - 0.11), "hay", false)
+	# (T-238: battens, so it reads as a crate: it rendered as a plain green block) corner posts, a top and a foot rail
+	for cp: Vector2 in [Vector2(in0 + 0.9, zs - 0.85), Vector2(in0 + 0.9, zs - 0.05), Vector2(in0 + 0.05, zs - 0.85)]:
+		Props.block(g, Vector3(cp.x - 0.035, cy, cp.y - 0.035), Vector3(cp.x + 0.035, cy + 0.9, cp.y + 0.035), "beam")
+	for ry: Array in [[0.0, 0.09], [0.81, 0.9]]:
+		Props.block(g, Vector3(in0 + 0.9, cy + float(ry[0]), zs - 0.85), Vector3(in0 + 0.915, cy + float(ry[1]), zs - 0.05), "beam")
+		Props.block(g, Vector3(in0 + 0.05, cy + float(ry[0]), zs - 0.865), Vector3(in0 + 0.9, cy + float(ry[1]), zs - 0.85), "beam")
 	Props.stencil(g, Vector3(in0 + 0.905, cy + 0.5, zs - 0.45), -90.0, "THIS SIDE UP", 24, Color(0.9, 0.9, 0.84, 0.65), 0.0026)
 	Props.obox(g, Vector3(in0 + 1.4, cy + 0.5, zs - 0.03), Vector3(0.85, 1.0, 0.05), "olive_drab")
 	Props.stencil(g, Vector3(in0 + 1.4, cy + 0.62, zs - 0.06), 0.0, "RANGE SUPPLY\nGROOM LAKE", 22, Color(0.9, 0.9, 0.84, 0.55), 0.0026)
 	Props.obox(g, Vector3(in0 + 2.0, cy + 0.46, zs - 0.08), Vector3(0.028, 0.92, 0.028), "iron", Vector3(9, 0, 6))   # the crowbar that opened them
 	var srng: RandomNumberGenerator = RandomNumberGenerator.new()
 	srng.seed = 179
-	for i: int in 9:
-		var sp: Vector3 = Vector3(in0 + srng.randf_range(0.9, 2.4), cy + 0.01, srng.randf_range(zs - 1.6, zs - 0.3))
-		Props._noshadow(Props.ball(g, sp, Vector3(0.35, 0.03, 0.22) * srng.randf_range(0.7, 1.3), "hay"))
+	Hay.scatter(g, Vector3(in0 + 1.5, cy, zs - 0.8), 0.8, 0.6, 22, 179 + srng.randi_range(0, 3), 0)   # (T-238: packing straw as stalks; it was nine flat blobs)
 	# ---- the floor and the corners
 	Props.puddle(g, Vector3(38.6, cy, 27.4), 1.0, 0.6, 25.0)
 	Props.block(g, Vector3(38.6, cy + 0.002, 25.7), Vector3(39.1, cy + 0.012, 26.2), "iron")   # a drain under the bulb
@@ -2181,11 +2209,10 @@ func _dress_old_cellar() -> void:
 		Props.cyl(g, Vector3(9.84, cy + 0.32, cz), 0.03, 0.08, "brass", Vector3(0, 0, 90))   # the tap
 	_lib_barrel(Vector3(9.6, cy, 17.85), 20.0, 0.25, 0.6)
 	_lib_barrel(Vector3(0.55, cy, 17.9), -10.0, 0.25, 0.6)
-	Props.crate(g, Vector3(1.0, cy, 9.05), 0.5, 8.0)
+	# (T-238: the crate that stood in the corner in front of two racks is gone)
 	Props.stencil(g, Vector3(10.73, cy + 1.9, 15.9), 90.0, "RIESLING 38  ·  40 FL.\nROTWEIN 41  ·  22 FL.\nSCHNAPS  ·  —", 28, Color(0.9, 0.9, 0.85, 0.55), 0.0035)
 	Props.puddle(g, Vector3(6.9, cy, 15.3), 1.2, 0.8, 15.0)
 	Props.puddle(g, Vector3(1.7, cy, 11.4), 0.9, 0.7, -20.0)
-	Props.puddle(g, Vector3(4.4, cy, 17.0), 0.8, 0.5, 40.0)
 	for c: Array in [[Vector3(0.15, top - 0.02, 8.15), 0.0], [Vector3(10.75, top - 0.02, 18.35), 180.0], [Vector3(0.15, top - 0.02, 18.35), 90.0]]:
 		Props.cobweb(g, c[0], float(c[1]), 0.8)
 	# ---------------- the coal room: the chute heap under the window, soot, the cage, the patrol's leftovers
@@ -2212,17 +2239,19 @@ func _dress_old_cellar() -> void:
 	for cp: Vector2 in [Vector2(cg.end.x, cg.position.y), Vector2(cg.end.x, cg.end.y), Vector2(cg.end.x, OC_CAGE_DOOR.x), Vector2(cg.end.x, OC_CAGE_DOOR.y)]:
 		Props.block(g, Vector3(cp.x - 0.04, cy, cp.y - 0.04), Vector3(cp.x + 0.04, top, cp.y + 0.04), "iron")
 	# inside: straw, a folded blanket, a tin cup and a bucket, a miner's greeting and a tally chalked on the wall
-	Props.obox(g, Vector3(1.0, cy + 0.015, 5.3), Vector3(1.3, 0.03, 1.6), "straw_floor", Vector3(0, 8, 0))
+	Hay.pad(g, Vector3(1.0, cy + 0.015, 5.3), Vector3(1.3, 0.03, 1.6), "straw_floor", Vector3(0, 8, 0))
 	Props.block(g, Vector3(0.3, cy, 5.6), Vector3(0.95, cy + 0.12, 6.3), "tarp")
 	Props.cyl(g, Vector3(1.9, cy + 0.05, 6.1), 0.045, 0.1, "tin")
 	Props.cyl(g, Vector3(0.45, cy + 0.17, 3.7), 0.15, 0.34, "iron")
 	Props.stencil(g, Vector3(0.16, cy + 1.45, 4.6), -90.0, "SZCZESC BOZE", 30, Color(0.92, 0.92, 0.88, 0.6), 0.0035)
 	Props.stencil(g, Vector3(0.16, cy + 1.1, 5.9), -90.0, "| |", 34, Color(0.92, 0.92, 0.88, 0.55), 0.0035)
 	# outside: the guard's stool and crate with a mess tin and his cigarettes, the tag on the padlock, the lantern
-	_lib("stool_workshop", Vector3(4.2, cy, 5.1), 15.0, Vector3.ONE, false)
-	Props.crate(g, Vector3(4.3, cy, 7.25), 0.55, -8.0, "WH")
-	Props.cyl(g, Vector3(4.25, cy + 0.6, 7.2), 0.09, 0.05, "steel")
-	Props.block(g, Vector3(4.4, cy + 0.55, 7.05), Vector3(4.5, cy + 0.57, 7.12), "paper")
+	# (T-238: against the east wall under his lamp, facing the cage. The stool stood in the middle of the walk and
+	# the crate half a metre inside the wine cellar's doorway, both without colliders)
+	_lib("stool_workshop", Vector3(4.5, cy, 4.75), 80.0, Vector3.ONE, false)
+	Props.crate(g, Vector3(4.5, cy, 3.8), 0.55, -84.0, "WH")
+	Props.cyl(g, Vector3(4.45, cy + 0.6, 3.75), 0.09, 0.05, "steel")
+	Props.block(g, Vector3(4.5, cy + 0.55, 3.92), Vector3(4.6, cy + 0.57, 3.99), "paper")
 	Props.stencil(g, Vector3(2.62, cy + 0.82, 5.45), -90.0, "Häftling (Pole)\nFlucht aus K.\n22.XII.", 20, Color(0.22, 0.2, 0.18, 0.9), 0.0028)
 	Props.block(g, Vector3(2.61, cy + 0.68, 5.32), Vector3(2.615, cy + 0.94, 5.6), "paper")
 	Props.lantern(g, Vector3(3.9, cy + 2.25, 3.9), top)
@@ -2299,8 +2328,7 @@ func _dress_old_cellar() -> void:
 		Props.block(g, Vector3(st.position.x + 0.1, cy, cz2 - 0.08), Vector3(st.end.x - 0.1, cy + 0.2, cz2 + 0.08), "beam")
 	Props.stencil(g, Vector3(sx - 1.56, cy + 0.6, 8.0), 90.0, "KREUZWEG\nHAUSWEIN", 32, Color(0.92, 0.9, 0.85, 0.65), 0.004)
 	Props.stencil(g, Vector3(sx + 1.56, cy + 0.6, 8.0), -90.0, "1942", 40, Color(0.92, 0.9, 0.85, 0.65), 0.004)
-	for kb: Vector3 in [Vector3(15.55, cy, 6.1), Vector3(19.35, cy, 9.9), Vector3(19.4, cy, 6.15)]:
-		_lib_barrel(kb, rng.randf_range(0, 90), 0.24, 0.55)
+	# (T-238: the three kegs that stood loose at the stack's corners, on the training loop's turns, are gone)
 	Props.lantern(g, Vector3(13.4, cy + 2.35, 8.0), top - 0.17)
 	Props.lantern(g, Vector3(21.6, cy + 2.35, 8.0), top - 0.17)
 	for bp: Vector3 in OC_BULBS:
@@ -2313,7 +2341,7 @@ func _dress_old_cellar() -> void:
 	Props.block(g, Vector3(11.05, cy + 0.5, 0.15), Vector3(13.15, top, 0.17), "char")   # the hearth footing's soot
 	Props.stencil(g, Vector3(13.16, cy + 1.6, 0.75), -90.0, "KAMIN", 32, Color(0.85, 0.82, 0.75, 0.45), 0.004)
 	Props.puddle(g, Vector3(20.6, cy, 4.4), 1.0, 0.7, 25.0)
-	Props.puddle(g, Vector3(13.0, cy, 12.2), 0.9, 0.6, -30.0)
+	# (T-238: the puddles left are the ones under a drip)
 	for c2: Array in [[Vector3(23.85, top - 0.02, 15.85), 180.0], [Vector3(11.05, top - 0.02, 15.85), 90.0], [Vector3(23.85, top - 0.02, 0.15), 270.0]]:
 		Props.cobweb(g, c2[0], float(c2[1]), 0.9)
 	# the breach the installers knocked through: rubble at the jambs, two pit props, the cable run, a chalk arrow
@@ -2493,7 +2521,7 @@ func _dress_hearth() -> void:
 		Props.cyl(irons, off + Vector3(0, 0.79 - h * 0.5, 0), 0.007, h, "iron", Vector3(2.5 * cos(r), 0, 2.5 * sin(r)))
 		Props.obox(irons, off + Vector3(0, 0.8, 0), Vector3(0.03, 0.012, 0.012), "iron", Vector3(0, float(a[0]), 0))   # the hook
 	Props.obox(irons, Vector3(0.0, 0.03, 0.105), Vector3(0.012, 0.012, 0.07), "iron")                                   # the poker's bent tip
-	Props.obox(irons, Vector3(0.075 * sin(deg_to_rad(240.0)), 0.21, 0.075 * cos(deg_to_rad(240.0))), Vector3(0.05, 0.08, 0.03), "straw")   # the brush's head
+	Props.obox(irons, Vector3(0.075 * sin(deg_to_rad(240.0)), 0.21, 0.075 * cos(deg_to_rad(240.0))), Vector3(0.05, 0.08, 0.03), "hay")   # the brush's head
 	Props.obox(g, Vector3(10.84, 0.4, 1.05), Vector3(0.16, 0.5, 0.05), "furniture", Vector3(-12, 0, 0))                 # the bellows, leant on the jamb
 	Props.cyl(g, Vector3(10.84, 0.72, 0.985), 0.012, 0.16, "brass", Vector3(-12, 0, 0))                                 # its nozzle
 
@@ -2574,10 +2602,29 @@ func _dress_bar() -> void:
 		Props.cyl(g, Vector3(sx + 0.2, 1.3, tz), 0.03, 0.4, "brass")
 		Props.obox(g, Vector3(sx + 0.3, 1.47, tz), Vector3(0.2, 0.04, 0.04), "brass")
 		Props.cyl(g, Vector3(sx + 0.22, 1.6, tz), 0.025, 0.2, "enamel_white", Vector3(0, 0, 20))
-	Props.block(g, Vector3(sx + 0.1, 1.1, z0 + 0.7), Vector3(sx + 0.65, 1.45, z0 + 1.2), "brass")
-	Props.block(g, Vector3(sx + 0.12, 1.45, z0 + 0.75), Vector3(sx + 0.63, 1.5, z0 + 1.15), "black_paint")
+	# the till (T-238: it was a 0.55 x 0.35 x 0.5 m brass block with a black lid, a plain box from the taproom side):
+	# a drawer base, the brass body, a sloped key bank toward the landlord, the indicator housing with its rounded
+	# top and price flags at the back, an embossed plate on the customers' side, the crank
+	var tl0: Vector3 = Vector3(sx + 0.1, 1.1, z0 + 0.7)
+	var tl1: Vector3 = Vector3(sx + 0.65, 1.1, z0 + 1.2)
+	var tzc: float = (tl0.z + tl1.z) * 0.5
+	Props.block(g, tl0, Vector3(tl1.x, 1.19, tl1.z), "furniture")
+	Props.block(g, Vector3(tl0.x - 0.012, 1.13, tzc - 0.06), Vector3(tl0.x, 1.16, tzc + 0.06), "brass")
+	Props.block(g, Vector3(tl0.x + 0.02, 1.19, tl0.z + 0.02), Vector3(tl1.x - 0.02, 1.32, tl1.z - 0.02), "brass")
+	Props.obox(g, Vector3(tl0.x + 0.17, 1.365, tzc), Vector3(0.27, 0.03, 0.4), "black_paint", Vector3(0, 0, 24))
 	for kk: int in 12:
-		Props.cyl(g, Vector3(sx + 0.18 + (kk % 4) * 0.12, 1.47, z0 + 0.78 + (kk / 4) * 0.12), 0.02, 0.03, "enamel_white")
+		var kr: int = kk / 4
+		Props.cyl(g, Vector3(tl0.x + 0.08 + kr * 0.085, 1.345 + kr * 0.038, tzc - 0.135 + (kk % 4) * 0.09), 0.018, 0.025, "enamel_white", Vector3(0, 0, 24))
+	Props.block(g, Vector3(tl1.x - 0.2, 1.32, tl0.z + 0.03), Vector3(tl1.x - 0.02, 1.52, tl1.z - 0.03), "brass")
+	Props.cyl(g, Vector3(tl1.x - 0.11, 1.52, tzc), 0.09, tl1.z - tl0.z - 0.06, "brass", Vector3(90, 0, 0))
+	Props.block(g, Vector3(tl1.x - 0.206, 1.4, tzc - 0.15), Vector3(tl1.x - 0.2, 1.5, tzc + 0.15), "window_dark")
+	for fz: float in [-0.07, 0.05]:
+		Props.block(g, Vector3(tl1.x - 0.21, 1.41, tzc + fz), Vector3(tl1.x - 0.206, 1.49, tzc + fz + 0.05), "paper", false)
+	Props.block(g, Vector3(tl1.x - 0.02, 1.23, tzc - 0.17), Vector3(tl1.x - 0.012, 1.47, tzc + 0.17), "black_paint")
+	Props.block(g, Vector3(tl1.x - 0.012, 1.3, tzc - 0.12), Vector3(tl1.x - 0.006, 1.4, tzc + 0.12), "brass")
+	Props.cyl(g, Vector3(tl1.x - 0.11, 1.3, tl0.z + 0.005), 0.014, 0.05, "iron", Vector3(90, 0, 0))
+	Props.obox(g, Vector3(tl1.x - 0.135, 1.265, tl0.z - 0.025), Vector3(0.014, 0.1, 0.014), "iron", Vector3(0, 0, -35))
+	Props.cyl(g, Vector3(tl1.x - 0.165, 1.225, tl0.z - 0.05), 0.016, 0.05, "enamel_white", Vector3(90, 0, 0))
 	Props.cyl(g, Vector3(sx + 0.4, 1.12, z0 + 1.5), 0.06, 0.08, "brass")
 	Props.obox(g, Vector3(x1 + 0.1, 0.98, 5.9), Vector3(0.26, 0.26, 0.012), "linen", Vector3(0, 0, 90))
 	# the back-bar: a cupboard base with doors and brass knobs, the top board, three bays of shelving (uprights and two
@@ -2688,13 +2735,17 @@ func _dress_taproom() -> void:
 	Props.lantern(g, Vector3(17.5, 2.6, 4.0), TAP_H - 0.28)
 	Props.lantern(g, Vector3(19.5, 2.6, 13.0), TAP_H - 0.28)
 	Props.lantern(g, Vector3(14.0, 2.6, 8.0), TAP_H - 0.36)
-	# crates of the signals unit's kit by the east wall, a dropped rifle sling
-	Props.crate(g, Vector3(22.8, 0, 2.0), 0.7, 10.0, "WH  Nachr.")
-	Props.crate(g, Vector3(22.7, 0.7, 2.1), 0.55, -5.0)
-	Props.crate(g, Vector3(21.9, 0, 2.2), 0.6, 30.0)
-	# boarded-up feel: spare planks leaning by the west window (T-227: south of it, clear of the Kar98k chalk at z 3.1)
+	# crates of the signals unit's kit against the east wall under the portrait (T-238: they stood 0.7 m off the east
+	# wall and 1.6 m off the north one, without a collider, between the front door and the Garand; TAP_CRATES is theirs)
+	Props.crate(g, Vector3(23.44, 0, 2.0), 0.7, 94.0, "WH  Nachr.")
+	Props.crate(g, Vector3(23.46, 0.7, 2.02), 0.55, 86.0)
+	Props.crate(g, Vector3(23.5, 0, 1.25), 0.6, 92.0)
+	# boarded-up feel: spare planks leaning on the west wall south of the window (clear of the Kar98k chalk at z 3.1 and
+	# of Door 5 at z 8.25). T-238: they stood upright a metre out in the walk to the Old Cellar door, tipped along the
+	# wall and touching nothing; now their feet are 0.3 m out and their heads on the plaster
 	for i: int in 3:
-		Props.obox(g, Vector3(1.0 + i * 0.12, 1.0, 7.3), Vector3(0.04, 2.0, 0.18), "planks", Vector3(0, 90, 12.0 + i * 3.0))
+		var lean: float = 7.0 + i * 2.0
+		Props.obox(g, Vector3(T * 0.5 + 0.06 + sin(deg_to_rad(lean)) * 1.0, cos(deg_to_rad(lean)) * 1.0, 7.0 + i * 0.22), Vector3(0.04, 2.0, 0.18), "planks", Vector3(0, 0, lean))
 
 
 ## The added tables (TAP_TABLES_NEW, T-072) and what the round 1 patrons leave on them as they run: steins half
@@ -3042,20 +3093,29 @@ func _dress_stable() -> void:
 	srng.seed = 7
 	for p: Vector3 in [Vector3(12.5, 0, 23.6), Vector3(14.0, 0, 24.0), Vector3(19.5, 0, 24.5), Vector3(9.0, 0, 27.0), Vector3(20.0, 0, 31.0)]:
 		for k: int in 5:   # loose straw: scattered thin tufts
-			Props.obox(g, p + Vector3(srng.randf_range(-0.9, 0.9), 0.012, srng.randf_range(-0.7, 0.7)),
+			Hay.pad(g, p + Vector3(srng.randf_range(-0.9, 0.9), 0.012, srng.randf_range(-0.7, 0.7)),
 				Vector3(srng.randf_range(0.3, 0.8), 0.02, srng.randf_range(0.2, 0.5)), "straw_floor", Vector3(0, srng.randf_range(0, 180), 0))
 	for x: float in [12.0, 16.8]:
 		Props.block(g, Vector3(x - 0.6, 0.5, 22.2), Vector3(x + 0.6, 0.85, 22.6), "planks")
-	Props.block(g, Vector3(21.5, 0, 22.4), Vector3(23.5, 0.7, 25.0), "hay")   # the hay pile (ground spawn; west of the stair's foot since T-084)
-	for i: int in 4:
-		Props.hay_bale(g, Vector3(19.6, 0.45 * (i / 2), 25.6 + (i % 2) * 0.55), 90.0)   # (under the bay, clear of the stair)
-	Props.hay_bale(g, Vector3(20.2, 0, 27.3), 75.0)
+	# T-238 (the owner: "the haystacks feel half baked in the barn"): the pile was one 2 x 0.7 x 2.6 m hay-coloured block
+	# and five plain bale boxes stood without colliders in the north door's lane. Now: four bales stacked two high
+	# against the north wall (over the StableBales collider), the bale forked open in front of them as a loose heap
+	# you wade through (the ground spawn rises out of it; HayPuff6 puffs it), the fork left standing in it, and
+	# stalks trodden out toward the door, the stair foot and the stalls. Nothing stands in the lane any more.
+	Hay.stack(g, STABLE_BALES.position, STABLE_BALES.end, 2, 21, false)
+	Hay.heap(g, Vector3(22.5, 0, 23.72), Vector3(2.0, 0.5, 2.3), 5, Vector3(0.1, 0, -0.4))
+	Hay.pitchfork(g, Vector3(23.05, 0.3, 23.2), 170.0, 13.0)
+	Hay.scatter(g, Vector3(22.4, 0, 24.6), 1.6, 1.0, 34, 1, 2)
+	Hay.scatter(g, Vector3(20.6, 0, 23.6), 1.2, 1.0, 16, 2, 0)   # dragged toward the door
+	Hay.scatter(g, Vector3(12.6, 0, 23.8), 1.3, 1.2, 22, 3, 0)   # the horse's stall
+	Hay.scatter(g, Vector3(16.8, 0, 23.6), 0.6, 1.2, 12, 4, 0)
+	Hay.scatter(g, Vector3(19.3, 0, 28.4), 1.0, 0.8, 18, 6, 0)   # under the bale drop
 	# tack rail, saddle blanket, bridle: hung above the Armorer's Bench (T-068), which stands under them
 	var wx: float = STB_X0 + 0.15   # the west wall's inner face
 	Props.block(g, Vector3(wx, 2.0, 25.5), Vector3(wx + 0.1, 2.1, 27.5), "beam")   # tack rail
 	Props.block(g, Vector3(wx + 0.1, 1.8, 25.9), Vector3(wx + 0.45, 2.15, 26.5), "cloth_red")   # saddle blanket
 	Props.block(g, Vector3(wx + 0.1, 1.78, 26.8), Vector3(wx + 0.3, 2.1, 27.2), "furniture")    # bridle/strap
-	Props.crate(g, Vector3(22.7, 0, 33.2), 0.6, 15.0)
+	# (T-238: the crate that stood loose by the Tack Room crate spot, without a collider, is gone)
 	for lp: Array in [[Vector3(19.0, 4.0, 26.0), STABLE_H - 0.6], [Vector3(19.0, 2.5, 31.5), LOFT_Y], [Vector3(10.0, 2.3, 28.0), LOFT_Y],
 			[Vector3(10.0, 5.6, 28.0), STABLE_H - 0.6], [Vector3(20.0, 2.4, 19.0), 3.0]]:
 		Props.lantern(g, lp[0], float(lp[1]))
@@ -3134,14 +3194,23 @@ func _dress_loft(g: Node3D) -> void:
 	Props.block(g, Vector3((LOFT_DROP.x + LOFT_DROP.y) * 0.5 - 0.02, STABLE_H - 1.0, GAL_Z0 - 0.3), Vector3((LOFT_DROP.x + LOFT_DROP.y) * 0.5 + 0.02, STABLE_H - 0.6, GAL_Z0 - 0.26), "iron")
 	Props.cable(g, Vector3((LOFT_DROP.x + LOFT_DROP.y) * 0.5, STABLE_H - 1.0, GAL_Z0 - 0.28), Vector3((LOFT_DROP.x + LOFT_DROP.y) * 0.5, y + 1.3, GAL_Z0 - 0.2), 0.0, 0.015, 2, "rope")
 	# the bale stack in the south-west corner (over the HayBales collider), the single bales (over theirs)
-	for xi: int in 3:
-		for zi: int in 5:
-			Props.hay_bale(g, Vector3(STB_X0 + 0.9 + xi * 0.95, y, 30.85 + zi * 0.55), 0.0 if (xi + zi) % 2 == 0 else 3.0)
-	Props.hay_bale(g, Vector3(STB_X0 + 1.8, y + 0.45, 31.4), 8.0)
-	Props.hay_bale(g, Vector3(STB_X0 + 2.6, y + 0.45, 32.4), -6.0)
-	Props.hay_bale(g, Vector3(STB_X0 + 1.3, y + 0.45, 32.9), 4.0)
+	# T-238: the stack fills its collider now (it drew one course of 15 bales and three on top inside a 0.9 m high
+	# 3.2 x 3.2 m collider: an invisible step all round the three). Two full courses laid crosswise, a third started
+	# in the corner (LOFT_TOP_BALES, each with its own collider), loose hay at its foot; the cover bales are drawn at
+	# their colliders' size (they were 0.9 x 0.45 x 0.5 inside 1.0 x 0.47 x 0.6).
+	Hay.stack(g, Vector3(STB_X0 + 0.3, y, 30.5), Vector3(STB_X0 + 3.5, y + 0.9, 33.7), 2, 3)
+	var bi: int = 0
+	for tb: Array in LOFT_TOP_BALES:
+		bi += 1
+		Hay.bale(g, tb[0], float(tb[1]), 40 + bi, 1.05, 0.45, 0.52)
 	for hb: Array in LOFT_BALES:
-		Props.hay_bale(g, hb[0], float(hb[1]))
+		bi += 1
+		Hay.bale(g, hb[0], float(hb[1]), 60 + bi, 0.99, 0.47, 0.59)
+	Hay.tuft(g, Vector3(STB_X0 + 3.75, y, 31.3), 0.55, 1)
+	Hay.tuft(g, Vector3(STB_X0 + 2.2, y, 30.25), 0.6, 2)
+	Hay.scatter(g, Vector3(STB_X0 + 3.4, y, 30.6), 1.5, 1.0, 30, 11, 2)
+	Hay.scatter(g, Vector3(17.6, y, 30.6), 1.2, 0.5, 14, 12, 0)   # round the gallery's cover bales
+	Hay.scatter(g, Vector3(LOFT_X1 - 1.0, y, 25.6), 0.7, 1.8, 18, 13, 0)   # and the rail's
 	for cr: Array in LOFT_CRATES:
 		Props.crate(g, cr[0], float(cr[1]), float(cr[2]), str(cr[3]))
 	# the hay chute: a trapdoor flush in the boards over the horse's stall, its frame, straps and ring, the rope from
@@ -3156,11 +3225,7 @@ func _dress_loft(g: Node3D) -> void:
 	Props.cable(g, Vector3(13.0, STABLE_H - 0.8, 24.5), Vector3(13.0, y + 0.3, 24.3), 0.0, 0.015, 2, "rope")
 	Props.rope_coil(g, Vector3(13.9, y, 24.6), 0.3)
 	# the pitchfork leaning in the stack, a bucket, sacks
-	var pf: Node3D = Props.group(g, "Pitchfork", Vector3(STB_X0 + 3.6, y, 30.4), 20.0)
-	Props.cyl(pf, Vector3(0, 0.8, 0.1), 0.018, 1.6, "beam", Vector3(-14, 0, 0))
-	Props.block(pf, Vector3(-0.12, 1.55, 0.27), Vector3(0.12, 1.59, 0.31), "iron")
-	for tx: float in [-0.1, 0.0, 0.1]:
-		Props.obox(pf, Vector3(tx, 1.72, 0.33), Vector3(0.012, 0.3, 0.012), "iron", Vector3(-14, 0, 0))
+	Hay.pitchfork(g, Vector3(STB_X0 + 3.74, y, 31.0), 90.0, 14.0)   # (T-238: tines on the boards, the handle against the stack; it stood on its handle)
 	Props.cyl(g, Vector3(24.6, y + 0.15, 33.3), 0.15, 0.3, "tin")
 	Props.sack(g, Vector3(8.6, y, 33.2), 15.0, 0.9)
 	Props.sack(g, Vector3(9.3, y, 33.4), -30.0, 0.8)
@@ -3512,11 +3577,14 @@ func _dress_carters_road() -> void:
 		Props.block(g, Vector3(gx - 0.22, 2.3, 47.78), Vector3(gx + 0.22, 2.45, 48.22), "snow", false)
 	Props.signpost(g, Vector3(22.9, 0, 49.6), [["KALTENBRUNN  9 km", 120.0], ["WILCZA GÓRA  6 km", -150.0], ["GASTHAUS ZUM KREUZWEG", 0.0]])
 	# drifts along the stable's south wall and the fence, a broken cart wheel in the snow
-	Props.snow_drift(g, Vector3(23.5, 0, 35.3), Vector3(4.5, 0.9, 2.0))
+	# (T-238: the wall's drift lay under the Thompson's chalk, where you stand to buy it, and the yard's lay across its
+	# open south-east quarter; they are against the wall east of the chalk and against the fence now. The wheel stood
+	# on its rim in the open, leaning on nothing; it leans on the woodpile.)
+	Props.snow_drift(g, Vector3(24.35, 0, 35.0), Vector3(2.5, 0.8, 1.5))
 	Props.snow_drift(g, Vector3(8, 0, 49.2), Vector3(10, 0.8, 2.4))
 	Props.snow_drift(g, Vector3(29, 0, 49.0), Vector3(8, 0.9, 2.2))
-	Props.snow_drift(g, Vector3(24.5, 0, 46.0), Vector3(5, 0.6, 3.0))
-	Props.cyl(g, Vector3(13.0, 0.35, 37.2), 0.55, 0.08, "beam", Vector3(70, 20, 0))
+	Props.snow_drift(g, Vector3(25.0, 0, 47.35), Vector3(4.6, 0.6, 1.5))
+	Props.cyl(g, Vector3(14.7, 0.54, 35.52), 0.55, 0.08, "beam", Vector3(78, 0, 0))
 	# dead trees along the road and the horizon's rises (half-buried domes of snow past the fog)
 	Props.dead_tree(g, Vector3(31, 0, 52), 131, 7.0)
 	Props.dead_tree(g, Vector3(12, 0, 55), 132, 8.5)
@@ -3568,8 +3636,10 @@ func _dress_yard() -> void:
 	for row: int in 4:
 		for k: int in 6:
 			Props.cyl(g, Vector3(13.55 + k * 0.42, 0.18 + row * 0.3, 34.75), 0.15, 1.1, "pine" if (row + k) % 2 == 0 else "beam", Vector3(90, 0, wr.randf_range(-6, 6)))
-	_lib("stump_chopping", Vector3(9.4, 0.0, 36.2), 30.0, Vector3(0.45, 1.0, 0.42))
-	_lib("axe_wood", Vector3(9.42, 0.5, 36.2), 20.0, Vector3.ONE, false, Vector3(0, 0, -28))
+	# (T-238: the chopping block stands in the corner west of the yard door now, against the stable wall; it stood, with
+	# no collider, on the edge of the trodden path two metres out of the door)
+	_lib("stump_chopping", Vector3(5.6, 0.0, 34.85), 30.0, Vector3(0.45, 1.0, 0.42))
+	_lib("axe_wood", Vector3(5.62, 0.5, 34.85), 20.0, Vector3.ONE, false, Vector3(0, 0, -28))
 	# the snowed cart and the trough
 	Props.cart(g, Vector3(28.3, 0, 38.1), 100.0)
 	Props._noshadow(Props.ball(g, Vector3(28.3, 1.2, 38.1), Vector3(2.4, 0.5, 1.6), "snow"))
@@ -3581,9 +3651,11 @@ func _dress_yard() -> void:
 	Props.snow_drift(g, Vector3(3.2, 0, 36.5), Vector3(2.4, 0.9, 4.0))
 	Props.snow_drift(g, Vector3(32.6, 0, 36.0), Vector3(2.6, 0.8, 3.0))
 	Props.snow_drift(g, Vector3(4.6, 0, 46.2), Vector3(3.6, 0.7, 2.6))
-	Props.block(g, Vector3(22.0, 0.05, 44.0), Vector3(23.0, 0.12, 46.2), "planks")
-	Props.block(g, Vector3(21.95, 0.0, 44.0), Vector3(22.05, 0.08, 46.2), "iron")
-	Props.block(g, Vector3(22.95, 0.0, 44.0), Vector3(23.05, 0.08, 46.2), "iron")
+	# the sledge, pulled up along the south fence east of the gate (T-238: it lay across the yard's open middle, where
+	# the horse rides now)
+	Props.block(g, Vector3(21.6, 0.05, 46.75), Vector3(23.8, 0.12, 47.65), "planks")
+	Props.block(g, Vector3(21.6, 0.0, 46.7), Vector3(23.8, 0.08, 46.8), "iron")
+	Props.block(g, Vector3(21.6, 0.0, 47.6), Vector3(23.8, 0.08, 47.7), "iron")
 	# lights: a lantern on the gatepost, a lamp over the yard door, the stable's south-wall lamp by the Thompson
 	Props.block(g, Vector3(20.36, 1.9, 47.9), Vector3(20.72, 2.3, 48.1), "lantern_glass")
 	_lamp("GateLantern", Vector3(20.5, 2.1, 47.4), Color(1.0, 0.62, 0.3), 6.0, 15.0, false, true, 0.25)
@@ -3696,7 +3768,7 @@ func _polish_taproom(g: Node3D) -> void:
 	PropsStory.mess_tin(g, Vector3(15.95, 0.75, 11.95), -30.0)
 	PropsStory.helmet(g, Vector3(17.05, 0.75, 11.05), 35.0)
 	PropsStory.loaf(g, Vector3(16.95, 0.75, 11.95), 70.0)
-	_lib_chair(Vector3(18.0, 0, 12.75), 110.0, true)
+	_lib_chair(Vector3(17.7, 0, 12.6), 110.0, true)   # (T-238: half a metre nearer its table, off the line from Door 2)
 	PropsStory.coat_drape(g, Vector3(15.6, 0.5, 15.45), 0.0)
 	PropsStory.gasmask_can(g, Vector3(17.35, 0, 12.25), 40.0)
 	PropsStory.map_case(g, Vector3(15.75, 0, 12.55), -20.0)
@@ -3827,15 +3899,15 @@ func _polish_stable(g: Node3D) -> void:
 	Props.block(g, Vector3(11.85, 0.85, 22.18), Vector3(12.95, 1.1, 22.24), "cloth_green")   # a horse blanket over the manger
 	# hay pulled from the manger and trodden into the floor of the stall
 	for hp: Vector3 in [Vector3(12.4, 0, 23.2), Vector3(11.8, 0, 24.3)]:
-		Props.obox(g, hp + Vector3(0, 0.012, 0), Vector3(0.9, 0.02, 0.6), "straw_floor", Vector3(0, 25, 0))
+		Hay.pad(g, hp + Vector3(0, 0.012, 0), Vector3(0.9, 0.02, 0.6), "straw_floor", Vector3(0, 25, 0))
 	# the loft: loose straw over the boards
 	var lr: RandomNumberGenerator = RandomNumberGenerator.new()
 	lr.seed = 3401
 	for k: int in 18:
-		Props.obox(g, Vector3(lr.randf_range(STB_X0 + 0.6, LOFT_X1 - 0.6), LOFT_TOP + 0.012, lr.randf_range(22.6, 30.0)), Vector3(lr.randf_range(0.4, 1.0), 0.02, lr.randf_range(0.3, 0.6)),
+		Hay.pad(g, Vector3(lr.randf_range(STB_X0 + 0.6, LOFT_X1 - 0.6), LOFT_TOP + 0.012, lr.randf_range(22.6, 30.0)), Vector3(lr.randf_range(0.4, 1.0), 0.02, lr.randf_range(0.3, 0.6)),
 			"straw_floor", Vector3(0, lr.randf_range(0, 180), 0))
 	for k2: int in 8:   # and along the gallery (T-084)
-		Props.obox(g, Vector3(lr.randf_range(LOFT_X1 + 0.5, HSTAIR_X0 - 0.6), LOFT_TOP + 0.012, lr.randf_range(GAL_Z0 + 0.6, 33.4)), Vector3(lr.randf_range(0.4, 1.0), 0.02, lr.randf_range(0.3, 0.6)),
+		Hay.pad(g, Vector3(lr.randf_range(LOFT_X1 + 0.5, HSTAIR_X0 - 0.6), LOFT_TOP + 0.012, lr.randf_range(GAL_Z0 + 0.6, 33.4)), Vector3(lr.randf_range(0.4, 1.0), 0.02, lr.randf_range(0.3, 0.6)),
 			"straw_floor", Vector3(0, lr.randf_range(0, 180), 0))
 	# cobwebs in the roof corners and on the trusses
 	Props.cobweb(g, Vector3(STB_X0 + 0.15, STABLE_H - 0.02, 22.15), 0.0, 1.0)
@@ -3987,27 +4059,25 @@ func _barn_dressing(parent: Node3D) -> void:
 		Vector3(13.0, 0, 24.2), Vector3(19.3, 0, 29.6), Vector3(22.4, 0, 25.6), Vector3(18.0, 0, 33.2), Vector3(5.4, 0, 28.6)]
 	for fs: Vector3 in floor_spots:
 		for k4: int in 4:
-			Props.obox(g, fs + Vector3(rng.randf_range(-0.6, 0.6), 0.014, rng.randf_range(-0.45, 0.45)),
+			Hay.pad(g, fs + Vector3(rng.randf_range(-0.6, 0.6), 0.014, rng.randf_range(-0.45, 0.45)),
 				Vector3(rng.randf_range(0.25, 0.7), 0.02, rng.randf_range(0.15, 0.4)), "straw_floor", Vector3(0, rng.randf_range(0, 180), 0))
 		for k5: int in 3:
-			Props.obox(g, fs + Vector3(rng.randf_range(-0.5, 0.5), 0.03, rng.randf_range(-0.4, 0.4)),
-				Vector3(rng.randf_range(0.18, 0.35), 0.05, 0.05), "hay", Vector3(rng.randf_range(-8, 8), rng.randf_range(0, 180), rng.randf_range(-8, 8)))
+			Hay.stalk(g, fs + Vector3(rng.randf_range(-0.5, 0.5), 0.022, rng.randf_range(-0.4, 0.4)),
+				rng.randf_range(0.18, 0.35) + 0.1, rng.randf_range(0, 180), rng.randf_range(-4, 4), "hay", 0.012)   # (T-238: these were 5 cm square hay sticks)
 	var loft_spots: Array = [Vector3(8.0, LOFT_TOP, 22.6), Vector3(11.0, LOFT_TOP, 22.5), Vector3(14.6, LOFT_TOP, 22.7), Vector3(5.0, LOFT_TOP, 26.0),
 		Vector3(5.0, LOFT_TOP, 28.6), Vector3(9.0, LOFT_TOP, 33.4), Vector3(19.3, LOFT_TOP, 29.6), Vector3(16.4, LOFT_TOP, 32.4), Vector3(22.6, LOFT_TOP, 33.4)]
 	for ls: Vector3 in loft_spots:
 		for k6: int in 4:
-			Props.obox(g, ls + Vector3(rng.randf_range(-0.5, 0.5), 0.014, rng.randf_range(-0.3, 0.3)),
+			Hay.pad(g, ls + Vector3(rng.randf_range(-0.5, 0.5), 0.014, rng.randf_range(-0.3, 0.3)),
 				Vector3(rng.randf_range(0.3, 0.8), 0.022, rng.randf_range(0.2, 0.4)), "straw_floor", Vector3(0, rng.randf_range(0, 180), 0))
-		Props.obox(g, ls + Vector3(rng.randf_range(-0.3, 0.3), 0.06, 0.0), Vector3(0.5, 0.12, 0.3), "hay", Vector3(0, rng.randf_range(0, 180), 0))
+		Hay.tuft(g, ls + Vector3(rng.randf_range(-0.3, 0.3), 0.0, 0.0), 0.5, int(ls.x * 7.0 + ls.z))   # (T-238: it was a 0.5 x 0.12 x 0.3 m hay-coloured block)
 	# ---- grain sacks along the loft's north wall and by the salt crate, two feed sacks below against the stall by the north door
 	for sk: Array in [[Vector3(9.6, LOFT_TOP, 22.5), 10.0, 0.95], [Vector3(10.25, LOFT_TOP, 22.5), -20.0, 0.9], [Vector3(10.9, LOFT_TOP, 22.55), 35.0, 0.95],
 			[Vector3(9.95, LOFT_TOP + 0.36, 22.5), 80.0, 0.85], [Vector3(15.95, LOFT_TOP, 33.5), 15.0, 0.85], [Vector3(16.0, LOFT_TOP, 32.85), -40.0, 0.8],
 			[Vector3(17.95, 0.0, 23.3), 20.0, 0.9], [Vector3(17.95, 0.0, 23.9), -15.0, 0.85]]:
 		Props.sack(g, sk[0], float(sk[1]), float(sk[2]))
-	# library props (PropScatter, no collision): crates by the loft's old crate, buckets, a spade against the wall
-	_lib("crate_wood_a", Vector3(7.75, LOFT_TOP, wn + 0.25), 0.0, Vector3.ONE, false)
-	_lib("crate_wood_b", Vector3(8.6, LOFT_TOP, wn + 0.65), 90.0, Vector3.ONE, false)
-	_lib("crate_wood_a", Vector3(7.75, LOFT_TOP + 0.35, wn + 0.25), 6.0, Vector3.ONE, false)
+	# library props (PropScatter, no collision): buckets, a spade against the wall (T-238: the three crates that stood
+	# beside the loft's solid crate, 0.7 m high with no collider, are gone)
 	_lib("bucket_wood", Vector3(14.6, LOFT_TOP, 22.55), 40.0, Vector3(0.8, 0.8, 0.8), false)
 	_lib("spade_rusted", Vector3(ww + 0.1, LOFT_TOP, 29.6), 90.0, Vector3.ONE, false, Vector3(0, 0, -12))
 	_lib("bucket_wood", Vector3(STB_X1 - 0.5, 0.0, 22.6), -15.0, Vector3(0.85, 0.85, 0.85), false)
@@ -4166,7 +4236,7 @@ func merge_static_meshes() -> int:
 	for holder: Node in [geo, dress]:
 		for n: Node in holder.find_children("*", "MeshInstance3D", true, false):
 			var mi: MeshInstance3D = n as MeshInstance3D
-			if not (mi.mesh is PrimitiveMesh) or mi.material_override == null or mi.has_meta("keep"):
+			if not (mi.mesh is PrimitiveMesh or mi.has_meta("batch")) or mi.material_override == null or mi.has_meta("keep"):   # ("batch": PropsHay's soft boxes)
 				continue
 			var xf: Transform3D = _xform_to_root(mi)
 			var c: Vector3 = xf.origin

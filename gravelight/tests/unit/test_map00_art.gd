@@ -20,9 +20,14 @@ const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 ## along the upstairs hall's south wall, the two gable ledges) and the bigger bar (BAR_* / SHELF_*: the counter 1.1 m west
 ## and 0.6 m further north, the cask behind it). Nothing else moved: the taproom loop, the Old Cellar door walkway, the
 ## stable, the yard, the grounds and the cellars bake the same polygons.
+## Re-baked by T-238 (the owner's final layout pass): the stable's bales against the north wall (STABLE_BALES; they were
+## drawn, not solid, in the north door's lane), the loft stack's third course (LOFT_TOP_BALES), the Helvetia cellar's
+## north-east corner (the bench and two crates 0.75 m deep; the 2.65 x 1.65 m heap and the crates between the Crucible
+## and the lever are gone), the taproom's signals crates against the east wall (TapCrates). The polygons round those four
+## places changed; the doors, stairs, loops and spawns are where they were (smoke_map00, smoke_map00_loop).
 const NAV_FP: Dictionary = {
-	"Navigation": "de45f9a6e3c50542111a6af4213ce57950b66f68",
-	"NavigationBreachOpen": "dd7f660a5ed11aab8646f09198398c6cd75b1ca6",
+	"Navigation": "a8543c4189ae75754bde466dcec4c5a6fc9a1490",
+	"NavigationBreachOpen": "5a7666b1c4793ea60fff508ed4c5183cef03458c",
 }
 ## Library-prop triangles within CAM_RADIUS of any capture camera (data/gravelight/capture_cams.json).
 const CAM_RADIUS: float = 12.0
