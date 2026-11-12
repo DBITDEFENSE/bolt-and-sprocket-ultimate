@@ -38,6 +38,13 @@ Settings > Video can change it at any time; nothing is picked again once a prese
    objects, triangles, lights and shadow casters are real; the FPS is not (software rendering).
 4. **The web build's size:** `tools/build_web.sh` prints the table; `python -I tools/pck_sizes.py <pck>` lists a
    pack by folder. The split rules are in `tools_src/web_pack_lists.gd` (T-139, T-150).
+5. **What the bots cost, and hitches (T-237), headless:** `tools/bot_perf.sh <tag> [maps] [runs]` runs perf_marks
+   `--hitch` at 60 fixed frames a second (a frame's wall time = the CPU work of one 60 FPS frame, no renderer) three
+   ways back to back: with the squad, the same with T-237's optimisations off (`--ab=t237_off`, the before), and the
+   player alone. It keeps every frame's time and every script's time per tick (p50 / p95 / p99 / worst, frames over
+   16.7 / 20 / 33 ms), the worst ticks with what ran in them, and `BotProf`'s sections of the bots' tick (ms per
+   tick, calls over 2 ms). `python -I tools/bot_perf_table.py .smoke_logs/t237/<tag> [--prof]` prints the medians.
+   Method, numbers and what is left: `docs/u15/t237_bot_perf.md`.
 
 ### The web build's sizes (T-150, after the section 5 map rebuilds and the new main menu)
 

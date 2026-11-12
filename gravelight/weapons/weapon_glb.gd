@@ -105,7 +105,9 @@ static func wants(weapon_id: StringName) -> bool:
 
 static func _scene(path: String) -> PackedScene:
 	if not _scenes.has(path):
+		var pt: int = BotProf.t()
 		_scenes[path] = load(path) as PackedScene
+		BotProf.add(&"gun.load", pt)
 	return _scenes[path]
 
 

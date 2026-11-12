@@ -731,7 +731,7 @@ func power_plan(now: float) -> Dictionary:
 	var me: Vector3 = player.global_position
 	var nav: RID = player.get_world_3d().navigation_map
 	var goal: Vector3 = brain.snap(sw.global_position)
-	var path: PackedVector3Array = NavigationServer3D.map_get_path(nav, me, goal, true, brain.squad.nav_mask())
+	var path: PackedVector3Array = BotProf.nav_path(nav, me, goal, true, brain.squad.nav_mask())
 	if path.is_empty() or path[path.size() - 1].distance_to(goal) > 2.0:
 		# (a path that stops short is the server's partial path to the closest reachable point, not a way there)
 		# UPDATE 07 QA (T-107): on a map with one navmesh region per zone (Kaltenbrunn, Totenhafen) the open
@@ -739,7 +739,7 @@ func power_plan(now: float) -> Dictionary:
 		# for the whole match. Plan the way across every zone (minus the ones bots can't use, e.g. the lift) and
 		# buy the nearest closed door that path crosses, as the single-region Map 0 always allowed.
 		var zb: Dictionary = brain.squad.map.director.zone_bits if brain.squad.map != null and brain.squad.map.director != null else {}
-		path = NavigationServer3D.map_get_path(nav, me, goal, true, plan_mask_of(zb, pw_avoid_zones()))
+		path = BotProf.nav_path(nav, me, goal, true, plan_mask_of(zb, pw_avoid_zones()))
 	if path.is_empty():
 		return _power
 	var best: BuyDoor = null

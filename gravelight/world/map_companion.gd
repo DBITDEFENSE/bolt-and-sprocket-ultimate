@@ -240,7 +240,7 @@ func _tick_waiting(delta: float) -> void:
 	player.net_flags = NetMatch.PF_FLOOR
 	if player.remote_body != null:
 		player.remote_body.calm = true
-		player.remote_body.update_pose(delta, 0.0, 0.0, NetMatch.PF_FLOOR)
+		player.remote_body.update_pose_lod(delta, 0.0, 0.0, NetMatch.PF_FLOOR)   # T-237: by what the camera sees
 	_tick_scene(delta)
 	_call_t -= delta
 	if _call_t > 0.0:

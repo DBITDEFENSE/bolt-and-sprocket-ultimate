@@ -189,7 +189,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	anim_flags = _flags()
 	if body != null:
-		body.update_pose(delta, Vector2(velocity.x, velocity.z).length(), _pitch, anim_flags)
+		body.update_pose_lod(delta, Vector2(velocity.x, velocity.z).length(), _pitch, anim_flags)   # T-237
 
 
 func _flags() -> int:

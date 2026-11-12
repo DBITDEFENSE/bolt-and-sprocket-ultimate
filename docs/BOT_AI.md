@@ -1285,3 +1285,27 @@ per metre) and keeps its current objective (about 49 points), and weighs the lis
 soaks to round 12 (seeds 1-2, x3 speed): trained built-in brain round 13 both runs, 0 bot downs, power thrown and
 doors opened, 54-58 stuck events; the 27B round 13 both runs, 0-1 downs, 94-101 stuck events. Two runs on one map:
 retrain with rows from Kaltenbrunn, Totenhafen and Fernflug before trusting it there.
+
+## 17. What the squad costs per frame (T-237, 2026-11-11)
+
+The owner: "while there's bots the game gets laggy". Measured and fixed in `docs/u15/t237_bot_perf.md`; what changed
+in the bots' own code:
+
+- **One think per tick.** `BotBrain.think_slot()`: one brain of the squad runs its think (senses, blackboard, errand
+  list, scores) per physics tick; another whose turn it is not waits a tick, `THINK_WAIT_MAX_S` (0.1 s) at most. The
+  setup stagger was lost whenever an errand ended or an order came (those think at once).
+- **Reachability is remembered.** `BotBrain._reachable()` keeps its answers per half-metre cell for `REACH_TTL_S`
+  (4 s) and drops them when a door opens or a zone unlocks. The errand list (`BotEconomy.candidates`, once a second
+  per calm bot) asked the navmesh for every machine, wall gun, door and window again each time.
+- **The planner's model is asked when there is something to decide** (`BotPlanner.ask_due`, bots.json `local_ai`
+  `ask_gap_s` 8, `reask_every_s` 20): at once with no objective; otherwise not within the gap, then when the options
+  changed, the built-in brain changed its own pick, or the refresh is due. It was asked every `decide_every_s` (4 s),
+  each answer about a second of the model on the game's GPU.
+- **Bodies.** `RemoteBody.update_pose_lod()` poses an AI's body by what the camera sees (every tick in view within
+  15 m, every 2nd to 40 m, every 4th out of view); a body keeps the last four gun models it held instead of
+  building one on every swap; its muzzle light is hidden while dark.
+- **Files in the background.** `StreamWarm`: the sound bank's one-shots from match start, a squad member's voice
+  lines from their first line, the weapon model files from the squad's setup.
+- **Measuring.** `BotProf` (sections of the tick, off unless a tool turns it on; `BotProf.opt = false` or the
+  environment variable `CZ_T237_OFF=1` switches the optimisations above off for a before / after from one build),
+  `tools/bot_perf.sh`, `perf_marks --hitch`.
