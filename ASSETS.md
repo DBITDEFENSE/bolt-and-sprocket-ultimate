@@ -38,8 +38,8 @@ free-asset intake rule. The Motus demonstration body/textures are not used in th
 | `Zombie_HyperAttack_1_SHORT_Idle_Loop.fbx` | `mco_fast_attack_idle` / gallery |
 | `Zombie_Death_Back_Mid_1.fbx` | `mco_death_back` / live `death_sit` visual, recorded root travel and momentum into ragdoll; gallery |
 | `Zombie_Death_Hit_Back_1.fbx` | `mco_death_hit_back` / live `death_back` visual, recorded root travel and momentum into ragdoll; gallery |
-| `Zombie_Turn_L_45_Loop.fbx` | `mco_turn_l_45` / gallery, nonlooping facing change |
-| `Zombie_Turn_R_45_Loop.fbx` | `mco_turn_r_45` / gallery, nonlooping facing change |
+| `Zombie_Turn_L_45_Loop.fbx` | `mco_turn_l_45` raw gallery; `mco_turn_l_45_yaw` contact cleanup/root-yaw extraction, stationary turn presentation; same MoCap Online Standard License |
+| `Zombie_Turn_R_45_Loop.fbx` | `mco_turn_r_45` raw gallery; `mco_turn_r_45_yaw` contact cleanup/root-yaw extraction, stationary turn presentation; same MoCap Online Standard License |
 | `Zombie_Turn_L_90_1.fbx` | `mco_turn_l_90` / gallery |
 | `Zombie_Turn_R_90_1.fbx` | `mco_turn_r_90` / gallery |
 | `Zombie_Walk_F_1_KnockBack_Walk.fbx` | `mco_walk_knockback` / gallery |

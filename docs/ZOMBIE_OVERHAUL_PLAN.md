@@ -3,6 +3,46 @@
 Base: master e96a0188; branch codex/zombie-overhaul in .wt/zombie-overhaul.
 The owner approved master because main does not exist. No new animation poses or assets authored.
 
+## 2026-11-11 recorded stationary turns
+
+The bank now contains 30 derived clips from 26 owned source recordings. Two additional versions
+of the 45-degree turns extract source hip yaw into Root after contact cleanup. Blender checks
+world-pose reconstruction (worst 4.5e-16 m); Godot checks all 30 imported rigs and the new Root
+rotation curves at 60 Hz. Raw versions remain available for comparison.
+
+A presentation-only `Turn` AnimationTree state plays the recorded step below 0.5 m/s in CHASE
+and TO_WINDOW. Data permits 25-65 degree requests and bounds rotation lag; the pivot compensates
+for the original fast body-facing response, then follows recorded yaw. Gameplay body facing,
+speed, attack timing and networking state enums remain unchanged. Source-contact IK and audio
+run with the turn. Movement/attack/other states cancel it; residual rotation releases and pooled
+reuse resets it. No new gait or turn poses were generated.
+
+Executed: 46/46 zombie tests, 4,066 assertions; 860 scripts/0 failures; license 4/4, 367 assertions;
+108-folder manifest current. The first license-filter command matched no tests; it was corrected
+and the actual passing count verified. Final scoped logs have no script/shader/engine/leak errors;
+known Unicode/NUL warnings remain. Map2 smoke passes root speed (worst median discrepancy .7%),
+climbing, severs/Gore Off, knockdown/get-up, deaths, cap6 and corpse return.
+
+| Check | Result |
+|---|---|
+| Stationary turn contact drift p95 | .008172 m/s; 175 source-contact samples after entry blend |
+| Max visual heading step, fixed 60 Hz | 11.25 -> 1.7943 degrees; original body-facing error <.000006 degrees |
+| Turn interruption | Movement/attack passed; 35/45/60 degrees both ways and pool reset covered by unit tests |
+| Fresh 60 s rendered 24-active gallery | frame p95 4.5455 ms; zombie callback CPU .192 ms/actor/frame |
+| Fresh 60 s fixed-60 motion gallery | 51,308 contacts; toe p95 .01245 m/s; root mismatch .5694% |
+| Both horde runs | minimum24; no missing clips/rest samples; 83,520 pose samples each |
+
+Evidence: `docs/captures/after/mocap/turns/comparison.mp4`, `turns/README.md`, and
+`acceptance_turns_{motion,rendered}/horde.json`. RTX5090/Ryzen7800X3D results do not certify
+mid-range hardware or full maps; the moving horde is not a 24-simultaneous-turn benchmark.
+Captured soldier stationary turns rate **2 -> 3/5**; locomotion/swipes/two deaths stay3,
+model stays2, variety stays3. Other types are not newly scored. Full premium target is unmet.
+
+RESUME HERE: hand off to Claude Fable 5.2 as requested. First finish co-op turn triggering:
+puppets receive observed yaw, so small interpolated increments can miss the 25-degree trigger.
+Host stationary turns are verified; network parity is not. Then stairs/rubble, special bodies,
+remaining licensed states and artist-authored model/PBR/LOD sample. No main merge or export.
+
 ## 2026-11-09 push and local playtest
 
 Devin explicitly requested pushing the current work. `codex/zombie-overhaul` is now on origin;

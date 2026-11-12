@@ -2096,6 +2096,240 @@
       "foot_lock": false,
       "timing": null,
       "events": {}
+    },
+    "mco_turn_l_45_yaw": {
+      "file": "mco_turn_l_45_yaw.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Turn_L_45_Loop.fbx",
+      "sha256": "3105e754cb806432bf27db1d54359cd539dfa13ec6dc487dbf7b9b17c3a0f39e",
+      "duration": 1.2666666666666666,
+      "frames": 39,
+      "loop": false,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "speed_mps": 0.0,
+      "loop_seam_radians": null,
+      "source_contact_before": {
+        "samples": 52,
+        "mean_mps": 0.02909497533814778,
+        "p95_mps": 0.06881832949482118
+      },
+      "source_contact_after": {
+        "samples": 52,
+        "mean_mps": 2.1494162303778257e-15,
+        "p95_mps": 4.0217275400536114e-15
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            0.6666666666666666
+          ],
+          [
+            1.2,
+            1.2666666666666666
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            0.23333333333333334
+          ],
+          [
+            0.5,
+            1.2666666666666666
+          ]
+        ]
+      },
+      "foot_lock": true,
+      "timing": null,
+      "events": {},
+      "extract_yaw": true,
+      "root_yaw": {
+        "radians": [
+          0.0,
+          -0.003147716669928317,
+          -0.005420427404015642,
+          -0.003952112733495579,
+          0.0015530412955492407,
+          0.012886801283238509,
+          0.023131862856150286,
+          0.033352330129565524,
+          0.0548051109353992,
+          0.08661175296608989,
+          0.12906987957424174,
+          0.17510341775239094,
+          0.2172930554788153,
+          0.2561757894512587,
+          0.28632263030343913,
+          0.3143578172928973,
+          0.3478261959591591,
+          0.3847843715442814,
+          0.4322171820959409,
+          0.490179485248157,
+          0.5526737347011027,
+          0.60635288890297,
+          0.6357170837786423,
+          0.6611865781486982,
+          0.6877442334077971,
+          0.7085699001779987,
+          0.7269802004327929,
+          0.7385895567436814,
+          0.7451290520143719,
+          0.748557408475211,
+          0.7497976917193632,
+          0.7495248315892192,
+          0.7493284813399783,
+          0.7509380992057272,
+          0.7544241143432745,
+          0.7597169306985458,
+          0.766945612741748,
+          0.7773651766205797,
+          0.7853979979232925
+        ],
+        "net_degrees": 44.999990519029254,
+        "reconstruction_error_m": 2.3055512673781017e-16
+      }
+    },
+    "mco_turn_r_45_yaw": {
+      "file": "mco_turn_r_45_yaw.glb",
+      "source_fbx": "assets/user_supplied/mocap_online/zombie_starter_2_7/Animation/Root_Motion/Zombie_Turn_R_45_Loop.fbx",
+      "sha256": "76d306d4b9c3ac1115c98cb9f009950732e3595465662a01656893cbe658d31a",
+      "duration": 1.2666666666666666,
+      "frames": 39,
+      "loop": false,
+      "bone_map": {
+        "Hips": "Hips",
+        "LeftUpperArm": "LeftArm",
+        "LeftLowerArm": "LeftForeArm",
+        "LeftHand": "LeftHand",
+        "RightUpperArm": "RightArm",
+        "RightLowerArm": "RightForeArm",
+        "RightHand": "RightHand",
+        "Neck": "Neck",
+        "Head": "Head",
+        "LeftUpperLeg": "LeftUpLeg",
+        "LeftLowerLeg": "LeftLeg",
+        "LeftFoot": "LeftFoot",
+        "LeftToe": "LeftToeBase",
+        "RightUpperLeg": "RightUpLeg",
+        "RightLowerLeg": "RightLeg",
+        "RightFoot": "RightFoot",
+        "RightToe": "RightToeBase",
+        "Spine": "Spine",
+        "Chest": "Spine2"
+      },
+      "root_displacement": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "speed_mps": 0.0,
+      "loop_seam_radians": null,
+      "source_contact_before": {
+        "samples": 53,
+        "mean_mps": 0.02979115008938825,
+        "p95_mps": 0.07162497514221842
+      },
+      "source_contact_after": {
+        "samples": 53,
+        "mean_mps": 0.00013662697053795346,
+        "p95_mps": 6.217979286825578e-15
+      },
+      "contact_windows": {
+        "Left": [
+          [
+            0.0,
+            0.23333333333333334
+          ],
+          [
+            0.5,
+            1.2666666666666666
+          ]
+        ],
+        "Right": [
+          [
+            0.0,
+            0.7
+          ],
+          [
+            1.2,
+            1.2666666666666666
+          ]
+        ]
+      },
+      "foot_lock": true,
+      "timing": null,
+      "events": {},
+      "extract_yaw": true,
+      "root_yaw": {
+        "radians": [
+          0.0,
+          0.0032112139431049796,
+          0.005528301797356533,
+          0.004085325896983148,
+          -0.0014085614847587449,
+          -0.012733089235269855,
+          -0.022931784721942357,
+          -0.03306029707426008,
+          -0.05443930375871146,
+          -0.08626590358123426,
+          -0.12875586891745636,
+          -0.1747251293063217,
+          -0.21679781419282818,
+          -0.2555679063965993,
+          -0.2858338109497726,
+          -0.31394647897256084,
+          -0.34747893743843183,
+          -0.3845319127677433,
+          -0.4320335687592105,
+          -0.49005487970161243,
+          -0.5526865470230381,
+          -0.6065186965793828,
+          -0.6359394204458751,
+          -0.6614402348320388,
+          -0.6880272478252967,
+          -0.7088525634949302,
+          -0.7272460096726974,
+          -0.7388042415433973,
+          -0.7452855998758826,
+          -0.748656157347994,
+          -0.7498480412603982,
+          -0.7495535728482745,
+          -0.7493615297248224,
+          -0.7509896169155734,
+          -0.7544987622351449,
+          -0.7598078949053113,
+          -0.7670281584505423,
+          -0.7774151146047857,
+          -0.7853977872305774
+        ],
+        "net_degrees": -44.99997844722591,
+        "reconstruction_error_m": 4.484050470211362e-16
+      }
     }
   },
   "errors": []

@@ -12,7 +12,7 @@ extends RefCounted
 ## Each state is a nested blend tree "Anim -> TimeScale": Locomotion's Anim is a BlendSpace2D (speed x turn),
 ## Attack's and Crawl's a BlendSpace1D (variant / speed), the rest an Animation node whose clip is set per use.
 
-const STATES: PackedStringArray = ["Spawn", "Emerge", "Climb", "Barricade", "Locomotion", "Attack", "React", "Crawl", "Death"]
+const STATES: PackedStringArray = ["Spawn", "Emerge", "Climb", "Barricade", "Locomotion", "Attack", "React", "Crawl", "Death", "Turn"]
 const FORWARD: Vector3 = Vector3(0, 0, -1)
 const ATTACK_WINDUP: float = 0.45     # the baked attack timing; Zombie rescales it to its attack_windup
 const ATTACK_SWING: float = 0.35
@@ -121,6 +121,24 @@ static func death_key_pose_time(clip: String) -> float:
 static func death_motion_config() -> Dictionary:
 	library()
 	return _mocap.config.get("death_motion", {})
+
+
+static func turn_config() -> Dictionary:
+	library()
+	return _mocap.config.get("turn", {})
+
+
+static func recorded_turns_enabled() -> bool:
+	var c: Dictionary = turn_config()
+	return mocap_enabled() and bool(c.get("enabled", false)) and not "--legacy-zombie-turns" in OS.get_cmdline_user_args() and _mocap.metadata.get(c.get("left", ""), {}).has("root_yaw") and _mocap.metadata.get(c.get("right", ""), {}).has("root_yaw")
+
+
+static func turn_progress(clip: String, seconds: float) -> float:
+	var curve: Array = _mocap.metadata.get(clip, {}).get("root_yaw", {}).get("radians", [])
+	if curve.size() < 2 or absf(float(curve.back())) < 0.001: return 0.0
+	var at: float = clampf(seconds / length_of(clip), 0.0, 1.0) * float(curve.size() - 1)
+	var i: int = int(at)
+	return lerpf(float(curve[i]), float(curve[mini(i + 1, curve.size() - 1)]), at - float(i)) / float(curve.back())
 
 
 ## Recorded loops may contain several strides. Events are source contact onsets, not even halves.
@@ -279,7 +297,7 @@ static func _state_tree(state: String) -> AnimationNodeBlendTree:
 				bsa.add_blend_point(_anim_node(str(names[i])), float(i), -1, StringName(str(names[i])))
 			anim = bsa
 		_:
-			var defaults: Dictionary = {"Spawn": "idle", "Emerge": "emerge_standard", "Climb": "vault_a", "Barricade": "tear_rip", "React": "stagger", "Death": "death_back"}
+			var defaults: Dictionary = {"Spawn": "idle", "Emerge": "emerge_standard", "Climb": "vault_a", "Barricade": "tear_rip", "React": "stagger", "Death": "death_back", "Turn": "idle"}
 			anim = _anim_node(str(defaults[state]))
 	bt.add_node("Anim", anim, Vector2(0, 0))
 	var seek: AnimationNodeTimeSeek = AnimationNodeTimeSeek.new()

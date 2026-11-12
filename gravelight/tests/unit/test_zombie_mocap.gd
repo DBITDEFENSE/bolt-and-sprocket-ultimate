@@ -1,5 +1,70 @@
 extends GutTest
 
+func test_recorded_turns_keep_gameplay_facing_and_release_on_interrupt() -> void:
+	if not ZombieClips.recorded_turns_enabled():
+		pending("Local licensed root-yaw clips required")
+		return
+	var host := Node3D.new()
+	add_child_autofree(host)
+	var spawn := ZombieSpawn.new()
+	host.add_child(spawn)
+	var z := Zombie.new()
+	host.add_child(z)
+	var drift: Array[float] = []
+	for degrees: float in [35.0, 45.0, 60.0, -35.0, -45.0, -60.0]:
+		z.activate({"enemy_id":"ganger", "variant":"soldier", "tier":"walk"}, spawn, null)
+		z.set_physics_process(false)
+		z.set_process(false)
+		z.rotation.y = 0.0
+		z.set_posture("none", 0.0)
+		z._enter(Zombie.State.CHASE)
+		z._animate(0.3)
+		var yaw: float = deg_to_rad(degrees)
+		var target: Vector3 = z.position + Vector3(-sin(yaw), 0, -cos(yaw)) * 10.0
+		var expected: float = 0.0
+		var old_toes: Array[Vector3] = [Vector3.ZERO, Vector3.ZERO]
+		var old_ids: Array[int] = [-1, -1]
+		var entered: bool = false
+		var here: Vector3 = z.position
+		var speed: float = z.speed
+		for tick: int in 120:
+			expected = lerp_angle(expected, yaw, 0.25)
+			z._face(target)
+			z._animate(1.0/60.0)
+			assert_almost_eq(wrapf(z.rotation.y - expected, -PI, PI), 0.0, 0.00001, "gameplay facing response unchanged")
+			if z._tree_state == "Turn":
+				entered = true
+				assert_lt(z._skel.get_bone_pose_rotation(z._skel.find_bone("Root")).angle_to(Quaternion.IDENTITY), 0.001, "tree extracts yaw instead of double rotating skeleton")
+			for side: int in 2:
+				var foot: int = z._skel.find_bone("LeftFoot" if side == 0 else "RightFoot")
+				var toe: Vector3 = z._skel.global_transform * (z._skel.get_bone_global_pose(foot) * Vector3(0, -0.06, -0.15))
+				var id: int = z._contact_lock.intervals[side]
+				if id >= 0 and id == old_ids[side] and z._tree_state == "Turn":
+					var d: Vector3 = toe - old_toes[side]
+					drift.append(Vector2(d.x, d.z).length() * 60.0)
+				old_toes[side] = toe
+				old_ids[side] = id
+		assert_true(entered, "recorded turn selected " + str(degrees))
+		assert_false(z._turn_motion.active)
+		assert_almost_eq(z._pivot.rotation.y, 0.0, 0.001, "visual turn settles exactly onto gameplay heading")
+		assert_eq(z.position, here)
+		assert_eq(z.speed, speed)
+		# Interrupt a fresh turn with an attack; its windup and visual state must win immediately.
+		z._face(z.position + Vector3(-sin(yaw + 0.7), 0, -cos(yaw + 0.7)) * 10.0)
+		z._animate(0.1)
+		assert_true(z._turn_motion.active)
+		z._enter(Zombie.State.ATTACK)
+		for tick: int in 24: z._animate(1.0/60.0)
+		assert_eq(z._tree_state, "Attack")
+		assert_false(z._turn_motion.active)
+		assert_almost_eq(z._pivot.rotation.y, 0.0, 0.002)
+		assert_false(z._attack_hit_done, "turn presentation cannot cause damage")
+		z.deactivate()
+		assert_eq(z._turn_motion.offset, 0.0, "pool reuse clears turn compensation")
+	drift.sort()
+	assert_gt(drift.size(), 100)
+	if not drift.is_empty(): assert_lt(drift[int(drift.size()*0.95)], 0.1, "turn contact p95 below 0.1 m/s")
+
 func test_recorded_swipes_keep_gameplay_windup_and_recovery() -> void:
 	if not ZombieClips.has_clip("mco_swipe_l"):
 		pending("Local licensed pack required")

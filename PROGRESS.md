@@ -1,5 +1,32 @@
 # PROGRESS
 
+RESUME HERE: 2026-11-11 Codex recorded-turn checkpoint. Work ONLY in .wt/zombie-overhaul,
+branch codex/zombie-overhaul. Two cleaned 45-degree turns are integrated via a visual Turn
+AnimationTree state: extracted source hip yaw, bounded root-angle matching, source contact IK,
+footstep events, cancellation on movement/attack/other states, pool resets. Original gameplay
+facing, speeds and jitter are unchanged. 30 derived clips from 26 owned source FBXs; raw turns
+remain for comparison. Blender headless extraction reconstructs poses within 4.5e-16 m;
+Godot imports 30/30, including yaw-track checks. 46/46 zombie tests / 4,066 asserts; 860 scripts
+/ 0 failures; 4/4 license tests / 367 asserts; manifest 108 folders current. Initial license
+filter typo selected no tests; corrected to test_license_gate and verified actual test counts.
+Turn studio headless/rendered PASS: 175 contacts, p95 .008172 m/s, max visual heading step
+11.25 -> 1.7943 degrees at 60 Hz; body-facing discrepancy <=.000006 degrees. Both directions,
+35/45/60 degree unit cases, movement/attack interruption and pool reset verified. Review
+docs/captures/after/mocap/turns/comparison.mp4 and README.md. Turn visual rating 2->3/5;
+other ratings unchanged (locomotion/swipes/two deaths 3, model2, variety3). Full target NOT MET.
+60-second 24-active checks: rendered p95 4.5455 ms, callback CPU .192 ms/actor/frame; fixed-60
+motion 51,308 contacts, toe p95 .01245 m/s, root/body mismatch .5694%. Both minimum24, zero
+missing/rest samples, 83,520 sampled poses. Hardware RTX5090/Ryzen7800X3D, not mid-range/full-map
+sign-off. Map2 integration smoke PASS: worst median root mismatch .7%, climb/severs/Gore Off,
+knockdown/get-up, 8 deaths, ragdoll peak6/cap6, corpse return. Final logs no script/shader/engine
+or leak errors; known Unicode/NUL warnings remain.
+NEXT: write the requested docs/CLAUDE_FABLE_5_2_ZOMBIE_HANDOFF.md, commit and push this checkpoint
+and handoff. Then Fable should fix/verify co-op turn triggering (small interpolated yaw increments
+can miss the trigger), test stairs/rubble and special bodies, and finish the remaining asset/spec
+gaps. Host stationary turns are verified, not complete co-op acceptance. Purchased binaries stay
+local; never request the Starter pack again. Do not merge or replace main/export without request.
+
+
 RESUME HERE: 2026-11-09 Codex push/playtest checkpoint. Work ONLY in .wt/zombie-overhaul,
 branch codex/zombie-overhaul. Devin explicitly requested PUSH and to try the current work;
 this supersedes the older no-push notes below. origin/codex/zombie-overhaul now contains

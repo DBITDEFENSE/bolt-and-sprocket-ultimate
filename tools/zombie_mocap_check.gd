@@ -69,6 +69,12 @@ func _ready() -> void:
 					for frame: int in samples:
 						ap.seek(minf(float(frame)/60.0, a.length - 0.00001), true)
 						ap.advance(0.0)
+						if row.has("root_yaw"):
+							var yaw_curve: Array = row["root_yaw"]["radians"]
+							var x: float = minf(float(frame)/60.0/a.length, 1.0) * float(yaw_curve.size() - 1)
+							var expected_yaw: float = lerpf(float(yaw_curve[int(x)]), float(yaw_curve[mini(int(x)+1, yaw_curve.size()-1)]), x - floorf(x))
+							var root_q: Quaternion = sk.get_bone_pose_rotation(sk.find_bone("Root"))
+							if root_q.angle_to(Quaternion(Vector3.UP, expected_yaw)) > 0.001: failures.append(key + ": root yaw changed on import")
 						var all_rest: bool = true
 						for bone: int in sk.get_bone_count():
 							var q: Quaternion = sk.get_bone_pose_rotation(bone)

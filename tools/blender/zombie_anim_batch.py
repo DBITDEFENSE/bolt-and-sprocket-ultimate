@@ -178,6 +178,25 @@ def periodic_lock(c, rig, contacts, root, cfg, looping):
         q[-1] = q[0]
 
 
+def extract_yaw(c, rig, root):
+    """Factor the recorded hip heading into Root without changing any world-space pose."""
+    forward = ml.qrot(c["local"]["Hips"], np.array([0., 0., -1.]))
+    yaw = np.unwrap(np.arctan2(-forward[:, 0], -forward[:, 2]))
+    yaw -= yaw[0]
+    rotations = np.array([ml.qaxis([0., 1., 0.], a) for a in yaw])
+    hips = ml.qrot(ml.qinv(rotations), c["hips"] - root)
+    local = dict(c["local"], Hips=ml.qnorm(ml.qmul(ml.qinv(rotations), c["local"]["Hips"])))
+    error = 0.0
+    for i in range(len(hips)):
+        before, _ = ml.rig_fk(rig, c["hips"][i], {b: c["local"][b][i] for b in ml.DRIVEN})
+        after, _ = ml.rig_fk(rig, hips[i], {b: local[b][i] for b in ml.DRIVEN})
+        for b in before:
+            error = max(error, float(np.linalg.norm(root[i] + ml.qrot(rotations[i], after[b]) - before[b])))
+    if error > 1e-6:
+        raise RuntimeError("Root-yaw extraction changed the source pose: " + str(error))
+    return hips, local, rotations, {"radians": yaw.tolist(), "net_degrees": float(np.degrees(yaw[-1])), "reconstruction_error_m": error}
+
+
 def write_glb(path, c, rig, root, name, meta):
     """glTF 2.0, metres, Y-up. A tiny weighted marker preserves joints on scene import.
     Runtime loads only the Animation; it never attaches this marker to an enemy."""
@@ -218,10 +237,15 @@ def write_glb(path, c, rig, root, name, meta):
         ai = accessor(data, "<f4", 5126, kind)
         samplers.append({"input": times, "output": ai, "interpolation": "LINEAR"})
         channels.append({"sampler": len(samplers)-1, "target": {"node": indices[bone], "path": channel}})
+    hips, local = c["hips"]-root, c["local"]
+    if meta.get("extract_yaw", False):
+        hips, local, rotations, yaw_report = extract_yaw(c, rig, root)
+        local = dict(local, Root=rotations)
+        meta["root_yaw"] = yaw_report
     track("Root", "translation", root, "VEC3")
-    track("Hips", "translation", c["hips"]-root, "VEC3")
+    track("Hips", "translation", hips, "VEC3")
     for b in names:
-        q = c["local"].get(b, np.tile([1., 0, 0, 0], (len(c["hips"]), 1)))
+        q = local.get(b, np.tile([1., 0, 0, 0], (len(c["hips"]), 1)))
         track(b, "rotation", q[:, [1, 2, 3, 0]], "VEC4")
     doc = {"asset": {"version": "2.0", "generator": "Gravelight licensed zombie retargeter", "copyright": "Animation: Motus Digital LLC / MoCap Online; licensed project use only"},
            "scene": 0, "scenes": [{"nodes": [0]}], "nodes": nodes,
@@ -269,7 +293,7 @@ def main():
         c = retime_recording(ml.resample(ml.retarget(m, rig), float(cfg["fps"])), row)
         trajectory = np.outer(np.linspace(0, 1, len(c["hips"])), (c["hips"][-1]-c["hips"][0]) * [1, 0, 1]) if row.get("extract_root", True) else np.zeros_like(c["hips"])
         # Straight gait root faces -Z; rotate recording and trajectory together (no pose invention).
-        if row.get("foot_lock") or name == "mco_crawl":
+        if (row.get("foot_lock") or name == "mco_crawl") and row.get("align_to_travel", True):
             yaw = ml.yaw_to_minus_z(trajectory[-1]) if np.linalg.norm(trajectory[-1]) > 1e-5 else np.array([1., 0, 0, 0])
             c["hips"] = ml.qrot(yaw, c["hips"])
             c["local"]["Hips"] = ml.qnorm(ml.qmul(yaw, c["local"]["Hips"]))
@@ -291,7 +315,8 @@ def main():
                 "loop_seam_radians": seam if row["loop"] else None, "source_contact_before": before, "source_contact_after": after,
                 "contact_windows": {s: [[a/c["fps"], b/c["fps"]] for a, b in spans(mask)] for s, mask in contact.items()},
                 "foot_lock": bool(row.get("foot_lock") and not args.no_foot_lock),
-                "timing": row.get("timing"), "events": row.get("events", {})}
+                "timing": row.get("timing"), "events": row.get("events", {}),
+                "extract_yaw": bool(row.get("extract_yaw", False))}
         if not np.isfinite(c["hips"]).all() or not all(np.isfinite(q).all() for q in c["local"].values()):
             raise RuntimeError("Non-finite retarget: " + name)
         if row["loop"] and seam > 0.002:

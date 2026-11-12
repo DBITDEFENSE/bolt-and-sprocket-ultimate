@@ -951,8 +951,76 @@
 				"ZombieMocap/Skeleton3D:LeftHand",
 				"ZombieMocap/Skeleton3D:RightHand"
 			]
+		},
+		{
+			"animations": [
+				"mco_turn_l_45_yaw"
+			],
+			"bones": 19,
+			"clip": "mco_turn_l_45_yaw",
+			"duration": 1.26666665077209,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 6.64097969651188,
+			"sampled_frames_60hz": 76,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
+		},
+		{
+			"animations": [
+				"mco_turn_r_45_yaw"
+			],
+			"bones": 19,
+			"clip": "mco_turn_r_45_yaw",
+			"duration": 1.26666665077209,
+			"identity_pose_frames": 0,
+			"largest_bone_step_degrees": 6.25451265223375,
+			"sampled_frames_60hz": 76,
+			"tracks": [
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Root",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:Hips",
+				"ZombieMocap/Skeleton3D:LeftUpperLeg",
+				"ZombieMocap/Skeleton3D:RightUpperLeg",
+				"ZombieMocap/Skeleton3D:LeftLowerLeg",
+				"ZombieMocap/Skeleton3D:RightLowerLeg",
+				"ZombieMocap/Skeleton3D:LeftFoot",
+				"ZombieMocap/Skeleton3D:RightFoot",
+				"ZombieMocap/Skeleton3D:Spine",
+				"ZombieMocap/Skeleton3D:Chest",
+				"ZombieMocap/Skeleton3D:Neck",
+				"ZombieMocap/Skeleton3D:Head",
+				"ZombieMocap/Skeleton3D:Jaw",
+				"ZombieMocap/Skeleton3D:LeftUpperArm",
+				"ZombieMocap/Skeleton3D:RightUpperArm",
+				"ZombieMocap/Skeleton3D:LeftLowerArm",
+				"ZombieMocap/Skeleton3D:RightLowerArm",
+				"ZombieMocap/Skeleton3D:LeftHand",
+				"ZombieMocap/Skeleton3D:RightHand"
+			]
 		}
 	],
-	"expected": 28,
+	"expected": 30,
 	"failures": []
 }

@@ -292,6 +292,7 @@ func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
 
 func deactivate() -> void:
 	_contact_lock.reset()
+	_turn_motion.reset()
 	state = State.INACTIVE
 	forced_target = null
 	prey = null
@@ -1678,6 +1679,7 @@ func _face(p: Vector3) -> void:
 	var yaw: float = atan2(-d.x, -d.z)
 	var before: float = rotation.y
 	rotation.y = lerp_angle(rotation.y, yaw, 0.25)
+	_turn_motion.request(before, yaw, _can_recorded_turn())
 	_turn_rate = wrapf(rotation.y - before, -PI, PI) / maxf(0.001, get_physics_process_delta_time())
 
 
@@ -2163,6 +2165,7 @@ var _cycle: float = 0.0
 var _step_phase_valid: bool = false
 var _cycle_len: float = 1.0
 var _contact_lock: RefCounted = preload("res://gravelight/enemies/zombie_contact_lock.gd").new()
+var _turn_motion: RefCounted = preload("res://gravelight/enemies/zombie_turn_motion.gd").new()
 var _attack_clip: String = "swipe_l"
 var _tear_clip: String = "tear_rip"
 var _climb_clip: String = "vault_a"
@@ -2431,6 +2434,7 @@ func _set_inst(key: String, v: Variant) -> void:
 
 
 func _reset_presentation() -> void:
+	_turn_motion.reset()
 	if has_meta("person"):
 		remove_meta("person")   # T-099: a pooled zombie that was a risen person goes back to its kit
 	for sg: MeshInstance3D in _squad_gear:
@@ -3233,6 +3237,11 @@ func _play_flinch(limb: StringName, side: String) -> void:
 	_flinch_dir = -1.0 if side == "l" else 1.0
 
 
+## Only stationary upright locomotion can yield presentation to a recorded turn.
+func _can_recorded_turn() -> bool:
+	return has_rig() and not is_crawler and not hopping and state in [State.CHASE, State.TO_WINDOW] and _tree_state in ["Locomotion", "Turn"] and Vector2(velocity.x, velocity.z).length() < float(_anim["turn"].get("in_place_below_mps", 0.5))
+
+
 ## Per visual tick: tree parameters from the state and velocity, LOD-rated advance, animation events.
 func _animate(dt: float) -> void:
 	if state == State.INACTIVE or _tree == null or _ragdoll != null:
@@ -3240,7 +3249,11 @@ func _animate(dt: float) -> void:
 	ZombieBody.update_cracks(RoundManager.current_round, float(GLData.table("enemies").get("visual", {}).get("crack_energy", 2.6)))
 	var spd: float = Vector2(velocity.x, velocity.z).length()
 	var moving_state: bool = state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW]
-	if moving_state:
+	var can_turn: bool = _can_recorded_turn()
+	if not can_turn: _turn_motion.cancel()
+	if _turn_motion.active:
+		if _tree_state != "Turn": _tree_play("Turn", _turn_motion.clip, 1.0)
+	elif moving_state:
 		if state == State.WAIT_WINDOW and spd < 0.2:
 			if _tree_state != "Barricade":
 				_tree_play("Barricade", str(_anim["clips"]["wait"]), 1.0)
@@ -3254,6 +3267,7 @@ func _animate(dt: float) -> void:
 		var lean: float = float(lean_t.get(String(tier), 0.0))
 		var turn_norm: float = clampf(_turn_rate / float(_anim["turn"].get("full_turn_rate", 2.5)), -1.0, 1.0)
 		var want_turn: float = turn_norm * (lean / 0.18 if spd > below else 1.0)
+		if spd <= below and ZombieClips.recorded_turns_enabled(): want_turn = 0.0
 		_loco_turn = move_toward(_loco_turn, want_turn if absf(turn_norm) > 0.15 else 0.0, dt * 5.0)
 		_tree.set("parameters/SM/Locomotion/Anim/blend_position", Vector2(_loco_x, _loco_turn))
 		# the clip's root motion is in rig space: the height scale on the pivot stretches every stride by that much
@@ -3276,6 +3290,8 @@ func _animate(dt: float) -> void:
 			_tree.set("parameters/SM/Attack/TimeSeek/seek_request", recorded_hit)
 			_tree.set("parameters/SM/Attack/TimeScale/scale", 1.0)
 	_tree.advance(dt)
+	var turn_time: float = _playback.get_current_play_position() if String(_playback.get_current_node()) == "Turn" else 0.0
+	_pivot.rotation.y = _turn_motion.advance(rotation.y, turn_time, dt, can_turn and _tree_state == "Turn")
 	if state == State.DEAD and _tree_state == "Death" and ZombieClips.visual_clip(_death_clip).begins_with("mco_"):
 		# The corpse presentation follows the recorded fall before physics takes over. The pooled
 		# body's nav position/hit timings are unchanged; activate()/make_puppet() reset the pivot.
@@ -3288,7 +3304,12 @@ func _animate(dt: float) -> void:
 		for bone: String in ["Spine", "Chest"]:
 			var idx: int = _skel.find_bone(bone)
 			_skel.set_bone_pose_rotation(idx, _skel.get_bone_pose_rotation(idx) * Quaternion(Vector3.BACK, lean_angle * 0.5))
-	if _loco_clip.begins_with("mco_") and _tree_state == "Locomotion" and _playback.get_fading_from_node() == &"" and _loco_x >= 0.99 and spd > 0.4 and bool(contact_cfg.get("enabled", false)):
+	if _tree_state == "Turn" and _playback.get_fading_from_node() == &"" and bool(contact_cfg.get("enabled", false)):
+		_contact_lock.apply(_skel, _modifier, _turn_motion.clip, turn_time, dt, contact_cfg)
+		for event: Dictionary in ZombieClips.footstep_events(_turn_motion.clip):
+			var at: float = float(event["phase"]) * ZombieClips.length_of(_turn_motion.clip)
+			if at > _turn_motion.previous_clock and at <= _turn_motion.clock: _footstep(bool(event["left"]))
+	elif _loco_clip.begins_with("mco_") and _tree_state == "Locomotion" and _playback.get_fading_from_node() == &"" and _loco_x >= 0.99 and spd > 0.4 and bool(contact_cfg.get("enabled", false)):
 		_contact_lock.apply(_skel, _modifier, _loco_clip, fposmod(_playback.get_current_play_position(), _cycle_len), dt, contact_cfg)
 	else:
 		_contact_lock.reset()
@@ -3493,6 +3514,7 @@ func puppet_activate(enemy: StringName, tier_v: StringName, variant: String, hp_
 
 
 func _puppet_show(pos: Vector3, yaw: float) -> void:
+	_turn_motion.reset()
 	show()
 	process_mode = Node.PROCESS_MODE_INHERIT
 	collision_layer = LAYER_ZBODY
@@ -3543,6 +3565,7 @@ func _puppet_tick(delta: float) -> void:
 		_turn_rate = wrapf(rotation.y - before, -PI, PI) / maxf(delta, 0.0001)
 		velocity = (global_position - prev) / maxf(delta, 0.0001)
 		velocity.y = 0.0
+		_turn_motion.request(before, interp.yaw, _can_recorded_turn())
 		var zf: int = (interp.flags >> 8) & 0xFF
 		hp = max_hp * float((interp.aux >> 8) & 0xFF) / 255.0
 		is_last = (zf & NetMatch.ZF_LAST) != 0
