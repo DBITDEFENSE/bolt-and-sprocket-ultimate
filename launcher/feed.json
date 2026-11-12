@@ -1,0 +1,65 @@
+{
+  "_comment": "The launcher reads this file from the branch of the channel the player is on (origin/<branch>:launcher/feed.json), so news goes live with a push, no launcher rebuild. Images: 'art/<file>' = bundled with the launcher (launcher/assets/art), 'repo:<path>' = a file in the game repo (shown once installed). Items with 'channels' only show on those channels. 'hero': true puts it in the big carousel.",
+  "news": [
+    {
+      "id": "launcher-1",
+      "date": "2026-11-12",
+      "tag": "LAUNCHER",
+      "title": "The launcher is here",
+      "summary": "One button installs everything a new recruit needs: Git, the engine, the game. It keeps you on the newest build and tells you what changed.",
+      "body": "The launcher installs Git for Windows (with Git LFS and the GitHub sign-in helper) if it is missing, downloads Godot 4.7.2 and verifies it, pulls the game from GitHub and prepares the assets on first launch. After that it checks for updates every time it opens. Pick Stable for the build that always launches or Preview for the newest work.",
+      "image": "art/map00_crossroads.png",
+      "hero": true
+    },
+    {
+      "id": "u15",
+      "date": "2026-11-12",
+      "tag": "UPDATE 15",
+      "title": "Horses, movement and two inns rebuilt",
+      "summary": "A rideable horse in the Carters' Yard, das Totenross on round 20 and der Fuhrmann on 30. Step assist, coyote time and jump buffering.",
+      "body": "Movement: step assist over small ledges, coyote time and a jump buffer. Bots: fewer hitches when the squad is busy. The Inn: the vault thinned, the hay rebuilt. Kaltenbrunn: 65 props made solid, green timber. Horses: a rideable horse in the Carters' Yard, plus two horse bosses.",
+      "image": "art/map01_kaltenbrunn.png",
+      "hero": true,
+      "channels": ["preview"]
+    },
+    {
+      "id": "bosses",
+      "date": "2026-11-12",
+      "tag": "BOSSES",
+      "title": "All ten bosses reworked",
+      "summary": "Every boss has new telegraphs, effects and sound, built on one shared kit.",
+      "image": "art/map04d_mondlicht.png",
+      "hero": true,
+      "channels": ["preview"]
+    },
+    {
+      "id": "zombies",
+      "date": "2026-11-12",
+      "tag": "ZOMBIES",
+      "title": "The dead move like the dead",
+      "summary": "Licensed motion capture for gaits, swipes, deaths and turns. Zombies turn in place in co-op too, and their feet stay planted.",
+      "image": "art/map02_totenhafen.png",
+      "hero": true
+    },
+    {
+      "id": "maps",
+      "date": "2026-11-10",
+      "tag": "MAPS",
+      "title": "Seven places to hold the line",
+      "summary": "The Crossroads, Kaltenbrunn, Totenhafen, Thalbach, the Kranich, Groom Lake and Mondlicht.",
+      "image": "art/map04a_thalbach.png"
+    },
+    {
+      "id": "coop",
+      "date": "2026-11-10",
+      "tag": "CO-OP",
+      "title": "Bring a squad",
+      "summary": "Muster up to four. Empty slots are filled by bots that pick their own fights.",
+      "image": "art/map04c_groomlake.png"
+    }
+  ],
+  "links": [
+    { "label": "GitHub", "url": "https://github.com/DBITDEFENSE/bolt-and-sprocket-ultimate" },
+    { "label": "Report a bug", "url": "https://github.com/DBITDEFENSE/bolt-and-sprocket-ultimate/issues/new" }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "name": "claude-zombies-launcher",
+  "productName": "CLAUDE ZOMBIES Launcher",
+  "version": "1.0.0",
+  "description": "Installs, updates and launches CLAUDE ZOMBIES from GitHub.",
+  "main": "main.js",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "electron .",
+    "check": "node tests/check.js",
+    "shots": "node tests/shots.js",
+    "dist": "electron-builder --win nsis portable",
+    "dist:portable": "electron-builder --win portable"
+  },
+  "devDependencies": {
+    "electron": "45.3.1",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "dev.gravelight.claudezombies.launcher",
+    "productName": "CLAUDE ZOMBIES Launcher",
+    "directories": { "output": "dist", "buildResources": "build" },
+    "files": ["main.js", "preload.js", "config.json", "feed.json", "src/**", "renderer/**", "assets/**", "build/icon.png"],
+    "win": { "icon": "build/icon.ico", "target": ["nsis", "portable"] },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "shortcutName": "CLAUDE ZOMBIES",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "artifactName": "ClaudeZombiesLauncher-Setup-${version}.${ext}"
+    },
+    "portable": { "artifactName": "ClaudeZombiesLauncher-${version}-portable.${ext}" }
+  }
+}
