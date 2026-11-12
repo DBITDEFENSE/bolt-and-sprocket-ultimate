@@ -1,0 +1,520 @@
+{
+	"body_facing_error_degrees": 0.00000557795007365782,
+	"clips": [
+		"mco_turn_l_45_yaw",
+		"mco_turn_r_45_yaw"
+	],
+	"contact_p95_mps": 0.00817206222563982,
+	"contact_samples": 175,
+	"failures": [],
+	"frames": 362,
+	"interrupt": "",
+	"max_visual_yaw_step_degrees": 1.79427053323631,
+	"samples": [
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.0666666666666667,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.15,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.233333333333333,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.316666666666667,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.4,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.483333333333333,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.566666666666667,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.65,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.733333333333334,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.816666666666668,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.900000000000001,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.983333333333335,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 34.3212907679639,
+			"recording_seconds": 0.0500000007450581,
+			"seconds": 1.06666666666667,
+			"state": "Turn",
+			"visual_degrees": -0.245459923297333
+		},
+		{
+			"body_degrees": 42.4658917871376,
+			"recording_seconds": 0.133333340287209,
+			"seconds": 1.15,
+			"state": "Turn",
+			"visual_degrees": 0.0889837045069261
+		},
+		{
+			"body_degrees": 44.3986440769545,
+			"recording_seconds": 0.216666668653488,
+			"seconds": 1.23333333333333,
+			"state": "Turn",
+			"visual_degrees": 1.61815377664606
+		},
+		{
+			"body_degrees": 44.8572946948154,
+			"recording_seconds": 0.300000011920929,
+			"seconds": 1.31666666666667,
+			"state": "Turn",
+			"visual_degrees": 4.96249101694569
+		},
+		{
+			"body_degrees": 44.9661337592396,
+			"recording_seconds": 0.383333325386047,
+			"seconds": 1.4,
+			"state": "Turn",
+			"visual_degrees": 11.2413336567767
+		},
+		{
+			"body_degrees": 44.991962119586,
+			"recording_seconds": 0.466666668653488,
+			"seconds": 1.48333333333333,
+			"state": "Turn",
+			"visual_degrees": 16.4050813202587
+		},
+		{
+			"body_degrees": 44.9980887992715,
+			"recording_seconds": 0.550000011920929,
+			"seconds": 1.56666666666667,
+			"state": "Turn",
+			"visual_degrees": 20.9877523476491
+		},
+		{
+			"body_degrees": 44.9995470446593,
+			"recording_seconds": 0.633333325386047,
+			"seconds": 1.65,
+			"state": "Turn",
+			"visual_degrees": 28.0852221878101
+		},
+		{
+			"body_degrees": 44.9998919692124,
+			"recording_seconds": 0.716666638851166,
+			"seconds": 1.73333333333333,
+			"state": "Turn",
+			"visual_degrees": 35.5826901038818
+		},
+		{
+			"body_degrees": 44.9999739314824,
+			"recording_seconds": 0.800000011920929,
+			"seconds": 1.81666666666667,
+			"state": "Turn",
+			"visual_degrees": 39.4048511568163
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.883333325386047,
+			"seconds": 1.9,
+			"state": "Turn",
+			"visual_degrees": 41.9854897915346
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.966666638851166,
+			"seconds": 1.98333333333333,
+			"state": "Turn",
+			"visual_degrees": 42.8891891324112
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 1.04999995231628,
+			"seconds": 2.06666666666666,
+			"state": "Turn",
+			"visual_degrees": 42.9389935911784
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 1.13333332538605,
+			"seconds": 2.15,
+			"state": "Turn",
+			"visual_degrees": 43.225326860573
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 1.21666669845581,
+			"seconds": 2.23333333333333,
+			"state": "Turn",
+			"visual_degrees": 44.2412553875796
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 2.31666666666666,
+			"state": "Locomotion",
+			"visual_degrees": 44.9999976224179
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 2.4,
+			"state": "Locomotion",
+			"visual_degrees": 44.9999952200687
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 2.48333333333333,
+			"state": "Locomotion",
+			"visual_degrees": 44.9999946210377
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 2.56666666666666,
+			"state": "Locomotion",
+			"visual_degrees": 44.999994471668
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 2.65,
+			"state": "Locomotion",
+			"visual_degrees": 44.9999944344223
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 2.73333333333333,
+			"state": "Locomotion",
+			"visual_degrees": 44.999994425135
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 2.81666666666666,
+			"state": "Locomotion",
+			"visual_degrees": 44.9999944228192
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 2.89999999999999,
+			"state": "Locomotion",
+			"visual_degrees": 44.9999944222417
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 2.98333333333333,
+			"state": "Locomotion",
+			"visual_degrees": 44.9999944220977
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 3.06666666666666,
+			"state": "Locomotion",
+			"visual_degrees": 44.9999944220618
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 3.14999999999999,
+			"state": "Locomotion",
+			"visual_degrees": 44.9999944220529
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 3.23333333333333,
+			"state": "Locomotion",
+			"visual_degrees": 44.9999944220507
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 3.31666666666666,
+			"state": "Locomotion",
+			"visual_degrees": 44.9999944220501
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 3.39999999999999,
+			"state": "Locomotion",
+			"visual_degrees": 44.99999442205
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 3.48333333333333,
+			"state": "Locomotion",
+			"visual_degrees": 44.9999944220499
+		},
+		{
+			"body_degrees": 14.238278938153,
+			"recording_seconds": 0.0333333350718021,
+			"seconds": 3.56666666666666,
+			"state": "Turn",
+			"visual_degrees": 45.1839843503644
+		},
+		{
+			"body_degrees": 3.37881048570115,
+			"recording_seconds": 0.116666667163372,
+			"seconds": 3.64999999999999,
+			"state": "Turn",
+			"visual_degrees": 45.0766782365221
+		},
+		{
+			"body_degrees": 0.801807539333727,
+			"recording_seconds": 0.200000002980232,
+			"seconds": 3.73333333333333,
+			"state": "Turn",
+			"visual_degrees": 43.6860996395534
+		},
+		{
+			"body_degrees": 0.190272688494718,
+			"recording_seconds": 0.283333331346512,
+			"seconds": 3.81666666666666,
+			"state": "Turn",
+			"visual_degrees": 40.9690872600717
+		},
+		{
+			"body_degrees": 0.0451525996844891,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 3.89999999999999,
+			"state": "Turn",
+			"visual_degrees": 34.9889775444546
+		},
+		{
+			"body_degrees": 0.0107149234602336,
+			"recording_seconds": 0.449999988079071,
+			"seconds": 3.98333333333332,
+			"state": "Turn",
+			"visual_degrees": 29.4899718906808
+		},
+		{
+			"body_degrees": 0.00254270175303089,
+			"recording_seconds": 0.533333361148834,
+			"seconds": 4.06666666666666,
+			"state": "Turn",
+			"visual_degrees": 25.090908400646
+		},
+		{
+			"body_degrees": 0.000603395092540684,
+			"recording_seconds": 0.616666674613953,
+			"seconds": 4.14999999999999,
+			"state": "Turn",
+			"visual_degrees": 18.5840950039513
+		},
+		{
+			"body_degrees": 0.000143188481380846,
+			"recording_seconds": 0.699999988079071,
+			"seconds": 4.23333333333332,
+			"state": "Turn",
+			"visual_degrees": 10.2490204767776
+		},
+		{
+			"body_degrees": 0.0000339792948252375,
+			"recording_seconds": 0.783333361148834,
+			"seconds": 4.31666666666666,
+			"state": "Turn",
+			"visual_degrees": 6.34058310940864
+		},
+		{
+			"body_degrees": 0.00000806344563464011,
+			"recording_seconds": 0.866666674613953,
+			"seconds": 4.39999999999999,
+			"state": "Turn",
+			"visual_degrees": 3.33185224742308
+		},
+		{
+			"body_degrees": 0.00000191349334790432,
+			"recording_seconds": 0.949999988079071,
+			"seconds": 4.48333333333332,
+			"state": "Turn",
+			"visual_degrees": 2.20170037239885
+		},
+		{
+			"body_degrees": 0.000000454080921874434,
+			"recording_seconds": 1.03333330154419,
+			"seconds": 4.56666666666666,
+			"state": "Turn",
+			"visual_degrees": 2.0537228646181
+		},
+		{
+			"body_degrees": 0.00000010775553871955,
+			"recording_seconds": 1.11666667461395,
+			"seconds": 4.64999999999999,
+			"state": "Turn",
+			"visual_degrees": 1.8709137858178
+		},
+		{
+			"body_degrees": 0.0000000255708963058431,
+			"recording_seconds": 1.20000004768372,
+			"seconds": 4.73333333333332,
+			"state": "Turn",
+			"visual_degrees": 1.0525014408186
+		},
+		{
+			"body_degrees": 0.00000000606809360664917,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 4.81666666666665,
+			"state": "Locomotion",
+			"visual_degrees": -0.0000000000603987334009922
+		},
+		{
+			"body_degrees": 0.0000000014399869879379,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 4.89999999999999,
+			"state": "Locomotion",
+			"visual_degrees": -0.0000000000881660690858404
+		},
+		{
+			"body_degrees": 0.000000000341715664117926,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 4.98333333333332,
+			"state": "Locomotion",
+			"visual_degrees": -0.0000000000393326773414869
+		},
+		{
+			"body_degrees": 0.0000000000810907264122573,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 5.06666666666665,
+			"state": "Locomotion",
+			"visual_degrees": -0.0000000000139245180916142
+		},
+		{
+			"body_degrees": 0.0000000000192432099757228,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 5.14999999999999,
+			"state": "Locomotion",
+			"visual_degrees": -0.0000000000044490508945368
+		},
+		{
+			"body_degrees": 0.00000000000456650390248687,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 5.23333333333332,
+			"state": "Locomotion",
+			"visual_degrees": -0.00000000000134121374103528
+		},
+		{
+			"body_degrees": 0.00000000000108365287330188,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 5.31666666666665,
+			"state": "Locomotion",
+			"visual_degrees": -0.000000000000389449544476219
+		},
+		{
+			"body_degrees": 0.00000000000025715589735774,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 5.39999999999999,
+			"state": "Locomotion",
+			"visual_degrees": -0.000000000000110165458178944
+		},
+		{
+			"body_degrees": 0.0000000000000610242904535598,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 5.48333333333332,
+			"state": "Locomotion",
+			"visual_degrees": -0.0000000000000305680989127397
+		},
+		{
+			"body_degrees": 0.0000000000000144813505018247,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 5.56666666666665,
+			"state": "Locomotion",
+			"visual_degrees": -0.00000000000000835741415416123
+		},
+		{
+			"body_degrees": 0.00000000000000343649229172785,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 5.64999999999999,
+			"state": "Locomotion",
+			"visual_degrees": -0.00000000000000225840399518946
+		},
+		{
+			"body_degrees": 0.00000000000000081549570235527,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 5.73333333333332,
+			"state": "Locomotion",
+			"visual_degrees": -0.000000000000000604539318471695
+		},
+		{
+			"body_degrees": 0.000000000000000193520952434745,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 5.81666666666665,
+			"state": "Locomotion",
+			"visual_degrees": -0.000000000000000160567909744305
+		},
+		{
+			"body_degrees": 0.0000000000000000459234301141759,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 5.89999999999998,
+			"state": "Locomotion",
+			"visual_degrees": -0.0000000000000000423694105223835
+		},
+		{
+			"body_degrees": 0.0000000000000000108978451974602,
+			"recording_seconds": 1.26666665077209,
+			"seconds": 5.98333333333332,
+			"state": "Locomotion",
+			"visual_degrees": -0.0000000000000000111181693407476
+		}
+	],
+	"scope": "Fixed-60 stationary studio, real facing function/tree, source-contact toe drift after entry blend. Not full-map or network coverage."
+}

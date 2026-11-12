@@ -20,6 +20,7 @@ const ALLOWED: Array = [
 	["\\bmit\\b", "MIT"],
 	["apache", "Apache 2.0"],
 	["unity asset store|asset store eula", "Unity Asset Store EULA"],
+	["mocap online standard license", "MoCap Online Standard License"],
 	["\\bours\\b|original work|in-house", "Ours"],
 	["higgsfield", "Owner-generated (Higgsfield)"],
 ]
@@ -115,6 +116,10 @@ func test_every_asset_file_has_paperwork() -> void:
 		if canon == "Owner-generated (Higgsfield)" and not _in_any(folder + "/", HIGGSFIELD_DIRS):
 			offenders.append(folder + "/SOURCE.txt  (the Higgsfield licence is only for the archive-reel clips)")
 			continue
+		# Owner explicitly supplied this paid zombie pack; this is a scoped intake exception.
+		if canon == "MoCap Online Standard License" and folder != "res://assets/zombies/anims":
+			offenders.append(folder + "/SOURCE.txt  (MoCap license is scoped to the zombie animation output)")
+			continue
 		for bad: String in FORBIDDEN:
 			if RegEx.create_from_string(bad).search(lic_line.to_lower()) != null:
 				offenders.append(folder + "/SOURCE.txt  (forbidden licence term in '%s')" % lic_line)
@@ -180,6 +185,7 @@ func test_known_license_strings() -> void:
 	assert_eq(canonical_license("CC0 1.0 Universal"), "CC0")
 	assert_eq(canonical_license("SIL Open Font License 1.1"), "OFL 1.1")
 	assert_eq(canonical_license("Standard Unity Asset Store EULA"), "Unity Asset Store EULA")
+	assert_eq(canonical_license("MoCap Online Standard License"), "MoCap Online Standard License")
 	assert_eq(canonical_license("Ours (original work)"), "Ours")
 	assert_eq(canonical_license("CC-BY-NC 4.0"), "", "NC is never allowed")
 	assert_eq(canonical_license("free for personal use"), "")

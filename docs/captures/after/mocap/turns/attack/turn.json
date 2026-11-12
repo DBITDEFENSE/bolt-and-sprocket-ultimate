@@ -1,0 +1,519 @@
+{
+	"body_facing_error_degrees": 0.00000557795007365782,
+	"clips": [
+		"mco_turn_l_45_yaw"
+	],
+	"contact_p95_mps": 0.00537149418960325,
+	"contact_samples": 19,
+	"failures": [],
+	"frames": 362,
+	"interrupt": "attack",
+	"max_visual_yaw_step_degrees": 11.2499977517388,
+	"samples": [
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.0666666666666667,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.15,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.233333333333333,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.316666666666667,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.4,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.483333333333333,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.566666666666667,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.65,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.733333333333334,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.816666666666668,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.900000000000001,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 0.0,
+			"recording_seconds": 0.0,
+			"seconds": 0.983333333333335,
+			"state": "Locomotion",
+			"visual_degrees": 0.0
+		},
+		{
+			"body_degrees": 34.3212907679639,
+			"recording_seconds": 0.0500000007450581,
+			"seconds": 1.06666666666667,
+			"state": "Turn",
+			"visual_degrees": -0.245459923297333
+		},
+		{
+			"body_degrees": 42.4658917871376,
+			"recording_seconds": 0.133333340287209,
+			"seconds": 1.15,
+			"state": "Turn",
+			"visual_degrees": 0.0889837045069261
+		},
+		{
+			"body_degrees": 44.3986440769545,
+			"recording_seconds": 0.216666668653488,
+			"seconds": 1.23333333333333,
+			"state": "Turn",
+			"visual_degrees": 1.61815377664606
+		},
+		{
+			"body_degrees": 44.8572946948154,
+			"recording_seconds": 0.300000011920929,
+			"seconds": 1.31666666666667,
+			"state": "Turn",
+			"visual_degrees": 4.96249101694569
+		},
+		{
+			"body_degrees": 44.9661337592396,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 1.4,
+			"state": "Attack",
+			"visual_degrees": 18.5138168491355
+		},
+		{
+			"body_degrees": 44.991962119586,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 1.48333333333333,
+			"state": "Attack",
+			"visual_degrees": 38.396018556027
+		},
+		{
+			"body_degrees": 44.9980887992715,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 1.56666666666667,
+			"state": "Attack",
+			"visual_degrees": 43.3533757253161
+		},
+		{
+			"body_degrees": 44.9995470446593,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 1.65,
+			"state": "Attack",
+			"visual_degrees": 44.5894342056397
+		},
+		{
+			"body_degrees": 44.9998919692124,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 1.73333333333333,
+			"state": "Attack",
+			"visual_degrees": 44.8976294298038
+		},
+		{
+			"body_degrees": 44.9999739314824,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 1.81666666666667,
+			"state": "Attack",
+			"visual_degrees": 44.9744745407941
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 1.9,
+			"state": "Attack",
+			"visual_degrees": 44.99363609248
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 1.98333333333333,
+			"state": "Attack",
+			"visual_degrees": 44.9984089585525
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 2.06666666666666,
+			"state": "Attack",
+			"visual_degrees": 44.9995990832417
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 2.15,
+			"state": "Attack",
+			"visual_degrees": 44.9998958434435
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 2.23333333333333,
+			"state": "Attack",
+			"visual_degrees": 44.9999698412561
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 2.31666666666666,
+			"state": "Attack",
+			"visual_degrees": 44.9999882927748
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 2.4,
+			"state": "Attack",
+			"visual_degrees": 44.9999928937016
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 2.48333333333333,
+			"state": "Attack",
+			"visual_degrees": 44.9999940409529
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 2.56666666666666,
+			"state": "Attack",
+			"visual_degrees": 44.9999943270225
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 2.65,
+			"state": "Attack",
+			"visual_degrees": 44.9999943983546
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 2.73333333333333,
+			"state": "Attack",
+			"visual_degrees": 44.9999944161414
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 2.81666666666666,
+			"state": "Attack",
+			"visual_degrees": 44.9999944205766
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 2.89999999999999,
+			"state": "Attack",
+			"visual_degrees": 44.9999944216825
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 2.98333333333333,
+			"state": "Attack",
+			"visual_degrees": 44.9999944219583
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 3.06666666666666,
+			"state": "Attack",
+			"visual_degrees": 44.9999944220271
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 3.14999999999999,
+			"state": "Attack",
+			"visual_degrees": 44.9999944220442
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 3.23333333333333,
+			"state": "Attack",
+			"visual_degrees": 44.9999944220485
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 3.31666666666666,
+			"state": "Attack",
+			"visual_degrees": 44.9999944220496
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 3.39999999999999,
+			"state": "Attack",
+			"visual_degrees": 44.9999944220498
+		},
+		{
+			"body_degrees": 44.9999944220499,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 3.48333333333333,
+			"state": "Attack",
+			"visual_degrees": 44.9999944220499
+		},
+		{
+			"body_degrees": 14.238278938153,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 3.56666666666666,
+			"state": "Attack",
+			"visual_degrees": 14.238278938153
+		},
+		{
+			"body_degrees": 3.37881048570115,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 3.64999999999999,
+			"state": "Attack",
+			"visual_degrees": 3.37881048570115
+		},
+		{
+			"body_degrees": 0.801807539333727,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 3.73333333333333,
+			"state": "Attack",
+			"visual_degrees": 0.801807539333727
+		},
+		{
+			"body_degrees": 0.190272688494718,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 3.81666666666666,
+			"state": "Attack",
+			"visual_degrees": 0.190272688494718
+		},
+		{
+			"body_degrees": 0.0451525996844891,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 3.89999999999999,
+			"state": "Attack",
+			"visual_degrees": 0.0451525996844891
+		},
+		{
+			"body_degrees": 0.0107149234602336,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 3.98333333333332,
+			"state": "Attack",
+			"visual_degrees": 0.0107149234602336
+		},
+		{
+			"body_degrees": 0.00254270175303089,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 4.06666666666666,
+			"state": "Attack",
+			"visual_degrees": 0.00254270175303089
+		},
+		{
+			"body_degrees": 0.000603395092540684,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 4.14999999999999,
+			"state": "Attack",
+			"visual_degrees": 0.000603395092540684
+		},
+		{
+			"body_degrees": 0.000143188481380846,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 4.23333333333332,
+			"state": "Attack",
+			"visual_degrees": 0.000143188481380846
+		},
+		{
+			"body_degrees": 0.0000339792948252375,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 4.31666666666666,
+			"state": "Attack",
+			"visual_degrees": 0.0000339792948252375
+		},
+		{
+			"body_degrees": 0.00000806344563464011,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 4.39999999999999,
+			"state": "Attack",
+			"visual_degrees": 0.00000806344563464011
+		},
+		{
+			"body_degrees": 0.00000191349334790432,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 4.48333333333332,
+			"state": "Attack",
+			"visual_degrees": 0.00000191349334790431
+		},
+		{
+			"body_degrees": 0.000000454080921874434,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 4.56666666666666,
+			"state": "Attack",
+			"visual_degrees": 0.000000454080921874434
+		},
+		{
+			"body_degrees": 0.00000010775553871955,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 4.64999999999999,
+			"state": "Attack",
+			"visual_degrees": 0.00000010775553871955
+		},
+		{
+			"body_degrees": 0.0000000255708963058431,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 4.73333333333332,
+			"state": "Attack",
+			"visual_degrees": 0.0000000255708963058431
+		},
+		{
+			"body_degrees": 0.00000000606809360664917,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 4.81666666666665,
+			"state": "Attack",
+			"visual_degrees": 0.00000000606809360664917
+		},
+		{
+			"body_degrees": 0.0000000014399869879379,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 4.89999999999999,
+			"state": "Attack",
+			"visual_degrees": 0.0000000014399869879379
+		},
+		{
+			"body_degrees": 0.000000000341715664117926,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 4.98333333333332,
+			"state": "Attack",
+			"visual_degrees": 0.000000000341715664117925
+		},
+		{
+			"body_degrees": 0.0000000000810907264122573,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 5.06666666666665,
+			"state": "Attack",
+			"visual_degrees": 0.0000000000810907264122572
+		},
+		{
+			"body_degrees": 0.0000000000192432099757228,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 5.14999999999999,
+			"state": "Attack",
+			"visual_degrees": 0.0000000000192432099757228
+		},
+		{
+			"body_degrees": 0.00000000000456650390248687,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 5.23333333333332,
+			"state": "Attack",
+			"visual_degrees": 0.00000000000456650390248687
+		},
+		{
+			"body_degrees": 0.00000000000108365287330188,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 5.31666666666665,
+			"state": "Attack",
+			"visual_degrees": 0.00000000000108365287330188
+		},
+		{
+			"body_degrees": 0.00000000000025715589735774,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 5.39999999999999,
+			"state": "Attack",
+			"visual_degrees": 0.000000000000257155897357739
+		},
+		{
+			"body_degrees": 0.0000000000000610242904535598,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 5.48333333333332,
+			"state": "Attack",
+			"visual_degrees": 0.0000000000000610242904535598
+		},
+		{
+			"body_degrees": 0.0000000000000144813505018247,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 5.56666666666665,
+			"state": "Attack",
+			"visual_degrees": 0.0000000000000144813505018247
+		},
+		{
+			"body_degrees": 0.00000000000000343649229172785,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 5.64999999999999,
+			"state": "Attack",
+			"visual_degrees": 0.00000000000000343649229172785
+		},
+		{
+			"body_degrees": 0.00000000000000081549570235527,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 5.73333333333332,
+			"state": "Attack",
+			"visual_degrees": 0.000000000000000815495702355269
+		},
+		{
+			"body_degrees": 0.000000000000000193520952434745,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 5.81666666666665,
+			"state": "Attack",
+			"visual_degrees": 0.000000000000000193520952434745
+		},
+		{
+			"body_degrees": 0.0000000000000000459234301141759,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 5.89999999999998,
+			"state": "Attack",
+			"visual_degrees": 0.0000000000000000459234301141759
+		},
+		{
+			"body_degrees": 0.0000000000000000108978451974602,
+			"recording_seconds": 0.366666674613953,
+			"seconds": 5.98333333333332,
+			"state": "Attack",
+			"visual_degrees": 0.0000000000000000108978451974602
+		}
+	],
+	"scope": "Fixed-60 stationary studio, real facing function/tree, source-contact toe drift after entry blend. Not full-map or network coverage."
+}

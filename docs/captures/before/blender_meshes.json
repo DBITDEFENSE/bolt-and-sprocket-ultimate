@@ -1,0 +1,1148 @@
+{
+  "blender": "5.1.2",
+  "models": [
+    {
+      "file": "char_zombie_base_f_heavy.glb",
+      "skeletons": [
+        {
+          "name": "Armature",
+          "bones": [
+            "Root",
+            "Hips",
+            "LeftUpperLeg",
+            "LeftLowerLeg",
+            "LeftFoot",
+            "RightUpperLeg",
+            "RightLowerLeg",
+            "RightFoot",
+            "Spine",
+            "Chest",
+            "Neck",
+            "Head",
+            "Jaw",
+            "LeftUpperArm",
+            "LeftLowerArm",
+            "LeftHand",
+            "RightUpperArm",
+            "RightLowerArm",
+            "RightHand"
+          ]
+        }
+      ],
+      "meshes": [
+        {
+          "name": "Body",
+          "vertices": 9372,
+          "triangles": 7198,
+          "uv_layers": 1,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Body_LOD1",
+          "vertices": 4203,
+          "triangles": 3598,
+          "uv_layers": 1,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Body_LOD2",
+          "vertices": 1911,
+          "triangles": 1798,
+          "uv_layers": 1,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Hair_f",
+          "vertices": 1087,
+          "triangles": 2060,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 16
+        },
+        {
+          "name": "Hair_m",
+          "vertices": 871,
+          "triangles": 1644,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_bellringer",
+          "vertices": 1262,
+          "triangles": 2090,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_dockworker",
+          "vertices": 1655,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_labstaff",
+          "vertices": 1730,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_miner",
+          "vertices": 1656,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_nurse",
+          "vertices": 1773,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_sailor",
+          "vertices": 1714,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soldier",
+          "vertices": 1730,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soviet",
+          "vertices": 1756,
+          "triangles": 2997,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soviet_burial",
+          "vertices": 1745,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soviet_tunic",
+          "vertices": 1917,
+          "triangles": 2992,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_technician",
+          "vertices": 1657,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_villager",
+          "vertices": 1713,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Parts",
+          "vertices": 120,
+          "triangles": 196,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 32
+        }
+      ]
+    },
+    {
+      "file": "char_zombie_base_f_medium.glb",
+      "skeletons": [
+        {
+          "name": "Armature",
+          "bones": [
+            "Root",
+            "Hips",
+            "LeftUpperLeg",
+            "LeftLowerLeg",
+            "LeftFoot",
+            "RightUpperLeg",
+            "RightLowerLeg",
+            "RightFoot",
+            "Spine",
+            "Chest",
+            "Neck",
+            "Head",
+            "Jaw",
+            "LeftUpperArm",
+            "LeftLowerArm",
+            "LeftHand",
+            "RightUpperArm",
+            "RightLowerArm",
+            "RightHand"
+          ]
+        }
+      ],
+      "meshes": [
+        {
+          "name": "Body",
+          "vertices": 9224,
+          "triangles": 7196,
+          "uv_layers": 1,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Body_LOD1",
+          "vertices": 4085,
+          "triangles": 3597,
+          "uv_layers": 1,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Body_LOD2",
+          "vertices": 1945,
+          "triangles": 1799,
+          "uv_layers": 1,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Hair_f",
+          "vertices": 1087,
+          "triangles": 2060,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 16
+        },
+        {
+          "name": "Hair_m",
+          "vertices": 871,
+          "triangles": 1644,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_bellringer",
+          "vertices": 1258,
+          "triangles": 2082,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_dockworker",
+          "vertices": 1656,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_labstaff",
+          "vertices": 1730,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_miner",
+          "vertices": 1660,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_nurse",
+          "vertices": 1764,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_sailor",
+          "vertices": 1717,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soldier",
+          "vertices": 1732,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soviet",
+          "vertices": 1752,
+          "triangles": 2998,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soviet_burial",
+          "vertices": 1744,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soviet_tunic",
+          "vertices": 1900,
+          "triangles": 2991,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_technician",
+          "vertices": 1660,
+          "triangles": 2996,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_villager",
+          "vertices": 1713,
+          "triangles": 2998,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Parts",
+          "vertices": 120,
+          "triangles": 196,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 32
+        }
+      ]
+    },
+    {
+      "file": "char_zombie_base_f_thin.glb",
+      "skeletons": [
+        {
+          "name": "Armature",
+          "bones": [
+            "Root",
+            "Hips",
+            "LeftUpperLeg",
+            "LeftLowerLeg",
+            "LeftFoot",
+            "RightUpperLeg",
+            "RightLowerLeg",
+            "RightFoot",
+            "Spine",
+            "Chest",
+            "Neck",
+            "Head",
+            "Jaw",
+            "LeftUpperArm",
+            "LeftLowerArm",
+            "LeftHand",
+            "RightUpperArm",
+            "RightLowerArm",
+            "RightHand"
+          ]
+        }
+      ],
+      "meshes": [
+        {
+          "name": "Body",
+          "vertices": 9381,
+          "triangles": 7200,
+          "uv_layers": 1,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Body_LOD1",
+          "vertices": 4413,
+          "triangles": 3599,
+          "uv_layers": 1,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Body_LOD2",
+          "vertices": 2254,
+          "triangles": 1799,
+          "uv_layers": 1,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Hair_f",
+          "vertices": 1087,
+          "triangles": 2060,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 16
+        },
+        {
+          "name": "Hair_m",
+          "vertices": 871,
+          "triangles": 1644,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_bellringer",
+          "vertices": 1322,
+          "triangles": 2206,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_dockworker",
+          "vertices": 1646,
+          "triangles": 2998,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_labstaff",
+          "vertices": 1726,
+          "triangles": 2998,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_miner",
+          "vertices": 1650,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_nurse",
+          "vertices": 1761,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_sailor",
+          "vertices": 1708,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soldier",
+          "vertices": 1716,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soviet",
+          "vertices": 1738,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soviet_burial",
+          "vertices": 1739,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soviet_tunic",
+          "vertices": 1882,
+          "triangles": 2991,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_technician",
+          "vertices": 1661,
+          "triangles": 2998,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_villager",
+          "vertices": 1705,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Parts",
+          "vertices": 120,
+          "triangles": 196,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 32
+        }
+      ]
+    },
+    {
+      "file": "char_zombie_base_m_heavy.glb",
+      "skeletons": [
+        {
+          "name": "Armature",
+          "bones": [
+            "Root",
+            "Hips",
+            "LeftUpperLeg",
+            "LeftLowerLeg",
+            "LeftFoot",
+            "RightUpperLeg",
+            "RightLowerLeg",
+            "RightFoot",
+            "Spine",
+            "Chest",
+            "Neck",
+            "Head",
+            "Jaw",
+            "LeftUpperArm",
+            "LeftLowerArm",
+            "LeftHand",
+            "RightUpperArm",
+            "RightLowerArm",
+            "RightHand"
+          ]
+        }
+      ],
+      "meshes": [
+        {
+          "name": "Body",
+          "vertices": 9522,
+          "triangles": 7200,
+          "uv_layers": 1,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Body_LOD1",
+          "vertices": 4346,
+          "triangles": 3600,
+          "uv_layers": 1,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Body_LOD2",
+          "vertices": 2076,
+          "triangles": 1800,
+          "uv_layers": 1,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Hair_f",
+          "vertices": 1087,
+          "triangles": 2060,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 16
+        },
+        {
+          "name": "Hair_m",
+          "vertices": 871,
+          "triangles": 1644,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_bellringer",
+          "vertices": 1280,
+          "triangles": 2130,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_dockworker",
+          "vertices": 1656,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_labstaff",
+          "vertices": 1731,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_miner",
+          "vertices": 1658,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_nurse",
+          "vertices": 1767,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_sailor",
+          "vertices": 1707,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soldier",
+          "vertices": 1732,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soviet",
+          "vertices": 1758,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soviet_burial",
+          "vertices": 1740,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soviet_tunic",
+          "vertices": 1923,
+          "triangles": 2994,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_technician",
+          "vertices": 1662,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_villager",
+          "vertices": 1659,
+          "triangles": 2997,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Parts",
+          "vertices": 120,
+          "triangles": 196,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 32
+        }
+      ]
+    },
+    {
+      "file": "char_zombie_base_m_medium.glb",
+      "skeletons": [
+        {
+          "name": "Armature",
+          "bones": [
+            "Root",
+            "Hips",
+            "LeftUpperLeg",
+            "LeftLowerLeg",
+            "LeftFoot",
+            "RightUpperLeg",
+            "RightLowerLeg",
+            "RightFoot",
+            "Spine",
+            "Chest",
+            "Neck",
+            "Head",
+            "Jaw",
+            "LeftUpperArm",
+            "LeftLowerArm",
+            "LeftHand",
+            "RightUpperArm",
+            "RightLowerArm",
+            "RightHand"
+          ]
+        }
+      ],
+      "meshes": [
+        {
+          "name": "Body",
+          "vertices": 5108,
+          "triangles": 7196,
+          "uv_layers": 1,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Body_LOD1",
+          "vertices": 2929,
+          "triangles": 3597,
+          "uv_layers": 1,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Body_LOD2",
+          "vertices": 1687,
+          "triangles": 1799,
+          "uv_layers": 1,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Hair_f",
+          "vertices": 1087,
+          "triangles": 2060,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 16
+        },
+        {
+          "name": "Hair_m",
+          "vertices": 871,
+          "triangles": 1644,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_bellringer",
+          "vertices": 1262,
+          "triangles": 2090,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_dockworker",
+          "vertices": 1656,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_labstaff",
+          "vertices": 1732,
+          "triangles": 2998,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_miner",
+          "vertices": 1660,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_nurse",
+          "vertices": 1766,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_sailor",
+          "vertices": 1718,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soldier",
+          "vertices": 1730,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soviet",
+          "vertices": 1754,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soviet_burial",
+          "vertices": 1742,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soviet_tunic",
+          "vertices": 1921,
+          "triangles": 2993,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_technician",
+          "vertices": 1661,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_villager",
+          "vertices": 1657,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Parts",
+          "vertices": 120,
+          "triangles": 196,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 32
+        }
+      ]
+    },
+    {
+      "file": "char_zombie_base_m_thin.glb",
+      "skeletons": [
+        {
+          "name": "Armature",
+          "bones": [
+            "Root",
+            "Hips",
+            "LeftUpperLeg",
+            "LeftLowerLeg",
+            "LeftFoot",
+            "RightUpperLeg",
+            "RightLowerLeg",
+            "RightFoot",
+            "Spine",
+            "Chest",
+            "Neck",
+            "Head",
+            "Jaw",
+            "LeftUpperArm",
+            "LeftLowerArm",
+            "LeftHand",
+            "RightUpperArm",
+            "RightLowerArm",
+            "RightHand"
+          ]
+        }
+      ],
+      "meshes": [
+        {
+          "name": "Body",
+          "vertices": 9157,
+          "triangles": 7198,
+          "uv_layers": 1,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Body_LOD1",
+          "vertices": 4222,
+          "triangles": 3598,
+          "uv_layers": 1,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Body_LOD2",
+          "vertices": 2117,
+          "triangles": 1799,
+          "uv_layers": 1,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Hair_f",
+          "vertices": 1087,
+          "triangles": 2060,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 16
+        },
+        {
+          "name": "Hair_m",
+          "vertices": 871,
+          "triangles": 1644,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_bellringer",
+          "vertices": 1232,
+          "triangles": 2042,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_dockworker",
+          "vertices": 1650,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_labstaff",
+          "vertices": 1720,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_miner",
+          "vertices": 1655,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_nurse",
+          "vertices": 1761,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_sailor",
+          "vertices": 1707,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soldier",
+          "vertices": 1723,
+          "triangles": 3000,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soviet",
+          "vertices": 1739,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soviet_burial",
+          "vertices": 1734,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_soviet_tunic",
+          "vertices": 1900,
+          "triangles": 2993,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_technician",
+          "vertices": 1657,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Kit_villager",
+          "vertices": 1653,
+          "triangles": 2999,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 0
+        },
+        {
+          "name": "Parts",
+          "vertices": 120,
+          "triangles": 196,
+          "uv_layers": 0,
+          "unweighted_vertices": 0,
+          "degenerate_triangles": 32
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "uv_findings": [
+    "char_zombie_base_f_heavy.glb/Hair_f: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_heavy.glb/Hair_m: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_heavy.glb/Kit_bellringer: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_heavy.glb/Kit_dockworker: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_heavy.glb/Kit_labstaff: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_heavy.glb/Kit_miner: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_heavy.glb/Kit_nurse: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_heavy.glb/Kit_sailor: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_heavy.glb/Kit_soldier: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_heavy.glb/Kit_soviet: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_heavy.glb/Kit_soviet_burial: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_heavy.glb/Kit_soviet_tunic: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_heavy.glb/Kit_technician: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_heavy.glb/Kit_villager: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_heavy.glb/Parts: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_medium.glb/Hair_f: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_medium.glb/Hair_m: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_medium.glb/Kit_bellringer: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_medium.glb/Kit_dockworker: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_medium.glb/Kit_labstaff: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_medium.glb/Kit_miner: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_medium.glb/Kit_nurse: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_medium.glb/Kit_sailor: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_medium.glb/Kit_soldier: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_medium.glb/Kit_soviet: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_medium.glb/Kit_soviet_burial: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_medium.glb/Kit_soviet_tunic: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_medium.glb/Kit_technician: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_medium.glb/Kit_villager: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_medium.glb/Parts: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_thin.glb/Hair_f: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_thin.glb/Hair_m: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_thin.glb/Kit_bellringer: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_thin.glb/Kit_dockworker: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_thin.glb/Kit_labstaff: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_thin.glb/Kit_miner: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_thin.glb/Kit_nurse: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_thin.glb/Kit_sailor: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_thin.glb/Kit_soldier: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_thin.glb/Kit_soviet: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_thin.glb/Kit_soviet_burial: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_thin.glb/Kit_soviet_tunic: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_thin.glb/Kit_technician: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_thin.glb/Kit_villager: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_f_thin.glb/Parts: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_heavy.glb/Hair_f: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_heavy.glb/Hair_m: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_heavy.glb/Kit_bellringer: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_heavy.glb/Kit_dockworker: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_heavy.glb/Kit_labstaff: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_heavy.glb/Kit_miner: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_heavy.glb/Kit_nurse: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_heavy.glb/Kit_sailor: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_heavy.glb/Kit_soldier: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_heavy.glb/Kit_soviet: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_heavy.glb/Kit_soviet_burial: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_heavy.glb/Kit_soviet_tunic: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_heavy.glb/Kit_technician: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_heavy.glb/Kit_villager: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_heavy.glb/Parts: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_medium.glb/Hair_f: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_medium.glb/Hair_m: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_medium.glb/Kit_bellringer: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_medium.glb/Kit_dockworker: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_medium.glb/Kit_labstaff: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_medium.glb/Kit_miner: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_medium.glb/Kit_nurse: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_medium.glb/Kit_sailor: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_medium.glb/Kit_soldier: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_medium.glb/Kit_soviet: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_medium.glb/Kit_soviet_burial: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_medium.glb/Kit_soviet_tunic: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_medium.glb/Kit_technician: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_medium.glb/Kit_villager: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_medium.glb/Parts: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_thin.glb/Hair_f: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_thin.glb/Hair_m: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_thin.glb/Kit_bellringer: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_thin.glb/Kit_dockworker: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_thin.glb/Kit_labstaff: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_thin.glb/Kit_miner: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_thin.glb/Kit_nurse: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_thin.glb/Kit_sailor: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_thin.glb/Kit_soldier: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_thin.glb/Kit_soviet: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_thin.glb/Kit_soviet_burial: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_thin.glb/Kit_soviet_tunic: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_thin.glb/Kit_technician: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_thin.glb/Kit_villager: no UVs; verify shader coordinates before atlas migration",
+    "char_zombie_base_m_thin.glb/Parts: no UVs; verify shader coordinates before atlas migration"
+  ]
+}

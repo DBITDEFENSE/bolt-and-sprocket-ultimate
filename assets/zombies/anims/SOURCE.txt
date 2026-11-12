@@ -1,0 +1,8 @@
+Title: MoCap Online Zombie Starter 2.7 - shared ZombieRig retargets
+Author: Motus Digital, LLC / MoCap Online
+Source: https://mocaponline.itch.io/zombie-starter-animations
+License: MoCap Online Standard License
+Credit line: Zombie motion capture by Motus Digital / MoCap Online.
+Game use: Claude Zombies shared humanoid animation library.
+Modified: Retargeting, root extraction, loop cleanup and foot contact IK by tools/blender/zombie_anim_batch.py.
+Notes: Owner-supplied FBX pack. Raw FBX and derived GLBs are not committed or redistributed separately.

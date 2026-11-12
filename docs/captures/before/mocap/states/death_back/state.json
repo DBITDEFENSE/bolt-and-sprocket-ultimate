@@ -1,0 +1,17 @@
+{
+	"case": "death_back",
+	"failures": [],
+	"handoffs": [
+		{
+			"expected": 0.55,
+			"hips_velocity_mps": "Vector3(0, 0, 0)",
+			"immediate_bone_jump_m": 0.010881737805903,
+			"pivot_offset": "Vector3(0, 0, 0)",
+			"time": 0.55
+		}
+	],
+	"hits": [],
+	"scope": "Actual state callbacks/tree/ragdoll in studio; forced clip selection; freeze clock normalized to simulated time; no player damage/range test",
+	"seconds": 6.01666666666665,
+	"visual_clip": "death_back"
+}

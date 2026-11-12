@@ -1,0 +1,98 @@
+{
+  "blender": "5.1.2",
+  "maps": [
+    {
+      "class": "fabric",
+      "channel": "normal",
+      "path": "assets/third_party/ambientcg/fabric-031/textures/Fabric031_normal.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "finite": true,
+      "rgb_min": [
+        0.2705882489681244,
+        0.24313727021217346,
+        0.847058892250061
+      ],
+      "rgb_max": [
+        0.729411780834198,
+        0.7529412508010864,
+        1.0
+      ],
+      "repeats_per_rest_metre": 7.0,
+      "normal_length_error_p95": 0.14676351190638426,
+      "xy_variance": 0.0032273934159823244,
+      "xy_length_squared_max": 0.2694655669170949,
+      "runtime_decode": "RG, reconstruct positive Z; source blue not used"
+    },
+    {
+      "class": "fabric",
+      "channel": "orm",
+      "path": "assets/third_party/ambientcg/fabric-031/textures/Fabric031_orm.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "finite": true,
+      "rgb_min": [
+        1.0,
+        0.5803921818733215,
+        0.0
+      ],
+      "rgb_max": [
+        1.0,
+        0.6470588445663452,
+        0.0
+      ],
+      "repeats_per_rest_metre": 7.0
+    },
+    {
+      "class": "leather",
+      "channel": "normal",
+      "path": "assets/third_party/ambientcg/leather-014/textures/Leather014_normal.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "finite": true,
+      "rgb_min": [
+        0.16078431904315948,
+        0.15294118225574493,
+        0.847058892250061
+      ],
+      "rgb_max": [
+        0.8431373238563538,
+        0.8549020290374756,
+        1.0
+      ],
+      "repeats_per_rest_metre": 5.0,
+      "normal_length_error_p95": 0.022569066082414047,
+      "xy_variance": 0.002088406372777861,
+      "xy_length_squared_max": 0.5696581374751446,
+      "runtime_decode": "RG, reconstruct positive Z; source blue not used"
+    },
+    {
+      "class": "leather",
+      "channel": "orm",
+      "path": "assets/third_party/ambientcg/leather-014/textures/Leather014_orm.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "finite": true,
+      "rgb_min": [
+        1.0,
+        0.5058823823928833,
+        0.0
+      ],
+      "rgb_max": [
+        1.0,
+        0.7764706611633301,
+        0.0
+      ],
+      "repeats_per_rest_metre": 5.0
+    }
+  ],
+  "failures": []
+}

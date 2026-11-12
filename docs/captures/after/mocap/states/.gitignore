@@ -1,0 +1,4 @@
+**/*.png
+**/run.log
+/*.jpg
+!/*_comparison.jpg

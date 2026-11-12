@@ -1,0 +1,7 @@
+# Raw review frames stay available locally; compact videos and selected stills are committed.
+/walk/
+/motion/*/horde_frame_*.png
+/motion/*/runtime_inventory.json
+/motion/sprint/
+/preview/*/sequence_*.png
+/preview/*/runtime_inventory.json

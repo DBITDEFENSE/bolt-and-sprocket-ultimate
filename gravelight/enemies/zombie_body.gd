@@ -559,6 +559,17 @@ uniform float fabric_scale = 7.0;
 uniform float knit_scale = 4.0;
 uniform float leather_scale = 5.0;
 uniform float detail_amount = 0.0;
+uniform bool zombie_pbr = false;
+uniform sampler2D fabric_normal : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
+uniform sampler2D fabric_orm : filter_linear_mipmap_anisotropic, repeat_enable;
+uniform sampler2D leather_normal : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
+uniform sampler2D leather_orm : filter_linear_mipmap_anisotropic, repeat_enable;
+uniform float fabric_normal_strength = 0.0;
+uniform float leather_normal_strength = 0.0;
+uniform float fabric_roughness_floor = 0.7;
+uniform float leather_roughness_floor = 0.4;
+uniform float roughness_amount = 0.0;
+uniform float ao_amount = 0.0;
 instance uniform vec4 inst_tint : source_color = vec4(1.0);
 instance uniform float inst_dirt = 0.3;
 instance uniform float inst_frost = 0.0;
@@ -571,6 +582,7 @@ varying vec4 v_col;
 varying vec4 v_cus;
 varying float v_h;
 """ + TRIPLANAR + """
+#include "res://gravelight/enemies/zombie_kit_detail.gdshaderinc"
 void vertex() {
 	v_pos = CUSTOM1.xyz;
 	v_nrm = NORMAL;
@@ -586,13 +598,29 @@ void fragment() {
 	// -> the leather grain (rubber flattened); triplanar on the rest position, centred on its mean so the vertex
 	// colour stays the colour
 	float cls = floor(v_cus.a + 0.5);
+	float material_roughness = v_cus.r;
 	if (cls > 0.5) {
 		bool leathery = cls > 2.5 && cls < 4.5;
 		float sc = cls > 1.5 && cls < 2.5 ? knit_scale : (leathery ? leather_scale : fabric_scale);
-		vec3 t = leathery ? tri(leather_tex, v_pos, v_nrm, sc) : tri(fabric_tex, v_pos, v_nrm, sc);
+		vec3 weights = v_nrm;
+		if (zombie_pbr) {
+			// Keep colour, roughness and normals on the same stable rest-space projections.
+			weights = pow(abs(cross(dFdx(v_pos), dFdy(v_pos))), vec3(2.0));
+			float weight_sum = weights.x + weights.y + weights.z;
+			weights = weight_sum > 0.0000000000000001 ? weights / weight_sum : vec3(0.0, 0.0, 1.0);
+		}
+		vec3 t = leathery ? tri(leather_tex, v_pos, weights, sc) : tri(fabric_tex, v_pos, weights, sc);
 		float l = dot(t, vec3(0.333)) / max(leathery ? leather_mean : fabric_mean, 0.05);
 		float amt = cls > 3.5 && cls < 4.5 ? 0.25 : detail_amount;
 		base *= mix(1.0, clamp(l, 0.3, 1.8), amt);
+		if (zombie_pbr) {
+			vec3 orm = leathery ? tri_detail_orm(leather_orm, v_pos, weights, sc) : tri_detail_orm(fabric_orm, v_pos, weights, sc);
+			float floor_r = leathery ? leather_roughness_floor : fabric_roughness_floor;
+			material_roughness = mix(material_roughness, clamp(orm.g, floor_r, 1.0), roughness_amount);
+			AO = mix(1.0, orm.r, ao_amount);
+			NORMAL = leathery ? tri_detail_normal(leather_normal, v_pos, weights, NORMAL, VERTEX, sc, leather_normal_strength)
+				: tri_detail_normal(fabric_normal, v_pos, weights, NORMAL, VERTEX, sc, fabric_normal_strength);
+		}
 	}
 	if (emit < 0.01) { base *= inst_tint.rgb; }
 	float dirt = inst_dirt * (1.0 - smoothstep(0.0, 1.3, v_h)) * (0.4 + 0.6 * n) * (1.0 - step(0.01, emit));
@@ -602,7 +630,7 @@ void fragment() {
 	base = mix(base, vec3(0.86, 0.9, 0.96), frost);
 	base = mix(base, vec3(0.03, 0.02, 0.02), clamp(inst_char * smoothstep(0.15, 0.75, n + inst_char * 0.4), 0.0, 1.0) * (1.0 - step(0.01, emit)));
 	ALBEDO = base;
-	ROUGHNESS = mix(v_cus.r, 0.2, max(inst_fuel, frost * 0.6));
+	ROUGHNESS = mix(material_roughness, 0.2, max(inst_fuel, frost * 0.6));
 	METALLIC = v_cus.g;
 	vec3 em = v_col.rgb * emit * (1.0 + 0.35 * gl_hum * step(2.0, emit));
 	if (inst_dissolve > 0.0) {
@@ -678,12 +706,13 @@ const FABRIC_TEX: String = "res://assets/third_party/ambientcg/fabric-031/textur
 const LEATHER_TEX: String = "res://assets/third_party/ambientcg/leather-014/textures/Leather014_albedo.png"
 
 
-static func kit_material() -> ShaderMaterial:
-	var mkey: String = ("legacy:" if legacy_bodies else "") + "shader:kit"
+static func kit_material(zombie_detail: bool = false) -> ShaderMaterial:
+	var mkey: String = ("legacy:" if legacy_bodies else "") + ("shader:kit_zombie" if zombie_detail else "shader:kit")
 	if _mats.has(mkey):
 		return _mats[mkey]
 	var m: ShaderMaterial = ShaderMaterial.new()
 	m.shader = kit_shader()
+	m.set_shader_parameter("zombie_pbr", false)
 	m.set_shader_parameter("noise_tex", _noise_tex(31, 0.06, Color(0.65, 0.65, 0.65), Color(1.08, 1.08, 1.08)))
 	for pair: Array in [["fabric", FABRIC_TEX], ["leather", LEATHER_TEX]]:
 		if not legacy_bodies and ResourceLoader.exists(str(pair[1])):
@@ -691,6 +720,18 @@ static func kit_material() -> ShaderMaterial:
 			m.set_shader_parameter(str(pair[0]) + "_tex", t)
 			m.set_shader_parameter(str(pair[0]) + "_mean", _linear_mean(t))
 			m.set_shader_parameter("detail_amount", 0.55)
+	if zombie_detail and not legacy_bodies and not "--legacy-zombie-materials" in OS.get_cmdline_user_args():
+		var detail: Dictionary = GLData.load_json("res://data/gravelight/zombie_materials.json")
+		if bool(detail.get("enabled", false)):
+			for kind: String in ["fabric", "leather"]:
+				var settings: Dictionary = detail[kind]
+				for map: String in ["normal", "orm"]:
+					m.set_shader_parameter(kind + "_" + map, load(str(settings[map])))
+				for value: String in ["normal_strength", "roughness_floor", "scale"]:
+					m.set_shader_parameter(kind + "_" + value, float(settings[value]))
+			m.set_shader_parameter("roughness_amount", float(detail["roughness_amount"]))
+			m.set_shader_parameter("ao_amount", float(detail["ao_amount"]))
+			m.set_shader_parameter("zombie_pbr", true)
 	_mats[mkey] = m
 	return m
 
@@ -955,7 +996,7 @@ static func _merge_glb(base: Dictionary, kit: String, female: bool, living: bool
 	kit_arr[Mesh.ARRAY_INDEX] = acc.index
 	var im: ImporterMesh = ImporterMesh.new()
 	im.add_surface(Mesh.PRIMITIVE_TRIANGLES, skin_arr, [], {}, skin_material("living" if living else _skin_look(kit)), "skin", flags)
-	im.add_surface(Mesh.PRIMITIVE_TRIANGLES, kit_arr, [], {}, kit_material(), "kit", flags)
+	im.add_surface(Mesh.PRIMITIVE_TRIANGLES, kit_arr, [], {}, kit_material(not living), "kit", flags)
 	if str((char_cfg().get("lod", {}) as Dictionary).get("mode", "auto")) == "auto":
 		im.generate_lods(60.0, 25.0, [])
 	var mesh: ArrayMesh = im.get_mesh()

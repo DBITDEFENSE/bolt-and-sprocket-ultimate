@@ -1,0 +1,9 @@
+Copyright Motus Digital, LLC / MoCap Online. All rights reserved.
+These files are derived from the owner's supplied Zombie Starter 2.7 FBX pack.
+Applicable vendor terms: https://mocaponline.com/pages/standard-license
+Official project-use/retargeting FAQ: https://faq.mocaponline.com/en/articles/14068214-licensing-faq-what-can-i-use-these-animations-for
+This notice is provenance, not a replacement for or grant of the vendor license.
+The vendor permits retargeting and incorporation into a licensed game. Standalone source redistribution
+is not permitted. Keep the raw and converted animation files out of public source control.
+No receipt or license document was bundled in the supplied directory; the owner's purchase records
+remain with the owner. This project records the official Standard License as the pack's included license.

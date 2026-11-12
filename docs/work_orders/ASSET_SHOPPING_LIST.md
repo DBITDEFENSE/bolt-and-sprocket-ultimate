@@ -1,5 +1,26 @@
 # Gun shopping list (for Devin)
 
+## Zombie overhaul additions (2026-11-08)
+
+- RECEIVED 2026-11-09: MoCap Online Zombie Starter 2.7 from Devin's Downloads folder;
+  26 root-motion clips plus 26 in-place versions of the same recordings. These are not 52
+  distinct motions. Source files are now in the zombie worktree's ignored `assets/user_supplied/`.
+- Remaining motion coverage: additional distinct locomotion variants (especially upright walks
+  suited to the preserved 1.3/2.0 m/s tiers and a 0.8 m/s crawl), barricade tears/vaults, climbs,
+  ground emerges, directional hit reacts, knockdown/get-up pairs, crawler bite/armless attacks,
+  and at least six more distinct death performances. The Starter pack has two death clips.
+- Archive the purchase receipt/license with the local pack when available; the official Standard
+  License and owner-supplied provenance are recorded in ASSETS.md. Do not buy this pack again.
+- The supplied arm loop now covers two reviewed single swipes; both supplied deaths are integrated.
+  Two additional distinct swipes, a runner lunge and sprinter grab remain source gaps. The supplied
+  rapid multi-swipe barrage is preview-only: it is not a single hit at the game's existing windup.
+- Close-up review found the current soldier head and uniform too simplified for the art bible.
+  Needed: an original artist-authored zombie head/body and distressed WW2-style clothing set
+  (or a commercially licensed source with editable meshes), PBR albedo/normal/roughness, clean
+  deformation weights, and LOD0-2. Fictional markings only; no prisoner/forced-laborer enemies.
+  Fit it to the shared rig and validate one soldier before commissioning the rest of the roster.
+
+
 Claude Code models only the wonder weapons. These are the conventional guns you download or buy, then drop into:
 `C:\Users\Devin\PROJECTS\bolt-and-sprocket-ultimate\assets\user_supplied\weapons\<pack-name>\`
 Put the license text, or a screenshot of the license and receipt, in the same folder. Claude Code handles everything after that: unpacking, scaling, sight alignment, the shared materials, Crucible camo, and fitting animations.
@@ -28,3 +49,7 @@ Put the license text, or a screenshot of the license and receipt, in the same fo
 - **itch.io:** mostly low-poly or stylized, but cheap.
 
 Not everything is on hand: if a gun is missing, Claude keeps the greybox for that one and lists it in the morning report. You can grab it later.
+
+## Measured 2026-11-12: upright gaits at the game's slow speeds (the most felt gap)
+
+The two active recordings are played far from their recorded cadence to hold the preserved speeds (`docs/captures/after/mocap/terrain/terrain_baseline.json`, `playback_rate_p50`): the shuffle `Zombie_Chase_1_Loop` was recorded at 0.48 m/s and plays at x2.8 for the shamble tier (1.3 m/s) and x4.3 for the walk tier (2.0 m/s); `Zombie_HyperChase_1_Loop` (2.88 m/s) plays at x1.2 / x1.7 / x1.9 for jog / run / sprint. Wanted, in this order: an upright zombie walk recorded near 2.0 m/s, one near 1.3 m/s, then a run near 4.8-5.6 m/s. The Starter pack is received and is not on this list.

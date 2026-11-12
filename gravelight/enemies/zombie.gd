@@ -212,6 +212,7 @@ static func kind_config(kind: StringName) -> Dictionary:
 
 
 func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
+	_contact_lock.reset()
 	var tiers: Dictionary = GLData.table("enemies")["tiers"]
 	var jitter: float = float(GLData.table("enemies")["speed_jitter"])
 	net_died = false
@@ -290,6 +291,8 @@ func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
 
 
 func deactivate() -> void:
+	_contact_lock.reset()
+	_turn_motion.reset()
 	state = State.INACTIVE
 	forced_target = null
 	prey = null
@@ -1289,7 +1292,7 @@ func _update_dead(delta: float) -> void:
 				director.call("on_zombie_returned", self)
 		return
 	var rd: Dictionary = _anim["ragdoll"]
-	if not _ragdoll_started and _state_t >= float(rd.get("key_pose_seconds", 0.55)):
+	if not _ragdoll_started and _state_t >= ZombieClips.death_key_pose_time(_death_clip):
 		_ragdoll_started = true
 		_begin_ragdoll()
 	if _ragdoll != null:
@@ -1676,6 +1679,7 @@ func _face(p: Vector3) -> void:
 	var yaw: float = atan2(-d.x, -d.z)
 	var before: float = rotation.y
 	rotation.y = lerp_angle(rotation.y, yaw, 0.25)
+	_turn_motion.request(before, yaw, _can_recorded_turn())
 	_turn_rate = wrapf(rotation.y - before, -PI, PI) / maxf(0.001, get_physics_process_delta_time())
 
 
@@ -2049,19 +2053,45 @@ func _start_death() -> void:
 	state = State.DEAD
 	_state_t = 0.0
 	_ragdoll_started = false
+	_death_previous_pose.clear()
+	_death_velocity.clear()
 	var rd: Array = _anim["ragdoll"].get("corpse_seconds", [8.0, 12.0])
 	_corpse_seconds = randf_range(float(rd[0]), float(rd[1]))
 	if has_rig():
 		_look.active = false
 		_modifier.ik_weight = 0.0
+		if ZombieClips.visual_clip(_death_clip).begins_with("mco_"):
+			_tree.set("parameters/Posture/add_amount", 0.0)
 	_enter(State.DEAD)
+
+
+var _death_previous_pose: Dictionary = {}
+var _death_velocity: Dictionary = {}
+
+
+## Velocity of the evaluated recorded fall, including its presentation root displacement.
+## Physics starts from the same pose and momentum; no additional death poses are authored.
+func _record_death_velocity(dt: float) -> void:
+	var settings: Dictionary = ZombieClips.death_motion_config()
+	if not bool(settings.get("inherit_velocity", false)) or dt <= 0.0: return
+	for bone: String in _anim["ragdoll"]["bones"]:
+		var index: int = _skel.find_bone(bone)
+		if index < 0: continue
+		var pose: Transform3D = _skel.global_transform * _skel.get_bone_global_pose(index)
+		if _death_previous_pose.has(bone):
+			var previous: Transform3D = _death_previous_pose[bone]
+			var rotation_delta: Quaternion = (pose.basis.orthonormalized().get_rotation_quaternion() * previous.basis.orthonormalized().get_rotation_quaternion().inverse()).normalized()
+			if rotation_delta.w < 0.0: rotation_delta = -rotation_delta
+			var angular: Vector3 = rotation_delta.get_axis() * rotation_delta.get_angle() / dt
+			_death_velocity[bone] = {"linear": ((pose.origin - previous.origin) / dt).limit_length(float(settings["max_linear_mps"])), "angular": angular.limit_length(float(settings["max_angular_rps"]))}
+		_death_previous_pose[bone] = pose
 
 
 func _begin_ragdoll() -> void:
 	var launch: Vector3 = Vector3.ZERO
 	if _death_explosive:
 		launch = _away_from_target() * float(_anim["ragdoll"].get("explosive_launch", 5.0)) + Vector3.UP * 3.0
-	_ragdoll = ZombieRagdoll.start(_skel, launch)
+	_ragdoll = ZombieRagdoll.start(_skel, launch, _death_velocity)
 	# the tree stays active (deactivating an AnimationTree resets the rendered skin to rest); it simply is not
 	# advanced any more while the ragdoll writes the bones (_animate)
 
@@ -2132,7 +2162,10 @@ var _loco_x: float = 0.0
 var _loco_turn: float = 0.0
 var _turn_rate: float = 0.0
 var _cycle: float = 0.0
+var _step_phase_valid: bool = false
 var _cycle_len: float = 1.0
+var _contact_lock: RefCounted = preload("res://gravelight/enemies/zombie_contact_lock.gd").new()
+var _turn_motion: RefCounted = preload("res://gravelight/enemies/zombie_turn_motion.gd").new()
 var _attack_clip: String = "swipe_l"
 var _tear_clip: String = "tear_rip"
 var _climb_clip: String = "vault_a"
@@ -2401,6 +2434,7 @@ func _set_inst(key: String, v: Variant) -> void:
 
 
 func _reset_presentation() -> void:
+	_turn_motion.reset()
 	if has_meta("person"):
 		remove_meta("person")   # T-099: a pooled zombie that was a risen person goes back to its kit
 	for sg: MeshInstance3D in _squad_gear:
@@ -2527,11 +2561,14 @@ func set_posture(posture: String, amount: float) -> void:
 func _pick_locomotion() -> void:
 	var loco: Dictionary = _anim["clips"]["locomotion"]
 	var key: String = String(tier) if loco.has(String(tier)) else "walk"
-	_loco_clip = str(_pick(loco[key]))
-	_loco_speed = float(_anim["gait"][key]["speed"])
+	_loco_clip = str(_pick(ZombieClips.locomotion_clips(key)))
+	_loco_speed = ZombieClips.stride_speed(_loco_clip, key)
 	_cycle_len = ZombieClips.length_of(_loco_clip)
+	(_loco_bs.get_blend_point_node(0) as AnimationNodeAnimation).animation = StringName(str(_pick(ZombieClips.idle_clips())))
 	for i: int in 3:
-		(_loco_bs.get_blend_point_node(1 + i) as AnimationNodeAnimation).animation = StringName(_loco_clip if i == 0 else _loco_clip + ("_lean_l" if i == 1 else "_lean_r"))
+		var clip: String = _loco_clip if i == 0 else _loco_clip + ("_lean_l" if i == 1 else "_lean_r")
+		# Imported performances have no fabricated lean versions. Preserve their original motion.
+		(_loco_bs.get_blend_point_node(1 + i) as AnimationNodeAnimation).animation = StringName(clip if ZombieClips.has_clip(clip) else _loco_clip)
 	var crawl: String = str(_pick(loco["crawl"]))
 	(_crawl_bs.get_blend_point_node(1) as AnimationNodeAnimation).animation = StringName(crawl)
 
@@ -2778,7 +2815,7 @@ func _tree_play(st: String, clip: String, time_scale: float) -> void:
 	if _tree == null or _playback == null:
 		return
 	if _anim_nodes.has(st):
-		(_anim_nodes[st] as AnimationNodeAnimation).animation = StringName(clip)
+		(_anim_nodes[st] as AnimationNodeAnimation).animation = StringName(ZombieClips.visual_clip(clip))
 	_tree.set("parameters/SM/%s/TimeScale/scale" % st, maxf(0.01, time_scale))
 	# One-shot states share one AnimationNodeAnimation per state; travel() to the state already playing restarts
 	# it from 0 in Godot 4.7 (reset_on_teleport), so a swapped clip (knockdown -> get-up, climb loop -> mantle)
@@ -2786,11 +2823,17 @@ func _tree_play(st: String, clip: String, time_scale: float) -> void:
 	_playback.travel(st)
 	_tree_state = st
 	_cycle = 0.0
+	_step_phase_valid = false
+
+
+var _attack_visual_hit_done: bool = false
 
 
 func _tree_attack(clip: String) -> void:
+	_attack_visual_hit_done = false
 	_tree.set("parameters/SM/Attack/Anim/blend_position", ZombieClips.attack_index(clip))
-	_tree_play("Attack", clip, ZombieClips.ATTACK_WINDUP / maxf(0.05, float(_cfg["attack_windup"])))
+	var hit: float = ZombieClips.hit_event_time(clip)
+	_tree_play("Attack", clip, (hit if hit >= 0.0 else ZombieClips.ATTACK_WINDUP) / maxf(0.05, float(_cfg["attack_windup"])))
 
 
 func _tree_emerge() -> void:
@@ -3132,8 +3175,17 @@ func _tree_locomotion(force: bool = false) -> void:
 
 
 func _random_phase() -> void:
-	if _tree_state == "Locomotion" or _tree_state == "Crawl":
-		_tree.advance(randf() * _cycle_len)
+	# Queue the phase until the state machine has actually entered its gait. Ground
+	# spawns begin in Emerge, so advancing the tree here used to consume the random
+	# offset on the emerge clip and leave every first chase gait in sync.
+	if _tree == null or not bool(_anim["random_phase"]):
+		return
+	var phase: float = randf()
+	_cycle = phase
+	_tree.set("parameters/SM/Locomotion/TimeSeek/seek_request", phase * _cycle_len)
+	var crawl_node: AnimationNodeAnimation = _crawl_bs.get_blend_point_node(1) as AnimationNodeAnimation
+	_tree.set("parameters/SM/Crawl/TimeSeek/seek_request", phase * ZombieClips.length_of(String(crawl_node.animation)))
+	_step_phase_valid = false
 
 
 func _pick_attack() -> String:
@@ -3185,6 +3237,27 @@ func _play_flinch(limb: StringName, side: String) -> void:
 	_flinch_dir = -1.0 if side == "l" else 1.0
 
 
+## The contact lock for this frame. With the body modifier running it is handed to it and applied LAST, on the pose
+## after the terrain IK and the foot tilt (ZombieBodyModifier); with the modifier off (a far body) it runs here.
+func _lock_feet(clip: String, time: float, dt: float, cfg: Dictionary) -> void:
+	if _modifier.active and _modifier.is_inside_tree():
+		_modifier.lock = _contact_lock
+		_modifier.lock_clip = clip
+		_modifier.lock_time = time
+		_modifier.lock_dt = dt
+		_modifier.lock_cfg = cfg
+		_modifier.lock_fresh = true
+		_modifier.lock_on = true
+	else:
+		_modifier.lock_on = false
+		_contact_lock.apply(_skel, _modifier, clip, time, dt, cfg)
+
+
+## Only stationary upright locomotion can yield presentation to a recorded turn.
+func _can_recorded_turn() -> bool:
+	return has_rig() and not is_crawler and not hopping and state in [State.CHASE, State.TO_WINDOW] and _tree_state in ["Locomotion", "Turn"] and Vector2(velocity.x, velocity.z).length() < float(_anim["turn"].get("in_place_below_mps", 0.5))
+
+
 ## Per visual tick: tree parameters from the state and velocity, LOD-rated advance, animation events.
 func _animate(dt: float) -> void:
 	if state == State.INACTIVE or _tree == null or _ragdoll != null:
@@ -3192,7 +3265,11 @@ func _animate(dt: float) -> void:
 	ZombieBody.update_cracks(RoundManager.current_round, float(GLData.table("enemies").get("visual", {}).get("crack_energy", 2.6)))
 	var spd: float = Vector2(velocity.x, velocity.z).length()
 	var moving_state: bool = state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW]
-	if moving_state:
+	var can_turn: bool = _can_recorded_turn()
+	if not can_turn: _turn_motion.cancel()
+	if _turn_motion.active:
+		if _tree_state != "Turn": _tree_play("Turn", _turn_motion.clip, 1.0)
+	elif moving_state:
 		if state == State.WAIT_WINDOW and spd < 0.2:
 			if _tree_state != "Barricade":
 				_tree_play("Barricade", str(_anim["clips"]["wait"]), 1.0)
@@ -3206,16 +3283,12 @@ func _animate(dt: float) -> void:
 		var lean: float = float(lean_t.get(String(tier), 0.0))
 		var turn_norm: float = clampf(_turn_rate / float(_anim["turn"].get("full_turn_rate", 2.5)), -1.0, 1.0)
 		var want_turn: float = turn_norm * (lean / 0.18 if spd > below else 1.0)
+		if spd <= below and ZombieClips.recorded_turns_enabled(): want_turn = 0.0
 		_loco_turn = move_toward(_loco_turn, want_turn if absf(turn_norm) > 0.15 else 0.0, dt * 5.0)
 		_tree.set("parameters/SM/Locomotion/Anim/blend_position", Vector2(_loco_x, _loco_turn))
 		# the clip's root motion is in rig space: the height scale on the pivot stretches every stride by that much
 		var scale: float = maxf(spd, 0.15) / maxf(0.1, _loco_speed * _pivot.scale.y) if _loco_x > 0.01 else 1.0
 		_tree.set("parameters/SM/Locomotion/TimeScale/scale", scale)
-		if _loco_x > 0.5:
-			var before: float = _cycle
-			_cycle = fmod(_cycle + dt * scale / _cycle_len, 1.0)
-			if (before < 0.5 and _cycle >= 0.5) or _cycle < before:
-				_footstep(_cycle < before)
 	elif _tree_state == "Crawl":
 		var cx: float = clampf(spd / float(_cfg["crawler_speed"]), 0.0, 1.0)
 		_tree.set("parameters/SM/Crawl/Anim/blend_position", cx)
@@ -3224,7 +3297,55 @@ func _animate(dt: float) -> void:
 	_turn_rate = move_toward(_turn_rate, 0.0, dt * 8.0)
 	if _flinch > 0.0:
 		_flinch = maxf(0.0, _flinch - dt)
+	if state == State.ATTACK and not _attack_visual_hit_done and _state_t >= float(_cfg["attack_windup"]):
+		_attack_visual_hit_done = true
+		var recorded_hit: float = ZombieClips.hit_event_time(_attack_clip)
+		if recorded_hit >= 0.0:
+			# Shared host/puppet presentation: strike at the existing windup, then retain the
+			# existing 0.35 s recovery. Gameplay damage remains in the physics state callback.
+			_tree.set("parameters/SM/Attack/TimeSeek/seek_request", recorded_hit)
+			_tree.set("parameters/SM/Attack/TimeScale/scale", 1.0)
 	_tree.advance(dt)
+	var turn_time: float = _playback.get_current_play_position() if String(_playback.get_current_node()) == "Turn" else 0.0
+	_pivot.rotation.y = _turn_motion.advance(rotation.y, turn_time, dt, can_turn and _tree_state == "Turn")
+	if state == State.DEAD and _tree_state == "Death" and ZombieClips.visual_clip(_death_clip).begins_with("mco_"):
+		# The corpse presentation follows the recorded fall before physics takes over. The pooled
+		# body's nav position/hit timings are unchanged; activate()/make_puppet() reset the pivot.
+		_pivot.position += _tree.get_root_motion_position() * _pivot.scale
+		_record_death_velocity(dt)
+	var contact_cfg: Dictionary = ZombieClips.contact_lock_config()
+	# A one-tick collision stop starts the idle blend. Keep established contacts through its gait-dominant
+	# part instead of dropping both pins and planting them elsewhere on the very next moving frame.
+	# Entry still requires the full recorded gait; sustained stops release as the idle blend takes over.
+	var retain_contacts: bool = _contact_lock.previous_clip == _loco_clip and _loco_x >= float(contact_cfg.get("retain_locomotion_blend", 0.5))
+	if _loco_clip.begins_with("mco_") and _tree_state == "Locomotion":
+		# Upper-body turn lean is additive to the recording and leaves planted leg motion intact.
+		var lean_angle: float = _loco_turn * float(_anim["turn"]["lean_tiers"].get(String(tier), 0.0))
+		for bone: String in ["Spine", "Chest"]:
+			var idx: int = _skel.find_bone(bone)
+			_skel.set_bone_pose_rotation(idx, _skel.get_bone_pose_rotation(idx) * Quaternion(Vector3.BACK, lean_angle * 0.5))
+	if _tree_state == "Turn" and _playback.get_fading_from_node() == &"" and bool(contact_cfg.get("enabled", false)):
+		_lock_feet(_turn_motion.clip, turn_time, dt, contact_cfg)
+		for event: Dictionary in ZombieClips.footstep_events(_turn_motion.clip):
+			var at: float = float(event["phase"]) * ZombieClips.length_of(_turn_motion.clip)
+			if at > _turn_motion.previous_clock and at <= _turn_motion.clock: _footstep(bool(event["left"]))
+	elif _loco_clip.begins_with("mco_") and _tree_state == "Locomotion" and _playback.get_fading_from_node() == &"" and ((_loco_x >= 0.99 and spd > 0.4) or retain_contacts) and bool(contact_cfg.get("enabled", false)):
+		_lock_feet(_loco_clip, fposmod(_playback.get_current_play_position(), _cycle_len), dt, contact_cfg)
+	else:
+		_contact_lock.reset()
+		_modifier.lock_on = false
+	# Use the evaluated state's clock, including seeks, idle blends and resumes after
+	# attacks. A separate integrated clock drifts away from the feet on those paths.
+	if _tree_state == "Locomotion" and String(_playback.get_current_node()) == "Locomotion" and _loco_x > 0.5:
+		var phase: float = fposmod(_playback.get_current_play_position() / _cycle_len, 1.0)
+		if _step_phase_valid:
+			for event: Dictionary in ZombieClips.footstep_events(_loco_clip):
+				if ZombieClips.crossed_phase(_cycle, phase, float(event["phase"])):
+					_footstep(bool(event["left"]))
+		_cycle = phase
+		_step_phase_valid = true
+	else:
+		_step_phase_valid = false
 	# root motion bookkeeping for the foot-slide check: the clip's stride distance against the body's travel
 	# over the same window, only while fully in the gait (the idle blend scales the root motion down)
 	var rm: Vector3 = _tree.get_root_motion_position()
@@ -3261,6 +3382,7 @@ func _update_senses(delta: float) -> void:
 			var fidx: int = _foot_idx[i]
 			if fidx < 0:
 				_modifier.foot_ground_y[i] = NAN
+				_modifier.toe_ground_y[i] = NAN
 				continue
 			var foot_g: Vector3 = _skel.to_global(_skel.get_bone_global_pose(fidx).origin)
 			var from: Vector3 = Vector3(foot_g.x, global_position.y + float(fi["ray_up"]), foot_g.z)
@@ -3268,6 +3390,11 @@ func _update_senses(delta: float) -> void:
 			var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, to, LAYER_WORLD, [get_rid()])
 			var hit: Dictionary = space.intersect_ray(q)
 			_modifier.foot_ground_y[i] = (_skel.to_local(hit["position"] as Vector3).y) if not hit.is_empty() else NAN
+			# the ground under the toe too: the foot is tilted by the rise between the two (ZombieBodyModifier)
+			var toe_g: Vector3 = _skel.to_global(_skel.get_bone_global_pose(fidx) * Vector3(0, -0.06, -0.15))
+			var tq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(Vector3(toe_g.x, from.y, toe_g.z), Vector3(toe_g.x, to.y, toe_g.z), LAYER_WORLD, [get_rid()])
+			var toe_hit: Dictionary = space.intersect_ray(tq)
+			_modifier.toe_ground_y[i] = (_skel.to_local(toe_hit["position"] as Vector3).y) if not toe_hit.is_empty() else NAN
 		_modifier.ik_weight = move_toward(_modifier.ik_weight, 1.0, delta * 4.0)
 	else:
 		_modifier.ik_weight = move_toward(_modifier.ik_weight, 0.0, delta * 4.0)
@@ -3302,7 +3429,7 @@ func _update_audio(delta: float) -> void:
 		AudioDirector.play_3d(ring_key, global_position + Vector3.UP, -8.0, 0.0)
 
 
-## A footstep from the locomotion clip's events (phase 0 and 0.5), surface-aware: culled by distance to the
+## A footstep from the locomotion clip's contact events, surface-aware: culled by distance to the
 ## target player and rate-capped across the horde (anim.json footsteps).
 func _footstep(_left: bool) -> void:
 	var fs: Dictionary = _anim["footsteps"]
@@ -3414,6 +3541,7 @@ func puppet_activate(enemy: StringName, tier_v: StringName, variant: String, hp_
 
 
 func _puppet_show(pos: Vector3, yaw: float) -> void:
+	_turn_motion.reset()
 	show()
 	process_mode = Node.PROCESS_MODE_INHERIT
 	collision_layer = LAYER_ZBODY
@@ -3457,13 +3585,7 @@ func _puppet_tick(delta: float) -> void:
 		_emerge_tick(delta)   # the rise's sprays, crunches and the head-out hitbox switch play on the client too
 	_pred_dmg *= exp(-delta * 4.0)
 	if Net.session != null and interp.sample(Net.session.render_time_ms()):
-		var prev: Vector3 = global_position
-		global_position = interp.pos
-		var before: float = rotation.y
-		rotation.y = interp.yaw
-		_turn_rate = wrapf(rotation.y - before, -PI, PI) / maxf(delta, 0.0001)
-		velocity = (global_position - prev) / maxf(delta, 0.0001)
-		velocity.y = 0.0
+		_puppet_apply_sample(delta)
 		var zf: int = (interp.flags >> 8) & 0xFF
 		hp = max_hp * float((interp.aux >> 8) & 0xFF) / 255.0
 		is_last = (zf & NetMatch.ZF_LAST) != 0
@@ -3475,6 +3597,19 @@ func _puppet_tick(delta: float) -> void:
 	_puppet_visual_tick(delta)
 	_update_audio(delta)
 	_update_senses(delta)
+
+
+## The interpolated sample onto the body (interp.sample() was just taken): place, facing, the observed velocity,
+## and the recorded turn's presentation trigger (only the observed yaw is known here: ZombieTurnMotion.observe).
+func _puppet_apply_sample(delta: float) -> void:
+	var prev: Vector3 = global_position
+	global_position = interp.pos
+	var before: float = rotation.y
+	rotation.y = interp.yaw
+	_turn_rate = wrapf(rotation.y - before, -PI, PI) / maxf(delta, 0.0001)
+	velocity = (global_position - prev) / maxf(delta, 0.0001)
+	velocity.y = 0.0
+	_turn_motion.observe(before, interp.yaw, delta, _can_recorded_turn())
 
 
 func _puppet_visual_tick(_delta: float) -> void:

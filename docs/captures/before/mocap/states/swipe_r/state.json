@@ -1,0 +1,26 @@
+{
+	"case": "swipe_r",
+	"failures": [],
+	"handoffs": [],
+	"hits": [
+		{
+			"state_time": 0.466666666666667,
+			"windup": 0.45
+		},
+		{
+			"state_time": 0.466666666666667,
+			"windup": 0.45
+		},
+		{
+			"state_time": 0.466666666666667,
+			"windup": 0.45
+		},
+		{
+			"state_time": 0.466666666666667,
+			"windup": 0.45
+		}
+	],
+	"scope": "Actual state callbacks/tree/ragdoll in studio; forced clip selection; no player damage/range test",
+	"seconds": 6.01666666666665,
+	"visual_clip": "swipe_r"
+}
