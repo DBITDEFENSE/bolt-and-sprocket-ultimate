@@ -66,10 +66,7 @@ npm run dist                    # dist/ClaudeZombiesLauncher-Setup-<v>.exe and -
 
 ## Known limits
 - The exe is not code-signed, so Windows SmartScreen warns on first run ("More info" > "Run anyway").
-- Players get the repository itself (tools, docs, the converted zombie clips). The launcher leaves the purchased
-  mocap pack's raw files out of every install (`exclude` in `config.json`: a sparse checkout plus `lfs.fetchexclude`;
-  its licence forbids standalone source redistribution), but anyone with repo access *can* still download them from
-  GitHub. For players outside the team, give exported builds instead, or read access to a repo without the pack.
+- Players get the whole repository, the purchased mocap pack included (personal project, private repo).
 - Disk: 3.6 GB after the first import (measured 2026-11-12: game files, the LFS cache in `.git\lfs`, the import
   cache). The launcher asks for 5 GB free. A full install took 5.6 minutes on the owner's PC and connection.
 - Windows only (Godot win64, winget, the Git for Windows installer).

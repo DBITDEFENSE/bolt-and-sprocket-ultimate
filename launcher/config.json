@@ -7,12 +7,23 @@
   "repoWeb": "https://github.com/DBITDEFENSE/bolt-and-sprocket-ultimate",
   "defaultChannel": "stable",
   "channels": [
-    { "id": "stable", "name": "Stable", "branch": "master", "description": "The build that always launches." },
-    { "id": "preview", "name": "Preview", "branch": "claude/boss-rework", "description": "Newest work before it is merged. Can break." }
+    {
+      "id": "stable",
+      "name": "Stable",
+      "branch": "master",
+      "description": "The build that always launches."
+    },
+    {
+      "id": "preview",
+      "name": "Preview",
+      "branch": "claude/boss-rework",
+      "description": "Newest work before it is merged. Can break."
+    }
   ],
-  "godot": { "version": "4.7.2" },
+  "godot": {
+    "version": "4.7.2"
+  },
   "mainScene": "res://gravelight/ui/main_menu.tscn",
-  "_exclude": "Repo folders players never download: the purchased mocap pack's raw files (its licence forbids standalone source redistribution; the game uses the converted clips in assets/zombies/anims).",
-  "exclude": ["assets/user_supplied/mocap_online/"],
+  "exclude": [],
   "installSizeGB": 5
 }

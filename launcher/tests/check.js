@@ -92,7 +92,7 @@ const m = new GameManager({ dataDir: path.join(tmp, 'data'), config, getSettings
       if (n.image && n.image.startsWith('art/')) assert.ok(fs.existsSync(path.join(__dirname, '..', 'assets', n.image)), n.image);
     }
   });
-  await t('excludes: the raw mocap pack is removed from a checkout and kept out of LFS', async () => {
+  await t('excludes (empty by default; the mechanism still works when a feed lists a folder)', async () => {
     const { execFileSync } = require('child_process');
     const g = (cwd, ...a) => execFileSync('git', a, { cwd, stdio: 'pipe' }).toString();
     const src = path.join(tmp, 'src'); const dst = path.join(tmp, 'dst');
@@ -105,7 +105,9 @@ const m = new GameManager({ dataDir: path.join(tmp, 'data'), config, getSettings
     g(tmp, 'clone', '-q', src, dst);
     await m.detectGit();
     settings.installDir = dst;
+    m.feed = { exclude: ['assets/user_supplied/mocap_online/'] };
     await m.applyExcludes(dst);
+    m.feed = null;
     assert.ok(!fs.existsSync(path.join(dst, 'assets', 'user_supplied', 'mocap_online', 'pack', 'raw.fbx')), 'raw pack still there');
     assert.ok(fs.existsSync(path.join(dst, 'assets', 'zombies', 'clip.glb')), 'converted clip missing');
     assert.strictEqual(g(dst, 'config', 'lfs.fetchexclude').trim(), 'assets/user_supplied/mocap_online/**');
