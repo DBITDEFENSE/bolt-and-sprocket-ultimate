@@ -280,12 +280,17 @@ func _find_fire_and_chimney() -> void:
 	_fire_light = m.find_child(str((cfg.get("chimney", {}) as Dictionary).get("fire_light", "Hearthfire")), true, false) as Light3D
 	if _fire_light != null:
 		_fire_base = float(_fire_light.get("base_energy")) if _fire_light.get("base_energy") != null else _fire_light.light_energy
-	# the chimney's smoke is the GPUParticles3D gen_map00 puts on the stack (x 12, y 11.6, z 0.5)
+	# the chimney's smoke is the GPUParticles3D gen_map00 puts on the stack: over (x 12, z 0.5), above the roof.
+	# Found by its column, not its height: the stack rose 3 m with the attic (T-224) and the old fixed point
+	# (y 11.6) no longer found it, so the smoke kept rising after the fire died.
+	var at: Array = (cfg.get("chimney", {}) as Dictionary).get("stack_xz", [12.0, 0.5])
+	var best_y: float = 9.0
 	for n: Node in m.find_children("*", "GPUParticles3D", true, false):
 		var p: GPUParticles3D = n as GPUParticles3D
-		if p.global_position.distance_to(Vector3(12.0, 11.6, 0.5)) < 1.5:
+		var gp: Vector3 = p.global_position
+		if Vector2(gp.x - float(at[0]), gp.z - float(at[1])).length() < 1.5 and gp.y > best_y:
+			best_y = gp.y
 			_chimney = p
-			break
 
 
 func _find_snow() -> void:
