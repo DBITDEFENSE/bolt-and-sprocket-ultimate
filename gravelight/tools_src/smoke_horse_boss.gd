@@ -175,6 +175,8 @@ func _round_ends(seconds: float = 30.0) -> bool:
 	while t < seconds and RoundManager.state != RoundManager.State.BREAK:
 		RoundManager.to_spawn = 0
 		_cull_horde()
+		if RoundManager.alive <= 0 and RoundManager.state == RoundManager.State.ROUND:
+			RoundManager.on_zombie_died()   # (the queue was emptied by hand after the last death: the round is asked again)
 		await get_tree().physics_frame
 		t += get_physics_process_delta_time()
 	return RoundManager.state == RoundManager.State.BREAK

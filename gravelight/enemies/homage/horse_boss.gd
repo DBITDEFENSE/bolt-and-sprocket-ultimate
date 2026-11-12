@@ -69,6 +69,7 @@ var _warn_t: float = 0.0
 var _arrive_to: Vector3 = Vector3.INF
 var _horse_boxes: Array[Hitbox] = []
 var _glow: OmniLight3D = null
+var _eyes: OmniLight3D = null
 var _steam: GPUParticles3D = null
 var _motes: GPUParticles3D = null
 var _steam_t: float = 0.0
@@ -259,10 +260,19 @@ func _ready() -> void:
 	rig.attach("Body", _glow, Vector3(0, 1.2, -0.05))
 	var nose: Node3D = Node3D.new()
 	rig.attach("Head", nose, HorseMesh.head_point(0.62, 0.0, 0.02))
-	_steam = BossFx.emitter("steam", nose, Vector3.ZERO, 0.55)
+	_steam = BossFx.emitter("steam", nose, Vector3.ZERO, 0.4)
 	var ribs: Node3D = Node3D.new()
 	rig.attach("Body", ribs, Vector3(0, 1.25, -0.05))
 	_motes = BossFx.emitter("motes", ribs, Vector3.ZERO, 0.9)
+	# the sockets' light on the skull: what a player sees of its head in the dark
+	_eyes = OmniLight3D.new()
+	_eyes.light_color = VIOLET
+	_eyes.light_energy = 0.9
+	_eyes.omni_range = 1.5
+	_eyes.omni_attenuation = 1.3
+	_eyes.shadow_enabled = false
+	_eyes.set_meta("no_dim", true)
+	rig.attach("Head", _eyes, HorseMesh.head_point(0.2, 0.0, 0.22))
 	# the telegraph light rides the chest (the framework hung it on its own, hidden, body)
 	if _tele_light != null and _tele_light.get_parent() != null:
 		_tele_light.get_parent().remove_child(_tele_light)
@@ -286,6 +296,7 @@ func spawn_horse(at: Vector3, health: float) -> void:
 
 func _on_spawned() -> void:
 	enemy_id = StringName(str(bcfg.get("boss_id", boss_key)))
+	_skel.hide()   # the framework's own body, whole: its mesh, its gear, whatever a kit hangs on its bones
 	_body.hide()
 	for g: MeshInstance3D in _gear:
 		g.hide()
@@ -370,8 +381,10 @@ func _tick(delta: float) -> void:
 	_update_picture(delta)
 	if posed:
 		stand(delta, false)
+		_drag_shaft(delta)
+		_tick_rider(delta)
 		return
-	_update_phase_cfg()
+	_update_phase()
 	_siege_cd = maxf(0.0, _siege_cd - delta)
 	target = _pick_target()
 	match bstate:
@@ -422,7 +435,7 @@ func _reachable(at: Vector3) -> bool:
 	return may_chase(z, GameState.is_zone_open(z), dy, zones)
 
 
-func _update_phase_cfg() -> void:
+func _update_phase() -> void:
 	var want: int = phase_for(hp_fraction(), bcfg.get("phases", []))
 	if want > phase_i:
 		phase_i = want
@@ -450,6 +463,8 @@ func _set_glow(k: float) -> void:
 	if _glow != null:
 		_glow.light_energy = 2.0 * k
 		_glow.omni_range = 4.5 + 1.2 * (k - 1.0)
+	if _eyes != null:
+		_eyes.light_energy = 0.9 * k
 
 
 # ---- arrival
@@ -959,7 +974,7 @@ func _update_picture(delta: float) -> void:
 	var flat: float = Vector2(velocity.x, velocity.z).length()
 	rig.speed = flat if state == State.CHASE else 0.0
 	rig.turn = clampf(-off * 1.6, -1.0, 1.0) if flat > 0.3 or absf(off) > 0.3 else 0.0
-	if bstate == B.MOVE or bstate == B.RECOVER or bstate == B.ARRIVE:
+	if (bstate == B.MOVE or bstate == B.RECOVER or bstate == B.ARRIVE) and not posed:
 		rig.head_low = move_toward(rig.head_low, 0.0, delta * 2.0)
 		rig.paw = move_toward(rig.paw, 0.0, delta * 4.0)
 		rig.rear = move_toward(rig.rear, 0.0, delta * 3.0)
@@ -969,6 +984,9 @@ func _update_picture(delta: float) -> void:
 		rig.look_yaw = move_toward(rig.look_yaw, 0.0, delta * 3.0)
 		rig.alert = move_toward(rig.alert, 0.0, delta * 1.0)
 	rig.shy = move_toward(rig.shy, 0.0, delta * 2.0)
+	if posed:
+		rig.speed = 0.0
+		rig.turn = 0.0
 	rig.tick(delta)
 	# the breath: a rattle and a cloud of steam at the nostrils
 	_breath_t -= delta
@@ -1071,6 +1089,11 @@ func _build_rider() -> void:
 	_rider_skel.add_child(mi)
 	mi.skeleton = NodePath("..")
 	mi.skin = _rider_skel.create_skin_from_rest_transforms()
+	# long dead and frozen to the saddle: dark, dirty, frost on him (the body shader's own instance values)
+	mi.set_instance_shader_parameter("inst_tint", Color(0.5, 0.47, 0.5, 1.0))
+	mi.set_instance_shader_parameter("inst_dirt", 0.9)
+	mi.set_instance_shader_parameter("inst_char", 0.35)
+	mi.set_instance_shader_parameter("inst_frost", 0.25)
 	_rider_skel.position = Vector3(0, -ZombieRig.rest_global("Hips").origin.y, 0)
 	# seated: the thighs forward and out round the barrel, the knees bent, the back slumped, the head down
 	_rb("LeftUpperLeg", Basis(Vector3.BACK, -0.42) * Basis(Vector3.RIGHT, 1.2))
@@ -1217,6 +1240,8 @@ func _death_tick(delta: float) -> void:
 	rig.tick(delta)
 	if _glow != null:
 		_glow.light_energy = move_toward(_glow.light_energy, 0.25, delta * 0.9)
+	if _eyes != null:
+		_eyes.light_energy = move_toward(_eyes.light_energy, 0.0, delta * 0.5)
 	if rig.collapse >= 0.5 and not _death_scream:
 		_death_scream = true
 		sfx("boss_stomp", 4.0, 0.6)

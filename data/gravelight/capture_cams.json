@@ -9480,6 +9480,41 @@
           "note": "T-240: the same horse from its off side: the long side of the mane"
         },
         {
+          "name": "horse_rider_trot",
+          "pos": [
+            9.0,
+            0.0,
+            46.3
+          ],
+          "yaw": -90.0,
+          "pitch": -9.0,
+          "settle_s": 1.0,
+          "bright": true,
+          "do": [
+            "open:Door_Yard",
+            "callv:YardHorse:stand_at:9,46.5,-90:0.5"
+          ],
+          "use": "YardHorse",
+          "shot_after_s": 4.4,
+          "note": "T-240: the rider's view four seconds after mounting, at a trot east down the yard: the neck and the ears ahead, the gun up (a rider may shoot at a walk and a trot)"
+        },
+        {
+          "name": "horse_rider_gallop",
+          "pos": [
+            9.0,
+            0.0,
+            46.3
+          ],
+          "yaw": -90.0,
+          "pitch": -9.0,
+          "settle_s": 0.2,
+          "bright": true,
+          "do": [
+            "callv:YardHorse:demo:0,1,1:1.7"
+          ],
+          "note": "T-240: the same rider at a gallop: both hands on the reins at the pommel, the view opened"
+        },
+        {
           "name": "totenross_front_quarter",
           "pos": [
             11.2,
@@ -9594,41 +9629,6 @@
           "settle_s": 2.0,
           "do": [],
           "note": "T-240: the Fuhrmann from his off side at night, the Totenross beyond him"
-        },
-        {
-          "name": "horse_rider_trot",
-          "pos": [
-            9.0,
-            0.0,
-            46.3
-          ],
-          "yaw": -90.0,
-          "pitch": -9.0,
-          "settle_s": 1.0,
-          "bright": true,
-          "do": [
-            "open:Door_Yard",
-            "callv:YardHorse:stand_at:9,46.5,-90:0.5"
-          ],
-          "use": "YardHorse",
-          "shot_after_s": 4.4,
-          "note": "T-240: the rider's view four seconds after mounting, at a trot east down the yard: the neck and the ears ahead, the gun up (a rider may shoot at a walk and a trot)"
-        },
-        {
-          "name": "horse_rider_gallop",
-          "pos": [
-            9.0,
-            0.0,
-            46.3
-          ],
-          "yaw": -90.0,
-          "pitch": -9.0,
-          "settle_s": 0.2,
-          "bright": true,
-          "do": [
-            "callv:YardHorse:demo:0,1,1:1.7"
-          ],
-          "note": "T-240: the same rider at a gallop: both hands on the reins at the pommel, the view opened"
         }
       ]
     }

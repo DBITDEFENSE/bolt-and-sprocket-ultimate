@@ -3,6 +3,8 @@ extends Node3D
 ## moon and a lamp, the rig posed at fixed stride phases and poses, one PNG each. Seconds to run, so the model can be
 ## looked at many times (the in-map frames come from tools_src/capture.gd, set u15_horse).
 ##   sh tools/wsl_godot.sh --path . res://gravelight/tools_src/horse_shots.tscn -- --label=<label> [--looks=noriker,dead] [--only=name,...] [--night]
+## Looks "boss" and "boss_rider" stand a real HorseBoss (the Totenross, the Fuhrmann) on the floor instead of the bare
+## rig: its light, breath, shaft and rider, in the poses of BOSS_SHOTS (HorseBoss.debug_pose).
 ## PNGs: morning/screenshots/t240_horse/<label>/<look>_<shot>.png. Never run with a window on the owner's PC.
 
 ## [name, gait speed m/s, stride phase, camera yaw deg (0 = from the front), camera height, distance, poses {..}]
@@ -30,6 +32,13 @@ const SHOTS: Array = [
 	["stagger", 0.0, 0.0, 50.0, 1.4, 4.4, {"stagger": 1.0}],
 	["down_a", 0.0, 0.0, 70.0, 1.4, 4.8, {"collapse": 0.5}],
 	["down_b", 0.0, 0.0, 70.0, 1.6, 4.8, {"collapse": 1.0}],
+]
+
+## [name, pose (HorseBoss.debug_pose), camera yaw deg (0 = from the front), camera height, distance]
+const BOSS_SHOTS: Array = [
+	["stand_quarter", "none", 40.0, 1.6, 5.0], ["stand_side", "none", 90.0, 1.4, 5.2], ["stand_front", "none", 6.0, 1.6, 4.6],
+	["stand_off_quarter", "none", -50.0, 1.6, 5.0], ["stand_rear", "none", 150.0, 1.6, 5.2], ["head", "none", 50.0, 1.9, 2.4],
+	["rear", "rear", 45.0, 1.5, 6.0], ["low", "low", 20.0, 1.3, 5.0], ["kick", "kick", 120.0, 1.4, 5.4], ["stagger", "stagger", 50.0, 1.5, 5.0],
 ]
 
 var _out: String = ""
@@ -86,7 +95,19 @@ func _run() -> void:
 	cam.fov = 40.0
 	add_child(cam)
 	cam.current = true
+	# a floor to stand on (the bosses are bodies)
+	var fb: StaticBody3D = StaticBody3D.new()
+	var fcs: CollisionShape3D = CollisionShape3D.new()
+	var fbs: BoxShape3D = BoxShape3D.new()
+	fbs.size = Vector3(60, 1, 60)
+	fcs.shape = fbs
+	fcs.position = Vector3(0, -0.5, 0)
+	fb.add_child(fcs)
+	add_child(fb)
 	for look: String in _looks:
+		if look.begins_with("boss"):
+			await _boss(look, cam)
+			continue
 		var rig: HorseRig = HorseRig.new(look)
 		add_child(rig)
 		if look == "dead":
@@ -133,3 +154,33 @@ func _run() -> void:
 		await get_tree().process_frame
 	print("RESULT horse_shots: done")
 	get_tree().quit()
+
+
+## A real HorseBoss in each pose of BOSS_SHOTS.
+func _boss(look: String, cam: Camera3D) -> void:
+	get_tree().current_scene = self
+	var b: HorseBoss = HorseBoss.new()
+	b.boss_key = "totenross_fuhrmann" if look == "boss_rider" else "totenross"
+	add_child(b)
+	b.spawn_horse(Vector3(0, 0.02, 0), 1000.0)
+	for sh: Array in BOSS_SHOTS:
+		if not _only.is_empty() and not _only.has(str(sh[0])):
+			continue
+		b.debug_pose(0.0, str(sh[1]))
+		for i: int in 45:
+			await get_tree().physics_frame
+		var yaw: float = deg_to_rad(float(sh[2]))
+		var aim: Vector3 = Vector3(0, 1.75, -1.4) if str(sh[0]) == "head" else Vector3(0, 1.3, -0.2)
+		cam.fov = 40.0
+		cam.global_position = Vector3(-sin(yaw) * float(sh[4]), float(sh[3]), -cos(yaw) * float(sh[4]) + aim.z)
+		cam.look_at(aim, Vector3.UP)
+		await get_tree().process_frame
+		var path: String = _out.path_join("%s_%s.png" % [look, str(sh[0])])
+		if DisplayServer.get_name() == "headless":
+			print("[horse_shots] (headless: no frame) ", path)
+			continue
+		await RenderingServer.frame_post_draw
+		get_viewport().get_texture().get_image().save_png(path)
+		print("[horse_shots] ", path)
+	b.queue_free()
+	await get_tree().process_frame

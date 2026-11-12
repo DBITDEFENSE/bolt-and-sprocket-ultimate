@@ -134,8 +134,12 @@ func _far_point() -> Vector3:
 			players.append((n as Player).global_position)
 	var best: Vector3 = Vector3.ZERO
 	var best_d: float = -1.0
-	for k: int in 60:
+	# on the squad's own level (the arena's centre when it names one): never a deck, a ramp's head or a gallery
+	var level: float = float((arena.get("centre", [0, 0, 0]) as Array)[1]) if (arena.get("centre", []) as Array).size() >= 3 else (float((players[0] as Vector3).y) if not players.is_empty() else 0.0)
+	for k: int in 80:
 		var p: Vector3 = NavigationServer3D.map_get_random_point(rid, director.nav_mask if director != null else 0x7FFFFFFF, true)
+		if absf(p.y - level) > 1.0:
+			continue
 		if not zones.is_empty():
 			var z: StringName = ZoneVolume.zone_at(get_tree(), p + Vector3.UP * 0.6)
 			if not HorseBoss.may_chase(z, GameState.is_zone_open(z), 0.0, zones):

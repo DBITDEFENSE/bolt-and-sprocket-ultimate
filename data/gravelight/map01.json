@@ -79,11 +79,18 @@
       "A_MINEHEAD",
       "B_RAILYARD"
     ],
+    "arrive": [
+      [
+        33.0,
+        0.0,
+        1.8
+      ]
+    ],
     "centre": [
       20.0,
       0.0,
       26.0
     ],
-    "_doc": "T-240 the surface yards only (the navmesh is baked for a 0.5 m agent and the doors are 2 m, but the lift cage, the stairs and the galleries are no place for a horse): it comes in at the far side of these zones from the squad and never follows below ground (the siege rule)."
+    "_doc": "T-240 the surface yards only (the navmesh is baked for a 0.5 m agent and the doors are 2 m, but the lift cage, the stairs and the galleries are no place for a horse): it comes in by the north gate (arrive; without it: the far side of these zones from the squad, on the yard's level) and never follows below ground (the siege rule)."
   }
 }

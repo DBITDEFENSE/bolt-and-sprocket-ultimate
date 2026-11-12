@@ -12,7 +12,7 @@
    "hp_base": 46000,
    "hp_player_step": 0.75,
    "damage_mult": 1.0,
-   "height": 1.1,
+   "height": 1.15,
    "tier": "run",
    "speed": 4.2,
    "turn_rate": 2.6,
@@ -58,7 +58,7 @@
    "small": "AND HIS HORSE",
    "hp_base": 72000,
    "damage_mult": 1.2,
-   "height": 1.16,
+   "height": 1.22,
    "speed": 4.6,
    "rider": {
     "falls_at": 0.5,

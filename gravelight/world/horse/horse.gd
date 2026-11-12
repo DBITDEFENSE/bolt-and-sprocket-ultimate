@@ -9,8 +9,9 @@ extends CharacterBody3D
 ## In a zombie game: zombies ignore it and cannot hurt it (its body is on the map-edge layer: players and bots are
 ## stopped by it, zombies and shots pass); it shies and slows when they crowd it, will not go near a homage boss, and
 ## flings aside a zombie it gallops through (damage on landing, a cooldown, its own speed lost); a rider can be hit
-## and is put down beside it when downed. Left alone it walks back to its rail. It only stands on open ground in its
-## zones (never through a house door, onto the tower or off the map): a step outside is refused.
+## and is put down beside it when downed (or knocked down by a boss). Left alone it walks back to its rail. It only
+## stands on open ground in its zones (never through a house door, onto the tower or off the map): a step outside is
+## refused.
 ## Co-op: one rider. The host decides who mounts (HorseUse.interact runs there) and mirrors it; the rider's own
 ## machine moves the horse (as a ladder or a zip line moves its user), every other peer puts it under the rider's
 ## replicated body. Bots never ride (may_mount), and nothing in their brains looks for it.
@@ -583,8 +584,9 @@ func _tick_ridden(delta: float) -> void:
 	if not p.is_local:
 		_follow_rider(delta)
 		return
-	if not p.is_alive() or p.downed or p.carry != self:
-		# downed in the saddle: pulled off (the host hears it as a use by the rider when this is a client)
+	if not p.is_alive() or p.downed or p.carry != self or p.has_status(&"knockdown"):
+		# downed in the saddle, or knocked down by a boss's charge or stomp: off the horse (the host hears it as a use
+		# by the rider when this is a client)
 		if Net.is_client() and Net.session != null:
 			Net.session.request_interact(use)
 		else:

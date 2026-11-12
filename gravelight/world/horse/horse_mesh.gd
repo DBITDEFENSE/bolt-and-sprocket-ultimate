@@ -39,7 +39,7 @@ const COAT: Color = Color(0.21, 0.115, 0.062)
 const COAT_DARK: Color = Color(0.055, 0.04, 0.035)
 const COAT_PALE: Color = Color(0.36, 0.25, 0.17)
 const WHITE: Color = Color(0.86, 0.83, 0.77)
-const HAIR: Color = Color(0.042, 0.033, 0.028)
+const HAIR: Color = Color(0.07, 0.054, 0.045)
 const DEAD_HIDE: Color = Color(0.2, 0.17, 0.15)
 const DEAD_DARK: Color = Color(0.07, 0.06, 0.06)
 const BONE: Color = Color(0.74, 0.7, 0.6)
@@ -123,8 +123,8 @@ static func material(surface: String, look: String) -> Material:
 				m.rim = 0.18
 				m.rim_tint = 0.7
 		"hair":
-			m.roughness = 0.85
-			m.metallic_specular = 0.12
+			m.roughness = 0.62
+			m.metallic_specular = 0.3
 			m.cull_mode = BaseMaterial3D.CULL_DISABLED
 		"hoof":
 			m.roughness = 0.45
@@ -680,11 +680,13 @@ class _Builder:
 					var shadec: float = 0.04 * absf(sin(float(ci) * 5.1 + float(r)))
 					col.append([p, w, HorseMesh.HAIR.lightened(shadec + 0.05 * q)])
 				grid.append(col)
-				if dead and ci % 3 == 1:
-					sheet("hair", grid)   # a hank two columns wide, then a gap
-					grid = []
-				elif dead and ci % 3 == 2:
-					grid = []
+				if dead and (ci * 7 + int(sx)) % 3 != 0:
+					# what is left of it: thin wisps, each on its own
+					var along: Vector3 = ((f1[0] as Vector3) - (f0[0] as Vector3)).normalized()
+					var wisp: Array = []
+					for e: Array in col:
+						wisp.append([e[0], along * (0.012 + 0.008 * absf(sin(float(ci) * 1.9))), e[1]])
+					card("hair", wisp, HorseMesh.HAIR, HorseMesh.HAIR.lightened(0.1))
 			if not dead:
 				sheet("hair", grid)
 		if not dead:
