@@ -137,6 +137,7 @@ var _flee_break_t: Dictionary = {}    # pid -> clock time of the last spike
 var squad_state: Dictionary = {"alone": false, "hurt": null, "downed": 0}
 var _squad_t: float = 0.0
 var _hurt_say_t: float = -99.0
+var _guard_log_t: float = -99.0
 var _retreat_roared: bool = false
 
 
@@ -727,6 +728,12 @@ func _think(delta: float) -> void:
 		if body != null:
 			_start_guard(body)
 			return
+		if int(squad_state.get("downed", 0)) > 0 and _clock - _guard_log_t > 2.0:
+			_guard_log_t = _clock
+			for n: Node in get_tree().get_nodes_in_group(&"players"):
+				var dp: Player = n as Player
+				if dp != null and dp.downed:
+					print("[paul] a body he will not guard: player %d at %.1f m, los %s, spectating %s" % [dp.player_id, dist_to(dp), str(has_los(dp, 2.2, 0.4)), str(dp.spectating)])
 	# the arena: never into the Core Vault (he waits in G, roaring)
 	if _in_vault(target.global_position):
 		var wait: Vector3 = _v(_arena.get("wait_point", [0, 0, 0]))
@@ -968,6 +975,7 @@ func _start(id: String) -> void:
 			climbing = true
 			_bt = 0.0
 			_leap_from = global_position
+			set_cd(id, float(m.get("cooldown", 30.0)))   # T-232: the dive skips _on_active_start; without this he looped climb-dive at BERSERK in the yard
 			sfx("paul_roar", 4.0, 0.8)
 		"taunt":
 			_pose.set_bone("LeftUpperArm", Vector3(1.5, 0, 0.6))

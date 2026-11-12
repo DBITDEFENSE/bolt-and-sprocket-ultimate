@@ -31,6 +31,7 @@ const COAT: Color = Color(0.13, 0.1, 0.08)
 
 var fstate: F = F.EMERGE
 var enraged: bool = false
+var gone: bool = false                 # out of the match (BossFx reads boss.gone like a HomageBoss's)
 var fx: BossFx = null                  # T-232: the shared effects kit
 var vents_done: int = 0
 var arrival_bursts: int = 0
@@ -111,6 +112,7 @@ func spawn_boss(at: Vector3, health: float) -> void:
 	_dim_back_t = -1.0
 	_redim_t = -1.0
 	_pivot.position.y = -3.4
+	gone = false
 	show()
 	process_mode = Node.PROCESS_MODE_INHERIT
 	collision_layer = LAYER_ZBODY
@@ -647,6 +649,7 @@ func _update_dead(delta: float) -> void:
 		_pivot.position.y -= delta * 1.2
 	if _state_t > 4.0:
 		hide()
+		gone = true
 		process_mode = Node.PROCESS_MODE_DISABLED
 		state = State.INACTIVE
 		if fx != null:

@@ -581,6 +581,7 @@ The **rage meter, 0–100**, shows on his boss bar as a **stout bottle filling**
 | Damage dealt to him | +1 per 1% of his max HP |
 | A player fleeing (sprinting away while within 20 m of him, after he has targeted them) | +4 per second per fleeing player |
 | He sees a player go down | +10 at once, then +1 per second per downed player in his sight |
+| **A player runs out of his sight** (he could see them a moment ago; they sprint round a corner or through a door within 20 m) | **+6 at once** (T-232), at most every 3 s per player; he shouts `PAU_FLEE_01` |
 | Natural cooling (no damage taken for 8 s) | −0.5 per second (proposed) |
 | **Shooting an IV bottle on his back rack** until it breaks (400 HP solo each, scaled) | **−20**, with a stout splash; 6 bottles, regrown on his next return |
 
@@ -590,7 +591,9 @@ The **rage meter, 0–100**, shows on his boss bar as a **stout bottle filling**
 |---|---|---|---|---|
 | **Calm** | 0–33 | 2.5 m (×1.00) | 2.6 m/s heavy two-legged stomp | Haymaker, Zombie Throw, Grab & Squeeze |
 | **Angry** | 34–66 | ×1.15, animated (skin cracks, plates push out, 1.2 s, he roars through it) | 3.6 m/s | + Ground Pound Combo, Rip & Throw (ore carts, rail sections) |
-| **BERSERK** | 67–100 | ×1.30, steam pours off him, the iron-red **glows** | 6.2 m/s knuckle-assisted gorilla run (still under the 6.8 sprint) | + Leap Slam (across zones), Thunderclap, Charge, Headframe Climb & Dive |
+| **BERSERK** | 67–100 | ×1.30, steam pours off him, the iron-red **glows** | 6.2 m/s knuckle-assisted gorilla run (still under the 6.8 sprint) | + Leap Slam (across zones), Thunderclap, Charge, Headframe Climb & Dive, **the Guard** (§5.4) |
+
+**The stage on the ground and in the room (T-232):** his footfalls are the kit's (`boss_stomp`, dust, a view shake of 0.45 at Calm, 0.65 Angry, 0.85 BERSERK, out to 16 / 20 / 24 m); every stage up roars (`paul_roar`) and the plates grind (`paul_plate_grind`) as they push out; a breath (`boss_breath`) and a puff of steam off the plates every 2-3 s, faster as he rages, constant steam at BERSERK. **BERSERK is the arena beat:** the yard's lights die under his roar (every light within 32 m to 12 %, guttering, and again every 18 s while he stays BERSERK), the headframe shakes and its floodlights swing on their brackets for 7 s, and the ground cracks under each of his steps (a dark decal at the foot, fading over 25 s). The light comes back over 5 s when he shrinks out of BERSERK, leaves or goes to his knees.
 
 **Hitboxes:**
 - head ×1.25, body ×1.0, arms and legs ×0.8;
@@ -611,6 +614,13 @@ The **rage meter, 0–100**, shows on his boss bar as a **stout bottle filling**
 | **Thunderclap** | Berserk | 0.8 s: arms flung wide, a huge inhale, steam vents from the plates | A 60° **cone shockwave** 14 m long | 40 + knockback 6 m; **strips every board from the barricades in the cone** | 9 s | Get out of the cone, or behind cover |
 | **Charge** | Berserk | 1.0 s: head down, knuckles paw the ground twice | 11 m/s for up to 20 m. **Smashes through doors**: an unbought door he crashes through opens for free and stays open. | 90 + big knockback | 12 s | Side-step. If he hits a solid wall he is stunned for 2 s (×1.5 window). |
 | **Headframe Climb & Dive** | Berserk, Minehead Yard only | Climbs the steel headframe like a gorilla (3 s, visible from the whole yard), then **his shadow grows** under the target for 1.2 s | A dive onto that spot | 130 in 3 m (downs a non-Ironhide player), 60 at 3–7 m | 30 s | Keep moving; the shadow follows you for 0.6 s then locks |
+| **The Guard, "protect my guys"** (T-232) | Berserk; a downed player within 30 m in his sight | He walks to the body (`PAU_CALM_03`, a roar) and **stands over it, arms spread**, for up to 12 s. Anyone who comes within 4.5 m: 0.6 s, both fists up, a roar, the light | A slam in the **half-circle in front of him** (3.5 m): he faces the comer only when a slam starts | 60 + knockdown, every 2.5 s at most | After a guard he does not guard again for 8 s | **Revive from behind him**: the far side is safe between slams. Never a grab; nothing chains. A blast stagger breaks the guard. |
+
+**Every telegraph is the kit's one light shape** (T-232: `BossFx.tele`, a rise, a hold, a snap out, with `boss_telegraph_rise`) in the stout's amber-red, never the Nachtglas violet, except the violet flash when a bottle breaks.
+
+**The squad's state changes him (T-232):**
+- **A hurt player** (under 35 % health, within 25 m, in his sight) becomes his target while he is choosing a move: *"Nobody gets left. Nobody."* (`PAU_CALM_03`, at most every 20 s), and the dread layer reads him looking at them.
+- **A lone player** (one on their feet) feels the pressure: Haymaker and Zombie Throw come back at 0.8× their cooldowns; in return **Grab & Squeeze holds a lone player at most 3.5 s and breaks on 6 melee presses** (the solo break stays fair).
 
 **Idle / taunt** (Calm only, when nobody has hurt him for 4 s, at most every 20 s):
 - He **beats his chest**, and the **dog tags clink**.
@@ -626,8 +636,11 @@ The **rage meter, 0–100**, shows on his boss bar as a **stout bottle filling**
 - **Bottles:** a bottle-break flinch (no stagger, a gasp).
 - **Reactions:** knee-down stagger and get-up.
 - **Idle:** chest beat, the tin-cup look.
+- **Guard (T-232):** the walk to the body, the stand over it (arms spread), the two-fist wind-up and the slam.
 - **Retreat:** headframe leap away.
 - **Death sequence:** knees, the drain-and-shrink, the look, the cup hand-over, the slow fall forward.
+
+**The model as built (T-232, on the kit's helpers; `gravelight/enemies/homage/paul.gd`):** iron-red skin (the MZ heavy male, `inst_tint`) with a wet sheen on the chest and head; the riveted bone plates in rust-rough iron with a darker rim where they push out of the skin, rivets with their shadows and rust streaks running down from them, pushed out 12 % per stage; the six Helvetia bottles **lit from inside** (emissive amber glass with a tin cap and a paper label, an amber light on the rack) that **dim as each breaks**; the IV lines as tubes from each bottle's neck over the shoulder into the back of the neck with a faint violet running in them (the Nachtglas in the stout), stout dripping where they go in; steam off the plates on every exhale; eyes that read (warm amber beads with a slow 4.5 s blink, redder and brighter per stage, out when he falls); the tin cup and the dog tags in polished tin. Everything stays in the Likeness Sheet's silhouette; nothing is a joke.
 
 ### 5.6 Death and the twist
 1. At 0 HP he **drops to his knees**. The **rage drains out of him all at once**: steam, the glow fading, the bottle on his boss bar emptying. **His body shrinks a little** and the red fades toward a human colour.

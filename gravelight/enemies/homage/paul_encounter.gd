@@ -311,9 +311,10 @@ func _tick(delta: float) -> void:
 		_swing_t += delta
 		var k: float = clampf(_swing_left / _swing_s, 0.0, 1.0)   # settles toward the end
 		for e2: Array in _swinging:
-			var sn: Node3D = e2[0]
-			if not is_instance_valid(sn):
-				continue
+			var sv: Variant = e2[0]
+			if not is_instance_valid(sv):
+				continue   # (a lamp freed with its zone: a typed assignment would error first)
+			var sn: Node3D = sv as Node3D
 			var a: float = sin(_swing_t * 2.6 + float(e2[2])) * 0.26 * k if _swing_left > 0.0 else 0.0
 			sn.transform.basis = (e2[1] as Basis) * Basis(Vector3.RIGHT, a)
 
