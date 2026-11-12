@@ -1,17 +1,58 @@
 # PROGRESS
 
-RESUME HERE: 2026-11-12 Claude Fable 5.2, the foot corrections are reordered (the contact lock runs last, inside
-ZombieBodyModifier; a toe ray tilts the foot; the knee's bend plane is steadied) and committed. Work ONLY in
-.wt/zombie-overhaul, branch codex/zombie-overhaul; rules and commands in docs/CLAUDE_FABLE_5_2_ZOMBIE_HANDOFF.md.
-ONE GATE NOW FAILS AND MUST NOT BE LOOSENED: `zombie_gallery --horde ... --verify-motion` reports a recorded-contact
-p95 of 0.145 m/s against the 0.10 limit (0.171 on the runtime before this slice; the 0.012 of the turn checkpoint was
-read from the pose before the modifier). NEXT: (1) find where the horde's planted feet move: split the gallery's
-contact samples by cause (a lock release, a body turning in place, a shove from another zombie, the first frames of
-a contact while the terrain IK eases in) and fix the largest; (2) the toe still goes 10 cm into a stair-angle slope
-at the 5th percentile (the IK's `blend` 12 lags a landing foot; 24 helped at a walk and hurt at a run: needs a
-per-foot landing rule, not one number); (3) the lock's one-frame release on rubble and real steps at a jog and
-faster; (4) the rest of handoff item 2: turn-to-move / attack / death on terrain, rapid target changes, the LOD
-distances (--lod), a rendered look. Then items 3-6. Preserve all gameplay speeds.
+RESUME HERE: 2026-11-12 Codex closed the mixed-horde foot-contact gate on codex/zombie-overhaul in
+.wt/zombie-overhaul: final-pose p95 0.144702 -> 0.012850 m/s, unchanged limit 0.10. A one-tick collision stop
+was dropping both contacts at the start of the idle blend; established contacts now survive its gait-dominant
+part and release for sustained idle/attack. Evidence/negative control: docs/captures/after/mocap/contacts/README.md.
+NEXT: continue terrain landing/release work from docs/CLAUDE_FABLE_5_2_ZOMBIE_HANDOFF.md item 2: stair-angle
+slope toe penetration (~10 cm p05); sprint contact releases on real steps/rubble; Bellringer ramp20 releases;
+then terrain transitions, LOD, remaining recorded states and artist-authored model sample. Preserve gameplay
+speeds, existing jitter, collision/nav, attack timing, and the 0.10 gate. No merge/export; boss branch untouched.
+
+## 2026-11-12, retained planted feet through brief collision stops (Codex)
+
+Traced the SAME final-pose acceptance samples with the optional gallery `--diagnose-contact` flag. Of 2,723
+samples above 0.10 m/s before the fix: 2,129 had the contact lock off, 127 repinned at the correction limit,
+and 467 drifted with a stable pin. Typical failing frames were CHASE with speed zero and `_loco_x = 0.9`,
+followed immediately by full-speed locomotion. The former `_loco_x >= .99 && speed > .4` condition reset both
+anchors during that one-frame idle blend. This was real drawn movement, not a reason to remove samples.
+
+`zombie.gd` now retains an established recorded gait's contacts while its blend is >= the new data value
+`contact_lock.retain_locomotion_blend` (0.5). Entry still requires the full gait; state fades, attacks, pooling
+and sustained idle release normally. No authored poses, motion sources, gameplay speeds/jitter, navigation,
+collision shapes, attack timing, or acceptance threshold changed. Gallery diagnostics partition samples and
+save frame context; `--contact-retention-off` disables only retention in memory for a repeatable negative control.
+The measurement description now admits brief idle-blend endpoints (the existing filter only tests the current
+callback); the sample-selection code is unchanged.
+
+Executed on the final runtime:
+
+- 60 s, fixed-60, 24 active, near-player modifiers: 52,787 final-pose source contacts; p95 **0.012850 m/s**;
+  root/body mismatch p95 **0.8472%**; no missing clips/rest samples; minimum24; motion gate PASS/exit0.
+  Negative control reproduces **0.144702 m/s**, 50,980 samples, exit1 at the unchanged gate.
+- 60 s rendered, uncapped, no captures: frame p95 **4.1667 ms**, synchronous callback CPU **0.146 ms** per actor;
+  minimum24, performance gate PASS/exit0. RTX5090 / Ryzen7800X3D; an unrelated headless Godot process was
+  running and was left alone. Not isolated mid-range/full-map certification; deferred modifier work is outside
+  the callback counter (but contributes to overall frame time).
+- GUT zombie suite **50/50, 4,612 asserts**. New regression observes the final skeleton at stop/restart, requires
+  unchanged world anchors and <0.10 m/s toe motion, then checks attack and sustained-idle releases. Its first
+  fixture used margins longer than the fast recording's contact windows; corrected to fit those actual windows.
+- Script scan **860/0**; imported bank **30/30**; stationary turns **0.006314 m/s**, 175 contacts; Map2 smoke
+  PASS (root mismatch worst1.5%, climb, severs/Gore Off, knockdown/get-up, deaths/corpse return); ragdolls peak6/cap6.
+- Blender5.1.2 headless re-ran both chase conversions, exit0, bank still30 clips; loop/contact validation passed.
+  No new asset/source, no raw licensed files committed. Only regenerated metadata adds `extract_yaw: false`.
+- Terrain matrix rerun: **22 cases x5 lanes**, no lost actors/failures. Jog/run on real steps: slip p95
+  1.3216/16.0485 -> 0.0115/0.0132 m/s; rubble12.8299/13.4247 -> 0.0117/0.0092. Sprint remains bad:
+  steps10.8193, rubble12.2039. Bellringer ramp20 worsened11.3951 ->13.8384; thin male rubble .0501 ->.1605.
+  Walk-case median stair-angle toe p05 remains -0.1021 m. These are still open; no terrain-wide sign-off.
+
+Evidence: `docs/captures/after/mocap/contacts/` and `terrain/terrain_contact_retain.json`; local full logs
+`.mocap_work/zombies/contact_*.log`. Known Unicode/NUL startup warnings remain. No new whole-roster visual
+score: reviewed soldier locomotion/swipes/two deaths/turns3, variety3, model2; full premium target unfinished.
+An eight-second offscreen sprint-studio comparison was captured and sampled frames inspected: bodies are
+still visibly simplified; crowding obscures some feet. That short all-sprint case already had low drift before
+the fix and is not the mixed-tier gate. It provides a current visual check, not terrain or transition sign-off.
+
 
 ## 2026-11-12, the foot corrections in the right order (handoff item 2, the fixing half, part 1)
 

@@ -2,6 +2,7 @@ extends "res://gravelight/tools_src/shots_zombie_anim.gd"
 ## Baseline viewer. --horde runs real AI; default previews every registered clip on every outfit.
 ## --capture saves frames (requires rendering); --out=res://docs/captures/before
 ## --seconds=60 controls horde duration. No settings/profile saves; no synthetic animation keys.
+## --diagnose-contact partitions the unchanged gate; --contact-retention-off reproduces its pre-fix runtime.
 
 var horde: bool = false
 var capture: bool = false
@@ -50,6 +51,11 @@ var verify_performance: bool = false
 var near_player: bool = false
 var final_poses: Dictionary = {}     # instance id -> the last final pose's toes, clip, cycle time and serial
 var material_closeup: bool = false
+var diagnose_contact: bool = false
+var contact_buckets: Dictionary = {}
+var contact_examples: Dictionary = {}
+var contact_retention_off: bool = false
+var contact_limit: float = 0.0
 
 func _place_new(spec: Dictionary, pos: Vector3, window: Barricade = null) -> Zombie:
 	var z: Zombie = preload("res://tools/zombie_profiled.gd").new()
@@ -72,11 +78,25 @@ func _place_new(spec: Dictionary, pos: Vector3, window: Barricade = null) -> Zom
 				"time": fposmod((z.get("_playback") as AnimationNodeStateMachinePlayback).get_current_play_position(), maxf(0.001, ZombieClips.length_of(clip)))}
 			for side: String in ["Left", "Right"]:
 				snap[side] = sk.global_transform * (sk.get_bone_global_pose(sk.find_bone(side + "Foot")) * Vector3(0, -0.06, -0.15))
+			if diagnose_contact:
+				var modifier: ZombieBodyModifier = z.get("_modifier")
+				var lock: RefCounted = z.get("_contact_lock")
+				snap["diagnosis"] = {"actor": _new.find(z), "tier": z.get("tier"), "body": z.global_position,
+					"contact_clip": lock.get("previous_clip"),
+					"loco_x": z.get("_loco_x"), "speed": Vector2(z.velocity.x, z.velocity.z).length(),
+					"fading_from": (z.get("_playback") as AnimationNodeStateMachinePlayback).get_fading_from_node(),
+					"state": Zombie.State.keys()[z.state], "lock_clip": modifier.lock_clip, "lock_time": modifier.lock_time,
+					"yaw": z.rotation.y, "clip_state": z.current_clip_state(), "lock_on": modifier.lock_on,
+					"modifier_active": modifier.active, "pins": lock.get("pins").duplicate(),
+					"intervals": lock.get("intervals").duplicate(), "correction": lock.get("correction").duplicate(),
+					"hip_drop": modifier.get("_hip_drop"), "foot_lift": modifier.get("_foot_lift").duplicate(),
+					"ik_weight": modifier.ik_weight}
 			final_poses[id] = snap)
 	return z
 
 func _ready() -> void:
 	seed(74119)
+	contact_limit = float(GLData.load_json("res://data/gravelight/zombie_mocap.json")["validation"]["contact_p95_mps"])
 	process_priority = 10 # Sample after the actual zombie animation callbacks.
 	# Tool owns its input; the project's console references a missing action in this baseline.
 	for autoload: Node in get_tree().root.get_children():
@@ -101,12 +121,17 @@ func _ready() -> void:
 		elif arg == "--verify-motion": verify_motion = true
 		elif arg == "--verify-performance": verify_performance = true
 		elif arg == "--near-player": near_player = true
+		elif arg == "--diagnose-contact": diagnose_contact = true
+		elif arg == "--contact-retention-off": contact_retention_off = true
 	if capture and DisplayServer.get_name() == "headless":
 		push_error("Screenshots require a rendered run; omit --headless.")
 		get_tree().quit(2)
 		return
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(_out))
 	GameState.map_id = &"map01_kaltenbrunn"
+	if contact_retention_off:
+		# Tool-local negative control; never writes the resource or a user setting.
+		ZombieClips.contact_lock_config()["retain_locomotion_blend"] = 2.0
 	if full_rate: Zombie.anim_lod_scale = 100.0
 	_build_studio()
 	await get_tree().process_frame
@@ -211,6 +236,7 @@ func _process(delta: float) -> void:
 			last_actor_state[actor_id] = {"inactive": not actor.is_active(), "state": state_name, "position": str(actor.position), "no_progress_seconds": actor.get("_progress_t"), "stuck_seconds": actor.get("_stuck_t")}
 		min_active = mini(min_active, active_count)
 		var version: String = "BEFORE / legacy" if "--legacy-zombies" in OS.get_cmdline_user_args() else "AFTER"
+		if contact_retention_off: version = "BEFORE / contacts released at brief stops"
 		_label.text = "%s | LIVE AI | %d active | %.1f / %.1f s" % [version, active_count, elapsed, seconds]
 		if elapsed > 2.0: frames.append(delta * 1000.0)
 		if capture and elapsed > (6.0 if emerge_together else 3.0) and captures == 0:
@@ -292,6 +318,7 @@ func _sample_mocap(delta: float) -> void:
 		if snap.is_empty() or str(snap.get("clip", "")) != clip: continue
 		var time: float = float(snap["time"])
 		var now: Dictionary = {"time": time, "clip": clip, "serial": int(snap["serial"])}
+		if diagnose_contact: now["diagnosis"] = snap["diagnosis"]
 		var old: Dictionary = source_feet.get(id, {})
 		for side: String in windows:
 			var toe: Vector3 = snap[side]
@@ -302,8 +329,34 @@ func _sample_mocap(delta: float) -> void:
 					var v: Vector3 = (toe - (old[side] as Vector3)) / maxf(delta, 0.00001)
 					source_slips.append(Vector2(v.x, v.z).length())
 					source_relative_slips.append(Vector2(v.x, v.z).length() / Vector2(z.velocity.x, z.velocity.z).length())
+					if diagnose_contact: _diagnose_sample(now, old, side, Vector2(v.x, v.z).length(), delta)
 					break
 		source_feet[id] = now
+
+## Partition the exact acceptance samples, including failures; diagnostics never filter the gate.
+func _diagnose_sample(now: Dictionary, old: Dictionary, side: String, speed: float, dt: float) -> void:
+	var a: Dictionary = old.get("diagnosis", {})
+	var b: Dictionary = now["diagnosis"]
+	if a.is_empty(): return
+	var i: int = 0 if side == "Left" else 1
+	var reason: String = "stable_pin"
+	if str(a["contact_clip"]) != str(old["clip"]) or str(b["contact_clip"]) != str(now["clip"]): reason = "lock_off"
+	elif int(a["intervals"][i]) != int(b["intervals"][i]): reason = "contact_onset"
+	elif (a["pins"][i] as Vector3).distance_to(b["pins"][i]) > 0.00001: reason = "repin"
+	elif int(b["intervals"][i]) < 0: reason = "outside_lock_window"
+	var bucket: Array = contact_buckets.get(reason, [])
+	bucket.append(speed)
+	contact_buckets[reason] = bucket
+	var examples: Array = contact_examples.get(reason, [])
+	if speed > contact_limit and examples.size() < 32:
+		var residual: Vector3 = (now[side] as Vector3) - (b["pins"][i] as Vector3)
+		var old_residual: Vector3 = (old[side] as Vector3) - (a["pins"][i] as Vector3)
+		examples.append({"speed": speed, "side": side, "clip": now["clip"], "time": now["time"],
+			"old_time": old["time"], "residual_xz": Vector2(residual.x, residual.z).length(),
+			"old_residual_xz": Vector2(old_residual.x, old_residual.z).length(),
+			"yaw_step": angle_difference(float(a["yaw"]), float(b["yaw"])),
+			"body_step": (b["body"] as Vector3) - (a["body"] as Vector3), "dt": dt, "context": b, "previous_context": a})
+		contact_examples[reason] = examples
 
 func _physics_process(delta: float) -> void:
 	if not ready_gallery or not horde or finished or elapsed < 2: return
@@ -358,6 +411,14 @@ func _write_json(filename: String, value: Dictionary) -> void:
 
 func _finish() -> void:
 	finished = true
+	if diagnose_contact:
+		var diagnosis: Dictionary = {"limit_mps": contact_limit, "buckets": {}, "examples": contact_examples}
+		for reason: String in contact_buckets:
+			var values: Array[float] = []
+			values.assign(contact_buckets[reason])
+			diagnosis["buckets"][reason] = {"samples": values.size(), "over_limit": values.filter(func(v: float) -> bool: return v > contact_limit).size(),
+				"p50": _percentile(values, 0.5), "p95": _percentile(values, 0.95), "max": values.max()}
+		_write_json("contact_diagnosis.json", diagnosis)
 	var result := {"mode": "horde" if horde else "clip_preview", "seconds": elapsed, "zombies": _new.size(), "rendered": DisplayServer.get_name() != "headless", "frame_ms_p50": _percentile(frames, 0.5), "frame_ms_p95": _percentile(frames, 0.95), "planted_foot_speed_mps_p50": _percentile(slips, 0.5), "planted_foot_speed_mps_p95": _percentile(slips, 0.95), "contact_samples": slips.size(), "contact_method": "y < 0.14m and abs(vertical velocity) < 0.2m/s; heuristic only", "rest_pose_samples": zero_pose_samples, "pose_samples": sample_count, "phase_bin_peak_occupancy": phase_bins, "ragdoll_peak": peak_ragdolls, "missing": missing, "limitations": "Headless timing excludes GPU. Rest-pose heuristic does not prove zero T-poses or pops. Ragdolls are not exercised by horde mode. Preview bypasses gameplay transitions. No target-machine performance sign-off."}
 	result["min_active"] = min_active
 	result["moving_pose_samples"] = moving_samples
@@ -373,13 +434,14 @@ func _finish() -> void:
 	result["mocap_contact_samples"] = source_slips.size()
 	result["mocap_contact_speed_relative_p95"] = _percentile(source_relative_slips, 0.95)
 	result["mocap_contact_timing_caveat"] = "Use fixed-fps 60 for contact acceptance: unsynchronized render/physics clocks create sampling jitter, especially headless. Do not use fixed-fps runs for performance."
-	result["mocap_contact_method"] = "Source toe contact intervals; toe world displacement of the FINAL pose (read at Skeleton3D.skeleton_updated, after the body modifier's terrain IK and the contact lock); excludes blends, transitions and track wraps"
+	result["mocap_contact_method"] = "Source toe contact intervals; consecutive FINAL poses at Skeleton3D.skeleton_updated after terrain IK/contact lock. Current callback must be Locomotion, blend >= .99 and speed >= .4 m/s; endpoints can include brief idle blends. Same clip/contact interval, forward clock; track wraps excluded."
 	result["root_body_speed_relative_error_p95"] = _percentile(root_errors, 0.95)
 	result["callback_cpu_ms_per_actor_frame_p95"] = _percentile(actor_cpu_ms, 0.95)
 	result["cpu_scope"] = "Gallery wrapper around Zombie physics/process callbacks, includes synchronous calls; excludes deferred engine/GPU work and other game systems. Render FPS affects calls/frame. Not mid-range certification."
 	result["cpu"] = OS.get_processor_name()
 	result["played_gaits"] = played_gaits
 	result["near_player_modifiers"] = near_player
+	result["contact_retention_negative_control"] = contact_retention_off
 	result["validation_scope"] = "Active population, missing resources/captures, sampled rest poses only. Not art or foot-contact acceptance."
 	result["quality_acceptance"] = "NOT CERTIFIED: mixed legacy/mocap library; full state and planted-contact runtime acceptance still required"
 	if horde and min_active < actor_count:

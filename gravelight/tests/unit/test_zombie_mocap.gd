@@ -269,6 +269,76 @@ func test_live_gaits_keep_speed_and_match_root_travel_after_random_seek() -> voi
 		assert_lt(held_speeds[int(held_speeds.size() * 0.95)], 0.1, "p95 planted foot drift with additive limp stays below 0.1 m/s")
 
 
+func test_planted_contact_survives_a_collision_stop_then_releases_for_idle_and_attack() -> void:
+	if not ZombieClips.has_clip("mco_fast_chase"):
+		pending("Local licensed pack required")
+		return
+	seed(74119)
+	var host := Node3D.new()
+	add_child_autofree(host)
+	var spawn := ZombieSpawn.new()
+	host.add_child(spawn)
+	var z := Zombie.new()
+	host.add_child(z)
+	z.activate({"enemy_id":"ganger", "variant":"soldier", "tier":"sprint"}, spawn, null)
+	z.set_physics_process(false)
+	z.set_process(false)
+	z.set_posture("none", 0.0)
+	z._modifier.ik_weight = 1.0
+	z._modifier.foot_ground_y = PackedFloat32Array([-0.018, -0.018])
+	z._modifier.toe_ground_y = PackedFloat32Array([-0.018, -0.018])
+	z._enter(Zombie.State.CHASE)
+	var toes: Array[Vector3] = [Vector3.ZERO, Vector3.ZERO]
+	z._skel.skeleton_updated.connect(func() -> void:
+		for i: int in 2:
+			toes[i] = z._skel.global_transform * (z._skel.get_bone_global_pose(z._skel.find_bone("LeftFoot" if i == 0 else "RightFoot")) * Vector3(0, -0.06, -0.15)))
+	var foot: int = -1
+	# Find the middle of a real recorded plant, after entry blending and terrain easing have settled.
+	for frame: int in 240:
+		z.velocity = Vector3(0, 0, -z.speed)
+		z.position += z.velocity / 60.0
+		z._animate(1.0 / 60.0)
+		await get_tree().process_frame
+		if frame < 60: continue
+		var t: float = fposmod(z._playback.get_current_play_position(), z._cycle_len)
+		for i: int in 2:
+			for span: Array in ZombieClips.contact_windows(z._loco_clip)["Left" if i == 0 else "Right"]:
+				if t > float(span[0]) + 0.025 and t < float(span[1]) - 0.065: foot = i
+		if foot >= 0: break
+	assert_gte(foot, 0, "exercised a real source plant")
+	if foot < 0: return
+	var pin: Vector3 = z._contact_lock.pins[foot]
+	var previous: Vector3 = toes[foot]
+	for stopped: bool in [true, false]:
+		z.velocity = Vector3.ZERO if stopped else Vector3(0, 0, -z.speed)
+		z.position += z.velocity / 60.0
+		z._animate(1.0 / 60.0)
+		await get_tree().process_frame
+		assert_true(z._modifier.lock_on, "one stopped tick must not release the planted foot")
+		assert_eq(z._contact_lock.pins[foot], pin, "restart keeps the same world contact")
+		var step: Vector3 = toes[foot] - previous
+		assert_lt(Vector2(step.x, step.z).length() * 60.0, 0.10, "final drawn foot remains planted through stop/restart")
+		previous = toes[foot]
+	z._enter(Zombie.State.ATTACK)
+	z._animate(1.0 / 60.0)
+	assert_false(z._modifier.lock_on, "an attack immediately releases locomotion contacts")
+	assert_eq(z._contact_lock.previous_clip, "")
+	z._enter(Zombie.State.CHASE)
+	for frame: int in 60:
+		z.velocity = Vector3(0, 0, -z.speed)
+		z.position += z.velocity / 60.0
+		z._animate(1.0 / 60.0)
+		await get_tree().process_frame
+	assert_true(z._modifier.lock_on, "locomotion establishes fresh contacts after an attack")
+	z.velocity = Vector3.ZERO
+	for frame: int in 20:
+		z._animate(1.0 / 60.0)
+		await get_tree().process_frame
+	assert_false(z._modifier.lock_on, "a sustained stop releases contacts into idle")
+	assert_eq(z._contact_lock.previous_clip, "")
+	z.deactivate()
+
+
 ## Co-op: a client's copy sees only the host's interpolated yaw (20 snapshots a second, 100 ms behind, with jitter and
 ## a lost packet now and then), never the destination. The real InterpBuffer carries a real host zombie's _face().
 func _puppet_turn_run(degrees: float, jitter_ms: float, drop_every: int, seed_v: int, track_dps: float = 0.0) -> Dictionary:

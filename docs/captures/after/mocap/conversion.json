@@ -311,7 +311,8 @@
       },
       "foot_lock": true,
       "timing": null,
-      "events": {}
+      "events": {},
+      "extract_yaw": false
     },
     "mco_fast_chase": {
       "file": "mco_fast_chase.glb",
@@ -390,7 +391,8 @@
       },
       "foot_lock": true,
       "timing": null,
-      "events": {}
+      "events": {},
+      "extract_yaw": false
     },
     "mco_crawl": {
       "file": "mco_crawl.glb",

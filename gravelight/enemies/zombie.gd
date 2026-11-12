@@ -3314,6 +3314,10 @@ func _animate(dt: float) -> void:
 		_pivot.position += _tree.get_root_motion_position() * _pivot.scale
 		_record_death_velocity(dt)
 	var contact_cfg: Dictionary = ZombieClips.contact_lock_config()
+	# A one-tick collision stop starts the idle blend. Keep established contacts through its gait-dominant
+	# part instead of dropping both pins and planting them elsewhere on the very next moving frame.
+	# Entry still requires the full recorded gait; sustained stops release as the idle blend takes over.
+	var retain_contacts: bool = _contact_lock.previous_clip == _loco_clip and _loco_x >= float(contact_cfg.get("retain_locomotion_blend", 0.5))
 	if _loco_clip.begins_with("mco_") and _tree_state == "Locomotion":
 		# Upper-body turn lean is additive to the recording and leaves planted leg motion intact.
 		var lean_angle: float = _loco_turn * float(_anim["turn"]["lean_tiers"].get(String(tier), 0.0))
@@ -3325,7 +3329,7 @@ func _animate(dt: float) -> void:
 		for event: Dictionary in ZombieClips.footstep_events(_turn_motion.clip):
 			var at: float = float(event["phase"]) * ZombieClips.length_of(_turn_motion.clip)
 			if at > _turn_motion.previous_clock and at <= _turn_motion.clock: _footstep(bool(event["left"]))
-	elif _loco_clip.begins_with("mco_") and _tree_state == "Locomotion" and _playback.get_fading_from_node() == &"" and _loco_x >= 0.99 and spd > 0.4 and bool(contact_cfg.get("enabled", false)):
+	elif _loco_clip.begins_with("mco_") and _tree_state == "Locomotion" and _playback.get_fading_from_node() == &"" and ((_loco_x >= 0.99 and spd > 0.4) or retain_contacts) and bool(contact_cfg.get("enabled", false)):
 		_lock_feet(_loco_clip, fposmod(_playback.get_current_play_position(), _cycle_len), dt, contact_cfg)
 	else:
 		_contact_lock.reset()

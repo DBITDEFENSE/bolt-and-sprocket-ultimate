@@ -3,6 +3,25 @@
 Base: master e96a0188; branch codex/zombie-overhaul in .wt/zombie-overhaul.
 The owner approved master because main does not exist. No new animation poses or assets authored.
 
+## 2026-11-12 current checkpoint: mixed-horde contact gate closed
+
+Final-pose toe drift p95 **0.144702 -> 0.012850 m/s**, limit unchanged0.10. Brief collision stops were resetting
+contact anchors as idle blending began. Retaining established contacts through the gait-dominant blend fixes
+that without changing gameplay speed. The existing gate's sample selection is unchanged; optional diagnostics
+account for every sample. `--contact-retention-off` reproduces the failing result exactly.
+
+50/50 zombie tests (4,612 asserts), 860 scripts/0 failures, bank30, Blender both chase conversions, Map2 smoke,
+stationary turns, cap6 ragdolls, and both60s horde gates passed. Rendered frame p954.1667ms; callback CPU .146ms
+on RTX5090/7800X3D, with another headless Godot process running; no mid-range/full-map claim.
+Evidence and commands: `docs/captures/after/mocap/contacts/README.md`. Terrain110-row rerun:
+`docs/captures/after/mocap/terrain/terrain_contact_retain.json`.
+
+RESUME HERE: handoff item2 in `docs/CLAUDE_FABLE_5_2_ZOMBIE_HANDOFF.md`: per-foot slope landing (~10cm toe
+penetration p05), sprint releases on real steps/rubble, Bellringer ramp20, terrain transitions/LOD, then remaining
+licensed states and artist-authored body/PBR/LOD sample. Co-op turns and the mixed-horde gate are closed;
+older dated resume paragraphs below are history. Scores remain unchanged; the full premium target is unfinished.
+
+
 ## 2026-11-11 recorded stationary turns
 
 The bank now contains 30 derived clips from 26 owned source recordings. Two additional versions
@@ -38,7 +57,7 @@ mid-range hardware or full maps; the moving horde is not a 24-simultaneous-turn 
 Captured soldier stationary turns rate **2 -> 3/5**; locomotion/swipes/two deaths stay3,
 model stays2, variety stays3. Other types are not newly scored. Full premium target is unmet.
 
-**2026-11-12: the foot corrections are reordered** (contact lock last inside the body modifier, toe-ray foot tilt, steadied knee plane; see the newest PROGRESS entry and `docs/captures/after/mocap/terrain/terrain_lock_last.json`). **Open and failing:** read on the final pose, the 24-horde recorded-contact p95 is 0.145 m/s against the 0.10 limit (`horde_contact_final_pose.json`); the earlier 0.012 was read before the modifier. Contact acceptance is NOT met.
+**2026-11-12: the foot corrections are reordered** (contact lock last inside the body modifier, toe-ray foot tilt, steadied knee plane; see the newest PROGRESS entry and `docs/captures/after/mocap/terrain/terrain_lock_last.json`). **Historical failure, fixed in the current checkpoint above:** final-pose p95 was0.145 against0.10 (`horde_contact_final_pose.json`). The earlier turn-checkpoint0.012 was read before the modifier and remains invalid evidence; the new0.012850 is measured after all modifiers.
 
 **2026-11-12: the terrain / body matrix is measured** (`tools/zombie_terrain_check.tscn`, 22 cases x 5 lanes; `docs/captures/after/mocap/terrain/terrain_baseline.json`; the newest PROGRESS entry has the findings). Three limits are now numbers: the recorded shuffle is played at x2.8 (shamble) and x4.3 (walk) of its recorded cadence; toes go 11 cm into a stair-angle slope because feet stay level; the contact lock releases with an 18 cm one-frame snap on rough ground at speed. Earlier toe-drift evidence read poses without the foot IK (a modifier's result is only visible at `Skeleton3D.skeleton_updated`). No runtime change was kept from this slice.
 

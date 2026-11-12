@@ -1,8 +1,30 @@
 # Claude Fable 5.2 — finish the zombie overhaul
 
-Prepared 2026-11-11 at Devin's request. Continue the existing work; do not restart the audit or
-replace the project. The latest verified runtime checkpoint is **bf395bc3** on
-**codex/zombie-overhaul**. The full premium art/animation target is **NOT finished**.
+Updated 2026-11-12 after Claude's terrain/co-op work and Codex's collision-stop contact fix. Continue the
+existing `codex/zombie-overhaul` branch; do not restart the audit or replace the project. See `git log -5` for
+its current checkpoint. The full premium art/animation target is **NOT finished**.
+
+## Current status: read this before the historical evidence
+
+- Co-op turns are implemented and tested (`e52633cc`). Terrain/body matrix and final-pose readers were added
+  (`ae8a9aff`); lock-last/tilt/knee fixes followed (`0dca8313`).
+- **The mixed-horde final-pose gate now PASSES:** 0.012850 m/s p95 (52,787 samples), down from0.144702,
+  unchanged0.10 limit. Brief collision stops had reset the pins at `_loco_x=.9`. Established contacts now survive
+  that short idle blend while gait weight>=0.5 (resource setting); attacks/sustained idle still release.
+- Exact old behavior is reproducible with gallery `--contact-retention-off`; it fails at0.144702, exit1.
+  `--diagnose-contact` partitions the same acceptance samples and records context, without hiding failures.
+- Current tests: zombie50/50 (4,612 asserts), scripts860/0, bank30, Blender both chase conversions, Map2 smoke,
+  turns.006314m/s/175 contacts, cap6 ragdolls, and both60s horde gates. Rendered frame p954.1667ms,
+  callbackCPU.146ms; RTX5090/7800X3D and another headless Godot process active. No mid-range certification.
+- The old turn-checkpoint0.01245 below is **INVALID as final-pose evidence**: it sampled before the modifier.
+  Current evidence is `docs/captures/after/mocap/contacts/README.md`, not that historical row.
+
+**RESUME HERE: item2 below.** Terrain110-row rerun is `terrain/terrain_contact_retain.json` under the mocap
+captures. Jog/run contact on steps/rubble improved sharply, but sprint still releases (steps10.8193m/s,
+rubble12.2039), Bellringer ramp20 worsened11.3951 ->13.8384, thin male rubble.0501 ->.1605. Walk-case median
+toe penetration on ramp31 remains10.21cm atp05. Diagnose these separately; do not loosen the0.10 gate or change
+speeds. Then terrain transition/LOD/rendered review, remaining recorded states and artist-authored model work.
+The current render review is limited to the flat studio; there is still no rendered terrain sign-off.
 
 ## Start in the correct checkout
 
@@ -81,7 +103,7 @@ sources are already copied to the worktree's ignored
 | Source/config | `data/gravelight/zombie_mocap.json`; shared 19-bone ZombieRig and Humanoid BoneMap; source hashes/contact windows retained |
 | Runtime bank | `gravelight/enemies/zombie_mocap.gd`, `zombie_clips.gd`; import once, remap tracks to `Skel:Bone`, copy only animation |
 | Locomotion | `mco_chase` at shamble/walk; `mco_fast_chase` at jog/run/sprint; recorded idles; actual body speed/height determines cadence; delayed random phase; source-contact footsteps; additive turn lean |
-| Contact cleanup | `zombie_contact_lock.gd` pins source toe contacts after additive pose; bounded horizontal correction. `ZombieBodyModifier` handles vertical terrain adaptation separately |
+| Contact cleanup | Source toe contacts applied LAST inside `ZombieBodyModifier`, after terrain/tilt; established anchors survive brief idle blends. Bounded correction and sustained idle/attack release retained |
 | Swipes | `swipe_l/r` visually map to two reviewed single-strike trims of one arm-loop performance. Original windup, .35s recovery, damage and network names retained |
 | Deaths | `death_sit/back` map to the two supplied recordings; visual root displacement, per-clip1.0/.4s handoff, measured per-bone momentum into ragdoll; cap6 and pooling retained |
 | Turns | New visual-only `Turn` tree state, `zombie_turn_motion.gd`; cleaned `mco_turn_l/r_45_yaw`. Root-yaw extraction avoids double rotation; visual pivot follows source yaw while gameplay body faces as before |
@@ -92,7 +114,7 @@ sources are already copied to the worktree's ignored
 Useful history: `4177e459` pipeline; `eabd2799` locomotion/contact; `baa71d96` swipes/deaths;
 `e8bc3d67` material detail; `24f8078a` playtest launcher; `bf395bc3` stationary turns.
 
-## Verified evidence at the turn checkpoint
+## Historical evidence at the turn checkpoint (see current corrections above)
 
 | Executed check | Result / qualification |
 |---|---|
@@ -136,14 +158,8 @@ were not freshly scored. Do not turn these limited reviews into a full-roster si
 
 ## Next work, in order
 
-1. **Close the co-op turn gap.** `_face` gives the host controller its intended destination,
-   but `_puppet_tick` supplies observed interpolated yaw. Small per-snapshot increments can
-   remain below the25degree trigger. Reproduce with a real host/client pair and a stationary
-   facing target; then use a stable presentation trigger/accumulated angle or appropriate
-   existing animation-event transport. Do not simply lower the threshold until network jitter
-   triggers step animations. Preserve gameplay-facing response, snapshot semantics and attack
-   timing; test interruption, redirect, wraparound, pool reuse and packet jitter. Keep any shared
-   networking change minimal and identify it in the commit message.
+1. **Co-op turn gap: CLOSED.** Claude implemented observed-yaw triggering and tested real host/client
+   traffic (6/6 turns). Keep its tests; do not redo the implementation. See PROGRESS for that slice.
 2. **Stairs/rubble and special-body coverage.** Build repeatable cases using real collision and
    foot rays. Check all three builds/sexes/height variants, crawler, Glasshide, Bellringer and
    other special enemies; Foreman has a bespoke rig. Test turn-to-move/attack/death, rapid target
