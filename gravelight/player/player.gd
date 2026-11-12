@@ -174,6 +174,15 @@ var _rc_pool: Vector2 = Vector2.ZERO     # recoil pattern still to recover (pitc
 var _rc_recover: float = 8.0
 var _rc_delay: float = 0.1
 var _rc_since: float = 99.0
+## T-236 (movement.json "jump" / "step"): jump forgiveness, the step assist's eased eye, and the tick values the
+## camera reads, kept for the last two ticks so the render-rate camera (smooth motion) can blend them.
+var _coyote_t: float = 0.0               # seconds a jump still counts as from the floor after the feet left it
+var _jump_buf: float = 0.0               # seconds a jump press is remembered (pressed just before landing)
+var _view_off: Vector3 = Vector3.ZERO    # world offset of the eye from the body after a step up / down; eases to 0
+var _step_hold: float = 0.0              # seconds the body waits after a step (the distance the step skipped ahead)
+var _eye_prev: float = EYE_STAND
+var _phase_prev: float = 0.0
+var _slide_k_prev: float = 0.0
 ## Update 03 section 3 (T-056): the movement code reads this, not Input. The local human fills it from Input
 ## each frame (_read_move_intent); a bot's BotLocomotion passes its own to drive_bot().
 var _mi: MoveIntent = MoveIntent.new()
@@ -311,9 +320,7 @@ func _process(delta: float) -> void:
 	_update_camera(delta)
 	if _tick_prev.is_finite() and _tick_cur.is_finite():
 		var interp: Vector3 = _tick_prev.lerp(_tick_cur, Engine.get_physics_interpolation_fraction())
-		var off: Vector3 = global_basis.inverse() * (interp - global_position)
-		head.position += Vector3(off.x, off.y, 0.0)
-		head.position.z = off.z
+		head.position += global_basis.inverse() * (interp - global_position)   # (_update_camera set all three axes)
 
 
 func _apply_look(rel: Vector2) -> void:
@@ -408,6 +415,9 @@ func _physics_process(delta: float) -> void:
 		_update_health(delta)   # keep regen + heartbeat in step while a radio/switchboard UI is open
 		return
 	_pad_look(delta)
+	_eye_prev = _eye                 # T-236: last tick's values, for the render-rate camera's blend
+	_phase_prev = _raw_step_phase()
+	_slide_k_prev = _slide_k
 	_update_movement(delta)
 	_update_health(delta)
 	_update_interaction(delta)
@@ -415,7 +425,7 @@ func _physics_process(delta: float) -> void:
 	_view_live = true
 	if smooth_view:
 		_tick_prev = _tick_cur if _tick_cur.is_finite() else global_position
-		_tick_cur = global_position
+		_tick_cur = global_position + _view_off   # (T-236: the eye's place, which lags the body after a step)
 		if _tick_prev.distance_to(_tick_cur) > 2.0:
 			_tick_prev = _tick_cur   # a teleport: no smear through space
 	else:
@@ -491,6 +501,12 @@ func _update_movement(delta: float) -> void:
 	# mantle / vault: jump facing a waist-high ledge; a jump pressed a little early still catches the ledge
 	# (mantle_buffer s while moving forward), and so does holding jump into one while airborne
 	var jump_pressed: bool = _mi.jump_pressed
+	var J: Dictionary = _mv.get("jump", {})
+	# T-236 jump forgiveness: a press is remembered buffer_time (it jumps on the landing), and the floor counts
+	# for coyote_time after the feet leave it (a jump at the lip of a ledge is not lost)
+	_jump_buf = float(J.get("buffer_time", 0.12)) if jump_pressed else maxf(0.0, _jump_buf - delta)
+	if not on_floor:
+		_coyote_t = maxf(0.0, _coyote_t - delta)
 	_mantle_buffer = float((_mv.get("mantle", {}) as Dictionary).get("buffer", 0.35)) if jump_pressed else maxf(0.0, _mantle_buffer - delta)
 	var forward: bool = input.y < -0.3
 	if jump_pressed:
@@ -503,6 +519,7 @@ func _update_movement(delta: float) -> void:
 	elif jump_pressed and prone:
 		_set_prone(false)
 		jump_pressed = false
+		_jump_buf = 0.0
 	elif jump_pressed and crouching and not sliding:
 		crouching = false
 	_update_sprint(delta, input, on_floor)
@@ -544,6 +561,8 @@ func _update_movement(delta: float) -> void:
 			rate = maxf(walk, horizontal.length()) / maxf(0.02, float(_mv.get("decel_time", 0.17)))
 		else:
 			rate = maxf(target_speed, horizontal.length()) / maxf(0.02, float(_mv.get("accel_time", 0.12)))
+			if horizontal.dot(wish) < 0.0:
+				rate *= float(_mv.get("turn_boost", 1.0))   # T-236: braking against the stick is quicker (strafe reversals)
 		horizontal = horizontal.move_toward(wish * target_speed, rate * delta)
 	else:
 		# air control: weak, and never faster than you left the ground (no bunny-hop gain)
@@ -553,33 +572,51 @@ func _update_movement(delta: float) -> void:
 			horizontal = horizontal.limit_length(cap)
 	velocity.x = horizontal.x
 	velocity.z = horizontal.z
+	var jumped: bool = false
+	if (on_floor or _coyote_t > 0.0) and (jump_pressed or _jump_buf > 0.0) and not crouching and not prone and velocity.y <= 0.0:
+		velocity.y = float(_cfg["jump_velocity"]) * GameState.jump_mult()
+		_air_cap = horizontal_speed() if on_floor else maxf(_air_cap, horizontal_speed())
+		_jump_buf = 0.0
+		_coyote_t = 0.0
+		jumped = true
+		weapons.on_jump()
+		GLBus.player_jumped.emit(player_id, global_position)
 	if on_floor:
-		if jump_pressed and not crouching and not prone and velocity.y <= 0.0:
-			velocity.y = float(_cfg["jump_velocity"]) * GameState.jump_mult()
-			_air_cap = horizontal_speed()
-			weapons.on_jump()
-			GLBus.player_jumped.emit(player_id, global_position)
-		elif velocity.y < 0.0:
+		if not jumped and velocity.y < 0.0:
 			velocity.y = -0.5
-	else:
+	elif not jumped:
 		# Skyhook Sekt: one more jump in the air (air_hops), a smaller one, reset on landing (tier II: on a slide too)
 		if jump_pressed and _hops_left > 0 and not sliding and not prone and not _mantle_air_catching():
 			_hops_left -= 1
 			_did_hop = true
+			_jump_buf = 0.0
 			velocity.y = float(_cfg["jump_velocity"]) * GameState.jump_mult() * float(PerkManager.stat(player_id, "air_hop_mult", 0.6))
 			_air_cap = maxf(_air_cap, horizontal_speed())
 			weapons.on_jump()
 			AudioDirector.play_2d("perk_skyhook_hop", -6.0, 0.1)
 			GLBus.player_jumped.emit(player_id, global_position)
 			PerkManager.note_proc(player_id, &"skyhook_sekt", &"hop")
-		velocity.y -= GameState.g_player() * delta
+		velocity.y -= GameState.g_player() * _fall_gravity_mult() * delta
 	_update_stance_shape(delta)
 	_slide_k = move_toward(_slide_k, 1.0 if sliding else 0.0, delta * (9.0 if sliding else 5.0))
 	var fall_speed: float = -velocity.y
+	# T-236: a step put the body ahead by the width of the edge; it waits that long (the eye keeps walking)
+	var held: bool = _step_hold > 0.0 and on_floor and not jumped
+	_step_hold = maxf(0.0, _step_hold - delta) if held else 0.0
+	if held:
+		velocity.x = 0.0
+		velocity.z = 0.0
 	move_with_push()
+	if held:
+		velocity.x = horizontal.x
+		velocity.z = horizontal.z
+	elif on_floor and not jumped and _lunge_t <= 0.0:
+		_step_assist(wish, horizontal)       # kerbs and low props are walked up, short drops walked down
+	_ease_view_off(delta)
 	if not _was_on_floor and is_on_floor():
 		_on_landed(fall_speed)
 	if is_on_floor():
+		_coyote_t = float(J.get("coyote_time", 0.1))
 		_air_cap = horizontal_speed()
 		_floor_y = global_position.y
 		if not jump_pressed:
@@ -692,7 +729,7 @@ func _update_sprint(delta: float, input: Vector2, on_floor: bool) -> void:
 ## bunny-hop gain from chained jumps).
 func _on_landed(fall_speed: float) -> void:
 	var J: Dictionary = _mv.get("jump", {})
-	var h: float = fall_speed * fall_speed / (2.0 * maxf(0.5, GameState.g_player()))   # the real fall: soft landings in low g (T-112)
+	var h: float = fall_speed * fall_speed / (2.0 * maxf(0.5, GameState.g_player() * _fall_gravity_mult(true)))   # the real fall: soft landings in low g (T-112)
 	var safe: bool = bool(PerkManager.stat(player_id, "safe_landing", false))   # Skyhook Sekt (T-105)
 	var shake_mult: float = float(PerkManager.stat(player_id, "landing_shake_mult", 1.0)) if safe else 1.0
 	_shake = maxf(_shake, clampf((h - float(J.get("shake_from_m", 0.25))) * float(J.get("shake_per_m", 0.22)), 0.0, float(J.get("shake_max", 0.7))) * shake_mult)
@@ -732,6 +769,122 @@ func _gait_db() -> float:
 	if sprinting:
 		return float(F.get("sprint_db", 4.0))
 	return float(F.get("walk_db", 0.0))
+
+
+# ---------------------------------------------------------------- steps and falls (T-236)
+
+## Gravity on the way down (movement.json jump.fall_gravity_mult; 1 = the same both ways). Never during a launch
+## plate's arc (air_grace_t: the arc was solved for plain gravity). `falling` forces the falling value (landings).
+func _fall_gravity_mult(falling: bool = false) -> float:
+	if (velocity.y >= 0.0 and not falling) or air_grace_t > 0.0:
+		return 1.0
+	return maxf(0.1, float((_mv.get("jump", {}) as Dictionary).get("fall_gravity_mult", 1.0)))
+
+
+## After the move, for a body that stood on the floor: a kerb, sill or low prop it walked into is stepped onto, and
+## a short drop it walked off is stepped down (no fall). The body moves at once; the eye follows eased
+## (_view_off). Bots keep the plain slide unless movement.json step.bots is on.
+func _step_assist(wish: Vector3, pre_h: Vector3) -> void:
+	var S: Dictionary = _mv.get("step", {})
+	var max_h: float = float(S.get("max_h", 0.4))
+	if max_h <= 0.0 or ((is_bot or bot_driven) and not bool(S.get("bots", false))):
+		return
+	var want: Vector3 = wish.normalized() if wish.length_squared() > 0.01 else (_slide_dir if sliding else Vector3.ZERO)
+	var from: Vector3 = global_position
+	var to: Vector3 = Vector3.INF
+	if is_on_floor():
+		if is_on_wall() and want != Vector3.ZERO:
+			to = step_up_spot(want, max_h, float(S.get("min_facing", 0.5)))
+	elif velocity.y <= 0.0 and pre_h.length_squared() > 0.09:
+		to = step_down_spot(pre_h.normalized(), max_h)
+	if not to.is_finite():
+		return
+	global_position = to
+	_view_off = (_view_off + from - to).limit_length(float(S.get("view_max", 0.6)))
+	_step_hold = clampf(Vector2(to.x - from.x, to.z - from.z).length() / maxf(1.0, pre_h.length()), 0.0, 0.2)
+	# settle: the floor state is this spot's (no landing, no fall), the walk keeps its speed
+	velocity = Vector3(0.0, -0.5, 0.0)
+	move_and_slide()
+	velocity = Vector3(pre_h.x, -0.5, pre_h.z)
+
+
+## Where a step up over what the last move hit would put the feet, or Vector3.INF: something low (up to max_h)
+## met within min_facing of head on, with head room, room on top and a floor there. Never onto a body (zombies,
+## teammates), a barricade, a door or a no_mantle collider.
+func step_up_spot(want: Vector3, max_h: float, min_facing: float) -> Vector3:
+	var cos_floor: float = cos(floor_max_angle)
+	var into: Vector3 = Vector3.ZERO
+	var edge: float = 0.0
+	for i: int in get_slide_collision_count():
+		var c: KinematicCollision3D = get_slide_collision(i)
+		var n: Vector3 = c.get_normal()
+		var flat: Vector3 = Vector3(-n.x, 0.0, -n.z)
+		if n.y >= cos_floor - 0.01 or n.y < -0.01 or flat.length_squared() < 0.0001:
+			continue
+		flat = flat.normalized()
+		if flat.dot(want) < min_facing or not _step_surface(c.get_collider()):
+			continue
+		into = flat
+		edge = clampf((c.get_position() - global_position).dot(flat), 0.0, _capsule.radius)
+		break
+	if into == Vector3.ZERO:
+		return Vector3.INF
+	var t: Transform3D = global_transform
+	if test_move(t, Vector3.UP * max_h):
+		return Vector3.INF                          # no head room
+	t.origin += Vector3.UP * max_h
+	var fwd: Vector3 = into * (edge + 0.05)         # the capsule's middle just past the edge: it lands flat on top
+	if test_move(t, fwd):
+		return Vector3.INF                          # a wall, not a step
+	t.origin += fwd
+	var down: KinematicCollision3D = KinematicCollision3D.new()
+	if not test_move(t, Vector3.DOWN * max_h, down) or down.get_normal().y < cos_floor or not _step_surface(down.get_collider()):
+		return Vector3.INF
+	var land: Vector3 = t.origin + down.get_travel()
+	if land.y - global_position.y < -0.02:
+		return Vector3.INF                          # (level is fine: a seam between two floor pieces that snagged the capsule)
+	return land
+
+
+## Where a step down off the edge the feet just left would put them (at most max_h lower), or Vector3.INF. The
+## capsule hangs on the edge for its last centimetres, so the spot is looked for a little ahead too.
+func step_down_spot(dir: Vector3, max_h: float) -> Vector3:
+	var cos_floor: float = cos(floor_max_angle)
+	var down: KinematicCollision3D = KinematicCollision3D.new()
+	for f: float in [0.0, 0.06, 0.12]:
+		var t: Transform3D = global_transform
+		if f > 0.0:
+			if test_move(t, dir * f):
+				break
+			t.origin += dir * f
+		if test_move(t, Vector3.DOWN * (max_h + 0.05), down) and down.get_normal().y >= cos_floor and _step_surface(down.get_collider()):
+			var land: Vector3 = t.origin + down.get_travel()
+			if global_position.y - land.y > 0.01:
+				return land
+	return Vector3.INF
+
+
+## The eye's offset after a step runs out: sideways and forward at the walking speed (so the eye keeps the pace
+## while the body waits out _step_hold), in height at step.view_rate (exponential).
+func _ease_view_off(delta: float) -> void:
+	if _view_off == Vector3.ZERO:
+		return
+	var flat: Vector3 = Vector3(_view_off.x, 0.0, _view_off.z).move_toward(Vector3.ZERO, maxf(1.0, horizontal_speed()) * delta)
+	var y: float = _view_off.y * exp(-float((_mv.get("step", {}) as Dictionary).get("view_rate", 11.0)) * delta)
+	_view_off = Vector3(flat.x, y if absf(y) > 0.002 else 0.0, flat.z)
+
+
+## May the step assist use this collider? The world only.
+func _step_surface(col: Object) -> bool:
+	return col is Node and not (col is CharacterBody3D or col is RigidBody3D) and not _no_mantle(col)
+
+
+## 1 on the tick path. With smooth motion the camera runs at the render rate: the frame's place between the last
+## two physics ticks, for the tick values it reads (eye height, step phase, slide blend).
+func _view_frac() -> float:
+	if smooth_view and _view_live and not Engine.is_in_physics_frame():
+		return clampf(Engine.get_physics_interpolation_fraction(), 0.0, 0.999)
+	return 1.0
 
 
 # ---------------------------------------------------------------- mantle / vault
@@ -1075,6 +1228,8 @@ func _slide_jump() -> void:
 	velocity.z = _slide_dir.z * spd
 	velocity.y = float(_cfg["jump_velocity"]) * GameState.jump_mult() + float(S.get("jump_boost", 0.6)) * float(PerkManager.stat(player_id, "slide_jump_boost_mult", 1.0))
 	_slide_cd = maxf(_slide_cd, float(S.get("cooldown", 0.45)))
+	_jump_buf = 0.0
+	_coyote_t = 0.0
 
 
 func is_sliding() -> bool:
@@ -1390,7 +1545,9 @@ func _update_camera(delta: float) -> void:
 	_tick_recoil_recovery(delta)
 	var S: Dictionary = _cfg.get("slide", {})
 	var C: Dictionary = _mv.get("camera", {})
-	var dip: float = _slide_k * float(S.get("cam_dip", 0.22)) * (0.75 + 0.25 * sin(_shake_t * 0.9))
+	var vf: float = _view_frac()
+	var slide_k: float = lerpf(_slide_k_prev, _slide_k, vf)
+	var dip: float = slide_k * float(S.get("cam_dip", 0.22)) * (0.75 + 0.25 * sin(_shake_t * 0.9))
 	# head bob on the footstep cadence: the head dips on every footfall and sways toward the planted foot;
 	# bigger at a sprint, small crouched, almost nothing aimed
 	var on_floor: bool = is_on_floor() and not sliding and not mantling
@@ -1410,7 +1567,11 @@ func _update_camera(delta: float) -> void:
 	var bob_roll: float = sw * deg_to_rad(float(C.get("bob_roll_deg", 0.35))) * (_bob_k / maxf(0.001, float(C.get("bob_walk", 0.012)))) * 0.5 * bob_scale
 	_sprint_k = lerpf(_sprint_k, 1.0 if sprinting else 0.0, 1.0 - exp(-float(_mv.get("sprint_fov_rate", 7.0)) * delta))
 	var mk: float = mantle_k()
-	head.position.y = _eye - dip + bob_y + _land_dip - mk * 0.08
+	# the eye eases after a step up / down instead of jumping with the body (T-236; at the render rate the tick
+	# blend in _process carries it: _tick_cur includes the offset)
+	var step_off: Vector3 = global_basis.inverse() * _view_off if vf >= 1.0 else Vector3.ZERO
+	head.position.y = lerpf(_eye_prev, _eye, vf) - dip + bob_y + _land_dip - mk * 0.08 + step_off.y
+	head.position.z = step_off.z
 	head.rotation.x = _pitch + _rk.x - mk * 0.06
 	head.rotation.y = _rk.y
 	# lean (and the slide's roll: the body leans into the slide direction)
@@ -1418,17 +1579,17 @@ func _update_camera(delta: float) -> void:
 	if bool(GLSettings.values.get("lean_enabled", true)):
 		lean_in = Input.get_action_strength(&"lean_right") - Input.get_action_strength(&"lean_left")
 	_lean = move_toward(_lean, lean_in, delta * 5.0)
-	head.position.x = _lean * 0.35 + bob_x
+	head.position.x = _lean * 0.35 + bob_x + step_off.x
 	var side: float = 0.0
-	if _slide_k > 0.001:
-		side = global_basis.x.dot(_slide_dir)                      # +1 sliding to the right
+	if slide_k > 0.001:
+		side = global_basis.x.dot(_slide_dir)                     # +1 sliding to the right
 	# strafe roll: the view tips a little into a sideways move
 	var lateral: float = global_basis.x.dot(velocity) if not sliding else 0.0
 	var roll_target: float = -clampf(lateral / maxf(0.1, walk), -1.0, 1.0) * deg_to_rad(float(C.get("strafe_roll_deg", 1.5))) * bob_scale
 	_roll = lerpf(_roll, roll_target, 1.0 - exp(-float(C.get("roll_rate", 8.0)) * delta))
 	_punch_roll = move_toward(_punch_roll, 0.0, delta * maxf(0.2, absf(_punch_roll) * 6.0))
 	_ext_roll = lerpf(_ext_roll, deg_to_rad(ext_roll_deg), 1.0 - exp(-3.0 * delta))
-	camera.rotation.z = -_lean * 0.12 - _slide_k * (deg_to_rad(float(S.get("cam_tilt_deg", 3.5))) * (0.6 + 0.4 * side)) + _roll + bob_roll + _punch_roll + mk * 0.05 + _ext_roll
+	camera.rotation.z = -_lean * 0.12 - slide_k * (deg_to_rad(float(S.get("cam_tilt_deg", 3.5))) * (0.6 + 0.4 * side)) + _roll + bob_roll + _punch_roll + mk * 0.05 + _ext_roll
 	# shake (smooth pseudo-noise rather than per-frame white noise, scaled by the Screen Shake setting)
 	_shake = maxf(0.0, _shake - delta * 1.8)
 	_shake_t += delta * 38.0
@@ -1438,7 +1599,7 @@ func _update_camera(delta: float) -> void:
 	# fov (+ a short punch on heavy shots, + the eased sprint kick)
 	_fov_punch = move_toward(_fov_punch, 0.0, delta * maxf(8.0, absf(_fov_punch) * 14.0))
 	var fov: float = GLSettings.get_f("fov") * weapons.fov_mult() + float(_mv.get("sprint_fov_deg", 6.0)) * _sprint_k
-	fov *= lerpf(1.0, float(S.get("fov_mult", 1.09)), _slide_k)
+	fov *= lerpf(1.0, float(S.get("fov_mult", 1.09)), slide_k)
 	if _fov_base <= 0.0:
 		_fov_base = camera.fov
 	_fov_base = lerpf(_fov_base, fov, clampf(delta * 12.0, 0.0, 1.0))
@@ -1514,7 +1675,14 @@ func shake_setting() -> float:
 
 ## Footstep cadence as a continuous phase: the integer part counts footsteps, so sin(PI * phase) crosses
 ## zero on every footfall (the viewmodel bob dips there).
+## With smooth motion (T-236) a render frame reads it blended between the last two ticks.
 func step_phase() -> float:
+	var now: float = _raw_step_phase()
+	var vf: float = _view_frac()
+	return now if vf >= 1.0 or absf(now - _phase_prev) > 0.5 else lerpf(_phase_prev, now, vf)
+
+
+func _raw_step_phase() -> float:
 	return float(_step_count) + clampf(_step_dist / _stride(), 0.0, 1.0)
 
 
