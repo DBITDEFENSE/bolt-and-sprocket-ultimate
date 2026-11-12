@@ -8829,31 +8829,31 @@
           "pos": [
             28.2,
             11.45,
-            163.5
+            178.5
           ],
           "yaw": 0.0,
-          "pitch": 1.0,
+          "pitch": 0.0,
           "settle_s": 3.0,
           "do": [
             "power",
-            "boss:kranfuehrer:28,12,156"
+            "boss:kranfuehrer:28,12,156::5"
           ],
-          "note": "T-234: the Kranfuehrer's cab from the east catwalk, 7.5 m up the rail: the cab's back and side, rust, oil, the seat he is fused into, the chain and hook under the bridge",
+          "note": "T-234: the Kranfuehrer's cab from the east catwalk, 7 m up the rail (the trolley ran toward the camera for 5 s): the cab's back and side, rust, oil, the seat he is fused into, the chain and hook under the bridge",
           "bright": true
         },
         {
           "name": "kran_from_floor",
           "map": "res://gravelight/maps/map04_fernflug/map04a.tscn",
           "pos": [
-            14.0,
+            22.0,
             0.2,
-            166.0
+            181.0
           ],
-          "yaw": -55.0,
-          "pitch": 32.0,
+          "yaw": -31.0,
+          "pitch": 45.0,
           "settle_s": 3.0,
           "do": [],
-          "note": "T-234: the crane from the hangar floor, 17 m: the bridge, the cab lit by its gauge, the hook on its chain (the same posed crane)",
+          "note": "T-234: the crane from the hangar floor under the rail, 12 m: the cab's underside and face with the gauge, the bridge, the hook on its chain (the same posed crane)",
           "bright": true
         },
         {
@@ -8903,8 +8903,7 @@
             "power",
             "boss:testpilot:-40,-6,130"
           ],
-          "note": "T-234: the Test Pilot in the lab's long hall, 4 m: the helmet and visor, the rig's nozzles breathing embers, the straps, the cracks on his arms",
-          "bright": true
+          "note": "T-234: the Test Pilot in the lab's long hall, 4 m: the helmet and visor, the rig's nozzles breathing embers, the straps, the cracks on his arms"
         },
         {
           "name": "pilot_rig_back",
@@ -8918,8 +8917,7 @@
           "pitch": 2.0,
           "settle_s": 3.0,
           "do": [],
-          "note": "T-234: the jump rig from behind (the same posed Pilot): the pack, the two nozzles with their rings, the cables, the lamp",
-          "bright": true
+          "note": "T-234: the jump rig from behind (the same posed Pilot): the pack, the two nozzles with their rings, the cables, the lamp"
         },
         {
           "name": "manager_account",
@@ -8942,12 +8940,12 @@
           "name": "manager_face",
           "map": "res://gravelight/maps/map04_fernflug/map04d.tscn",
           "pos": [
-            30.8,
+            31.5,
             0.2,
-            -31.8
+            -30.5
           ],
-          "yaw": 52.0,
-          "pitch": 26.0,
+          "yaw": 45.0,
+          "pitch": 22.0,
           "settle_s": 3.0,
           "do": [],
           "note": "T-234: the ledger face from beside the console (the same posed Manager): the signature lines, the lit lenses, the chest plate and the signature line, the brass joints"

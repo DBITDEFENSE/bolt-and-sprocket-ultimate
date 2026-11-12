@@ -124,6 +124,14 @@ func rcfg() -> Dictionary:
 	return wcfg.get("rework", {})
 
 
+## The base dresses a cousin (a thin woman, porcelain pale); he is the Bordmechaniker: a thin man in the technician's kit.
+func _on_spawned() -> void:
+	_female = false
+	_build = "thin"
+	_body.mesh = ZombieBody.build_skinned("technician", "thin", false)
+	_set_inst("inst_tint", Color(0.9, 0.9, 0.95, 1.0))
+
+
 func spawn_bordwart(_at: Vector3, health: float) -> void:
 	spawn_homage(station, health)
 	enemy_id = &"bordwart"

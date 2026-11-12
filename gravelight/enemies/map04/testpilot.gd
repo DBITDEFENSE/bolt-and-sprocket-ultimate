@@ -142,6 +142,14 @@ func rcfg() -> Dictionary:
 	return tcfg.get("rework", {})
 
 
+## The base dresses a cousin (a thin woman, porcelain pale); he is a Major: a man in the soldier's kit.
+func _on_spawned() -> void:
+	_female = false
+	_build = "medium"
+	_body.mesh = ZombieBody.build_skinned("soldier", "medium", false)
+	_set_inst("inst_tint", Color(0.95, 0.92, 0.9, 1.0))
+
+
 func _anchor(n: String, fallback: Vector3) -> Vector3:
 	var m: Node = _map()
 	var a: Node3D = m.find_child(n, true, false) as Node3D if m != null else null

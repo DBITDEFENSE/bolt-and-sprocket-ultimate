@@ -138,6 +138,14 @@ func rcfg() -> Dictionary:
 	return kcfg.get("rework", {})
 
 
+## The base dresses a cousin (a thin woman, porcelain pale); he is a works fitter: a man in the technician's kit.
+func _on_spawned() -> void:
+	_female = false
+	_build = "medium"
+	_body.mesh = ZombieBody.build_skinned("technician", "medium", false)
+	_set_inst("inst_tint", Color(0.92, 0.9, 0.9, 1.0))
+
+
 ## Brings the crane in: the driver on the trolley at the rail's near end.
 func spawn_crane(_at: Vector3, health: float) -> void:
 	spawn_homage(Vector3(float(rail.get("x", 28.0)), float(rail.get("y", 12.0)), float(rail.get("z_min", 156.0))), health)
