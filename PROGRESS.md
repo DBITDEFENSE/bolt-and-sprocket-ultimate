@@ -1,12 +1,65 @@
 # PROGRESS
 
-RESUME HERE: 2026-11-12 Claude Fable 5.2, co-op turn slice committed. Work ONLY in .wt/zombie-overhaul,
-branch codex/zombie-overhaul; the handoff file docs/CLAUDE_FABLE_5_2_ZOMBIE_HANDOFF.md still holds the rules, the
-asset state and the commands. NEXT (handoff item 2): the terrain / special-body matrix: repeatable stairs and rubble
-cases on real collision with foot rays, all three builds / sexes / heights, crawler, Glasshide, Bellringer and the
-other special enemies, turn-to-move / attack / death, rapid target changes, large facings, animation LOD distances;
-capture evaluated feet and pose continuity, diagnose before tuning. Then items 3-6 (review the unused supplied
-states, the recording gaps, one artist-authored soldier, Stage 4 evidence). Preserve all gameplay speeds.
+RESUME HERE: 2026-11-12 Claude Fable 5.2, the terrain / body matrix is MEASURED (tools/zombie_terrain_check.tscn,
+baseline in docs/captures/after/mocap/terrain/) and NOTHING in the runtime was changed by it: two trial fixes were
+measured, did not hold up and were reverted (see the entry below). Work ONLY in .wt/zombie-overhaul, branch
+codex/zombie-overhaul; rules and commands in docs/CLAUDE_FABLE_5_2_ZOMBIE_HANDOFF.md. NEXT, in this order:
+(1) move the contact lock to run LAST, inside ZombieBodyModifier after the terrain IK (today it runs in _animate
+before the modifier, so it pins a toe the IK then moves; keep the _animate call for bodies whose modifier is off),
+and give the IK a second ray at the toe so the foot can be tilted between ankle and toe ground (ignore a difference
+over about 0.12 m: a step edge); re-measure against terrain_baseline.json and keep only what the numbers support.
+(2) Re-run the existing contact acceptance reading poses at Skeleton3D.skeleton_updated (the gallery and the unit
+drift test read bones in _process / _animate, which shows the pose WITHOUT the modifier's foot IK). (3) The rest of
+handoff item 2 not done here: turn-to-move / attack / death on terrain, rapid target changes, the animation LOD
+distances (--lod), a rendered look at feet. Then items 3-6. Preserve all gameplay speeds.
+
+## 2026-11-12, terrain and body matrix (handoff item 2, the measuring half)
+
+`tools/zombie_terrain_check.tscn` (new): five lanes of real collision (flat, a 20 degree ramp, a 31 degree ramp =
+the slope of a 0.18 / 0.30 stair, the same flight as real step boxes, forty rubble boxes of 5-20 cm), one live zombie
+per lane with the real AI, navigation, physics, foot rays and animation, for 22 cases: three builds x two sexes at
+both ends of the height range, the five tiers, a crawler, and eleven shared-rig kinds (Glasshide, Bellringer,
+Bordschuetze, Suited, Shield-Cell, Burrower, Canary, Jumpjockey, Backorder, both Kielholer bodies; the Foreman and
+the Screamer have bespoke bodies and are not in it). 110 rows, 24 s each at a fixed 60. No tolerance is applied: it
+is a diagnosis. Report: `docs/captures/after/mocap/terrain/terrain_baseline.json`.
+
+What it found (final poses, medians over the upright cases unless said):
+- Nobody was lost and nobody stayed stuck. Every case crossed every lane (the slowest once in 24 s). Real steps
+  cost 0.4-1.7 s of standing and 8-17 % of the time off the floor (Zombie._step_up); the maps use ramps under stair
+  art, so the ramp lanes are the ones that matter.
+- **The recorded gaits are played far from their recorded cadence.** `mco_chase` was recorded at 0.48 m/s: it
+  plays at x2.8 at a shamble (1.3 m/s) and x4.3 at a walk (2.0 m/s). `mco_fast_chase` (2.88 m/s) plays at x1.2 at a
+  jog, x1.7 at a run, x1.9 at a sprint and for the Bellringer. At x4.3 a wrist flick in the recording becomes a
+  30-40 degree step of the hand in one frame, about fifty times in 22 s at a walk (four at a shamble, nine at a
+  jog). The supplied crawl was rejected for x9; the walk tier's x4.3 was not called out before. Code cannot cure
+  it: it needs upright recordings near 1.3 and 2.0 m/s (added to the shopping list).
+- **Toes go into slopes.** The foot IK sets the ankle by the ground under the ankle and leaves the foot level: on
+  the stair-angle ramp the toe is 11 cm into the surface at the 5th percentile and 9 cm over it at the 95th (flat:
+  0 and 2 cm); 8 / 7 cm on the 20 degree ramp; rubble 6 / 6 cm. The same for every build, sex, height and kind.
+- **The contact lock lets go with a snap.** When the body has moved more than `max_correction_m` (0.18) from a
+  pinned toe, the pin is re-seated at once: an 18 cm move of the planted foot in one frame (11 m/s in the slip
+  column). On flat ground it is rare (slip p95 0.014 m/s); on rubble at a jog or faster it is inside the worst 5 %
+  of contact frames for most cases, on real steps for the fast tiers.
+- The crawler has no recorded contact windows (the legacy crawl clips), so its feet are not measured here.
+
+**A fault in the earlier evidence, found on the way:** bones read in `_process` or `_animate` show the pose
+WITHOUT the SkeletonModifier3D (the foot IK): its result is rolled back before the next frame. Only
+`Skeleton3D.skeleton_updated` shows the final pose (checked directly: on the ramp the foot's pitch and the toe's
+height differ between the two). The gallery's contact acceptance and the unit drift test read toes the first way,
+so the "toe drift p95" numbers in the handoff describe the animated pose plus the contact lock, not what is drawn.
+On flat ground the two agree closely (this tool's flat lane: p95 0.014-0.016 m/s); on terrain they do not.
+
+**Two fixes tried, measured like for like against the baseline, and reverted:**
+- A foot tilt from the ground normal under the ankle (about the ankle, capped at 35 degrees): toes 11 -> 9.6 cm
+  into the stair-angle ramp, but planted feet began to slide on slopes (slip p95 0.04 -> 0.6 m/s at a walk),
+  because the lock pins the toe BEFORE the modifier tilts the foot. Not a net gain.
+- Easing the lock's release over `release_seconds` instead of the one-frame snap: the worst frame fell (11 -> 7
+  m/s) but the slide then lasts five frames and the p95 rose (rubble at a walk 0.16 -> 2.0 m/s).
+Both are in `terrain_trial_tilt_and_eased_release.json` for the record. The cause they share is the order of the
+two corrections; the RESUME line says what to build instead.
+
+Not done from item 2: turn-to-move / attack / death on terrain, rapid target changes, the LOD distances, any
+rendered look. No runtime file changed in this slice; scores unchanged.
 
 ## 2026-11-12, co-op stationary turns (handoff item 1)
 

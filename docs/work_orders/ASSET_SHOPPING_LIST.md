@@ -49,3 +49,7 @@ Put the license text, or a screenshot of the license and receipt, in the same fo
 - **itch.io:** mostly low-poly or stylized, but cheap.
 
 Not everything is on hand: if a gun is missing, Claude keeps the greybox for that one and lists it in the morning report. You can grab it later.
+
+## Measured 2026-11-12: upright gaits at the game's slow speeds (the most felt gap)
+
+The two active recordings are played far from their recorded cadence to hold the preserved speeds (`docs/captures/after/mocap/terrain/terrain_baseline.json`, `playback_rate_p50`): the shuffle `Zombie_Chase_1_Loop` was recorded at 0.48 m/s and plays at x2.8 for the shamble tier (1.3 m/s) and x4.3 for the walk tier (2.0 m/s); `Zombie_HyperChase_1_Loop` (2.88 m/s) plays at x1.2 / x1.7 / x1.9 for jog / run / sprint. Wanted, in this order: an upright zombie walk recorded near 2.0 m/s, one near 1.3 m/s, then a run near 4.8-5.6 m/s. The Starter pack is received and is not on this list.
