@@ -60,5 +60,30 @@
     "vo_open": "OPR_EXFIL_OPEN_01",
     "vo_wait": "OPR_EXFIL_WAIT_01",
     "vo_missed": "OPR_EXFIL_MISSED_01"
+  },
+  "round_bosses": [
+    {
+      "round": 20,
+      "boss": "totenross",
+      "count": 1,
+      "_doc": "T-240 the undead horses on Kaltenbrunn: on the surface only"
+    },
+    {
+      "round": 30,
+      "boss": "totenross_fuhrmann",
+      "count": 1
+    }
+  ],
+  "round_boss_arena": {
+    "zones": [
+      "A_MINEHEAD",
+      "B_RAILYARD"
+    ],
+    "centre": [
+      20.0,
+      0.0,
+      26.0
+    ],
+    "_doc": "T-240 the surface yards only (the navmesh is baked for a 0.5 m agent and the doors are 2 m, but the lift cage, the stairs and the galleries are no place for a horse): it comes in at the far side of these zones from the squad and never follows below ground (the siege rule)."
   }
 }
