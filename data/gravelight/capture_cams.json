@@ -9510,7 +9510,7 @@
           "settle_s": 0.2,
           "bright": true,
           "do": [
-            "callv:YardHorse:demo:0,1,1:1.7"
+            "callv:YardHorse:demo:-0.6,1,1:1.6"
           ],
           "note": "T-240: the same rider at a gallop: both hands on the reins at the pommel, the view opened"
         },

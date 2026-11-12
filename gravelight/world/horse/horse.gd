@@ -243,6 +243,7 @@ func _finish_dismount() -> void:
 	_idle = 0.0
 	speed = 0.0
 	pace = 0.0
+	_hands_on = false   # (end_carry puts the gun back: the next ride sets the hands afresh)
 	if p != null and is_instance_valid(p):
 		if p.is_local and p.carry == self:
 			p.prompt_text = ""
@@ -569,6 +570,7 @@ func _abort_mount() -> void:
 	var p: Player = rider
 	rider = null
 	mode = Mode.LOOSE
+	_hands_on = false
 	if p != null and is_instance_valid(p):
 		if p.carry == self:
 			p.end_carry(self)
