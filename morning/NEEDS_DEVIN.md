@@ -18,6 +18,9 @@ Short, phone-readable. Nothing here blocks the build.
   4.4 m to about 3.9 m. Say if you want it (`jump.fall_gravity_mult`).
 - [ ] **Merge to master** when happy (this branch carries the maps 1-2 pass and the boss rework too):
   `git checkout master && git merge claude/boss-rework && git push`.
+- Smokes on the final code: 101 run, 95 passed first time; two real bugs found and fixed (the Inn's chimney smoke,
+  a Screamer falling out of Totenhafen and holding the round open); `smoke_late_kit` failed once and passed alone;
+  `smoke_marks`, `smoke_npc_walls` and `smoke_letzte_fahrt` fail as they did before this work.
 - Not yours to do, for the record: the zombie overhaul's file lets a body's fall speed build without limit off a
   floor (`Zombie._apply_gravity`), and its explosions cost 9-35 ms in a pack.
 

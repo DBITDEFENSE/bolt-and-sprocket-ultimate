@@ -67,6 +67,12 @@ func _physics_process(delta: float) -> void:
 		_state_t += delta
 		_update_dead(delta)
 		return
+	# Out of the world (seen on Totenhafen: a Screamer on a climb link fell to y -56,530 and, being the round's last
+	# body, held round 33 open for good). The base Zombie recycles below -30; this override never had the guard.
+	if global_position.y < -30.0:
+		print("[screamer] fell out of the world at %s: put down" % str(global_position.snapped(Vector3.ONE)))
+		kill_silently()
+		return
 	_st += delta
 	_scream_cd -= delta
 	_claw_cd = maxf(0.0, _claw_cd - delta)

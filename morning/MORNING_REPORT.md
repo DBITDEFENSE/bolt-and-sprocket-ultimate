@@ -62,7 +62,15 @@ software renders.
 - Scripts: 903, 0 failed. Unit suite: 2254 of 2255 pass, 1 risky (the old loudness test that asserts nothing).
 - A second code review of the new code found ten more faults, all fixed: the worst was a co-op horse left "ridden"
   for everyone when a client rider went down.
-- Smokes: see the last section of `morning/NEEDS_DEVIN.md`.
+- Smokes: all 101 ran on the final code. 95 passed first time. Of the six that did not:
+  - `smoke_landscape`: a real bug, fixed. The Inn's chimney kept smoking after the hearth died (the code looked for
+    the smoke where the stack was before the attic). Passes now.
+  - `smoke_map02` (Totenhafen): a real bug, fixed. A Screamer fell out of the world off a climb link and, as the
+    round's last body, held round 33 open for good. It is put down below the map now. Passes now. Why it falls at
+    that link is not found yet.
+  - `smoke_late_kit`: failed once in the full run (a bot at round 30 holding its plain Thompson), passed alone.
+  - `smoke_marks`, `smoke_npc_walls`, `smoke_letzte_fahrt`: as before this work (the pause-map empty spot; a bot
+    pressed behind the Inn's bar; the 20-minute cap).
 
 ## Known and open
 - Co-op clients see a plain zombie where a boss horse is (the limit every homage boss has had).
