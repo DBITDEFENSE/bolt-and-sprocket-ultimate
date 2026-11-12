@@ -238,7 +238,7 @@ func pose() -> void:
 	var head_pitch: float = -neck_pitch * 0.45 - 0.35 * low + 0.25 * shy + 0.25 * stagger - 0.3 * rear + (0.18 * sin(t * 2.3) * wrong * 0.3 if dead else 0.0)
 	var a_head: Transform3D = a_prev * _about(HorseMesh.NECK[3], Basis(Vector3.UP, yaw_total * 0.2) * _rx(head_pitch) * Basis(Vector3.BACK, twist * 0.5))
 	_put("Head", a_head)
-	_put("Jaw", a_head * _about(HorseMesh.head_point(0.1, 0.0, -0.1), _rx(-(jaw + (0.1 if dead else 0.0)))))
+	_put("Jaw", a_head * _about(HorseMesh.head_point(0.1, 0.0, -0.1), _rx(-(jaw + (0.24 if dead else 0.0)))))
 	_put("Forelock", a_head * _about(HorseMesh.head_point(-0.02, 0.0, 0.1), _rx(0.12 * sin(TAU * phase * 2.0) * (1.0 - standing)) * Basis(Vector3.BACK, _lat * 0.3)))
 	for i: int in 2:
 		var sx: float = -1.0 if i == 0 else 1.0

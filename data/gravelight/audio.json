@@ -5804,6 +5804,206 @@
       ],
       "max_voices": 2,
       "loop": true
+    },
+    "horse_blow": {
+      "files": [
+        "res://gravelight/audio/horse/horse_blow_1.ogg",
+        "res://gravelight/audio/horse/horse_blow_2.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -9.0,
+      "pitch": [
+        0.94,
+        1.06
+      ],
+      "attenuation": "quiet"
+    },
+    "horse_boss_breath": {
+      "files": [
+        "res://gravelight/audio/horse/horse_boss_breath_1.ogg",
+        "res://gravelight/audio/horse/horse_boss_breath_2.ogg",
+        "res://gravelight/audio/horse/horse_boss_breath_3.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -7.0,
+      "pitch": [
+        0.9,
+        1.08
+      ]
+    },
+    "horse_boss_crash": {
+      "files": [
+        "res://gravelight/audio/horse/horse_boss_crash_1.ogg",
+        "res://gravelight/audio/horse/horse_boss_crash_2.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -1.0,
+      "pitch": [
+        0.92,
+        1.06
+      ]
+    },
+    "horse_boss_death": {
+      "files": [
+        "res://gravelight/audio/horse/horse_boss_death.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": 0.0,
+      "attenuation": "world"
+    },
+    "horse_boss_drag": {
+      "files": [
+        "res://gravelight/audio/horse/horse_boss_drag.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -6.0,
+      "loop": true
+    },
+    "horse_boss_gallop_far": {
+      "files": [
+        "res://gravelight/audio/horse/horse_boss_gallop_far.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": 0.0,
+      "attenuation": "world"
+    },
+    "horse_boss_hoof": {
+      "files": [
+        "res://gravelight/audio/horse/horse_boss_hoof_1.ogg",
+        "res://gravelight/audio/horse/horse_boss_hoof_2.ogg",
+        "res://gravelight/audio/horse/horse_boss_hoof_3.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -3.0,
+      "pitch": [
+        0.9,
+        1.08
+      ],
+      "max_voices": 6
+    },
+    "horse_boss_scream": {
+      "files": [
+        "res://gravelight/audio/horse/horse_boss_scream_1.ogg",
+        "res://gravelight/audio/horse/horse_boss_scream_2.ogg",
+        "res://gravelight/audio/horse/horse_boss_scream_3.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -1.0,
+      "pitch": [
+        0.95,
+        1.05
+      ],
+      "attenuation": "world"
+    },
+    "horse_boss_snort": {
+      "files": [
+        "res://gravelight/audio/horse/horse_boss_snort_1.ogg",
+        "res://gravelight/audio/horse/horse_boss_snort_2.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -4.0,
+      "pitch": [
+        0.92,
+        1.06
+      ]
+    },
+    "horse_boss_whip": {
+      "files": [
+        "res://gravelight/audio/horse/horse_boss_whip_1.ogg",
+        "res://gravelight/audio/horse/horse_boss_whip_2.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -2.0,
+      "pitch": [
+        0.95,
+        1.05
+      ]
+    },
+    "horse_hoof_snow": {
+      "files": [
+        "res://gravelight/audio/horse/horse_hoof_snow_1.ogg",
+        "res://gravelight/audio/horse/horse_hoof_snow_2.ogg",
+        "res://gravelight/audio/horse/horse_hoof_snow_3.ogg",
+        "res://gravelight/audio/horse/horse_hoof_snow_4.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -6.0,
+      "pitch": [
+        0.92,
+        1.08
+      ],
+      "max_voices": 6,
+      "attenuation": "zombie"
+    },
+    "horse_hoof_stone": {
+      "files": [
+        "res://gravelight/audio/horse/horse_hoof_stone_1.ogg",
+        "res://gravelight/audio/horse/horse_hoof_stone_2.ogg",
+        "res://gravelight/audio/horse/horse_hoof_stone_3.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -5.0,
+      "pitch": [
+        0.93,
+        1.07
+      ],
+      "max_voices": 6,
+      "attenuation": "zombie"
+    },
+    "horse_hoof_wood": {
+      "files": [
+        "res://gravelight/audio/horse/horse_hoof_wood_1.ogg",
+        "res://gravelight/audio/horse/horse_hoof_wood_2.ogg",
+        "res://gravelight/audio/horse/horse_hoof_wood_3.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -5.0,
+      "pitch": [
+        0.93,
+        1.07
+      ],
+      "max_voices": 6,
+      "attenuation": "zombie"
+    },
+    "horse_neigh": {
+      "files": [
+        "res://gravelight/audio/horse/horse_neigh_1.ogg",
+        "res://gravelight/audio/horse/horse_neigh_2.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -4.0,
+      "pitch": [
+        0.96,
+        1.04
+      ],
+      "attenuation": "zombie"
+    },
+    "horse_snort": {
+      "files": [
+        "res://gravelight/audio/horse/horse_snort_1.ogg",
+        "res://gravelight/audio/horse/horse_snort_2.ogg",
+        "res://gravelight/audio/horse/horse_snort_3.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -5.0,
+      "pitch": [
+        0.93,
+        1.07
+      ],
+      "attenuation": "zombie"
+    },
+    "horse_tack": {
+      "files": [
+        "res://gravelight/audio/horse/horse_tack_1.ogg",
+        "res://gravelight/audio/horse/horse_tack_2.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -8.0,
+      "pitch": [
+        0.92,
+        1.08
+      ],
+      "attenuation": "quiet"
     }
   }
 }

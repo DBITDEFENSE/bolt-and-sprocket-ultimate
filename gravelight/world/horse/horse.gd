@@ -78,6 +78,7 @@ var _hands_on: bool = false
 var _rope: MeshInstance3D = null
 var _puppet_yaw: float = 0.0
 var _has_zones: bool = false
+var _demo_after: Variant = null        # captures: the input the horse is ridden with once the rider is up (ride)
 
 
 func _init() -> void:
@@ -243,6 +244,7 @@ func _finish_dismount() -> void:
 	pace = 0.0
 	if p != null and is_instance_valid(p):
 		if p.is_local and p.carry == self:
+			p.prompt_text = ""
 			p.global_position = _to
 			p.velocity = Vector3.ZERO
 			p.carry_fire = false
@@ -250,10 +252,14 @@ func _finish_dismount() -> void:
 			if p.is_alive():
 				p.land_dip(2.0)
 		# the rider may still stand inside the body for a moment: let them step clear before it is solid to them again
-		get_tree().create_timer(1.2).timeout.connect(func() -> void:
-			if is_instance_valid(p) and rider != p:
-				remove_collision_exception_with(p)
-				p.remove_collision_exception_with(self))
+		get_tree().create_timer(1.2).timeout.connect(_solid_again.bind(p.get_instance_id()))
+
+
+func _solid_again(player_iid: int) -> void:
+	var p: Player = instance_from_id(player_iid) as Player
+	if p != null and is_instance_valid(p) and rider != p:
+		remove_collision_exception_with(p)
+		p.remove_collision_exception_with(self)
 
 
 ## The rider is thrown or pulled off (downed, gone): no climb down, the body is left beside the horse.
@@ -450,7 +456,8 @@ func _move(delta: float) -> void:
 	else:
 		_blocked_t = 0.0
 	if absf(speed) > 0.05 or not is_on_floor():
-		if _may_stand(global_position):
+		# its place, and the end of it that leads (the nose going forward, the quarters backing): a horse is long
+		if _may_stand(global_position) and _may_stand(global_position + fwd * (1.3 if speed >= 0.0 else -1.0)):
 			_last_ok = global_position
 		else:
 			# a house door, the tower, the map's edge: it will not go
@@ -499,8 +506,10 @@ func _trample() -> void:
 		side = side - fwd * side.dot(fwd)
 		if side.length() < 0.05:
 			side = fwd.cross(Vector3.UP) * (1.0 if randf() < 0.5 else -1.0)
-		var push: Vector3 = (fwd * 0.6 + side.normalized() * 0.8).normalized() * float(hit["push"])
+		var push: Vector3 = (fwd * 0.25 + side.normalized()).normalized() * float(hit["push"])
 		zn.external_push(push, float(hit["push_s"]), rider.player_id if rider != null else 0, &"", float(hit["damage"]))
+		if not zn.is_pushed():
+			continue   # still rising, at a window, on a ladder: it cannot be flung (and costs the horse nothing)
 		speed *= 1.0 - float(hit["slow"])
 		pace = minf(pace, 2.2)
 		_trample_cd = float(tc.get("cooldown", 0.7))
@@ -546,6 +555,9 @@ func _tick_mount(delta: float) -> void:
 	if k >= 1.0:
 		mode = Mode.RIDDEN
 		_t = 0.0
+		if _demo_after is Vector3:
+			input_override = _demo_after
+			_demo_after = null
 		if p.is_local:
 			p.carry_roll = 0.0
 			p.carry_pitch = 0.0
@@ -628,6 +640,8 @@ func _seat_rider(p: Player) -> void:
 	p.carry_roll = -sm.z * 0.8 - steer * 0.03 * clampf(absf(speed) / 5.0, 0.0, 1.0) + 0.008 * sway * sin(TAU * rig.phase)
 	p.carry_head = Vector3(0.012 * sway * sin(TAU * rig.phase), 0.0, 0.0)
 	p.carry_fov = 6.0 * clampf((absf(speed) - 5.0) / 4.5, 0.0, 1.0)
+	# the way down is said once, for the first seconds in the saddle (the Player shows no prompt while carried)
+	p.prompt_text = "Hold [%s] or press [%s] to get down" % [Interactable.prompt_key(&"interact"), Interactable.prompt_key(&"jump")] if _t < 5.0 and rides <= 3 else ""
 	var fire: bool = HorseRules.can_fire(g, mode == Mode.RIDDEN, fc)
 	p.carry_fire = fire
 	_set_hands(not fire)
@@ -690,6 +704,39 @@ func _follow_rider(delta: float) -> void:
 		rig.speed = speed
 		rig.turn = clampf(wrapf(rotation.y - _prev_yaw, -PI, PI) / maxf(delta, 0.0001), -1.0, 1.0) * -1.0
 	_last_ok = global_position
+
+
+# ================================================================== tools (captures, the dev console, the smokes)
+
+## A capture camera's `use` (tools_src/capture.gd): `p` mounts, and once up rides straight on at an easy trot.
+func ride(p: Player) -> void:
+	_demo_after = Vector3(0.0, 0.55, 0.0)
+	on_use(p)
+
+
+## Rides with a fixed input from now on (steer -1..1 right positive, throttle -1..1, sprint 0 / 1) instead of the keys.
+func demo(steer_in: float, throttle: float, sprint: float = 0.0) -> void:
+	input_override = Vector3(steer_in, throttle, sprint)
+
+
+## Stands the horse loose at (x, z) on its rail's level, facing `yaw_deg` (0 = north); at its rail's own place it is
+## tied again.
+func stand_at(x: float, z: float, yaw_deg: float) -> void:
+	if rider != null:
+		_force_off()
+		forced_off -= 1
+	global_position = Vector3(x, home_pos.y, z)
+	rotation.y = deg_to_rad(yaw_deg)
+	speed = 0.0
+	pace = 0.0
+	steer = 0.0
+	_last_ok = global_position
+	_prev_pos = global_position
+	_prev_yaw = rotation.y
+	_idle = 0.0
+	_home_wait = 600.0
+	input_override = null
+	mode = Mode.TIED if _flat(global_position, home_pos) < 0.2 else Mode.LOOSE
 
 
 # ================================================================== going home

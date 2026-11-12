@@ -222,9 +222,10 @@ class _Builder:
 		return (r["c"] as Vector3) + (r["u"] as Vector3) * (float(r["ru"]) * sin(th) * wide) + (r["v"] as Vector3) * (float(r["rv"]) * cos(th))
 
 	## Lofts a skin through `rings`. `arc`: [from, to] in turns of theta for an open strip (a blanket, a strap); the
-	## default is the full section. `caps`: close the first / last ring with a fan. `skip`: Callable(ring i, seg j) ->
-	## true leaves that quad out (the gaps between the ribs). `push`: metres every vertex is moved out along the section.
-	func loft(sname: String, rings: Array, segs: int = SEGS, arc: Array = [], caps: Array = [true, true], skip: Callable = Callable(), push: float = 0.0) -> void:
+	## default is the full section. `caps`: close the first / last ring with a fan (`bulge`: how far its middle stands
+	## out, in radii). `skip`: Callable(ring i, seg j) -> true leaves that quad out (the gaps between the ribs). `push`:
+	## metres every vertex is moved out along the section.
+	func loft(sname: String, rings: Array, segs: int = SEGS, arc: Array = [], caps: Array = [true, true], skip: Callable = Callable(), push: float = 0.0, bulge: float = 0.45) -> void:
 		var s: _Surf = surf(sname)
 		var open: bool = arc.size() == 2
 		var cols: int = segs + 1 if open else segs
@@ -261,7 +262,7 @@ class _Builder:
 				var other: Dictionary = rings[1 if e == 0 else rings.size() - 2]
 				var out_dir: Vector3 = ((r2["c"] as Vector3) - (other["c"] as Vector3)).normalized()
 				var col2: Color = (r2["col"] as Callable).call(0.0) if r2["col"] is Callable else r2["col"]
-				var cv: int = vert(s, (r2["c"] as Vector3) + out_dir * minf(float(r2["ru"]), float(r2["rv"])) * 0.45, col2, r2["w"])
+				var cv: int = vert(s, (r2["c"] as Vector3) + out_dir * minf(float(r2["ru"]), float(r2["rv"])) * bulge, col2, r2["w"])
 				var b0: int = int(base[0 if e == 0 else rings.size() - 1])
 				for j: int in cols:
 					tri(s, cv, b0 + j, b0 + (j + 1) % cols, (r2["c"] as Vector3) - out_dir * 0.05)
@@ -494,7 +495,8 @@ class _Builder:
 				var p: Vector3 = c + Vector3.RIGHT * sin(th) * hw + HorseMesh.HEAD_FRONT * cos(th) * hd
 				if dead:
 					# the muzzle's skin is gone: bone from the nose down
-					return shade(HorseMesh.BONE, p, 0.1) if s > 0.4 else _coat(p)
+					var bare: float = 0.3 + 0.08 * sin(th * 3.0)        # the hide's ragged edge round the muzzle
+					return shade(HorseMesh.BONE.darkened(0.12), p, 0.14) if s > bare else _coat(p)
 				var front: float = cos(th)
 				if front > 0.8 and s > 0.03 and s < 0.5:
 					return HorseMesh.WHITE   # the blaze
@@ -511,13 +513,13 @@ class _Builder:
 		for sx: float in [-1.0, 1.0]:
 			var ep: Vector3 = HorseMesh.eye_pos(sx)
 			if dead:
-				blob("dark", ep - Vector3.RIGHT * 0.006 * sx, Vector3(0.012, 0.034, 0.038), Color(0.015, 0.01, 0.015), ["Head", 1.0])
-				blob("glow", ep + Vector3.RIGHT * 0.006 * sx, Vector3(0.011, 0.017, 0.017), HorseMesh.GLOW_CORE.lightened(0.25), ["Head", 1.0], 6)
+				blob("dark", ep - Vector3.RIGHT * 0.004 * sx, Vector3(0.012, 0.042, 0.048), Color(0.012, 0.008, 0.012), ["Head", 1.0])
+				blob("glow", ep + Vector3.RIGHT * 0.008 * sx, Vector3(0.012, 0.02, 0.02), HorseMesh.GLOW_CORE.lightened(0.3), ["Head", 1.0], 6)
 				blob("dark", HorseMesh.nostril_pos(sx), Vector3(0.02, 0.018, 0.03), Color(0.03, 0.02, 0.02), ["Head", 1.0], 6, Basis(Vector3.RIGHT, 0.6))
 			else:
-				blob("eye", ep, Vector3(0.022, 0.028, 0.028), Color(0.03, 0.02, 0.015), ["Head", 1.0])
-				# the lid's shadow over it and the nostril
-				blob("coat", ep + HorseMesh.HEAD_FRONT * 0.024 - Vector3.RIGHT * 0.006 * sx, Vector3(0.02, 0.014, 0.034), _coat(ep).darkened(0.25), ["Head", 1.0], 6, Basis(Vector3.RIGHT, 0.6))
+				blob("eye", ep - Vector3.RIGHT * 0.012 * sx, Vector3(0.016, 0.023, 0.026), Color(0.03, 0.02, 0.015), ["Head", 1.0])
+				# the brow's ridge over it, and the nostril
+				blob("coat", ep - Vector3.RIGHT * 0.02 * sx + HorseMesh.HEAD_FRONT * 0.03, Vector3(0.022, 0.012, 0.04), _coat(ep).darkened(0.2), ["Head", 1.0], 6, Basis(Vector3.RIGHT, 0.6))
 				blob("eye", HorseMesh.nostril_pos(sx), Vector3(0.014, 0.012, 0.024), Color(0.02, 0.012, 0.012), ["Head", 1.0], 6, Basis(Vector3.RIGHT, 0.6))
 		if dead:
 			_jaw()
@@ -530,12 +532,21 @@ class _Builder:
 			tube("bone", pts, [0.016, 0.03], shade(HorseMesh.BONE, pts[1], 0.12), w, 6)
 			for t: int in 5:
 				var tp: Vector3 = HorseMesh.head_point(0.3 + 0.035 * float(t), 0.05 * sx, -0.118)
-				blob("bone", tp, Vector3(0.011, 0.017, 0.015), Color(0.8, 0.76, 0.6), ["Jaw", 1.0], 5)
-				blob("bone", HorseMesh.head_point(0.3 + 0.035 * float(t), 0.052 * sx, -0.088), Vector3(0.011, 0.017, 0.015), Color(0.8, 0.76, 0.6), ["Head", 1.0], 5)
+				blob("bone", tp, Vector3(0.013, 0.024, 0.016), Color(0.8, 0.76, 0.6), ["Jaw", 1.0], 5)
+				blob("bone", HorseMesh.head_point(0.3 + 0.035 * float(t), 0.056 * sx, -0.082), Vector3(0.013, 0.024, 0.016), Color(0.8, 0.76, 0.6), ["Head", 1.0], 5)
+		for k: int in 6:
+			var np: Array = _neck_path()
+			var fr: Array = _neck_at(np, 1 + (k % 4))
+			var root: Vector3 = (fr[0] as Vector3) - (fr[1] as Vector3) * (float(fr[3]) * 0.96) + Vector3.RIGHT * (0.05 * (float(k % 3) - 1.0))
+			var ln: float = 0.16 + 0.07 * float((k * 5) % 3)
+			var nb: String = np[1 + (k % 4)][5]
+			var mb: String = np[1 + (k % 4)][6]
+			card("coat", [[root, Vector3.RIGHT * 0.035, [nb, 1.0]], [root + Vector3(0.01, -ln * 0.5, 0.01), Vector3.RIGHT * 0.03, [nb, 0.5, mb, 0.5]],
+				[root + Vector3(-0.01, -ln, 0.02), Vector3.RIGHT * 0.012, [mb, 1.0]]], HorseMesh.DEAD_HIDE.darkened(0.2), HorseMesh.DEAD_DARK)
 		for t: int in 4:
 			var x: float = -0.027 + 0.018 * float(t)
-			blob("bone", HorseMesh.head_point(0.6, x, -0.085), Vector3(0.008, 0.02, 0.01), Color(0.82, 0.78, 0.62), ["Jaw", 1.0], 5)
-			blob("bone", HorseMesh.head_point(0.615, x, -0.045), Vector3(0.008, 0.02, 0.01), Color(0.82, 0.78, 0.62), ["Head", 1.0], 5)
+			blob("bone", HorseMesh.head_point(0.6, x, -0.085), Vector3(0.009, 0.026, 0.011), Color(0.82, 0.78, 0.62), ["Jaw", 1.0], 5)
+			blob("bone", HorseMesh.head_point(0.622, x, -0.05), Vector3(0.009, 0.028, 0.011), Color(0.82, 0.78, 0.62), ["Head", 1.0], 5)
 
 	func _ears() -> void:
 		for sx: float in [-1.0, 1.0]:
@@ -615,7 +626,7 @@ class _Builder:
 			ring(hc + Vector3(0, 0.005, 0), Vector3.RIGHT, Vector3.FORWARD, 0.06, 0.064, 0.0, [d, 1.0], horn),
 			ring(hc.lerp(hg, 0.5) + Vector3(0, 0, -0.004), Vector3.RIGHT, Vector3.FORWARD, 0.07, 0.078, 0.0, [d, 1.0], horn),
 			ring(hg + Vector3(0, 0.004, -0.008), Vector3.RIGHT, Vector3.FORWARD, 0.08, 0.094, 0.0, [d, 1.0], horn.lightened(0.12))]
-		loft("hoof", hr, 10, [], [false, true])
+		loft("hoof", hr, 10, [], [false, true], Callable(), 0.0, 0.0)   # (a flat sole)
 		if not dead:
 			# the feather: long hair from the back of the cannon over the fetlock to the hoof (the Noriker's)
 			var f: Vector3 = j[3]
@@ -659,7 +670,8 @@ class _Builder:
 					var th: float = minf(q * 2.0, 1.0) * 1.35            # over the crest's shoulder in the first half...
 					var top: float = (cos(th) + 1.0) * 0.5
 					var wide: float = 1.0 - narrow * top * top
-					var p: Vector3 = c + Vector3.RIGHT * (sx * (ru * sin(th) * wide + 0.014 + 0.012 * q)) + v * (rv * cos(th) + 0.012)
+					var lap: float = minf(q * 5.0, 1.0)
+					var p: Vector3 = c + Vector3.RIGHT * (sx * (ru * sin(th) * wide + 0.014 * lap - 0.01 * (1.0 - lap) + 0.012 * q)) + v * (rv * cos(th) + 0.012)
 					if q > 0.5:
 						p += Vector3.DOWN * ((q - 0.5) * 2.0 * length)   # ...then hanging
 					else:

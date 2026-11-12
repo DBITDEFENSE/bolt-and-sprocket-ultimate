@@ -804,12 +804,17 @@ func _end_charge(m: Dictionary) -> void:
 		_charged_twice = true
 		_cds.erase("charge")
 		_recover(0.25)
-		get_tree().create_timer(0.3).timeout.connect(func() -> void:
-			if is_active() and bstate == B.MOVE and target != null:
-				_start("charge"))
+		get_tree().create_timer(0.3).timeout.connect(_charge_again)   # (a method: the timer lets go if the horse is freed)
 		return
 	_charged_twice = false
 	_recover(float(m.get("recover", 1.1)))
+
+
+func _charge_again() -> void:
+	if is_active() and bstate == B.MOVE and target != null and not posed:
+		_start("charge")
+	else:
+		_charged_twice = false
 
 
 ## It ran into something solid: staggered, open to more damage.
@@ -1151,9 +1156,12 @@ func _show_lash(length: float) -> void:
 	var d: Vector3 = to - from
 	_lash.global_transform = Transform3D(Basis.looking_at(d.normalized(), Vector3.UP).scaled(Vector3(1.0, 1.0, d.length())), (from + to) * 0.5)
 	_lash.visible = true
-	get_tree().create_timer(0.14).timeout.connect(func() -> void:
-		if is_instance_valid(_lash):
-			_lash.visible = false)
+	get_tree().create_timer(0.14).timeout.connect(_hide_lash)
+
+
+func _hide_lash() -> void:
+	if _lash != null and is_instance_valid(_lash):
+		_lash.visible = false
 
 
 ## Half its health gone: the horse rears and the carter is thrown; he gets up and fights on foot (an ordinary zombie
@@ -1260,6 +1268,8 @@ func debug_move(id: String) -> void:
 ## Dev / capture: stand still facing `yaw_deg` in a pose ("", "rear", "low", "kick", "gallop", "stagger").
 func debug_pose(yaw_deg: float, pose: String = "") -> void:
 	posed = true
+	if pose == "none":
+		pose = ""
 	rotation.y = deg_to_rad(yaw_deg)
 	_vis_yaw = rotation.y
 	bstate = B.MOVE

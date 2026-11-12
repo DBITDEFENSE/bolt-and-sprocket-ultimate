@@ -30,5 +30,5 @@
  "home": {"idle_s": 25.0, "pace": 1.0, "arrive_m": 0.5, "stuck_s": 6.0, "retry_s": 12.0},
  "bounds": {"y_up": 0.9, "y_down": 0.6},
  "body": {"radius": 0.55, "height": 1.7, "use_size": [1.5, 2.0, 3.0]},
- "sounds": {"snort": "horse_snort", "whinny": "horse_whinny", "blow": "horse_blow", "tack": "horse_tack", "hoof": "horse_hoof_", "mount": "horse_tack"}
+ "sounds": {"snort": "horse_snort", "whinny": "horse_neigh", "blow": "horse_blow", "tack": "horse_tack", "hoof": "horse_hoof_", "mount": "horse_tack"}
 }

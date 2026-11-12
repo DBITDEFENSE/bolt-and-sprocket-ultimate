@@ -9373,6 +9373,264 @@
           ]
         }
       ]
+    },
+    "u15_horse": {
+      "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "T-240 (docs/u15/t240_horses.md): the rideable horse at its rail in the Carters' Yard (front, side, three-quarter, in the open), the undead horses of rounds 20 and 30 posed in the yard through HorseRound.pose(x, y, z, yaw, pose) and HorseBoss.debug_pose(yaw, pose) with callv, and the rider's view (the camera's `use` mounts through Horse.ride, which then rides east). 'bright' frames show the surfaces; their night twins the real light.",
+      "cams": [
+        {
+          "name": "horse_side",
+          "pos": [
+            19.6,
+            0.0,
+            37.3
+          ],
+          "yaw": -86.2,
+          "pitch": -3.0,
+          "settle_s": 3.0,
+          "bright": true,
+          "do": [],
+          "note": "T-240: the Noriker at its rail from the near side, 4.5 m: barrel, crested neck, head, mane, tail, four jointed legs with feathers, the saddle on its blanket, the bridle, the lead rope to the rail"
+        },
+        {
+          "name": "horse_side_night",
+          "pos": [
+            19.6,
+            0.0,
+            37.3
+          ],
+          "yaw": -86.2,
+          "pitch": -3.0,
+          "settle_s": 2.0,
+          "do": [],
+          "note": "T-240: the same frame under the yard's own light (the wall lamp)"
+        },
+        {
+          "name": "horse_three_quarter",
+          "pos": [
+            21.2,
+            0.0,
+            35.1
+          ],
+          "yaw": -117.0,
+          "pitch": -2.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "do": [],
+          "note": "T-240: three-quarter from the front, by the stable wall: the head and the blaze, the chest, the rail and the hay net"
+        },
+        {
+          "name": "horse_face",
+          "pos": [
+            24.15,
+            0.0,
+            34.62
+          ],
+          "yaw": -180.0,
+          "pitch": 4.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "do": [],
+          "note": "T-240: from between the rail and the wall, a metre off its nose: the eyes, the nostrils, the ears, the bridle's straps"
+        },
+        {
+          "name": "horse_rear_quarter",
+          "pos": [
+            27.4,
+            0.0,
+            40.7
+          ],
+          "yaw": 41.3,
+          "pitch": -3.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "do": [],
+          "note": "T-240: three-quarter from behind, past the snowed cart: the quarters, the tail, the hocks, the stirrup"
+        },
+        {
+          "name": "horse_front_open",
+          "pos": [
+            16.0,
+            0.0,
+            46.2
+          ],
+          "yaw": -0.0,
+          "pitch": -2.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "do": [
+            "callv:YardHorse:stand_at:16,41.5,180:1.0"
+          ],
+          "note": "T-240: stood in the open yard (stand_at) and seen full from the front, 4.7 m"
+        },
+        {
+          "name": "horse_side_open",
+          "pos": [
+            11.6,
+            0.0,
+            42.6
+          ],
+          "yaw": -76.0,
+          "pitch": -3.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "do": [],
+          "note": "T-240: the same horse from its off side: the long side of the mane"
+        },
+        {
+          "name": "totenross_front_quarter",
+          "pos": [
+            11.2,
+            0.0,
+            47.2
+          ],
+          "yaw": -33.7,
+          "pitch": 2.0,
+          "settle_s": 3.0,
+          "bright": true,
+          "do": [
+            "callv:YardHorse:stand_at:24.15,37.2,0:0.2",
+            "callv:HorseRound_20:pose:14,0,43,180,none:5"
+          ],
+          "note": "T-240: DAS TOTENROSS from 5 m, lit to show the surfaces: the hide tight on the ribs, the bare jaw, the collar and hames, the traces, the broken shaft behind"
+        },
+        {
+          "name": "totenross_front_quarter_night",
+          "pos": [
+            11.2,
+            0.0,
+            47.2
+          ],
+          "yaw": -33.7,
+          "pitch": 2.0,
+          "settle_s": 2.0,
+          "do": [],
+          "note": "T-240: the same under the yard's own light: the Nachtglas in the sockets and through the ribs, the breath"
+        },
+        {
+          "name": "totenross_side_night",
+          "pos": [
+            19.6,
+            0.0,
+            43.2
+          ],
+          "yaw": 88.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "do": [],
+          "note": "T-240: its off side at 5.6 m at night: the gaps in the hide, the light inside, the head carried wrong"
+        },
+        {
+          "name": "totenross_rear_up_night",
+          "pos": [
+            11.2,
+            0.0,
+            47.2
+          ],
+          "yaw": -33.7,
+          "pitch": 10.0,
+          "settle_s": 2.0,
+          "do": [
+            "callv:HorseBoss_totenross_pose:debug_pose:180,rear:1.5"
+          ],
+          "note": "T-240: the stomp's wind-up (it rears) from where a player would stand"
+        },
+        {
+          "name": "totenross_charge_windup_night",
+          "pos": [
+            14.6,
+            0.0,
+            47.3
+          ],
+          "yaw": 7.9,
+          "pitch": -2.0,
+          "settle_s": 2.0,
+          "do": [
+            "callv:HorseBoss_totenross_pose:debug_pose:180,low:1.5"
+          ],
+          "note": "T-240: the charge's wind-up from down its line: the head down, pawing"
+        },
+        {
+          "name": "fuhrmann_front_quarter",
+          "pos": [
+            19.2,
+            0.0,
+            47.2
+          ],
+          "yaw": -33.7,
+          "pitch": 4.0,
+          "settle_s": 3.0,
+          "bright": true,
+          "do": [
+            "callv:HorseBoss_totenross_pose:debug_pose:180,none:0.2",
+            "callv:HorseRound_30:pose:22,0,43,180,none:5"
+          ],
+          "note": "T-240: DER FUHRMANN (round 30) lit: the dead carter in the saddle, his hat and whip"
+        },
+        {
+          "name": "fuhrmann_front_quarter_night",
+          "pos": [
+            19.2,
+            0.0,
+            47.2
+          ],
+          "yaw": -33.7,
+          "pitch": 4.0,
+          "settle_s": 2.0,
+          "do": [],
+          "note": "T-240: the same at night"
+        },
+        {
+          "name": "fuhrmann_side_night",
+          "pos": [
+            27.4,
+            0.0,
+            43.4
+          ],
+          "yaw": 85.8,
+          "pitch": 2.0,
+          "settle_s": 2.0,
+          "do": [],
+          "note": "T-240: the Fuhrmann from his off side at night, the Totenross beyond him"
+        },
+        {
+          "name": "horse_rider_trot",
+          "pos": [
+            9.0,
+            0.0,
+            46.3
+          ],
+          "yaw": -90.0,
+          "pitch": -9.0,
+          "settle_s": 1.0,
+          "bright": true,
+          "do": [
+            "open:Door_Yard",
+            "callv:YardHorse:stand_at:9,46.5,-90:0.5"
+          ],
+          "use": "YardHorse",
+          "shot_after_s": 4.4,
+          "note": "T-240: the rider's view four seconds after mounting, at a trot east down the yard: the neck and the ears ahead, the gun up (a rider may shoot at a walk and a trot)"
+        },
+        {
+          "name": "horse_rider_gallop",
+          "pos": [
+            9.0,
+            0.0,
+            46.3
+          ],
+          "yaw": -90.0,
+          "pitch": -9.0,
+          "settle_s": 0.2,
+          "bright": true,
+          "do": [
+            "callv:YardHorse:demo:0,1,1:1.7"
+          ],
+          "note": "T-240: the same rider at a gallop: both hands on the reins at the pommel, the view opened"
+        }
+      ]
     }
   }
 }

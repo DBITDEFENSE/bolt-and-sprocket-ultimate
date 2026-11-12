@@ -46,7 +46,7 @@ static func pace_step(pace: float, throttle: float, sprint: bool, dt: float, r: 
 ## down, the hardest when the rider reins in.
 static func speed_step(speed: float, want: float, reining: bool, dt: float, r: Dictionary) -> float:
 	var rate: float = float(r.get("accel", 3.6))
-	if absf(want) < absf(speed) or signf(want) != signf(speed):
+	if absf(want) < absf(speed) or (absf(speed) > 0.01 and want * speed < 0.0):
 		rate = float(r.get("brake", 7.5)) if reining else float(r.get("decel", 4.5))
 	return move_toward(speed, want, rate * dt)
 
@@ -103,7 +103,7 @@ static func shy_level(zombies: int, boss_dist: float, c: Dictionary, bf: Diction
 	var k: float = clampf(float(zombies) / maxf(1.0, float(c.get("shy_at", 3))), 0.0, 1.0)
 	if boss_dist <= float(bf.get("radius", 14.0)):
 		k = maxf(k, 1.0 - 0.4 * boss_dist / maxf(1.0, float(bf.get("radius", 14.0))))
-	return k * k if zombies < int(c.get("shy_at", 3)) and boss_dist > float(bf.get("radius", 14.0)) else k
+	return k
 
 
 ## What galloping through a zombie does: {} when too slow or still cooling down, else {damage, push, push_s, slow}.
