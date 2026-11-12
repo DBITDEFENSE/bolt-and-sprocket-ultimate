@@ -246,6 +246,11 @@ func on_cousin_died(b: HomageBoss) -> void:
 	dead += 1
 	kills += 1
 	reserved_left = maxi(0, reserved_left - 1)
+	if hb == boss:
+		for o: HorseBoss in horses():
+			if o != hb and is_instance_valid(o) and o.is_active():
+				boss = o   # the fail-safe and the squad scaling read `boss`: it must be a living horse
+				break
 	if hud != null and is_instance_valid(hud):
 		hud.strike("%s_%d" % [boss_id, bosses.find(hb)], true)
 	if dead < bosses.size():
@@ -276,6 +281,9 @@ func leave() -> void:
 	for b: HorseBoss in horses():
 		if b != boss and b.is_active():
 			b.retreat()
+	if hud != null and is_instance_valid(hud):
+		for i: int in bosses.size():
+			hud.strike("%s_%d" % [boss_id, i], false)   # (the bars are keyed per horse: the base strikes boss_id only)
 	super.leave()
 
 

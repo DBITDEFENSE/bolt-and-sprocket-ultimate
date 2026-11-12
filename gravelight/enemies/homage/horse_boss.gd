@@ -920,6 +920,9 @@ func _smash_doors() -> void:
 		var d: BuyDoor = n as BuyDoor
 		if d == null or d.is_open:
 			continue
+		# only a door a player could have bought now: never one waiting on the power, a quest flag or a boss lock
+		if d.boss_locked or (d.requires_power and not GameState.power_on) or (d.requires_flag != &"" and not GameState.has_flag(d.requires_flag)):
+			continue
 		var dp: Vector3 = d.global_position
 		if Vector2(dp.x - global_position.x, dp.z - global_position.z).length() < 2.6 and absf(dp.y - global_position.y) < 3.0:
 			d.open(0)

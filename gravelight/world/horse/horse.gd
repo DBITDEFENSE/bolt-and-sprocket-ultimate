@@ -265,6 +265,17 @@ func _solid_again(player_iid: int) -> void:
 
 
 ## The rider is thrown or pulled off (downed, gone): no climb down, the body is left beside the horse.
+## The host's own check of a rider on another machine (review, 2026-11-12). A client rider who goes down asks
+## for the dismount with a Use, but the host has already heard `report_downed` and drops requests from the downed:
+## the horse stayed RIDDEN under the body on the host and every other peer, and nobody else could mount it.
+func _host_unseats(p: Player) -> bool:
+	if p == null or p.is_local or not Net.is_authority() or not (p.downed or p.spectating):
+		return false
+	Net.mirror(self, &"net_dismount", [global_position, rotation.y])
+	_force_off()
+	return true
+
+
 func _force_off() -> void:
 	if rider == null:
 		return
@@ -391,7 +402,7 @@ func _sense(delta: float) -> void:
 			if zn == null or not is_instance_valid(zn):
 				continue
 			var d: float = zn.global_position.distance_to(global_position)
-			if zn is HomageBoss:
+			if zn is HomageBoss or str(zn.get("enemy_id")).begins_with("totenross"):   # (a client's copy of a boss is a plain puppet)
 				_boss_d = minf(_boss_d, d)
 			elif d <= rad:
 				n += 1
@@ -528,6 +539,8 @@ func _tick_mount(delta: float) -> void:
 		return
 	var dur: float = float(_r.get("mount_s", 1.0))
 	var k: float = clampf(_t / dur, 0.0, 1.0)
+	if _host_unseats(p):
+		return
 	if p.is_local:
 		if not p.is_alive() or p.carry != self:
 			_abort_mount()
@@ -583,6 +596,8 @@ func _tick_ridden(delta: float) -> void:
 	if p == null:
 		mode = Mode.LOOSE
 		return
+	if _host_unseats(p):
+		return
 	if not p.is_local:
 		_follow_rider(delta)
 		return
@@ -629,6 +644,8 @@ func _tick_ridden(delta: float) -> void:
 	_seat_rider(p)
 	if want_off:
 		dismount_wanted = false
+		_use_released = false     # one request: a client waits a round trip for the host's answer, and a request
+		_hold_t = 0.0             # every tick was denied (with its sound) once the first had been taken
 		p.use_interactable(use)   # the host decides (and mirrors it); solo runs it here
 
 
@@ -708,6 +725,8 @@ func _follow_rider(delta: float) -> void:
 		rig.speed = speed
 		rig.turn = clampf(wrapf(rotation.y - _prev_yaw, -PI, PI) / maxf(delta, 0.0001), -1.0, 1.0) * -1.0
 	_last_ok = global_position
+	if Net.is_authority():
+		_trample()   # a client's ride: the trample is the host's to decide (drive() never runs here)
 
 
 # ================================================================== tools (captures, the dev console, the smokes)

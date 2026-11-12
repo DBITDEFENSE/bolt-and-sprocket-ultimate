@@ -41,6 +41,10 @@ var _human_t: float = 0.0
 var _horde_cut: bool = false
 var _sched: Array = []
 var _force: bool = false
+## The encounter that began on a round (review, 2026-11-12): two encounters on one map (a returning horse and the
+## Fuhrmann on 30; PAUL's return and a horse on Kaltenbrunn) could both begin: two bosses, two bars, the horde cut twice.
+static var _begun_round: int = -1
+static var _begun_by: HomageEncounter = null
 
 
 # ================================================================== pure rules (unit-tested)
@@ -175,7 +179,8 @@ func _on_round_started(r: int, special: bool) -> void:
 	var foreman_now: int = r if RoundManager.boss_due() or (director != null and director._boss_pending >= 0.0) else -1
 	var special_now: int = r if special else -1
 	var want: int = pick_round(r, foreman_now, special_now)
-	if want != r or not can_start(r):
+	var other: bool = _begun_round == r and _begun_by != null and is_instance_valid(_begun_by) and _begun_by != self and _begun_by.is_inside_tree()
+	if want != r or not can_start(r) or other:
 		RoundManager.unreserve_round(event_round)
 		event_round = r + 1 if want == r else want
 		RoundManager.reserve_round(event_round)
@@ -208,6 +213,8 @@ func start_now() -> void:
 
 ## The fight starts on round `r`.
 func begin(r: int) -> void:
+	_begun_round = r
+	_begun_by = self
 	phase = Phase.ACTIVE
 	event_round = r
 	t = 0.0

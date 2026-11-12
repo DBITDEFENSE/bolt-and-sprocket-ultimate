@@ -1131,6 +1131,7 @@ func mantle_k() -> float:
 func begin_carry(by: Node) -> void:
 	carry = by
 	_view_off = Vector3.ZERO   # T-236: no eased step offset under a carried body
+	_lunge_t = 0.0             # a lunge or a knockback in flight ends here (its clock only runs in _update_movement)
 	carry_fire = false
 	velocity = Vector3.ZERO
 	sprinting = false
@@ -1153,6 +1154,8 @@ func end_carry(by: Node) -> void:
 	if carry != null and is_instance_valid(carry) and carry != by:
 		return
 	carry = null
+	if not has_status(&"knockdown"):
+		_lunge_t = 0.0   # a push taken in the saddle is not served on the way down (a knockdown's throw still is)
 	carry_fire = false
 	carry_head = Vector3.ZERO
 	carry_pitch = 0.0
@@ -1775,7 +1778,7 @@ func _on_perks_changed(pid: int) -> void:
 
 
 func lunge_toward(target: Vector3, distance: float) -> void:
-	if distance <= 0.1:
+	if distance <= 0.1 or carry != null:   # (a carried body does not lunge: the push would wait for the dismount)
 		return
 	var d: Vector3 = target - global_position
 	d.y = 0.0

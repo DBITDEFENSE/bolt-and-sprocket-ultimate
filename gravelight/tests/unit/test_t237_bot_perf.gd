@@ -137,6 +137,9 @@ func test_a_skipped_pose_hands_its_time_on() -> void:
 	seen.global_position = Vector3(0, 0, -8)
 	unseen.global_position = Vector3(0, 0, 12)
 	assert_eq(unseen.pose_div(), 4)
+	# the loop below runs inside one physics frame: put this body off the frame its slot falls on, or one run in four
+	# poses it on every call (the frame counter never moves here) and the last assert fails
+	unseen.set("_lod_phase", (5 - int(Engine.get_physics_frames() % 4)) % 4)
 	var poses_before: float = float(unseen.get("_phase"))
 	var full_poses: int = 0
 	for i: int in 60:

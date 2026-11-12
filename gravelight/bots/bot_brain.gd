@@ -116,6 +116,7 @@ var _think_t: float = 0.0
 var _seen_seq: int = 0
 var _reach_cache: Dictionary = {}
 var _reach_stamp: int = -1
+var _reach_from: Vector3 = Vector3.INF   # where the bot stood when the answers were taken
 ## T-237: a think waits at most this long for its turn (the squad thinks one brain per tick).
 const THINK_WAIT_MAX_S: float = 0.1
 ## T-237: how long a reachability answer is kept (doors opening clear it at once: BotSquad._on_door_opened).
@@ -1300,8 +1301,12 @@ func _reachable(p: Vector3) -> bool:
 	for d: BuyDoor in _doors:
 		if is_instance_valid(d) and d.is_open:
 			stamp += 1 << 40
-	if stamp != _reach_stamp:
+	# the bot was moved (a ladder, the zip line, a revive or respawn teleport): answers from the old spot are another
+	# island's. A walk covers 8 m in about the cache's own lifetime, so this costs a walking bot nothing.
+	var here: Vector3 = player.global_position
+	if stamp != _reach_stamp or not _reach_from.is_finite() or here.distance_to(_reach_from) > 8.0:
 		_reach_stamp = stamp
+		_reach_from = here
 		_reach_cache.clear()
 	var key: Vector3i = Vector3i(roundi(p.x * 2.0), roundi(p.y * 2.0), roundi(p.z * 2.0))
 	var now: float = squad.time()
