@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' game: data:; font-src 'self'; style-src 'self'; script-src 'self'; connect-src 'none'">
+  <title>CLAUDE ZOMBIES</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- background: key art (crossfades with the hero slide), snow, grain, vignette -->
+  <div id="bg" aria-hidden="true">
+    <div class="bg-img" id="bgA"></div>
+    <div class="bg-img" id="bgB"></div>
+    <canvas id="snow"></canvas>
+    <div class="bg-shade"></div>
+    <div class="grain"></div>
+  </div>
+
+  <header id="titlebar">
+    <div class="brand">
+      <img src="../assets/art/claude_zombies_icon.png" alt="">
+      <span>CLAUDE ZOMBIES</span>
+    </div>
+    <nav id="tabs">
+      <button class="tab active" data-view="home">News</button>
+      <button class="tab" data-view="notes">Patch notes</button>
+      <button class="tab" data-view="settings">Settings</button>
+    </nav>
+    <div class="spacer"></div>
+    <div class="channel" id="channel">
+      <button id="channelBtn" class="channel-btn" title="Release channel"><i class="dot"></i><span id="channelName">STABLE</span><svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button>
+      <div class="channel-menu" id="channelMenu"></div>
+    </div>
+    <div class="winctl">
+      <button data-win="min" title="Minimize"><svg viewBox="0 0 10 10"><path d="M1 5h8"/></svg></button>
+      <button data-win="max" title="Maximize"><svg viewBox="0 0 10 10"><rect x="1.5" y="1.5" width="7" height="7"/></svg></button>
+      <button data-win="close" class="close" title="Close"><svg viewBox="0 0 10 10"><path d="M1.5 1.5l7 7M8.5 1.5l-7 7"/></svg></button>
+    </div>
+  </header>
+
+  <main id="views">
+    <!-- HOME -->
+    <section class="view active" id="view-home">
+      <div class="home-left">
+        <div class="logo-block">
+          <img class="wordmark" src="../assets/art/claude_zombies.png" alt="Claude Zombies">
+          <div class="subtitle" id="subtitle">TERMS &amp; CONDITIONS</div>
+          <div class="tagline" id="tagline"></div>
+        </div>
+        <article class="hero" id="hero">
+          <div class="hero-meta"><span class="tag" id="heroTag"></span><span class="date" id="heroDate"></span></div>
+          <h1 id="heroTitle"></h1>
+          <p id="heroSummary"></p>
+          <div class="hero-actions">
+            <button class="ghost" id="heroMore">Read more</button>
+            <div class="hero-nav">
+              <button class="arrow" id="heroPrev" title="Previous"><svg viewBox="0 0 8 12"><path d="M6.5 1L1.5 6l5 5"/></svg></button>
+              <div class="dots" id="heroDots"></div>
+              <button class="arrow" id="heroNext" title="Next"><svg viewBox="0 0 8 12"><path d="M1.5 1l5 5-5 5"/></svg></button>
+            </div>
+          </div>
+          <div class="hero-timer"><i id="heroTimer"></i></div>
+        </article>
+      </div>
+      <aside class="home-right">
+        <div class="panel">
+          <div class="panel-head"><h2>Latest news</h2></div>
+          <div class="news-list" id="newsList"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2 id="miniNotesTitle">Patch notes</h2><button class="link" data-goto="notes">All</button></div>
+          <ul class="mini-notes" id="miniNotes"></ul>
+        </div>
+        <div class="links" id="links"></div>
+      </aside>
+    </section>
+
+    <!-- PATCH NOTES -->
+    <section class="view" id="view-notes">
+      <div class="sheet">
+        <div class="sheet-head">
+          <h1>Patch notes</h1>
+          <div class="sheet-sub" id="notesSub"></div>
+        </div>
+        <div class="notes-scroll" id="notesScroll"></div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="view" id="view-settings">
+      <div class="sheet settings">
+        <div class="sheet-head"><h1>Settings</h1><div class="sheet-sub">Saved as you change them.</div></div>
+        <div class="settings-grid">
+          <div class="group">
+            <h3>Game</h3>
+            <label class="field">
+              <span>Install folder</span>
+              <div class="row"><input id="setDir" readonly><button class="ghost" id="setDirPick">Change</button></div>
+              <small id="setDirNote"></small>
+            </label>
+            <label class="field">
+              <span>Release channel</span>
+              <select id="setChannel"></select>
+              <small id="setChannelNote"></small>
+            </label>
+            <label class="check"><input type="checkbox" id="setAuto"><span>Check for updates when the launcher opens</span></label>
+          </div>
+          <div class="group">
+            <h3>Launch</h3>
+            <label class="field">
+              <span>Graphics API</span>
+              <select id="setDriver">
+                <option value="auto">Automatic (recommended)</option>
+                <option value="vulkan">Vulkan</option>
+                <option value="d3d12">Direct3D 12</option>
+                <option value="opengl3">OpenGL (compatibility, older GPUs)</option>
+              </select>
+            </label>
+            <label class="check"><input type="checkbox" id="setFull"><span>Start in fullscreen</span></label>
+            <label class="field">
+              <span>When the game starts</span>
+              <select id="setAfter">
+                <option value="minimize">Minimize the launcher</option>
+                <option value="close">Close the launcher</option>
+                <option value="keep">Keep the launcher open</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Extra launch arguments</span>
+              <input id="setArgs" placeholder="for example --windowed --resolution 1920x1080" spellcheck="false">
+            </label>
+          </div>
+          <div class="group">
+            <h3>Maintenance</h3>
+            <div class="btn-col">
+              <button class="ghost" id="actRepair">Verify &amp; repair files</button>
+              <button class="ghost" id="actFolder">Open game folder</button>
+              <button class="ghost" id="actGameLogs">Open game logs</button>
+              <button class="ghost" id="actLogs">Open launcher logs</button>
+              <button class="ghost" id="actSignOut">Switch GitHub account</button>
+              <button class="ghost danger" id="actUninstall">Uninstall game</button>
+            </div>
+            <div class="about" id="about"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="bottombar">
+    <div class="build" id="buildInfo">
+      <div class="build-line1" id="build1">Not installed</div>
+      <div class="build-line2" id="build2"></div>
+    </div>
+    <div class="prog" id="prog">
+      <div class="prog-top"><span class="prog-label" id="progLabel">Ready</span><span class="prog-pct" id="progPct"></span></div>
+      <div class="bar" id="bar"><i id="barFill"></i><b id="barShine"></b></div>
+      <div class="prog-bottom"><span id="progDetail"></span><span id="progSpeed"></span></div>
+    </div>
+    <div class="actions">
+      <button class="cancel" id="cancelBtn" hidden>Cancel</button>
+      <button class="play" id="playBtn"><span id="playText">PLAY</span><small id="playSub"></small></button>
+    </div>
+  </footer>
+
+  <!-- article reader -->
+  <div class="modal" id="article" hidden>
+    <div class="modal-card article-card">
+      <div class="article-img" id="articleImg"></div>
+      <div class="article-body">
+        <div class="hero-meta"><span class="tag" id="articleTag"></span><span class="date" id="articleDate"></span></div>
+        <h1 id="articleTitle"></h1>
+        <div id="articleText"></div>
+      </div>
+      <button class="modal-x" data-close>&times;</button>
+    </div>
+  </div>
+
+  <!-- first run -->
+  <div class="modal" id="welcome" hidden>
+    <div class="modal-card welcome-card">
+      <h1>Welcome, recruit</h1>
+      <p class="lede">The launcher sets everything up. Here is what it will do:</p>
+      <ul class="checklist" id="reqList"></ul>
+      <label class="field">
+        <span>Install folder</span>
+        <div class="row"><input id="welcomeDir" readonly><button class="ghost" id="welcomeDirPick">Change</button></div>
+      </label>
+      <p class="fineprint">The game lives in a private GitHub repository. When a GitHub window opens, sign in with the account the owner invited (accept the invitation e-mail first).</p>
+      <div class="welcome-actions">
+        <button class="ghost" data-close>Later</button>
+        <button class="play small" id="welcomeInstall"><span>INSTALL</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toasts"></div>
+  <script src="app.js"></script>
+</body>
+</html>

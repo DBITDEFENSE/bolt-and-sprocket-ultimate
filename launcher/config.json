@@ -1,0 +1,29 @@
+{
+  "_comment": "Built into the launcher. launcher/feed.json in the repo (read from the installed channel's branch) can override channels, godot and mainScene without rebuilding the launcher.",
+  "productName": "CLAUDE ZOMBIES",
+  "subtitle": "TERMS & CONDITIONS",
+  "tagline": "Silesia, winter 1944. The dead are keeping count.",
+  "repoUrl": "https://github.com/DBITDEFENSE/bolt-and-sprocket-ultimate.git",
+  "repoWeb": "https://github.com/DBITDEFENSE/bolt-and-sprocket-ultimate",
+  "defaultChannel": "stable",
+  "channels": [
+    {
+      "id": "stable",
+      "name": "Stable",
+      "branch": "master",
+      "description": "The build that always launches."
+    },
+    {
+      "id": "preview",
+      "name": "Preview",
+      "branch": "claude/boss-rework",
+      "description": "Newest work before it is merged. Can break."
+    }
+  ],
+  "godot": {
+    "version": "4.7.2"
+  },
+  "mainScene": "res://gravelight/ui/main_menu.tscn",
+  "exclude": [],
+  "installSizeGB": 5
+}
