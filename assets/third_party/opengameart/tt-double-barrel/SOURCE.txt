@@ -10,3 +10,5 @@ Downloaded: 2026-10-25 by Devin Blair (zip in assets/user_supplied/packs) and by
 Files used: model.glb, textures/tt_double_barrel_ultimatelowpolyguns_albedo.png
 Game use: sawed_off
 Notes: A full-length side-by-side (1.13 m). The game's Sawed-Off is this gun with the barrels cut and the stock shortened: Barrels is a separate part, so phase 2 can clip it (the mesh's barrel geometry is a straight extrusion) or scale the long axis.
+
+Modified 2026-11-12: smooth-shaded with sharp edges at 35 deg, a 0.7 mm angle-limited bevel and weighted normals by tools_src/blender/smooth_palette_guns.py (geometry, part names and origins otherwise as published).

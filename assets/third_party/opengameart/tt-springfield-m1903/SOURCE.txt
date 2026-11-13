@@ -9,3 +9,5 @@ Format: Blender .blend (one rigged mesh, one palette material, 8x8 PichuliruPale
 Downloaded: 2026-10-25 by Devin Blair (zip in assets/user_supplied/packs) and by Claude (main set zip); converted 2026-10-25 by Claude (T-087)
 Files used: model.glb, textures/tt_springfield_m1903_ultimatelowpolyguns_albedo.png
 Game use: springfield
+
+Modified 2026-11-12: smooth-shaded with sharp edges at 35 deg, a 0.7 mm angle-limited bevel and weighted normals by tools_src/blender/smooth_palette_guns.py (geometry, part names and origins otherwise as published).

@@ -638,6 +638,12 @@ func _build_lore() -> void:
 	panel.perk_id = perk_id
 	panel.width = fp.x
 	panel.position = Vector3(0, 0, fp.z * 0.5 + 0.03)
+	if str(_data().get("shape", "cabinet")) == "barrel":
+		# 2026-11-12: a flat 0.62 m plate stood up to 0.18 m off the barrel's curve (the owner's "beige panel"): a
+		# narrower plate sits on the staves (the barrel's widest band is 0.98 of its half-width)
+		panel.width = 0.54
+		panel.read_width = fp.x
+		panel.position = Vector3(0, 0, fp.x * 0.5 * 0.98 + 0.012)
 	panel.rotation.y = PI   # its -Z (reader side) points out of the machine's back
 	add_child(panel)
 	# the maker's plate as something you can read (T-075): a thin box just in front of the machine's own, at its foot

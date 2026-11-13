@@ -17,7 +17,8 @@
         {"name": "vault_from_stairs", "pos": [28.6, -3.2, 20.2], "yaw": 180.0, "pitch": -4.0, "note": "the owner's screenshot: the Helvetia vault from the stair foot, Ironhide Stout on the right"},
         {"name": "vault_ironhide_back", "pos": [27.6, -3.2, 21.0], "yaw": -150.0, "pitch": -2.0, "note": "behind Ironhide Stout: the beige board"},
         {"name": "vault_north_west", "pos": [29.5, -3.2, 25.0], "yaw": 30.0, "pitch": -4.0, "note": "the vault's north end and the Crucible from the middle"},
-        {"name": "vault_ironhide_close", "pos": [27.2, -3.2, 24.4], "yaw": 50.0, "pitch": 4.0, "note": "the pale panel between Ironhide Stout and the west wall"}
+        {"name": "vault_ironhide_close", "pos": [27.2, -3.2, 24.4], "yaw": 50.0, "pitch": 4.0, "note": "the pale panel between Ironhide Stout and the west wall"},
+        {"name": "vault_fineprint", "pos": [24.6, -3.2, 21.2], "yaw": -35.0, "pitch": 6.0, "note": "Ironhide Stout's fine-print plate from the wall side"}
       ]
     },
     "u16_fix_m01": {

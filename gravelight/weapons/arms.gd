@@ -52,8 +52,110 @@ static func available(ch: StringName) -> bool:
 static func _mesh(ch: StringName, node_name: String) -> Mesh:
 	if not available(ch):
 		return null
+	var key: String = String(ch) + "|" + node_name
+	if _dressed.has(key):
+		return _dressed[key]
 	var n: MeshInstance3D = (_scenes[ch] as Node).find_child(node_name, true, false) as MeshInstance3D
-	return n.mesh if n != null else null
+	var m: Mesh = n.mesh if n != null else null
+	if m != null and not bool(GLSettings.values.get("plain_arms", false)):
+		m = dress(m)
+	_dressed[key] = m
+	return m
+
+
+# ------------------------------------------------------------------ the surface detail (2026-11-12)
+
+## 2026-11-12 (the owner: the first-person hands were "plain untextured shapes"): every surface of the arms GLB
+## (flat Principled colours) is drawn with arms.gdshader: its colour, roughness and metal kept, the ambientCG
+## fabric or leather laid over it in object space, a pore grain on skin. GLSettings "plain_arms" keeps the GLB's own.
+const ARMS_SHADER: String = "res://assets/materials/shaders/arms.gdshader"
+const DETAIL: Dictionary = {
+	"fabric": ["res://assets/third_party/ambientcg/fabric-031/textures/Fabric031_", 11.0, 0.55, 0.75],    # [path prefix, repeats/m, albedo, normal]
+	"leather": ["res://assets/third_party/ambientcg/leather-014/textures/Leather014_", 9.0, 0.45, 0.8],
+	"skin": ["res://assets/third_party/ambientcg/leather-014/textures/Leather014_", 34.0, 0.0, 0.18],
+	"metal": ["res://assets/third_party/ambientcg/leather-014/textures/Leather014_", 20.0, 0.0, 0.08],
+}
+static var _dressed: Dictionary = {}    # "<character>|<node>" -> Mesh
+static var _shader_mats: Dictionary = {}
+static var _means: Dictionary = {}
+
+
+## A copy of `src` whose surfaces use the arms shader (the mesh data is shared, only the materials differ).
+static func dress(src: Mesh) -> Mesh:
+	var m: Mesh = src.duplicate(false)
+	for si: int in m.get_surface_count():
+		var sm: StandardMaterial3D = m.surface_get_material(si) as StandardMaterial3D
+		if sm != null:
+			m.surface_set_material(si, material_for(sm))
+	return m
+
+
+## The kind of detail a surface gets, from its material's name (make_arms.py: glove, palm, skin, strap, cuff,
+## sleeve, button) and its look: metal (Vendelin's brass hands, buttons), leather (smooth gloves, palms, straps),
+## fabric (sleeves, cuffs, wool and work gloves: rough), skin.
+static func kind_of(sm: StandardMaterial3D) -> String:
+	var nm: String = String(sm.resource_name).to_lower()
+	if sm.metallic > 0.5 or nm.begins_with("button"):
+		return "metal"
+	if nm.begins_with("skin"):
+		return "skin"
+	if nm.begins_with("sleeve") or nm.begins_with("cuff"):
+		return "fabric"
+	if nm.begins_with("glove") or nm.begins_with("palm") or nm.begins_with("strap"):
+		return "leather" if sm.roughness <= 0.78 else "fabric"
+	return "fabric"
+
+
+static func material_for(sm: StandardMaterial3D) -> Material:
+	if _shader_mats.has(sm):
+		return _shader_mats[sm]
+	var sh: Shader = load(ARMS_SHADER) as Shader
+	if sh == null:
+		return sm
+	var kind: String = kind_of(sm)
+	var d: Array = DETAIL[kind]
+	var pre: String = str(d[0])
+	var m: ShaderMaterial = ShaderMaterial.new()
+	m.shader = sh
+	m.set_shader_parameter("base_color", sm.albedo_color)
+	m.set_shader_parameter("roughness", sm.roughness)
+	m.set_shader_parameter("metallic", sm.metallic)
+	m.set_shader_parameter("kind", ["fabric", "leather", "skin", "metal"].find(kind))
+	for slot: String in ["albedo", "normal", "orm"]:
+		var t: Texture2D = load(pre + slot + ".png") as Texture2D if ResourceLoader.exists(pre + slot + ".png") else null
+		if t != null:
+			m.set_shader_parameter("detail_" + slot, t)
+	m.set_shader_parameter("detail_mean", _mean_of(pre + "albedo.png"))
+	m.set_shader_parameter("detail_scale", float(d[1]))
+	m.set_shader_parameter("albedo_amount", float(d[2]))
+	m.set_shader_parameter("normal_strength", float(d[3]))
+	m.set_shader_parameter("orm_amount", 0.0 if kind == "metal" or kind == "skin" else 0.5)
+	_shader_mats[sm] = m
+	return m
+
+
+## The mean luminance of a detail texture (sampled on a grid), so the detail centres on the character's colour.
+static func _mean_of(path: String) -> float:
+	if _means.has(path):
+		return _means[path]
+	var mean: float = 0.5
+	var t: Texture2D = load(path) as Texture2D if ResourceLoader.exists(path) else null
+	var img: Image = t.get_image() if t != null else null
+	if img != null:
+		if img.is_compressed():
+			img.decompress()
+		var sum: float = 0.0
+		var cnt: int = 0
+		var step: int = maxi(1, img.get_width() / 32)
+		for y: int in range(0, img.get_height(), step):
+			for x: int in range(0, img.get_width(), step):
+				var c: Color = img.get_pixel(x, y)
+				sum += (c.r + c.g + c.b) / 3.0
+				cnt += 1
+		if cnt > 0:
+			mean = sum / float(cnt)
+	_means[path] = mean
+	return mean
 
 
 static func _radius_key(r: float) -> String:

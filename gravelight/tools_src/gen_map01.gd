@@ -909,6 +909,8 @@ func build_core() -> void:
 	wall_z("RampFE", 22.5, 90, 101, y, DY + 3.0, [], "rock")
 	box(geo, "RampFRoof", Vector3(17.5, DY + 3.0, 90), Vector3(22.5, DY + 3.3, 101), "roof")
 	ramp_z("RampF", 18.0, 22.0, 101.0, 90.0, y, DY)
+	# (2026-11-12: the ramp runs 1.5 m west of the Core's west wall at x 19; its foot left a slit there into the void)
+	wall_x("RampFFoot", 101.0, 17.35, 19.0, y, DY + 3.0, [], "rock")
 	# G ramp: Generator south (z 82, y -12) -> Core north (z 101)
 	wall_z("RampGW", 41.5, 82, 101, y, DY + 3.0, [], "rock")
 	wall_z("RampGE", 47.5, 82, 101, y, DY + 3.0, [], "rock")
@@ -923,6 +925,11 @@ func build_core() -> void:
 	wall_x("CorrHS", 118.0, 49, 76.5, y, y + 3.5, [], "rock")
 	box(geo, "CorrHFloor", Vector3(49, y - 0.5, 112), Vector3(76.5, y, 118), "floor_stone")
 	box(geo, "CorrHRoof", Vector3(49, y + 3.5, 112), Vector3(76.5, y + 3.8, 118), "roof")
+	# 2026-11-12 (the owner's screenshot: a mine tunnel ending in "a box of sky"): the H ramp's roof is at DY + 3 and the
+	# corridor's at y + 3.5, 5.5 m lower; nothing closed the step between them where the ramp meets the corridor (z 112),
+	# so from the ramp and the corridor's east end you looked over the corridor's roof into the void and the sky dome.
+	# A rock header wall fills it (found by tools: drawn-geometry rays from every walkable point, see DECISIONS T-241).
+	wall_x("RampHHead", 112.0, 71.5, 76.5, y + 3.5, DY + 3.0, [], "rock")
 
 
 func build_closets() -> void:

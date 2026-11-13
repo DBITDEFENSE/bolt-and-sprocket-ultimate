@@ -10,3 +10,5 @@ Downloaded: 2026-10-25 by Devin Blair (zip in assets/user_supplied/packs) and by
 Files used: model.glb, textures/tt_ppsh41_ultimatelowpolyguns_albedo.png
 Game use: ppsh41
 Notes: 71-round drum as the Mag part.
+
+Modified 2026-11-12: smooth-shaded with sharp edges at 35 deg, a 0.7 mm angle-limited bevel and weighted normals by tools_src/blender/smooth_palette_guns.py (geometry, part names and origins otherwise as published).
