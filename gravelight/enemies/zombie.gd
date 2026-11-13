@@ -3253,9 +3253,13 @@ func _lock_feet(clip: String, time: float, dt: float, cfg: Dictionary) -> void:
 		_contact_lock.apply(_skel, _modifier, clip, time, dt, cfg)
 
 
+const _TURN_STATES: Array = [State.CHASE, State.TO_WINDOW]
+const _TURN_TREE_STATES: Array = ["Locomotion", "Turn"]
+
+
 ## Only stationary upright locomotion can yield presentation to a recorded turn.
 func _can_recorded_turn() -> bool:
-	return has_rig() and not is_crawler and not hopping and state in [State.CHASE, State.TO_WINDOW] and _tree_state in ["Locomotion", "Turn"] and Vector2(velocity.x, velocity.z).length() < float(_anim["turn"].get("in_place_below_mps", 0.5))
+	return has_rig() and not is_crawler and not hopping and state in _TURN_STATES and _tree_state in _TURN_TREE_STATES and Vector2(velocity.x, velocity.z).length() < float(_anim["turn"].get("in_place_below_mps", 0.5))
 
 
 ## Per visual tick: tree parameters from the state and velocity, LOD-rated advance, animation events.
