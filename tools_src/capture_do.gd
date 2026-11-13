@@ -136,6 +136,56 @@ static func run(tree: SceneTree, map: Node, player: Player, ops: Array) -> void:
 				await tree.process_frame
 			"wait":
 				await tree.create_timer(float(op[1])).timeout
+			"hud_off":
+				# T-221 b (the trailer set): the HUD, crosshair and viewmodel gone (the console's `hud off` path)
+				TrailerCommands.hud(tree, PackedStringArray(["off"]))
+				await tree.process_frame
+			"noclip":
+				# T-221 b: the camera may hang anywhere (under the belly, in line with the sun), never falls
+				if player != null:
+					player.noclip = true
+					player.collision_mask = 0
+			"pos":
+				# T-221 b: "pos:x,y,z,yaw,pitch": stand the camera now (before the ops that follow: a clip's action plays
+				# in front of it; the cam's own pos is applied only after every op)
+				if player != null and op.size() > 1:
+					var v: PackedStringArray = op[1].split(",")
+					if v.size() >= 3:
+						player.global_position = Vector3(float(v[0]), float(v[1]), float(v[2]))
+						player.velocity = Vector3.ZERO
+					if v.size() >= 4:
+						player.rotation.y = deg_to_rad(float(v[3]))
+					if v.size() >= 5:
+						player.set("_pitch", deg_to_rad(float(v[4])))
+			"timescale":
+				Engine.time_scale = clampf(float(op[1]) if op.size() > 1 else 1.0, 0.05, 4.0)
+			"boss":
+				# T-231: "boss:<id>[:x,y,z[:yaw]]": summon a boss (ZombieDirector.summon_boss ids) at the point (default: 6 m
+				# ahead of the player), posed still facing `yaw` (default: the player) so a camera can frame it
+				var dir: Node = tree.get_first_node_in_group(&"director")
+				if dir == null or not dir.has_method("summon_boss") or op.size() < 2:
+					print("[capture] boss: no director or no id")
+				else:
+					var at: Vector3 = Vector3.ZERO
+					if op.size() > 2 and op[2].split(",").size() >= 3:
+						var v: PackedStringArray = op[2].split(",")
+						at = Vector3(float(v[0]), float(v[1]), float(v[2]))
+					elif player != null:
+						var fwd: Vector3 = -player.camera.global_basis.z
+						fwd.y = 0.0
+						at = player.global_position + fwd.normalized() * 6.0
+					var b: Node = dir.call("summon_boss", StringName(op[1]), at)
+					await tree.create_timer(float(op[4]) if op.size() > 4 else 2.0).timeout
+					if b is Node3D and is_instance_valid(b):
+						(b as Node3D).set_physics_process(false)
+						if op.size() > 3 and op[3] != "":
+							(b as Node3D).rotation.y = deg_to_rad(float(op[3]))
+						elif player != null:
+							var to_p: Vector3 = player.global_position - (b as Node3D).global_position
+							(b as Node3D).rotation.y = atan2(-to_p.x, -to_p.z)
+						print("[capture] boss %s posed at %s" % [op[1], str((b as Node3D).global_position)])
+					else:
+						print("[capture] boss %s: nothing came (%s)" % [op[1], str(b)])
 			_:
 				print("[capture] unknown do verb '%s'" % op[0])
 

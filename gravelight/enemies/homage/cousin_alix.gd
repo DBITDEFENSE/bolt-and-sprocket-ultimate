@@ -22,6 +22,19 @@ extends HomageBoss
 ## HP in the window ends it early), then rises enraged: the third arm drips Nachtglas light and Lash becomes Double
 ## Lash. Death: the third arm reaches up toward the inn upstairs and closes slowly into a fist; she sinks to her
 ## knees, still upright.
+## T-232 (the boss rework, docs/BOSS_REWORK.md 4.1, docs/boss_rework/w1_cousins.md): the doll register pushed. The
+## porcelain glaze, glass eyes that never blink, hairline cracks that spread with the damage (crack_tiers), the red
+## ribbon's tails swinging from the bow, Nachtglas motes rising off the Third Hand whenever it opens for someone (the
+## hold's telegraph, the hold, and always once she drips). The kit: a dread block (porcelain; her steps stay silent),
+## fx.tele on every telegraph, the pack on every move (the breath she holds for the Lash, the bone crack of the whip,
+## porcelain splitting as she rises enraged), dust and old ice from the hatch and the lamps guttering as she rises.
+## Battle: the grief window lengthens with each dead cousin (grieve.seconds + seconds_step per dead cousin beyond
+## the first: 3.0 s, then 4.5 s) and she hits harder after each rise (grieve.damage_step: +15 % per grief, on top of
+## her double damage). The squad rule (cousins.json "step"): within her walking band, a player who turns their back
+## on her for away_seconds hears the dress rustle and she takes a step: a short glide at her unseen speed that stops
+## stop_at metres short (no damage: the consequence of looking away is that she is closer). As the last cousin
+## standing she hunts in the dark with only the hearth relit (CousinsRound.dark_hunt); her drip is the readability
+## light.
 
 const HAIR: Color = Color(0.1, 0.08, 0.08)
 const NAVY: Color = Color(0.13, 0.15, 0.26)
@@ -30,6 +43,8 @@ const RIBBON: Color = Color(0.74, 0.07, 0.1)
 const STOCKING: Color = Color(0.09, 0.08, 0.09)
 const SKIN: Color = Color(0.82, 0.8, 0.82)
 const VIOLET: Color = Color(0.7, 0.35, 1.0)
+const CRACK: Color = Color(0.42, 0.2, 0.62)
+const GLASS_EYE: Color = Color(0.78, 0.84, 1.0)
 
 var third: HomageArm
 var freeze: ObservedFreeze = ObservedFreeze.new()
@@ -40,7 +55,12 @@ var holds_landed: int = 0
 var lashes: int = 0
 var lash_dodged: int = 0
 var griefs: int = 0
+var grief_rises: int = 0             # griefs she rose from (each makes her hit harder)
+var steps_taken: int = 0             # look-away steps (the squad rule)
+var crack_tier_now: int = 0
+var doll_cracks: int = 0
 var dripping: bool = false
+var dark_hunt: bool = false
 var trapdoor: Vector3 = Vector3.INF  # where a held player is led
 var _grief_body: Node3D = null
 var _grief_queue: Array[Node3D] = []
@@ -51,28 +71,79 @@ var _hold_g: Dictionary = {}
 var _drip: OmniLight3D
 var _anchor: Node3D
 var _death_fist: float = 0.0
+var _away_t: float = 0.0
+var _step_t: float = 0.0
+var _motes: GPUParticles3D = null
+var _crack_tiers: Array = []
+var _hum_loop: AudioStreamPlayer3D = null
+var _eyes: Node3D = null
+var _emerged_fx: bool = false
 
 
 func _init() -> void:
 	boss_key = "alix"
 
 
+# ---------------------------------------------------------------- pure rules (unit-tested)
+
+## The grief window's length after `dead` cousins have fallen: base + step per dead cousin beyond the first
+## (3.0 s for the first, 4.5 s for the second). She hesitates longer each time.
+static func grief_seconds(base: float, step: float, dead: int) -> float:
+	return base + step * float(maxi(0, dead - 1))
+
+
+## Her hits after `rises` griefs: x(1 + step x rises) on top of her double damage.
+static func grief_damage_mult(step: float, rises: int) -> float:
+	return 1.0 + step * float(maxi(0, rises))
+
+
+## The look-away rule: true when the player's view (`cam_fwd`) points more than `away_deg` from the boss (`to_boss`
+## from the player). Flat (the y is ignored).
+static func looking_away(cam_fwd: Vector3, to_boss: Vector3, away_deg: float) -> bool:
+	var f: Vector3 = Vector3(cam_fwd.x, 0.0, cam_fwd.z)
+	var t: Vector3 = Vector3(to_boss.x, 0.0, to_boss.z)
+	if f.length_squared() < 1e-6 or t.length_squared() < 1e-6:
+		return false
+	return rad_to_deg(f.normalized().angle_to(t.normalized())) > away_deg
+
+
+func grief_seconds_now() -> float:
+	var g: Dictionary = bcfg["grieve"]
+	var dead: int = int(event.call("dead_count")) if event != null and event.has_method("dead_count") else griefs
+	return grief_seconds(float(g["seconds"]), float(g.get("seconds_step", 0.0)), dead)
+
+
+## Her hits grow with each grief she rose from.
+func hit_player(p: Player, amount: float) -> void:
+	super.hit_player(p, amount * grief_damage_mult(float((bcfg.get("grieve", {}) as Dictionary).get("damage_step", 0.0)), grief_rises))
+
+
 func _on_spawned() -> void:
 	freeze.include_bots = bool(ecfg.get("observers_include_bots", true))
 	frozen = false
 	dripping = false
+	dark_hunt = false
+	grief_rises = 0
+	crack_tier_now = 0
+	_set_crack_tier(0)
 	_drip.light_energy = 0.0
 	_grief_body = null
 	_set_third_rest(true)
 	third.show()
 	third.set_reach_on(true)
 	_look.primary_limit_angle = deg_to_rad(80.0)
+	_away_t = 0.0
+	_emerged_fx = false
 
 
 # ---------------------------------------------------------------- brain
 
 func _tick(delta: float) -> void:
 	_update_third(delta)
+	if _motes != null:
+		_motes.emitting = third.visible and (dripping or (move_id == "hold" and (bstate == B.TELEGRAPH or bstate == B.ACTIVE)))
+	if fx != null and dark_hunt:
+		fx.extra_dread = maxf(fx.extra_dread, 0.3)
 	match bstate:
 		B.ARRIVE:
 			_tick_emerge(delta)
@@ -87,12 +158,25 @@ func _tick(delta: float) -> void:
 			if _bt >= 0.45:
 				_go(B.MOVE)
 		B.SPECIAL:
-			_tick_grief(delta)
+			if move_id == "step":
+				_tick_step(delta)
+			else:
+				_tick_grief(delta)
 
 
-## Rising from the trapdoor: a small hand first, then she rises perfectly upright, as if lifted.
+## Rising from the trapdoor: a small hand first, then she rises perfectly upright, as if lifted. Dust and old ice
+## fall from the hatch; the lamps near it gutter.
 func _tick_emerge(delta: float) -> void:
 	_halt(delta)
+	if not _emerged_fx and is_inside_tree():
+		_emerged_fx = true
+		BossFx.burst("dust", global_position + Vector3.UP * 0.3, get_tree(), 1.6, 1.4)
+		BossFx.burst("frost", global_position + Vector3.UP * 0.5, get_tree(), 1.4, 1.2)
+		# the lamps near the hatch gutter (only when no relight can be running: before any death)
+		var dead: int = int(event.call("dead_count")) if event != null and event.has_method("dead_count") else 0
+		if dead == 0:
+			_flicker_room(1.8, 0.7, 14.0)
+		sfx("boss_breath", -4.0, 0.7)
 	var secs: float = float(bcfg.get("emerge_seconds", 1.6))
 	_pivot.position.y = lerpf(-1.75, 0.0, clampf(_bt / secs, 0.0, 1.0))
 	if _bt >= secs:
@@ -112,6 +196,7 @@ func _think(delta: float) -> void:
 	var dy: float = absf(target.global_position.y - global_position.y)
 	var near: bool = d <= float(c["freeze_beyond"])
 	if not near:
+		_away_t = 0.0
 		# beyond 8 m: only while unobserved
 		frozen = freeze.update(get_physics_process_delta_time(), self, look_points())
 		if frozen:
@@ -124,6 +209,8 @@ func _think(delta: float) -> void:
 		return
 	frozen = false
 	freeze.observed = false
+	if _tick_away(delta, d):
+		return
 	if dy < 1.4 and d <= float(c["hold"]["range"]) and cd_ready("hold") and can_grab(target) and _clear_to(target):
 		_begin("hold", float(c["hold"]["telegraph"]))
 	elif dy < 1.4 and d <= float(c["swipe"]["range"]) and cd_ready("swipe") and _clear_to(target):
@@ -132,6 +219,38 @@ func _think(delta: float) -> void:
 		_begin("lash", float(c["lash"]["telegraph"]))
 	else:
 		walk_to(target.global_position, delta)
+
+
+## The squad rule: within her walking band, a player who stops looking at her for away_seconds hears the dress and
+## she takes a step (a short glide at her unseen speed, stopping short). Returns true when the step began.
+func _tick_away(delta: float, d: float) -> bool:
+	var sc: Dictionary = bcfg.get("step", {})
+	if sc.is_empty() or not cd_ready("step") or d <= float(sc.get("stop_at", 2.6)) or not has_los(target):
+		_away_t = 0.0
+		return false
+	var fwd: Vector3 = -target.camera.global_basis.z if target.camera != null else -target.global_basis.z
+	if looking_away(fwd, global_position - target.global_position, float(sc.get("away_deg", 100.0))):
+		_away_t += delta
+	else:
+		_away_t = 0.0
+	if _away_t < float(sc.get("away_seconds", 0.6)):
+		return false
+	_away_t = 0.0
+	steps_taken += 1
+	set_cd("step", float(sc.get("cooldown", 5.0)))
+	_step_t = 0.0
+	sfx("boss_breath", -6.0, 1.5)   # only the dress, behind you
+	_go(B.SPECIAL, "step")
+	return true
+
+
+func _tick_step(delta: float) -> void:
+	var sc: Dictionary = bcfg.get("step", {})
+	_step_t += delta
+	if target == null or _step_t >= float(sc.get("glide_seconds", 0.45)) or dist_to(target) <= float(sc.get("stop_at", 2.6)):
+		_go(B.MOVE)
+		return
+	walk_to(target.global_position, delta, float(bcfg["unseen_speed"]) * speed_mult() * squad_speed_mult)
 
 
 var _tele_total: float = 0.5
@@ -143,10 +262,12 @@ func _begin(id: String, telegraph: float) -> void:
 	match id:
 		"swipe":
 			attack_anim("swipe_over", _tele_total)
-			sfx("knife_swing", -14.0, 0.5)   # only the dress rustling
+			sfx("boss_breath", -16.0, 1.4)   # only the dress rustling (no wind-up sound)
+			fx.tele(VIOLET, 1.0, _tele_total, false)
 		"hold":
 			pose_anim()
 			_hum_mute = _tele_total + 0.6   # the hum drops out
+			fx.tele(VIOLET, 2.5, _tele_total)
 		"lash":
 			pose_anim()
 			# her two normal hands rise slowly to her ears, as if she can't bear a sound
@@ -154,7 +275,8 @@ func _begin(id: String, telegraph: float) -> void:
 			_pose.set_bone("RightUpperArm", Vector3(2.1, 0, -0.9))
 			_pose.set_bone("LeftLowerArm", Vector3(1.6, 0, 0))
 			_pose.set_bone("RightLowerArm", Vector3(1.6, 0, 0))
-			sfx("screamer_hum", -6.0, 0.6)
+			sfx("boss_breath", -4.0, 0.7)   # the breath she holds
+			fx.tele(VIOLET, 3.0, _tele_total)
 
 
 func _telegraph(delta: float) -> void:
@@ -185,6 +307,7 @@ func _telegraph(delta: float) -> void:
 			_lash_i = 0
 			_lash_hit.clear()
 			_pose.clear()
+			sfx("boss_bone_crack", 2.0, 1.3)   # the third arm unfolds like a lock-knife
 			_go(B.ACTIVE, "lash")
 
 
@@ -228,7 +351,7 @@ func _active(delta: float) -> void:
 		if _lash_i + 1 < count:
 			_lash_i += 1
 			_lash_hit.clear()
-			sfx("knife_swing", 0.0, 0.7)
+			sfx("boss_bone_crack", 2.0, 1.2)   # the second lash, mirrored
 		else:
 			_go(B.RECOVER)
 
@@ -282,10 +405,33 @@ func damage_taken_mult() -> float:
 
 
 func _on_damaged(amount: float, _limb: StringName, _by: int, _kind: StringName) -> void:
+	super._on_damaged(amount, _limb, _by, _kind)
+	var tier: int = CousinHammer.crack_tier(hp_fraction(), ecfg.get("crack_tiers", [0.75, 0.5, 0.25]) as Array)
+	if tier > crack_tier_now:
+		_set_crack_tier(tier)
+		doll_cracks += 1
+		if is_inside_tree() and fx != null:
+			sfx("boss_doll_crack", 0.0, 0.95 + 0.08 * float(tier))
+			BossFx.burst("chips", fx.limb_pos(_limb), get_tree(), 1.2, 1.0)
 	if bstate == B.SPECIAL and _grief_kneeling:
 		_grief_dmg += amount
 		if _grief_dmg >= max_hp * float(bcfg["grieve"]["break_fraction"]):
 			_end_grief()
+
+
+func _set_crack_tier(tier: int) -> void:
+	crack_tier_now = tier
+	for i: int in _crack_tiers.size():
+		for mi: MeshInstance3D in _crack_tiers[i]:
+			if is_instance_valid(mi):
+				mi.visible = i < tier
+
+
+## The last cousin standing: the lamps are out again, only the hearth burns; her drip is the light that moves.
+func set_dark_hunt(on: bool) -> void:
+	dark_hunt = on
+	if on and _drip != null and not dripping:
+		_drip.light_energy = 1.0
 
 
 # ---------------------------------------------------------------- grief: holding a fallen cousin's hand
@@ -326,10 +472,12 @@ func _tick_grief(delta: float) -> void:
 		state = State.ATTACK
 		_dead_name = HomageBoss.speaker_name(str((_grief_body as HomageBoss).bcfg.get("slot", "")), true) if _grief_body is HomageBoss else ""
 		say("ALX_COUSIN_01")
+		sfx("boss_breath", -2.0, 0.6)
+		_hum_mute = 1.5   # the hum stops while she kneels
 		return
 	_halt(delta)
 	third.tip = spot + Vector3.UP * 0.35
-	if _bt >= float(bcfg["grieve"]["seconds"]):
+	if _bt >= grief_seconds_now():
 		_end_grief()
 
 
@@ -353,8 +501,14 @@ func _end_grief() -> void:
 	_tree_locomotion(true)
 	if was:
 		dripping = true
+		grief_rises += 1
 		_drip.light_energy = 2.2
 		say("ALX_ENRAGE_01")
+		# she rises: something in her splits, the lamps near her gutter, the hum goes flat from here
+		sfx("boss_doll_crack", 2.0, 0.9)
+		_flicker_room(1.6, 0.85)
+		if is_inside_tree():
+			BossFx.burst("motes", _anchor.global_position if _anchor != null else global_position + Vector3.UP, get_tree(), 1.5, 1.2)
 	_go(B.MOVE)
 
 
@@ -362,8 +516,49 @@ func _on_enraged() -> void:
 	pass   # her step comes with the grief window (on_cousin_fell); the speed step is already applied
 
 
+## A beat on the room's lights through the kit: the lamps within `radius` gutter for `seconds`, then the kit lets
+## them go (lights_restore right after, so a later relight by the CousinsRound is never undone at cleanup).
+func _flicker_room(seconds: float, depth: float, radius: float = 16.0) -> void:
+	if fx == null or not is_inside_tree():
+		return
+	fx.lights_dim(global_position, radius, 1.0, 0.05)
+	fx.lights_flicker(seconds, depth)
+	var k: BossFx = fx
+	get_tree().create_timer(seconds + 0.1).timeout.connect(func() -> void:
+		if is_instance_valid(k):
+			k.lights_restore(0.2))
+
+
+## fx.tele owns the telegraph light.
 func _tele_glow() -> float:
-	return 2.5 if bstate == B.TELEGRAPH and move_id != "swipe" else 0.0
+	return _tele_light.light_energy
+
+
+## The hum: the shared lullaby; once enraged (she has risen from a grief), the lullaby hummed flat as a loop.
+func _update_audio(delta: float) -> void:
+	if (enrage_steps >= 1 or dripping) and is_active():
+		if _hum_loop == null:
+			_hum_loop = AudioDirector.make_loop_3d("boss_hum_wrong", self, -9.0)
+			if _hum_loop != null:
+				_hum_loop.pitch_scale = _hum_pitch()
+		if _hum_loop != null:
+			var want: bool = _hum_mute <= 0.0
+			if want and not _hum_loop.playing:
+				_hum_loop.play()
+			elif not want and _hum_loop.playing:
+				_hum_loop.stop()
+		return
+	super._update_audio(delta)
+
+
+func _stop_hum() -> void:
+	if _hum_loop != null and is_instance_valid(_hum_loop) and _hum_loop.playing:
+		_hum_loop.stop()
+
+
+func _vanish() -> void:
+	_stop_hum()
+	super._vanish()
 
 
 ## Her steps make no sound.
@@ -384,6 +579,9 @@ func _process(delta: float) -> void:
 func _on_retreat() -> void:
 	_grief_queue.clear()
 	_grief_body = null
+	_stop_hum()
+	if _motes != null:
+		_motes.emitting = false
 
 
 ## Down into the trapdoor without bending.
@@ -395,12 +593,17 @@ func _tick_retreat(delta: float) -> void:
 
 
 func _start_authored_death() -> void:
+	_stop_hum()
+	if _motes != null:
+		_motes.emitting = false
 	_tree_play("Death", "death_knee", 0.45)
 	_pose.clear()
 	_death_fist = 0.0
 	say("ALX_DEATH_01")
 	if dripping:
 		_drip.light_energy = 0.6
+	_set_crack_tier(_crack_tiers.size())
+	sfx("boss_doll_crack", 2.0, 0.85)
 
 
 ## The third arm reaches up toward the ceiling, toward the inn upstairs, toward her aunt, and closes into a fist.
@@ -458,3 +661,49 @@ func _build_costume() -> void:
 	_drip.light_energy = 0.0
 	_drip.shadow_enabled = false
 	third.hand_mi.add_child(_drip)
+	# T-232: Nachtglas motes rise off the Third Hand whenever it opens for someone
+	_motes = BossFx.emitter("motes", third.hand_mi, Vector3.ZERO, 0.6)
+	_doll_pass()
+
+
+## T-232: the doll register on top of the modelled body: the glaze, the glass eyes that never blink, the ribbon's
+## tails, the crack tiers.
+func _doll_pass() -> void:
+	var glaze: StandardMaterial3D = StandardMaterial3D.new()
+	glaze.albedo_color = Color(0.92, 0.9, 0.9, 0.16)
+	glaze.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	glaze.roughness = 0.05
+	glaze.metallic = 0.15
+	glaze.metallic_specular = 0.9
+	var head: Node3D = bone_attachment("Head")
+	if head != null:
+		var sp: SphereMesh = SphereMesh.new()
+		sp.radius = 0.132
+		sp.height = 0.264
+		sp.material = glaze
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		mi.mesh = sp
+		mi.position = Vector3(0, 0.1, -0.005)
+		mi.scale = Vector3(0.98, 1.06, 1.02)
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		head.add_child(mi)
+	_eyes = eye_glow(GLASS_EYE, 0.6, 0.0)   # she never blinks
+	# the red ribbon's two tails from the bow, swinging as she walks (the bow and the dress stay intact)
+	strips("Chest", Vector3(0, 0.06, -0.175), 2, 0.2, 0.035, RIBBON, 0.07, 121)
+	var tiers: Array = ecfg.get("crack_tiers", [0.75, 0.5, 0.25]) as Array
+	for i: int in tiers.size():
+		var set_i: Array = []
+		var emit: float = 0.9 + 0.6 * float(i)
+		var c1: MeshInstance3D = cracks("Head", 4 + 3 * i, 0.128, 0.0, 0.2, CRACK, emit, 131 + i)
+		if c1 != null:
+			set_i.append(c1)
+		for side: String in ["Left", "Right"]:
+			var c2: MeshInstance3D = cracks(side + "UpperArm", 2 + 2 * i, 0.066, -0.28, -0.02, CRACK, emit, 141 + i + (7 if side == "Left" else 0))
+			if c2 != null:
+				set_i.append(c2)
+			var c3: MeshInstance3D = cracks(side + "LowerArm", 2 + i, 0.058, -0.25, -0.02, CRACK, emit, 151 + i + (7 if side == "Left" else 0))
+			if c3 != null:
+				set_i.append(c3)
+		for mi2: MeshInstance3D in set_i:
+			mi2.visible = false
+		_crack_tiers.append(set_i)

@@ -1,0 +1,73 @@
+{
+ "_doc": "T-240: the undead horses (the owner: 'add boss zombie horses on round 20 and 30'). Loaded by HorseBoss.table() (not a GLData table). Which map gets which boss on which round is the map's own json: \"round_bosses\": [{\"round\": 20, \"boss\": \"totenross\", \"count\": 1}, ...] and \"round_boss_arena\": {\"zones\": [zone ids the horse may stand in and chase into], \"arrive\": [[x, y, z], ...] (where it comes in; omit: the far side of its zones), \"exit\": [x, y, z]}; HorseRound (gravelight/enemies/homage/horse_round.gd) reads them. DAS TOTENROSS (round 20) is a carters' dray horse long in the ground, still in its collar and traces, dragging a broken shaft; DER FUHRMANN (round 30) is the same horse, worse, with its dead carter on its back: he lashes with the whip until the horse is at rider.falls_at of its health, then he is thrown and fights on foot as an ordinary zombie (rider.hp_rounds x the round's zombie health, tier rider.tier). Numbers: hp_base is solo; HP = hp_base x (1 + hp_player_step x (players - 1)). Reasoning (docs/u15/t240_horses.md): a round-20 zombie has 2,710 health and the Foreman 50,000 at round 20, PAUL 30,000 at round 15; the horse has two weak points (the head x1.6, the lit gaps in the ribs x2.0) and a 2.6 s stagger at x1.5 every time it runs into a wall, so 46,000 at round 20 and 72,000 at round 30 sit between PAUL and the Foreman for what a squad holds by then (Crucible weapons). Damage against 100 health (250 with Ironhide): a charge 80, a stomp 60 / 30, a kick 55, a trample stomp 30, the whip 35; round 30 x1.2. Every attack is telegraphed (pose + sound + light, never under 0.5 s) and has a counter. phases: at each health fraction the speed, the cooldown scale and what changes in the arena. dread: the shared kit's block (docs/BOSS_REWORK.md 2.4). bots_alone mirrors cousins.json. siege: when nobody it may reach is left for wait_s it screams and the dead within radius run (every every_s): hiding indoors is not free. failsafe_seconds after it comes in it bolts away and comes back return_after rounds later until it is killed.",
+ "version": 1,
+ "status": {"grab": "boss_grab", "held": "held_hand"},
+ "enrage_speed_step": 0.0,
+ "bosses": {
+  "totenross": {
+   "boss_id": "totenross",
+   "name": "DAS TOTENROSS",
+   "small": "THE CARTERS' DRAY",
+   "date_line": "24.XII.1944  ·  DIE FUHRMANNSSTRASSE",
+   "hp_base": 46000,
+   "hp_player_step": 0.75,
+   "damage_mult": 1.0,
+   "height": 1.15,
+   "tier": "run",
+   "speed": 4.2,
+   "turn_rate": 2.6,
+   "horde_fraction": 0.6,
+   "failsafe_seconds": 300.0,
+   "return_after": 2,
+   "kill_scrip_per_player": 0,
+   "look_limit_deg": 60.0,
+   "limb_mult": {"head": 1.6, "neck": 1.0, "torso": 1.0, "back": 2.0, "legs": 0.7, "arms": 0.7},
+   "dread": {
+    "radius": 26.0,
+    "near": 6.0,
+    "surface": "flesh",
+    "step_sound": "horse_boss_hoof",
+    "step_shake": 0.22,
+    "step_radius": 16.0,
+    "look_cone_deg": 35.0,
+    "gallop_shake": 0.4
+   },
+   "phases": [
+    {"at": 1.0, "name": "the dray", "speed": 4.2, "cd_mult": 1.0, "lights": 1.0},
+    {"at": 0.66, "name": "the traces burn", "speed": 5.2, "cd_mult": 0.85, "lights": 0.7, "double_charge": true},
+    {"at": 0.33, "name": "it runs blind", "speed": 6.0, "cd_mult": 0.7, "lights": 0.35, "double_charge": true, "stomp_ring_add": 1.5}
+   ],
+   "lights": {"radius": 30.0, "seconds": 2.5, "flicker_s": 1.6},
+   "stagger": {"wall_seconds": 2.6, "mult": 1.5, "blast_fraction": 0.04, "blast_seconds": 1.4},
+   "moves": {
+    "_doc": "telegraph seconds (pose + sound + light); damage; cooldown seconds; ranges in metres; counter = how a player beats it.",
+    "charge": {"telegraph": 1.4, "telegraph_again": 0.9, "lock_at": 0.7, "min_range": 7.0, "range": 28.0, "speed": 13.0, "overrun": 6.0, "width": 1.5, "damage": 80, "knockback": 8.0, "knockdown": 1.1, "cooldown": 9.0, "recover": 1.1, "counter": "side-step once the head goes down: the line is set before it runs; a wall staggers it"},
+    "stomp": {"telegraph": 0.9, "range": 4.4, "r_in": 3.2, "r_out": 6.5, "damage": 60, "damage_out": 30, "knockdown": 1.0, "knock_radius": 2.2, "cooldown": 7.0, "recover": 0.9, "counter": "back out of the ring, or be in the air as the hooves land"},
+    "kick": {"telegraph": 0.5, "range": 3.4, "cone_deg": 60.0, "behind_deg": 115.0, "linger": 0.35, "damage": 55, "knockback": 9.0, "cooldown": 3.5, "recover": 0.5, "counter": "do not stand behind it; leave the cone when the ears go flat"},
+    "trample": {"telegraph": 0.6, "search": 9.0, "reach": 1.5, "every": 0.6, "stomps": 3, "damage": 30, "interrupt_fraction": 0.025, "cooldown": 10.0, "recover": 1.2, "counter": "teammates hit it for 2.5% of its health (or its ribs once) and it breaks off; get up and roll clear"}
+   },
+   "siege": {"wait_s": 8.0, "every_s": 14.0, "radius": 45.0, "tier": "sprint"},
+   "arrival": {"hooves_at": 0.5, "scream_at": 3.5, "spawn_at": 6.0, "speed": 9.0, "card_m": 30.0, "card_s": 7.0},
+   "bots_alone": {"enabled": true, "hp_mult": 0.5, "damage_mult": 0.6, "cooldown_mult": 1.3, "speed_mult": 0.9, "horde_mult": 0.6, "engage_after": 4.0, "release_after": 2.0},
+   "rewards": {"scrip_per_player": 2000, "drops": ["resupply", "double_scrip"], "unlocks": [], "intel": [], "flag": "totenross_down"}
+  },
+  "totenross_fuhrmann": {
+   "inherits": "totenross",
+   "boss_id": "totenross_fuhrmann",
+   "name": "DER FUHRMANN",
+   "small": "AND HIS HORSE",
+   "hp_base": 72000,
+   "damage_mult": 1.2,
+   "height": 1.22,
+   "speed": 4.6,
+   "rider": {
+    "falls_at": 0.5,
+    "hp_rounds": 4.0,
+    "tier": "run",
+    "kit": "villager",
+    "whip": {"telegraph": 0.7, "min_range": 3.0, "range": 9.5, "width": 1.2, "damage": 35, "slow_s": 2.5, "status": "whip_slow", "cooldown": 6.0, "recover": 0.4, "counter": "step off the line when the arm goes up; it does not reach past 9 m"}
+   },
+   "rewards": {"scrip_per_player": 3000, "drops": ["resupply", "deaths_door", "double_scrip"], "unlocks": [], "intel": [], "flag": "fuhrmann_down"}
+  }
+ }
+}

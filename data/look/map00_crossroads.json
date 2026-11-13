@@ -113,14 +113,14 @@
  ],
  "zones": {
   "inn": {
-   "_doc": "T-214: inside the inn (taproom, stairs and rooms, the passage, the stable, the cellar) the haze thins: the fireplace and the far wall read.",
+   "_doc": "T-214: inside the inn (taproom, stairs and rooms, the passage, the stable, the cellar) the haze thins: the fireplace and the far wall read. T-224: up through the attic (y 10.2).",
    "boxes": [
     [
      0,
      -0.5,
      0,
      24,
-     7,
+     10.2,
      16
     ],
     [

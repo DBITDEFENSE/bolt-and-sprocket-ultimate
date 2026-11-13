@@ -180,6 +180,46 @@
       "enrage_fraction": 0.3,
       "enrage_speed_mult": 1.25,
       "enrage_cooldown_mult": 0.7,
+      "dread": {
+        "_doc": "T-232 (docs/BOSS_REWORK.md 2.4): the kit's block for the Foreman (gravelight/enemies/foreman.gd makes its own BossFx). Iron hits (sparks, boss_hit_iron; the core flashes violet), boss_stomp footfalls with a view shake.",
+        "radius": 22.0,
+        "near": 5.0,
+        "surface": "iron",
+        "step_sound": "boss_stomp",
+        "step_shake": 0.5,
+        "step_radius": 16.0,
+        "look_cone_deg": 30.0
+      },
+      "arrival": {
+        "_doc": "T-232: the rock burst. Dust and chips every dust_every s through the 4 s tell; at the burst the lights within light_radius drop to light_drop and gutter, back after light_back_s.",
+        "dust_every": 0.7,
+        "light_radius": 14.0,
+        "light_drop": 0.2,
+        "light_back_s": 2.5
+      },
+      "enrage_lights": {
+        "_doc": "T-232: ENRAGED puts the gallery lamps within radius of him down to level and keeps them out; when he has walked follow_m from where they went out the dark is re-captured round him (he is the light: his core and headlamp burn brighter).",
+        "radius": 26.0,
+        "level": 0.08,
+        "follow_m": 16.0
+      },
+      "vent": {
+        "_doc": "T-232: Core Vent, the ENRAGED move. He plants the drill: windup s of the core flaring (the core takes core_mult the whole time), then a Nachtglas burst: damage + whip_slow for slow_seconds + a dread punch on every player within radius m. Counter: back off past radius, or shoot the core while it flares.",
+        "damage": 35,
+        "radius": 6.0,
+        "windup": 1.0,
+        "cooldown": 14.0,
+        "slow_seconds": 1.5,
+        "core_mult": 4.0
+      },
+      "squad": {
+        "_doc": "T-232: the squad rules. A hurt player (under hurt_fraction of max HP, within hurt_range, in his sight) is his target while he stalks and hears the shift cadence every hurt_shout_every s (the dread layer reads him looking at them). A lone player gets the chain whip from any side (alone_whip_any_side), not only from behind.",
+        "hurt_fraction": 0.35,
+        "hurt_range": 25.0,
+        "hurt_shout_every": 12.0,
+        "hurt_dread": 0.25,
+        "alone_whip_any_side": true
+      },
       "max_active": 1,
       "maps": [
         "map01_kaltenbrunn",
@@ -214,6 +254,8 @@
       "chance_cap": 0.75,
       "spawn_progress_min": 0.3,
       "spawn_progress_max": 0.7,
+      "scream_punch": 1.0,
+      "throat_pulse_hz": 1.4,
       "maps": [
         "map01_kaltenbrunn",
         "map02_totenhafen"

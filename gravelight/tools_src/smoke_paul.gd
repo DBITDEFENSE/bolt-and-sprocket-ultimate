@@ -8,8 +8,13 @@ extends Node
 ##     the clock run past 6:00, he leaves (headframe, north) and his return round is 8-10 later; the return: +35%
 ##     HP and six bottles, then the kill: the twist (the last line to the nearest player, the tin cup, the fall)
 ##     and the rewards (Scrip, Double Scrip, the unlocks and documents, PAUL'S LAST ROUND drunk: free Ironhide).
-##   Case BOTS: round 15 with a bots-only squad (the human spectating): bots alone switches on (half HP), and the
-##     kill still pays out.
+##     T-232 (the boss rework): the kit is on him (flesh hits, boss_stomp footfalls that shake harder per stage), the
+##     model's new pieces (lit bottles, the eyes, the drips), BERSERK kills the yard's floods and swings the headframe's
+##     lamps (and shrinking out of it brings the light back), the squad read (a lone player; a hurt player becomes his
+##     target), a bottle's glow dims as it breaks.
+##   Case BOTS: round 15 with a bots-only squad (the human spectating): bots alone switches on (half HP); T-232: at
+##     BERSERK he guards a downed bot's body ("protect my guys": he walks to it, stands over it, slams the bot that
+##     comes near, and lets go when the body is revived); and the kill still pays out.
 ##   Case OFF: Homage Bosses Off: round 15 is a normal round (no PAUL, not reserved).
 ## Prints "[paul] ..." lines and "[paul] RESULT: PASS/FAIL"; exit code 0/1.
 ## godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/smoke_paul.tscn
@@ -165,18 +170,41 @@ func _case_on() -> void:
 	var want_hp: float = 30000.0 * (1.0 + 0.75 * float(RoundManager.players - 1))
 	_check(is_equal_approx(p.max_hp, want_hp), "PAUL has %d HP (30000 x the player scaling)" % int(p.max_hp))
 	_check(p.bottles_left() == 6, "six IV bottles on the rack")
+	# ---- T-232: the kit and the model
+	_check(p.fx != null and p.fx.has_footfalls() and str(p.fx.cfg.get("surface", "")) == "flesh" and str(p.fx.cfg.get("step_sound", "")) == "boss_stomp", "the kit is on him (flesh hits, boss_stomp footfalls)")
+	var shake_calm: float = float(p.fx.cfg.get("step_shake", 0.0)) if p.fx != null else 0.0
+	_check(is_equal_approx(shake_calm, 0.45), "Calm footfalls shake 0.45 (%.2f)" % shake_calm)
+	_check(p._eyes != null and p._bottle_mat != null and p._bottle_mat.emission_enabled and p._drips != null and p._drips.emitting and p._steam != null, "the model: amber eyes, bottles lit from inside, stout drips at the neck, the steam emitter")
+	var glow_full: float = p._bottle_mat.emission_energy_multiplier if p._bottle_mat != null else 0.0
+	_check(p.squad_read().get("alone", false), "the squad read: a lone player")
 	# ---- stages by scripted damage
 	p.take_damage(p.max_hp * 0.36, &"torso", &"debug", 1, &"world")
 	await _secs(1.5)
 	_check(p.stage() == PaulRage.ANGRY and p.stage_scale > 1.1, "36%% damage: Angry (rage %.0f, scale %.2f)" % [p.rage.value, p.stage_scale])
+	_check(not p._floods_out and (p.fx == null or p.fx.dimmed_count() == 0), "Angry: the yard's light stays")
 	p.take_damage(p.max_hp * 0.33, &"torso", &"debug", 1, &"world")
 	await _secs(1.5)
 	_check(p.stage() == PaulRage.BERSERK and p.stage_scale > 1.25, "69%% damage: BERSERK (rage %.0f, scale %.2f)" % [p.rage.value, p.stage_scale])
 	_check(is_equal_approx(p.move_speed(), 6.2), "BERSERK runs at 6.2 m/s")
 	_check(enc.lines_said.has("PAU_BERSERK_01"), "his BERSERK roar line")
+	_check(p._floods_out and p.fx != null and p.fx.dimmed_count() > 0, "BERSERK: the yard's floods die under his roar (%d lights dimmed)" % (p.fx.dimmed_count() if p.fx != null else 0))
+	_check(enc.lamp_swings >= 1 and enc._swinging.size() > 0, "the headframe's floods swing on their brackets (%d pieces)" % enc._swinging.size())
+	_check(p.fx != null and float(p.fx.cfg.get("step_shake", 0.0)) > 0.8 and float(p.fx.cfg.get("step_radius", 0.0)) > 20.0, "his footfalls shake harder and wider at BERSERK (%.2f, %.0f m)" % [float(p.fx.cfg.get("step_shake", 0.0)), float(p.fx.cfg.get("step_radius", 0.0))])
+	_check(p._steam != null and p._steam.emitting, "steam pours off him at BERSERK")
+	# ---- T-232: the squad read: a hurt player is his target
+	_place(p.global_position + p.basis_fwd() * 4.0)
+	var hp_save: float = _player().hp
+	_player().hp = _player().max_hp * 0.2
+	_player().set("_since_hit", 0.0)   # (else the regen heals him before the read)
+	await _secs(0.35)
+	_check(p.squad_read().get("hurt") == _player(), "the squad read: a hurt player (20%%) in his sight becomes his target (hp %.0f, los %s)" % [_player().hp, str(p.has_los(_player(), 2.2, 1.2))])
+	_player().hp = hp_save
+	await _secs(0.4)
+	_check(p.squad_read().get("hurt") == null, "healed: no longer the hurt one")
 	# ---- Grab & Squeeze, then a bottle shot frees the player and cools him
 	p.set_rage(20.0)   # Calm again: the hysteresis lets him shrink
 	await _secs(0.3)
+	_check(not p._floods_out, "shrinking out of BERSERK brings the yard's light back")
 	_place(p.global_position + p.basis_fwd() * 1.8)
 	await get_tree().physics_frame
 	p.debug_move("grab")
@@ -189,6 +217,7 @@ func _case_on() -> void:
 	var hpb: float = p.bottles_hp[0]
 	p.take_damage(hpb + 1.0, &"bottle1", &"m1911", 1, &"bullet")
 	_check(p.bottles_left() == 5, "a shot bottle breaks (5 left)")
+	_check(p._bottle_mat != null and p._bottle_mat.emission_energy_multiplier < glow_full - 0.05, "the rack's glow dims with the broken bottle (%.2f -> %.2f)" % [glow_full, p._bottle_mat.emission_energy_multiplier if p._bottle_mat != null else 0.0])
 	_check(p.rage.value <= rage_before - 19.0 or p.rage.value <= 0.01, "the bottle cools him 20 (%.0f -> %.0f)" % [rage_before, p.rage.value])
 	_check(p.grabs().is_empty(), "breaking a bottle frees the held player")
 	_check(enc.lines_said.has("PAU_BOTTLE_01"), "his bottle line")
@@ -280,6 +309,56 @@ func _case_bots() -> void:
 	await _until(func() -> bool: return enc.bots_alone, 6.0)
 	_check(enc.bots_alone and is_equal_approx(p.squad_hp_mult, 0.5), "bots alone scales him down (hp x%.2f)" % p.squad_hp_mult)
 	await _secs(3.0)
+	# ---- T-232: "protect my guys": at BERSERK he stands over a downed bot's body and slams the one who comes near
+	var bots: Array[Player] = []
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		var b: Player = n as Player
+		if b != null and b.is_bot:
+			bots.append(b)
+	_check(bots.size() >= 2, "two bots in the yard")
+	if bots.size() >= 2 and is_instance_valid(p) and p.is_active():
+		var body: Player = bots[0]
+		var comer: Player = bots[1]
+		if _root().squad != null:
+			_root().squad.process_mode = Node.PROCESS_MODE_DISABLED   # brains off: the bots hold still
+		body.set_physics_process(false)
+		comer.set_physics_process(false)
+		body.global_position = p.global_position + Vector3(3.0, 0.0, 2.0)
+		comer.global_position = p.global_position + Vector3(14.0, 0.0, 14.0)
+		p.set_rage(80.0)
+		await _secs(0.3)
+		body.down()
+		# (he may be mid-move: the Headframe Climb & Dive he picks the moment he turns BERSERK runs ~5 s; the guard
+		# is checked whenever he is back to choosing)
+		# He walks on between moves, so the body laid 3 m from him can be 15 m off and behind a wall by the time he
+		# is choosing again: it is kept in his sight (3 m in front of him) until he takes the guard.
+		var tries: Array = [0]
+		var guarding: bool = await _until(func() -> bool:
+			if p.guard_pid == body.player_id:
+				return true
+			if p.bstate != HomageBoss.B.SPECIAL and p.bstate != HomageBoss.B.TELEGRAPH and (p.dist_to(body) > 6.0 or not p.has_los(body, 2.2, 0.4)):
+				# a spot 3 m from him on the navmesh, a new bearing each try (the one in front may be a wall)
+				tries[0] = int(tries[0]) + 1
+				var f: Vector3 = Vector3.FORWARD.rotated(Vector3.UP, float(tries[0]) * PI * 0.25)
+				body.global_position = NavigationServer3D.map_get_closest_point(p.get_world_3d().navigation_map, p.global_position + f * 3.0)
+			return false, 30.0)
+		_check(guarding and p.bstate == HomageBoss.B.SPECIAL, "BERSERK + a downed bot in sight: he goes to guard the body (downed %s, los %s, state %d/%s, %.1f m)" % [str(body.downed), str(p.has_los(body, 2.2, 0.4)), p.bstate, p._special_id, p.dist_to(body)])
+		_check(enc.lines_said.has("PAU_CALM_03"), "'Nobody gets left. Nobody.'")
+		var over: bool = await _until(func() -> bool: return p.guard_pid == body.player_id and p.dist_to(body) <= 1.3 * p.stage_scale + 0.3, 10.0)
+		_check(over, "he stands over the body (%.2f m, scale %.2f, guard_pid %d, bstate %d, guard_t %.1f, posed %s, speed %.2f, vel %s, y %.1f body y %.1f, climbing %s, state %d, tele %.2f)" % [p.dist_to(body), p.stage_scale, p.guard_pid, p.bstate, p.guard_t, str(p._guard_posed), p.move_speed(), str(p.velocity), p.global_position.y, body.global_position.y, str(p.climbing), p.state, p._guard_tele])
+		if over:
+			comer.global_position = p.global_position + p.basis_fwd() * 2.2
+			var slammed: bool = await _until(func() -> bool: return p.guard_slams >= 1, 5.0)
+			_check(slammed and int(p.moves_used.get("guard", 0)) >= 1, "a bot coming near takes the slam after the telegraph (%d)" % p.guard_slams)
+			_check(p.grabs().is_empty(), "the guard is never a grab")
+		body.revive(1)
+		var let_go: bool = await _until(func() -> bool: return p.guard_pid < 0, 3.0)
+		_check(let_go, "the body revived: he lets go of the guard")
+		_check(not p.cd_ready("guard"), "and does not guard again at once (again_after)")
+		comer.set_physics_process(true)
+		body.set_physics_process(true)
+		p.set_rage(10.0)
+		await _secs(0.5)
 	p.debug_kill(1)
 	var paid: bool = await _until(func() -> bool: return enc.rewards_given, 16.0)
 	_check(paid, "a bots-only kill still pays out")

@@ -65,8 +65,9 @@ func setup_tables() -> void:
 		[Vector3(28, 0, -15.6), Vector3(28, 0, -16.4), "F_CORE"],
 	]
 	buys = [
-		["kar98k", Vector3(-11.83, 1.5, 16.0), 90.0], ["thompson", Vector3(11.83, 1.5, 32.0), -90.0],
-		["springfield", Vector3(-39.6, 1.5, 80.0), 90.0], ["bar", Vector3(43.83, 1.5, 42.0), -90.0],
+		# T-219: every yaw turned 180 (they faced their wall: the act was authored with the yaw sign flipped)
+		["kar98k", Vector3(-11.83, 1.5, 16.0), -90.0], ["thompson", Vector3(11.83, 1.5, 32.0), 90.0],
+		["springfield", Vector3(-39.6, 1.5, 80.0), -90.0], ["bar", Vector3(43.83, 1.5, 42.0), 90.0],
 	]
 	doors = [
 		["Door_Concourse", "door_concourse", "B_CONCOURSE", [], "", 750, "the concourse", Vector3(0, 0, 24), 0.0, 2.4, false],
@@ -77,8 +78,9 @@ func setup_tables() -> void:
 		["Door_Account", "door_account", "F_CORE", [], "", 2000, "the Account", Vector3(28, 0, -16), 0.0, 2.4, false],
 	]
 	ammo_boxes = [
-		["Reception", Vector3(11.48, 0, 4.0), -90.0], ["Concourse", Vector3(-11.48, 0, 56.0), 90.0],
-		["Store", Vector3(43.48, 0, 56.0), -90.0], ["Hall", Vector3(12.52, 0, -12.0), 90.0],
+		# T-219: turned 180 (they faced their wall; the nav blocks are the same either way)
+		["Reception", Vector3(11.48, 0, 4.0), 90.0], ["Concourse", Vector3(-11.48, 0, 56.0), -90.0],
+		["Store", Vector3(43.48, 0, 56.0), 90.0], ["Hall", Vector3(12.52, 0, -12.0), -90.0],
 	]
 	grounds = [
 		["A_RECEPTION", Vector3(0, 0, 18), 1],
@@ -93,13 +95,14 @@ func setup_tables() -> void:
 	for hc: Array in (_u10_table().get("low_g", {}) as Dictionary).get("hall_catwalks", []):
 		catwalks.append(["E_HALL", Vector3(float(hc[0]), float(hc[1]), float(hc[2])), true])
 	perks = [
-		["second_wind", Vector3(8.0, 0, 22.6), 180.0],
-		["skyhook_sekt", Vector3(-11.3, 0, 30.0), 90.0], ["magpie_mead", Vector3(11.3, 0, 30.0), -90.0],
-		["ironhide_stout", Vector3(12.7, 0, 50.0), 90.0], ["trigger_tonic", Vector3(43.3, 0, 28.0), -90.0],
-		["hawkeye_brandy", Vector3(12.7, 0, 16.0), 90.0], ["blastproof_bock", Vector3(43.3, 0, -8.0), -90.0],
-		["packmule_porter", Vector3(14.7, 0, -24.0), 90.0],
+		# T-219: every machine turned 180 (they showed the room their backs)
+		["second_wind", Vector3(8.0, 0, 22.6), 0.0],
+		["skyhook_sekt", Vector3(-11.3, 0, 30.0), -90.0], ["magpie_mead", Vector3(11.3, 0, 30.0), 90.0],
+		["ironhide_stout", Vector3(12.7, 0, 50.0), -90.0], ["trigger_tonic", Vector3(43.3, 0, 28.0), 90.0],
+		["hawkeye_brandy", Vector3(12.7, 0, 16.0), -90.0], ["blastproof_bock", Vector3(43.3, 0, -8.0), 90.0],
+		["packmule_porter", Vector3(14.7, 0, -24.0), -90.0],
 		# Ledger Lager (T-141): on the concourse's east wall between the Thompson and the store door; Accounts is opposite (bank.json)
-		["ledger_lager", Vector3(11.45, 0, 36.6), -90.0],
+		["ledger_lager", Vector3(11.45, 0, 36.6), 90.0],
 	]
 	crates = [
 		["Reception", Vector3(-7.0, 0, 18.0), 90.0, true, [Vector3(-7, 0, 14), Vector3(-4, 0, 12), Vector3(0, 0, 12)]],
@@ -121,6 +124,9 @@ func setup_tables() -> void:
 		"roof": "steel", "planks": "planks", "dirt": "dirt",
 	}
 	mat_rules = [["Rim*", "rock_dark"], ["Regolith*", "rock_floor"], ["Floor*", "tile_floor"], ["Hull*", "enamel_white"], ["Shaft*", "steel"]]
+	# T-222: the reception's east wall A_E and the hall's west wall E_W stand on the same line (x 12, z 0..24) and
+	# fought on both faces (white enamel against the hall's violet): each mesh keeps its own room's side
+	visual_adjust = [["A_E_*", Vector3.ZERO, Vector3(-0.16, 0, 0)], ["E_W_*", Vector3(0.16, 0, 0), Vector3.ZERO]]
 	hide = ["NavBlock*", "Model*", "Rack*", "Conveyor*", "Capsule*", "Desk*", "Pad*", "Pilch*", "Dish*", "Smile*", "Slogan*", "Floor_Domes"]
 	sky_top = Color(0.002, 0.002, 0.004)
 	sky_horizon = Color(0.008, 0.008, 0.014)
@@ -260,6 +266,7 @@ func build_dressing() -> void:
 	_dress_store()
 	_dress_hall()
 	_dress_account()
+	_t222_fixtures()
 	print("  shadow diet: %d small/flat/ceiling pieces stop casting" % D.shadow_diet(dress, _ceil_at))
 	print("  dressing triangles: %s" % D.tally(dress))
 	print("  zone batches (ViewCells): %d" % D.merge_by_group(dress, map_root, _vis_group))
@@ -1331,8 +1338,10 @@ func _presentation() -> void:
 		l.set("base_energy", 1.7)
 		l.set("phase", 0.7 * float(i))
 		i += 1
+	_t222_lights()
 	var shadowed: Dictionary = D.tag_lights(map_root, zone_boxes, "C_YARD")
 	print("  shadowed lights per zone: %s" % [shadowed])
+	print("  T-222: %d small lights fade with distance" % fade_small_lights())
 	# ViewCells: each dome shows itself and what its doors open onto; the act's lights follow their zone
 	for c: Node in map_root.get_children():
 		if c is Light3D and not (c is DirectionalLight3D) and c.has_meta("zone"):
@@ -1353,6 +1362,51 @@ func _presentation() -> void:
 		cells.append({"name": str(cdef[0]), "aabb": AABB(lo, hi - lo), "show": PackedStringArray(cdef[3]), "moon": true})
 	vc.set("cells", cells)
 	map_root.add_child(vc)
+
+
+# ================================================================== T-222 the lighting pass
+
+## T-222 (the Fernflug lighting pass): the store's aisles, the retention hall and the Account were black between
+## their violet accents (frame means 9-24 of 255; the grade's T-214 rule turns the long violet fills neutral and
+## short, so the nave had no fill left). Darkmatter lights its buildings like a showroom: cold white strips. Added:
+## a strip light down the hall's ridge, cold uplights at the nave's pilasters, a light under each store aisle's strip
+## (the strips were drawn, unlit), a ring of cold strips in the Account, strips by the yard airlocks. All shadowless; the violet stays on the
+## Nachtglas (the grade keeps only strong violet). Fixtures here (dressing time), the lights in _t222_lights.
+const T222_STORE_STRIPS: Array = [29.0, 38.0, 46.0, 53.0]   # the aisles' own strips (_dress_store): lit at last
+const T222_PILASTERS: Array = [-10.0, -2.0, 6.0, 14.0, 22.0]
+
+
+func _t222_fixtures() -> void:
+	D.strip(dress, Vector3(28.0, CEIL_E - 0.32, 4.0), 36.0, false, "dm_glow_white")   # the nave's ridge
+	for q: Vector3 in [Vector3(28, CEIL_F - 0.25, -19.5), Vector3(28, CEIL_F - 0.25, -40.5)]:   # the Account
+		D.strip(dress, q, 20.0, true, "dm_glow_white")
+	for q2: Vector3 in [Vector3(16.5, CEIL_F - 0.25, -30), Vector3(39.5, CEIL_F - 0.25, -30)]:
+		D.strip(dress, q2, 16.0, false, "dm_glow_white")
+	for ax: float in [-6.0, 6.0]:   # the concourse's yard airlock
+		D.strip(dress, Vector3(ax, CEIL_B - 0.1, 55.0), 6.0, false, "dm_glow_white")
+	D.strip(dress, Vector3(28.0, CEIL_D - 0.1, 57.6), 6.0, true, "dm_glow_white")   # the store's airlock
+
+
+func _t222_lights() -> void:
+	var n: int = 0
+	for z: float in [-10.0, 4.0, 18.0]:
+		D.omni(map_root, "T222_Hall_Ridge_%d" % n, Vector3(28, CEIL_E - 0.8, z), D.COLD, 3.0, 18.0, "E_HALL")
+		n += 1
+	for rz: float in T222_PILASTERS:
+		for side: float in [-1.0, 1.0]:
+			D.omni(map_root, "T222_Hall_Up_%d" % n, Vector3(28.0 + side * 15.0, 0.6, rz), D.COLD, 1.3, 7.5, "E_HALL")
+			n += 1
+	for sz: float in T222_STORE_STRIPS:
+		for sx: float in [20.0, 36.0]:
+			D.omni(map_root, "T222_Store_Aisle_%d" % n, Vector3(sx, CEIL_D - 1.2, sz), D.COLD, 2.0, 10.0, "D_FULFILLMENT")
+			n += 1
+	for q: Vector3 in [Vector3(21, CEIL_F - 0.9, -20.5), Vector3(35, CEIL_F - 0.9, -20.5), Vector3(21, CEIL_F - 0.9, -39.5), Vector3(35, CEIL_F - 0.9, -39.5)]:
+		D.omni(map_root, "T222_Account_%d" % n, q, D.COLD, 2.4, 13.0, "F_CORE")
+		n += 1
+	for ax: float in [-6.0, 6.0]:
+		D.omni(map_root, "T222_Concourse_Airlock_%d" % n, Vector3(ax, CEIL_B - 0.7, 55.0), D.COLD, 1.0, 9.0, "B_CONCOURSE")
+		n += 1
+	D.omni(map_root, "T222_Store_Airlock", Vector3(28.0, CEIL_D - 0.7, 57.0), D.COLD, 1.0, 9.0, "D_FULFILLMENT")
 
 
 # ================================================================== UPDATE 10 §3 Act IV (T-158)

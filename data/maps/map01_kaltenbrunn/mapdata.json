@@ -15,8 +15,8 @@
     1136,
     1304
   ],
-  "baked_at": "2026-11-02T14:40:16",
-  "poi_signature": "e33852b1eee795528d132afe168b142a",
+  "baked_at": "2026-11-12T00:19:33",
+  "poi_signature": "35bf7d58232fec8f8c9ce95ae44a687c",
   "floors": [
     {
       "id": "vault",
@@ -954,6 +954,23 @@
       "key": "Gameplay/Perk_second_wind",
       "data": {
         "perk_id": "second_wind"
+      }
+    },
+    {
+      "id": "perk:Gameplay/Perk_skyhook_sekt",
+      "type": "perk",
+      "pos": [
+        34.5,
+        -18.0,
+        101.6
+      ],
+      "floor": 0,
+      "label": "Skyhook Sekt",
+      "price": 2500,
+      "node_path": "Gameplay/Perk_skyhook_sekt",
+      "key": "Gameplay/Perk_skyhook_sekt",
+      "data": {
+        "perk_id": "skyhook_sekt"
       }
     },
     {

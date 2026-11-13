@@ -1,6 +1,6 @@
 {
- "_doc": "Kaltenbrunn (map01) bosses, UPDATE 10 section 4 (docs/U10_CONTRACTS.md C5; docs/HOMAGE_BOSSES.md section 5; DECISIONS T-159). Loaded as GLData.table(\"bosses/map01\"); one entry under \"bosses\" keyed by id. PAUL runs on HomageBoss (gravelight/enemies/homage/paul.gd) with PaulEncounter as his round director (paul_encounter.gd). hp_base is solo; HP = hp_base x (1 + hp_player_step x (players - 1)) x (1 + return_hp_step x visit). failsafe_seconds after he comes in he leaves (the designed retreat, which is the fail-safe) and returns return_after_min..max rounds later, stronger, until he is killed. bots_alone mirrors cousins.json (T-060). Likeness fields stay in likeness.json; no placeholder token is ever shown (HomageEncounter.fill_tokens / title_of).",
- "version": 1,
+ "_doc": "Kaltenbrunn (map01) bosses, UPDATE 10 section 4 (docs/U10_CONTRACTS.md C5; docs/HOMAGE_BOSSES.md section 5; DECISIONS T-159, T-232 the boss rework). Loaded as GLData.table(\"bosses/map01\"); one entry under \"bosses\" keyed by id. PAUL runs on HomageBoss (gravelight/enemies/homage/paul.gd) with PaulEncounter as his round director (paul_encounter.gd). hp_base is solo; HP = hp_base x (1 + hp_player_step x (players - 1)) x (1 + return_hp_step x visit). failsafe_seconds after he comes in he leaves (the designed retreat, which is the fail-safe) and returns return_after_min..max rounds later, stronger, until he is killed. bots_alone mirrors cousins.json (T-060). Likeness fields stay in likeness.json; no placeholder token is ever shown (HomageEncounter.fill_tokens / title_of). T-232 (docs/BOSS_REWORK.md 2.4): \"dread\" is the shared kit's block (BossFx: the presence meter, footfalls with boss_stomp and a view shake that grows per stage, flesh hits); \"floods\" the arena beat at BERSERK (the yard's lights die under his roar, the headframe's floods swing); \"guard\" the third-stage 'protect my guys' turn; \"squad\" the rules that read the squad's state; rage.flee_break the spike when a player runs out of his sight.",
+ "version": 2,
  "bosses": {
   "paul": {
    "boss_id": "paul",
@@ -21,6 +21,50 @@
    "grow_seconds": 1.2,
    "tier": "walk",
    "speed": 2.6,
+   "dread": {
+    "_doc": "T-232: the kit's block. step_shake is the Calm value; Paul adds stage_step_shake per rage stage (Angry 0.65, BERSERK 0.85) and widens step_radius by stage_step_radius.",
+    "radius": 20.0,
+    "near": 5.0,
+    "surface": "flesh",
+    "step_sound": "boss_stomp",
+    "step_shake": 0.45,
+    "step_radius": 16.0,
+    "look_cone_deg": 35.0,
+    "stage_step_shake": 0.2,
+    "stage_step_radius": 4.0
+   },
+   "floods": {
+    "_doc": "T-232: the arena beat at BERSERK. Every light within radius of him dims to level under his roar (BossFx.lights_dim), gutters for flicker_s, and gutters again every again_s while he stays BERSERK; the headframe's floods swing for swing_s (PaulEncounter.swing_lamps). The light comes back over restore_s when he shrinks out of BERSERK, leaves or dies.",
+    "radius": 32.0,
+    "level": 0.12,
+    "flicker_s": 2.5,
+    "again_s": 18.0,
+    "swing_s": 7.0,
+    "restore_s": 5.0
+   },
+   "guard": {
+    "_doc": "T-232: 'protect my guys' (BERSERK only). A downed player within search m in his sight: he walks to the body, stands over it (arms spread) for up to max s and slams anyone who comes within approach m: a telegraph s wind-up (pose + paul_roar + the light), then damage + knockdown in a half-circle of radius m (arc_deg wide) in FRONT of him; he turns to face the comer only when a slam starts, so a teammate can revive from the far side. cooldown between slams; after a guard ends he does not guard again for again_after s. Not a grab: nothing chains.",
+    "search": 30.0,
+    "approach": 4.5,
+    "telegraph": 0.6,
+    "radius": 3.5,
+    "arc_deg": 180.0,
+    "damage": 60,
+    "cooldown": 2.5,
+    "max": 12.0,
+    "again_after": 8.0,
+    "counter": "revive from behind him; he turns only when a slam starts"
+   },
+   "squad": {
+    "_doc": "T-232: the rules that read the squad. A hurt player (under hurt_fraction of max HP, within hurt_range m, in his sight) becomes his target ('Nobody gets left. Nobody.', every hurt_say_every s) and the dread layer reads him looking at you. A lone player (one alive): Haymaker and Zombie Throw cooldowns x alone_cd_mult (pressure), but Grab & Squeeze holds at most alone_grab_max s and breaks on alone_grab_mash melee presses (fair in solo).",
+    "hurt_fraction": 0.35,
+    "hurt_range": 25.0,
+    "hurt_say_every": 20.0,
+    "hurt_dread": 0.25,
+    "alone_cd_mult": 0.8,
+    "alone_grab_max": 3.5,
+    "alone_grab_mash": 6
+   },
    "bots_alone": {
     "enabled": true,
     "hp_mult": 0.5,
@@ -32,10 +76,12 @@
     "release_after": 2.0
    },
    "rage": {
-    "_doc": "Section 5.3. per_pct_damage: +1 per 1% of max HP; flee_per_s per fleeing player (sprinting away within flee_radius after he targeted them); down_burst once per downed player he sees, then down_per_s each; cool_per_s after cool_after s without damage; bottle_cool per broken bottle (bottles x bottle_hp solo, scaled like his HP, regrown on a return); cup_dip from the tin-cup idle. Stages: angry_at / berserk_at with a hysteresis on the way down.",
+    "_doc": "Section 5.3. per_pct_damage: +1 per 1% of max HP; flee_per_s per fleeing player (sprinting away within flee_radius after he targeted them); flee_break (T-232) at once when a player he could see sprints out of his sight within flee_radius, at most every flee_break_every s per player; down_burst once per downed player he sees, then down_per_s each; cool_per_s after cool_after s without damage; bottle_cool per broken bottle (bottles x bottle_hp solo, scaled like his HP, regrown on a return); cup_dip from the tin-cup idle. Stages: angry_at / berserk_at with a hysteresis on the way down.",
     "per_pct_damage": 1.0,
     "flee_per_s": 4.0,
     "flee_radius": 20.0,
+    "flee_break": 6.0,
+    "flee_break_every": 3.0,
     "down_burst": 10.0,
     "down_per_s": 1.0,
     "cool_after": 8.0,

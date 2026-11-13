@@ -14,6 +14,9 @@ extends HomageEncounter
 ## (free Ironhide without a perk slot until downed, or +100 overshield if you have it), 2000 Scrip each, a Double
 ## Scrip drop, the "Carried My Share" card, the Archive card and his two documents, the tin cup to the player he
 ## gave it to. He is gone for the match: the death is never undone.
+## T-232 (the boss rework): the arena beat at BERSERK: the headframe shakes again and its floodlights swing on their
+## brackets (swing_lamps) while the yard's lights die under his roar (Paul's BossFx); `pose()` stands him still for the
+## capture cameras (CaptureDo "callv:PaulEncounter:pose:x,y,z,yaw,rage").
 
 const FIRST_SIGHT: Dictionary = {"DUT": "DUT_PAUL_02", "PEG": "PEG_PAUL_01", "DEA": "DEA_PAUL_01", "WRN": "WRN_PAUL_01"}
 const RAGE_SEEN: Dictionary = {"DUT": "DUT_PAUL_RAGE_01", "PEG": "PEG_PAUL_02", "WRN": "WRN_PAUL_02", "DEA": "DEA_PAUL_02"}
@@ -31,6 +34,11 @@ var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _shaking: Array = []              # [Node3D, base position]
 var _shake_left: float = 0.0
 var _rewarded: bool = false
+var _swinging: Array = []             # [Node3D, base Basis, phase] (T-232: the floods on their brackets)
+var _swing_left: float = 0.0
+var _swing_s: float = 1.0
+var _swing_t: float = 0.0
+var lamp_swings: int = 0
 
 
 func _init() -> void:
@@ -127,9 +135,60 @@ func on_paul_stage(to: int) -> void:
 	if to == PaulRage.ANGRY and not angry_said:
 		angry_said = true
 		_squad(RAGE_SEEN)
-	elif to == PaulRage.BERSERK and not berserk_said:
-		berserk_said = true
-		later(1.2, "OPR_BOSS_PAUL_RAGE_01")
+	elif to == PaulRage.BERSERK:
+		# T-232: the arena beat: the headframe shakes, its floods swing on their brackets, the yard's lights die (Paul)
+		var fl: Dictionary = cfg.get("floods", {})
+		_shake_headframe(2.5)
+		swing_lamps(float(fl.get("swing_s", 7.0)))
+		if not berserk_said:
+			berserk_said = true
+			later(1.2, "OPR_BOSS_PAUL_RAGE_01")
+
+
+## T-232: the headframe's floodlights swing for `seconds`, hardest at first, settling; a chain creak with it. The
+## generator merges the brackets' geometry into the yard's batched meshes, so what swings is the light itself: every
+## spot light hung high (over 3 m) within 30 m of the headframe (the frame's two floods at 22 m, the walls' two at
+## 4.6 m), and the hanging lamps' lights within 16 m; their beams and pools swing over the yard.
+func swing_lamps(seconds: float) -> void:
+	var m: Node = _map()
+	if m == null:
+		return
+	var hf: Vector3 = _v((cfg.get("arena", {}) as Dictionary).get("headframe", [20, 0, 15]))
+	if _swinging.is_empty():
+		for n: Node in m.find_children("*", "Light3D", true, false):
+			var l: Light3D = n as Light3D
+			if l == null or l is DirectionalLight3D or l.global_position.y - hf.y < 3.0:
+				continue
+			var d: float = Vector2(l.global_position.x - hf.x, l.global_position.z - hf.z).length()
+			if (l is SpotLight3D and d < 30.0) or (not (l is SpotLight3D) and d < 16.0):
+				_swinging.append([l, l.transform.basis, randf() * TAU])
+	_swing_left = seconds
+	_swing_s = maxf(0.5, seconds)
+	_swing_t = 0.0
+	lamp_swings += 1
+	AudioDirector.play_3d("door_creak", hf + Vector3.UP * 20.0, 4.0, 0.0)
+	print("[paul] the headframe's floods swing (%d pieces, %.0f s)" % [_swinging.size(), seconds])
+
+
+## Dev / capture (T-232): PAUL standing still at (x, y, z) facing `yaw` degrees at the stage `rage_v` gives, with the
+## title card and his bar, no arrival. CaptureDo: "callv:PaulEncounter:pose:20,0,26,180,80:3".
+func pose(x: float, y: float, z: float, yaw: float = 180.0, rage_v: float = 0.0) -> Paul:
+	if director == null:
+		return null
+	if hud == null or not is_instance_valid(hud):
+		hud = BossHud.new()
+		_map().add_child(hud)
+	var p: Paul = Paul.new()
+	p.name = "Paul"
+	adopt(p, HomageEncounter.visit_hp(cfg, RoundManager.players, 0), _snap(Vector3(x, y, z)))
+	var tl: PackedStringArray = HomageEncounter.title_of("paul", HomageBoss.names_real(), str(cfg.get("fallback_name", "PAUL")))
+	hud.title_card(tl[0], tl[1], "20.XII.1944  ·  ZECHE KALTENBRUNN")
+	hud.add_bar(boss_id, p, tl[0], tl[1])
+	hud.add_gauge(boss_id, "bottle")
+	arrival_done = true
+	p.debug_pose(yaw, rage_v)
+	print("[paul] posed at %s (yaw %.0f, rage %.0f, stage %s)" % [str(p.global_position.snapped(Vector3.ONE * 0.1)), yaw, rage_v, p.rage.stage_name()])
+	return p
 
 
 func on_bottle_broken(n: int) -> void:
@@ -247,6 +306,17 @@ func _tick(delta: float) -> void:
 			var p: Player = n3 as Player
 			if p != null and p.is_alive():
 				p.set("_shake", maxf(float(p.get("_shake")), 0.25))
+	if _swing_left > 0.0:
+		_swing_left -= delta
+		_swing_t += delta
+		var k: float = clampf(_swing_left / _swing_s, 0.0, 1.0)   # settles toward the end
+		for e2: Array in _swinging:
+			var sv: Variant = e2[0]
+			if not is_instance_valid(sv):
+				continue   # (a lamp freed with its zone: a typed assignment would error first)
+			var sn: Node3D = sv as Node3D
+			var a: float = sin(_swing_t * 2.6 + float(e2[2])) * 0.26 * k if _swing_left > 0.0 else 0.0
+			sn.transform.basis = (e2[1] as Basis) * Basis(Vector3.RIGHT, a)
 
 
 ## Fasbender's radio room: he ripped through it; its door lies on the floor (cosmetic: the egg's objects stay).

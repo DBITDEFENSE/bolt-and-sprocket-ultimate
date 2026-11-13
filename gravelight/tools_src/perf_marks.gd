@@ -18,6 +18,13 @@ extends Node
 ## map04a_thalbach ... map04d_mondlicht; the default is Map 0); `--preset=web` the browser preset;
 ## `--no-webprofile` keeps WebProfile off on the Compatibility renderer (the before / after of the profile). The
 ## census then also lists the shadowed omni / spot lights per zone (contract C4 budget: 6 per zone).
+## T-237 (the bots' frame cost and hitches): `--hitch` (run it with the engine flag `--fixed-fps 60` before the `--`,
+## as tools/bot_perf.sh does: every frame is then one physics tick + one process step with no sleep, so a frame's
+## wall time is the CPU work of one 60 FPS frame) keeps every frame's wall time and every script group's time per
+## tick, and prints the distribution (p50 / p95 / p99 / worst, frames over 8 / 16.7 / 20 / 33 ms), the same per
+## script, and the worst ticks with what ran in them (which brain thought, its action, BotProf's sections).
+## `--bots=N` (0-3), `--no-companions` (no Jakub, the map's companion left waiting), `--ai=off|squad|local` (the
+## planner bot), `--secs=N` (the sampled window, 15 by default), `--live` (the round keeps running: kills, spawns).
 
 const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 const SPIKE_MS: float = 40.0
@@ -34,7 +41,19 @@ var _phys_frames: int = 0
 var _spikes: PackedStringArray = []
 var _node_count: int = 0
 var _compiles: Vector4i = Vector4i.ZERO
-var _probe: bool = "--probe" in OS.get_cmdline_user_args()
+var _hitch: bool = "--hitch" in OS.get_cmdline_user_args()
+var _probe: bool = _hitch or "--probe" in OS.get_cmdline_user_args()
+var _live: bool = "--live" in OS.get_cmdline_user_args()
+var _companions: bool = not ("--no-companions" in OS.get_cmdline_user_args())
+var _t_end: float = 24.0
+## --hitch: wall microseconds per frame, the scripts' microseconds per physics tick, the worst ticks [us, text]
+var _wall: PackedInt32Array = []
+var _wall_prev: int = 0
+var _skip_us: int = 0
+var _tick_tot: PackedInt32Array = []
+var _proc_tot: PackedInt32Array = []
+var _worst: Array = []
+var _calib: PackedInt32Array = []
 var _breakdown: bool = _probe or "--breakdown" in OS.get_cmdline_user_args() or "--compiles" in OS.get_cmdline_user_args()
 ## --probe: script file -> {"proc": [nodes], "phys": [nodes], "us_proc": float, "us_phys": float}
 var _groups: Dictionary = {}
@@ -51,6 +70,9 @@ var _added_prev: PackedStringArray = []
 ## hide_movers (zombies and players hidden), omni_dp (dual-paraboloid omni shadows), no_spot_shadows, no_post (T-208)
 var _ab: PackedStringArray = []
 var _map_path: String = MAP
+## T-220: `--pos=x,y,z,yaw` stands the player there once the 24 are up (the Kranich's wing walk: -80,3.4,21,90), with
+## the flight's tilts calmed (FlightSky.calm) so the measured view never moves; empty = the spawn, as before
+var _pos: PackedFloat32Array = []
 const QUICK_FRAMES: int = 6
 ## T-139: `--quick` (software GL under Xvfb, a frame a second or slower): census at 6 s, then 6 frames sampled, quit
 ## (no pause-map phase). Counts (draw calls, triangles, lights) are what it is for, not timings.
@@ -67,9 +89,24 @@ func _ready() -> void:
 				GLSettings.values[str(k)] = GLSettings.PRESETS[a.substr(9)][k]
 		elif a.begins_with("--map="):
 			_map_path = Campaign.scene_for(StringName(a.substr(6)))
+		elif a == "--no-plane":   # T-220: the A/B of der Kranich's plane pass (KranichExterior / KranichAir never build)
+			KranichExterior.disabled = true
+			KranichAir.disabled = true
+			KranichSunset.disabled = true
+			KranichInterior.disabled = true
+		elif a.begins_with("--pos="):
+			for v: String in a.substr(6).split(","):
+				_pos.append(float(v))
 		elif a == "--no-webprofile":
 			GLSettings.compat_override = 0
+		elif a.begins_with("--secs="):
+			_t_end = 9.0 + maxf(1.0, float(a.substr(7)))
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	BotProf.on = _hitch
+	BotProf.reset()
+	if "--ab=t237_off" in OS.get_cmdline_user_args():   # T-237: the "before" side (the optimisations off, same build)
+		BotProf.opt = false
+		StreamWarm.enabled = false
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 	for i: int in AudioServer.bus_count:
 		AudioServer.set_bus_mute(i, true)
@@ -82,6 +119,14 @@ func _ready() -> void:
 	GameState.character_id = &"dutch"
 	GameState.bot_count = 3
 	GameState.bot_ai_mode = "off"
+	for a: String in OS.get_cmdline_user_args():
+		if a.begins_with("--bots="):
+			GameState.bot_count = clampi(int(a.substr(7)), 0, 3)
+		elif a.begins_with("--ai="):
+			GameState.bot_ai_mode = a.substr(5)
+			GLSettings.values["bot_local_ai"] = a.substr(5) == "local"
+		elif a.begins_with("--brain="):
+			GLSettings.values["bot_ai_brain"] = a.substr(8)
 	GameState.god_mode = true
 	if _breakdown:
 		RenderingServer.viewport_set_measure_render_time(get_viewport().get_viewport_rid(), true)
@@ -105,44 +150,77 @@ func _process(delta: float) -> void:
 	_t += delta
 	match _phase:
 		0:
-			if _t > 3.0 and _map.squad != null:
+			if _t > 3.0 and (_map.squad != null or GameState.bot_count == 0):
 				_phase = 1
 				RoundManager.debug_set_round(15)
-				GLConsole.call("run", "jakub join")
+				if _companions:
+					GLConsole.call("run", "jakub join")
+					if _hitch:   # T-237: the map's own companion too (the owner's squad: 3 bots + Jakub + one more)
+						for c: MapCompanion in MapCompanion.instances(get_tree()):
+							if c.player != null:
+								c.call("_join", 1, false)
 		1:
 			if _t > 5.0:
 				_phase = 2
-				RoundManager.stop()
-				(_map.get_node("ZombieDirector") as ZombieDirector).debug_spawn(24)
-				if not ("--no-marks" in OS.get_cmdline_user_args()):
+				if not _live:
+					RoundManager.stop()
+					(_map.get_node("ZombieDirector") as ZombieDirector).debug_spawn(24)
+				if _pos.size() >= 3:
+					var fs: Node = get_tree().get_first_node_in_group(&"flight_sky")
+					if fs != null and fs.has_method("calm"):
+						fs.call("calm")
+					_map.player.global_position = Vector3(_pos[0], _pos[1], _pos[2])
+					_map.player.velocity = Vector3.ZERO
+					if _pos.size() >= 4:
+						_map.player.rotation.y = deg_to_rad(_pos[3])
+					print("[perf] the player stands at %s" % str(_map.player.global_position))
+				if not ("--no-marks" in OS.get_cmdline_user_args()) and _map.squad != null and not _map.squad.brains.is_empty():
 					_place_marks()
-				print("[perf] round %d, bots %d, jakub %s, marks %d" % [RoundManager.current_round, GameState.bot_ids.size(),
-					str(JakubCompanion.instance(get_tree()) != null), MapMarks.current().marks().size()])
+				print("[perf] round %d, bots %d, jakub %s, marks %d, brains %d, ai %s" % [RoundManager.current_round, GameState.bot_ids.size(),
+					str(JakubCompanion.instance(get_tree()) != null), MapMarks.current().marks().size(),
+					_map.squad.brains.size() if _map.squad != null else 0, GameState.bot_ai_mode])
 		2 when _t > (6.0 if _quick else 8.0) and not _census_done:
 			_census_done = true
 			if _breakdown or not _ab.is_empty():
 				_census()
 			_apply_ab()
 		2:
-			for z: Zombie in _map.director.active_zombies():
-				z.hp = maxf(z.hp, 1.0e9)
+			if not _live:
+				for z: Zombie in _map.director.active_zombies():
+					z.hp = maxf(z.hp, 1.0e9)
+				if _hitch:   # T-237: the squad stays up too (24 zombies nobody can kill put every bot down in 15 s)
+					for bp: Node in get_tree().get_nodes_in_group(&"bots"):
+						(bp as Player).bot_damage_mult = 0.0
 			if _probe:
 				_probe_scan_t -= delta
 				if _probe_scan_t <= 0.0:
 					_probe_scan_t = 0.5
+					var ts0: int = Time.get_ticks_usec()
 					_probe_scan()
+					_skip_us += Time.get_ticks_usec() - ts0   # the probe's own tree walk is not the game's cost
 			if "--ts" in OS.get_cmdline_user_args() and _t > 15.0 and _t - delta <= 15.0:
 				_print_timestamps()
 			if "--mm-bench" in OS.get_cmdline_user_args() and _t > 16.0 and _t - delta <= 16.0:
 				_minimap_bench()
-			if (_quick and _census_done) or (_t > 9.0 and _t < 24.0):
+			if (_quick and _census_done) or (_t > 9.0 and _t < _t_end):
 				_samples.append(delta)
 				_frame_stats(delta)
-			if (_quick and _samples.size() >= QUICK_FRAMES) or (not _quick and _t >= 24.0):
+				if _hitch:
+					var wn: int = Time.get_ticks_usec()
+					if _wall_prev != 0:
+						_wall.append(maxi(0, wn - _wall_prev - _skip_us))
+					_wall_prev = wn
+					_skip_us = 0
+			if (_quick and _samples.size() >= QUICK_FRAMES) or (not _quick and _t >= _t_end):
 				_report("in play", _samples)
 				_report_breakdown()
 				if _probe:
 					_probe_release()
+				if _hitch:
+					_report_hitch()
+					DirAccess.remove_absolute(ProjectSettings.globalize_path(ProfileSave.path))
+					get_tree().quit()
+					return
 				if _quick:
 					print("[perf] active zombies %d   GPU: %s" % [_map.director.active_zombies().size(), RenderingServer.get_video_adapter_name()])
 					get_tree().quit()
@@ -160,8 +238,9 @@ func _process(delta: float) -> void:
 					var pr: Dictionary = mm.canvas.prof
 					print("[perf]   minimap parts (us, rolling): list rebuild %.0f (4 Hz), placing icons %.0f, of which live list %.0f" % [
 						float(pr["rebuild"]), float(pr["place"]), float(pr["live"])])
-				var ts: Dictionary = _map.squad.think_stats()
-				print("[perf] brains %.3f ms per bot per frame (%d brains incl. Jakub)" % [float(ts["ms_per_bot_frame"]), _map.squad.brains.size()])
+				if _map.squad != null:
+					var ts: Dictionary = _map.squad.think_stats()
+					print("[perf] brains %.3f ms per bot per frame (%d brains incl. Jakub)" % [float(ts["ms_per_bot_frame"]), _map.squad.brains.size()])
 				print("[perf] active zombies %d   GPU: %s" % [_map.director.active_zombies().size(), RenderingServer.get_video_adapter_name()])
 				get_tree().paused = false
 				DirAccess.remove_absolute(ProjectSettings.globalize_path(ProfileSave.path))
@@ -301,7 +380,7 @@ func _probe_scan() -> void:
 			continue
 		var key: String = s.resource_path.get_file()
 		if not _groups.has(key):
-			_groups[key] = {"proc": [], "phys": [], "us_proc": 0.0, "us_phys": 0.0}
+			_groups[key] = {"proc": [], "phys": [], "us_proc": 0.0, "us_phys": 0.0, "s_proc": [], "s_phys": []}
 		var g: Dictionary = _groups[key]
 		if has_p:
 			n.set_process(false)
@@ -314,7 +393,7 @@ func _probe_scan() -> void:
 func probe_tick(physics: bool, delta: float) -> void:
 	if _phase != 2:
 		return
-	var counting: bool = (_quick and _census_done) or (_t > 9.0 and _t < 24.0)
+	var counting: bool = (_quick and _census_done) or (_t > 9.0 and _t < _t_end)
 	if counting:
 		if physics:
 			_probe_pframes += 1
@@ -322,6 +401,25 @@ func probe_tick(physics: bool, delta: float) -> void:
 			_probe_frames += 1
 	var list_key: String = "phys" if physics else "proc"
 	var us_key: String = "us_phys" if physics else "us_proc"
+	var s_key: String = "s_phys" if physics else "s_proc"
+	var tick_us: int = 0
+	var tick_parts: Dictionary = {}
+	var keep: bool = _hitch and counting
+	var b_us: PackedFloat64Array = []
+	var b_th: PackedInt32Array = []
+	if keep and physics:
+		BotProf.begin_tick()
+		# the machine's noise floor: a fixed loop of ~0.1 ms timed every tick. Its p99 / worst say how much of any
+		# section's worst is the machine (preemption by other processes), not the game.
+		var c0: int = Time.get_ticks_usec()
+		var acc: int = 0
+		for ci: int in 2000:
+			acc += ci * ci
+		_calib.append(Time.get_ticks_usec() - c0)
+		if _map.squad != null:
+			for b: BotBrain in _map.squad.brains:
+				b_us.append(b.us_total)
+				b_th.append(b.thinks)
 	for key: String in _groups:
 		var g: Dictionary = _groups[key]
 		var arr: Array = g[list_key]
@@ -341,7 +439,39 @@ func probe_tick(physics: bool, delta: float) -> void:
 					(n as Node).call(&"_process", delta)
 			i += 1
 		if counting:
-			g[us_key] = float(g[us_key]) + float(Time.get_ticks_usec() - t0)
+			var el: int = Time.get_ticks_usec() - t0
+			g[us_key] = float(g[us_key]) + float(el)
+			if keep:
+				(g[s_key] as Array).append(el)
+				tick_us += el
+				tick_parts[key] = el
+	if not keep:
+		return
+	if not physics:
+		_proc_tot.append(tick_us)
+		return
+	_tick_tot.append(tick_us)
+	if _worst.size() >= 14 and tick_us <= int(_worst[_worst.size() - 1][0]):
+		return
+	var keys: Array = tick_parts.keys()
+	keys.sort_custom(func(a: String, b: String) -> bool: return int(tick_parts[a]) > int(tick_parts[b]))
+	var txt: PackedStringArray = []
+	for k: String in keys.slice(0, 4):
+		txt.append("%s %.2f" % [k.trim_suffix(".gd"), int(tick_parts[k]) / 1000.0])
+	var line: String = "t=%.2f %.2f ms: %s" % [_t, tick_us / 1000.0, ", ".join(txt)]
+	if _map.squad != null:
+		var bt: PackedStringArray = []
+		for i: int in mini(b_us.size(), _map.squad.brains.size()):
+			var b: BotBrain = _map.squad.brains[i]
+			bt.append("%s %.2f%s %s" % [b.player.name, (b.us_total - b_us[i]) / 1000.0, " THINK" if b.thinks != b_th[i] else "", b.action])
+		line += " | brains: " + "; ".join(bt)
+	var pr: String = BotProf.tick_text(7)
+	if pr != "":
+		line += " | " + pr
+	_worst.append([tick_us, line])
+	_worst.sort_custom(func(a: Array, b: Array) -> bool: return int(a[0]) > int(b[0]))
+	if _worst.size() > 14:
+		_worst.resize(14)
 
 
 func _probe_release() -> void:
@@ -372,6 +502,65 @@ func _report_probe() -> void:
 	for i: int in mini(30, rows.size()):
 		var r: Array = rows[i]
 		print("[perf]   %-34s process %.3f ms (%d nodes)  physics %.3f ms (%d nodes)" % [r[0], r[1], r[3], r[2], r[4]])
+
+
+# ================================================================== --hitch: the distributions (T-237)
+
+## [mean, p50, p95, p99, worst] in ms of microsecond samples.
+static func dist(s: PackedInt32Array) -> Array:
+	if s.is_empty():
+		return [0.0, 0.0, 0.0, 0.0, 0.0]
+	var a: PackedInt32Array = s.duplicate()
+	a.sort()
+	var tot: float = 0.0
+	for x: int in a:
+		tot += float(x)
+	var n: int = a.size()
+	return [tot / float(n) / 1000.0, a[n / 2] / 1000.0, a[mini(n - 1, int(n * 0.95))] / 1000.0, a[mini(n - 1, int(n * 0.99))] / 1000.0, a[n - 1] / 1000.0]
+
+
+static func over(s: PackedInt32Array, ms: float) -> int:
+	var c: int = 0
+	for x: int in s:
+		if float(x) > ms * 1000.0:
+			c += 1
+	return c
+
+
+func _report_hitch() -> void:
+	var w: Array = dist(_wall)
+	var nb: int = _map.squad.brains.size() if _map.squad != null else 0
+	print("[hitch] map %s bots %d brains %d ai %s live %s zombies %d frames %d" % [str(_map.map_id), GameState.bot_ids.size(), nb, GameState.bot_ai_mode, str(_live),
+		_map.director.active_zombies().size(), _wall.size()])
+	print("[hitch] frame wall ms: mean %.2f p50 %.2f p95 %.2f p99 %.2f worst %.2f | over 8 ms %d, over 16.7 ms %d, over 20 ms %d, over 33 ms %d" % [
+		w[0], w[1], w[2], w[3], w[4], over(_wall, 8.0), over(_wall, 16.7), over(_wall, 20.0), over(_wall, 33.0)])
+	var t: Array = dist(_tick_tot)
+	print("[hitch] scripts per physics tick ms: mean %.2f p50 %.2f p95 %.2f p99 %.2f worst %.2f | over 4 ms %d, over 8 ms %d, over 16.7 ms %d" % [
+		t[0], t[1], t[2], t[3], t[4], over(_tick_tot, 4.0), over(_tick_tot, 8.0), over(_tick_tot, 16.7)])
+	var cd: Array = dist(_calib)
+	print("[hitch] noise floor (a fixed ~0.1 ms loop per tick) ms: mean %.3f p50 %.3f p95 %.3f p99 %.3f worst %.3f | over 1 ms %d of %d" % [cd[0], cd[1], cd[2], cd[3], cd[4], over(_calib, 1.0), _calib.size()])
+	var pd: Array = dist(_proc_tot)
+	print("[hitch] scripts per process frame ms: mean %.2f p50 %.2f p95 %.2f p99 %.2f worst %.2f" % [pd[0], pd[1], pd[2], pd[3], pd[4]])
+	var rows: Array = []
+	for key: String in _groups:
+		var g: Dictionary = _groups[key]
+		for k: String in ["s_phys", "s_proc"]:
+			var d: Array = dist(PackedInt32Array(g[k] as Array))
+			if float(d[4]) > 0.0:
+				rows.append([key + (" phys" if k == "s_phys" else " proc"), d, (g["phys" if k == "s_phys" else "proc"] as Array).size()])
+	rows.sort_custom(func(a: Array, b: Array) -> bool: return float(a[1][0]) > float(b[1][0]))
+	for i: int in mini(16, rows.size()):
+		var d: Array = rows[i][1]
+		print("[hitch]   %-36s mean %.3f p50 %.3f p95 %.3f p99 %.3f worst %.3f (%d nodes)" % [rows[i][0], d[0], d[1], d[2], d[3], d[4], rows[i][2]])
+	print("[hitch] worst ticks (scripts):")
+	for e: Array in _worst:
+		print("[hitch]   " + str(e[1]))
+	for l: String in BotProf.report():
+		print("[hitch] " + l)
+	if _map.squad != null:
+		for b: BotBrain in _map.squad.brains:
+			print("[hitch] brain %s: %.3f ms/tick, think %.3f ms each (%d thinks), action %s" % [b.player.name, b.ms_per_frame(), b.us_think / 1000.0 / float(maxi(1, b.thinks)), b.thinks, b.action])
+	print("[hitch] nodes %d, orphans %d" % [int(Performance.get_monitor(Performance.OBJECT_NODE_COUNT)), int(Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT))])
 
 
 ## The probe's own loop: a child node, so it runs in both the process and the physics step.

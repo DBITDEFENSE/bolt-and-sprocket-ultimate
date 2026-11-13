@@ -142,7 +142,9 @@ func setup_tables() -> void:
 	power_switch = {"name": "Hauptschalter", "label": "the works' main breaker", "pos": Vector3(-59.0, 0, 66.0), "yaw": -90.0,
 		"zone_order": ["E_MONTAGE", "C_KANTINE", "B_BAHNHOF", "A_SIEDLUNG", "D_KIRCHPLATZ", "F_WINDKANAL", "G_PRUEFSTAND", "H_HALLE"]}
 	crucible = {"pos": Vector3(-58.5, 0, 146.0), "yaw": -90.0, "needs_power": true}
-	armorers_bench = [Vector3(30.0, 0, 0.5 + T * 0.5 + 0.01), 0.0]
+	# T-219: yaw 180 (was 0: the bench ran from the node into the south wall, its front to the wall; its nav block
+	# was always the room side, z 0.66..1.38, where the bench now stands)
+	armorers_bench = [Vector3(30.0, 0, 0.5 + T * 0.5 + 0.01), 180.0]
 	burst_points = [Vector3(-30, 0, 70), Vector3(-30, 0, 100), Vector3(-6, 0, 64)]
 	traps = [
 		["res://gravelight/world/trap_chandelier.gd", "Trap_CoalHopper", {"drop_points": PackedVector3Array([Vector3(-10, 0, 0), Vector3(0, 0, 0), Vector3(10, 0, 0)]),
@@ -787,8 +789,8 @@ func _jig(g: Node3D, z0: float, z1: float, skin: float, n: int) -> void:
 	# plank work decks along both long edges and a ladder at each end
 	for dz: Array in [[z0 + 0.05, z0 + 0.75], [z1 - 0.75, z1 - 0.05]]:
 		Props.block(g, Vector3(x0 + 0.05, 2.4, float(dz[0])), Vector3(x1 - 0.05, 2.5, float(dz[1])), "planks")
-	Props.ladder(g, Vector3(x0 + 0.15, 0, (z0 + z1) * 0.5), -90.0, 2.5)
-	Props.ladder(g, Vector3(x1 - 0.15, 0, (z0 + z1) * 0.5), 90.0, 2.5)
+	Props.ladder_stowed(g, Vector3(x0 - 0.02, 1.5, (z0 + z1) * 0.5), 90.0, 2.5)    # (T-229: stowed on the jigs' end faces; the work decks are no floor)
+	Props.ladder_stowed(g, Vector3(x1 + 0.02, 1.5, (z0 + z1) * 0.5), -90.0, 2.5)
 	# the wing: two half-wings meeting at x -26, leading edge along z1 - 0.6, chord running south
 	var le_z: float = z1 - 0.6
 	GenDetail.wing_skeleton(g, Vector3(-19.5, 3.0, le_z), 0.0, 13.0, 6.6, 2.4, skin, 1.1, "machine_grey", "chrome_worn", 0.24, false)
@@ -929,6 +931,7 @@ func _dress_bahnhof() -> void:
 	GenDetail._ns(Props.ball(sg, Vector3(-0.28, 4.5, 0.0), Vector3(0.12, 0.12, 0.12), "lamp_red_lit"))
 	GenDetail._ns(Props.ball(sg, Vector3(-0.28, 4.5, -0.15), Vector3(0.12, 0.12, 0.12), "lamp_green"))
 	Props.ladder(sg, Vector3(0.0, 0, 0.18), 0.0, 4.2)
+	Props.ladder_guard(sg, Vector3(0.0, 0, 0.18), 0.0, 2.1)   # (T-229: a signal post's anti-climb guard)
 	# weathering: soot from the locomotives on the walls, puddles between the sleepers, coal spill
 	for i: int in 5:
 		GenDetail.card(g, "soot", Vector3(39.84, 2.6, 36.0 + float(i) * 4.5), Vector3.LEFT, Vector2(2.4, 2.2))
@@ -1368,6 +1371,7 @@ func _dress_windkanal() -> void:
 	GenDetail.silhouette(g, Vector3(33.2, 2.75, 118.5), 0.0, 1.78)
 	GenDetail.enamel_sign(g, Vector3(37.0, 3.1, 118.3), 0.0, "BÜRO MAURER  ·  ZUTRITT NUR MIT ERLAUBNIS", 2.6, 0.24)
 	Props.ladder(g, Vector3(43.7, 0, 125.4), -90.0, 2.75)
+	Props.ladder_chain(g, Vector3(43.7, 0, 125.4), -90.0, 1.1, "GESPERRT")   # (T-229: the office is hung glass, not a floor; its sign says so)
 	# the hatch under the office on the east wall (the JetteHatch interactable stands in front of it)
 	GenDetail.door(g, Vector3(43.85, 0.0, 124.0), 90.0, 0.9, 1.4, {"blind": true, "steel": true, "leaf": "machine_grey", "step": false, "frame": "steel"})
 	# signs, pipes, the control desk by the fan control
@@ -1534,7 +1538,7 @@ func _lights() -> void:
 	# other always-on light sources (lanterns, glows), shadowless
 	lamp(Vector3(8.6, 2.9, 29.45), INCAND, 0.6, 5.0, 0.12, 0.3)
 	lamp(Vector3(8.0, 2.15, 80.6), INCAND, 0.6, 5.0, 0.12, 0.3)
-	lamp(Vector3(7.0, 2.1, 6.0), INCAND, 0.8, 7.0, 0.1, 0.2)                 # the cellar lantern
+	lamp(Vector3(7.0, 2.1, 6.0), INCAND, 1.3, 9.0, 0.1, 0.2)                 # the cellar lantern (T-222: 0.8 / 7 m -> 1.3 / 9 m)
 	lamp(Vector3(-12.0, 2.9, 128.0), VIOLET, 1.6, 12.0, 0.1, 1.0)            # the live impeller in pit 4
 	lamp(Vector3(3.2, 3.5, 115.0), VIOLET, 0.9, 8.0, 0.06, 0.6)              # the fan hub's Nachtglas glow
 	lamp(Vector3(40.0, 8.7, 33.0), RED, 0.5, 4.0, 0.0, 0.2)                  # the signal lamp
@@ -1580,6 +1584,58 @@ func _lights() -> void:
 	for hp: Vector3 in [Vector3(-45, 15.2, 165), Vector3(5, 15.2, 165), Vector3(-45, 15.2, 200), Vector3(5, 15.2, 200), Vector3(-20, 15.2, 182)]:
 		var hb: Vector3 = GenDetail.lamp_fixture(dress, hp, "hanging", 0.0, 16.0, "machine_grey", "bulb_cold")
 		power("H_HALLE", hb, 40.0, 1.6, MERCURY, false, {"dir": Vector3.DOWN, "energy": 2.0, "range": 40.0, "angle": 50.0})
+	_t222_lights()
+
+
+## T-222 (the Fernflug lighting pass): the halls, the tunnel lane, the annexes and the hangar were black inside
+## (frame means 4-30 of 255 against the bible's 30-60 unpowered / 45-80 powered). Every added light is a fixture
+## you can see and casts no shadow (the zones' shadow budget is untouched): the works' battery emergency lamps
+## (Notbeleuchtung: caged bulkheads, always on, dim and warm, so every hall has a source before the power), more of
+## the works' own hanging lamps and wall lamps on the power sweep, and in the Great Hangar the ground crew's sodium
+## floods on the side walls, aimed at the Kranich (power on). Lights, fixtures, no colliders.
+const T222_EMERGENCY: Array = [
+	# [pos on the wall face, yaw the lamp faces (0 = -Z, -90 = +X)]
+	[Vector3(-43.85, 2.9, 38.0), -90.0], [Vector3(-0.15, 2.9, 54.0), 90.0], [Vector3(-12.0, 2.9, 59.85), 0.0], [Vector3(-30.0, 2.9, 30.15), 180.0],   # the canteen
+	[Vector3(-59.85, 3.2, 84.0), -90.0], [Vector3(-59.85, 3.2, 102.0), -90.0], [Vector3(-0.15, 3.2, 70.0), 90.0], [Vector3(-0.15, 3.2, 96.0), 90.0],   # the Montage
+	[Vector3(-38.0, 3.2, 109.85), 0.0],
+	[Vector3(-59.85, 2.8, 64.0), -90.0], [Vector3(-48.15, 2.8, 72.0), 90.0],   # the Kraftzentrale: the switch is found before the power
+	[Vector3(43.85, 3.0, 104.0), 90.0], [Vector3(0.15, 3.0, 127.0), -90.0], [Vector3(14.0, 2.0, 112.15), 180.0], [Vector3(30.0, 2.0, 112.15), 180.0],   # the Windkanal + its lane
+	[Vector3(-59.85, 2.8, 141.0), -90.0],   # the control bunker
+	[Vector3(-69.85, 3.2, 160.0), -90.0], [Vector3(-69.85, 3.2, 184.0), -90.0], [Vector3(-69.85, 3.2, 208.0), -90.0],   # the hangar's west wall
+	[Vector3(29.85, 3.2, 160.0), 90.0], [Vector3(29.85, 3.2, 184.0), 90.0], [Vector3(29.85, 3.2, 208.0), 90.0],   # and its east wall
+]
+
+
+func _t222_lights() -> void:
+	for e: Array in T222_EMERGENCY:
+		var p: Vector3 = e[0]
+		var yaw: float = float(e[1])
+		Props.bulkhead_lamp(dress, p, yaw, "bulb_warm")
+		var out: Vector3 = Basis(Vector3.UP, deg_to_rad(yaw)) * Vector3(0, 0, -1)
+		lamp(p + out * 0.35, INCAND, 1.0, 10.0, 0.03, 0.0, false, 3.0)   # no volumetric fog share (cheaper, no haze halo on every wall lamp)
+	# the canteen: the long tables get their own lamps (two rows of four were two rows of two)
+	for hp: Vector3 in [Vector3(-40.0, 4.6, 41.0), Vector3(-40.0, 4.6, 48.0), Vector3(-6.0, 4.6, 36.0), Vector3(-6.0, 4.6, 46.0),
+			Vector3(-6.0, 4.6, 55.0), Vector3(-24.0, 4.6, 34.0), Vector3(-24.0, 4.6, 55.0)]:
+		power("C_KANTINE", GenDetail.lamp_fixture(dress, hp, "hanging", 0.0, 5.6, "enamel_green", "bulb_warm"), 11.0, 1.0, INCAND)
+	# the Montage: the west aisle north of the Kraftzentrale, the east aisle, the covered way between the jigs
+	for mp: Array in [[Vector3(-52.0, 6.6, 84.0), SODIUM], [Vector3(-52.0, 6.6, 100.0), SODIUM], [Vector3(-4.0, 6.6, 66.0), SODIUM],
+			[Vector3(-4.0, 6.6, 86.0), MERCURY], [Vector3(-4.0, 6.6, 104.0), SODIUM], [Vector3(-26.0, 6.6, 86.0), MERCURY]]:
+		power("E_MONTAGE", GenDetail.lamp_fixture(dress, mp[0], "hanging", 0.0, 8.0, "machine_grey", "bulb_warm"), 16.0, 1.3, mp[1])
+	# the Windkanal: wall lamps along the lane under the vault, two more hanging lamps over the hall
+	for lx: float in [10.0, 18.0, 26.0, 34.0]:
+		var wb: Vector3 = GenDetail.lamp_fixture(dress, Vector3(lx, 2.15, 112.15), "wall", 180.0, 0.0, "black_paint", "bulb_warm")
+		power("F_WINDKANAL", wb, 8.0, 0.8, INCAND)
+	for fp: Vector3 in [Vector3(32.0, 6.0, 105.0), Vector3(4.0, 6.0, 106.0), Vector3(30.0, 6.0, 126.0)]:
+		power("F_WINDKANAL", GenDetail.lamp_fixture(dress, fp, "hanging", 0.0, 6.4, "enamel_green", "bulb_warm"), 13.0, 1.0, INCAND)
+	# the test stands: sodium wall lamps along the Montage's back wall (the ring road's dark south side)
+	for gx: float in [-50.0, -20.0, -8.0]:
+		var gb: Vector3 = GenDetail.lamp_fixture(dress, Vector3(gx, 4.0, 110.15), "wall", 180.0, 0.0, "black_paint", "bulb_warm")
+		power("G_PRUEFSTAND", gb, 14.0, 1.0, SODIUM)
+	# the Great Hangar: the ground crew's floods on the side walls, aimed at the Kranich (warm against the cold high bays)
+	for hf: Array in [[Vector3(-69.6, 7.0, 170.0), -90.0], [Vector3(-69.6, 7.0, 196.0), -90.0], [Vector3(29.6, 7.0, 170.0), 90.0], [Vector3(29.6, 7.0, 196.0), 90.0]]:
+		var fb: Vector3 = GenDetail.lamp_fixture(dress, hf[0], "flood", float(hf[1]), 0.0, "machine_grey", "bulb_warm")
+		var aim: Vector3 = (KRANICH_AT + Vector3(0, 3.0, 0) - fb).normalized()
+		power("H_HALLE", fb, 14.0, 0.8, SODIUM, false, {"dir": aim, "energy": 9.0, "range": 72.0, "angle": 24.0, "color": SODIUM})
 
 
 ## Detail materials whose batches fade out with distance (contract C4: the dressing must fit the draw-call and
@@ -1686,6 +1742,7 @@ func build_lights() -> void:
 	super.build_lights()
 	var counts: Dictionary = tag_light_zones(6)
 	print("  shadowed lights per zone: %s" % str(counts))
+	print("  T-222: %d small lights fade with distance" % fade_small_lights())
 	# the moon: two shadow splits are enough over a works this size (half the directional shadow passes)
 	var moon: DirectionalLight3D = map_root.get_node_or_null("Moon") as DirectionalLight3D
 	if moon != null:

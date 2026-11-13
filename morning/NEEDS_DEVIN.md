@@ -2,6 +2,72 @@
 
 Short, phone-readable. Nothing here blocks the build.
 
+## UPDATE 15 (2026-11-12): movement, bot lag, maps 1-2, horses, bosses. Look, then merge.
+- [ ] **Walk Map 1.** Kerbs and low props should carry you over, not stop you. If a spot lets you somewhere it
+  should not, tell me where (`step.max_h` in `data/gravelight/movement.json` is the knob).
+- [ ] **Ride the horse.** Map 1, buy the yard door, the horse is at the rail by the stable wall. Mount, trot a loop,
+  shoot from the saddle, gallop through a zombie, get down. Say if it should be faster, turn tighter, or sit lower.
+- [ ] **Fight the horses.** Dev console to round 20 and round 30 on Map 1. Is the charge fair to dodge? Is it
+  frightening or silly?
+- [ ] **Bot lag, with a window.** One match with 3 bots and one without, from the repo root:
+  `tools\dl_godot\Godot_v4.7.2-stable_win64.exe --path . --log-file logs\game_last.log res://gravelight/ui/main_menu.tscn -- --frame-log`
+  Send me the two frame logs. If it still stutters, try the AI-brain bot set to the built-in brain (Settings).
+- [ ] **The Inn's vault.** If the cellar still feels cluttered, the next step is moving perk machines out of it. Say
+  yes or no.
+- [ ] **Fall speed.** The jump is a little floaty. Falling faster feels snappier but shortens the sprint jump from
+  4.4 m to about 3.9 m. Say if you want it (`jump.fall_gravity_mult`).
+- [ ] **Merge to master** when happy (this branch carries the maps 1-2 pass and the boss rework too):
+  `git checkout master && git merge claude/boss-rework && git push`.
+- Smokes on the final code: 101 run, 95 passed first time; two real bugs found and fixed (the Inn's chimney smoke,
+  a Screamer falling out of Totenhafen and holding the round open); `smoke_late_kit` failed once and passed alone;
+  `smoke_marks`, `smoke_npc_walls` and `smoke_letzte_fahrt` fail as they did before this work.
+- Not yours to do, for the record: the zombie overhaul's file lets a body's fall speed build without limit off a
+  floor (`Zombie._apply_gravity`), and its explosions cost 9-35 ms in a pack.
+
+## THE CLIMB AND THE RIDE MOVE (2026-11-09 late): ride it, then merge. Nothing blocks the build.
+- [ ] **Climb and ride.** Map 1, yard door, the tower: hold Use at the ladder (you go up hand over hand), up top hold
+  Use at the trolley (you grab the bar, step off, roll down and swing). Renders of both mid-way:
+  `morning/screenshots/u05/anim1/` or `tools_src/capture.gd --set=u05 --only=ride_climb,ride_zip,ride_zip_late`.
+  Say if the climb pace (1.4 m/s, `PACE` in `gravelight/world/ladder_climb.gd`) or the line's cap (7.5 m/s, `speed` in
+  `data/gravelight/map00.json`) should change.
+- [ ] **The piece of wood.** I took it to be the poker by the hearth (now fire irons). If you meant something else in the
+  taproom, say where you stood and where it was; `GL_PROBE_BOX` on the generator names any piece by its box.
+- [ ] **Merge `claude/maps-1-2-production` to master** when happy:
+  `git checkout master && git merge claude/maps-1-2-production && git push`.
+
+## SNIPER TOWER + ZIP LINE + LADDERS (2026-11-09 night): look, then merge. Nothing blocks the build.
+- [ ] **Ride it.** Map 1, buy the yard door (1250), the tower is in the south-west corner: hold Use at the ladder, up top
+  hold Use at the trolley. Then buy the Old Cellar and watch the hatch behind the bar fall open; climb it both ways.
+  Cameras: `tools_src/capture.gd --set=u05 --only=yard_tower,tower_deck,bar_hatch`. Say if the deck should be higher
+  or the line faster (ZipLine speed is one number in `data/gravelight/map00.json`).
+- [ ] **Say which "shut" ladders should work instead.** I made climbable every ladder that leads to a floor; the rest got
+  guards, chains or were stowed (the list is in `docs/DECISIONS.md` T-229). If you want the crane cab or the U-boat
+  bridge as perches, that is new floor, navmesh and zombie routes: a section of its own.
+- [ ] **Merge `claude/maps-1-2-production` to master** when happy:
+  `git checkout master && git merge claude/maps-1-2-production && git push`.
+
+## TOUCH-UP after your look (2026-11-09 evening): look again, then merge. Nothing blocks the build.
+- [ ] **Look at the attic flight and the Waschkaue again.** `DevLauncher.bat` into Map 0 (upstairs hall, east along
+  the south wall) and Map 1 (you spawn inside the Kaue; step out and turn round), or
+  `tools_src/capture.gd --set=u05 --only=attic_flight,attic_well,attic_stairhead` and
+  `--set=u10_map01 --only=A_kaue_front,A_kaue_corner,A_kaue_inside`. My own renders of these are in
+  `morning/screenshots/u05/touchup2` and `u10_map01/touchup2` (software renderer, darker than yours).
+- [ ] **Say what else looks unfinished.** Name the spot and I will render it here first next time; I can now see the
+  maps on this machine (WSL, off your screen), so "looks incomplete" is checkable before you are asked to look.
+- [ ] **Merge `claude/maps-1-2-production` to master** when happy:
+  `git checkout master && git merge claude/maps-1-2-production && git push`.
+
+## MAPS 1-2 PRODUCTION PASS (2026-11-09): look before merging. Nothing blocks the build.
+- [ ] **Eyeball the four new areas** (I had no renderer: everything was checked by geometry, navmesh and smokes only).
+  `DevLauncher.bat` into Map 0 / Map 1, or capture them: `tools_src/capture.gd --set=u05 --only=attic_stairhead,attic_east,bar_counter,bar_service`
+  and `--set=u10_map01 --only=A_kaue_inside,A_kaue_front,I_skyhook,I_crucible_corner`. What to judge: the attic's
+  scale and clutter, the bar's proportions (is it "bigger" enough?), the Kaue's baskets and light before the power, the
+  Core corner's density. Tell me what to push further.
+- [ ] **Merge `claude/maps-1-2-production` to master** when happy (it carries the Fernflug plane pass; the full unit
+  suite passed on this branch after two test updates). `git checkout master && git merge claude/maps-1-2-production && git push`.
+- [ ] **Perf glance on your GPU:** the attic adds ~60 colliders and ~600 dressing primitives to the Inn, the Kaue and the
+  Core about 300 to Kaltenbrunn. `tools/perf_census.sh` or just the FPS counter in the taproom and the Kaue.
+
 ## UPDATE 12 (2026-11-08): only you can do these. Nothing blocks the game: each has a stand-in.
 - [ ] **The real C-47 for GRAVELIGHT ONE:** on Sketchfab, download "C47" by manilov.ap (CC-BY 4.0), https://sketchfab.com/3d-models/c47-c4fb0f24d55f4866a9669aa952dceaf3 , as **glTF Binary (.glb)**. Save it as `assets/user_supplied/u12/c47/c47-manilov-ap/model.glb` with a `SOURCE.txt` holding that link. Optional: "Douglas C-47B Dakota IV KN645" by mgg8 (CC0), https://sketchfab.com/3d-models/35da2958566f421593bcc2dac9c3b762 , into `assets/user_supplied/u12/c47/c47-dakota-kn645-mgg8/` the same way. Then run `sh tools/c47/build.sh`. It builds the crashed and intact planes and adds the artist to the credits. Until then the game uses our own C-47 built from the real dimensions. After the swap, check the model's own markings (it may carry USAAF stars or a real serial).
 - [ ] **Higgsfield commercial terms:** check that your Higgsfield plan allows commercial use of the clips. Write the plan and the date you checked into each `assets/user_supplied/cutscenes/<scene>/LICENSE.txt`, and the model and dates into each `SOURCE.txt`. Until then, treat the clips as private and development use only.

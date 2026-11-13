@@ -84,6 +84,9 @@ func _ready() -> void:
 	if not nav_zone_bits.is_empty():
 		director.configure_navigation(nav_zone_bits, nav_always_bits, zone_adjacency)
 	ClimbLink.spawn_all(self, map_id, nav_zone_bits)   # authored climb volumes from the map's json (MZ, T-041)
+	LadderClimb.spawn_all(self, map_id)   # the ladders players climb (T-229), and the zip lines
+	ZipLine.spawn_all(self, map_id)
+	Horse.spawn_all(self, map_id)   # T-240: the rideable horse (the map json's "horses" rows)
 	Muster.begin_match(_online)   # each human's sidearm and Field Habits for this match (T-079), before they spawn
 	_spawn_players()
 	MapState.attach(self, map_id)   # what the minimap / pause map know this match (Update 04, T-065)
@@ -124,6 +127,7 @@ func _ready() -> void:
 	FirstHints.attach(self)   # T-162: first-time hints (once per profile) and the citations' watcher
 	EggModeTag.attach(self)   # T-181: the Easter Egg Mode practice tag (EggMode)
 	BoundsGuard.attach(self)   # T-185: anyone far outside the playable space is brought back down
+	HorseRound.attach(self)   # T-240: the undead horses' rounds (the map json's "round_bosses" rows)
 	LazarusCinema.attach(self)   # T-194: the LAZARUS cutscenes at a match start (every peer; the host decides)
 	for q: String in quest_files:
 		QuestManager.load_quest(q)
@@ -141,6 +145,8 @@ func _ready() -> void:
 	CrucibleRoom.attach(self)   # T-175: the Crucible's room (props, lights, hum, forge fx) from data/gravelight/crucible_rooms.json
 	(func() -> void: LampGlow.attach(self)).call_deferred()   # lamp glass dims with its light (T-057)
 	ShadowProxies.build(self)   # the static batches' shadows drawn from a few merged depth meshes (T-070)
+	print("[DetailRange] %s: %d cut-offs x%.2f (gfx_lod %s)" % [map_id, DetailRange.apply(self, DetailRange.factor(str(GLSettings.gfx("gfx_lod")))),
+		DetailRange.factor(str(GLSettings.gfx("gfx_lod"))), str(GLSettings.gfx("gfx_lod"))])   # T-223: no ring of missing detail
 	var sb: Node = get_node_or_null("StaticBatches")
 	if sb != null:   # T-145: batches split into ViewCells visibility groups get proxies per group (hidden with it)
 		for vg: Node in sb.get_children():

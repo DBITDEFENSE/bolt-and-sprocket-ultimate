@@ -6,21 +6,36 @@ extends HomageBoss
 ## dead would stay in the pens. The Marke kept him walking. A person, just too long: never faceless, never a suit,
 ## never anything growing from his back (the originality checklist in T-160).
 ## Body: the MZ humanoid (ZombieBody "dockworker", thin, male) on the shared rig, about 2.6 m (the pivot scale plus
-## longer upper arms and legs through the pose layer), pale with faint violet eyes that never blink; a long
-## dark-grey watchman's greatcoat with brass buttons, the collar up, a scarf, a peaked cap; a brass lantern burning
-## violet on a short pole (a hitbox: "lantern"), a ring of keys at the hip that jingles as he walks and goes silent
-## before he strikes, the watch-book under his arm (a hitbox: "book").
+## longer upper arms and legs through the pose layer), pale with faint violet eyes that never blink while he watches
+## you (a slow blink otherwise); a long dark-grey watchman's greatcoat with brass buttons, the collar up, a scarf, a
+## peaked cap; a brass lantern burning violet on a short pole (a hitbox: "lantern"), a ring of keys at the hip that
+## jingles as he walks and goes silent before he strikes, the watch-book under his arm (a hitbox: "book").
 ## The Watch system: every player's LOGGED meter (WatchMeter) fed from their senses each step; tier whispers and
 ## effects; CRITICAL puts him right behind you; 100 quarantines you (SlenderEncounter's Watch Room).
 ## He can only be damaged while lit (a powered lamp pool, the signal tower's searchlight, a shooter within 5 m,
 ## frost); in the dark bullets pass through like smoke. The lantern (x2, 3% of max HP) breaks into a 6 s stun and
 ## relights; the book (2%) is shot out of his hands for a 4 s x1.5 window (then 30 s before it can go again).
-## Moves: the Walk (1.6 m/s), the Teleport (15 m closer, only while unobserved), Mirroring, the Lantern Sweep,
-## the Key Ring Lash; Shift Change below 50% (two decoys with flickering lanterns); End of Shift below 20%, once
-## (every light out for 30 s, the pools off until a fuse box is held 5 s).
-## He locks the Pen Hall doors and the pump stair as he walks past; a locked door re-opens for free when he leaves
-## its zone, dies or leaves the map.
-## Pure rules are static for the tests (lit_by_pools, in_box, door_should_unlock, phase_for).
+## Moves: the Walk (1.6 m/s), the Teleport (15 m closer, only while unobserved), Mirroring (you stop, he stops; and
+## the Mirroring step below), the Lantern Sweep, the Key Ring Lash; Shift Change below 50% (two decoys with
+## flickering lanterns); End of Shift below 20%, once (every light out for 30 s, the pools off until a fuse box is
+## held 5 s). He locks the Pen Hall doors and the pump stair as he walks past; a locked door re-opens for free when
+## he leaves its zone, dies or leaves the map.
+## T-233 (the boss rework, docs/BOSS_REWORK.md 4.1; docs/boss_rework/w3_totenhafen.md), on the T-231 kit:
+##   - the model moves: the coat's hem and the scarf's ends sway (SwayStrips), the lantern swings on its pole (a
+##     pendulum in _process) and its violet light pools on the grating under him (a radial decal that follows the
+##     lantern), the brass (buttons, cage, keys, badge) is metal that catches the light, the eyes are the kit's
+##     EyeGlow (never blinking while he watches you);
+##   - the effects: the "dread" block (radius 24: he is felt from far; cloth; a quiet step), fx.tele on every
+##     telegraph, slender_lantern_hum as a 3D loop at the lantern, slender_keys_still as the tell of every silence
+##     (the Lash and the Mirroring step), slender_whisper close to a player by Watch tier (and from LOW when they
+##     are hurt), boss_breath when he stands over you; the Watch tiers push the dread layer (the screen's edge goes
+##     violet as the meter rises, near full at CRITICAL); End of Shift puts the arena's lights out through the kit
+##     (they gutter as they die) and the fuse boxes spark while it lasts;
+##   - the battle: the Mirroring step (the keys go still, then he stands where you stood a second ago, and holds
+##     still for a clean shot), the squad rule (alone in the dark the Watch fills x1.5; a hurt player hears the
+##     whisper), and the phases escalate (phase overrides in the data: the sweep's and the step's cooldowns fall,
+##     the Lash reaches 5 m and his walk is 1.9 m/s at End of Shift; he never runs).
+## Pure rules are static for the tests (lit_by_pools, in_box, door_should_unlock, phase_for, trail_point).
 
 const COAT: Color = Color(0.24, 0.25, 0.27)
 const COAT_DARK: Color = Color(0.18, 0.19, 0.2)
@@ -31,8 +46,11 @@ const BOOK: Color = Color(0.3, 0.18, 0.1)
 const VIOLET: Color = Color(0.7, 0.35, 1.0)
 const PALE: Color = Color(1.16, 1.12, 1.2, 1.0)
 const LIMB_BONES: PackedStringArray = ["LeftUpperArm", "RightUpperArm", "LeftUpperLeg", "RightUpperLeg"]
+## The dread the Watch tiers add to the local player's screen (NONE, LOW, MEDIUM, HIGH, CRITICAL).
+const TIER_DREAD: PackedFloat32Array = [0.0, 0.15, 0.35, 0.6, 0.95]
+const TRAIL_KEEP_S: float = 2.5
 
-enum S { WALK, SWEEP_TELE, SWEEP, LASH_SILENCE, LASH, STUN, BOOK, MIRROR }
+enum S { WALK, SWEEP_TELE, SWEEP, LASH_SILENCE, LASH, STUN, BOOK, MIRROR, MIRROR_SILENCE, MIRROR_HOLD }
 
 var meters: Dictionary = {}          # pid -> WatchMeter
 var wphase: int = 1                  # 1, 2 (Shift Change), 3 (End of Shift)
@@ -51,6 +69,10 @@ var teleports: int = 0
 var sweeps: int = 0
 var lashes: int = 0
 var mirror_stops: int = 0
+var mirror_steps: int = 0            # T-233: the Mirroring step
+var whispers: int = 0                # T-233: slender_whisper plays
+var breaths: int = 0                 # T-233: boss_breath plays
+var fuse_sparks: int = 0             # T-233: spark bursts at the fuse boxes
 var locked: Array[BuyDoor] = []
 var locks_done: Array[StringName] = []
 var unlocks_done: int = 0
@@ -76,18 +98,33 @@ var _write_t: float = 6.0
 var _decoy_t: float = 0.0
 var _shift_dmg: float = 0.0
 var _decoy_recast: float = 0.0
-var _lantern: Node3D = null
+var _lantern: Node3D = null          # the pole in his hand
+var _lantern_swing: Node3D = null    # the cage, glass, lamp and hitbox hanging off the pole's end (the pendulum)
 var _lamp: OmniLight3D = null
+var _pool: MeshInstance3D = null     # T-233: the lantern's violet pool on the grating
+var _hum: AudioStreamPlayer3D = null # T-233: slender_lantern_hum
+var _eyes: BossFx.EyeGlow = null     # T-233: the kit's eyes
+var _eyes_watching: bool = true
 var _book: Node3D = null
 var _keys: Node3D = null
 var _observe: ObservedFreeze = ObservedFreeze.new()
 var _death_phase: int = 0
-var _dark_lights: Array = []          # [Light3D, energy] dimmed by End of Shift
 var _exit_i: int = 0
 var _hit_shooter: Vector3 = Vector3.INF
 var _tier_said: Dictionary = {}       # pid -> highest tier whispered
 var _mirror_said: bool = false
 var _sweep_hit: Dictionary = {}
+var _trail: Array = []                # T-233: [clock, position] of the target's last TRAIL_KEEP_S seconds
+var _trail_pid: int = -1
+var _mirror_dest: Vector3 = Vector3.INF
+var _lant_ang: Vector2 = Vector2.ZERO
+var _lant_vel: Vector2 = Vector2.ZERO
+var _lant_last: Vector3 = Vector3.INF
+var _whisper_t: Dictionary = {}       # pid -> seconds to the next whisper
+var _breath_t: float = 0.0
+var _tele_t: float = 0.0              # a kit telegraph is shaping the light (the base's move_toward stays out)
+var _spark_t: float = 0.0
+var _step_said: bool = false
 
 
 func _init() -> void:
@@ -100,6 +137,12 @@ func _ready() -> void:
 	bcfg = HomageEncounter.block(ecfg, "the_slender")
 	_lcfg = bcfg.get("lights", {})
 	_wcfg = bcfg.get("watch", {})
+	# the kit was made in super._ready() from the base's cousins table: give it his own "dread" block (T-233)
+	if fx != null:
+		fx.cfg = BossFx.DEFAULTS.duplicate()
+		for k: Variant in (bcfg.get("dread", {}) as Dictionary).keys():
+			fx.cfg[k] = (bcfg["dread"] as Dictionary)[k]
+		fx.dread_id = &"the_slender"
 
 
 func modelled() -> bool:
@@ -157,6 +200,26 @@ static func in_spot(light: SpotLight3D, p: Vector3) -> bool:
 	return rad_to_deg(fwd.angle_to(d.normalized())) <= light.spot_angle
 
 
+## T-233: where the target stood `delay` seconds before `now` on a trail of [clock, position] samples (the newest
+## last): the newest sample at least `delay` old, else Vector3.INF (the trail is too short).
+static func trail_point(trail: Array, now: float, delay: float) -> Vector3:
+	var best: Vector3 = Vector3.INF
+	for e: Variant in trail:
+		var a: Array = e as Array
+		if now - float(a[0]) >= delay:
+			best = a[1] as Vector3
+	return best
+
+
+## T-233: a move's number at a phase: phases["<phase>"][move][key] over moves[move][key] over `default`.
+static func phase_value(b: Dictionary, phase: int, move: String, key: String, default: float) -> float:
+	var ph: Dictionary = (b.get("phases", {}) as Dictionary).get(str(phase), {})
+	var o: Dictionary = ph.get(move, {}) if ph.get(move, {}) is Dictionary else {}
+	if o.has(key):
+		return float(o[key])
+	return float(((b.get("moves", {}) as Dictionary).get(move, {}) as Dictionary).get(key, default))
+
+
 # ================================================================== spawn and the body
 
 func _on_spawned() -> void:
@@ -176,6 +239,8 @@ func _on_spawned() -> void:
 	meters.clear()
 	_tier_said.clear()
 	_crit_seen.clear()
+	_whisper_t.clear()
+	_trail.clear()
 	wphase = 1
 	sstate = S.WALK
 	stun_t = 0.0
@@ -184,11 +249,18 @@ func _on_spawned() -> void:
 	sat = false
 	end_of_shift_done = false
 	_death_phase = 0
+	_tele_t = 0.0
 	_observe.include_bots = true
 	_neutral()
 	_pose.snap()
 	if _lamp != null:
 		_lamp.light_energy = 1.6
+	if _hum != null and not _hum.playing:
+		_hum.play()
+	if _eyes != null:
+		_eyes.lit = true
+	if _pool != null:
+		_pool.visible = true
 
 
 ## The long limbs and the neutral shape: the pose layer keeps the upper arms and legs lengthened at all times.
@@ -207,32 +279,47 @@ func _arm(bone: String, rot: Vector3) -> void:
 	_pose.set_bone(bone, rot, Vector3.ZERO, Vector3(1.0, float(bcfg.get("limb_scale", 1.12)), 1.0))
 
 
+## A costume piece's one surface made metal (T-233: the brass catches the lantern).
+static func _metal(mi: MeshInstance3D, c: Color, rough: float = 0.3, metal: float = 0.9) -> void:
+	if mi != null and mi.mesh != null and mi.mesh.get_surface_count() > 0:
+		mi.mesh.surface_set_material(0, mat_ex(c, rough, metal))
+
+
 func _build_costume() -> void:
 	# the long greatcoat: skirts to mid-shin, buttoned, collar up; nothing on his back but cloth
 	costume("Chest", [
 		cyl(0.21, 0.19, 0.42, Vector3(0, 0.12, 0), COAT),
 		cyl(0.11, 0.15, 0.14, Vector3(0, 0.38, 0.01), COAT_DARK),   # the collar, up
 		cyl(0.12, 0.13, 0.07, Vector3(0, 0.33, 0.0), SCARF),
+	])
+	_metal(costume("Chest", [
 		sph(0.018, Vector3(0, 0.25, -0.2), BRASS), sph(0.018, Vector3(0, 0.15, -0.205), BRASS),
 		sph(0.018, Vector3(0, 0.05, -0.2), BRASS), sph(0.018, Vector3(0, -0.05, -0.19), BRASS),
-	])
+	]), BRASS)
 	costume("Hips", [
 		cyl(0.2, 0.27, 0.62, Vector3(0, -0.22, 0.0), COAT),
-		sph(0.018, Vector3(0, 0.0, -0.21), BRASS), sph(0.018, Vector3(0, -0.12, -0.23), BRASS),
 		boxp(Vector3(0.42, 0.05, 0.3), Vector3(0, 0.05, 0), COAT_DARK),   # the belt
 	])
+	_metal(costume("Hips", [sph(0.018, Vector3(0, 0.0, -0.21), BRASS), sph(0.018, Vector3(0, -0.12, -0.23), BRASS)]), BRASS)
 	for side: String in ["Left", "Right"]:
 		costume(side + "UpperLeg", [cyl(0.13, 0.15, 0.46, Vector3(0, -0.22, 0), COAT)])
 		costume(side + "UpperArm", [cyl(0.075, 0.07, 0.34, Vector3(0, -0.15, 0), COAT)])
 		costume(side + "LowerArm", [cyl(0.07, 0.065, 0.36, Vector3(0, -0.16, 0), COAT), cyl(0.075, 0.075, 0.05, Vector3(0, -0.3, 0), COAT_DARK)])
-	# the peaked watchman's cap and the violet eyes (a real, tired face: the body's face stays visible)
+	# T-233: the coat moves: strips along the hem (front, back, both sides) and the scarf's two ends
+	strips("Hips", Vector3(0.0, -0.5, -0.24), 3, 0.3, 0.1, COAT, 0.3, 11)
+	strips("Hips", Vector3(0.0, -0.5, 0.24), 3, 0.32, 0.1, COAT, 0.3, 12)
+	strips("Hips", Vector3(-0.25, -0.5, 0.0), 2, 0.28, 0.1, COAT_DARK, 0.2, 13)
+	strips("Hips", Vector3(0.25, -0.5, 0.0), 2, 0.28, 0.1, COAT_DARK, 0.2, 14)
+	strips("Chest", Vector3(0.07, 0.3, -0.15), 2, 0.3, 0.06, SCARF, 0.08, 15)
+	# the peaked watchman's cap over a real, tired face (the body's face stays visible); the badge band is brass
 	costume("Head", [
 		cyl(0.12, 0.125, 0.07, Vector3(0, 0.15, 0.0), CAP),
 		boxp(Vector3(0.2, 0.012, 0.09), Vector3(0, 0.12, -0.12), CAP, Vector3(-0.2, 0, 0)),   # the peak
-		boxp(Vector3(0.18, 0.02, 0.012), Vector3(0, 0.14, -0.123), BRASS),   # the badge band
 	])
-	costume("Head", [sph(0.012, Vector3(-0.035, 0.05, -0.105), VIOLET), sph(0.012, Vector3(0.035, 0.05, -0.105), VIOLET)], 2.5)
-	# the lantern on its short pole in the right hand
+	_metal(costume("Head", [boxp(Vector3(0.18, 0.02, 0.012), Vector3(0, 0.14, -0.123), BRASS)]), BRASS)
+	# T-233: the eyes catch the lantern (the kit's EyeGlow; never blinking while he watches you, a slow blink otherwise)
+	_eyes = eye_glow(VIOLET, 1.3, 0.0, [Vector3(-0.035, 0.05, -0.105), Vector3(0.035, 0.05, -0.105)]) as BossFx.EyeGlow
+	# the lantern on its short pole in the right hand; the cage hangs off the pole's end and swings (T-233)
 	var hand: BoneAttachment3D = bone_attachment("RightHand")
 	_lantern = Node3D.new()
 	_lantern.name = "Lantern"
@@ -246,39 +333,75 @@ func _build_costume() -> void:
 	pole.material_override = mat(Color(0.3, 0.22, 0.14))
 	pole.position = Vector3(0, -0.2, -0.05)
 	_lantern.add_child(pole)
+	_lantern_swing = Node3D.new()
+	_lantern_swing.name = "Swing"
+	_lantern_swing.position = Vector3(0, -0.52, -0.05)
+	_lantern.add_child(_lantern_swing)
 	var cage: MeshInstance3D = MeshInstance3D.new()
 	var st: SurfaceTool = SurfaceTool.new()
 	var lm: ArrayMesh = ArrayMesh.new()
-	for p: Array in [boxp(Vector3(0.14, 0.02, 0.14), Vector3(0, -0.55, -0.05), BRASS), boxp(Vector3(0.12, 0.02, 0.12), Vector3(0, -0.76, -0.05), BRASS),
-			cyl(0.01, 0.01, 0.2, Vector3(0.06, -0.66, 0.01), BRASS), cyl(0.01, 0.01, 0.2, Vector3(-0.06, -0.66, -0.11), BRASS)]:
+	for p: Array in [boxp(Vector3(0.14, 0.02, 0.14), Vector3(0, -0.03, 0.0), BRASS), boxp(Vector3(0.12, 0.02, 0.12), Vector3(0, -0.24, 0.0), BRASS),
+			cyl(0.01, 0.01, 0.2, Vector3(0.06, -0.14, 0.06), BRASS), cyl(0.01, 0.01, 0.2, Vector3(-0.06, -0.14, -0.06), BRASS),
+			cyl(0.008, 0.008, 0.05, Vector3(0, 0.0, 0.0), BRASS)]:   # the hook
 		st.append_from(p[0] as Mesh, 0, p[1] as Transform3D)
 	st.commit(lm)
-	lm.surface_set_material(0, mat(BRASS, 0.0, 0.4))
+	lm.surface_set_material(0, mat_ex(BRASS, 0.3, 0.9))
 	cage.mesh = lm
-	_lantern.add_child(cage)
+	_lantern_swing.add_child(cage)
 	var glass: MeshInstance3D = MeshInstance3D.new()
 	var gm: BoxMesh = BoxMesh.new()
 	gm.size = Vector3(0.1, 0.18, 0.1)
 	glass.mesh = gm
 	glass.material_override = mat(VIOLET, 3.0, 0.2)
-	glass.position = Vector3(0, -0.66, -0.05)
+	glass.position = Vector3(0, -0.14, 0.0)
 	glass.name = "Glass"
-	_lantern.add_child(glass)
+	_lantern_swing.add_child(glass)
 	_lamp = OmniLight3D.new()
 	_lamp.light_color = VIOLET
 	_lamp.omni_range = float(_wcfg.get("pool_radius", 8.0))
 	_lamp.light_energy = 1.6
 	_lamp.shadow_enabled = false
-	_lamp.position = Vector3(0, -0.66, -0.05)
-	_lantern.add_child(_lamp)
+	_lamp.position = Vector3(0, -0.14, 0.0)
+	_lantern_swing.add_child(_lamp)
 	var lhb: Hitbox = Hitbox.new()
 	lhb.name = "LanternHit"
 	lhb.setup(self, &"lantern", Vector3(0.18, 0.26, 0.18))
 	lhb.bone = "RightHand"
-	lhb.position = Vector3(0, -0.66, -0.05)
-	_lantern.add_child(lhb)
+	lhb.position = Vector3(0, -0.14, 0.0)
+	_lantern_swing.add_child(lhb)
 	_hitboxes.append(lhb)
-	# the ring of keys at the left hip
+	_hum = AudioDirector.make_loop_3d("slender_lantern_hum", _lantern_swing, -10.0)
+	# the pool of violet on the grating under the lantern (a radial decal that follows it; the light itself has no
+	# shadows, so this is what reads as "his light pools on the catwalk")
+	_pool = MeshInstance3D.new()
+	_pool.name = "LanternPool"
+	var pm: PlaneMesh = PlaneMesh.new()
+	pm.size = Vector2(4.4, 4.4)
+	_pool.mesh = pm
+	var pmat: StandardMaterial3D = StandardMaterial3D.new()
+	pmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	pmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	pmat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	pmat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	pmat.no_depth_test = false
+	var grad: Gradient = Gradient.new()
+	grad.set_color(0, Color(0.5, 0.25, 0.8, 0.42))
+	grad.add_point(0.45, Color(0.4, 0.18, 0.7, 0.16))
+	grad.set_color(grad.get_point_count() - 1, Color(0.3, 0.1, 0.5, 0.0))
+	var gt: GradientTexture2D = GradientTexture2D.new()
+	gt.gradient = grad
+	gt.fill = GradientTexture2D.FILL_RADIAL
+	gt.fill_from = Vector2(0.5, 0.5)
+	gt.fill_to = Vector2(0.5, 0.0)
+	gt.width = 64
+	gt.height = 64
+	pmat.albedo_texture = gt
+	pmat.albedo_color = Color(1, 1, 1, 1)
+	_pool.material_override = pmat
+	_pool.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_pool.top_level = true
+	add_child(_pool)
+	# the ring of keys at the left hip (the ring and the keys' heads are brass)
 	var hip: BoneAttachment3D = bone_attachment("Hips")
 	_keys = Node3D.new()
 	_keys.name = "Keys"
@@ -287,11 +410,17 @@ func _build_costume() -> void:
 	for i: int in 10:
 		var a: float = TAU * float(i) / 10.0
 		kparts.append(cyl(0.006, 0.006, 0.035, Vector3(cos(a) * 0.06, sin(a) * 0.06, 0), BRASS, Vector3(0, 0, a + PI * 0.5), Vector3.ONE, 5))
-	for j: int in 6:
-		kparts.append(boxp(Vector3(0.012, 0.07, 0.004), Vector3(-0.04 + 0.016 * float(j), -0.09, 0.0), Color(0.55, 0.5, 0.42), Vector3(0, 0, 0.15 * float(j - 3))))
 	var km: MeshInstance3D = costume("Hips", kparts)
+	_metal(km, BRASS)
+	var kparts2: Array = []
+	for j: int in 6:
+		kparts2.append(boxp(Vector3(0.012, 0.07, 0.004), Vector3(-0.04 + 0.016 * float(j), -0.09, 0.0), Color(0.55, 0.5, 0.42), Vector3(0, 0, 0.15 * float(j - 3))))
+	var km2: MeshInstance3D = costume("Hips", kparts2)
+	_metal(km2, Color(0.55, 0.5, 0.42), 0.45, 0.7)
 	if km != null:
 		km.reparent(_keys, false)
+	if km2 != null:
+		km2.reparent(_keys, false)
 	_keys.position = Vector3(-0.22, -0.08, -0.02)
 	# the watch-book under the left arm
 	var chest: BoneAttachment3D = bone_attachment("LeftUpperArm")
@@ -313,21 +442,70 @@ func _build_costume() -> void:
 	_hitboxes.append(bhb)
 
 
+func _glass_node() -> Node3D:
+	return _lantern_swing.get_node_or_null("Glass") as Node3D if _lantern_swing != null else null
+
+
 func move_speed() -> float:
-	return float(bcfg.get("speed", 1.6)) * squad_speed_mult
+	var ph: Dictionary = (bcfg.get("phases", {}) as Dictionary).get(str(wphase), {})
+	return float(ph.get("speed", bcfg.get("speed", 1.6))) * squad_speed_mult
+
+
+## T-233: the presentation that runs every frame: the lantern's pendulum and the pool of light under it.
+func _process(delta: float) -> void:
+	super._process(delta)
+	if state == State.INACTIVE or not visible:
+		return
+	_tick_lantern(delta)
+
+
+func _tick_lantern(delta: float) -> void:
+	if _lantern_swing == null or not _lantern_swing.is_inside_tree():
+		return
+	var gp: Vector3 = _lantern_swing.global_position
+	var v: Vector3 = Vector3.ZERO
+	if _lant_last.is_finite() and delta > 0.0:
+		v = (gp - _lant_last) / delta
+	_lant_last = gp
+	var lv: Vector3 = _lantern_swing.get_parent_node_3d().global_basis.inverse() * v
+	var target: Vector2 = Vector2(clampf(-lv.z * 0.35, -0.9, 0.9), clampf(lv.x * 0.35, -0.9, 0.9))
+	if sstate == S.STUN:
+		target = Vector2.ZERO
+	var w: Vector2 = _lant_vel
+	var a: Vector2 = _lant_ang
+	w += (-(a - target) * 22.0 - w * 2.0 * 0.3 * sqrt(22.0)) * delta
+	a += w * delta
+	_lant_ang = a
+	_lant_vel = w
+	_lantern_swing.rotation = Vector3(a.x, 0.0, a.y)
+	if _pool != null and _lamp != null:
+		var e: float = _lamp.light_energy
+		_pool.visible = e > 0.05 and state != State.DEAD
+		if _pool.visible:
+			var lp: Vector3 = _lamp.global_position
+			var k: float = clampf(e / 1.6, 0.0, 2.5)
+			_pool.global_position = Vector3(lp.x, global_position.y + 0.04, lp.z)
+			_pool.global_rotation = Vector3.ZERO
+			_pool.scale = Vector3.ONE * (0.75 + 0.35 * k)
+			(_pool.material_override as StandardMaterial3D).albedo_color = Color(1, 1, 1, clampf(0.55 + 0.45 * k, 0.0, 1.0))
 
 
 # ================================================================== the brain
 
 func _tick(delta: float) -> void:
 	_st += delta
+	_tele_t = maxf(0.0, _tele_t - delta)
 	_update_lit()
+	_track_trail()
 	_tick_meters(delta)
 	_tick_doors()
 	_tick_phase(delta)
 	_tick_decoys(delta)
 	_tick_dark(delta)
 	_tick_keys(delta)
+	_tick_whisper(delta)
+	_tick_eyes()
+	_tick_dread()
 	if book_lock_t > 0.0:
 		book_lock_t -= delta
 	if stun_t > 0.0:
@@ -372,7 +550,7 @@ func _tick(delta: float) -> void:
 				_neutral()
 				if _lamp != null:
 					_lamp.light_energy = 1.6
-				set_cd("sweep", float(_mv("sweep").get("cooldown", 12.0)))
+				set_cd("sweep", _mvf("sweep", "cooldown", 12.0))
 		S.LASH_SILENCE:
 			stand(delta)
 			_arm("LeftUpperArm", Vector3(0.4, 0, 0.5))   # the hand closes over the keys
@@ -388,7 +566,7 @@ func _tick(delta: float) -> void:
 				lashes += 1
 				var m: Dictionary = _mv("lash")
 				for p: Player in alive_players():
-					if dist_to(p) <= float(m.get("range", 4.0)) and _facing(p, 80.0):
+					if dist_to(p) <= _mvf("lash", "range", 4.0) and _facing(p, 80.0):
 						hit_player(p, float(m.get("damage", 85)))
 						p.apply_status(&"knockdown", float(m.get("stagger", 0.6)))
 			if _st >= 0.9:
@@ -396,12 +574,32 @@ func _tick(delta: float) -> void:
 				sstate = S.WALK
 				_neutral()
 				set_cd("lash", float(_mv("lash").get("cooldown", 4.0)))
+		S.MIRROR_SILENCE:
+			# T-233: the keys are still; he looks at where you were
+			stand(delta)
+			_arm("LeftUpperArm", Vector3(0.4, 0, 0.5))
+			_pose.set_bone("Head", Vector3(0.1, 0, 0.3))
+			if _st >= _mvf("mirror", "step_silence", 0.8):
+				_do_mirror_step()
+		S.MIRROR_HOLD:
+			stand(delta)
+			if _st >= _mvf("mirror", "step_hold", 0.6):
+				_silent = false
+				sstate = S.WALK
+				_neutral()
+				if _lamp != null and stun_t <= 0.0:
+					_lamp.light_energy = 1.6   # (a sweep's rise the step cut short)
 		_:
 			_think(delta)
 
 
 func _mv(id: String) -> Dictionary:
 	return (bcfg.get("moves", {}) as Dictionary).get(id, {})
+
+
+## T-233: a move's number at the current phase (the data's "phases" overrides).
+func _mvf(id: String, key: String, default: float) -> float:
+	return phase_value(bcfg, wphase, id, key, default)
 
 
 func _think(delta: float) -> void:
@@ -412,12 +610,13 @@ func _think(delta: float) -> void:
 	var los: bool = has_los(target, 2.4, 1.3)
 	var sight: float = float(_wcfg.get("sight_m", 40.0))
 	# the Key Ring Lash: the keys go silent first (silence is the telegraph)
-	if dist <= float(_mv("lash").get("range", 4.0)) and cd_ready("lash"):
+	if dist <= _mvf("lash", "range", 4.0) and cd_ready("lash"):
 		sstate = S.LASH_SILENCE
 		_st = 0.0
 		_hit_done = false
 		_silent = true
 		_face(target.global_position)
+		_still_tell(float(_mv("lash").get("silence", 0.6)) + float(_mv("lash").get("backswing", 0.4)), 2.2)
 		if target.character_id == &"deacon":
 			say("DEA_SLENDER_02")
 		return
@@ -428,14 +627,20 @@ func _think(delta: float) -> void:
 		moves_used["sweep"] = int(moves_used.get("sweep", 0)) + 1
 		_face(target.global_position)
 		sfx("glass_harmonic" if AudioDirector.has_sound("glass_harmonic") else "screamer_hum", -2.0, 1.6)
+		_kit_tele(tele_len(float(_mv("sweep").get("telegraph", 1.0))), 3.0)
 		return
 	# the Teleport: only while nobody is watching, 15 m closer
 	var observed: bool = _observe.update(delta, self, look_points())
 	if not observed and dist > float(_mv("teleport").get("min_range", 12.0)) and cd_ready("teleport"):
 		_teleport_toward(target.global_position, float(_mv("teleport").get("distance", 15.0)))
 		return
+	# T-233: the Mirroring step: you walk, and a moment later he is standing where you were
+	if los and dist >= _mvf("mirror", "step_min_range", 6.0) and dist <= _mvf("mirror", "range", 30.0) and cd_ready("mirror_step") \
+			and target.velocity.length() >= 0.3 and trail_point(_trail, _clock, _mvf("mirror", "step_delay_s", 1.0)).is_finite():
+		_start_mirror_step()
+		return
 	# Mirroring: in sight within 30 m, you stop, he stops
-	if los and dist <= float(_mv("mirror").get("range", 30.0)) and target.velocity.length() < 0.3:
+	if los and dist <= _mvf("mirror", "range", 30.0) and target.velocity.length() < 0.3:
 		if sstate != S.MIRROR:
 			sstate = S.MIRROR
 			mirror_stops += 1
@@ -486,6 +691,79 @@ func appear_behind(p: Player) -> void:
 	global_position = _snap_nav(p.global_position + back.normalized() * 1.6)
 	_face(p.global_position)
 	teleports += 1
+	sfx("boss_breath", -4.0, 0.9)
+	breaths += 1
+
+
+# ---- T-233: the Mirroring step
+
+## The target's trail: where they stood over the last TRAIL_KEEP_S seconds (one sample a physics frame).
+func _track_trail() -> void:
+	if target == null:
+		_trail.clear()
+		_trail_pid = -1
+		return
+	if target.get_instance_id() != _trail_pid:   # another player's trail is not this one's
+		_trail.clear()
+		_trail_pid = target.get_instance_id()
+	_trail.append([_clock, target.global_position])
+	while not _trail.is_empty() and _clock - float((_trail[0] as Array)[0]) > TRAIL_KEEP_S:
+		_trail.pop_front()
+
+
+## The still tell every silence shares (the Lash, the Mirroring step): the keys stop (slender_keys_still) and the
+## kit's telegraph light shapes itself over `seconds`.
+func _still_tell(seconds: float, energy: float) -> void:
+	sfx("slender_keys_still", -3.0, 1.0, _keys.global_position if _keys != null else Vector3.INF)
+	_kit_tele(seconds, energy)
+
+
+func _kit_tele(seconds: float, energy: float) -> void:
+	if fx != null:
+		fx.tele(VIOLET, energy, seconds)
+	_tele_t = seconds
+
+
+func _start_mirror_step() -> void:
+	sstate = S.MIRROR_SILENCE
+	_st = 0.0
+	_silent = true
+	_mirror_dest = trail_point(_trail, _clock, _mvf("mirror", "step_delay_s", 1.0))
+	if target != null:
+		_face(target.global_position)
+	_still_tell(_mvf("mirror", "step_silence", 0.8) + 0.2, 2.4)
+
+
+## He stands where you stood a second ago, facing you, and holds still for step_hold s (a clean shot).
+func _do_mirror_step() -> void:
+	var dest: Vector3 = _mirror_dest
+	if not dest.is_finite():
+		dest = trail_point(_trail, _clock, _mvf("mirror", "step_delay_s", 1.0))
+	if not dest.is_finite() and target != null:
+		dest = target.global_position + target.global_transform.basis.z * 2.5
+	if target != null and dest.is_finite():
+		var away: Vector3 = dest - target.global_position
+		away.y = 0.0
+		if away.length() < 1.5:   # never on top of them: a step back along their own path
+			dest = target.global_position + (away.normalized() if away.length() > 0.05 else target.global_transform.basis.z) * 1.5
+	if dest.is_finite():
+		global_position = _snap_nav(dest)
+		velocity = Vector3.ZERO
+	if target != null:
+		_face(target.global_position)
+	mirror_steps += 1
+	set_cd("mirror_step", _mvf("mirror", "step_cooldown", 14.0))
+	sfx("keys_jingle" if AudioDirector.has_sound("keys_jingle") else "shell_ping", -8.0, 0.75)
+	if fx != null:
+		fx.extra_dread = maxf(fx.extra_dread, 0.6)
+	if not _step_said:
+		_step_said = true
+		say("SLN_MIRROR_STEP_01")
+	sstate = S.MIRROR_HOLD
+	_st = 0.0
+	_neutral()
+	_pose.set_bone("Head", Vector3(0, 0, 0.3))
+	print("[slender] the Mirroring step: he stands where you were (%s)" % str(global_position.snapped(Vector3.ONE * 0.1)))
 
 
 func _facing(p: Node3D, half_deg: float) -> bool:
@@ -568,7 +846,7 @@ func senses(p: Player) -> Dictionary:
 			mate = true
 			break
 	return {"pool": pool, "sweep": sweep, "seen": los, "looking": looking, "moving": p.velocity.length() > 0.3,
-		"dark": not lit_p, "lit": lit_p, "teammate": mate}
+		"dark": not lit_p, "lit": lit_p, "teammate": mate, "alone": not mate}
 
 
 ## The tier words and the creeping effects (all scale with "reduce screen effects" through the status FX).
@@ -578,12 +856,78 @@ func _tier_fx(p: Player, m: WatchMeter) -> void:
 		_tier_said[p.player_id] = m.tier
 		if p.is_local and not p.is_bot:
 			say(WatchMeter.TIER_LINES[m.tier])
+			if m.tier >= WatchMeter.Tier.HIGH:
+				var dfx: DreadFx = DreadFx.of(p)
+				if dfx != null:
+					dfx.punch(0.45 if m.tier == WatchMeter.Tier.HIGH else 0.8)
 		if m.tier == WatchMeter.Tier.HIGH and p.character_id == &"dutch" and p.is_local:
 			say("DUT_SLENDER_02")
 	elif m.tier < said:
 		_tier_said[p.player_id] = m.tier
 	if m.tier >= WatchMeter.Tier.MEDIUM and (p.is_local or p.is_bot):
 		p.apply_status(&"logged", 0.25)
+
+
+## T-233: the Watch tiers are felt on the screen: the local human's tier pushes the dread layer (the vignette, the
+## violet edge while he looks at you), near full at CRITICAL; every silence adds a little more.
+func _tick_dread() -> void:
+	if fx == null:
+		return
+	var p: Player = BossFx.local_human(get_tree())
+	if p == null:
+		return
+	var m: WatchMeter = meters.get(p.player_id, null)
+	var extra: float = TIER_DREAD[clampi(m.tier, 0, TIER_DREAD.size() - 1)] if m != null else 0.0
+	if sstate in [S.LASH_SILENCE, S.MIRROR_SILENCE]:
+		extra += 0.25
+	fx.extra_dread = maxf(fx.extra_dread, extra)
+
+
+## T-233: slender_whisper close to a player by Watch tier (every tier_s[tier] seconds), and from LOW when they are
+## hurt (under hurt_fraction of their HP); boss_breath when he stands over somebody.
+func _tick_whisper(delta: float) -> void:
+	var wc: Dictionary = bcfg.get("whisper", {})
+	var tier_s: Array = wc.get("tier_s", [0.0, 0.0, 9.0, 5.5, 3.0])
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		var p: Player = n as Player
+		if p == null or not p.is_alive() or p.is_bot or not p.is_local:
+			continue
+		var m: WatchMeter = meters.get(p.player_id, null)
+		var tier: int = m.tier if m != null else 0
+		var every: float = float(tier_s[clampi(tier, 0, tier_s.size() - 1)]) if not tier_s.is_empty() else 0.0
+		var hurt: bool = p.max_hp > 0.0 and p.hp / p.max_hp < float(wc.get("hurt_fraction", 0.5))
+		if every <= 0.0 and hurt and tier >= WatchMeter.Tier.LOW:
+			every = float(wc.get("hurt_tier_s", 8.0))
+		if every <= 0.0:
+			_whisper_t.erase(p.player_id)
+			continue
+		var t: float = float(_whisper_t.get(p.player_id, every * 0.5)) - delta
+		if t <= 0.0:
+			t = every * randf_range(0.8, 1.25)
+			var behind: Vector3 = p.global_transform.basis.z
+			behind.y = 0.0
+			var at: Vector3 = p.global_position + Vector3.UP * 1.6 + behind.normalized() * 0.7
+			AudioDirector.play_3d("slender_whisper", at, -16.0 + 3.0 * float(tier) + (3.0 if hurt else 0.0), 0.04)
+			whispers += 1
+		_whisper_t[p.player_id] = t
+	# the breath: he stands over you (still, within breath_m)
+	_breath_t -= delta
+	if _breath_t <= 0.0 and target != null and velocity.length() < 0.25 and dist_to(target) <= float(wc.get("breath_m", 2.6)):
+		_breath_t = float(wc.get("breath_s", 3.2)) * randf_range(0.85, 1.2)
+		sfx("boss_breath", -7.0, 0.85)
+		breaths += 1
+
+
+## T-233: the eyes never blink while he watches his target; a slow blink otherwise.
+func _tick_eyes() -> void:
+	if _eyes == null:
+		return
+	var watching: bool = target != null and _facing(target, 45.0) and has_los(target, 2.4, 1.3)
+	if watching == _eyes_watching:
+		return
+	_eyes_watching = watching
+	_eyes.blink_s = 0.0 if watching else 6.0
+	_eyes.set_process(not watching)
 
 
 ## Shots in the echoing pen hall log the shooter (SlenderEncounter forwards GLBus.weapon_fired).
@@ -712,13 +1056,20 @@ func _attacker_pos(pid: int) -> Vector3:
 	return Vector3.INF
 
 
+## A bullet through smoke: a violet puff where it passed and the soft sound (T-233: the kit's motes).
 func _smoke_puff() -> void:
 	sfx("impact_soft" if AudioDirector.has_sound("impact_soft") else "shell_ping", -8.0, 0.6)
+	BossFx.burst("motes", global_position + Vector3.UP * randf_range(0.8, 2.2), get_tree(), 0.4, 0.9)
 
 
 ## No flinch: he is patient (the small stagger is in the anim list as a reaction only to the lantern break).
 func _play_flinch(_limb: StringName, _side: String) -> void:
 	pass
+
+
+## T-233: the kit's telegraph light keeps its own shape while a tell runs (the base's move_toward stays out).
+func _tele_glow() -> float:
+	return _tele_light.light_energy if _tele_t > 0.0 else 0.0
 
 
 func _break_lantern() -> void:
@@ -728,10 +1079,14 @@ func _break_lantern() -> void:
 	sstate = S.STUN
 	_silent = false
 	if _lamp != null:
+		BossFx.burst("motes", _lamp.global_position, get_tree(), 1.4, 1.2)
+		BossFx.burst("chips", _lamp.global_position, get_tree(), 0.6, 0.7)
 		_lamp.light_energy = 0.0
-	var g: Node = _lantern.get_node_or_null("Glass") if _lantern != null else null
+	var g: Node3D = _glass_node()
 	if g != null:
-		(g as Node3D).hide()
+		g.hide()
+	if _hum != null:
+		_hum.stop()
 	sfx("glass_shatter" if AudioDirector.has_sound("glass_shatter") else "impact_flesh", 2.0, 1.2)
 	say("SLN_LANTERN_01")
 	print("[slender] the lantern breaks: stunned %.0f s" % stun_t)
@@ -741,9 +1096,12 @@ func _relight_lantern() -> void:
 	lantern_hp = max_hp * float((bcfg.get("weak_points", {}) as Dictionary).get("lantern_fraction", 0.03))
 	if _lamp != null:
 		_lamp.light_energy = 1.6
-	var g: Node = _lantern.get_node_or_null("Glass") if _lantern != null else null
+		BossFx.burst("motes", _lamp.global_position, get_tree(), 0.5, 0.8)
+	var g: Node3D = _glass_node()
 	if g != null:
-		(g as Node3D).show()
+		g.show()
+	if _hum != null:
+		_hum.play()
 	_neutral()
 	sstate = S.WALK
 
@@ -754,6 +1112,7 @@ func _drop_book() -> void:
 	book_drops += 1
 	book_hp = max_hp * float(wp.get("book_fraction", 0.02))
 	if _book != null:
+		BossFx.burst("ash", _book.global_position, get_tree(), 0.8, 0.6)   # the pages scatter
 		_book.hide()
 	say("SLN_BOOK_01")
 	print("[slender] the book is shot out of his hands: x1.5 for %.0f s" % book_t)
@@ -843,6 +1202,7 @@ func shift_change() -> void:
 		var side: Vector3 = Vector3(cos(TAU * float(i) / 2.0), 0, sin(TAU * float(i) / 2.0)) * 5.0
 		dcy.global_position = _snap_nav(global_position + side)
 		decoys.append(dcy)
+		BossFx.burst("motes", dcy.global_position + Vector3.UP * 1.4, get_tree(), 1.2, 1.3)
 	say("SLN_DECOY_01")
 	if event != null and event.has_method("on_shift_change"):
 		event.call("on_shift_change")
@@ -878,39 +1238,43 @@ func on_decoy_shot(pid: int) -> void:
 	say("SLN_DECOY_SHOT_01")
 
 
-## Lights out: every light on the map dims for 30 s and the pools stay off until a fuse box is held.
+## Lights out: every light on the map dies for 30 s (T-233: through the kit, guttering as they go; his lantern is
+## the only light left) and the pools stay off until a fuse box is held.
 func end_of_shift() -> void:
 	end_of_shift_done = true
 	var eos: Dictionary = _mv("end_of_shift")
 	dark_t = float(eos.get("dark_seconds", 30.0))
 	for i: int in pools_on.size():
 		pools_on[i] = false
-	_dark_lights.clear()
-	var m: Node = _map_root()
-	if m != null:
-		for l: Node in m.find_children("*", "Light3D", true, false):
-			var light: Light3D = l as Light3D
-			if light == null or light == _lamp or light is DirectionalLight3D or is_ancestor_of(light):
-				continue
-			if light.light_energy > 0.0:
-				_dark_lights.append([light, light.light_energy])
-				light.light_energy = 0.0
+	var fade: float = float(eos.get("dim_fade", 1.4))
+	if fx != null:
+		fx.lights_dim(global_position, 220.0, 0.0, fade)
+		fx.lights_flicker(fade * 0.9, 0.9)
+	_spark_t = 0.6
 	say("SLN_DARK_01")
 	if event != null and event.has_method("on_end_of_shift"):
 		event.call("on_end_of_shift")
-	print("[slender] End of Shift: %d lights out, the pools off" % _dark_lights.size())
+	print("[slender] End of Shift: %d lights out, the pools off" % (fx.dimmed_count() if fx != null else 0))
 
 
 func _tick_dark(delta: float) -> void:
 	if dark_t <= 0.0:
 		return
 	dark_t -= delta
+	# the fuse boxes spark in the dark (the way to the light)
+	_spark_t -= delta
+	if _spark_t <= 0.0:
+		_spark_t = float(_mv("end_of_shift").get("fuse_spark_s", 3.0)) * randf_range(0.7, 1.3)
+		if event != null and event.get("fuse_boxes") is Array:
+			for f: Variant in event.get("fuse_boxes"):
+				var fb: Node3D = f as Node3D
+				if fb != null and is_instance_valid(fb) and not bool(fb.get("done")):
+					BossFx.burst("sparks", fb.global_position + Vector3(0, 1.55, -0.15), get_tree(), 0.7, 0.8)
+					fuse_sparks += 1
 	if dark_t <= 0.0:
 		# the 30 s are over: the other lights come back; the pools stay off until their fuse box is held
-		for e: Array in _dark_lights:
-			if is_instance_valid(e[0]):
-				(e[0] as Light3D).light_energy = float(e[1])
-		_dark_lights.clear()
+		if fx != null:
+			fx.lights_restore(2.5)
 
 
 ## A fuse box was held 5 s: its pools light again (and he can be hurt in them).
@@ -929,6 +1293,8 @@ func _tick_keys(delta: float) -> void:
 		sfx("keys_jingle" if AudioDirector.has_sound("keys_jingle") else "shell_ping", -10.0, randf_range(1.4, 1.7))
 
 
+# ================================================================== dev / smoke / capture helpers
+
 ## Dev / smoke: walk him to a point now (bypassing the brain for `seconds`).
 func debug_walk_to(p: Vector3) -> void:
 	global_position = _snap_nav(p)
@@ -945,6 +1311,34 @@ func debug_sweep() -> void:
 		_face(target.global_position)
 
 
+## Dev / smoke: the Mirroring step now (the trail must hold where the target stood step_delay_s ago).
+func debug_mirror_step() -> void:
+	target = _nearest_player()
+	_cds.erase("mirror_step")
+	_start_mirror_step()
+
+
+## The capture cameras (CaptureDo callv): stand him at a point, facing `yaw` degrees, and hold still.
+func capture_pose(x: float, y: float, z: float, yaw: float = 0.0) -> void:
+	global_position = Vector3(x, y, z)
+	velocity = Vector3.ZERO
+	rotation.y = deg_to_rad(yaw)
+	set_physics_process(false)
+
+
+## The capture cameras: End of Shift while he holds still (no brain runs): the lights die through the kit and the
+## fuse boxes spark once now.
+func capture_dark() -> void:
+	if not end_of_shift_done:
+		end_of_shift()
+	if event != null and event.get("fuse_boxes") is Array:
+		for f: Variant in event.get("fuse_boxes"):
+			var fb: Node3D = f as Node3D
+			if fb != null and is_instance_valid(fb):
+				BossFx.burst("sparks", fb.global_position + Vector3(0, 1.55, -0.15), get_tree(), 0.9, 0.9)
+				fuse_sparks += 1
+
+
 # ================================================================== the fail-safe and the death
 
 func _on_retreat() -> void:
@@ -953,6 +1347,9 @@ func _on_retreat() -> void:
 	unlock_all()
 	_exit_i = 0
 	collision_mask = 0
+	if dark_t > 0.0 and fx != null:
+		dark_t = 0.0
+		fx.lights_restore(3.0)
 
 
 ## He walks to the quay's surf steps and off the edge into the storm.
@@ -972,6 +1369,21 @@ func _tick_retreat(delta: float) -> void:
 	velocity = Vector3.ZERO
 	if _bt > 40.0:
 		_vanish()
+
+
+func _vanish() -> void:
+	if _hum != null:
+		_hum.stop()
+	if _pool != null:
+		_pool.visible = false
+	super._vanish()
+
+
+func _boss_die(limb: StringName, weapon_id: StringName, by_player: int, kind: StringName) -> void:
+	super._boss_die(limb, weapon_id, by_player, kind)
+	if dark_t > 0.0 and fx != null:
+		dark_t = 0.0
+		fx.lights_restore(4.0)   # the lights come back as he sits down
 
 
 func _start_authored_death() -> void:
@@ -998,11 +1410,18 @@ func _death_tick(_delta: float) -> void:
 		_death_phase = 4
 		if _lamp != null:
 			_lamp.light_energy = 0.0   # blown out
+			BossFx.burst("smoke", _lamp.global_position, get_tree(), 0.4, 0.5)
+		if _hum != null:
+			_hum.stop()
+		if _pool != null:
+			_pool.visible = false
 		sfx("lantern_out" if AudioDirector.has_sound("lantern_out") else "door_creak", -4.0, 1.6)
 		say("SLN_DEATH_01")
 	if t >= 7.5 and _death_phase == 4:
 		_death_phase = 5
 		sat = true
+		if _eyes != null:
+			_eyes.lit = false   # eyes closed
 		_pose.set_bone("Spine", Vector3(-0.2, 0, 0))
 		_pose.set_bone("Head", Vector3(0.35, 0, 0.15))   # eyes closed, head down a little
 		_pose.set_bone("LeftUpperLeg", Vector3(1.5, 0, 0.1))
@@ -1029,9 +1448,12 @@ func _set_down_props() -> void:
 		keep.reparent(get_parent(), true)
 		keep.global_position = global_position + (-_pivot.global_transform.basis.z) * 0.7 + Vector3.UP * 0.75
 		keep.rotation = Vector3.ZERO
-		for c2: Node in keep.get_children():
-			if c2 is Hitbox:
-				(c2 as Hitbox).collision_layer = 0
+		if _lantern_swing != null:
+			_lantern_swing.rotation = Vector3.ZERO
+			_lant_ang = Vector2.ZERO
+			_lant_vel = Vector2.ZERO
+		for c2: Node in keep.find_children("*", "Hitbox", true, false):
+			(c2 as Hitbox).collision_layer = 0
 
 
 func _hold_after() -> float:

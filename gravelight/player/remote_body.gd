@@ -280,6 +280,7 @@ func _build_body(headgear: String) -> void:
 	_flash_light.omni_range = 6.0
 	_flash_light.light_energy = 0.0
 	_flash_light.shadow_enabled = false
+	_flash_light.visible = false   # T-237: a dark light is still a light to the renderer: shown only while it flashes
 	add_child(_flash_light)
 	_tag = Label3D.new()
 	_tag.text = Net.display_name(pid)
@@ -549,10 +550,30 @@ func set_weapon(weapon_id: StringName) -> void:
 	if _gun != null and is_instance_valid(_gun):
 		if _flash.get_parent() != null:
 			_flash.get_parent().remove_child(_flash)
-		_gun.queue_free()
+		if BotProf.opt:
+			_gun.visible = false   # T-237: kept (hidden) in _gun_cache for the next time it is drawn
+		else:
+			_gun.queue_free()
 	_gun = null
 	_muzzle = null
 	if weapon_id == &"":
+		return
+	# T-237: a gun this body held a moment ago comes back as it was. A bot changes guns every few seconds in a
+	# fight (the pistol for a reload, back to the long gun), and building the model anew each time cost 1 to 7 ms
+	# on the frame of the swap (60 ms the first time a model is loaded).
+	var ckey: String = "%s|%s" % [weapon_id, _look_sig]
+	var hit: Variant = _gun_cache.get(ckey) if BotProf.opt else null
+	if hit != null and is_instance_valid((hit as Array)[0]):
+		_gun = (hit as Array)[0]
+		_gun_hold = (hit as Array)[1]
+		_gun.visible = true
+		_gun_cache.erase(ckey)
+		_gun_cache[ckey] = hit   # the newest last
+		_muzzle = _gun.get_node_or_null("Muzzle") as Node3D
+		if weapon_id == &"coal_shovel":
+			_gun.add_child(_flash)
+		elif _muzzle != null:
+			_muzzle.add_child(_flash)
 		return
 	if weapon_id == &"coal_shovel":
 		_gun = build_shovel(_mats)
@@ -562,9 +583,12 @@ func set_weapon(weapon_id: StringName) -> void:
 		for n0: Node in _gun.find_children("*", "MeshInstance3D", true, false):
 			(n0 as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		_gun_hold = hold_of(_gun, &"coal_shovel")
+		_keep_gun(ckey)
 		return
 	var base: StringName = StringName(String(weapon_id).trim_suffix("_up"))
+	var pt: int = BotProf.t()
 	_gun = WeaponModels.build(base, String(weapon_id).ends_with("_up"), &"", look)
+	BotProf.add(&"body.gun_build", pt)
 	_gun_pivot.add_child(_gun)
 	_gun.position = Vector3(0.12, -0.02, -0.28)
 	for n: Node in _gun.find_children("*", "MeshInstance3D", true, false):
@@ -575,9 +599,26 @@ func set_weapon(weapon_id: StringName) -> void:
 	if _muzzle != null:
 		_muzzle.add_child(_flash)
 	_gun_hold = hold_of(_gun, base)
+	_keep_gun(ckey)
 
 
 var _look_sig: String = ""
+## T-237: the gun models this body built lately ("weapon id|attachment signature" -> [model, its hold]), the one in
+## hand included; the others stay under the gun pivot, hidden. At most GUN_CACHE_MAX (the oldest is freed).
+var _gun_cache: Dictionary = {}
+const GUN_CACHE_MAX: int = 4
+
+
+func _keep_gun(ckey: String) -> void:
+	if not BotProf.opt:
+		return
+	_gun_cache[ckey] = [_gun, _gun_hold]
+	while _gun_cache.size() > GUN_CACHE_MAX:
+		var oldest: String = _gun_cache.keys()[0]
+		var g: Variant = (_gun_cache[oldest] as Array)[0]
+		_gun_cache.erase(oldest)
+		if is_instance_valid(g) and g != _gun:
+			(g as Node).queue_free()
 
 
 ## The attachments on the gun in the owner's hands (their WeaponHolder, a mirror for bots and remote players),
@@ -594,6 +635,15 @@ func _owner_look(weapon_id: StringName) -> Dictionary:
 func refresh_weapon() -> void:
 	var id: StringName = _weapon_id
 	_weapon_id = &""
+	for k: Variant in _gun_cache.keys():   # T-237: the kept models are stale too
+		var g: Variant = (_gun_cache[k] as Array)[0]
+		if is_instance_valid(g):
+			if g == _gun and _flash.get_parent() != null:
+				_flash.get_parent().remove_child(_flash)
+			(g as Node).queue_free()
+	_gun_cache.clear()
+	_gun = null
+	_muzzle = null
 	set_weapon(id)
 
 
@@ -620,6 +670,7 @@ func fire(kind: int, weapon_id: StringName, origin: Vector3, end: Vector3) -> vo
 	_flash.rotation.z = randf() * TAU
 	_flash_light.global_position = mz
 	_flash_light.light_energy = 2.4
+	_flash_light.visible = true
 	var p: Player = get_parent() as Player
 	var cw: WeaponInstance = p.weapons.current() if p != null and p.weapons != null else null
 	var key: String = fire_key(weapon_id, kind)
@@ -680,6 +731,57 @@ func _active_pose(downed: bool, moving: bool) -> StringName:
 	return &""
 
 
+## T-237: update_pose for the bodies an AI drives (the bots, Jakub, the map's companion, the relief soldiers), at a
+## rate that follows what the local camera sees of them (pose_div): every tick in view and near, every 2nd tick
+## further off, every 4th out of view or far away. A skipped tick's time is handed to the next pose, so blends,
+## the walk cycle and the timers keep their pace; the muzzle flash still ends on time. The body itself (the
+## Player) moves every tick: only the limbs' pose is stepped. Posing a body nobody sees was the largest single
+## per-tick cost of a bot (0.13 ms each tick, a quarter of its brain's whole tick).
+func update_pose_lod(delta: float, speed: float, pitch: float, flags: int) -> void:
+	_lod_dt += delta
+	var div: int = pose_div()
+	if div > 1 and (Engine.get_physics_frames() + _lod_phase) % div != 0 and _lod_dt < 0.12:
+		if _flash_t > 0.0:
+			_flash_t -= delta
+			if _flash_t <= 0.0:
+				_flash.hide()
+				_flash_light.light_energy = 0.0
+				_flash_light.visible = false
+		return
+	var dt: float = _lod_dt
+	_lod_dt = 0.0
+	update_pose(dt, speed, pitch, flags)
+
+
+## T-237: every how many ticks this body is posed (1, 2 or 4), from the current camera: 1 within POSE_NEAR_M (it
+## may fill the screen's edge, or throw its shadow into view) and whenever there is no camera; 4 out of view
+## (more than ~75 degrees off the view axis) or beyond POSE_FAR_M; 2 between POSE_FULL_M and POSE_FAR_M.
+func pose_div() -> int:
+	if not pose_lod or not BotProf.opt or not is_inside_tree():
+		return 1
+	var cam: Camera3D = get_viewport().get_camera_3d()
+	if cam == null:
+		return 1
+	var to: Vector3 = global_position + Vector3.UP - cam.global_position
+	var d2: float = to.length_squared()
+	if d2 < POSE_NEAR_M * POSE_NEAR_M:
+		return 1
+	if to.dot(-cam.global_basis.z) < 0.25 * sqrt(d2):
+		return 4
+	if d2 < POSE_FULL_M * POSE_FULL_M:
+		return 1
+	return 2 if d2 < POSE_FAR_M * POSE_FAR_M else 4
+
+
+## T-237: off for tools that photograph the bodies (every pose then runs every tick).
+static var pose_lod: bool = true
+const POSE_NEAR_M: float = 3.0
+const POSE_FULL_M: float = 15.0   # (the zombies' full-rate animation distance, anim.json lod)
+const POSE_FAR_M: float = 40.0
+var _lod_dt: float = 0.0
+var _lod_phase: int = randi() % 4
+
+
 ## Called every physics frame by the puppet with its replicated state.
 func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 	var spectate: bool = (flags & NetMatch.PF_SPECTATE) != 0
@@ -729,6 +831,7 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 		if _flash_t <= 0.0:
 			_flash.hide()
 			_flash_light.light_energy = 0.0
+			_flash_light.visible = false
 	var stride: float = 0.75 if not sprint else 1.05
 	if moving:
 		_phase += delta * PI * speed / stride
@@ -922,9 +1025,11 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 		(_joints["hand_" + s2] as MeshInstance3D).position = hand
 	_update_props(b_drink, b_write, b_rep, b_tap)
 	if person != null:
+		var pt: int = BotProf.t()
 		person.drive({"hips": _hips.position, "chest": _chest.basis, "head": _head.basis, "legs": _legs_d,
 			"hands": _hand_t, "poles": _poles, "plant": _down_b < 0.05, "hand_basis": _hand_b, "hand_w": _hand_w})
 		person.face.set_expression(_face_state(downed, pose))
+		BotProf.add(&"pose.rig", pt)
 	# footsteps for nearby teammates
 	if moving and _down_b < 0.5:
 		_step_t -= delta * speed / stride

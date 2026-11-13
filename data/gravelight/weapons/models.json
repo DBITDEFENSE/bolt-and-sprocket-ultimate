@@ -1518,11 +1518,11 @@
     ]
    },
    "part_tris": {
-    "Body": 1100,
-    "Hammer": 72,
-    "Mag": 374,
-    "Slide": 819,
-    "Trigger": 68
+    "Body": 3078,
+    "Hammer": 176,
+    "Mag": 1146,
+    "Slide": 2233,
+    "Trigger": 164
    },
    "native": {
     "forward": "+X",
@@ -1546,7 +1546,7 @@
      0.0723,
      0.0138
     ],
-    "tris": 2433,
+    "tris": 6797,
     "materials": [
      "UltimateLowPolyGuns"
     ],
@@ -1642,11 +1642,11 @@
     ]
    },
    "part_tris": {
-    "Body": 922,
-    "Hammer": 68,
-    "Mag": 462,
-    "Slide": 770,
-    "Trigger": 52
+    "Body": 2370,
+    "Hammer": 176,
+    "Mag": 1346,
+    "Slide": 2341,
+    "Trigger": 128
    },
    "native": {
     "forward": "+X",
@@ -1670,7 +1670,7 @@
      0.0664,
      0.015
     ],
-    "tris": 2274,
+    "tris": 6361,
     "materials": [
      "UltimateLowPolyGuns"
     ],
@@ -1766,11 +1766,11 @@
     ]
    },
    "part_tris": {
-    "Barrels": 401,
-    "Body": 808,
-    "Cylinder": 1340,
-    "Hammer": 116,
-    "Trigger": 76
+    "Barrels": 1083,
+    "Body": 2017,
+    "Cylinder": 3788,
+    "Hammer": 288,
+    "Trigger": 196
    },
    "native": {
     "forward": "+X",
@@ -1794,7 +1794,7 @@
      0.0742,
      0.0209
     ],
-    "tris": 2741,
+    "tris": 7372,
     "materials": [
      "UltimateLowPolyGuns"
     ],
@@ -2059,10 +2059,10 @@
     ]
    },
    "part_tris": {
-    "Body": 1603,
-    "Bolt": 246,
-    "Mag": 322,
-    "Trigger": 36
+    "Body": 4707,
+    "Bolt": 744,
+    "Mag": 948,
+    "Trigger": 92
    },
    "native": {
     "forward": "+X",
@@ -2086,7 +2086,7 @@
      0.0858,
      0.0226
     ],
-    "tris": 2207,
+    "tris": 6491,
     "materials": [
      "UltimateLowPolyGuns"
     ],
@@ -2154,9 +2154,9 @@
     ]
    },
    "part_tris": {
-    "Body": 1767,
-    "Bolt": 143,
-    "Mag": 722
+    "Body": 4802,
+    "Bolt": 387,
+    "Mag": 2164
    },
    "native": {
     "forward": "+X",
@@ -2180,7 +2180,7 @@
      0.0765,
      0.0312
     ],
-    "tris": 2632,
+    "tris": 7353,
     "materials": [
      "UltimateLowPolyGuns"
     ],
@@ -2257,10 +2257,10 @@
     ]
    },
    "part_tris": {
-    "Body": 3123,
-    "Bolt": 316,
-    "Mag": 1132,
-    "Stock": 488
+    "Body": 8268,
+    "Bolt": 920,
+    "Mag": 2884,
+    "Stock": 1240
    },
    "native": {
     "forward": "+X",
@@ -2284,7 +2284,7 @@
      0.1169,
      0.0238
     ],
-    "tris": 5059,
+    "tris": 13312,
     "materials": [
      "UltimateLowPolyGuns"
     ],
@@ -2450,10 +2450,10 @@
     ]
    },
    "part_tris": {
-    "Body": 4393,
-    "Bolt": 422,
-    "Cover": 132,
-    "Mag": 1288
+    "Body": 12698,
+    "Bolt": 1225,
+    "Cover": 392,
+    "Mag": 3316
    },
    "native": {
     "forward": "+X",
@@ -2477,7 +2477,7 @@
      0.1663,
      0.0226
     ],
-    "tris": 6235,
+    "tris": 17631,
     "materials": [
      "UltimateLowPolyGuns"
     ],
@@ -2540,9 +2540,9 @@
     ]
    },
    "part_tris": {
-    "Body": 3696,
-    "Hammer": 64,
-    "Pump": 1255
+    "Body": 10927,
+    "Hammer": 168,
+    "Pump": 4143
    },
    "native": {
     "forward": "+X",
@@ -2566,7 +2566,7 @@
      0.0915,
      0.0173
     ],
-    "tris": 5015,
+    "tris": 15238,
     "materials": [
      "UltimateLowPolyGuns"
     ],
@@ -2629,9 +2629,9 @@
     ]
    },
    "part_tris": {
-    "Body": 2713,
-    "Bolt": 422,
-    "Mag": 730
+    "Body": 7677,
+    "Bolt": 1248,
+    "Mag": 1982
    },
    "native": {
     "forward": "+X",
@@ -2655,7 +2655,7 @@
      0.0957,
      0.09
     ],
-    "tris": 3865,
+    "tris": 10907,
     "materials": [
      "UltimateLowPolyGuns"
     ],
@@ -2732,10 +2732,10 @@
     ]
    },
    "part_tris": {
-    "Body": 3330,
-    "Bolt": 342,
-    "Mag": 1175,
-    "Trigger": 44
+    "Body": 8173,
+    "Bolt": 808,
+    "Mag": 2887,
+    "Trigger": 112
    },
    "native": {
     "forward": "+X",
@@ -2759,7 +2759,7 @@
      0.1084,
      0.0756
     ],
-    "tris": 4891,
+    "tris": 11980,
     "materials": [
      "UltimateLowPolyGuns"
     ],
@@ -2841,10 +2841,10 @@
     ]
    },
    "part_tris": {
-    "Body": 5693,
-    "Bolt": 294,
-    "Cover": 1416,
-    "Mag": 2435
+    "Body": 16681,
+    "Bolt": 900,
+    "Cover": 4195,
+    "Mag": 6589
    },
    "native": {
     "forward": "+X",
@@ -2868,7 +2868,7 @@
      0.1192,
      0.0751
     ],
-    "tris": 9838,
+    "tris": 28365,
     "materials": [
      "UltimateLowPolyGuns"
     ],
@@ -2931,9 +2931,9 @@
     ]
    },
    "part_tris": {
-    "Body": 1275,
-    "Bolt": 354,
-    "Trigger": 44
+    "Body": 3597,
+    "Bolt": 898,
+    "Trigger": 116
    },
    "native": {
     "forward": "+X",
@@ -2957,7 +2957,7 @@
      0.0664,
      0.0384
     ],
-    "tris": 1673,
+    "tris": 4611,
     "materials": [
      "UltimateLowPolyGuns"
     ],
@@ -3039,10 +3039,10 @@
     ]
    },
    "part_tris": {
-    "Barrels": 554,
-    "Body": 1352,
-    "Shells": 344,
-    "Trigger": 104
+    "Barrels": 1320,
+    "Body": 3138,
+    "Shells": 1016,
+    "Trigger": 264
    },
    "native": {
     "forward": "+X",
@@ -3066,7 +3066,7 @@
      0.0548,
      0.027
     ],
-    "tris": 2354,
+    "tris": 5738,
     "materials": [
      "UltimateLowPolyGuns"
     ],

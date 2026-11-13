@@ -11,7 +11,11 @@
   "exfil": {
     "round": 10,
     "target": "map01_kaltenbrunn",
-    "position": [18.0, 0.0, 32.0],
+    "position": [
+      18.0,
+      0.0,
+      32.0
+    ],
     "yaw": 0.0,
     "zone": "STABLE",
     "opens_zone": true,
@@ -22,5 +26,217 @@
     "vo_open": "OPR_EXFIL_OPEN_M0_01",
     "vo_wait": "OPR_EXFIL_WAIT_01",
     "vo_missed": "OPR_EXFIL_MISSED_M0_01"
+  },
+  "ladders": [
+    {
+      "name": "TowerLadder_Foot",
+      "pos": [
+        5.4,
+        0.0,
+        42.6
+      ],
+      "yaw": 0.0,
+      "to": [
+        5.4,
+        6.2,
+        44.0
+      ],
+      "target": "the tower",
+      "_doc": "T-229 the Hochsitz; T-230: the body climbs the ladder line 0.4 m off the rungs (line), facing the tower (face, default yaw + 180)",
+      "line": [
+        5.4,
+        42.55
+      ],
+      "surface": "wood"
+    },
+    {
+      "name": "TowerLadder_Top",
+      "pos": [
+        5.4,
+        6.2,
+        43.7
+      ],
+      "yaw": 180.0,
+      "down": true,
+      "to": [
+        5.4,
+        0.0,
+        42.4
+      ],
+      "target": "the tower",
+      "line": [
+        5.4,
+        42.55
+      ],
+      "surface": "wood",
+      "face": 180.0
+    },
+    {
+      "name": "CellarHatch_Up",
+      "pos": [
+        6.6,
+        -3.2,
+        5.95
+      ],
+      "yaw": 180.0,
+      "to": [
+        5.45,
+        0.0,
+        5.6
+      ],
+      "zone": "OLD_CELLAR",
+      "target": "to the bar",
+      "locked_text": "The hatch is bolted from above",
+      "_doc": "T-229: the aunt's ladder under the cellar hatch behind the bar",
+      "line": [
+        6.6,
+        5.68
+      ],
+      "surface": "wood"
+    },
+    {
+      "name": "CellarHatch_Down",
+      "pos": [
+        5.45,
+        0.0,
+        5.6
+      ],
+      "yaw": 180.0,
+      "down": true,
+      "to": [
+        6.6,
+        -3.2,
+        6.1
+      ],
+      "zone": "OLD_CELLAR",
+      "target": "into the Old Cellar",
+      "locked_text": "A bolted trapdoor",
+      "line": [
+        6.6,
+        5.68
+      ],
+      "surface": "wood"
+    }
+  ],
+  "ziplines": [
+    {
+      "name": "YardZip",
+      "pos": [
+        7.35,
+        8.2,
+        43.1
+      ],
+      "end": [
+        18.6,
+        2.75,
+        36.2
+      ],
+      "to": [
+        17.9,
+        0.0,
+        36.7
+      ],
+      "yaw": 135.0,
+      "speed": 7.5,
+      "hang": 2.7,
+      "sag": 0.3,
+      "target": "down to the stable wall",
+      "_doc": "T-229 the yard's zip line; T-230: hang 2.7 = the rider's feet under the cable with the arms up (the bar is 0.56 under it): standing on the deck the bar is at shoulder height, stepping off they drop 0.7 m into the hang"
+    }
+  ],
+  "climb_links": [
+    {
+      "name": "Climb_Tower",
+      "zone": "YARD",
+      "from": [
+        5.4,
+        0.0,
+        42.6
+      ],
+      "to": [
+        5.4,
+        6.2,
+        44.0
+      ],
+      "bidirectional": false,
+      "_doc": "T-229: the zombies climb the sniper tower's ladder to the deck"
+    },
+    {
+      "name": "Climb_CellarHatch",
+      "zone": "OLD_CELLAR",
+      "from": [
+        6.6,
+        -3.2,
+        5.95
+      ],
+      "to": [
+        5.45,
+        0.0,
+        5.6
+      ],
+      "bidirectional": true,
+      "_doc": "T-229: the cellar hatch behind the bar, both ways (down it is a drop)"
+    }
+  ],
+  "horses": [
+    {
+      "name": "YardHorse",
+      "pos": [
+        24.15,
+        0.0,
+        37.2
+      ],
+      "yaw": 0.0,
+      "rail": [
+        24.15,
+        0.0,
+        35.95
+      ],
+      "rail_yaw": 0.0,
+      "zones": [
+        "YARD",
+        "GROUNDS"
+      ],
+      "look": "noriker",
+      "_doc": "T-240 the carters' Noriker, tied at a hitching rail under the hoist ledge by the stable's south wall (east of the Thompson chalk at x 22, 6 m from the zip line's landing post, across the yard from the tower's ladder). yaw 0 = it faces north, toward the rail and the wall. zones: where it may stand (the yard; the grounds once the gate is open): it refuses the stable's door, the inn and the tower. The rail's collider is on the map-edge layer (players are stopped, zombies and shots pass), so the baked navmesh is untouched. Tuning: data/gravelight/horse.json"
+    }
+  ],
+  "round_bosses": [
+    {
+      "round": 20,
+      "boss": "totenross",
+      "count": 1,
+      "_doc": "T-240 the undead horses (data/gravelight/bosses/horse.json; HorseRound). One line per boss round; a map without this block has none"
+    },
+    {
+      "round": 30,
+      "boss": "totenross_fuhrmann",
+      "count": 1
+    }
+  ],
+  "round_boss_arena": {
+    "zones": [
+      "YARD",
+      "GROUNDS",
+      "STABLE"
+    ],
+    "arrive": [
+      [
+        18.0,
+        0.0,
+        57.0
+      ]
+    ],
+    "exit": [
+      18.0,
+      0.0,
+      60.0
+    ],
+    "centre": [
+      18.0,
+      0.0,
+      42.0
+    ],
+    "_doc": "T-240 where a horse goes on the Inn: the yard, the grounds and the stable (a 2.0 m door and an open floor); never the taproom, the stairs or the cellar (furniture, a staircase, a hatch). It comes up the carters' road (arrive) and breaks the yard's gate open if it is still chained; a player elsewhere is not chased (the siege rule)."
   }
 }

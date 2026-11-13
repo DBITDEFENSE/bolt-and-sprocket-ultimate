@@ -22,6 +22,10 @@ var _rest: Dictionary = {}          # bone -> rest offset (Vector3)
 var _attach: Dictionary = {}        # bone -> BoneAttachment3D
 ## T-099: the most a hand may bend at the wrist to meet a grip (radians).
 const WRIST_MAX: float = 1.25
+## The render layer the people's bodies draw on (render layer 18; 19 is Kranich's fill, 20 the viewmodel): every
+## camera sees it, and the floor decals (the in-world map marks, blood, the maps' grime) leave it out, so a chalk X
+## or a stain under a person's feet is not painted down their clothes (2026-11-12, the owner's screenshots).
+const CHAR_LAYER: int = 1 << 17
 
 
 ## Builds the body for person `id`; false when the person has no built GLB (the owner keeps its old body).
@@ -48,6 +52,7 @@ func setup_mesh(m: ArrayMesh, height: float, tag: String) -> bool:
 	body = MeshInstance3D.new()
 	body.name = "Body"
 	body.mesh = m
+	body.layers = CHAR_LAYER
 	skeleton.add_child(body)
 	body.skeleton = NodePath("..")
 	body.skin = skeleton.create_skin_from_rest_transforms()

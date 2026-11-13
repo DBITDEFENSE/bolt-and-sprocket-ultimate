@@ -67,6 +67,8 @@ func drop() -> void:
 		tw.tween_property(_casing, "position:y", -40.0, 2.2).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 		tw.tween_callback(func() -> void: _casing.visible = false)
 	_tag.modulate = Color(0.6, 0.2, 0.2) if state == R.DROPPED else Color(0.6, 0.6, 0.5)
+	# T-221: the trailer moment (KranichSunset: the hatch's light, the casing falling away under the hull); visual only
+	get_tree().call_group(&"bomb_drop_fx", "on_rack_dropped", self)
 
 
 func jam(by_player: int) -> void:

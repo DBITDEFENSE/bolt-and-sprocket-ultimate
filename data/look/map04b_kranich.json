@@ -1,8 +1,8 @@
 {
- "_doc": "Fernflug II, der Kranich: dawn blue over the cloud deck, cold aluminium inside; the red bay lamps keep their red. The unpowered bay is black in any grade, so the ambient is left alone. T-207.",
+ "_doc": "Fernflug II, der Kranich: dawn blue over the cloud deck, cold aluminium inside; the red bay lamps keep their red. The unpowered bay is black in any grade, so the ambient is left alone. T-207. T-221 (the owner: 'too many dark areas'; the golden hour of the bomb run): a cold ambient fill (the unpowered cabin is dark, not black), exposure 1.7 -> 1.8, and a third keep band for the low sun's saturated gold (hue 28 at saturation 0.55+ only: the sky, the sunlit cloud and the shafts keep their colour; the warm lamps, under that saturation, stay inside the bible's 0.65). T-221 b (the owner's trailer: 'a flat pink-grey milk'): the gold keep widened (hue 24 +- 26 from saturation 0.5) and two more keeps for the sunset sky only at high saturation: magenta 322 and the deep blue 228 overhead (from 0.55; the cabin's cold light and the lamps sit far under it).",
  "map": "map04b_kranich",
  "tonemap": "filmic",
- "exposure": 1.7,
+ "exposure": 1.8,
  "white": 6.0,
  "adjust": {
   "brightness": 1.0,
@@ -23,6 +23,33 @@
    "sat": [
     0.6,
     0.85
+   ]
+  },
+  {
+   "hue": 24,
+   "width": 26,
+   "amount": 0.85,
+   "sat": [
+    0.5,
+    0.95
+   ]
+  },
+  {
+   "hue": 322,
+   "width": 22,
+   "amount": 0.7,
+   "sat": [
+    0.55,
+    0.95
+   ]
+  },
+  {
+   "hue": 228,
+   "width": 18,
+   "amount": 0.6,
+   "sat": [
+    0.6,
+    0.95
    ]
   }
  ],
@@ -60,5 +87,9 @@
     "fog_scale": 0.5
    }
   ]
+ },
+ "ambient": {
+  "color": "#46526a",
+  "energy": 1.8
  }
 }

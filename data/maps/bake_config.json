@@ -96,9 +96,20 @@
           "id": "upstairs",
           "name": "Upstairs",
           "y_min": 2.0,
-          "y_max": 40.0,
+          "y_max": 6.9,
           "base_y": 3.8,
           "cut": 5.4,
+          "zones": [
+            "UPSTAIRS"
+          ]
+        },
+        {
+          "id": "attic",
+          "name": "Attic",
+          "y_min": 6.9,
+          "y_max": 40.0,
+          "base_y": 7.1,
+          "cut": 8.7,
           "zones": [
             "UPSTAIRS"
           ]

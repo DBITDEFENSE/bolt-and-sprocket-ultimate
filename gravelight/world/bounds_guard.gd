@@ -248,6 +248,8 @@ func _physics_process(delta: float) -> void:
 ## One check of one body (host / solo). Returns the reason it was brought back, or &"".
 func check(p: Player, dt: float, has_zones: bool = true) -> StringName:
 	var pid: int = p.player_id
+	if has_nav and NavigationServer3D.map_get_iteration_id(p.get_world_3d().navigation_map) == 0:
+		return &""   # the navigation map has not synchronised yet (the first physics frames after a load): nothing to judge against (T-224)
 	var st: Dictionary = _st.get(pid, {})
 	if _exempt(p):
 		st["fall"] = 0.0

@@ -344,13 +344,17 @@ func tick(delta: float) -> void:
 		return
 	var me: Vector3 = player.global_position
 	# 1. where to: the mode's goal (follow / train recompute theirs)
+	var pt: int = BotProf.t()
 	match mode:
 		Mode.FOLLOW:
 			_tick_follow_goal(delta)
 		Mode.TRAIN:
 			_tick_train(delta)
+	BotProf.add(&"loco.goal", pt)
 	# 2. yield to humans: a step aside overrides the goal for a moment
+	pt = BotProf.t()
 	_tick_yield(delta)
+	BotProf.add(&"loco.yield", pt)
 	var goal: Vector3 = _aside_to if _aside_t > 0.0 and _aside_to != Vector3.INF else _goal
 	var detour: int = 1 if goal != _goal else 0   # 1: stepping aside for a human (not stuck), 2: a stuck nudge
 	if _nudge_t > 0.0 and _nudge_to != Vector3.INF:
@@ -362,7 +366,9 @@ func tick(delta: float) -> void:
 		if _path_goal == Vector3.INF or _path_goal.distance_to(goal) > float(_g("path", "goal_moved_m", 0.75)) or _need_plan \
 				or (_repath_t <= 0.0 and (_path.is_empty() or (mode != Mode.MOVE and mode != Mode.HOLD))):
 			if _take_plan_budget():
+				pt = BotProf.t()
 				_plan(goal)
+				BotProf.add(&"loco.plan", pt)
 	# 4. steering
 	var wish: Vector3 = Vector3.ZERO
 	var remaining: float = 0.0
@@ -391,6 +397,7 @@ func tick(delta: float) -> void:
 		wish = to2.normalized() * 0.6   # the last steps with no path (a point just off the mesh)
 	var goal_move: bool = wish.length_squared() > 0.0004
 	# personal space / bot spacing (always on, even when standing)
+	pt = BotProf.t()
 	var push: Vector3 = _space_push(me)
 	wish = _no_closer(me, wish)
 	# T-143: a bot standing still (no goal to walk to) that a neighbour's personal-space push shoves into a wall just
@@ -405,15 +412,19 @@ func tick(delta: float) -> void:
 	var sprint: bool = _want_sprint(wish, remaining)
 	_face(delta, wish if wants_move else Vector3.ZERO, sprint)
 	_fill_intent(wish, sprint, remaining, delta)
+	BotProf.add(&"loco.steer", pt)
 	var tb: int = Time.get_ticks_usec()
 	player.drive_bot(delta, _mi)
 	_us_body += Time.get_ticks_usec() - tb
+	BotProf.add(&"loco.body", tb)
+	pt = BotProf.t()
 	# sprint-out bookkeeping (fire_ready)
 	if _was_sprinting and not player.sprinting:
 		_sprint_out = WeaponHolder.sprint_out_time(player.weapons.current() if player.weapons != null else null)
 	_was_sprinting = player.sprinting
 	# 6. stuck ladder + metrics
 	_tick_stuck(delta, me, goal, goal_move, remaining, detour)
+	BotProf.add(&"loco.stuck", pt)
 	_last_pos = player.global_position
 	_us_total += Time.get_ticks_usec() - t0
 	_ticks += 1
@@ -472,7 +483,7 @@ static func walled(who: Node3D, a: Vector3, b: Vector3) -> bool:
 
 ## A navmesh path that never crosses a closed BuyDoor (doors are baked open on some maps); empty if it would.
 func _raw_path(from: Vector3, to: Vector3) -> PackedVector3Array:
-	var path: PackedVector3Array = NavigationServer3D.map_get_path(_nav(), from, to, true, squad.nav_mask() if squad != null else 0x7FFFFFFF)
+	var path: PackedVector3Array = BotProf.nav_path(_nav(), from, to, true, squad.nav_mask() if squad != null else 0x7FFFFFFF)
 	for n: Node in player.get_tree().get_nodes_in_group(&"doors"):
 		var d: BuyDoor = n as BuyDoor
 		if d != null and not d.is_open and path_crosses_door(path, d.global_position, d.global_basis.z, d.global_basis.x, d.size.x * 0.5 + 0.3):

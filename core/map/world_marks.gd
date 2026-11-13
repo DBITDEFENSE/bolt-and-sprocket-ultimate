@@ -12,6 +12,8 @@ var _items: Dictionary = {}       # mark id -> {root: Node3D, label: Label3D, ma
 var _wc: Dictionary = {}
 var _gl: bool = true
 static var _x_tex: Texture2D = null
+## PersonRig.CHAR_LAYER (render layer 18, the people's bodies): the chalk X leaves it out.
+const CHAR_LAYER: int = 1 << 17
 
 
 func setup(m: MapMarks) -> void:
@@ -58,8 +60,14 @@ func _make(m: Dictionary) -> Dictionary:
 	if _gl:
 		var d: Decal = Decal.new()
 		var s: float = float(_wc.get("x_size_m", 1.15))
-		d.size = Vector3(s, 2.4, s)
-		d.position = Vector3(0, 0.6, 0)
+		# 2026-11-12 (the owner's screenshots: white smears down the extra people, who stand on their own note marks): the
+		# projector was 2.4 m tall, so it painted the chalk down everyone standing on the mark, stretched on their sides.
+		# It reaches 0.8 m above and below the mark now (a stair's few treads), skips faces that are not floor-like
+		# (normal_fade), and skips the people's bodies (PersonRig.CHAR_LAYER).
+		d.size = Vector3(s, 1.6, s)
+		d.position = Vector3(0, 0.0, 0)
+		d.normal_fade = 0.6
+		d.cull_mask = 0xFFFFF & ~CHAR_LAYER
 		d.texture_albedo = chalk_x_texture()
 		d.texture_emission = chalk_x_texture()   # chalk catches what little light there is: it reads in a dark cellar
 		d.emission_energy = float(_wc.get("chalk_glow", 0.35))

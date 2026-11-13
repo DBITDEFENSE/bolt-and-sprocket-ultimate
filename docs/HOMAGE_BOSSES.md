@@ -251,6 +251,8 @@ The ids are `ARC_HB_COUSINS`, `ARC_HB_PAUL`, `ARC_HB_SLENDER`, and the cards are
   - the humming turns to **whispering** after the first death.
 - **The last one standing sings alone, and it is awful.** Her line is sung full voice, too slow, a little sharp, and **she leaves a gap where each dead cousin's verse should be**. In the gap there is only her clapping, waiting for hands that don't come.
 - **Lamps:** one lamp group relights at each death (taproom first), and all of them relight when the round clears. The fight gets more readable as it goes.
+- **The dark hunt (T-232):** 3 s after the second death the **last cousin standing puts the lamps out again**: the lit lamps gutter for 1.6 s, every group goes out, and **only the hearth relights** (`cousins.json "dark_hunt"`). She hunts in the dark until the clear relights everything; each cousin carries her own moving light for readability (the maul head's violet glow, the Reach's wrist glow, Alix's drip), and the hum she hums alone is the flat one (`boss_hum_wrong`). The fail-safe and the clear relight as before.
+- **The doll register, pushed (T-232):** every cousin wears a porcelain glaze, glass eyes that catch the light (the Hammer blinks every 9 s, the Reach every 7 s, Alix never), and **hairline cracks that spread as she takes damage**: a tier opens under 75 / 50 / 25 % HP (`crack_tiers`), each with the porcelain-splitting sound and chips off the limb that was hit; her death opens every crack. Every hit on a cousin sounds like porcelain (`boss_hit_porcelain`, the kit); giggles stop too suddenly; once a cousin is enraged her hum goes flat.
 - **Horde:** normal Gängers keep spawning at **40% of round 10's count**, so the round stays chaotic but readable. The round ends when all three cousins are dead and the reduced horde is cleared.
 
 **Fail-safe: the Cousins get bored.** If the round runs past **6:00**, they retreat laughing (`CSN_BORED_01`):
@@ -292,6 +294,9 @@ The ids are `ARC_HB_COUSINS`, `ARC_HB_PAUL`, `ARC_HB_SLENDER`, and the cards are
 - **The locked head:** her head stays locked on the nearest player even while her body walks away. It is an additive head-look with a **180° limit**, and the neck and shoulder joints visibly over-rotate past what a neck should do.
 - **The catch:** when she catches the maul she **giggles and her whole body freezes for 0.3 s**, perfectly still, mid-pose, even the braid. Then she moves on as if nothing happened.
 - **The hitch step:** her skipping walk **hitches, every third step missing a frame** (AnimJitter, 12 fps for one step). She drags the maul one-handed and its head scrapes **sparks** off the floorboards (a positional scrape loop and a spark trail).
+- **The braid swings** (T-232): three blonde strips from the nape sway with her skip and whip round on the throw's spin.
+- **She picks the one who is bleeding** (T-232, the squad rule, `hurt.fraction` 0.5): the Mallet Throw aims at the **most hurt player in range** (under 50 % HP, with a clear line) instead of the nearest. The tell is fair: her locked head turns to them first and a short giggle comes with the wind-up. With nobody hurt enough it goes to the nearest as before.
+- **Enrage** (T-232): the lamps near her gutter for a breath and something in her splits (`boss_doll_crack`); from here her hum is the flat one. The Ricochet's banks ring iron off the walls with sparks.
 
 **Animation list:**
 - Locomotion: skip-walk (hitched), skip-walk enraged, idle (rocking heel-toe), turn-in-place ×2.
@@ -326,6 +331,7 @@ The ids are `ARC_HB_COUSINS`, `ARC_HB_PAUL`, `ARC_HB_SLENDER`, and the cards are
 | **Both Hands** (enraged, after the first death) | The same telegraph, both arms coil at once | Two grabs at two players (or one player, twice as fast) | as above | 10 s | Spread out |
 | **Through-the-Wall** | **0.6 s: dust falls and the boards creak** at the spot (ceiling dust from above, floorboards bowing from below, a window board bulging) | An arm punches through floorboards or window boards **from the next room or the floor below**: a 1.5 m column | 60 + slowed ×0.7 for 0.8 s | 7 s | Watch the dust and move off the spot |
 | **Window Spider** | **1.0 s: every barricade in the zone rattles at once** and every window's frost cracks | She hangs **outside** the building and **reaches through every window of the target's zone at once** for 6 s: a 2 m swipe area inside each window. Each barricade loses one board. | 40 per swipe | 25 s | Get away from the windows; while she hangs outside she is exposed through the glass (shoot her body) |
+| **Through-the-Window** (T-232, built) | **1.0 s: the boards of one window creak twice and rattle in their frame**, a violet glow grows outside the glass | When the target stands within 4.5 m of a **boarded** window of their zone and she has no line to them (or is 7 m+ off), her arm **punches through the boards from outside** (one board torn), takes the player and **drags them to the window** at 2.0 m/s for the Hug-Crush against the sill (120 over 1.5 s) | as the Long Reach | 14 s (10 s enraged) | The same breaks as the Long Reach: shoot the glowing wrist (x2, 8 % of her HP), melee-mash 6, teammates' 250 damage, or the time limit. Bots shoot the wrist. Step away from boarded windows when you hear the creak. |
 
 **Movement:**
 - She walks hunched, knuckles dragging, arms folded and coiled against her chest like a spring.
@@ -339,6 +345,8 @@ The ids are `ARC_HB_COUSINS`, `ARC_HB_PAUL`, `ARC_HB_SLENDER`, and the cards are
 **Creepy layers:**
 - **Her fingers are never still.** They keep counting, one-two-three, and clapping silently, even when the rest of her is frozen. This is an additive finger layer on every state.
 - **Her arms retract slowly and wrongly:** the joints fold backward, segment by segment (AnimJitter on the retract).
+- **The veins** (T-232): dark red veins run down the stretched arms below the torn elbows and **stand out wider when she enrages**; the flannel sleeve is torn at the elbow only (short strips hang from the tear; nothing else). Her **breath frosts** in the cold taproom every few seconds (`boss_breath`). Every stretch, shoot and retract cracks like bone (`boss_bone_crack`); a grab that lands gets the giggle, stopped short.
+- **A lone player** (T-232, the squad rule, `lone`): with one player on their feet (nobody to shoot the wrist for them) a grab **holds for 4.5 s instead of 6** and **drags at x0.8**, so the solo break stays fair; in return **her walls come alive sooner** (Through-the-Wall's cooldown x0.7).
 
 **Animation list:**
 - Locomotion: hunched walk with knuckle drag, ceiling crawl (arms only, body hanging), ceiling-to-floor drop.
@@ -374,13 +382,16 @@ The ids are `ARC_HB_COUSINS`, `ARC_HB_PAUL`, `ARC_HB_SLENDER`, and the cards are
 
 **When a cousin dies:**
 - Alix walks to the body and **holds its hand for 3 s**, kneeling, the Third Hand folded over both. This is an **interruptible window in which she takes ×2 damage** (`ALX_COUSIN_01`). 20% of her max HP in the window ends it early.
-- Then she **rises enraged**. **Her third arm now drips Nachtglas light**: an emissive drip trail that lights the floor, a readability gift in the dark inn. **Lash becomes Double Lash.**
+- **The window lengthens with each dead cousin** (T-232, `grieve.seconds_step` 1.5): 3.0 s for the first, **4.5 s for the second**. She hesitates longer, and **then hits harder**: every rise adds +15 % to all her hits (`grieve.damage_step`, on top of her double damage: a swipe 100 → 115 → 130).
+- Then she **rises enraged**. **Her third arm now drips Nachtglas light**: an emissive drip trail that lights the floor, a readability gift in the dark inn. **Lash becomes Double Lash.** Something in her splits as she rises (`boss_doll_crack`), the lamps near her gutter, and her hum goes flat.
 - If Alix arrives after a cousin is already dead, she goes to that body first.
+
+**The look-away step** (T-232, the squad rule, `step`): inside her 8 m walking band, a player who **turns their back on her** (more than 100° off) for 0.6 s hears the dress rustle behind them and she **takes a step**: a 0.45 s glide at her unseen speed that **stops 2.6 m short** (outside her 2 m grab range, so it never chains into Holding Hand). No damage: the consequence of looking away is that she is closer. 5 s cooldown.
 
 **Weak point:** the **palm of the Third Hand while it is extended: ×2**. It is extended almost always; it folds away only during Lash's wind-up.
 
 **Creepy layers:**
-- **She never blinks.**
+- **She never blinks** (the glass eyes catch the light and stay open; T-232). The red ribbon's two tails swing from the bow; **Nachtglas motes rise off the Third Hand** whenever it opens for someone (the hold's telegraph and the hold, and always once she drips). She rises out of the hatch in dust and old ice with the lamps guttering.
 - **Her steps make no sound;** only the dress rustles.
 - **She moves only while no player is looking at her** (ObservedFreeze, the Grand Galleria mannequin rule as a nod):
   - beyond 8 m, her animation runs at full speed only while she is unseen, then **snaps to a frozen pose** the instant someone looks;
@@ -505,10 +516,16 @@ Not a homage boss (no likeness). He is a story boss on the HB1 framework. The Co
 - **What taking it does:** sets the flag `boat_key` (the quest's s6 `flag` step), emits `GLBus.item_picked_up(&"boat_key")` and gives `QuestManager.give_item`.
 - **Co-op:** the host decides and mirrors the pickup.
 
-**The look:**
-- The `drowned_diver` body (the sailor geometry in the drowned palette), ×1.12 tall.
-- Costume pieces: the brass helmet with a lit port and side ports, the corselet, rubber gloves, lead-soled boots, and an anchor chain from the left shoulder across the chest with a stock hanging behind.
-- A helmet SpotLight (the charge telegraph) and a glow at the port.
+**The look** (reworked in T-233, the boss rework, on the T-231 kit; `docs/boss_rework/w3_totenhafen.md`):
+- The `drowned_diver` body (the sailor geometry in the drowned palette), ×1.12 tall, with a wet sheen on the suit.
+- Costume pieces: the brass helmet, **wet metal with a verdigris bloom** round the rim and the ports (`mat_ex`, low roughness), its **glass port translucent with the violet Marke glow dim behind it** from the start and an **inner shell that fogs** as he takes damage toward the break (the glass and the fog go together, chips and motes, when it breaks and the glow comes up full); the corselet (brass), rubber gloves, lead-soled boots; the anchor chain as a **real link chain** (`chain`) from the left shoulder across the chest with the stock behind, and a **second chain dragging from the left hip** to the deck whose pivot trails his motion; **weed strips** off both shoulders and the helmet's back and **rope strips** at the belt (`strips`, they sway with him).
+- A helmet SpotLight (the charge telegraph) and the Marke's glow at the port.
+- **Water:** `drips` emitters on the head, chest and hips for `drip_seconds` (10) after every surfacing; a **wake ring** and spray where he comes up; `kielholer_water_rise` on surfacing (and low and slow as the ripple's own sound); `kielholer_chain_drag` as a 3D loop that rises with his walk; `kielholer_helmet_knock` on every glass hit before the break; the kit's dread block (iron: sparks on hits, `boss_stomp` footfalls with a 0.4 view shake within 14 m, felt from 20 m); `fx.tele` on the sweep, the charge and the swipe; the **dock lamps within 16 m dip** as he sinks and come back once he is under.
+
+**The fight, reworked (T-233):**
+- **Spring and high tide:** he was already ×1.3 faster and surfacing at the dock nearest his target; now he is also **under for 3.6–6 s instead of 6–10** (`tide_under_mult` 0.6) and the **ripple lasts 1.2 s instead of 1.6** (`tide_ripple_mult` 0.75, never under 1.0 s). The surfacing is faster, closer and quicker to read.
+- **The dunk (one new beat):** a player he holds **at the water's edge for 1.2 s** (`dunk_after`) is **pushed under for a breath-holding second** (`dunk_seconds` 1.0): 20 damage once (`dunk_damage`), the wading status for the second, the screen under water (the dread layer full, a punch), spray and a muffled splash; he leans over them. Every break-free keeps running through it (the mash, teammates' damage, the weak points) and `max_hold` is unchanged at 5 s, so **every grab still breaks in solo**. 1.2 + 1.0 < 5.
+- **The squad rule:** he **hunts the lone wader**: a player within 3 m of a water edge (`lone_edge_m`) with no teammate within 6 m (`lone_mate_m`), in sight and inside 18 m (`lone_range`), is his target over the nearest player. Stay off the edges, or stay together on them.
 
 **Title card and bar:** "DER KIELHOLER" over "Kapitänleutnant Arvid Lenz, U-1047", dated "JANUAR 1945 · TOTENHAFEN", through `BossHud`.
 
@@ -520,7 +537,7 @@ Not a homage boss (no likeness). He is a story boss on the HB1 framework. The Co
 - **The Operator:** `OPR_BOSS_KIELHOLER_SPAWN_01` and `_DEATH_01`.
 - **The squad:** `DUT/PEG/DEA/WRN_BOSS_KIELHOLER_01` (spawn) and `_02` (death). The first member present speaks.
 
-**Sounds:** `kielholer_surface`, `kielholer_roar`, `chain_sweep`, `hull_groan`, `water_splash` and `glass_break`.
+**Sounds:** `kielholer_surface`, `kielholer_roar`, `chain_sweep`, `hull_groan`, `water_splash` and `glass_break`; T-233 adds the kit's `kielholer_water_rise`, `kielholer_chain_drag` (loop), `kielholer_helmet_knock`, `boss_stomp`, `boss_hit_iron`, `boss_breath` (through the valve, under the groan), `boss_telegraph_rise`, `boss_death_toll`.
 
 **Tests:**
 - `gravelight/tests/unit/test_kielholer.gd`: 12 tests.
@@ -581,6 +598,7 @@ The **rage meter, 0–100**, shows on his boss bar as a **stout bottle filling**
 | Damage dealt to him | +1 per 1% of his max HP |
 | A player fleeing (sprinting away while within 20 m of him, after he has targeted them) | +4 per second per fleeing player |
 | He sees a player go down | +10 at once, then +1 per second per downed player in his sight |
+| **A player runs out of his sight** (he could see them a moment ago; they sprint round a corner or through a door within 20 m) | **+6 at once** (T-232), at most every 3 s per player; he shouts `PAU_FLEE_01` |
 | Natural cooling (no damage taken for 8 s) | −0.5 per second (proposed) |
 | **Shooting an IV bottle on his back rack** until it breaks (400 HP solo each, scaled) | **−20**, with a stout splash; 6 bottles, regrown on his next return |
 
@@ -590,7 +608,9 @@ The **rage meter, 0–100**, shows on his boss bar as a **stout bottle filling**
 |---|---|---|---|---|
 | **Calm** | 0–33 | 2.5 m (×1.00) | 2.6 m/s heavy two-legged stomp | Haymaker, Zombie Throw, Grab & Squeeze |
 | **Angry** | 34–66 | ×1.15, animated (skin cracks, plates push out, 1.2 s, he roars through it) | 3.6 m/s | + Ground Pound Combo, Rip & Throw (ore carts, rail sections) |
-| **BERSERK** | 67–100 | ×1.30, steam pours off him, the iron-red **glows** | 6.2 m/s knuckle-assisted gorilla run (still under the 6.8 sprint) | + Leap Slam (across zones), Thunderclap, Charge, Headframe Climb & Dive |
+| **BERSERK** | 67–100 | ×1.30, steam pours off him, the iron-red **glows** | 6.2 m/s knuckle-assisted gorilla run (still under the 6.8 sprint) | + Leap Slam (across zones), Thunderclap, Charge, Headframe Climb & Dive, **the Guard** (§5.4) |
+
+**The stage on the ground and in the room (T-232):** his footfalls are the kit's (`boss_stomp`, dust, a view shake of 0.45 at Calm, 0.65 Angry, 0.85 BERSERK, out to 16 / 20 / 24 m); every stage up roars (`paul_roar`) and the plates grind (`paul_plate_grind`) as they push out; a breath (`boss_breath`) and a puff of steam off the plates every 2-3 s, faster as he rages, constant steam at BERSERK. **BERSERK is the arena beat:** the yard's lights die under his roar (every light within 32 m to 12 %, guttering, and again every 18 s while he stays BERSERK), the headframe shakes and its floodlights swing on their brackets for 7 s, and the ground cracks under each of his steps (a dark decal at the foot, fading over 25 s). The light comes back over 5 s when he shrinks out of BERSERK, leaves or goes to his knees.
 
 **Hitboxes:**
 - head ×1.25, body ×1.0, arms and legs ×0.8;
@@ -611,6 +631,13 @@ The **rage meter, 0–100**, shows on his boss bar as a **stout bottle filling**
 | **Thunderclap** | Berserk | 0.8 s: arms flung wide, a huge inhale, steam vents from the plates | A 60° **cone shockwave** 14 m long | 40 + knockback 6 m; **strips every board from the barricades in the cone** | 9 s | Get out of the cone, or behind cover |
 | **Charge** | Berserk | 1.0 s: head down, knuckles paw the ground twice | 11 m/s for up to 20 m. **Smashes through doors**: an unbought door he crashes through opens for free and stays open. | 90 + big knockback | 12 s | Side-step. If he hits a solid wall he is stunned for 2 s (×1.5 window). |
 | **Headframe Climb & Dive** | Berserk, Minehead Yard only | Climbs the steel headframe like a gorilla (3 s, visible from the whole yard), then **his shadow grows** under the target for 1.2 s | A dive onto that spot | 130 in 3 m (downs a non-Ironhide player), 60 at 3–7 m | 30 s | Keep moving; the shadow follows you for 0.6 s then locks |
+| **The Guard, "protect my guys"** (T-232) | Berserk; a downed player within 30 m in his sight | He walks to the body (`PAU_CALM_03`, a roar) and **stands over it, arms spread**, for up to 12 s. Anyone who comes within 4.5 m: 0.6 s, both fists up, a roar, the light | A slam in the **half-circle in front of him** (3.5 m): he faces the comer only when a slam starts | 60 + knockdown, every 2.5 s at most | After a guard he does not guard again for 8 s | **Revive from behind him**: the far side is safe between slams. Never a grab; nothing chains. A blast stagger breaks the guard. |
+
+**Every telegraph is the kit's one light shape** (T-232: `BossFx.tele`, a rise, a hold, a snap out, with `boss_telegraph_rise`) in the stout's amber-red, never the Nachtglas violet, except the violet flash when a bottle breaks.
+
+**The squad's state changes him (T-232):**
+- **A hurt player** (under 35 % health, within 25 m, in his sight) becomes his target while he is choosing a move: *"Nobody gets left. Nobody."* (`PAU_CALM_03`, at most every 20 s), and the dread layer reads him looking at them.
+- **A lone player** (one on their feet) feels the pressure: Haymaker and Zombie Throw come back at 0.8× their cooldowns; in return **Grab & Squeeze holds a lone player at most 3.5 s and breaks on 6 melee presses** (the solo break stays fair).
 
 **Idle / taunt** (Calm only, when nobody has hurt him for 4 s, at most every 20 s):
 - He **beats his chest**, and the **dog tags clink**.
@@ -626,8 +653,11 @@ The **rage meter, 0–100**, shows on his boss bar as a **stout bottle filling**
 - **Bottles:** a bottle-break flinch (no stagger, a gasp).
 - **Reactions:** knee-down stagger and get-up.
 - **Idle:** chest beat, the tin-cup look.
+- **Guard (T-232):** the walk to the body, the stand over it (arms spread), the two-fist wind-up and the slam.
 - **Retreat:** headframe leap away.
 - **Death sequence:** knees, the drain-and-shrink, the look, the cup hand-over, the slow fall forward.
+
+**The model as built (T-232, on the kit's helpers; `gravelight/enemies/homage/paul.gd`):** iron-red skin (the MZ heavy male, `inst_tint`) with a wet sheen on the chest and head; the riveted bone plates in rust-rough iron with a darker rim where they push out of the skin, rivets with their shadows and rust streaks running down from them, pushed out 12 % per stage; the six Helvetia bottles **lit from inside** (emissive amber glass with a tin cap and a paper label, an amber light on the rack) that **dim as each breaks**; the IV lines as tubes from each bottle's neck over the shoulder into the back of the neck with a faint violet running in them (the Nachtglas in the stout), stout dripping where they go in; steam off the plates on every exhale; eyes that read (warm amber beads with a slow 4.5 s blink, redder and brighter per stage, out when he falls); the tin cup and the dog tags in polished tin. Everything stays in the Likeness Sheet's silhouette; nothing is a joke.
 
 ### 5.6 Death and the twist
 1. At 0 HP he **drops to his knees**. The **rage drains out of him all at once**: steam, the glow fading, the bottle on his boss bar emptying. **His body shrinks a little** and the red fades toward a human colour.
@@ -702,6 +732,7 @@ When the facility fell, **he kept his post.**
   - a heavy **ring of keys** at his hip that **jingles when he moves and goes silent when he is about to attack**;
   - the **watch-book** under his arm, its pages fluttering.
 - **He never runs. He never needs to.**
+- **As built after T-233 (the boss rework, on the T-231 kit; `docs/boss_rework/w3_totenhafen.md`):** the greatcoat's **hem and the scarf's ends sway** (`strips`, front, back and both sides of the hem); the **lantern hangs off its pole and swings** (a spring pendulum driven by the hand's motion) and **its violet light pools on the grating** under it (a radial decal that follows the lantern, since the lamp casts no shadows); the brass (**buttons, the cage, the badge band, the keys**) is metal that catches the lantern (`mat_ex`); the **eyes are the kit's EyeGlow, violet: they never blink while he watches you and blink slowly otherwise**; the face is the MZ body's own, pale and tired, nothing over it but the cap. The **lantern hums** (`slender_lantern_hum`, a 3D loop on the lantern, off while it is broken and after he blows it out). The decoys' hems sway like his.
 
 **Originality checklist** (a review gate for the HB3 model, animations and VO):
 
@@ -745,6 +776,8 @@ Each player has a hidden **LOGGED meter (0–100)**. It exists only while he is 
 | Standing in Kessel floodlight or flare light (real light hides you from *his* light) | −15 per second |
 | Within 6 m of a teammate (stacks with the above) | −4 per second |
 
+**The squad's state (T-233):** a player who is **alone (nobody within 6 m) and in the dark** fills every source above **×1.5** (`alone_dark_mult`); the drains are untouched. **The tiers are felt:** the local player's tier pushes the kit's dread layer (the vignette, the desaturation, the pulse, the violet edge while he looks at you): LOW 0.15, MEDIUM 0.35, HIGH 0.6, CRITICAL 0.95 (the layer is near full), and every silence of his adds 0.25 more. A **whisper** (`slender_whisper`, wordless, close behind the player) comes every 9 s at MEDIUM, 5.5 s at HIGH, 3 s at CRITICAL; a **hurt player (under half HP) hears it from LOW** every 8 s. **`boss_breath`** when he stands still over you (within 2.6 m), and when he appears behind you at CRITICAL. HIGH and CRITICAL each punch the dread layer once as they are reached.
+
 **Quarantine:**
 - **At 100 he "QUARANTINES" you.** The screen cuts to black, there is a key-turn sound, and you're pulled into **"The Watch Room"**, a small dark pocket room shaped like his observatory guard booth. It is a Nachtglas echo of the real one, built off-map below the playable space.
   - Inside: shelves of watch-books, a desk with a green-shaded lamp, a **clock stuck at 3:00 AM** that never ticks, and a **window showing your teammates fighting below**, a live render of the map from the booth's real summit position.
@@ -767,10 +800,13 @@ Each player has a hidden **LOGGED meter (0–100)**. It exists only while he is 
 | **Walk** (locomotion) | all | — | 1.6 m/s, a long-legged walk with almost no bob, perfectly smooth, the coat trailing | — | — | — |
 | **Teleport** | all | **Only while unobserved** (ObservedFreeze): a flicker and a key-jingle | **15 m closer**, behind a tree or a pillar | — | 4 s | Keep eyes on him; teammates watch each other's backs |
 | **Mirroring** | all | — | Within 30 m and in sight, he **mirrors your movement**: you stop, he stops; you turn, he turns | — | — | Unnerving, not damaging. It also gives you a clean shot when he stops. |
+| **The Mirroring step** (T-233) | all | **The keys go still** (`slender_keys_still`) for **0.8 s**, the telegraph light rises, his head turns to where you were | In sight, 6–30 m, while you are moving: he **stands where you stood one second ago** (your own trail, never within 1.5 m of you), facing you, and **holds still 0.6 s** | — | 14 s (10 in phase 2, 7 in phase 3) | **Silence is the telegraph** again: when the jingle stops, look behind you; the hold is a clean shot. `SLN_MIRROR_STEP_01` once. |
 | **Lantern Sweep** | all | **The lantern rises and the light brightens slowly over 1.0 s** (a rising glass-harmonic tone) | A **70° violet cone, 20 m**, sweeping 90° over 2 s | LOGGED +35 per second in the cone | 12 s | Break line of sight; get behind trees or into floodlight |
 | **Key Ring Lash** | all | **The keys fall silent (0.6 s)**, then a 0.4 s backswing | At close range (2–4 m) a long-armed backhand with the heavy ring of keys | **85 + a 0.6 s stagger** | 4 s | **Silence is the telegraph:** when the jingle stops, move |
 | **Shift Change** | **phase 2, below 50%** | "Change of shift." (`SLN_DECOY_01`) | He splits into **3 Watchmen**, only one of them real. **The decoys' lanterns flicker; the real one's lantern is steady.** Decoys walk, sweep and lash with the same timing, for 0 damage. | Shooting a decoy: +15 LOGGED to the shooter per hit (`SLN_DECOY_SHOT_01`) | They dissolve after 25 s, or when the real one takes 5% of max HP in light; recast every 40 s while in phase 2 | **Read the light, don't spray** |
 | **End of Shift** | **phase 3, below 20%**, once | "Lights out. Last round of the night." | **The forest goes totally dark except his lantern** (every light, the moon and sky, the truck's headlights) **for 30 s**, and **the Kessel floodlights fail** and stay off | — | once | **Restore one floodlight generator**: one of the three ring-road masts' levers, a **5 s hold**. That mast relights, and he can be hurt in its light again. Flares and close muzzle flash still work in the dark. |
+
+**At Totenhafen after T-233:** End of Shift goes through the kit: every lamp within 220 m is captured (`fx.lights_dim`) and **dies over 1.4 s, guttering as it goes** (`lights_flicker`); his lantern is the only light left; the **three fuse boxes spark** every ~3 s while the dark lasts (the way to the light); when the 30 s are up the lamps **come back over 2.5 s** (the pools still wait for their fuses), and they come back at once if he dies or walks off in the dark. **The phases escalate** (`phases` in the data, read by `Slender._mvf`): the Lantern Sweep's cooldown **12 → 9 → 7 s**, the Mirroring step's **14 → 10 → 7 s**, the Key Ring Lash's reach **4 → 4 → 5 m** and his walk **1.6 → 1.6 → 1.9 m/s** at End of Shift (a walk still: he never runs). Every telegraph (the sweep's rise, the Lash's silence, the step's silence) drives the kit's telegraph light (`fx.tele`) and plays its rise.
 
 **Creepy layers:**
 - His **head tilts** at a slow, curious, observing angle, like he's taking notes.

@@ -73,7 +73,8 @@
         "teammate_m": 6.0,
         "noisy_zones": [
           "D_PENHALL"
-        ]
+        ],
+        "alone_dark_mult": 1.5
       },
       "quarantine": {
         "room_seconds": 25.0,
@@ -96,7 +97,12 @@
           "min_range": 12.0
         },
         "mirror": {
-          "range": 30.0
+          "range": 30.0,
+          "step_min_range": 6.0,
+          "step_silence": 0.8,
+          "step_delay_s": 1.0,
+          "step_hold": 0.6,
+          "step_cooldown": 14.0
         },
         "sweep": {
           "telegraph": 1.0,
@@ -127,7 +133,9 @@
         "end_of_shift": {
           "phase_at": 0.2,
           "dark_seconds": 30.0,
-          "lever_hold": 5.0
+          "lever_hold": 5.0,
+          "fuse_spark_s": 3.0,
+          "dim_fade": 1.4
         }
       },
       "weak_points": {
@@ -613,6 +621,10 @@
           "speaker": "SLN",
           "text": "You stop, I stop. That's only manners."
         },
+        "SLN_MIRROR_STEP_01": {
+          "speaker": "SLN",
+          "text": "You walked that way. I know. I was just behind you."
+        },
         "SLN_SWEEP_01": {
           "speaker": "SLN",
           "text": "Let's have a look at you."
@@ -753,6 +765,51 @@
           "speaker": "WRN",
           "text": "He wrote everything down. Every hour. ...I understand him."
         }
+      },
+      "_doc_rework": "T-233 (docs/BOSS_REWORK.md 4.1, docs/boss_rework/w3_totenhafen.md): the boss rework. dread: the kit's presence block (radius 24: he is felt from far; surface cloth; a quiet step: no stomp, no shake). moves.mirror: the Mirroring step (step_*): the keys go still for step_silence s, then he stands where the target stood step_delay_s ago (within step_min_range..range, in sight), and stands still step_hold s after it (a clean shot); step_cooldown by phase. phases: per-phase overrides of a move's numbers ('2' from Shift Change, '3' from End of Shift): the sweep's cooldown 12 -> 9 -> 7, the Mirroring step's cooldown 14 -> 10 -> 7, the Lash's range 4 -> 4 -> 5, his walk 1.6 -> 1.6 -> 1.9 (a walk still: he never runs). watch.alone_dark_mult: a lone player (no teammate within teammate_m) in the dark fills every positive source x1.5. whisper: slender_whisper close to a player by tier (seconds between whispers per tier NONE..CRITICAL; 0 = none); hurt_fraction: a player under that HP fraction hears it from LOW every hurt_tier_s; breath_m / breath_s: boss_breath when he stands over you. end_of_shift.fuse_spark_s: the fuse boxes spark every so often while the lights are out; dim_fade: how long the lamps take to die.",
+      "dread": {
+        "radius": 24.0,
+        "near": 6.0,
+        "surface": "cloth",
+        "step_sound": "",
+        "step_shake": 0.0,
+        "look_cone_deg": 25.0
+      },
+      "whisper": {
+        "tier_s": [
+          0.0,
+          0.0,
+          9.0,
+          5.5,
+          3.0
+        ],
+        "hurt_fraction": 0.5,
+        "hurt_tier_s": 8.0,
+        "breath_m": 2.6,
+        "breath_s": 3.2
+      },
+      "phases": {
+        "_doc": "Per-phase overrides (phase 2 from Shift Change, 3 from End of Shift) read by Slender._mvf: moves.<move>.<key> and 'speed'.",
+        "2": {
+          "sweep": {
+            "cooldown": 9.0
+          },
+          "mirror": {
+            "step_cooldown": 10.0
+          }
+        },
+        "3": {
+          "sweep": {
+            "cooldown": 7.0
+          },
+          "mirror": {
+            "step_cooldown": 7.0
+          },
+          "lash": {
+            "range": 5.0
+          },
+          "speed": 1.9
+        }
       }
     },
     "der_kielholer": {
@@ -827,7 +884,10 @@
         "break_team_damage": 300.0,
         "break_weak_damage": 400.0,
         "max_hold": 5.0,
-        "cooldown": 10.0
+        "cooldown": 10.0,
+        "dunk_after": 1.2,
+        "dunk_seconds": 1.0,
+        "dunk_damage": 20.0
       },
       "swipe": {
         "range": 2.4,
@@ -855,7 +915,25 @@
         "DEA_BOSS_KIELHOLER_02",
         "WRN_BOSS_KIELHOLER_02"
       ],
-      "intel": "INT_HB_KIELHOLER"
+      "intel": "INT_HB_KIELHOLER",
+      "_doc_rework": "T-233 (docs/BOSS_REWORK.md 4.1, docs/boss_rework/w3_totenhafen.md): the boss rework. dread: the kit's presence block (iron surface, a lead-soled stomp with a 0.4 view shake). tide_under_mult / tide_ripple_mult: at high and spring tide he is under for that share of submerge_seconds and the ripple lasts that share of ripple_seconds (never under 1.0 s): the surfacing is faster as well as closer and quicker. grab.dunk_*: once the held player has been at the water's edge for dunk_after s he pushes them under for dunk_seconds (dunk_damage once, the screen under water); the break-free rules run through it and max_hold is unchanged, so every grab still breaks in solo. squad: he hunts the lone wader: a player within lone_edge_m of a water edge with no teammate within lone_mate_m, inside lone_range and in sight, is his target over the nearest. drip_seconds: how long he drips after surfacing.",
+      "dread": {
+        "radius": 20.0,
+        "near": 5.0,
+        "surface": "iron",
+        "step_sound": "boss_stomp",
+        "step_shake": 0.4,
+        "step_radius": 14.0,
+        "look_cone_deg": 30.0
+      },
+      "tide_under_mult": 0.6,
+      "tide_ripple_mult": 0.75,
+      "drip_seconds": 10.0,
+      "squad": {
+        "lone_edge_m": 3.0,
+        "lone_mate_m": 6.0,
+        "lone_range": 18.0
+      }
     }
   },
   "hp_player_step": 0.75,

@@ -16,9 +16,34 @@ extends HomageBoss
 ## breaks with a roar and the violet glow behind it takes x2.0: the Marke he wears), the back of the suit where the
 ## chain rubs (x1.3). Fail-safe: failsafe_seconds after he first surfaces he dives for good and the ignition key floats
 ## up at the nearest dock edge (the egg can never softlock on him). His death drops the key at the body.
+## T-233 (the boss rework, docs/BOSS_REWORK.md 4.1; docs/boss_rework/w3_totenhafen.md), on the T-231 kit:
+##   - the model: the brass is wet metal with a verdigris bloom (mat_ex), the helmet glass is a translucent port with
+##     the violet Marke glow behind it from the start (full once the glass goes) and an inner shell that fogs as he
+##     takes damage toward the break, weed and rope strips hang off the shoulders and the belt (SwayStrips), the anchor
+##     chain is a real link chain across the chest and a second one drags behind him from the hip (it trails his
+##     motion), a wet sheen on the suit;
+##   - the effects: the "dread" block (iron, boss_stomp with a 0.4 view shake: lead soles), drips all over him for
+##     drip_seconds after he surfaces, kielholer_chain_drag as a 3D loop that rises with his walk, kielholer_water_rise
+##     on surfacing and (low) as the ripple's sound, a wake ring where he comes up, kielholer_helmet_knock on every glass
+##     hit before the break, fx.tele on the sweep, the charge and the swipe, the dock lamps dip as he sinks and come
+##     back once he is under;
+##   - the battle: at high and spring tide the surfacing is quicker as well as closer (submerge_seconds x
+##     tide_under_mult, ripple x tide_ripple_mult, never under 1.0 s); the grab's dunk: a player held at the water's
+##     edge for dunk_after s is pushed under for dunk_seconds (dunk_damage once, the screen under water) while every
+##     break-free keeps running and max_hold is unchanged, so every grab still breaks in solo; the squad rule: he hunts
+##     the lone wader (a player at a water edge with no teammate near, in sight) over the nearest player.
 ## Pure rules are static for the tests.
 
 enum K { RISE, WALK, SWIPE_TELE, SWEEP_TELE, SWEEP, CHARGE_TELE, CHARGE, GRAB, RECOVER, SINK, UNDER, RIPPLE }
+
+const BRASS_WET: Color = Color(0.5, 0.43, 0.22)
+const DARK_BRASS: Color = Color(0.3, 0.24, 0.12)
+const VERDIGRIS: Color = Color(0.3, 0.52, 0.42)
+const IRON: Color = Color(0.2, 0.2, 0.21)
+const RUBBER: Color = Color(0.16, 0.15, 0.13)
+const WEED: Color = Color(0.1, 0.19, 0.12)
+const ROPE: Color = Color(0.36, 0.3, 0.2)
+const TELE_COLOR: Color = Color(0.55, 0.9, 0.8)   # the cold green-white of his lamp through water
 
 var kcfg: Dictionary = {}
 var kstate: K = K.RISE
@@ -29,6 +54,9 @@ var sweeps_done: int = 0
 var charges_done: int = 0
 var grabs_done: int = 0
 var swipes_done: int = 0
+var dunks: int = 0                # T-233: players pushed under
+var helmet_knocks: int = 0        # T-233: kielholer_helmet_knock plays
+var lone_targets: int = 0         # T-233: the lone-wader rule picked somebody over the nearest
 var spawn_t: float = 0.0
 var failsafe_dived: bool = false
 var _kt: float = 0.0
@@ -39,11 +67,25 @@ var _charge_hit: bool = false
 var _grab: Dictionary = {}
 var _grab_dmg: float = 0.0
 var _grab_dmg_t: float = 0.0
+var _edge_t: float = 0.0
+var _dunk_t: float = 0.0
+var _dunk_done: bool = false
 var _lamp: SpotLight3D = null
 var _lamp_glow: OmniLight3D = null
 var _glass: MeshInstance3D = null
+var _fog: MeshInstance3D = null
+var _fog_mat: StandardMaterial3D = null
 var _glow: Node3D = null
+var _glow_light: OmniLight3D = null
 var _ripple: MeshInstance3D = null
+var _wake: MeshInstance3D = null
+var _wake_mat: StandardMaterial3D = null
+var _wake_t: float = 0.0
+var _drips: Array[GPUParticles3D] = []
+var _drip_t: float = 0.0
+var _drag: Node3D = null              # the dragging chain's pivot at the hip
+var _chain_loop: AudioStreamPlayer3D = null
+var _tele_t: float = 0.0
 var _title_done: bool = false
 var _hud: BossHud = null
 var _lines_said: Dictionary = {}
@@ -93,6 +135,36 @@ static func tide_mult(stage: StringName, c: Dictionary) -> float:
 	return float(c.get("tide_speed_mult", 1.3)) if (c.get("tide_fast_stages", ["high", "spring"]) as Array).has(String(stage)) else 1.0
 
 
+## T-233: how long he stays under at a tide ([lo, hi] seconds): submerge_seconds x tide_under_mult on a fast tide.
+static func under_range(c: Dictionary, fast: bool) -> Vector2:
+	var r: Array = c.get("submerge_seconds", [6.0, 10.0])
+	var m: float = float(c.get("tide_under_mult", 0.6)) if fast else 1.0
+	return Vector2(float(r[0]) * m, float(r[1]) * m)
+
+
+## T-233: the ripple's length at a tide: ripple_seconds x tide_ripple_mult on a fast tide, never under 1.0 s (the
+## telegraph rule).
+static func ripple_for(c: Dictionary, fast: bool) -> float:
+	var m: float = float(c.get("tide_ripple_mult", 0.75)) if fast else 1.0
+	return maxf(1.0, float(c.get("ripple_seconds", 1.6)) * m)
+
+
+## T-233: the lone wader among `cands` ([distance to him, distance to a water edge, has a teammate near, in sight]
+## each): the nearest one within lone_range, within lone_edge_m of an edge, with nobody near and in sight; -1 = none.
+static func lone_wader(cands: Array, sq: Dictionary) -> int:
+	var best: int = -1
+	var bd: float = INF
+	for i: int in cands.size():
+		var c: Array = cands[i]
+		var d: float = float(c[0])
+		if d > float(sq.get("lone_range", 18.0)) or float(c[1]) > float(sq.get("lone_edge_m", 3.0)) or bool(c[2]) or not bool(c[3]):
+			continue
+		if d < bd:
+			bd = d
+			best = i
+	return best
+
+
 ## Does the helmet glass break after `taken` damage of `max_hp`?
 static func helmet_breaks(taken: float, max_hp: float, c: Dictionary) -> bool:
 	return taken >= max_hp * float(c.get("helmet_break_fraction", 0.15))
@@ -123,6 +195,10 @@ static func boss_hp(players: int, bots_alone_on: bool, table_cfg: Dictionary) ->
 
 # ================================================================== setup
 
+func _init() -> void:
+	name = "DerKielholer"   # the capture cameras and the console find him by name (a second one is auto-numbered)
+
+
 func _ready() -> void:
 	super._ready()
 	boss_key = "der_kielholer"
@@ -130,6 +206,12 @@ func _ready() -> void:
 	kcfg = boss_cfg()
 	bcfg = kcfg
 	_rng.seed = hash("kielholer_boss_%d" % Time.get_ticks_usec())
+	# the kit was made in super._ready() from the base's cousins table: give it his own "dread" block (T-233)
+	if fx != null:
+		fx.cfg = BossFx.DEFAULTS.duplicate()
+		for k: Variant in (kcfg.get("dread", {}) as Dictionary).keys():
+			fx.cfg[k] = (kcfg["dread"] as Dictionary)[k]
+		fx.dread_id = &"der_kielholer"
 
 
 func modelled() -> bool:
@@ -182,9 +264,11 @@ func spawn_kielholer(at: Vector3, health: float) -> void:
 	submerges = 0
 	helmet_broken = false
 	failsafe_dived = false
+	_dunk_t = 0.0
+	_tele_t = 0.0
 	_pivot.position.y = -2.0
 	RoundManager.reserve_alive(1)
-	AudioDirector.play_3d("kielholer_surface", global_position, 4.0, 0.0)
+	_surface_fx(4.0)
 	if not _title_done:
 		_title_done = true
 		_hud = BossHud.new()
@@ -230,41 +314,77 @@ func _add_weak_hitboxes() -> void:
 	_hitboxes.append(bk)
 
 
-## The diving dress: the brass helmet with its lit port and lamp, the corselet, the anchor chain over the left
-## shoulder, lead-soled boots (primitives on bone attachments; HOMAGE_BOSSES 3.4 costume pieces).
+## A costume piece's one surface made metal (T-233: wet brass, iron).
+static func _metal(mi: MeshInstance3D, c: Color, rough: float = 0.28, metal: float = 0.9) -> void:
+	if mi != null and mi.mesh != null and mi.mesh.get_surface_count() > 0:
+		mi.mesh.surface_set_material(0, mat_ex(c, rough, metal))
+
+
+## The diving dress: the brass helmet with its glass port and lamp, the corselet, the anchor chain over the left
+## shoulder and the one that drags behind, lead-soled boots (primitives on bone attachments; HOMAGE_BOSSES 3.4).
 func _build_costume() -> void:
-	var brass: Color = Color(0.58, 0.46, 0.22)
-	var dark_brass: Color = Color(0.36, 0.28, 0.14)
-	var iron: Color = Color(0.22, 0.22, 0.23)
-	var rubber: Color = Color(0.16, 0.15, 0.13)
+	# the helmet: wet brass with a verdigris bloom round the rim and the ports
+	_metal(costume("Head", [
+		sph(0.235, Vector3(0, 0.12, 0.0), BRASS_WET, Vector3(1.0, 1.05, 1.0)),
+		cyl(0.1, 0.1, 0.05, Vector3(0, 0.12, -0.22), DARK_BRASS, Vector3(PI * 0.5, 0, 0)),
+		cyl(0.055, 0.055, 0.035, Vector3(-0.22, 0.14, -0.04), DARK_BRASS, Vector3(0, 0, PI * 0.5)),
+		cyl(0.055, 0.055, 0.035, Vector3(0.22, 0.14, -0.04), DARK_BRASS, Vector3(0, 0, PI * 0.5)),
+		cyl(0.035, 0.03, 0.12, Vector3(0.0, 0.2, 0.22), DARK_BRASS, Vector3(PI * 0.5, 0, 0)),   # the air hose's fitting
+	]), BRASS_WET)
 	costume("Head", [
-		sph(0.235, Vector3(0, 0.12, 0.0), brass, Vector3(1.0, 1.05, 1.0)),
-		cyl(0.1, 0.1, 0.05, Vector3(0, 0.12, -0.22), dark_brass, Vector3(PI * 0.5, 0, 0)),
-		cyl(0.055, 0.055, 0.035, Vector3(-0.22, 0.14, -0.04), dark_brass, Vector3(0, 0, PI * 0.5)),
-		cyl(0.055, 0.055, 0.035, Vector3(0.22, 0.14, -0.04), dark_brass, Vector3(0, 0, PI * 0.5)),
-		boxp(Vector3(0.06, 0.07, 0.08), Vector3(0, 0.33, 0.06), iron),
-		cyl(0.035, 0.03, 0.12, Vector3(0.0, 0.2, 0.22), iron, Vector3(PI * 0.5, 0, 0)),   # the air hose's fitting
+		boxp(Vector3(0.06, 0.07, 0.08), Vector3(0, 0.33, 0.06), IRON),
+		sph(0.07, Vector3(-0.12, -0.04, -0.14), VERDIGRIS, Vector3(1.0, 0.55, 0.5)),
+		sph(0.06, Vector3(0.16, 0.0, 0.1), VERDIGRIS, Vector3(0.6, 1.0, 0.6)),
+		sph(0.05, Vector3(0.08, 0.3, -0.1), VERDIGRIS, Vector3(1.0, 0.4, 0.8)),
+		sph(0.045, Vector3(-0.19, 0.2, 0.08), VERDIGRIS, Vector3(0.5, 0.9, 0.6)),
 	])
-	_glass = costume("Head", [cyl(0.085, 0.085, 0.012, Vector3(0, 0.12, -0.246), Color(0.9, 0.75, 0.45), Vector3(PI * 0.5, 0, 0))], 0.8)
+	# the glass port: translucent, with the Marke's glow behind it from the start; an inner shell fogs as he is hurt
+	_glass = costume("Head", [cyl(0.085, 0.085, 0.012, Vector3(0, 0.12, -0.246), Color(0.6, 0.75, 0.8), Vector3(PI * 0.5, 0, 0))])
+	if _glass != null and _glass.mesh != null:
+		var gmat: StandardMaterial3D = StandardMaterial3D.new()
+		gmat.albedo_color = Color(0.62, 0.78, 0.85, 0.42)
+		gmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		gmat.roughness = 0.05
+		gmat.metallic = 0.35
+		gmat.metallic_specular = 0.9
+		_glass.mesh.surface_set_material(0, gmat)
+	_fog = costume("Head", [cyl(0.08, 0.08, 0.01, Vector3(0, 0.12, -0.232), Color(0.85, 0.9, 0.92), Vector3(PI * 0.5, 0, 0))])
+	if _fog != null and _fog.mesh != null:
+		_fog_mat = StandardMaterial3D.new()
+		_fog_mat.albedo_color = Color(0.85, 0.9, 0.92, 0.0)
+		_fog_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		_fog_mat.roughness = 1.0
+		_fog.mesh.surface_set_material(0, _fog_mat)
+	# the corselet (brass) and the rubber dress, wet
+	_metal(costume("Chest", [cyl(0.29, 0.31, 0.09, Vector3(0, 0.3, 0.0), BRASS_WET, Vector3.ZERO, Vector3(1.0, 1.0, 0.85))]), BRASS_WET)
 	costume("Chest", [
-		cyl(0.29, 0.31, 0.09, Vector3(0, 0.3, 0.0), brass, Vector3.ZERO, Vector3(1.0, 1.0, 0.85)),
-		boxp(Vector3(0.44, 0.4, 0.3), Vector3(0, 0.12, 0.0), rubber),
+		boxp(Vector3(0.44, 0.4, 0.3), Vector3(0, 0.12, 0.0), RUBBER),
+		sph(0.05, Vector3(0.2, 0.33, -0.1), VERDIGRIS, Vector3(1.0, 0.5, 0.7)),
 	])
-	# the anchor chain: links from the left shoulder across the chest to the right hip, and a stock hanging behind
-	var links: Array = []
-	for i: int in 9:
-		var f: float = float(i) / 8.0
-		var p: Vector3 = Vector3(lerpf(-0.17, 0.16, f), lerpf(0.34, -0.2, f), -0.17 + sin(f * PI) * -0.03)
-		links.append(boxp(Vector3(0.05, 0.075, 0.025) if i % 2 == 0 else Vector3(0.025, 0.075, 0.05), p, iron, Vector3(0, 0, -0.75)))
-	for j: int in 7:
-		var g: float = float(j) / 6.0
-		links.append(boxp(Vector3(0.05, 0.075, 0.025) if j % 2 == 0 else Vector3(0.025, 0.075, 0.05), Vector3(-0.17 + g * 0.05, 0.34 - g * 0.5, 0.18), iron))
-	links.append(boxp(Vector3(0.36, 0.05, 0.05), Vector3(-0.12, -0.18, 0.2), iron, Vector3(0, 0, 0.3)))
-	costume("Chest", links)
+	wet(0.45)
+	# the anchor chain: real links from the left shoulder across the chest to the right hip, the stock behind, and the
+	# second chain that drags behind him from the left hip (its pivot trails his motion)
+	chain("Chest", Vector3(-0.19, 0.36, -0.16), Vector3(0.17, -0.2, -0.17), 10, 0.04, IRON, 0.7)
+	_metal(costume("Chest", [boxp(Vector3(0.36, 0.05, 0.05), Vector3(-0.12, -0.18, 0.2), IRON, Vector3(0, 0, 0.3))]), IRON, 0.5, 0.7)
+	var hip: Node3D = bone_attachment("Hips")
+	if hip != null:
+		_drag = Node3D.new()
+		_drag.name = "DragChain"
+		_drag.position = Vector3(-0.14, -0.12, 0.18)
+		hip.add_child(_drag)
+		var dc: MeshInstance3D = chain("Hips", Vector3.ZERO, Vector3(0.0, -1.05, 0.7), 14, 0.045, IRON, 0.7)
+		if dc != null:
+			dc.reparent(_drag, false)
+	# weed and rope: strips off the shoulders, the back of the helmet and the belt
+	strips("Chest", Vector3(-0.22, 0.36, 0.02), 4, 0.32, 0.05, WEED, 0.18, 31)
+	strips("Chest", Vector3(0.2, 0.36, 0.04), 3, 0.28, 0.05, WEED, 0.16, 32)
+	strips("Head", Vector3(0.0, 0.08, 0.2), 3, 0.22, 0.04, WEED, 0.2, 33)
+	strips("Hips", Vector3(0.16, 0.0, -0.17), 2, 0.42, 0.03, ROPE, 0.08, 34)
+	strips("Hips", Vector3(-0.2, 0.0, -0.1), 2, 0.3, 0.04, WEED, 0.1, 35)
 	for foot: String in ["LeftFoot", "RightFoot"]:
-		costume(foot, [boxp(Vector3(0.14, 0.07, 0.3), Vector3(0, -0.04, -0.04), dark_brass), boxp(Vector3(0.15, 0.04, 0.31), Vector3(0, -0.085, -0.04), iron)])
+		_metal(costume(foot, [boxp(Vector3(0.14, 0.07, 0.3), Vector3(0, -0.04, -0.04), DARK_BRASS), boxp(Vector3(0.15, 0.04, 0.31), Vector3(0, -0.085, -0.04), IRON)]), DARK_BRASS, 0.4, 0.8)
 	for hand: String in ["LeftHand", "RightHand"]:
-		costume(hand, [boxp(Vector3(0.11, 0.13, 0.07), Vector3(0, -0.05, 0), rubber)])
+		costume(hand, [boxp(Vector3(0.11, 0.13, 0.07), Vector3(0, -0.05, 0), RUBBER)])
 	# the helmet lamp (the charge's telegraph turns it to the target) and its glow
 	var head: Node3D = bone_attachment("Head")
 	_lamp = SpotLight3D.new()
@@ -285,10 +405,123 @@ func _build_costume() -> void:
 	_lamp_glow.position = Vector3(0, 0.12, -0.3)
 	(head if head != null else self).add_child(_lamp_glow)
 	_glow = KielholerController._glow_node()
-	_glow.position = Vector3(0, 0.12, -0.24)
-	_glow.scale = Vector3.ONE * 1.3
-	_glow.visible = false
+	_glow.position = Vector3(0, 0.12, -0.185)   # behind the fog shell until the glass goes
+	_glow.scale = Vector3.ONE * 0.8
+	_glow.visible = true   # the Marke behind the glass, dim until the glass goes
+	for c: Node in _glow.get_children():
+		if c is OmniLight3D:
+			_glow_light = c as OmniLight3D
+			_glow_light.light_energy = 0.35
 	(head if head != null else self).add_child(_glow)
+	# T-233: the drips (ten seconds after every surfacing), the chain-drag loop
+	for spec: Array in [["Head", Vector3(0, 0.0, 0), 1.0], ["Chest", Vector3(0, 0.25, 0), 1.6], ["Hips", Vector3(0, -0.1, 0), 1.3]]:
+		var at: Node3D = bone_attachment(str(spec[0]))
+		if at != null:
+			var e: GPUParticles3D = BossFx.emitter("drips", at, spec[1] as Vector3, float(spec[2]))
+			_drips.append(e)
+	_chain_loop = AudioDirector.make_loop_3d("kielholer_chain_drag", self, -40.0)
+
+
+# ================================================================== presentation (every frame)
+
+func _process(delta: float) -> void:
+	super._process(delta)
+	if state == State.INACTIVE:
+		return
+	_tick_drag_chain(delta)
+	_tick_wake(delta)
+	_tick_chain_loop()
+
+
+## The dragging chain trails his motion: its pivot yaws against his velocity and lifts a little with his speed.
+func _tick_drag_chain(delta: float) -> void:
+	if _drag == null:
+		return
+	var lv: Vector3 = global_basis.inverse() * velocity
+	lv.y = 0.0
+	var spd: float = lv.length()
+	var yaw: float = atan2(-lv.x, -lv.z) if spd > 0.3 else 0.0
+	var k: float = 1.0 - exp(-4.0 * delta)
+	_drag.rotation.y = lerp_angle(_drag.rotation.y, yaw, k)
+	_drag.rotation.x = lerpf(_drag.rotation.x, -clampf(spd * 0.09, 0.0, 0.4), k)
+
+
+func _tick_wake(delta: float) -> void:
+	if _wake == null or not _wake.visible:
+		return
+	_wake_t -= delta
+	var k: float = clampf(1.0 - _wake_t / 1.6, 0.0, 1.0)
+	_wake.scale = Vector3.ONE * (1.0 + k * 3.0)
+	if _wake_mat != null:
+		_wake_mat.albedo_color.a = 0.55 * (1.0 - k)
+	if _wake_t <= 0.0:
+		_wake.visible = false
+
+
+## kielholer_chain_drag rises with his walk; silent under water and when he stands.
+func _tick_chain_loop() -> void:
+	if _chain_loop == null:
+		return
+	var spd: float = Vector2(velocity.x, velocity.z).length()
+	var want: bool = is_active() and kstate in [K.WALK, K.CHARGE, K.GRAB] and spd > 0.3
+	if want:
+		_chain_loop.volume_db = lerpf(-30.0, -6.0, clampf(spd / 2.6, 0.0, 1.0))
+		if not _chain_loop.playing:
+			_chain_loop.play()
+	elif _chain_loop.playing:
+		_chain_loop.volume_db = move_toward(_chain_loop.volume_db, -40.0, 1.5)
+		if _chain_loop.volume_db <= -39.0:
+			_chain_loop.stop()
+
+
+func _set_drips(on: bool) -> void:
+	for e: GPUParticles3D in _drips:
+		if is_instance_valid(e):
+			e.emitting = on
+
+
+func dripping() -> bool:
+	return not _drips.is_empty() and is_instance_valid(_drips[0]) and _drips[0].emitting
+
+
+## Surfacing: the water sound, the wake ring where he comes up, the spray, the drips for drip_seconds.
+func _surface_fx(db: float) -> void:
+	AudioDirector.play_3d("kielholer_water_rise", global_position, db, 0.04)
+	_show_wake()
+	BossFx.burst("steam", global_position + Vector3.UP * 0.6, get_tree(), 1.2, 1.6)
+	BossFx.burst("drips", global_position + Vector3.UP * 1.8, get_tree(), 1.5, 1.4)
+	_drip_t = float(kcfg.get("drip_seconds", 10.0))
+	_set_drips(true)
+
+
+func _show_wake() -> void:
+	if _wake == null:
+		_wake = MeshInstance3D.new()
+		_wake.name = "Wake"
+		var tm: TorusMesh = TorusMesh.new()
+		tm.inner_radius = 0.75
+		tm.outer_radius = 1.0
+		tm.rings = 24
+		_wake.mesh = tm
+		_wake_mat = StandardMaterial3D.new()
+		_wake_mat.albedo_color = Color(0.7, 0.85, 0.9, 0.55)
+		_wake_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		_wake_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		_wake.material_override = _wake_mat
+		_wake.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		_wake.top_level = true
+		add_child(_wake)
+	_wake.global_position = global_position + Vector3(0, 0.06, 0)
+	_wake.global_rotation = Vector3.ZERO
+	_wake.scale = Vector3.ONE
+	_wake_mat.albedo_color.a = 0.55
+	_wake.visible = true
+	_wake_t = 1.6
+
+
+## Dev / capture: the surfacing's effects now (the wake, the spray, the drips).
+func debug_surface_fx() -> void:
+	_surface_fx(0.0)
 
 
 # ================================================================== the brain
@@ -298,6 +531,10 @@ func _tide_stage() -> StringName:
 	return StringName(str(tide.get("stage"))) if tide != null and tide.get("stage") != null else &"low"
 
 
+func _fast_tide() -> bool:
+	return tide_mult(_tide_stage(), kcfg) > 1.0
+
+
 func _speed() -> float:
 	return move_speed() * tide_mult(_tide_stage(), kcfg)
 
@@ -305,6 +542,11 @@ func _speed() -> float:
 func _tick(delta: float) -> void:
 	spawn_t += delta
 	_kt += delta
+	_tele_t = maxf(0.0, _tele_t - delta)
+	if _drip_t > 0.0:
+		_drip_t -= delta
+		if _drip_t <= 0.0:
+			_set_drips(false)
 	if failsafe_due(spawn_t, ecfg) and not retreating:
 		failsafe_dived = true
 		retreat()
@@ -375,13 +617,41 @@ func _tick(delta: float) -> void:
 			velocity = Vector3.ZERO
 			if _ripple != null:
 				_ripple.scale = Vector3.ONE * (1.0 + _kt * 1.4)
-			if _kt >= float(kcfg.get("ripple_seconds", 1.6)):
+			if _kt >= ripple_for(kcfg, _fast_tide()):
 				_resurface()
 
 
 func _set_k(k: K) -> void:
 	kstate = k
 	_kt = 0.0
+
+
+## T-233: the kit's telegraph: the light's one shape and the rising sound over `seconds`.
+func _kit_tele(seconds: float, energy: float, color: Color = TELE_COLOR) -> void:
+	if fx != null:
+		fx.tele(color, energy, seconds)
+	_tele_t = seconds
+
+
+## T-233: the squad rule: a lone wader (at a water edge, nobody near, in sight, within lone_range) is his target
+## over the nearest player.
+func _retarget_lone() -> void:
+	var sq: Dictionary = kcfg.get("squad", {})
+	if sq.is_empty():
+		return
+	var players: Array[Player] = alive_players()
+	var cands: Array = []
+	for p: Player in players:
+		var mate: bool = false
+		for o: Player in players:
+			if o != p and o.global_position.distance_to(p.global_position) <= float(sq.get("lone_mate_m", 6.0)):
+				mate = true
+				break
+		cands.append([dist_to(p), KielholerController.edge_distance(p.global_position), mate, has_los(p)])
+	var i: int = lone_wader(cands, sq)
+	if i >= 0 and players[i] != target:
+		target = players[i]
+		lone_targets += 1
 
 
 func _walk_tick(delta: float) -> void:
@@ -391,6 +661,7 @@ func _walk_tick(delta: float) -> void:
 	if target == null:
 		stand(delta)
 		return
+	_retarget_lone()
 	var d: float = dist_to(target)
 	var gr: Dictionary = kcfg.get("grab", {})
 	var sw: Dictionary = kcfg.get("chain_sweep", {})
@@ -402,16 +673,19 @@ func _walk_tick(delta: float) -> void:
 		_set_k(K.SWIPE_TELE)
 		bstate = B.TELEGRAPH
 		attack_anim("swipe_over", tele_len(float(sp.get("telegraph", 0.5))))
+		_kit_tele(tele_len(float(sp.get("telegraph", 0.5))), 2.5)
 	elif cd_ready("sweep") and d >= float(sw.get("min_range", 3.0)) and d <= float(sw.get("range", 9.0)) - 0.5 and has_los(target):
 		_set_k(K.SWEEP_TELE)
 		_go(B.TELEGRAPH, "sweep")
 		pose_anim()
 		sfx("chain_sweep", 0.0, 0.9)
+		_kit_tele(tele_len(float(sw.get("telegraph", 1.2))), 4.0)
 	elif cd_ready("charge") and d >= float(cc.get("min_range", 5.0)) and d <= float(cc.get("max_range", 18.0)) and has_los(target):
 		_set_k(K.CHARGE_TELE)
 		_go(B.TELEGRAPH, "charge")
 		pose_anim()
 		sfx("kielholer_roar", -6.0, 1.2)
+		_kit_tele(tele_len(float(cc.get("telegraph", 1.0))), 4.0, Color(1.0, 0.85, 0.55))
 	else:
 		walk_to(target.global_position, delta, _speed())
 
@@ -422,6 +696,7 @@ func _do_sweep() -> void:
 	set_cd("sweep", float(sw.get("cooldown", 7.0)))
 	sfx("chain_sweep", 2.0, 1.0)
 	attack_anim("swipe_double", 0.3)
+	BossFx.burst("sparks", global_position + _aim * 1.5 + Vector3.UP * 0.2, get_tree(), 0.8, 0.9)   # the chain on the concrete
 	for p: Player in alive_players():
 		if sweep_hits(global_position, _aim, p.global_position, float(sw.get("range", 9.0)), float(sw.get("half_width", 1.1))):
 			hit_player(p, float(sw.get("damage", 45)))
@@ -462,11 +737,21 @@ func _start_grab(p: Player) -> void:
 		"weak": float(gr.get("break_weak_damage", 400.0)), "max": float(gr.get("max_hold", 5.0))}, [&"back", &"helmet_glass", &"arms"], "grab")
 	_grab_dmg = 0.0
 	_grab_dmg_t = 0.0
+	_edge_t = 0.0
+	_dunk_t = 0.0
+	_dunk_done = false
 	grabs_done += 1
 	_set_k(K.GRAB)
 	_go(B.SPECIAL, "grab")
 	attack_anim("grab", 0.3)
 	sfx("kielholer_surface", 0.0, 0.8)
+
+
+## Dev / smoke: a grab on `p` now.
+func debug_grab(p: Player) -> void:
+	target = p
+	_cds.erase("grab")
+	_start_grab(p)
 
 
 func _grab_tick_k(delta: float) -> void:
@@ -479,15 +764,44 @@ func _grab_tick_k(delta: float) -> void:
 	var edge: Vector3 = KielholerController.edge_point(p.global_position)
 	drag_player(p, edge, float(gr.get("pull_mps", 1.8)) * squad_speed_mult, delta, 0.4)
 	var ed: float = KielholerController.edge_distance(p.global_position)
-	_grab_dmg += (float(gr.get("edge_dps", 28.0)) if ed <= float(gr.get("edge_m", 1.6)) else float(gr.get("dps", 12.0))) * delta
+	var at_edge: bool = ed <= float(gr.get("edge_m", 1.6))
+	_grab_dmg += (float(gr.get("edge_dps", 28.0)) if at_edge else float(gr.get("dps", 12.0))) * delta
 	_grab_dmg_t += delta
 	if _grab_dmg_t >= 0.5:
 		hit_player(p, _grab_dmg)
 		_grab_dmg = 0.0
 		_grab_dmg_t = 0.0
+	# T-233: the dunk: held at the edge for dunk_after s, he pushes them under for a breath-holding second
+	_edge_t = _edge_t + delta if at_edge else 0.0
+	if not _dunk_done and _edge_t >= float(gr.get("dunk_after", 1.2)):
+		_start_dunk(p)
+	if _dunk_t > 0.0:
+		_dunk_t -= delta
+		if fx != null and p.is_local and not p.is_bot:
+			fx.extra_dread = 1.0
+		if _dunk_t <= 0.0:
+			_pose.set_bone("Spine")
 	# he walks with his catch toward the water
 	var follow: Vector3 = p.global_position + (global_position - p.global_position).normalized() * 0.9
 	global_position = Vector3(follow.x, global_position.y, follow.z)
+
+
+func _start_dunk(p: Player) -> void:
+	var gr: Dictionary = kcfg.get("grab", {})
+	_dunk_done = true
+	_dunk_t = float(gr.get("dunk_seconds", 1.0))
+	dunks += 1
+	hit_player(p, float(gr.get("dunk_damage", 20.0)))
+	p.apply_status(&"wading", _dunk_t)
+	_pose.set_bone("Spine", Vector3(0.9, 0, 0))   # he leans over them
+	sfx("water_splash", 2.0, 0.7, p.global_position)
+	sfx("kielholer_water_rise", -4.0, 0.8, p.global_position)
+	BossFx.burst("drips", p.global_position + Vector3.UP * 1.3, get_tree(), 1.8, 1.4)
+	BossFx.burst("steam", p.global_position + Vector3.UP * 0.4, get_tree(), 0.8, 1.0)
+	var dfx: DreadFx = DreadFx.of(p)
+	if dfx != null:
+		dfx.punch(1.0)
+	print("[kielholer] under: %s is pushed under for %.1f s" % [String(p.character_id), _dunk_t])
 
 
 func _on_grab_released(_g: Dictionary, _reason: String) -> void:
@@ -497,6 +811,8 @@ func _on_grab_released(_g: Dictionary, _reason: String) -> void:
 
 func _end_grab() -> void:
 	_grab = {}
+	_dunk_t = 0.0
+	_pose.set_bone("Spine")
 	set_cd("grab", float(kcfg.get("grab", {}).get("cooldown", 10.0)))
 	_set_k(K.RECOVER)
 	bstate = B.RECOVER
@@ -504,6 +820,7 @@ func _end_grab() -> void:
 
 # ================================================================== submerge / resurface
 
+## T-233: the dock lamps dip as he goes down (the kit's lights, back once he is under).
 func _start_sink() -> void:
 	submerges += 1
 	_release_all_grabs("submerge")
@@ -511,21 +828,28 @@ func _start_sink() -> void:
 	_go(B.SPECIAL, "submerge")
 	sfx("kielholer_surface", 0.0, 0.7)
 	_hitboxes_on(false)
+	_set_drips(false)
+	_drip_t = 0.0
+	BossFx.burst("steam", global_position + Vector3.UP * 0.4, get_tree(), 0.8, 1.4)
+	if fx != null:
+		fx.lights_dim(global_position, 16.0, 0.3, float(kcfg.get("sink_seconds", 1.4)) * 0.6)
 	if submerges == 2:
 		_line_from("lines_hurt", 0.5)
 
 
 func _go_under() -> void:
-	var r: Array = kcfg.get("submerge_seconds", [6.0, 10.0])
-	_under_for = _rng.randf_range(float(r[0]), float(r[1]))
+	var r: Vector2 = under_range(kcfg, _fast_tide())
+	_under_for = _rng.randf_range(r.x, r.y)
 	_set_k(K.UNDER)
 	hide()
 	collision_layer = 0
 	velocity = Vector3.ZERO
+	if fx != null:
+		fx.lights_restore(2.5)
 
 
 func _start_ripple() -> void:
-	var near: bool = tide_mult(_tide_stage(), kcfg) > 1.0
+	var near: bool = _fast_tide()
 	var tp: Vector3 = target.global_position if target != null and is_instance_valid(target) else global_position
 	dock = pick_dock(_docks(), dock, tp, near, _rng.randf())
 	global_position = _dock_pos(dock)
@@ -553,6 +877,10 @@ func _start_ripple() -> void:
 	_ripple.visible = true
 	_set_k(K.RIPPLE)
 	AudioDirector.play_3d("water_splash", global_position, 2.0, 0.05)
+	# the ripple's own sound: the water rising, low and slow (a kielholer_ripple id is asked of the lead)
+	var rp: AudioStreamPlayer3D = AudioDirector.play_3d("kielholer_water_rise", global_position, -9.0, 0.0)
+	if rp != null:
+		rp.pitch_scale = 0.7
 
 
 func _resurface() -> void:
@@ -564,7 +892,7 @@ func _resurface() -> void:
 	_pivot.position.y = -2.0
 	_set_k(K.RISE)
 	_go(B.ARRIVE)
-	AudioDirector.play_3d("kielholer_surface", global_position, 4.0, 0.0)
+	_surface_fx(4.0)
 	if submerges == 1:
 		_line_from("lines_hurt", 1.0)
 
@@ -574,10 +902,23 @@ func _hitboxes_on(on: bool) -> void:
 		hb.collision_layer = Hitbox.LAYER_HITBOX if on else 0
 
 
-## The glass goes on the hit that takes him past helmet_break_fraction (not a frame later).
+## The glass goes on the hit that takes him past helmet_break_fraction (not a frame later). T-233: a hit on the glass
+## before then knocks (kielholer_helmet_knock) and the inner shell fogs a step further toward the break.
 func _on_damaged(_amount: float, _limb: StringName, _by_player: int, _kind: StringName) -> void:
-	if not helmet_broken and helmet_breaks(max_hp - hp, max_hp, kcfg):
-		_break_helmet()
+	super._on_damaged(_amount, _limb, _by_player, _kind)
+	if not helmet_broken:
+		if _limb == &"helmet_glass" or _limb == &"head":
+			helmet_knocks += 1
+			sfx("kielholer_helmet_knock", -2.0, randf_range(0.92, 1.08), _glass.global_position if _glass != null else Vector3.INF)
+		if _fog_mat != null:
+			_fog_mat.albedo_color.a = 0.8 * clampf((max_hp - hp) / maxf(1.0, max_hp * float(kcfg.get("helmet_break_fraction", 0.15))), 0.0, 1.0)
+		if helmet_breaks(max_hp - hp, max_hp, kcfg):
+			_break_helmet()
+
+
+## The fog on the inside of the glass (0..0.8; the smoke reads it).
+func fog_alpha() -> float:
+	return _fog_mat.albedo_color.a if _fog_mat != null else 0.0
 
 
 ## Under water he can't be hurt; a hit that lands on the frame he sinks does nothing.
@@ -587,17 +928,28 @@ func damage_taken_mult() -> float:
 
 func _break_helmet() -> void:
 	helmet_broken = true
+	var at: Vector3 = _glass.global_position if _glass != null else global_position + Vector3.UP * 2.0
 	if _glass != null:
 		_glass.visible = false
+	if _fog != null:
+		_fog.visible = false
 	if _glow != null:
 		_glow.visible = true
+		_glow.scale = Vector3.ONE * 1.3
+	if _glow_light != null:
+		_glow_light.light_energy = 0.9
+	BossFx.burst("chips", at, get_tree(), 1.6, 1.0)
+	BossFx.burst("motes", at, get_tree(), 1.2, 1.1)
 	sfx("glass_break", 4.0, 0.8)
 	sfx("kielholer_roar", 4.0, 1.0)
 	if _lamp_glow != null:
 		_lamp_glow.light_color = ZombieBody.MARKE_COLOR
 
 
+## T-233: the kit's telegraph light keeps its own shape while a tell runs; the base's steady level otherwise.
 func _tele_glow() -> float:
+	if _tele_t > 0.0:
+		return _tele_light.light_energy
 	return 4.0 if kstate in [K.SWEEP_TELE, K.CHARGE_TELE] else 0.0
 
 
@@ -638,6 +990,8 @@ func _update_audio(delta: float) -> void:
 	if _hum_t <= 0.0:
 		_hum_t = randf_range(4.0, 6.5)
 		sfx("hull_groan", -10.0, randf_range(0.8, 1.0))   # the air valve and the dress creaking under water's weight
+		if randf() < 0.5:
+			sfx("boss_breath", -14.0, 0.7)   # the man inside, through the valve
 
 
 # ================================================================== death, fail-safe
@@ -647,6 +1001,12 @@ func _boss_die(limb: StringName, weapon_id: StringName, by_player: int, kind: St
 	RoundManager.release_alive(1)
 	if _ripple != null:
 		_ripple.visible = false
+	if _wake != null:
+		_wake.visible = false
+	_set_drips(false)
+	if _chain_loop != null:
+		_chain_loop.stop()
+	BossFx.burst("drips", death_pos + Vector3.UP * 1.2, get_tree(), 1.2, 1.2)
 	for d: Variant in kcfg.get("drops", []):
 		PowerupManager.spawn(StringName(str(d)), death_pos + Vector3(1.5, 0.3, 0))
 	if str(kcfg.get("flag", "")) != "":
@@ -660,6 +1020,9 @@ func _boss_die(limb: StringName, weapon_id: StringName, by_player: int, kind: St
 		GLBus.intel_found.emit(StringName(str(kcfg["intel"])))
 	if _lamp != null:
 		_lamp.light_energy = 0.0
+	if _glow_light != null:
+		var tw: Tween = create_tween()
+		tw.tween_property(_glow_light, "light_energy", 0.0, 6.0)   # the Marke's glow goes out with him, slowly
 	_drop_key(Vector3(death_pos.x, maxf(0.0, death_pos.y), death_pos.z), false)
 
 
@@ -671,6 +1034,9 @@ func _start_authored_death() -> void:
 func _on_retreat() -> void:
 	RoundManager.release_alive(2)
 	sfx("kielholer_surface", 2.0, 0.6)
+	_set_drips(false)
+	if _chain_loop != null:
+		_chain_loop.stop()
 	var at: Vector3 = KielholerController.edge_point(global_position)
 	_drop_key(at, true)
 	GameState.set_flag(&"kielholer_dived", true)

@@ -51,7 +51,52 @@ static func block(parent: Node3D, a: Vector3, b: Vector3, key: String, shadows: 
 	if not shadows:
 		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	parent.add_child(mi)
+	_probe(mi, "block", key)
 	return mi
+
+
+## T-230: "what is that piece?" With the environment variable GL_PROBE_BOX="x0,y0,z0,x1,y1,z1" set when a generator
+## runs, every block / obox / cyl whose world box touches that box is printed (kind, material key, the group path, the
+## box), so a stray piece seen in a render can be traced to its line without guessing from coordinates.
+static var _probe_box: Variant = null   # AABB once read; false when unset
+
+
+static func _probe(mi: MeshInstance3D, kind: String, key: String) -> void:
+	if _probe_box == null:
+		var env: String = OS.get_environment("GL_PROBE_BOX")
+		var v: PackedFloat64Array = []
+		for part: String in env.split(","):
+			if part.strip_edges().is_valid_float():
+				v.append(float(part))
+		_probe_box = AABB(Vector3(v[0], v[1], v[2]), Vector3(v[3] - v[0], v[4] - v[1], v[5] - v[2])) if v.size() == 6 else false
+	if _probe_box is bool:
+		return
+	# the world transform without a tree: walk the parents' local transforms
+	var xf: Transform3D = mi.transform
+	var path: String = ""
+	var n: Node = mi.get_parent()
+	while n != null:
+		if n is Node3D:
+			xf = (n as Node3D).transform * xf
+		path = n.name + "/" + path
+		n = n.get_parent()
+	var box: AABB = xf * AABB(Vector3(-0.5, -0.5, -0.5), Vector3.ONE)   # unit box / cylinder bounds
+	if box.intersects(_probe_box as AABB):
+		print("[probe] %s %-14s %-40s at %s size %s" % [kind, key, path, str(box.position + box.size * 0.5), str(box.size)])
+
+
+## The same probe for a generator's geometry box (gen_mapNN box(): a collider with drawn faces), by its corners.
+static func probe_geo(n: String, a: Vector3, b: Vector3, key: String) -> void:
+	if _probe_box == null:
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		_probe(mi, "", "")   # reads the environment once
+		mi.free()
+	if _probe_box is bool:
+		return
+	var lo: Vector3 = Vector3(minf(a.x, b.x), minf(a.y, b.y), minf(a.z, b.z))
+	var hi: Vector3 = Vector3(maxf(a.x, b.x), maxf(a.y, b.y), maxf(a.z, b.z))
+	if AABB(lo, hi - lo).intersects(_probe_box as AABB):
+		print("[probe] geo  %-14s %-40s at %s size %s" % [key, n, str((lo + hi) * 0.5), str(hi - lo)])
 
 
 ## Oriented box: centre, size, yaw/pitch/roll in degrees.
@@ -63,6 +108,7 @@ static func obox(parent: Node3D, center: Vector3, size: Vector3, key: String, ro
 	mi.rotation = rot_deg * (PI / 180.0)
 	mi.scale = size
 	parent.add_child(mi)
+	_probe(mi, "obox", key)
 	return mi
 
 
@@ -74,6 +120,7 @@ static func cyl(parent: Node3D, center: Vector3, radius: float, height: float, k
 	mi.rotation = rot_deg * (PI / 180.0)
 	mi.scale = Vector3(radius * 2.0, height, radius * 2.0)
 	parent.add_child(mi)
+	_probe(mi, "cyl", key)
 	return mi
 
 
@@ -1217,6 +1264,40 @@ static func ladder(parent: Node3D, pos: Vector3, yaw: float, height: float, key:
 	var n: int = int(height / 0.3)
 	for k: int in n:
 		cyl(g, Vector3(0, 0.15 + k * 0.3, -0.115), 0.016, 0.4, key, Vector3(0, 0, 90))
+
+
+## A ladder stowed on hooks along a wall (T-229: a ladder nobody is meant to climb lies down). pos is on the wall
+## face at the ladder's centre, local -Z out of the wall; the ladder runs along local X at that height.
+static func ladder_stowed(parent: Node3D, pos: Vector3, yaw: float, length: float, key: String = "iron") -> void:
+	var g: Node3D = group(parent, "LadderStowed", pos, yaw)
+	for sy: float in [-0.2, 0.2]:
+		block(g, Vector3(-length * 0.5, sy - 0.025, -0.16), Vector3(length * 0.5, sy + 0.025, -0.11), key)
+	var n: int = int(length / 0.3)
+	for k: int in n:
+		cyl(g, Vector3(-length * 0.5 + 0.15 + k * 0.3, 0.0, -0.135), 0.016, 0.4, key)
+	for hx: float in [-length * 0.3, length * 0.3]:
+		block(g, Vector3(hx - 0.02, -0.26, -0.2), Vector3(hx + 0.02, -0.22, 0.0), "iron")   # the hooks
+		block(g, Vector3(hx - 0.02, -0.26, -0.2), Vector3(hx + 0.02, -0.14, -0.17), "iron")
+
+
+## A locked ladder guard (T-229: a ladder that leads nowhere a player may go is barred the way real ones are): a
+## steel plate over the rungs from knee height to `h`, hasp and padlock. Same frame as Props.ladder (pos at the foot).
+static func ladder_guard(parent: Node3D, pos: Vector3, yaw: float, h: float = 2.2, key: String = "machine_grey") -> void:
+	var g: Node3D = group(parent, "LadderGuard", pos, yaw)
+	block(g, Vector3(-0.3, 0.35, -0.21), Vector3(0.3, h, -0.18), key)
+	for sy: float in [0.4, h - 0.05]:
+		block(g, Vector3(-0.27, sy - 0.02, -0.17), Vector3(0.27, sy + 0.02, -0.14), "iron")   # the hinge straps
+	block(g, Vector3(0.24, h * 0.5 - 0.04, -0.235), Vector3(0.3, h * 0.5 + 0.04, -0.21), "iron")   # the hasp
+	cyl(g, Vector3(0.3, h * 0.5 - 0.08, -0.225), 0.035, 0.02, "brass", Vector3(90, 0, 0))          # the padlock
+
+
+## A chain across a ladder with a tag (T-229): the ladder is closed, not broken. pos as Props.ladder's, y_chain up it.
+static func ladder_chain(parent: Node3D, pos: Vector3, yaw: float, y_chain: float = 1.1, tag: String = "GESPERRT") -> void:
+	var g: Node3D = group(parent, "LadderChain", pos, yaw)
+	cable(g, Vector3(-0.2, y_chain, -0.2), Vector3(0.2, y_chain, -0.2), 0.06, 0.012, 6, "iron")
+	block(g, Vector3(-0.09, y_chain - 0.19, -0.215), Vector3(0.09, y_chain - 0.07, -0.205), "enamel_white")
+	block(g, Vector3(-0.004, y_chain - 0.08, -0.212), Vector3(0.004, y_chain - 0.03, -0.208), "iron")
+	stencil(g, Vector3(0, y_chain - 0.13, -0.216), 0.0, tag, 10, Color(0.6, 0.08, 0.06, 0.95))
 
 
 ## A stack of tinned cans (cannery): rows of small cylinders on a board.

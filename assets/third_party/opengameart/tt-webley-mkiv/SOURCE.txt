@@ -10,3 +10,5 @@ Downloaded: 2026-10-25 by Devin Blair (zip in assets/user_supplied/packs) and by
 Files used: model.glb, textures/tt_webley_mkiv_ultimatelowpolyguns_albedo.png
 Game use: webley
 Notes: The pack's Webley is the .38 Mk IV; the game's is the .455 Mk VI (same top-break family, the Mk VI has a longer barrel and squared grip). Barrels = the tilting barrel assembly, Cylinder = cylinder + rounds + ejector star (parent it under Barrels for the break).
+
+Modified 2026-11-12: smooth-shaded with sharp edges at 35 deg, a 0.7 mm angle-limited bevel and weighted normals by tools_src/blender/smooth_palette_guns.py (geometry, part names and origins otherwise as published).

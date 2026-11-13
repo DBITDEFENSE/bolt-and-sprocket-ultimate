@@ -7,6 +7,13 @@ extends Node
 ##     Overhead Split; Long Reach Grab + the wrist break, Through-the-Wall; Holding Hand + the melee break, Lash,
 ##     ObservedFreeze while watched and moving while not); then the deaths in order: the enrage chain, Alix holding
 ##     the Hammer's hand (x2 window), the clear's rewards (drops, Scrip, unlocks, the letter), and the round ending.
+##     T-232 (the boss rework): the kit is on every cousin (a porcelain dread block, the Hammer's and the Reach's
+##     footfalls, the modelled doll with the glaze, eyes and crack tiers built), the cracks open as a cousin takes
+##     damage (the porcelain splitting), the hum goes flat once enraged (the loop exists and plays), the Reach's
+##     Through-the-Window grab (the boards creak, one board torn, the player held and the wrist break), Alix's
+##     look-away step (a player who turns their back inside her band hears the dress and finds her closer), her
+##     longer second grief window, and the dark hunt: after the second death the last cousin puts the lamps out again
+##     (the lamps_out count climbs back, the hearth comes up) until the clear relights everything.
 ##   Case BORED: round 10 again on a fresh map, the clock run past 6:00: they leave, no rewards, round 15 is theirs
 ##     and they come back on it at full HP.
 ##   Case OFF (Homage Bosses Off): round 10 is a normal round: the full horde, no cousin, no reserved round.
@@ -223,6 +230,9 @@ func _case_on() -> void:
 	_check(is_equal_approx(ham.max_hp, 6000.0 * (1.0 + 0.75 * float(RoundManager.players - 1))), "the Hammer has %d HP (6000 x the player scaling)" % int(ham.max_hp))
 	_check(cr.hud != null and cr.hud.cards_shown.has("MARA"), "her title card is stamped (Real names: MARA, the default for the unfilled sheet)")
 	_check(cr._door_open("door_upstairs"), "Door 1 is split open on her way down")
+	# T-232: the kit and the doll pass
+	_check(ham.fx != null and str(ham.fx.cfg.get("surface", "")) == "porcelain" and ham.fx.has_footfalls(), "the kit: a porcelain dread block with footfalls")
+	_check(ham.modelled() and ham._eyes != null and ham._crack_tiers.size() == 3 and ham.crack_tier_now == 0, "the modelled doll with the glaze, glass eyes and three crack tiers (closed)")
 	await _hammer_moves(cr, ham)
 	# ---- the Reach (skip the clock to 0:29)
 	cr.t = maxf(cr.t, float(cr.cfg["arrival"]["reach_after"]) - 1.0)
@@ -265,6 +275,9 @@ func _hammer_moves(cr: CousinsRound, ham: CousinHammer) -> void:
 		var hp0: float = ham.hp
 		ham.take_damage(100.0, &"torso", &"m1911", 1, &"bullet")
 		_check(absf((hp0 - ham.hp) - 150.0) < 0.5, "while the maul is airborne she takes x1.5 (100 -> %.0f)" % (hp0 - ham.hp))
+	# T-232: the cracks spread with the damage (a tier opens under 75%)
+	ham.take_damage(maxf(0.0, ham.hp - ham.max_hp * 0.7), &"arms", &"debug", 1, &"world")
+	_check(ham.crack_tier_now == 1 and ham.doll_cracks == 1, "under 75%% the first hairline cracks open (tier %d, the porcelain splits)" % ham.crack_tier_now)
 	var caught: bool = await _until_cull(func() -> bool: return ham.catches >= 1, 8.0)
 	_check(caught, "the maul comes back and she catches it blind (%d hit(s) on the player, out and back)" % ham.maul_hits)
 	_check(ham.maul_hits >= 1, "the maul hit the player at least once on its passes")
@@ -342,6 +355,44 @@ func _reach_moves(cr: CousinsRound, rch: CousinReach) -> void:
 		walled = await _until(func() -> bool: return rch.wall_hits >= 1, 3.0)
 	_check(walled, "Through-the-Wall: the dust and creak at the spot, then the arm through the boards")
 	_check(_player().has_status(&"reach_slow") or walled, "the punch slows the player")
+	# T-232: Through-the-Window: the player by the boarded north-east taproom window, the Reach far off across the room
+	await _until(func() -> bool: return rch.bstate == HomageBoss.B.MOVE, 4.0)
+	var w: Barricade = cr._window("W_TAP_N2")
+	_check(w != null, "the taproom's W_TAP_N2 window exists")
+	if w != null:
+		while w.boards < 2:
+			w.repair_board(_player())
+		var boards0: int = w.boards
+		rch._cds["window"] = 0.0
+		rch._cds["grab"] = 99.0
+		rch._cds["wall"] = 99.0
+		rch._cds["swipe"] = 99.0
+		rch.global_position = cr._snap(Vector3(10.0, 0.0, 12.5))
+		var by_window: Callable = func() -> void:
+			if ham != null and ham.is_active():
+				ham.global_position = Vector3(2.0, 3.8, 7.5)
+			_place(Vector3(17.0, 0.0, 1.7), Vector3(17.0, 0.0, 12.0))
+			if rch.bstate == HomageBoss.B.MOVE and rch.global_position.distance_to(_player().global_position) < 7.5:
+				rch.global_position = cr._snap(Vector3(10.0, 0.0, 12.5))
+		var creaked: bool = await _until_cull(func() -> bool: return rch.bstate == HomageBoss.B.TELEGRAPH and rch.move_id == "window", 8.0, by_window)
+		if not creaked and rch.bstate == HomageBoss.B.MOVE:
+			_note("(forcing Through-the-Window)")
+			rch.target = _player()
+			rch._win = w
+			rch._begin("window", 1.0)
+			creaked = true
+		_check(creaked, "Through-the-Window: the boards creak and rattle for 1 s under a glow at the window")
+		var win_grab: bool = await _until(func() -> bool: return rch.window_grabs >= 1, 5.0)
+		_check(win_grab, "her arm punches through the boards from outside and takes the player")
+		if win_grab:
+			_check(w.boards == boards0 - 1 and rch.window_boards_torn >= 1, "one board torn (%d -> %d)" % [boards0, w.boards])
+			_check(_player().has_status(&"boss_grab"), "the held player can't walk away")
+			await _secs(0.3)
+			rch.take_damage(rch.max_hp * 0.05, &"wrist", &"m1911", 1, &"bullet")
+			_check(rch.grabs().is_empty(), "the wrist (x2, 8%) breaks the window grab too")
+		var win_done: bool = await _until(func() -> bool: return rch._win_state == "" and rch.bstate == HomageBoss.B.MOVE, 6.0)
+		_check(win_done, "the arm withdraws through the window")
+	_check(rch.breaths >= 1 or rch._breath == null, "her breath frosts in the cold taproom (%d puffs)" % rch.breaths)
 
 
 func _alix_moves(cr: CousinsRound, alx: CousinAlix) -> void:
@@ -400,6 +451,24 @@ func _alix_moves(cr: CousinsRound, alx: CousinAlix) -> void:
 			_place(Vector3(f.x, alx.global_position.y, f.z), alx.global_position)
 	var lashed: bool = await _until_cull(func() -> bool: return alx.lashes + alx.lash_dodged >= 1, 12.0, lash_range)
 	_check(lashed, "Lash: both hands to her ears, then the third arm whips out to 5 m")
+	# T-232: the look-away step: inside her band, the player turns their back for 0.6 s
+	await _until(func() -> bool: return alx.bstate == HomageBoss.B.MOVE, 4.0)
+	alx._cds["lash"] = 99.0
+	alx._cds["step"] = 0.0
+	alx.global_position = cr._snap(Vector3(16.0, 0.0, 11.0))
+	var d0: float = 6.0
+	var back_turned: Callable = func() -> void:
+		park.call()
+		if alx.steps_taken == 0:
+			var p: Vector3 = alx.global_position + Vector3(0, 0, -6.0)
+			_place(Vector3(p.x, alx.global_position.y, p.z), Vector3(p.x, 0.0, p.z - 6.0))   # looking away north
+			d0 = alx.dist_to(_player())
+	var stepped: bool = await _until_cull(func() -> bool: return alx.steps_taken >= 1, 6.0, back_turned)
+	_check(stepped, "the look-away step: a player who turns their back inside 8 m hears the dress (%d step)" % alx.steps_taken)
+	if stepped:
+		var closer: bool = await _until(func() -> bool: return alx.bstate == HomageBoss.B.MOVE and alx.dist_to(_player()) < d0 - 0.8, 3.0)
+		_check(closer, "and finds her closer (%.1f -> %.1f m), stopped short of her reach" % [d0, alx.dist_to(_player())])
+		_check(alx.dist_to(_player()) >= float(alx.bcfg["hold"]["range"]), "never a step straight into a grab")
 
 
 func _deaths(cr: CousinsRound, ham: CousinHammer, rch: CousinReach, alx: CousinAlix) -> void:
@@ -410,6 +479,7 @@ func _deaths(cr: CousinsRound, ham: CousinHammer, rch: CousinReach, alx: CousinA
 	ham.debug_kill(1)
 	_check(cr.dead.has("hammer") and cr.hud.is_struck("hammer"), "the Hammer dies: her bar is struck through")
 	_check(rch.enrage_steps == 1 and alx.enrage_steps == 1 and is_equal_approx(rch.speed_mult(), 1.2), "the survivors enrage (+20%%: Reach x%.2f)" % rch.speed_mult())
+	_check(ham.crack_tier_now == 3, "her death opens every crack")
 	var grief: bool = await _until_cull(func() -> bool: return alx.griefs >= 1, 15.0)
 	_check(grief, "Alix goes to the Hammer's body and holds her hand")
 	if grief:
@@ -418,11 +488,25 @@ func _deaths(cr: CousinsRound, ham: CousinHammer, rch: CousinReach, alx: CousinA
 		_check(absf((hp0 - alx.hp) - 200.0) < 0.5, "the grief window: she takes x2 (100 -> %.0f)" % (hp0 - alx.hp))
 		var rose: bool = await _until_cull(func() -> bool: return alx.dripping, 5.0)
 		_check(rose, "she rises enraged: the third arm drips Nachtglas light (Double Lash)")
+		_check(alx.grief_rises == 1 and is_equal_approx(alx.grief_damage_mult(0.15, alx.grief_rises), 1.15), "and hits harder from here (x%.2f on her double damage)" % alx.grief_damage_mult(0.15, alx.grief_rises))
+	# T-232: the hum has gone flat on the enraged (the loop exists and plays between tells)
+	var hum: bool = await _until_cull(func() -> bool: return rch._hum_loop != null and rch._hum_loop.playing, 6.0)
+	_check(hum, "the enraged Reach hums the lullaby flat (boss_hum_wrong loop)")
 	# the Reach second
 	rch.debug_kill(1)
 	_check(alx.enrage_steps == 2 and is_equal_approx(alx.speed_mult(), 1.4), "the second death stacks the enrage (+40%%: Alix x%.2f)" % alx.speed_mult())
 	_check(_drops.has("fortify"), "the Reach drops Fortify")
-	await _secs(0.2)
+	_check(is_equal_approx(alx.grief_seconds_now(), 4.5), "her second grief window is longer (%.1f s)" % alx.grief_seconds_now())
+	# T-232: the dark hunt: the lamps that came back go out again, the hearth comes up, Alix hunts in the dark
+	var out_before: int = cr.lamps_out
+	var dark: bool = await _until_cull(func() -> bool: return cr.dark_hunt, 8.0)
+	_check(dark and alx.dark_hunt, "the last cousin standing puts the lamps out again (the dark hunt)")
+	await _secs(2.4)   # past the lamps' gutter and the hearth's 0.6 s + 1.5 s relight tween
+	_check(cr.lamps_out > out_before, "the lamps are out again (%d -> %d out)" % [out_before, cr.lamps_out])
+	var fire: Light3D = cr._lamp_node(str(cr.cfg["setup"]["fire"]))
+	var fire_e: float = float(fire.get("base_energy")) if fire != null and fire.get("base_energy") != null else (fire.light_energy if fire != null else 0.0)
+	var fire_base: float = float((cr._lamps[str(cr.cfg["setup"]["fire"])] as Array)[1]) if fire != null else 1.0
+	_check(fire != null and fire_e > fire_base * 0.6, "only the hearth is relit for the finale (%.2f of %.2f)" % [fire_e, fire_base])
 	alx.debug_kill(1)
 	_check(cr.cleared_count == 1 and cr.rewards_given, "all three dead: the round is cleared")
 	_check(_drops.has("deaths_door") and _drops.has("resupply"), "Death's Door + Resupply drop at the last body (drops %s)" % str(_drops))

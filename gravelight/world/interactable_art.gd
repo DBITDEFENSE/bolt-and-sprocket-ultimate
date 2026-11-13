@@ -516,6 +516,26 @@ static func _apothecary(g: Node3D, fp: Vector3, en: String) -> void:
 		B(g, Vector3(-hw - 0.05, 0.62 + i * 0.03, -bw), Vector3(-hw, 0.64 + i * 0.03, bw), "leather")
 	B(g, Vector3(-hw - 0.06, 0.58, -0.18), Vector3(-hw, 0.6, 0.18), "furniture")
 	B(g, Vector3(-hw - 0.06, 0.78, -0.18), Vector3(-hw, 0.8, 0.18), "furniture")
+	# 2026-11-12 (the owner's screenshot from the vault's stair foot: a plain pale slab beside Ironhide Stout): the
+	# sides were bare enamel round the small cross; each side is a framed panel now, riveted, with the maker's plate
+	# low down, and the back (toward the wall) has its vent louvres and the inventory slip Ammer wrote.
+	for sx3: float in [-1.0, 1.0]:
+		var fx: float = sx3 * (hw + 0.004)
+		var fz0: float = -hd + 0.07
+		var fz1: float = hd - 0.07
+		for fy: float in [0.3, 1.78]:
+			B(g, Vector3(fx - 0.006, fy - 0.012, fz0), Vector3(fx + 0.006, fy + 0.012, fz1), "chrome_worn")
+		for fz: float in [fz0, fz1]:
+			B(g, Vector3(fx - 0.006, 0.3, fz - 0.012), Vector3(fx + 0.006, 1.78, fz + 0.012), "chrome_worn")
+		for rv: Vector2 in [Vector2(fz0 + 0.03, 0.34), Vector2(fz1 - 0.03, 0.34), Vector2(fz0 + 0.03, 1.74), Vector2(fz1 - 0.03, 1.74)]:
+			dot(g, Vector3(sx3 * (hw + 0.012), rv.y, rv.x), 0.011, "brass")
+		B(g, Vector3(fx - 0.005, 0.44, -0.11), Vector3(fx + 0.005, 0.54, 0.11), "brass")
+		B(g, Vector3(fx - 0.007, 0.48, -0.08), Vector3(fx + 0.007, 0.5, 0.08), "black_paint")
+	for li: int in 6:
+		B(g, Vector3(-0.24, 1.22 + li * 0.07, hd), Vector3(0.24, 1.245 + li * 0.07, hd + 0.016), "black_paint")
+	B(g, Vector3(-0.27, 1.18, hd), Vector3(0.27, 1.2, hd + 0.02), "chrome_worn")
+	B(g, Vector3(-0.27, 1.62, hd), Vector3(0.27, 1.64, hd + 0.02), "chrome_worn")
+	B(g, Vector3(-0.13, 0.6, hd + 0.002), Vector3(0.11, 0.92, hd + 0.006), "paper")
 	# the swallow, hand-painted over the factory angel (a faint outline still shows under it)
 	var sw: Vector3 = Vector3(0, 1.74, -hd - 0.006)
 	OB(g, sw + Vector3(0.0, 0.0, 0.002), Vector3(0.2, 0.09, 0.004), "paint:#a7b3bc")

@@ -114,6 +114,11 @@ func _gameplay() -> void:
 	content.add_child(MenuKit.row("Mouse sensitivity", MenuKit.slider(0.1, 4.0, 0.05, float(v["sensitivity"]), _setter("sensitivity"), "x")))
 	content.add_child(MenuKit.row("Aiming sensitivity", MenuKit.slider(0.2, 1.5, 0.05, float(v["ads_sensitivity"]), _setter("ads_sensitivity"), "x")))
 	content.add_child(MenuKit.row("Controller look speed", MenuKit.slider(0.2, 3.0, 0.05, float(v["pad_sensitivity"]), _setter("pad_sensitivity"), "x")))
+	var sway_modes: PackedStringArray = CameraSway.MODES   # T-220: the flight's camera motion (the Kranich)
+	var sway_labels: PackedStringArray = PackedStringArray(Array(sway_modes).map(func(k: Variant) -> String: return str(CameraSway.LABELS.get(str(k), k))))
+	content.add_child(MenuKit.row("Camera Sway / Turbulence", MenuKit.options(sway_labels, maxi(0, sway_modes.find(CameraSway.normalize(v.get("camera_sway", "full")))),
+		func(i: int) -> void: GLSettings.set_value("camera_sway", sway_modes[i]))))
+	content.add_child(MenuKit.help("How much the camera rolls and shakes with the aircraft (the Kranich's banks and turbulence). Off keeps the sky, the sound and the wind; only the camera holds still. Weapon and explosion shake follow Screen shake."))
 	content.add_child(MenuKit.switch_row("Invert look (Y)", bool(v["invert_y"]), _setter("invert_y")))
 	content.add_child(MenuKit.switch_row("Lean (Z / E)", bool(v.get("lean_enabled", true)), _setter("lean_enabled")))
 	content.add_child(MenuKit.section("Rules and practice"))

@@ -290,6 +290,7 @@ static func vii_tower(g: Node3D, c: Vector3, hx: float, hz: float, h: float, num
 		Props.stencil(g, c + Vector3(sx3 * (hx + 0.15), h * 0.55, 0), -90.0 * sx3, number, 40, Color(0.85, 0.82, 0.7, 0.8))
 	# the bridge ladder on the aft face, the attack-periscope's well cap and the hatch rim
 	Props.ladder(g, c + Vector3(0.4, 0, hz + 0.14), 180.0, h, "iron")
+	Props.ladder_chain(g, c + Vector3(0.4, 0, hz + 0.14), 180.0, 1.1, "GESPERRT")   # (T-229: the bridge is not a floor anyone stands on)
 
 
 # ================================================================== the cutter

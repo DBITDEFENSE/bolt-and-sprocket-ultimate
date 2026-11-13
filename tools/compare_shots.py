@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Stitch same-camera before/after pairs side by side (UPDATE_05 section 1, T-088).
 
-    python -I tools/compare_shots.py [before_label] [after_label] [--set=u05] [--root=morning/screenshots] [--out=<dir>]
+    python -I tools/compare_shots.py [before_label] [after_label] [--set=u05] [--root=morning/screenshots] [--out=<dir>] [--jpg]
 
 Pairs morning/screenshots/<set>/<before>/NN_<name>.png with <set>/<after>/NN_<name>.png by file name and writes
 <set>/pairs/NN_<name>__<before>_vs_<after>.png (the two frames at half size with a caption bar), plus a
@@ -21,6 +21,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 
 
 def main(argv):
     before, after, set_name, root, out = "before", "after", "u05", os.path.join(ROOT, "morning", "screenshots"), None
+    jpg = False   # T-220: --jpg writes the pairs and the sheet as JPEG (docs/ images, the repo's 400 KB rule); .jpg frames pair too
     pos = []
     for a in argv:
         if a.startswith("--set="):
@@ -29,6 +30,8 @@ def main(argv):
             root = a[7:]
         elif a.startswith("--out="):
             out = a[6:]
+        elif a == "--jpg":
+            jpg = True
         else:
             pos.append(a)
     if pos:
@@ -42,8 +45,10 @@ def main(argv):
         print("missing folder: %s or %s" % (bdir, adir))
         return 1
     os.makedirs(out, exist_ok=True)
-    names_b = {f for f in os.listdir(bdir) if f.lower().endswith(".png")}
-    names_a = {f for f in os.listdir(adir) if f.lower().endswith(".png")}
+    names_b = {f for f in os.listdir(bdir) if f.lower().endswith((".png", ".jpg"))}
+    names_a = {f for f in os.listdir(adir) if f.lower().endswith((".png", ".jpg"))}
+    ext = ".jpg" if jpg else ".png"
+    save_kw = {"quality": 88, "optimize": True} if jpg else {"optimize": True}
     pairs = sorted(names_b & names_a)
     tiles = []
     for name in pairs:
@@ -62,8 +67,8 @@ def main(argv):
         d = ImageDraw.Draw(pair)
         d.text((6, 6), "%s  |  %s" % (name[:-4], before), fill=(230, 230, 230))
         d.text((half[0] + 10, 6), after, fill=(230, 230, 230))
-        p = os.path.join(out, "%s__%s_vs_%s.png" % (name[:-4], before, after))
-        pair.save(p, optimize=True)
+        p = os.path.join(out, "%s__%s_vs_%s%s" % (name[:-4], before, after, ext))
+        pair.save(p, **save_kw)
         tiles.append(pair)
     if tiles:
         cols = 2
@@ -73,7 +78,7 @@ def main(argv):
         for i, t in enumerate(tiles):
             sheet.paste(t, ((i % cols) * tw, (i // cols) * th))
         sheet.thumbnail((2400, 100000), Image.LANCZOS)
-        sheet.save(os.path.join(out, "sheet__%s_vs_%s.png" % (before, after)), optimize=True)
+        sheet.save(os.path.join(out, "sheet__%s_vs_%s%s" % (before, after, ext)), **save_kw)
     print("%d pairs -> %s" % (len(pairs), out))
     for n in sorted(names_b - names_a):
         print("  only in %s: %s" % (before, n))

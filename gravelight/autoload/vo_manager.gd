@@ -69,6 +69,10 @@ var _last_ambient: float = -999.0
 var _idle_t: float = 0.0
 var _streak_times: Array[float] = []
 var _streams: Dictionary = {}        # file path -> AudioStream (or null when missing)
+## T-237: the squad's and the companions' recorded lines loaded in the background (StreamWarm), speaker by speaker
+## as each first speaks (warm_speaker): a bot's bark no longer loads its file in the frame it starts.
+var warm: StreamWarm = StreamWarm.new()
+var _warmed: Dictionary = {}         # speaker -> true
 var _story_2d: AudioStreamPlayer
 var _player_2d: AudioStreamPlayer
 var _player_3d: AudioStreamPlayer3D
@@ -545,6 +549,7 @@ func load_stream(path: String) -> AudioStream:
 	if _streams.has(path):
 		return _streams[path]
 	var stream: AudioStream = null
+	var pt: int = BotProf.t()
 	if ResourceLoader.exists(path):
 		stream = load(path) as AudioStream
 	if stream == null and FileAccess.file_exists(path):
@@ -552,6 +557,7 @@ func load_stream(path: String) -> AudioStream:
 			stream = AudioStreamOggVorbis.load_from_file(path)
 		elif path.ends_with(".wav"):
 			stream = AudioStreamWAV.load_from_file(path)
+	BotProf.add(&"vo.load", pt)
 	_streams[path] = stream
 	return stream
 
@@ -885,6 +891,7 @@ func _next_part(group: StringName) -> void:
 	var pid: int = (item["part_pids"] as Array)[int(item["part"])]
 	var path: String = audio_path(item["id"], int(item["part"]) if parts.size() > 1 else -1)
 	var stream: AudioStream = load_stream(path)
+	warm_speaker(speaker)   # T-237: the rest of this speaker's lines load in the background from here on
 	if voice_test:
 		_voice_test_log(String(item["id"]) + ("_p%d" % int(item["part"]) if parts.size() > 1 else ""), String(speaker), path if stream != null else "")
 	if stream != null:
@@ -1050,6 +1057,28 @@ func advance(delta: float) -> void:
 
 func _process(delta: float) -> void:
 	advance(delta)
+	if warm.busy():
+		warm.tick()
+
+
+## T-237: queues every recorded line of `speaker` for background loading (once per speaker). Squad members and
+## companions only: they talk all match long, a few hundred short lines each; the story voices (the Operator, the
+## radio, the tannoy) speak a handful of long lines a match and stay load-on-play.
+func warm_speaker(speaker: StringName) -> void:
+	if not StreamWarm.enabled or _warmed.has(speaker) or _group_for(speaker) == GROUP_STORY:
+		return
+	_warmed[speaker] = true
+	var prefix: String = String(speaker) + ":"
+	for key: Variant in _index.keys():
+		if not str(key).begins_with(prefix):
+			continue
+		for id: Variant in _index[key]:
+			if (lines.get(String(id), {}) as Dictionary).has("exchange"):
+				continue
+			if voice_language != "":
+				warm.add(audio_path(StringName(id)))
+			else:
+				warm.add("%s%s/%s.ogg" % [AUDIO_DIR, String(speaker).to_lower(), String(id)])
 
 
 ## Cheap occlusion (T-073, rules.json audio "occlusion_*"): a few times a second, while a bot's (or another

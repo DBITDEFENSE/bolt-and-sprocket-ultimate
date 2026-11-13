@@ -1,5 +1,5 @@
 {
- "_doc": "Fernflug IV, Mondlicht: hard black and white; Nachtglas violet is the only colour (the amber lamps and the red go grey on purpose). T-207.",
+ "_doc": "Fernflug IV, Mondlicht: hard black and white; Nachtglas violet is the only colour (the amber lamps and the red go grey on purpose). T-207. T-222: the store, the retention hall and the Account lift their exposure inside (LookZones boxes; the yard and the domes by the yard keep the vacuum's hard exposure).",
  "map": "map04d_mondlicht",
  "tonemap": "filmic",
  "exposure": 1.7,
@@ -83,5 +83,43 @@
     "sat_scale": 0.35
    }
   ]
+ },
+ "zones": {
+  "t222_store": {
+   "_doc": "T-222: Fulfillment",
+   "boxes": [
+    [
+     12,
+     -1,
+     24,
+     44,
+     5.5,
+     60
+    ]
+   ],
+   "exposure": 2.4
+  },
+  "t222_hall": {
+   "_doc": "T-222: the retention hall and the Account",
+   "boxes": [
+    [
+     12,
+     -1,
+     -16,
+     44,
+     9.5,
+     24
+    ],
+    [
+     14,
+     -1,
+     -44,
+     42,
+     7.5,
+     -16
+    ]
+   ],
+   "exposure": 2.5
+  }
  }
 }

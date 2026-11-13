@@ -10,6 +10,13 @@ extends Node
 ## a scripted kill's payout (HomageBoss.debug_kill: the data's flag and kill_scrip_per_player each; the Account
 ## Manager escalates instead: manager_escalated, escalate_scrip_per_player and her Resupply). The horde is culled
 ## while waiting so the boss has the stage. One "[actboss] RESULT: PASS|FAIL" line (tools/run_smokes.sh reads it).
+## T-234 (docs/boss_rework/w4_fernflug.md): each case also forces the boss's late phase by health and checks the
+## rework's beat: the Kranführer's phase 2 queues the hangar's work lights to die (and drops one when the hangar has
+## any lit) and never finds a squad of one "alone"; the Bordwart's Overspeed darkens the room through the kit and
+## lights the core white; the Test Pilot's Stall (on the lakebed) darkens the lights round him, cracks the floor and
+## raises Burrowers, and the lights come back when he rises; the Account Manager's COLLECTIONS puts the Account's lamps
+## out and prices the whole squad once nobody has stood in her light for dark_after s (the account is cut). Every
+## boss's dread block names a surface and no Fernflug boss has footfalls (only the Pilot's landings stomp).
 ##
 ## godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/smoke_act_bosses.tscn
 
@@ -117,6 +124,12 @@ func _case(c: Dictionary) -> void:
 	var counters: Array = c["counters"]
 	var acted: bool = await _until(func() -> bool: return _acted(boss, p0, counters), float(c["act_window"]))
 	_check(acted, "he moves or attacks within %.0f s (moved %.1f m; %s)" % [float(c["act_window"]), boss.global_position.distance_to(p0) if is_instance_valid(boss) else 0.0, _counts(boss, counters)])
+	# T-234: the kit's data and the rework's beat in his late phase
+	var dread: Dictionary = bcfg.get("dread", {})
+	_check(["iron", "flesh", "glass"].has(str(dread.get("surface", ""))), "%s's dread block names a surface (%s)" % [title, str(dread.get("surface", ""))])
+	_check(str(dread.get("step_sound", "")) == "" and float(dread.get("step_shake", 0.0)) <= 0.0, "no footfalls through the base (only the Pilot's landings stomp)")
+	if is_instance_valid(boss) and boss.is_active():
+		await _beat(str(c["id"]), boss, p)
 	# the scripted kill and its payout
 	var scrip0: int = Economy.get_scrip(p.player_id)
 	_drops.clear()
@@ -136,6 +149,59 @@ func _case(c: Dictionary) -> void:
 		_check(Economy.get_scrip(p.player_id) >= scrip0 + pay2, "the kill pays %d Scrip each (%d -> %d)" % [pay2, scrip0, Economy.get_scrip(p.player_id)])
 	for d: Variant in bcfg.get("drops", []):
 		_check(_drops.has(str(d)), "his %s drop" % str(d))
+
+
+# ================================================================== the rework's beats (T-234)
+
+func _beat(id: String, boss: HomageBoss, p: Player) -> void:
+	match id:
+		"kranfuehrer":
+			var kf: Kranfuehrer = boss as Kranfuehrer
+			_check(not kf.alone_now, "a squad of one is never 'alone' (the alone rule needs teammates)")
+			kf.hp = kf.max_hp * 0.55
+			var queued: bool = await _until(func() -> bool: return kf.lights_phase_done >= 2, 8.0)
+			_check(queued and kf.phase == 2, "phase 2 queues the hangar's work lights to die (phase %d, step %d)" % [kf.phase, kf.lights_phase_done])
+			var swept: bool = await _until(func() -> bool: return kf.hook_down or kf.sweeps_done > 0 or kf.drops_done > 0, 20.0)
+			_check(swept, "phase 2: the hook comes down for a sweep (or a casing fell; hook down %s, %s)" % [str(kf.hook_down), _counts(kf, ["drops_done", "sweeps_done"])])
+			_note("the hangar has %d lit work lights" % kf.work_lights.size())
+			if kf.work_lights.size() > 0:
+				var dropped: bool = await _until(func() -> bool: return kf.lights_dropped > 0, 6.0)
+				_check(dropped, "one work light gutters out (%d dropped)" % kf.lights_dropped)
+				var want: int = Kranfuehrer.lights_to_drop(kf.work_lights.size(), kf.work_lights.size(), 0.35, 3)
+				_check(want + 3 <= kf.work_lights.size() or want == 0, "never below the three nearest the ramp (%d of %d)" % [want, kf.work_lights.size()])
+		"bordwart":
+			var bw: Bordwart = boss as Bordwart
+			bw.hp = bw.max_hp * 0.25
+			var over: bool = await _until(func() -> bool: return bw.overspeed_on, 6.0)
+			_check(over and bw.phase == 3, "Overspeed: the room banks into darkness (phase %d)" % bw.phase)
+			var core: OmniLight3D = bw.get("_core_light") as OmniLight3D
+			var lit: bool = await _until(func() -> bool: return core != null and core.light_energy > 0.5, 4.0)
+			_check(lit, "only the core's white remains (core light %.1f)" % (core.light_energy if core != null else 0.0))
+			_check(bw.vent_flashes > 0, "the core flared at the Overspeed (%d flashes)" % bw.vent_flashes)
+			_check(bw.fx != null and bw.fx.dimmed_count() >= 0, "the kit holds the room's lights (%d captured)" % (bw.fx.dimmed_count() if bw.fx != null else -1))
+		"testpilot":
+			var tp: TestPilot = boss as TestPilot
+			tp.on_lake = true   # the Burrowers come up on the lakebed: pretend the fight went up the hatch
+			tp.hp = tp.max_hp * 0.25
+			var stalled: bool = await _until(func() -> bool: return tp.stalled, 30.0)
+			_check(stalled, "the Stall on his next landing (phase %d, landings %d, state %d)" % [tp.phase, tp.landings, tp.pstate])
+			if stalled:
+				_check(tp.stall_dark, "the lights round him die for the Stall (the one window)")
+				_check(tp.cracks_made > 0, "the landing cracked the floor (%d cracks)" % tp.cracks_made)
+				_check(tp.burrowers_raised > 0, "the Burrowers come up during the Stall (%d raised)" % tp.burrowers_raised)
+				var rose: bool = await _until(func() -> bool: return not tp.stalled, 10.0)
+				_check(rose and not tp.stall_dark and tp.fx.dimmed_count() == 0, "he rises and the lights come back (dimmed %d)" % tp.fx.dimmed_count())
+		"account_manager":
+			var am: AccountManager = boss as AccountManager
+			Economy.grant(p.player_id, 2000)
+			var scrip_before: int = Economy.get_scrip(p.player_id)
+			am.hp = am.max_hp * 0.3
+			var coll: bool = await _until(func() -> bool: return am.phase == 3, 6.0)
+			_check(coll and am.collections_dark, "COLLECTIONS puts the Account's lamps out (phase %d)" % am.phase)
+			_check(not am.player_in_light(p), "the player at 10 m stands outside her light")
+			var priced: bool = await _until(func() -> bool: return am.prices_all_done > 0, 20.0)
+			_check(priced, "nobody in her light for %.0f s: the whole squad is priced at once (%d; dark %.1f s)" % [float((am.wcfg.get("price", {}) as Dictionary).get("dark_after", 6.0)), am.prices_all_done, am.dark_t])
+			_check(Economy.get_scrip(p.player_id) < scrip_before, "the squad pricing cut the account (%d -> %d)" % [scrip_before, Economy.get_scrip(p.player_id)])
 
 
 # ================================================================== helpers

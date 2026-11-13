@@ -111,6 +111,16 @@ var _curves: Dictionary = {}
 var _pcfg: Dictionary = {}
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _think_t: float = 0.0
+## T-237: the squad's think count when this brain's last tick ended (think_slot), and what it found in or out of
+## reach lately (_reachable: a half-metre cell -> [squad time, reachable]).
+var _seen_seq: int = 0
+var _reach_cache: Dictionary = {}
+var _reach_stamp: int = -1
+var _reach_from: Vector3 = Vector3.INF   # where the bot stood when the answers were taken
+## T-237: a think waits at most this long for its turn (the squad thinks one brain per tick).
+const THINK_WAIT_MAX_S: float = 0.1
+## T-237: how long a reachability answer is kept (doors opening clear it at once: BotSquad._on_door_opened).
+const REACH_TTL_S: float = 4.0
 var _nav_ready: bool = false
 var _was_down: bool = false
 var _was_out: bool = false
@@ -374,24 +384,46 @@ func _physics_process(delta: float) -> void:
 		action = "idle"
 	player._update_health(delta)
 	_think_t -= delta
-	if _think_t <= 0.0:
+	if _think_t <= 0.0 and think_slot():
 		_think_t = 1.0 / maxf(1.0, think_hz)
 		var tt: int = Time.get_ticks_usec()
 		_think()
 		us_think += float(Time.get_ticks_usec() - tt)
 		thinks += 1
+		squad.think_seq += 1
 	loco.clear_look()   # a look lasts one frame: the aim layer (or the executor) asks again every frame
+	var pt: int = BotProf.t()
 	if aim.break_free():
 		loco.stop()   # U10 (T-163): held by a boss's grab: knife it free (the action waits)
 	else:
 		actions.run(action, delta)
+	if BotProf.on:
+		BotProf.add(StringName("act." + action), pt)
+	pt = BotProf.t()
 	loco.tick(delta)
+	BotProf.add(&"loco", pt)
 	_sprint_t = _sprint_t + delta if player.sprinting else 0.0
 	if _sprint_t > 1.0:
 		bonus_event("sprint")
+	pt = BotProf.t()
 	_pose(delta)
 	_local_view(delta)
+	BotProf.add(&"pose", pt)
 	_account(t0)
+
+
+## T-237: may this brain think on this tick? One brain of the squad thinks per physics tick: a think is the
+## brain's one heavy step (senses with their rays, the shared blackboard, the errand list with its path queries,
+## every action scored), and two or three landing on one tick was a frame-time spike (the stagger set at setup is
+## lost whenever an errand ends or an order comes: those think at once). A brain whose turn it is not waits a tick,
+## THINK_WAIT_MAX_S at most. True when no other brain has thought since this one's last tick ended.
+func think_slot() -> bool:
+	return squad.think_seq == _seen_seq or _think_t < -THINK_WAIT_MAX_S or not BotProf.opt
+
+
+## T-237: forgets what was in or out of reach (a door opened, the bot was moved).
+func forget_reach() -> void:
+	_reach_cache.clear()
 
 
 ## T-071: the player bot's body is the local Player: its camera and viewmodel follow what the brain did this frame.
@@ -401,6 +433,7 @@ func _local_view(delta: float) -> void:
 
 
 func _account(t0: int) -> void:
+	_seen_seq = squad.think_seq   # T-237 (think_slot): whoever thinks after this is ahead of this brain's next tick
 	us_total += float(Time.get_ticks_usec() - t0)
 	frames += 1
 
@@ -425,19 +458,31 @@ func _think() -> void:
 	var now: float = squad.time()
 	if crawler != null:
 		crawler.think(now)
+	var pt: int = BotProf.t()
 	perception.sense(now)
+	BotProf.add(&"think.sense", pt)
+	pt = BotProf.t()
 	squad.update_shared(now)
+	BotProf.add(&"think.shared", pt)
+	pt = BotProf.t()
 	aim.force_slot = forced_slot()
 	if action != "cover":
 		aim.cover_point = Vector3.INF
 	aim.think(now)
+	BotProf.add(&"think.aim", pt)
 	_read_claims(now)
+	pt = BotProf.t()
 	if ee != null:
 		ee.tick_think(now)
+	BotProf.add(&"think.ee", pt)
+	pt = BotProf.t()
 	if mark != null:
 		mark.tick_think(now)
+	BotProf.add(&"think.mark", pt)
+	pt = BotProf.t()
 	if setpieces != null:
 		setpieces.think(now)
+	BotProf.add(&"think.setpieces", pt)
 	if player.remote_body != null:
 		var cw: WeaponInstance = aim.cur()
 		var shown: StringName = cw.id if cw != null else &""
@@ -447,7 +492,10 @@ func _think() -> void:
 	if not bonus_said and now >= _bonus_due_t:
 		_bonus_due_t = now + 4.0
 		bonus_event("fallback")
+	pt = BotProf.t()
 	_ctx = context(now)
+	BotProf.add(&"think.context", pt)
+	pt = BotProf.t()
 	var mods: Dictionary = {"personality": personality.get("actions", {}), "role": (_acfg.get("roles", {}) as Dictionary).get(role, {})}
 	var oid: StringName = order_id()
 	if oid != &"":
@@ -477,6 +525,7 @@ func _think() -> void:
 	if setpieces != null and setpieces.wants_control() and best != "revive" 			and (setpieces.urgent() or not (["retreat", "cover"].has(best) and float(scores.get(best, 0.0)) > 0.8)):
 		best = "setpiece"   # U10 (T-163): a rail in a breach's pull, shelter from the meteors, the wing walk, the vent
 	top3 = BotUtility.top(scores, 3)
+	BotProf.add(&"think.score", pt)
 	if best != action and (now - _action_t >= float(_acfg.get("min_action_s", 0.4)) or action == "idle" or best == "retreat" or best == "revive" or best == "setpiece"):
 		_set_action(best)
 		actions.enter(best)
@@ -1100,7 +1149,7 @@ func _pose(delta: float) -> void:
 	player.net_flags = flags
 	if player.remote_body != null:
 		player.remote_body.calm = (action == "follow" or action == "idle" or action == "chatter") and aim.target == null and perception.nearest_d > 9.0 and player.horizontal_speed() < 0.3
-		player.remote_body.update_pose(delta, player.horizontal_speed(), player.head.rotation.x, flags)
+		player.remote_body.update_pose_lod(delta, player.horizontal_speed(), player.head.rotation.x, flags)   # T-237: by what the camera sees
 
 
 # ================================================================== the T-031 / planner API (kept)
@@ -1239,7 +1288,39 @@ static func _front_of(node: Interactable) -> Vector3:
 	return p
 
 
+## T-237: the answer is kept per half-metre cell for REACH_TTL_S. Whether a spot can be reached changes when a
+## door opens or a zone unlocks (the answers are dropped then: the stamp below, and BotSquad._on_door_opened) or
+## the bot ends up on another island of the navmesh, not from one think to the next; the errand list asked for every machine, wall gun, door and window in range
+## again each second (a path query each, 2 to 9 ms a list on Map 0).
 func _reachable(p: Vector3) -> bool:
+	if not BotProf.opt:
+		return _reachable_now(p)
+	# the world as the answers knew it: the open zones' layers and how many doors stand open (a door opened by a
+	# script, a zone unlocked by a quest: neither sends door_opened)
+	var stamp: int = squad.nav_mask()
+	for d: BuyDoor in _doors:
+		if is_instance_valid(d) and d.is_open:
+			stamp += 1 << 40
+	# the bot was moved (a ladder, the zip line, a revive or respawn teleport): answers from the old spot are another
+	# island's. A walk covers 8 m in about the cache's own lifetime, so this costs a walking bot nothing.
+	var here: Vector3 = player.global_position
+	if stamp != _reach_stamp or not _reach_from.is_finite() or here.distance_to(_reach_from) > 8.0:
+		_reach_stamp = stamp
+		_reach_from = here
+		_reach_cache.clear()
+	var key: Vector3i = Vector3i(roundi(p.x * 2.0), roundi(p.y * 2.0), roundi(p.z * 2.0))
+	var now: float = squad.time()
+	var hit: Variant = _reach_cache.get(key)
+	if hit != null and absf(now - float((hit as Array)[0])) < REACH_TTL_S:
+		return bool((hit as Array)[1])
+	var ok: bool = _reachable_now(p)
+	if _reach_cache.size() > 256:
+		_reach_cache.clear()
+	_reach_cache[key] = [now, ok]
+	return ok
+
+
+func _reachable_now(p: Vector3) -> bool:
 	var dest: Vector3 = snap(p)
 	if dest.distance_to(p) > 2.0:
 		return false
@@ -1261,7 +1342,7 @@ func door_approach(door: BuyDoor, front: Vector3) -> Vector3:
 	if c is Array and squad.time() - float((c as Array)[0]) < 4.0:
 		return (c as Array)[1]
 	var out: Vector3 = front
-	var path: PackedVector3Array = NavigationServer3D.map_get_path(player.get_world_3d().navigation_map, player.global_position, sf, true, 0x7FFFFFFF)
+	var path: PackedVector3Array = BotProf.nav_path(player.get_world_3d().navigation_map, player.global_position, sf, true, 0x7FFFFFFF)
 	var i: int = path.size() - 1
 	while i > 0:
 		var a: Vector3 = path[i]
@@ -1315,7 +1396,7 @@ func _snap(p: Vector3) -> Vector3:
 
 ## A nav path that doesn't cross a closed BuyDoor (doors aren't baked into the navmesh).
 func open_path(from: Vector3, dest: Vector3) -> PackedVector3Array:
-	var path: PackedVector3Array = NavigationServer3D.map_get_path(player.get_world_3d().navigation_map, from, dest, true, squad.nav_mask())
+	var path: PackedVector3Array = BotProf.nav_path(player.get_world_3d().navigation_map, from, dest, true, squad.nav_mask())
 	for d: BuyDoor in _doors:
 		if is_instance_valid(d) and not d.is_open and ZombieDirector.door_crossed(d, path):
 			return PackedVector3Array()

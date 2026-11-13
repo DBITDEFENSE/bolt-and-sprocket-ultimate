@@ -12,8 +12,23 @@ extends HomageBoss
 ## open and the torso is the weak point (x`weak_mult`), again every `present.every` s. She never dies: at 0 % (or
 ## the failsafe) she ESCALATES: folds, says her line, the flag `manager_escalated` unlocks the console's cover.
 ## Nobody human dies in the finale; the dead are the horde's. Pure rules are static for the tests.
+## T-234 (docs/BOSS_REWORK.md, docs/boss_rework/w4_fernflug.md): tall and elegant: the ledger face carries lit
+## signature lines (violet script over brass rulings) and the two lenses are her "eyes" (lit, never blinking); the
+## chest plate really opens on a hinge when a contract is presented, the signature line behind it lit violet; the
+## cabinet wears brass trim and ledger script; her light is a violet spot from the console onto the floor in front
+## of her. Sound: `manager_servo` on every move, `manager_stamp` on a pricing, `manager_field_hum` while the field
+## is up; every telegraph lights through the kit; the shield-cells hum and spark when hit (ShieldCell). The new
+## beat: COLLECTIONS puts the Account's lamps out (the kit; her light stays) and when nobody alive has stood in her
+## light for `price.dark_after` s she prices the whole squad at once (`price_all`: a `price.all_telegraph` telegraph
+## with the servo and the hum rising and her light flaring, then `price.all_damage` and `price.all_scrip_fraction`
+## of every living player's account, cooldown `price.all_cooldown`). The squad rule: with one human standing the
+## presented contract stays open `present.seconds` x `present.alone_mult` (she is polite to a squad of one).
 
-enum W { IDLE, ARMS_TELE, ARMS, PRICE_TELE, PRICE, RECOVER, FOLDED }
+enum W { IDLE, ARMS_TELE, ARMS, PRICE_TELE, PRICE, RECOVER, FOLDED, PRICE_ALL_TELE }
+
+const VIOLET: Color = Color(0.4, 0.18, 0.62)
+const VIOLET_LIT: Color = Color(0.78, 0.5, 1.0)
+const BRASS: Color = Color(0.7, 0.58, 0.3)
 
 var wcfg: Dictionary = {}
 var wstate: W = W.IDLE
@@ -39,6 +54,18 @@ var crews_done: int = 0
 var cells_lost: int = 0
 var cells_shot: int = 0
 var presents_done: int = 0
+# T-234
+var prices_all_done: int = 0
+var dark_t: float = 0.0               # seconds since somebody alive last stood in her light (COLLECTIONS)
+var collections_dark: bool = false    # the Account's lamps are out
+var _plate_piv: Node3D = null
+var _sig_mat: StandardMaterial3D = null
+var _sig_light: OmniLight3D = null
+var _face_mat: StandardMaterial3D = null
+var _spot: SpotLight3D = null
+var _field_hum: AudioStreamPlayer3D = null
+var _idle_servo_t: float = 6.0
+var _plate_open: bool = false
 
 
 static func table() -> Dictionary:
@@ -75,6 +102,29 @@ static func price_cut(scrip: int, fraction: float) -> int:
 	return maxi(1, int(round(float(scrip) * fraction)))
 
 
+## T-234: true when `p` stands in her light: within `range_m` (flat) of `origin` and within acos(cos_min) of `fwd`.
+static func in_light(origin: Vector3, fwd: Vector3, p: Vector3, range_m: float, cos_min: float) -> bool:
+	var d: Vector3 = p - origin
+	d.y = 0.0
+	if d.length() > range_m:
+		return false
+	var f: Vector3 = Vector3(fwd.x, 0, fwd.z)
+	if d.length() < 0.05 or f.length() < 0.01:
+		return true
+	return d.normalized().dot(f.normalized()) >= cos_min
+
+
+## T-234: the squad pricing is due in COLLECTIONS when nobody has stood in her light for `dark_after` s and its
+## cooldown is over.
+static func price_all_due(phase_now: int, dark_seconds: float, dark_after: float, cooldown_ready: bool) -> bool:
+	return phase_now >= 3 and cooldown_ready and dark_seconds >= dark_after
+
+
+## T-234: how long a presented contract stays open: `alone_mult` x with one human standing.
+static func present_seconds(base: float, humans_up: int, alone_mult: float) -> float:
+	return base * (alone_mult if humans_up <= 1 else 1.0)
+
+
 func _ready() -> void:
 	super._ready()
 	boss_key = "account_manager"
@@ -96,6 +146,10 @@ func person_id() -> String:
 	return "account_manager"
 
 
+func rcfg() -> Dictionary:
+	return wcfg.get("rework", {})
+
+
 func say(line_id: String) -> void:
 	if line_id != "":
 		GLVO.play(StringName(line_id))
@@ -110,11 +164,16 @@ func spawn_manager(_at: Vector3, health: float) -> void:
 	phase = 1
 	escalated = false
 	presenting = 0.0
+	dark_t = 0.0
+	collections_dark = false
 	_present_t = float((wcfg.get("present", {}) as Dictionary).get("every", 20.0)) * 0.5
 	_crew_t = 6.0
 	_trial_t = -1.0
 	_trial_cycle_t = 0.0
+	_set_inst("inst_dirt", 0.0)
 	RoundManager.reserve_alive(1)
+	if _field_hum != null:
+		_field_hum.play()
 	if not _title_done:
 		_title_done = true
 		var hud: BossHud = BossHud.new()
@@ -122,6 +181,7 @@ func spawn_manager(_at: Vector3, health: float) -> void:
 		hud.title_card(str(wcfg.get("title", "THE ACCOUNT MANAGER")), str(wcfg.get("subtitle", "attending remotely")), str(wcfg.get("date_line", "MONDLICHT  ·  RR-7")))
 		hud.add_bar("account_manager", self, str(wcfg.get("title", "THE ACCOUNT MANAGER")), "the contract")
 	say(str(wcfg.get("spawn_vo", "")))
+	_servo(0.0)
 	get_tree().create_timer(6.0).timeout.connect(func() -> void: _present(1))
 
 
@@ -132,20 +192,126 @@ func _map() -> Node:
 	return n if n != null else get_parent()
 
 
+# ================================================================== the model (T-234)
+
+func _mesh_box(parent: Node3D, center: Vector3, size: Vector3, m: Material) -> MeshInstance3D:
+	var bm: BoxMesh = BoxMesh.new()
+	bm.size = size
+	bm.material = m
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.mesh = bm
+	mi.position = center
+	parent.add_child(mi)
+	return mi
+
+
 func _build_costume() -> void:
-	var violet: Color = Color(0.4, 0.18, 0.62)
-	var brass: Color = Color(0.7, 0.58, 0.3)
-	# the ledger face: a tall plate over the head, two lenses; the chest plate (the contract) with a signature line
-	costume("Head", [HomageBoss.boxp(Vector3(0.3, 0.42, 0.06), Vector3(0, 0.1, -0.12), violet),
-		HomageBoss.sph(0.035, Vector3(-0.07, 0.16, -0.16), Color(0.9, 0.7, 1.0)), HomageBoss.sph(0.035, Vector3(0.07, 0.16, -0.16), Color(0.9, 0.7, 1.0))], 1.8)
-	costume("Chest", [HomageBoss.boxp(Vector3(0.42, 0.5, 0.05), Vector3(0, 0.15, -0.16), violet),
-		HomageBoss.boxp(Vector3(0.3, 0.02, 0.06), Vector3(0, 0.0, -0.17), brass)], 0.6)
-	# the welcome arms: long sleeves, telescoping in the sweep
+	var brass_m: StandardMaterial3D = HomageBoss.mat_ex(BRASS, 0.35, 0.9)
+	var violet_m: StandardMaterial3D = HomageBoss.mat_ex(VIOLET, 0.3, 0.4, 0.12, VIOLET_LIT)   # the first render bloomed the plate white at 0.5
+	# the ledger face: a tall plate over the head, brass rulings and lit signature lines (her script), the lenses lit
+	costume("Head", [HomageBoss.boxp(Vector3(0.3, 0.42, 0.06), Vector3(0, 0.1, -0.12), VIOLET)], 0.6)
+	var head: Node3D = bone_attachment("Head")
+	if head != null:
+		var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+		rng.seed = 41
+		for i: int in 5:
+			_mesh_box(head, Vector3(0, -0.07 + 0.045 * float(i), -0.152), Vector3(0.24, 0.003, 0.004), brass_m)
+		_face_mat = StandardMaterial3D.new()
+		_face_mat.albedo_color = VIOLET_LIT
+		_face_mat.emission_enabled = true
+		_face_mat.emission = VIOLET_LIT
+		_face_mat.emission_energy_multiplier = 1.2
+		for i: int in 9:
+			var y: float = -0.06 + 0.045 * float(i % 5) + rng.randf_range(0.0, 0.03)
+			var len_: float = rng.randf_range(0.05, 0.16)
+			var x: float = rng.randf_range(-0.1, 0.1)
+			var mi: MeshInstance3D = _mesh_box(head, Vector3(x, y, -0.154), Vector3(len_, 0.006, 0.003), _face_mat)
+			mi.rotation.z = rng.randf_range(-0.25, 0.25)
+		_mesh_box(head, Vector3(0, 0.31, -0.12), Vector3(0.32, 0.02, 0.08), brass_m)
+	eye_glow(Color(0.92, 0.75, 1.0), 1.4, 0.0, [Vector3(-0.07, 0.16, -0.16), Vector3(0.07, 0.16, -0.16)])
+	# the chest plate (the contract) on a hinge at its top edge; the signature line and its light behind it
+	var chest: Node3D = bone_attachment("Chest")
+	if chest != null:
+		_plate_piv = Node3D.new()
+		_plate_piv.name = "PlateHinge"
+		_plate_piv.position = Vector3(0, 0.4, -0.14)
+		chest.add_child(_plate_piv)
+		_mesh_box(_plate_piv, Vector3(0, -0.25, -0.02), Vector3(0.42, 0.5, 0.04), violet_m)
+		_mesh_box(_plate_piv, Vector3(0, -0.25, -0.045), Vector3(0.36, 0.42, 0.005), HomageBoss.mat_ex(Color(0.3, 0.14, 0.5), 0.25, 0.5))
+		for i: int in 3:
+			_mesh_box(_plate_piv, Vector3(0, -0.12 - 0.1 * float(i), -0.048), Vector3(0.3, 0.003, 0.003), brass_m)
+		_mesh_box(chest, Vector3(0, 0.15, -0.1), Vector3(0.4, 0.5, 0.03), HomageBoss.mat_ex(Color(0.08, 0.06, 0.1), 0.5, 0.3))
+		_sig_mat = StandardMaterial3D.new()
+		_sig_mat.albedo_color = BRASS
+		_sig_mat.metallic = 0.9
+		_sig_mat.roughness = 0.3
+		_sig_mat.emission_enabled = true
+		_sig_mat.emission = VIOLET_LIT
+		_sig_mat.emission_energy_multiplier = 0.0
+		_mesh_box(chest, Vector3(0, 0.0, -0.12), Vector3(0.3, 0.02, 0.02), _sig_mat)
+		_sig_light = OmniLight3D.new()
+		_sig_light.light_color = VIOLET_LIT
+		_sig_light.light_energy = 0.0
+		_sig_light.omni_range = 3.0
+		_sig_light.shadow_enabled = false
+		_sig_light.position = Vector3(0, 0.05, -0.25)
+		chest.add_child(_sig_light)
+	# the welcome arms: long sleeves, telescoping in the sweep, brass at the joints
 	for side: String in ["Left", "Right"]:
-		costume(side + "UpperArm", [HomageBoss.cyl(0.07, 0.06, 0.34, Vector3(0, -0.15, 0), violet)], 0.3)
-		costume(side + "LowerArm", [HomageBoss.cyl(0.06, 0.05, 0.36, Vector3(0, -0.16, 0), violet), HomageBoss.sph(0.06, Vector3(0, -0.36, 0), brass)], 0.3)
-	# the skirt of the unit: a cabinet from the hips down
-	costume("Hips", [HomageBoss.boxp(Vector3(0.5, 0.9, 0.4), Vector3(0, -0.45, 0), violet)], 0.4)
+		costume(side + "UpperArm", [HomageBoss.cyl(0.07, 0.06, 0.34, Vector3(0, -0.15, 0), VIOLET), HomageBoss.sph(0.075, Vector3(0, 0.0, 0), BRASS)], 0.3)
+		costume(side + "LowerArm", [HomageBoss.cyl(0.06, 0.05, 0.36, Vector3(0, -0.16, 0), VIOLET), HomageBoss.sph(0.06, Vector3(0, -0.36, 0), BRASS), HomageBoss.sph(0.065, Vector3(0, 0.0, 0), BRASS)], 0.3)
+	# the skirt of the unit: a cabinet from the hips down, brass trim, ledger script down its face
+	costume("Hips", [HomageBoss.boxp(Vector3(0.5, 0.9, 0.4), Vector3(0, -0.45, 0), VIOLET)], 0.4)
+	var hips: Node3D = bone_attachment("Hips")
+	if hips != null:
+		for e: Array in [[Vector3(0, -0.02, 0), Vector3(0.54, 0.03, 0.44)], [Vector3(0, -0.89, 0), Vector3(0.54, 0.03, 0.44)],
+				[Vector3(-0.255, -0.45, -0.205), Vector3(0.02, 0.9, 0.02)], [Vector3(0.255, -0.45, -0.205), Vector3(0.02, 0.9, 0.02)]]:
+			_mesh_box(hips, e[0], e[1], brass_m)
+	cracks("Hips", 12, 0.205, -0.8, -0.1, VIOLET_LIT, 1.5, 23)
+	# her light: a violet spot from over the console onto the floor in front of her
+	_spot = SpotLight3D.new()
+	_spot.light_color = VIOLET_LIT
+	_spot.light_energy = 1.8
+	_spot.spot_range = 10.0
+	_spot.spot_angle = 38.0
+	_spot.spot_attenuation = 0.9
+	_spot.shadow_enabled = false
+	_spot.position = Vector3(0, 2.8, -0.4)
+	_spot.rotation.x = -deg_to_rad(52.0)
+	add_child(_spot)
+	_field_hum = AudioDirector.make_loop_3d("manager_field_hum", self, float(rcfg().get("field_hum_db", -10.0)))
+
+
+## The chest plate swings open (a presented contract) or shut.
+func _set_plate(open: bool) -> void:
+	if _plate_open == open:
+		return
+	_plate_open = open
+	if _plate_piv != null:
+		var tw: Tween = create_tween()
+		tw.tween_property(_plate_piv, "rotation:x", -1.9 if open else 0.0, 0.45).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	if _sig_mat != null:
+		_sig_mat.emission_energy_multiplier = 3.0 if open else 0.0
+	if _sig_light != null:
+		_sig_light.light_energy = 2.2 if open else 0.0
+
+
+func _servo(db: float = -4.0) -> void:
+	AudioDirector.play_3d("manager_servo", global_position + Vector3.UP * 1.6, db + float(rcfg().get("servo_db", -4.0)) + 4.0, 0.05)
+
+
+## True when `p` stands in her light.
+func player_in_light(p: Player) -> bool:
+	var pc: Dictionary = wcfg.get("price", {})
+	return in_light(global_position, -global_basis.z, p.global_position, float(pc.get("light_range", 7.0)), float(pc.get("light_cos", 0.35)))
+
+
+func _humans_up() -> int:
+	var n: int = 0
+	for p: Player in alive_players():
+		if not p.is_bot:
+			n += 1
+	return n
 
 
 func _tick(delta: float) -> void:
@@ -170,6 +336,8 @@ func _tick(delta: float) -> void:
 	# the contract presented now and then: the open plate
 	if presenting > 0.0:
 		presenting -= delta
+		if presenting <= 0.0:
+			_set_plate(false)
 	else:
 		_present_t -= delta
 		if _present_t <= 0.0:
@@ -178,6 +346,12 @@ func _tick(delta: float) -> void:
 		_tick_trial(delta)
 	if phase >= 3:
 		_tick_collections(delta)
+		var someone: bool = false
+		for p: Player in alive_players():
+			if player_in_light(p):
+				someone = true
+				break
+		dark_t = 0.0 if someone else dark_t + delta
 	match wstate:
 		W.IDLE:
 			if _wt > 0.0:
@@ -188,13 +362,31 @@ func _tick(delta: float) -> void:
 				wstate = W.ARMS_TELE
 				_wt = tele_len(float(ac.get("telegraph", 1.2)))
 				bstate = B.TELEGRAPH
-				sfx("chain", -2.0, 1.4)
+				_servo(0.0)
+				fx.tele(VIOLET_LIT, 4.0, _wt)
+			elif price_all_due(phase, dark_t, float(pc.get("dark_after", 6.0)), cd_ready("price_all")):
+				wstate = W.PRICE_ALL_TELE
+				_wt = tele_len(float(pc.get("all_telegraph", 1.4)))
+				bstate = B.TELEGRAPH
+				_servo(2.0)
+				fx.tele(VIOLET_LIT, 6.0, _wt)
+				if _field_hum != null:
+					_field_hum.volume_db = float(rcfg().get("field_hum_db", -10.0)) + 6.0
+					_field_hum.play()
+				if _spot != null:
+					var tw: Tween = create_tween()
+					tw.tween_property(_spot, "light_energy", 9.0, _wt * 0.8)
+				fx.extra_dread = 0.5
+				if prices_all_done == 0:
+					var vo: Array = pc.get("vo", [])
+					say(str(vo[1]) if vo.size() > 1 else "")
 			elif phase >= 3 and cd_ready("price") and _pick_price_target(float(pc.get("range", 14.0))) != null:
 				_price_target = _pick_price_target(float(pc.get("range", 14.0)))
 				wstate = W.PRICE_TELE
 				_wt = tele_len(float(pc.get("telegraph", 0.9)))
 				bstate = B.TELEGRAPH
-				sfx("hum", 0.0, 1.5)
+				_servo(-2.0)
+				fx.tele(VIOLET_LIT, 4.0, _wt)
 				if prices_done == 0:
 					say(str((pc.get("vo", []) as Array)[0]) if (pc.get("vo", []) as Array).size() > 0 else "")
 			else:
@@ -211,6 +403,12 @@ func _tick(delta: float) -> void:
 				wstate = W.RECOVER
 				_wt = 0.8
 				bstate = B.RECOVER
+		W.PRICE_ALL_TELE:
+			if _wt <= 0.0:
+				_stamp_all()
+				wstate = W.RECOVER
+				_wt = 1.2
+				bstate = B.RECOVER
 		W.RECOVER:
 			if _wt <= 0.0:
 				wstate = W.IDLE
@@ -221,6 +419,7 @@ func _tick(delta: float) -> void:
 
 
 func _enter_phase(ph: int) -> void:
+	_servo(1.0)
 	match ph:
 		2:
 			var ctl: Node = get_tree().get_first_node_in_group(&"mondlicht_controller")
@@ -234,17 +433,29 @@ func _enter_phase(ph: int) -> void:
 		3:
 			_remove_trial()
 			GameState.set_flag(&"manager_field_down")
+			# T-234: the field drops (its hum with it) and the Account's lamps go out; her light stays. The lamps are
+			# captured before the cells spawn (their glows are no_dim too): a captured light that is freed later would
+			# trip the kit's flicker.
+			if _field_hum != null:
+				_field_hum.stop()
+			collections_dark = true
+			fx.lights_dim(station, float(rcfg().get("dark_radius", 22.0)), float(rcfg().get("dark_level", 0.1)), 3.0)
+			fx.lights_flicker(2.0, 0.8)
+			BossFx.burst("motes", station + Vector3.UP * 1.8, get_tree(), 2.0, 1.6)
+			dark_t = 0.0
 			_spawn_cells()
 			_crew_t = 4.0
 	_present(ph)
 
 
-## The contract presented: the phase's line, the plate open for `seconds` (the torso x weak).
+## The contract presented: the phase's line, the plate open for `seconds` (the torso x weak); longer for one human.
 func _present(ph: int) -> void:
 	var pc: Dictionary = wcfg.get("present", {})
-	presenting = float(pc.get("seconds", 3.0))
+	presenting = present_seconds(float(pc.get("seconds", 3.0)), _humans_up(), float(pc.get("alone_mult", 1.5)))
 	_present_t = float(pc.get("every", 20.0))
 	presents_done += 1
+	_set_plate(true)
+	_servo(-2.0)
 	var vo: Array = pc.get("vo", [])
 	if ph - 1 < vo.size() and presents_done <= 3:
 		say(str(vo[ph - 1]))
@@ -261,11 +472,13 @@ func _sweep() -> void:
 	var ac: Dictionary = wcfg.get("arms", {})
 	arms_done += 1
 	moves_used["arms"] = int(moves_used.get("arms", 0)) + 1
-	sfx("chain", 2.0, 1.1)
+	_servo(3.0)
 	var fwd: Vector3 = -global_basis.z
+	BossFx.burst("motes", global_position + fwd * 2.0 + Vector3.UP * 1.2, get_tree(), 1.0, 1.4)
 	for p: Player in alive_players():
 		if Bordwart.in_arc(global_position, fwd, p.global_position, float(ac.get("reach", 7.0))):
 			hit_player(p, float(ac.get("damage", 80)) * squad_damage_mult)
+			AudioDirector.play_3d("boss_hit_glass", p.global_position + Vector3.UP, 2.0)
 			var away: Vector3 = p.global_position - global_position
 			away.y = 0.0
 			p.external_push(away.normalized() * float(ac.get("push", 7.0)) + Vector3(0, 2.5, 0), 0.35, &"push")
@@ -289,6 +502,8 @@ func _offer_trial() -> void:
 
 func _remove_trial() -> void:
 	if trial != null and is_instance_valid(trial):
+		for l: Node in trial.find_children("*", "Light3D", true, false):
+			l.set_meta("no_dim", true)   # about to be freed: never one of the kit's captured lamps
 		trial.queue_free()
 	trial = null
 
@@ -352,6 +567,17 @@ func _pick_price_target(range_m: float) -> Player:
 	return best
 
 
+## One stamp on one player: the damage, the cut, the mark.
+func _price(p: Player, damage: float, fraction: float) -> void:
+	hit_player(p, damage * squad_damage_mult)
+	var cut: int = price_cut(Economy.get_scrip(p.player_id), fraction)
+	if cut > 0:
+		Economy.grant(p.player_id, -cut)
+	AudioDirector.play_3d("manager_stamp", p.global_position + Vector3.UP, 2.0, 0.04)
+	Effects.static_burst(p.global_position + Vector3.UP, 1.2)
+	BossFx.burst("motes", p.global_position + Vector3.UP * 1.2, get_tree(), 0.8, 1.0)
+
+
 func _stamp() -> void:
 	var pc: Dictionary = wcfg.get("price", {})
 	set_cd("price", cd_for(float(pc.get("cooldown", 8.0))))
@@ -361,15 +587,30 @@ func _stamp() -> void:
 		return
 	prices_done += 1
 	moves_used["price"] = int(moves_used.get("price", 0)) + 1
-	hit_player(p, float(pc.get("damage", 90)) * squad_damage_mult)
-	var cut: int = price_cut(Economy.get_scrip(p.player_id), float(pc.get("scrip_fraction", 0.1)))
-	if cut > 0:
-		Economy.grant(p.player_id, -cut)
-	sfx("board_slam", 0.0, 1.6, p.global_position + Vector3.UP)
-	Effects.static_burst(p.global_position + Vector3.UP, 1.2)
+	_price(p, float(pc.get("damage", 90)), float(pc.get("scrip_fraction", 0.1)))
 	var vo: Array = pc.get("vo", [])
 	if prices_done == 2 and vo.size() > 1:
 		say(str(vo[1]))
+
+
+## T-234: nobody stood in her light: the whole squad is priced at once, wherever they are.
+func _stamp_all() -> void:
+	var pc: Dictionary = wcfg.get("price", {})
+	set_cd("price_all", cd_for(float(pc.get("all_cooldown", 20.0))))
+	prices_all_done += 1
+	moves_used["price_all"] = int(moves_used.get("price_all", 0)) + 1
+	dark_t = 0.0
+	AudioDirector.play_3d("manager_stamp", global_position + Vector3.UP * 1.5, 6.0, 0.02)
+	BossFx.burst("motes", global_position + Vector3.UP * 2.0, get_tree(), 2.5, 2.0)
+	for p: Player in alive_players():
+		_price(p, float(pc.get("all_damage", 60)), float(pc.get("all_scrip_fraction", 0.05)))
+	if _field_hum != null:
+		_field_hum.stop()
+		_field_hum.volume_db = float(rcfg().get("field_hum_db", -10.0))
+	if _spot != null:
+		var tw: Tween = create_tween()
+		tw.tween_property(_spot, "light_energy", 1.8, 1.0)
+	fx.shake_all(global_position, 0.3, 30.0)
 
 
 func _tick_collections(delta: float) -> void:
@@ -415,6 +656,7 @@ func _bring_crew(cc: Dictionary) -> void:
 	if made > 0:
 		crews_done += 1
 		Effects.static_burst(pad + Vector3.UP, 2.0)
+		_servo(0.0)
 		if crews_done == 1:
 			say(str(cc.get("vo", "")))
 
@@ -480,7 +722,15 @@ func take_damage(amount: float, limb: StringName, weapon_id: StringName, by_play
 
 
 func _tele_glow() -> float:
-	return 4.0 if wstate in [W.ARMS_TELE, W.PRICE_TELE] else (2.0 if presenting_now() else 0.0)
+	return 4.0 if wstate in [W.ARMS_TELE, W.PRICE_TELE, W.PRICE_ALL_TELE] else (2.0 if presenting_now() else 0.0)
+
+
+## No Cousins' hum and no breath (she is a machine): a servo adjusts now and then while she waits.
+func _update_audio(delta: float) -> void:
+	_idle_servo_t -= delta
+	if _idle_servo_t <= 0.0 and wstate == W.IDLE:
+		_idle_servo_t = randf_range(5.0, 9.0)
+		_servo(-10.0)
 
 
 ## 0 %: she never dies. She folds, the voice steps away, the console unlocks.
@@ -507,6 +757,19 @@ func escalate() -> void:
 			c.vanish_for_good()
 	_pose.hold = true
 	_tree_play("React", str(_anim["clips"]["react"]["stagger"]), 0.2)
+	_set_plate(false)
+	_servo(2.0)
+	if _field_hum != null:
+		_field_hum.stop()
+	if _face_mat != null:
+		_face_mat.emission_energy_multiplier = 0.5
+	if _spot != null:
+		var tw: Tween = create_tween()
+		tw.tween_property(_spot, "light_energy", 0.6, 3.0)
+	if fx != null:
+		fx.lights_restore(4.0)
+		fx.release_dread()
+	collections_dark = false
 	say(str(wcfg.get("escalate_vo", "")))
 	var opr: String = str(wcfg.get("escalated_opr_vo", ""))
 	if opr != "":
@@ -521,11 +784,13 @@ func escalate() -> void:
 		GameState.set_flag(StringName(str(wcfg["flag"])))
 	GLBus.boss_spawned.emit(&"account_manager_escalated")
 	RoundManager.release_alive(2)   # her reserve and her extra-spawn count: the round can end around her
-	print("[m4d] the Account Manager escalated after %.0f s (arms %d, prices %d, crews %d, cells shot %d / lost %d)" % [_spawn_t, arms_done, prices_done, crews_done, cells_shot, cells_lost])
+	print("[m4d] the Account Manager escalated after %.0f s (arms %d, prices %d, squad prices %d, crews %d, cells shot %d / lost %d)" % [_spawn_t, arms_done, prices_done, prices_all_done, crews_done, cells_shot, cells_lost])
 
 
 func _on_retreat() -> void:
 	RoundManager.release_alive(2)
+	if _field_hum != null:
+		_field_hum.stop()
 
 
 func _start_authored_death() -> void:

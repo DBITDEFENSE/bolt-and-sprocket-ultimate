@@ -13,6 +13,10 @@ Synthesizes Act II's ambience from scratch with gen_audio.py's DSP core (no samp
   kranich_bordfunk          the Bordfunk's crackle and squelch between headings, 3 variants
   kranich_wind_gust         a gust across a breach or a blister, 2 variants
   kranich_flak              a flak burst far off through the hull, 3 variants
+  (T-220, the plane pass; KranichAir mixes them by how exposed the listener is)
+  kranich_wind_roar         out on the wing: the slipstream's roar, buffeting at the body, howling in the rigging
+  kranich_engine_outside    the four impellers heard from outside: the throat's roar, the exhaust's rumble, the beat
+  kranich_groan             the airframe's long groan in a turbulence event (deep, flexing, a rivet tick), 3 variants
 Keys merge into data/gravelight/audio.json like gen_audio.py does (existing per-key tuning is kept).
 Run from the repo root:   python gravelight/tools_src/gen_audio_kranich.py [key_prefix,...]
 then reimport:             godot --headless --import --path .
@@ -197,9 +201,49 @@ def gen_oneshots():
              pitch=[0.9, 1.1], max_voices=3, attenuation="loud")
 
 
+def groan(r, sec=2.8):
+    """The whole airframe flexing: a slow, deep stick-slip glide through the spar's low resonances, a tick at the end."""
+    n = N(sec)
+    t = tax(n)
+    rate = 7.0 + 16.0 * (0.5 + 0.5 * smooth_rand(r, sec, 1.1))
+    ph = np.cumsum(rate / SR)
+    pulses = (np.diff(np.floor(ph), prepend=0.0) > 0).astype(float) * (0.5 + 0.5 * r.uniform(0, 1, n))
+    env = np.interp(t / sec, [0, 0.18, 0.55, 0.85, 1.0], [0.0, 1.0, 0.75, 0.35, 0.0])
+    f0 = r.uniform(85, 140)
+    body = reson(pulses * env, f0, 9) + 0.7 * reson(pulses * env, f0 * 2.7, 14) + 0.35 * reson(pulses * env, r.uniform(520, 760), 20)
+    rumble = lp(brown(r, sec), 120, 2) * env * 0.5
+    x = nrm(body) + nrm(rumble) * 0.4
+    place(x, A.mech_click(r, r.uniform(2200, 3400), 0.03, 0.003) * 0.25, sec * r.uniform(0.75, 0.9))
+    return reverb(nrm(x), r, 1.6, 0.35, 2200, 0.02)
+
+
+def gen_plane():
+    """T-220: the exterior loops and the turbulence groan."""
+    sec = LOOP + XF
+    # the wind on the wing: a big low roar (the slipstream over 90 m of wing), buffeting, the rigging's howl
+    r = A.rng_for("kr_roar")
+    roar = lp(pink(r, sec), 700, 2) * (0.7 + 0.3 * (0.5 + 0.5 * smooth_rand(r, sec, 0.35)))
+    buffet = lp(brown(r, sec), 90, 2) * (0.5 + 0.5 * np.clip(smooth_rand(r, sec, 1.8), 0.0, 1.0))
+    howl = A.sweep_noise(r, sec, 500, 1500, 10, 7, curve=900 + 400 * (0.5 + 0.5 * smooth_rand(r, sec, 0.25))) * 0.18
+    m = A.wind_bed(r, sec, 1.0) * 0.7 + np.stack([nrm(roar) * 0.8 + nrm(buffet) * 0.5 + howl, nrm(roar) * 0.75 + nrm(buffet) * 0.55 + howl * 0.9], axis=1)
+    emit("kranich_wind_roar", "sfx/ambience/kranich_wind_roar", A.loopify(m, XF), -2.0, loop=True, **BED)
+    # the engines from outside: the impellers' harmonics hard, the exhaust's rumble, the four beating
+    r = A.rng_for("kr_eng_out")
+    imp = impellers(r, sec, 47.0, 4, 9, whine=0.18)
+    exh = lp(brown(r, sec), 220, 2) * 0.9 + bp(pink(r, sec), 120, 900, 2) * 0.5
+    x = 0.7 * nrm(imp) + 0.6 * nrm(exh)
+    emit("kranich_engine_outside", "sfx/ambience/kranich_engine_outside", A.loopify(stereo(r, nrm(x), 0.3), XF), -3.0, loop=True, **BED)
+    for i in A.variants(3):
+        r = A.rng_for(f"kr_groan{i}")
+        sec2 = r.uniform(2.2, 3.4)
+        emit("kranich_groan", f"sfx/ambience/kranich_groan_{i:02d}", fit(groan(r, sec2), sec2 + 1.4), -2.0, bus="Ambience",
+             volume_db=0.0, pitch=[0.9, 1.08], max_voices=1)
+
+
 def main():
     gen_beds()
     gen_oneshots()
+    gen_plane()
     A.write_manifest()
     total = sum(d for _, d in A.STATS)
     print(f"gen_audio_kranich: wrote {len(A.STATS)} files ({total:.1f} s of audio), {len(A.KEYS)} keys merged into data/gravelight/audio.json")

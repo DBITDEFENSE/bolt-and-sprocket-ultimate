@@ -90,6 +90,17 @@ var _bell_crank: Node3D = null
 var carry_limited: bool = false
 ## T-153 (the Searchlight): a manned station holsters everything (no fire, no melee, no swap; the gun hidden).
 var holstered: bool = false
+## T-230: the hands off the gun and on a ladder's rungs or a zip line's bar (set_hands &"climb" / &"hang"): the gun is
+## away, both arms reach from shoulders lifted by `hands_shoulder` to `hand_l` / `hand_r` (rig space, the space the hip
+## pose is in: x right, y up, -z ahead of the eye), which LadderClimb / ZipLine set every frame.
+var hands_mode: StringName = &""
+var hand_l: Transform3D = Transform3D.IDENTITY
+var hand_r: Transform3D = Transform3D.IDENTITY
+var hands_shoulder: float = 0.0
+const HANDS_GRIP: float = 0.019   # a rung's, a bar's radius for the fists
+const HANG_SHOULDER_R: Vector3 = Vector3(0.42, -0.05, 0.02)   # hanging from a bar the arms come in from the frame's sides (the
+const HANG_SHOULDER_L: Vector3 = Vector3(-0.42, -0.05, 0.02)  # real shoulders are behind the eye: an upper arm through the lens smears)
+const VM_MIN_DEPTH: float = 0.3   # vm_target keeps a hand at least this far ahead (the rig compresses toward the eye; nearer clips)
 var _fire_keys: Dictionary = {}    # base weapon id -> fire sound key (cached: "fire_<id>" or the class key)
 var _fire_buffer: float = 0.0      # a semi-auto click that arrived slightly early fires as soon as it can
 var _look_in: Vector2 = Vector2.ZERO
@@ -224,6 +235,40 @@ func set_holstered(on: bool) -> void:
 	holstered = on
 	ads_t = 0.0
 	visible = not on
+
+
+## T-230: where a hand must be, in viewmodel (rig) space, to appear on the world point `world_pos`: the same direction
+## from the eye (the rig's x / y scale is undone), at viewmodel depth (the real depth if it is VM_MIN_DEPTH or more, else
+## pushed out along the same ray). A hand gripping a real rung or bar is placed with this every frame.
+func vm_target(world_pos: Vector3) -> Vector3:
+	var local: Vector3 = global_transform.affine_inverse() * world_pos
+	var k: float = 1.0
+	if _rig != null and _rig.scale.z > 0.0001:
+		k = _rig.scale.x / _rig.scale.z
+	var p: Vector3 = Vector3(local.x / k, local.y / k, local.z)
+	if p.z > -VM_MIN_DEPTH:
+		var depth: float = maxf(-p.z, 0.001)
+		p *= VM_MIN_DEPTH / depth
+		p.z = -VM_MIN_DEPTH
+	return p
+
+
+## T-230: the hands onto a ladder (&"climb") or a zip line's bar (&"hang"), or back on the gun (&"", which rises again
+## as after a swap). The controller that set the mode sets hand_l / hand_r each frame while it lasts.
+func set_hands(mode: StringName) -> void:
+	if mode == hands_mode or _hand_r == null or _hand_l == null:
+		return
+	var was: StringName = hands_mode
+	hands_mode = mode
+	if mode != &"":
+		(_hand_r.get_node("Mesh") as MeshInstance3D).mesh = _hand_mesh(false, HANDS_GRIP, "fist")
+		(_hand_l.get_node("Mesh") as MeshInstance3D).mesh = _hand_mesh(true, HANDS_GRIP, "fist")
+		ads_t = 0.0
+	elif was != &"":
+		if _model != null:
+			(_hand_r.get_node("Mesh") as MeshInstance3D).mesh = _hand_mesh(false, _grip_r_radius, "fist")
+			(_hand_l.get_node("Mesh") as MeshInstance3D).mesh = _hand_mesh(true, _lh_radius, "open" if _lh_axis == "z" else "fist")
+		_swap_t = maxf(_swap_t, SWAP_TIME * 0.7)
 
 
 func enforce_slot_limit() -> void:
@@ -713,7 +758,7 @@ func tick(delta: float, intent: Dictionary) -> void:
 	if slot_req >= 0 and slot_req < slots.size() and slot_req != current_index and not holstered and (not carry_limited or carry_allows(slots[slot_req])):
 		_select(slot_req)
 	# Melee
-	_tick_melee(delta, bool(intent.get("melee", false)) and not holstered)
+	_tick_melee(delta, bool(intent.get("melee", false)) and not holstered and hands_mode == &"")
 	# Grenades / tactical
 	_tick_grenade(delta, bool(intent.get("lethal_held", false)))
 	if bool(intent.get("tactical", false)):
@@ -2263,60 +2308,80 @@ func _animate(delta: float, sprinting: bool) -> void:
 		_vm.position = pos
 		_vm.rotation = rot
 	# ---- arms
-	var melee: bool = _melee_t > 0.0
-	_gun.visible = not melee
-	if melee:
-		var md: Dictionary = _melee_data()
-		var mp: float = 1.0 - _melee_t / float(md["swing"])
-		_knife.show()
-		_knife.position = Vector3(lerpf(0.32, -0.12, mp), lerpf(-0.12, -0.2, mp), lerpf(-0.32, -0.45, _bump(mp, 0.2, 0.8)))
-		_knife.rotation = Vector3(lerpf(-0.1, -0.35, mp), lerpf(1.0, -1.1, mp), lerpf(0.3, -0.5, mp))
-		_pose_arm(_hand_r, _arm_r, _forearm_r, _knife.transform * Transform3D(Basis(Vector3.RIGHT, -1.45), Vector3(0, 0.0, 0.035)),
-			SHOULDER_R, 1.0, 0.013)
-	else:
+	if hands_mode != &"":
+		# T-230: on a ladder's rungs or a zip line's bar (set_hands; LadderClimb / ZipLine set hand_l / hand_r each frame):
+		# the gun is away, both arms reach from lifted shoulders
+		_gun.visible = false
 		_knife.hide()
-		if _model != null:
-			var grip: Transform3D = _grip_r
-			var handle: Node3D = _part("Handle")
-			if handle != null and _reload_kind == "bolt" and _cycle_t > 0.0:
-				# bolt action: the firing hand leaves the grip, works the handle, and comes back
-				var cp: float = 1.0 - _cycle_t / maxf(0.01, _cycle_total)
-				var reach: float = _seg(cp, 0.0, 0.16) * (1.0 - _seg(cp, 0.8, 1.0))
-				var knob: Vector3 = (_model.global_transform.affine_inverse() * handle.global_transform) * Vector3(0.05, 0, 0)
-				var at_bolt: Transform3D = Transform3D(Basis(Vector3.BACK, -1.35) * Basis(Vector3.UP, 0.4), knob + Vector3(0.012, 0.004, 0.006))
-				grip = grip.interpolate_with(at_bolt, reach)
-			_pose_arm(_hand_r, _arm_r, _forearm_r, _vm.transform * _gun.transform * _model.transform * grip, SHOULDER_R, 1.0, _grip_r_radius)
-	# support hand: on the gun, carrying a reload prop, or holding the grenade
-	var lh: Transform3D
-	if _cooking or _throw_t > 0.0:
-		_throw_t = maxf(0.0, _throw_t - delta)
-		var back: float = 1.0 if _cooking else _throw_t / 0.25
-		# cooking: the grenade is held up on the left, then the arm snaps forward on the throw
-		lh = Transform3D(Basis.from_euler(Vector3(0.5, 0.35, 0.25)), Vector3(lerpf(-0.05, -0.095, back), lerpf(-0.02, -0.07, back), lerpf(-0.5, -0.26, back)))
-		_frag_prop.show()
-		_frag_prop.transform = lh * Transform3D(Basis(), Vector3(-0.01, 0.03, -0.03))
-		_hand_l.visible = true
-	else:
 		_frag_prop.hide()
-		var gun_xf: Transform3D = _vm.transform * _gun.transform
-		if _model != null:
-			gun_xf = gun_xf * _model.transform
-			var lh_local: Vector3 = (_model.get_node("LeftHand") as Node3D).position
-			var pump: Node3D = _part("Pump")
-			if pump != null:
-				lh_local += pump.position - (_rest["Pump"] as Transform3D).origin
-			if lh_override != null:
-				lh_local = lh_override
-			lh = gun_xf * Transform3D(_lh_basis(), lh_local)
-		else:
-			lh = Transform3D(Basis(), Vector3(-0.2, -0.35, -0.2))
+		var lift: Vector3 = Vector3(0.0, hands_shoulder, -0.2 * hands_shoulder)
+		var hanging: bool = hands_mode == &"hang"
+		var sh_r: Vector3 = HANG_SHOULDER_R.lerp(SHOULDER_R + lift, 1.0 - hands_shoulder / 0.25) if hanging else SHOULDER_R + lift
+		var sh_l: Vector3 = HANG_SHOULDER_L.lerp(SHOULDER_L + lift, 1.0 - hands_shoulder / 0.25) if hanging else SHOULDER_L + lift
+		_pose_arm(_hand_r, _arm_r, _forearm_r, hand_r, sh_r, 1.0, HANDS_GRIP)
+		_pose_arm(_hand_l, _arm_l, _forearm_l, hand_l, sh_l, -1.0, HANDS_GRIP)
+		for hn: Node3D in [_hand_r, _hand_l, _forearm_r, _forearm_l]:
+			hn.visible = true
+		for ha: MeshInstance3D in _arm_r + _arm_l:
+			ha.visible = true
+		if hanging and hands_shoulder > 0.2:
+			_arm_r[1].visible = false   # the upper arms would pass through the lens
+			_arm_l[1].visible = false
+	else:
+		var melee: bool = _melee_t > 0.0
+		_gun.visible = not melee
 		if melee:
-			lh = Transform3D(Basis(), Vector3(-0.22, -0.32, -0.25))
-	_pose_arm(_hand_l, _arm_l, _forearm_l, lh, SHOULDER_L, -1.0, _lh_radius if not (_cooking or _throw_t > 0.0) else 0.03)
-	_hand_r.visible = _model != null or melee
-	_forearm_r.visible = _hand_r.visible
-	for a: MeshInstance3D in _arm_r:
-		a.visible = _hand_r.visible
+			var md: Dictionary = _melee_data()
+			var mp: float = 1.0 - _melee_t / float(md["swing"])
+			_knife.show()
+			_knife.position = Vector3(lerpf(0.32, -0.12, mp), lerpf(-0.12, -0.2, mp), lerpf(-0.32, -0.45, _bump(mp, 0.2, 0.8)))
+			_knife.rotation = Vector3(lerpf(-0.1, -0.35, mp), lerpf(1.0, -1.1, mp), lerpf(0.3, -0.5, mp))
+			_pose_arm(_hand_r, _arm_r, _forearm_r, _knife.transform * Transform3D(Basis(Vector3.RIGHT, -1.45), Vector3(0, 0.0, 0.035)),
+				SHOULDER_R, 1.0, 0.013)
+		else:
+			_knife.hide()
+			if _model != null:
+				var grip: Transform3D = _grip_r
+				var handle: Node3D = _part("Handle")
+				if handle != null and _reload_kind == "bolt" and _cycle_t > 0.0:
+					# bolt action: the firing hand leaves the grip, works the handle, and comes back
+					var cp: float = 1.0 - _cycle_t / maxf(0.01, _cycle_total)
+					var reach: float = _seg(cp, 0.0, 0.16) * (1.0 - _seg(cp, 0.8, 1.0))
+					var knob: Vector3 = (_model.global_transform.affine_inverse() * handle.global_transform) * Vector3(0.05, 0, 0)
+					var at_bolt: Transform3D = Transform3D(Basis(Vector3.BACK, -1.35) * Basis(Vector3.UP, 0.4), knob + Vector3(0.012, 0.004, 0.006))
+					grip = grip.interpolate_with(at_bolt, reach)
+				_pose_arm(_hand_r, _arm_r, _forearm_r, _vm.transform * _gun.transform * _model.transform * grip, SHOULDER_R, 1.0, _grip_r_radius)
+		# support hand: on the gun, carrying a reload prop, or holding the grenade
+		var lh: Transform3D
+		if _cooking or _throw_t > 0.0:
+			_throw_t = maxf(0.0, _throw_t - delta)
+			var back: float = 1.0 if _cooking else _throw_t / 0.25
+			# cooking: the grenade is held up on the left, then the arm snaps forward on the throw
+			lh = Transform3D(Basis.from_euler(Vector3(0.5, 0.35, 0.25)), Vector3(lerpf(-0.05, -0.095, back), lerpf(-0.02, -0.07, back), lerpf(-0.5, -0.26, back)))
+			_frag_prop.show()
+			_frag_prop.transform = lh * Transform3D(Basis(), Vector3(-0.01, 0.03, -0.03))
+			_hand_l.visible = true
+		else:
+			_frag_prop.hide()
+			var gun_xf: Transform3D = _vm.transform * _gun.transform
+			if _model != null:
+				gun_xf = gun_xf * _model.transform
+				var lh_local: Vector3 = (_model.get_node("LeftHand") as Node3D).position
+				var pump: Node3D = _part("Pump")
+				if pump != null:
+					lh_local += pump.position - (_rest["Pump"] as Transform3D).origin
+				if lh_override != null:
+					lh_local = lh_override
+				lh = gun_xf * Transform3D(_lh_basis(), lh_local)
+			else:
+				lh = Transform3D(Basis(), Vector3(-0.2, -0.35, -0.2))
+			if melee:
+				lh = Transform3D(Basis(), Vector3(-0.22, -0.32, -0.25))
+		_pose_arm(_hand_l, _arm_l, _forearm_l, lh, SHOULDER_L, -1.0, _lh_radius if not (_cooking or _throw_t > 0.0) else 0.03)
+		_hand_r.visible = _model != null or melee
+		_forearm_r.visible = _hand_r.visible
+		for a: MeshInstance3D in _arm_r:
+			a.visible = _hand_r.visible
 	# ---- Nachtglas: the upgraded glow breathes
 	if _model != null and _model.has_node("Nachtglow"):
 		# Omni falloff is in absolute units, so in compressed space the same glow is far too strong on the

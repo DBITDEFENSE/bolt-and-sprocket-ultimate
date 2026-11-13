@@ -236,10 +236,39 @@ func _cam_set() -> void:
 					k += 1
 			print("[capture] squad posed %d bots" % posed.size())
 		await _secs(float(cam.get("settle_s", 1.0 if i > 0 else 2.0)))
+		var env_saved: Array = []
+		if bool(cam.get("bright", false)):
+			# T-230: a work light for a night shot (the viewmodel's hands on a dark ladder): flat ambient, put back after
+			for we: Node in map.find_children("*", "WorldEnvironment", true, false):
+				var e: Environment = (we as WorldEnvironment).environment
+				if e != null:
+					env_saved.append([e, e.ambient_light_source, e.ambient_light_color, e.ambient_light_energy])
+					e.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+					e.ambient_light_color = Color(0.8, 0.82, 0.9)
+					e.ambient_light_energy = 1.5
+		if cam.has("use"):
+			# T-230: take a ladder (`climb`) or a zip line (`ride`) named by `use` and shoot `shot_after_s` into it, from
+			# the player's eye: the hands, the rungs or the bar, the world going past
+			var u: Node = CaptureDo.find(map, str(cam["use"]))
+			if u == null:
+				for n: Node in get_tree().get_nodes_in_group(&"ladders") + get_tree().get_nodes_in_group(&"ziplines"):
+					if n.name == str(cam["use"]):
+						u = n
+			if u != null and u.has_method("climb"):
+				u.call("climb", p)
+			elif u != null and u.has_method("ride"):
+				u.call("ride", p)
+			else:
+				print("[capture] use: no ladder / zip line %s for %s" % [cam["use"], cname])
+			await _secs(float(cam.get("shot_after_s", 1.0)))
 		if cam.has("shot_on"):
 			# T-167: wait (up to shot_on_timeout s) for a GLBus signal, e.g. tide_cable_spark, and shoot the next frame
 			await _wait_signal(str(cam["shot_on"]), float(cam.get("shot_on_timeout", 6.0)))
 		await _shot("%02d_%s" % [i, cname])
+		for es: Array in env_saved:
+			(es[0] as Environment).ambient_light_source = es[1]
+			(es[0] as Environment).ambient_light_color = es[2]
+			(es[0] as Environment).ambient_light_energy = es[3]
 		for b: Node3D in posed:
 			if is_instance_valid(b):
 				b.set_physics_process(true)

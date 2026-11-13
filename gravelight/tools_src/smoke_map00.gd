@@ -84,7 +84,14 @@ func _check_crucible() -> void:
 func _check_paths() -> void:
 	var map_rid: RID = _map.get_world_3d().navigation_map
 	var checks: Array = [
-		["taproom -> upstairs hall", Vector3(14, 0, 8), Vector3(12, 3.8, 8), true],
+		["taproom -> upstairs hall", Vector3(14, 0, 8), Vector3(12, 3.8, 7), true],
+		# the attic (T-224): up the hall's flight, across to both hoist windows; the gable ledges stay islands
+		["upstairs hall -> the attic", Vector3(12, 3.8, 7), Vector3(18, 7.1, 5), true],
+		["attic -> the west hoist window", Vector3(18, 7.1, 5), Vector3(1.2, 7.1, 4.5), true],
+		["attic -> the east hoist window", Vector3(5, 7.1, 5), Vector3(22.8, 7.1, 4.5), true],
+		["west gable ledge -> attic (must NOT connect)", Vector3(-1.6, 7.1, 2.9), Vector3(4, 7.1, 4.5), false],
+		["east gable ledge -> attic (must NOT connect)", Vector3(25.6, 7.1, 2.9), Vector3(20, 7.1, 4.5), false],
+		["attic -> the taproom (back down both flights)", Vector3(20, 7.1, 3), Vector3(14, 0, 8), true],
 		["taproom -> stable", Vector3(14, 0, 8), Vector3(15, 0, 29), true],
 		["taproom -> hayloft", Vector3(14, 0, 8), Vector3(9, 3.5, 27), true],
 		["outside N -> taproom (Door_Front, T-080)", Vector3(7, 0, -6), Vector3(14, 0, 8), true],

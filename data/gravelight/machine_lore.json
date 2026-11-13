@@ -92,6 +92,12 @@
     },
     "chalk.gewehr43": {
      "plate": "The road patrol's: they clamped it properly, then ran"
+    },
+    "chalk.bar": {
+     "plate": "\"Beutewaffe (amerik.) · off GRAVELIGHT ONE\" · the carters hauled it up through the hoist window with the crates"
+    },
+    "chalk.frag": {
+     "plate": "The wreck's grenade box, hoisted up with the rest · Lutz chalked it: \"NICHT ANFASSEN\" · the girls' chalk is beside it"
     }
    }
   },
@@ -185,6 +191,11 @@
     },
     "chalk.etool": {
      "plate": "Laborers' issue, sharpened in the galleries · three strokes and a hook"
+    },
+    "perk.skyhook_sekt": {
+     "plate": "Consignment W.T. · Cabinet 2 of 2 · ELEVATION · J. Maurer · \"for the vault, by order of Abt. I\"",
+     "title": "Maker's Plate: Skyhook Sekt (the Core Vault)",
+     "text": "The pale sky-blue glider-nosed cabinet under the Core Vault's north wall, between the two ramp doors where the laboratory's cable run comes down the rock, its little propeller ticking round whenever somebody jumps near it, a junction box wired straight into it from the conduit overhead.\n\nHELVETIA AUTOMATEN AG · BASEL. Hygienic beverage dispenser, glider pattern. Formula: J. Maurer, Windkanal Thalbach. Consignment Werk Thalbach, 2 of 2. \"Leicht · Lieber · Landen.\"\n\nThe second of Werk Thalbach's two unordered cabinets came down the shaft on the cage with the Crucible's crates and was stood where Abteilung I wanted it: within thirty metres of the heart, like everything else the readings had to be taken beside. The installers' docket says the vault's floor \"lifts\" under the heart when it sings and that a man who had drunk the Sekt came down on his feet every time. Nobody signed the line that asked whether he had wanted to go up."
     }
    }
   },

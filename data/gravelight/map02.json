@@ -401,6 +401,22 @@
         34.0
       ],
       "_doc": "apron -> north catwalk ladder"
+    },
+    {
+      "name": "Ladder_EngineHatch",
+      "zone": "E_UBOAT",
+      "from": [
+        7.0,
+        -2.0,
+        82.6
+      ],
+      "to": [
+        7.0,
+        1.0,
+        81.8
+      ],
+      "bidirectional": true,
+      "_doc": "T-229: the engine room's escape hatch, both ways (down it is a drop)"
     }
   ],
   "ballast": {
@@ -965,5 +981,51 @@
       "tier_gift": 1
     },
     "curtain_flood_hold_s": 600.0
-  }
+  },
+  "ladders": [
+    {
+      "name": "EngineHatch_Up",
+      "pos": [
+        7.0,
+        -2.0,
+        82.6
+      ],
+      "yaw": 0.0,
+      "to": [
+        7.0,
+        1.0,
+        81.8
+      ],
+      "zone": "E_UBOAT",
+      "target": "to the deck",
+      "_doc": "T-229: U-1047's engine room escape hatch: the ladder on the stern bulkhead up through the deck",
+      "line": [
+        7.0,
+        82.85
+      ],
+      "surface": "metal"
+    },
+    {
+      "name": "EngineHatch_Down",
+      "pos": [
+        7.0,
+        1.0,
+        82.1
+      ],
+      "yaw": 0.0,
+      "down": true,
+      "to": [
+        7.0,
+        -2.0,
+        82.2
+      ],
+      "zone": "E_UBOAT",
+      "target": "into the engine room",
+      "line": [
+        7.0,
+        82.85
+      ],
+      "surface": "metal"
+    }
+  ]
 }

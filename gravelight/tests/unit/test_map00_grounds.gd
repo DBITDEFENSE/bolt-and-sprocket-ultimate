@@ -133,11 +133,18 @@ func test_navmesh_loft_stair_and_pockets() -> void:
 		assert_eq(reached, bool(c[3]), str(c[0]))
 	# the stair's own slope: every path point between the foot and the head lies on the flight (x 23.35..25.35)
 	var up: PackedVector3Array = NavigationServer3D.map_get_path(map_rid, floor_pt, Vector3(20, 3.5, 31.5), true)
+	# (T-238: sampled along the path's segments. The bake can lay one polygon from the foot to the head, and then the
+	# optimised path has no corner of its own on the flight: the corners alone said "never climbs". A straight segment
+	# from the last floor corner to the first one up the flight rises before the first riser, so z starts a metre
+	# short of the foot; x is the test: the climb stays inside the flight's two sides.)
 	var on_flight: int = 0
-	for p: Vector3 in up:
-		if p.y > 0.3 and p.y < 3.3:
-			on_flight += 1
-			assert_true(p.x > 23.2 and p.x < 25.5 and p.z > 25.3 and p.z < 31.7, "climbing at %s" % str(p))
+	for k: int in maxi(0, up.size() - 1):
+		var steps: int = maxi(1, int(up[k].distance_to(up[k + 1]) / 0.25))
+		for j: int in steps + 1:
+			var p: Vector3 = up[k].lerp(up[k + 1], float(j) / float(steps))
+			if p.y > 0.3 and p.y < 3.3:
+				on_flight += 1
+				assert_true(p.x > 23.2 and p.x < 25.5 and p.z > 24.4 and p.z < 31.7, "climbing at %s" % str(p))
 	assert_gt(on_flight, 0, "the path climbs the east-wall flight")
 	map.free()
 

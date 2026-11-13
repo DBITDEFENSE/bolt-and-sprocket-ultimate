@@ -16,7 +16,7 @@
   {"id": "wiesner", "name": "Konrad Wiesner", "display": "WIESNER", "speaker": "WIE",
    "role": "a railway signalman (50s) from the Kaltenbrunn line, walking home to Hirschfelde since the snow cut the line; he served at Verdun in 1916 and has not held a rifle since",
    "look": {"jacket": [0.18, 0.2, 0.26], "trousers": [0.17, 0.17, 0.19], "skin": [0.8, 0.64, 0.55], "head": [0.16, 0.17, 0.2], "headgear": "cap", "build": 1.05, "skirt": false, "apron": false, "scarf": [0.3, 0.28, 0.24]},
-   "hide": [8.55, 3.8, 1.8], "hide_yaw": -90.0, "post": [8.4, 3.8, 8.4], "post_yaw": -90.0,
+   "hide": [8.55, 3.8, 1.8], "hide_yaw": -90.0, "post": [8.4, 3.8, 7.1], "post_yaw": -90.0,
    "female": false, "rise_variant": "villager",
    "lines": {"reveal": ["WIE_SURV_REVEAL_01"], "scared": ["WIE_SURV_SCARED_01", "WIE_SURV_SCARED_02"], "flinch": ["WIE_SURV_FLINCH_01"], "armed": ["WIE_SURV_ARMED_01"], "fight": ["WIE_SURV_FIGHT_01"], "hurt": ["WIE_SURV_HURT_01"], "downed": ["WIE_SURV_DOWNED_01"], "death": ["WIE_SURV_DEATH_01"]}},
   {"id": "brandt", "name": "Hedwig Brandt", "display": "FRÄULEIN BRANDT", "speaker": "BRA",
@@ -28,7 +28,7 @@
   {"id": "kroll", "name": "Ida Kroll", "display": "IDA KROLL", "speaker": "KRO",
    "role": "the postwoman (20s) from Sankt Anna on the Christmas round, her bicycle left in a drift on the west road; quick and talkative when she is scared",
    "look": {"jacket": [0.24, 0.27, 0.34], "trousers": [0.2, 0.21, 0.24], "skin": [0.88, 0.75, 0.66], "head": [0.55, 0.42, 0.25], "headgear": "kerchief", "build": 0.86, "skirt": true, "apron": false},
-   "hide": [12.6, 3.8, 0.75], "hide_yaw": 180.0, "post": [12.0, 3.8, 9.2], "post_yaw": 180.0,
+   "hide": [12.6, 3.8, 0.75], "hide_yaw": 180.0, "post": [13.2, 3.8, 7.4], "post_yaw": 180.0,
    "female": true, "rise_variant": "villager",
    "lines": {"reveal": ["KRO_SURV_REVEAL_01"], "scared": ["KRO_SURV_SCARED_01", "KRO_SURV_SCARED_02"], "flinch": ["KRO_SURV_FLINCH_01"], "armed": ["KRO_SURV_ARMED_01"], "fight": ["KRO_SURV_FIGHT_01"], "hurt": ["KRO_SURV_HURT_01"], "downed": ["KRO_SURV_DOWNED_01"], "death": ["KRO_SURV_DEATH_01"]}}
  ]

@@ -72,6 +72,13 @@ var _roles_t: float = -10.0
 var _call_t: float = 0.0
 var _window_said: Dictionary = {}
 var _tallies: Dictionary = {}
+## T-237: counts the thinks of every brain in the squad (BotBrain.think_slot: one brain thinks per physics tick).
+var think_seq: int = 0
+## T-237: the weapon models loaded in the background from the squad's first moments (StreamWarm): the first time a
+## bot (or anyone) draws a kind of gun nobody has held yet, its model file was loaded in that frame (about 50 ms).
+var _model_warm: StreamWarm = null
+var _ap_cache: Array[Player] = []
+var _ap_key: Vector4i = Vector4i(-1, -1, -1, -1)
 
 
 func setup(map_root: MapRoot) -> void:
@@ -91,6 +98,7 @@ func setup(map_root: MapRoot) -> void:
 	_start_ee()
 	_start_marks()
 	_build_chokes()
+	_warm_models()
 	for n: Node in map.find_children("*", "WallBuy", true, false):
 		_wall_buys.append(n as WallBuy)
 	GLBus.enemy_killed.connect(_on_enemy_killed)
@@ -505,6 +513,17 @@ func _start_planner() -> void:
 	brains[idx].planner = pl
 
 
+## T-237: every mapped weapon model file (models.json, 20 files, 8 MB) is asked of the loader threads once.
+func _warm_models() -> void:
+	if not StreamWarm.enabled:
+		return
+	_model_warm = StreamWarm.new()
+	_model_warm.any_resource = true
+	_model_warm.in_flight_max = 2
+	for wid: Variant in (WeaponGLB.models().get("weapons", {}) as Dictionary).keys():
+		_model_warm.add(WeaponGLB.glb_path(StringName(str(wid))))
+
+
 func _start_ee() -> void:
 	ee = BotEEHub.new()
 	add_child(ee)
@@ -565,6 +584,8 @@ func planner() -> BotPlanner:
 func _process(delta: float) -> void:
 	_t += delta
 	_round_t += delta
+	if _model_warm != null and _model_warm.busy():
+		_model_warm.tick()
 	_callout_t = maxf(0.0, _callout_t - delta)
 	var h: Player = human()
 	if h != null and is_instance_valid(h):
@@ -614,13 +635,20 @@ func player_by_id(pid: int) -> Player:
 	return p
 
 
+## T-237: the list is built once per frame (callers only read it): every bot's spacing, yielding and revive checks
+## asked for it five to eight times a tick, a new array each time.
 func all_players() -> Array[Player]:
+	var key: Vector4i = Vector4i(Engine.get_physics_frames(), Engine.get_process_frames(), map.players.size(), brains.size())
+	if key == _ap_key and BotProf.opt:
+		return _ap_cache
 	var out: Array[Player] = []
 	for pid: Variant in map.players.keys():
 		out.append(map.players[pid] as Player)
 	for b: BotBrain in brains:
 		if not out.has(b.player):
 			out.append(b.player)   # a companion that isn't in the match's player table
+	_ap_key = key
+	_ap_cache = out
 	return out
 
 
@@ -1366,6 +1394,11 @@ func _on_crate_moved(_index: int) -> void:
 func _on_door_opened(_door_id: StringName, by_player: int) -> void:
 	if GameState.human_ids().has(by_player):
 		human_doors_opened += 1
+	for b: BotBrain in brains:   # T-237: what a brain remembered as out of reach may be in reach now
+		if is_instance_valid(b):
+			b.forget_reach()
+	if player_bot != null and is_instance_valid(player_bot):
+		player_bot.forget_reach()
 
 
 func _brain_of(pid: int) -> BotBrain:

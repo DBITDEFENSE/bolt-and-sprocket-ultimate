@@ -6,9 +6,14 @@ extends Node
 ##     title card and the lantern pip); he walks; he locks two doors as he passes (the Pen Hall door and the pump
 ##     stair); the beam hurts (a Lantern Sweep logs the player through the tiers); the lit rule (smoke in the
 ##     dark, damage in a lamp pool); break-free from the Watch Room twice (the page torn out; a teammate's lantern
-##     hits); Shift Change's decoys (a decoy shot logs +15); the fail-safe walk-off into the storm re-opens every
-##     door he locked and his return round is 5 later; the return and the kill: he sits down, the rewards (Scrip,
-##     the card and charm, the Archive card, the Watch-Book, OVERWATCH).
+##     hits); Shift Change's decoys (a decoy shot logs +15); T-233 (the boss rework): the kit's dread block (cloth,
+##     a quiet step, radius 24), the model's moving parts (hem and scarf strips, the swinging lantern, the pool of
+##     light, the eyes, the lantern hum), the Mirroring step (he stands where you stood a second ago after the keys go
+##     still), the Watch tiers on the dread layer, the whisper by tier and for a hurt player, End of Shift through the
+##     kit (the lights die, the fuse boxes spark, the lights return) and the phase overrides (cooldowns, the Lash's
+##     reach, his walk at 1.9); the fail-safe walk-off into the storm re-opens every door he locked and his return
+##     round is 5 later; the return and the kill: he sits down, the rewards (Scrip, the card and charm, the Archive
+##     card, the Watch-Book, OVERWATCH).
 ##   Case BOTS: round 25 with a bots-only squad (the human spectating): bots alone scales him, a kill pays out.
 ##   Case OFF: Homage Bosses Off: round 25 is a normal round.
 ## Prints "[slender] ..." lines and "[slender] RESULT: PASS/FAIL"; exit code 0/1.
@@ -248,6 +253,7 @@ func _case_on() -> void:
 	var hp_d: float = s.hp
 	s.take_damage(30.0, &"decoy", &"m1911", _player().player_id, &"bullet")
 	_check(s.decoy_hits == 1 and m.value >= mv + 14.0 and is_equal_approx(s.hp, hp_d), "shooting a decoy: no damage, the shooter logged +15 (%.0f -> %.0f)" % [mv, m.value])
+	await _t233(s, enc, m)
 	# ---- the fail-safe: the walk-off into the storm
 	s.debug_walk_to(Vector3(30.0, 0.0, 36.0))
 	enc.spawn_t = enc.t - 481.0
@@ -282,6 +288,80 @@ func _case_on() -> void:
 	_check(ProfileSave.has_intel(&"INT_HB_04") and (ProfileSave.profile.get("watch_book", []) as Array).size() >= 2, "the Watch-Book (%d pages)" % (ProfileSave.profile.get("watch_book", []) as Array).size())
 	_check(enc.overwatch != null and is_instance_valid(enc.overwatch) and GameState.has_flag(&"overwatch"), "OVERWATCH for the squad")
 	_check(GameState.has_flag(&"slender_relieved"), "slender_relieved is set")
+
+
+# ================================================================== T-233: the boss rework
+
+func _t233(s: Slender, enc: SlenderEncounter, m: WatchMeter) -> void:
+	_note("---- T-233: the kit, the model, the Mirroring step, the whisper, End of Shift")
+	# the kit's dread block and the model's moving parts
+	_check(s.fx != null and is_equal_approx(s.fx.c("radius"), 24.0) and str(s.fx.cfg.get("surface", "")) == "cloth" and not s.fx.has_footfalls(),
+		"the dread block: felt from 24 m, cloth, a quiet step (no stomp, no shake)")
+	var strips_n: int = s.find_children("*Strips*", "", true, false).size()
+	_check(strips_n >= 5 and s._eyes != null and s._lantern_swing != null and s._pool != null,
+		"the coat and scarf sway (%d strip groups), the eyes glow, the lantern swings on its pole over its pool of light" % strips_n)
+	_check(s._hum != null or not AudioDirector.has_sound("slender_lantern_hum"), "the lantern hums (slender_lantern_hum as a 3D loop)")
+	# the Mirroring step: the keys go still, then he stands where you stood a second ago
+	var a: Vector3 = Vector3(16.0, 0.0, 66.0)
+	s._cds.erase("mirror_step")
+	s.debug_walk_to(Vector3(16.0, 0.0, 56.0))
+	_place(a, Vector3(16.0, 1.5, 56.0))
+	await _secs(1.3)
+	_place(Vector3(16.0, 0.0, 72.0), Vector3(16.0, 1.5, 56.0))
+	var steps0: int = s.mirror_steps
+	s.debug_mirror_step()
+	_check(s.sstate == Slender.S.MIRROR_SILENCE and s._silent, "the keys go still first (the step's telegraph)")
+	var stepped: bool = await _until(func() -> bool: return s.mirror_steps > steps0, 3.0)
+	var off: float = Vector2(s.global_position.x - a.x, s.global_position.z - a.z).length()
+	_check(stepped and off < 2.0, "the Mirroring step: he stands where you stood a second ago (%.1f m off)" % off)
+	_check(enc.lines_said.has("SLN_MIRROR_STEP_01"), "\"You walked that way. I know. I was just behind you.\"")
+	await _until(func() -> bool: return s.sstate == Slender.S.WALK, 2.0)
+	_check(s.sstate == Slender.S.WALK and not s._silent, "he holds still for the clean shot, then the keys jingle again")
+	# the squad rule: alone in the dark the Watch fills x1.5 (the pure rule; the smoke is solo, so the player is alone)
+	var alone_r: float = m.rate({"pool": true, "seen": true, "dark": true, "alone": true}, 0.0, 0.0)
+	var mate_r: float = m.rate({"pool": true, "seen": true, "dark": true, "teammate": true}, 0.0, 0.0)
+	_check(is_equal_approx(alone_r, 18.0) and is_equal_approx(mate_r, 8.0), "alone in the dark his pool logs +18/s; beside a teammate +8/s")
+	# the whisper: by tier (MEDIUM), and from LOW for a hurt player; the tiers push the dread layer
+	var pid: int = _player().player_id
+	var w0: int = s.whispers
+	m.immune = 0.0
+	m.value = 45.0
+	s._whisper_t[pid] = 0.01
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	_check(s.whispers > w0 and m.tier == WatchMeter.Tier.MEDIUM, "at Observed. a whisper comes close behind you")
+	var w1: int = s.whispers
+	m.value = 15.0
+	var hp_was: float = _player().hp
+	_player().hp = _player().max_hp * 0.3
+	s._whisper_t[pid] = 0.01
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	_check(s.whispers > w1 and m.tier == WatchMeter.Tier.LOW, "a hurt player hears it from Noted.")
+	_player().hp = hp_was
+	_place(Vector3(24.0, 0.0, 21.0))   # 45 m from him on the quay: the distance adds nothing, the tier does
+	m.value = 45.0
+	await _secs(0.35)
+	var dfx: DreadFx = DreadFx.of(_player())
+	var lvl: float = float(dfx.target_level()[0]) if dfx != null else -1.0
+	_check(dfx != null and lvl >= 0.3, "the Watch tier is felt on the screen (dread %.2f at Observed., out of his radius)" % lvl)
+	# End of Shift through the kit: the lights die (and gutter), the fuse boxes spark, the lights come back
+	var hp_pct: float = s.hp / s.max_hp
+	s.take_damage(s.hp - s.max_hp * 0.15, &"torso", &"debug", 1, &"world")
+	var dark: bool = await _until(func() -> bool: return s.end_of_shift_done and s.dark_t > 0.0, 2.0)
+	_check(dark and s.wphase == 3 and enc.lines_said.has("SLN_DARK_01"), "below 20%% (from %.0f%%): End of Shift, \"Lights out.\"" % (hp_pct * 100.0))
+	_check(s.fx.dimmed_count() > 0, "the arena's lights die through the kit (%d captured; his lantern is the only light)" % s.fx.dimmed_count())
+	await _until(func() -> bool: return enc.fuse_boxes.size() >= 3 and s.fuse_sparks >= 3, 4.0)
+	_check(enc.fuse_boxes.size() == 3 and s.fuse_sparks >= 3, "the three fuse boxes spark in the dark (%d bursts)" % s.fuse_sparks)
+	_check(is_equal_approx(Slender.phase_value(s.bcfg, 3, "sweep", "cooldown", 12.0), 7.0) and is_equal_approx(Slender.phase_value(s.bcfg, 1, "sweep", "cooldown", 12.0), 12.0)
+		and is_equal_approx(s._mvf("lash", "range", 4.0), 5.0) and is_equal_approx(s.move_speed(), 1.9),
+		"the last round escalates: the sweep 12 -> 7 s, the Lash reaches 5 m, he walks at 1.9 (never runs)")
+	s.dark_t = 0.02
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	_check(s.dark_t <= 0.0 and s.fx.dimmed_count() == 0, "when the 30 s are up the lights come back (the pools wait for the fuses)")
+	s.relight_pools([0, 1, 2])
+	_check(s.pools_on[2], "a fuse thrown relights its pools")
 
 
 # ================================================================== case BOTS
