@@ -512,6 +512,7 @@ func _label(parent: Node3D, text: String, pos: Vector3, px: int, ink: Color, pix
 	l.position = pos
 	l.rotation.y = PI
 	l.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	SurfaceText.apply(l, SurfaceText.PRINT)   # T-247
 	parent.add_child(l)
 	return l
 

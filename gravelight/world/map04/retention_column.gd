@@ -88,7 +88,7 @@ func build_greybox() -> void:
 	add_box(plate, Vector3(0.86, 0.5, 0.025), Vector3.ZERO, pm)
 	add_box(plate, Vector3(0.9, 0.035, 0.035), Vector3(0, 0.265, 0.0), Mats.get_mat("chrome"))
 	add_box(plate, Vector3(0.9, 0.035, 0.035), Vector3(0, -0.265, 0.0), Mats.get_mat("chrome"))
-	var l: Label3D = add_label(plate, "TERMS · %s of III\n%s" % [["I", "II", "III"][clampi(index - 1, 0, 2)], _panel_title()], Vector3(0, 0.02, 0.0135), 24, Color(0.12, 0.08, 0.04, 1.0))
+	var l: Label3D = add_label(plate, "TERMS · %s of III\n%s" % [["I", "II", "III"][clampi(index - 1, 0, 2)], _panel_title()], Vector3(0, 0.02, 0.0135), 24, Color(0.12, 0.08, 0.04, 1.0), SurfaceText.PRINT)
 	l.pixel_size = 0.0021
 	l.outline_size = 0
 	l.width = 380.0

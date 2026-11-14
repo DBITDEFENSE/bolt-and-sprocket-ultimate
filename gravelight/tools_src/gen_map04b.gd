@@ -547,6 +547,7 @@ func _set_pieces_u10() -> void:
 	icl.position = Vector3(-0.07, 1.72, 0)
 	icl.rotation.y = -PI * 0.5
 	icl.modulate = Color(0.9, 0.85, 0.65)
+	SurfaceText.apply(icl)   # T-247
 	ic.add_child(icl)
 	# the tilt's loose cargo
 	var si: int = 1

@@ -792,6 +792,7 @@ func _build_inn_details() -> void:
 		l.outline_size = 0
 		l.position = Vector3(0, -0.47, 0.035 * side)
 		l.rotation.y = 0.0 if side > 0 else PI
+		SurfaceText.apply(l)   # T-247: painted on the board, lit by the night
 		inn_sign.add_child(l)
 		var cross: Label3D = Label3D.new()
 		cross.text = "X"
@@ -801,6 +802,7 @@ func _build_inn_details() -> void:
 		cross.outline_size = 0
 		cross.position = Vector3(0, -0.76, 0.036 * side)
 		cross.rotation.y = 0.0 if side > 0 else PI
+		SurfaceText.apply(cross)
 		inn_sign.add_child(cross)
 	# the hayloft door over the stable's great doors: a dark opening, its frame, one leaf loose on its hinge
 	var hl: Node3D = Props.group(_static, "HayloftOpening", Vector3(18.0, 4.9, 34.17), 0.0)

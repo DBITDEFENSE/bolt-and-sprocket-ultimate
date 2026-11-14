@@ -684,12 +684,12 @@ static func poster(parent: Node3D, pos: Vector3, yaw: float, title: String, body
 	_ns(Props.block(g, Vector3(-w * 0.5, -h * 0.5, -0.006), Vector3(w * 0.5, h * 0.5, 0.0), paper_key))
 	for sx: float in [-1.0, 1.0]:
 		_ns(Props.cyl(g, Vector3(sx * (w * 0.5 - 0.03), h * 0.5 - 0.03, -0.01), 0.008, 0.01, "brass", Vector3(90, 0, 0)))
-	var t: Label3D = Props.stencil(g, Vector3(0, h * 0.32, -0.007), 0.0, title, 44, ink, 0.0016)
+	var t: Label3D = Props.stencil(g, Vector3(0, h * 0.32, -0.007), 0.0, title, 44, ink, 0.0016, SurfaceText.PRINT)
 	t.width = w / 0.0016 * 0.92
 	t.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	t.double_sided = false
 	if body != "":
-		var b: Label3D = Props.stencil(g, Vector3(0, -h * 0.06, -0.007), 0.0, body, 26, ink, 0.0012)
+		var b: Label3D = Props.stencil(g, Vector3(0, -h * 0.06, -0.007), 0.0, body, 26, ink, 0.0012, SurfaceText.PRINT)
 		b.width = w / 0.0012 * 0.9
 		b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		b.double_sided = false
@@ -707,7 +707,7 @@ static func enamel_sign(parent: Node3D, pos: Vector3, yaw: float, text: String, 
 			_ns(Props.cyl(g, Vector3(sx * (w * 0.5 - 0.03), sy * (h * 0.5 - 0.03), -0.018), 0.008, 0.006, "iron", Vector3(90, 0, 0)))
 	# fit the text to the plate: its height and (at ~0.62 em a glyph) its width
 	var px: float = minf(0.004, minf(h * 0.55 / 48.0, (w - 0.08) / maxf(1.0, float(text.length()) * 48.0 * 0.62)))
-	var l: Label3D = Props.stencil(g, Vector3(0, 0, -0.017), 0.0, text, 48, text_color, px)
+	var l: Label3D = Props.stencil(g, Vector3(0, 0, -0.017), 0.0, text, 48, text_color, px, SurfaceText.PRINT)
 	l.double_sided = false
 	return g
 

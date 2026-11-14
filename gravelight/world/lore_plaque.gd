@@ -30,7 +30,7 @@ func build_greybox() -> void:
 	m.roughness = 0.4
 	var plate: MeshInstance3D = add_box(self, Vector3(plate_size.x, plate_size.y, 0.012), Vector3.ZERO, m)
 	plate.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	var l: Label3D = add_label(self, plate_text, Vector3(0, 0, -0.008), 18, Color(0.18, 0.12, 0.05, 1.0))
+	var l: Label3D = add_label(self, plate_text, Vector3(0, 0, -0.008), 18, Color(0.18, 0.12, 0.05, 1.0), SurfaceText.PRINT)
 	l.pixel_size = 0.0016
 	l.outline_size = 0
 

@@ -30,7 +30,6 @@ func build_greybox() -> void:
 	for i: int in 7:
 		Props.cyl(self, Vector3(0, 0.3 + 0.32 * float(i), 0), 0.02, 0.6, "iron", Vector3(0, 0, 90))
 	var l: Label3D = add_label(self, "NOTAUSSTIEG · FLÜGEL" if direction == "out" else "EINSTIEG", Vector3(0, 2.2, 0.08), 16, Color(0.95, 0.85, 0.55))
-	l.outline_size = 4
 
 
 func set_open(on: bool) -> void:

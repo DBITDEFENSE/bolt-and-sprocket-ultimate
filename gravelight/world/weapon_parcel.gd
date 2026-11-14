@@ -36,7 +36,7 @@ func build_greybox() -> void:
 	_model = WeaponModels.build(weapon_id)
 	if _model != null:
 		add_child(_model)
-	_label = add_label(self, "", Vector3(0, 0.45, 0), 18, Color(1.0, 0.92, 0.7, 0.95))
+	_label = add_label(self, "", Vector3(0, 0.45, 0), 18, Color(1.0, 0.92, 0.7, 0.95), SurfaceText.FLOAT)
 	_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	_label.fixed_size = true
 	_label.pixel_size = 0.0012

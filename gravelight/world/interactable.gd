@@ -128,14 +128,17 @@ static func add_box(parent: Node3D, size: Vector3, pos: Vector3, mat: Material) 
 	return mi
 
 
-static func add_label(parent: Node3D, text: String, pos: Vector3, size: int = 24, color: Color = Color(1, 1, 1, 0.9)) -> Label3D:
+## T-247: in the surface look (SurfaceText: a period face, lit by the scene, no outline, toned down); `look` picks
+## paint (default), chalk, print, or FLOAT for a label that hangs in its own glow (the rolled weapon's name).
+static func add_label(parent: Node3D, text: String, pos: Vector3, size: int = 24, color: Color = Color(1, 1, 1, 0.9),
+		look: int = SurfaceText.PAINT) -> Label3D:
 	var l: Label3D = Label3D.new()
 	l.text = text
 	l.font_size = size
 	l.pixel_size = 0.004
 	l.modulate = color
-	l.outline_size = 6
 	l.position = pos
 	l.rotation.y = PI   # Label3D reads from its +Z side; our interactables face the player along -Z
+	SurfaceText.apply(l, look)
 	parent.add_child(l)
 	return l
