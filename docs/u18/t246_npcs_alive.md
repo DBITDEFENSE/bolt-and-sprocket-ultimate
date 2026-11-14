@@ -24,7 +24,7 @@ spot) and, in the second, following the squad with a rifle.
    hands. The one-handed fidgets hold the gun "low", and a long gun held low stands as a dark bar across the apron.
 
 **Fixes (the cause, for everyone, not just these two frames):**
-- `people.json` Trudi: the skirt is a brown wool (0.36 / 0.27 / 0.22), the stockings a dark brown (`dark` 0.22 /
+- `people.json` Trudi: the skirt is a mid brown wool (0.44 / 0.35 / 0.28), the stockings a dark brown (`dark` 0.22 /
   0.18 / 0.17, also her buttons and soles), the bodice a little lighter, the apron a little less white. The GLB is
   unchanged (the colours are per part key at merge time).
 - `RemoteBody`: the fidgets' hand targets have modelled-body heights (the watch wrist at chest height, the warming
