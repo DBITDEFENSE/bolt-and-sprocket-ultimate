@@ -6,7 +6,9 @@ extends CanvasLayer
 ##    or Trudi; not you): the name in their colour, their state and a row of small bottle caps for the tonics they
 ##    hold (the bonus perk first, gold-ringed; tiers as strokes on a brass tab, gold crimp at III, gold rim at IV).
 ##    T-183 (the owner: "we don't need to see the kills ... the scores all the time; just their names, whether or not
-##    they're down, and really small logos for what perks they have"): no Scrip, kills or health bars on it any more.
+##    they're down, and really small logos for what perks they have"): no kills or health bars on it. T-243 (the owner:
+##    "make sure the player is able to see other players score without going into score board"): each teammate's
+##    Scrip is back, in gold in its own column after the name (companions have no account: blank).
 ##    States: DOWN with the bleed-out clock and a pulsing red cross, REVIVING (someone holds use on them), BLED OUT
 ##    (a human or bot, back next round), OUT COLD (a companion who bled out: gone for the match).
 ##  - the scoreboard (hold ui_scoreboard, Ctrl / Back): the full ledger, everyone including you: name, state, Scrip,
@@ -148,7 +150,8 @@ func panel_top() -> float:
 
 
 ## One row per teammate of `me` (humans and bots by pid, then the companions with the squad): {pid, name, color,
-## state ("up" / "down" / "reviving" / "out" / "cold"), bleed (seconds), companion, caps [[perk, tier, bonus]]}.
+## state ("up" / "down" / "reviving" / "out" / "cold"), bleed (seconds), companion, scrip (-1: no account),
+## caps [[perk, tier, bonus]]}.
 static func squad_rows(s: NetMatch, me: int) -> Array:
 	var out: Array = []
 	if s == null:
@@ -177,7 +180,8 @@ static func _row(s: NetMatch, pid: int, companion: bool) -> Dictionary:
 	elif s.coop.is_dead(pid):
 		state = "cold" if companion else "out"
 	return {"pid": pid, "name": Net.display_name(pid), "color": COMPANION_COL if companion else Net.player_color(pid),
-		"state": state, "bleed": s.coop.bleed_left(pid), "companion": companion, "caps": caps_of(pid)}
+		"state": state, "bleed": s.coop.bleed_left(pid), "companion": companion,
+		"scrip": Economy.get_scrip(pid) if not companion else -1, "caps": caps_of(pid)}
 
 
 ## A survivor's tonics as [[perk, tier, bonus]], the bonus perk first (as on the nameplates).
@@ -205,7 +209,6 @@ static func board_rows(s: NetMatch, sq: BotSquad) -> Array:
 	for r: Dictionary in out:
 		var pid: int = int(r["pid"])
 		r["you"] = pid == me
-		r["scrip"] = Economy.get_scrip(pid) if not bool(r["companion"]) else -1
 		var k: int = -1
 		if sq != null:
 			k = int(sq.kills.get(pid, 0))
@@ -259,7 +262,7 @@ static func state_color(r: Dictionary) -> Color:
 
 
 ## The squad panel (T-183): drawn, not Labels (re-theming a Label per change cost frames, T-070). A row is
-## [state mark] NAME [DOWN 23] (caps...). Sizes from ui.json hud: squad_row (the name's font size), squad_cap (a cap's
+## [state mark] NAME ǂSCRIP [DOWN 23] (caps...). Sizes from ui.json hud: squad_row (the name's font size), squad_cap (a cap's
 ## diameter), squad_row_h.
 class SquadPanel extends Control:
 	var font: Font
@@ -293,18 +296,33 @@ class SquadPanel extends Control:
 			w = maxf(w, font.get_string_size(str(r["name"]), HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x if font != null else 60.0)
 		return w
 
+	## The Scrip column (T-243): as wide as the squad's biggest balance, so the state words and caps line up.
+	static func scrip_text(r: Dictionary) -> String:
+		var scrip: int = int(r.get("scrip", -1))
+		return ("ǂ%d" % scrip) if scrip >= 0 else ""
+
+	func scrip_w() -> float:
+		var fs: int = MenuKit.size("coop_row") - 2
+		var w: float = 0.0
+		for r: Dictionary in rows:
+			var t: String = scrip_text(r)
+			if t != "":
+				w = maxf(w, font.get_string_size(t, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x if font != null else 50.0)
+		return w + 10.0 if w > 0.0 else 0.0
+
 	func width() -> float:
 		var cd: float = float(MenuKit.hud("squad_cap", 16.0))
 		var most: int = 0
 		for r: Dictionary in rows:
 			most = maxi(most, (r["caps"] as Array).size())
-		return 22.0 + name_w() + 12.0 + 80.0 + float(most) * (cd + 3.0) + 3.0
+		return 22.0 + name_w() + 12.0 + scrip_w() + 80.0 + float(most) * (cd + 3.0) + 3.0
 
 	func _draw() -> void:
 		var fs: int = MenuKit.size("coop_row")
 		var rh: float = float(MenuKit.hud("squad_row_h", 24.0))
 		var cd: float = float(MenuKit.hud("squad_cap", 16.0))
 		var nw: float = name_w()
+		var scw: float = scrip_w()
 		var pulse: float = 0.6 + 0.4 * sin(Time.get_ticks_msec() * 0.008)
 		for i: int in rows.size():
 			var r: Dictionary = rows[i]
@@ -317,7 +335,7 @@ class SquadPanel extends Control:
 			# a soft backing strip, so the row holds on bright snow
 			var tw: String = CoopHud.state_text(r)
 			var sw: float = font.get_string_size(tw, HORIZONTAL_ALIGNMENT_LEFT, -1, fs - 4).x + 10.0 if tw != "" and font != null else 0.0
-			var strip_w: float = 22.0 + nw + 10.0 + sw + float(caps.size()) * (cd + 3.0) + 9.0
+			var strip_w: float = 22.0 + nw + 10.0 + scw + sw + float(caps.size()) * (cd + 3.0) + 9.0
 			draw_rect(Rect2(-6.0, y + 2.0, strip_w, rh - 4.0), Color(0.04, 0.03, 0.02, 0.36))
 			# the state mark: a colour chip while standing, a red cross while down (gold while being revived), a dash out
 			var mc: Vector2 = Vector2(6.0, mid)
@@ -341,6 +359,14 @@ class SquadPanel extends Control:
 				draw_string_outline(font, Vector2(x, base), str(r["name"]), HORIZONTAL_ALIGNMENT_LEFT, -1, fs, 4, Color(0, 0, 0, 0.78))
 				draw_string(font, Vector2(x, base), str(r["name"]), HORIZONTAL_ALIGNMENT_LEFT, -1, fs, ncol)
 			x += nw + 10.0
+			# the Scrip (T-243), dimmed with the row while they are out
+			var scrip_t: String = scrip_text(r)
+			if scrip_t != "" and font != null:
+				var base3: float = mid + float(fs - 2) * 0.34
+				var scol: Color = CoopHud.SCRIP_COL if not out else CoopHud.OUT_COL
+				draw_string_outline(font, Vector2(x, base3), scrip_t, HORIZONTAL_ALIGNMENT_LEFT, -1, fs - 2, 4, Color(0, 0, 0, 0.8))
+				draw_string(font, Vector2(x, base3), scrip_t, HORIZONTAL_ALIGNMENT_LEFT, -1, fs - 2, scol)
+			x += scw
 			# the state word (DOWN 23 / REVIVING / BLED OUT / OUT COLD)
 			if tw != "" and font != null:
 				var base2: float = mid + float(fs - 4) * 0.34

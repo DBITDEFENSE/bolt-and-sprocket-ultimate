@@ -13,6 +13,11 @@ extends Node3D
 ##   - the squad by a fire barrel: PeopleBodies on PersonRig, posed in code every frame (Dutch smoking, Wren writing,
 ##     Deacon cleaning a Thompson across his knees, Peg checking her watch);
 ##   - two slow camera moves (a 40 s dolly, a 30 s angle over the squad's shoulders) cross-faded, a breathing FOV;
+##   - T-243 the dread: the Watcher, one zombie standing on the camera's side of the fence, facing the camera, that
+##     only ever moves while the lights are out; dread beats every BEAT_EVERY s (the inn's windows, their spill and
+##     the fire stutter out, a whisper and a far groan; the main menu's MenuDread dims the frame with `dread_dark`),
+##     and on each beat's darkest moment the Watcher is one step closer (WATCHER_STEPS), then gone, then back far off.
+##     The flicker follows the Camera Sway comfort setting (full: three stutters; reduced: one dip; off: a slow dim).
 ##   - progress hooks: Fernflug beaten (ProfileSave.fernflug_beaten) puts a violet point of light on the Moon
 ##     (MONDLICHT); Map 0's egg done (map00_radio) plays the radio faintly in a window.
 ## The web / Compatibility variant (`web`) halves the zombies, drops volumetric fog for depth fog and keeps one
@@ -88,6 +93,28 @@ var _fade_left: float = 0.0
 var _env: Environment
 var _lib: AnimationLibrary
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var _glow: StandardMaterial3D = null
+var _spills: Array = []              # [OmniLight3D, base energy]
+
+## T-243 the Watcher and the dread beats.
+## (depth, lateral) from camera A, far to near; after the last step it is gone for WATCHER_GONE_BEATS beats.
+const WATCHER_STEPS: Array = [Vector2(8.4, 3.6), Vector2(6.9, 3.1), Vector2(5.5, 2.6), Vector2(4.2, 2.1)]
+const WATCHER_GONE_BEATS: int = 2
+const BEAT_FIRST_S: float = 10.0
+const BEAT_EVERY: Vector2 = Vector2(22.0, 38.0)
+const GLOW_ENERGY: float = 4.5
+signal dread_beat(index: int)
+var watcher: Node3D = null
+var watcher_step: int = 0           # an index into WATCHER_STEPS; WATCHER_STEPS.size() + n = gone
+## False while a menu page is open (MainMenu): no beats over Settings.
+var dread_enabled: bool = true
+var beats: int = 0
+## 0..1, how dark this beat has the scene now (MenuDread dims the frame by it).
+var dread_dark: float = 0.0
+var _beat_in: float = BEAT_FIRST_S
+var _beat_t: float = -1.0
+var _beat_profile: Array = []
+var _beat_stepped: bool = false
 
 
 ## The web / Compatibility test (contract C4: GLSettings.is_web / is_compat when present, else our own).
@@ -276,6 +303,7 @@ func _build_windows(g: Node3D) -> void:
 	glow.emission_energy_multiplier = 4.5
 	glow.emission_texture = glow.albedo_texture
 	glow.disable_fog = false
+	_glow = glow
 	for i: int in WINDOWS.size():
 		var w: Array = WINDOWS[i]
 		var wg: Node3D = Node3D.new()
@@ -320,6 +348,7 @@ func _build_windows(g: Node3D) -> void:
 		l.shadow_enabled = false
 		l.light_volumetric_fog_energy = 0.8
 		g.add_child(l)
+		_spills.append([l, float(sp[1])])
 	# the boards the tearers pull at
 	for t: Array in TEARERS:
 		var bg: Node3D = Node3D.new()
@@ -449,6 +478,106 @@ func _build_zombies() -> void:
 		(z2.get_node("AP") as AnimationPlayer).speed_scale = _rng.randf_range(0.8, 1.0)
 		add_child(z2)
 		tearers.append(z2)
+	_build_watcher()
+
+
+## T-243: the Watcher (not counted with the walkers and tearers: the census and its budgets stay as they were).
+func _build_watcher() -> void:
+	watcher = _zombie("soldier", "thin", false, "idle", 9300)
+	watcher.name = "Watcher"
+	add_child(watcher)
+	var ap: AnimationPlayer = watcher.get_node("AP") as AnimationPlayer
+	ap.speed_scale = 0.55   # barely breathing
+	watcher_step = 0
+	_place_watcher()
+
+
+## Stands the Watcher on its step, facing camera A (gone: hidden).
+func _place_watcher() -> void:
+	if watcher == null:
+		return
+	watcher.visible = watcher_step < WATCHER_STEPS.size()
+	if not watcher.visible:
+		return
+	var st: Vector2 = WATCHER_STEPS[watcher_step]
+	watcher.position = at(st.x, st.y)
+	watcher.look_at(Vector3(CAM_A.x, watcher.position.y, CAM_A.z), Vector3.UP)
+
+
+## The step after `step`: one closer, then gone for WATCHER_GONE_BEATS beats, then back at the far end.
+static func next_watcher_step(step: int) -> int:
+	return 0 if step + 1 >= WATCHER_STEPS.size() + WATCHER_GONE_BEATS else step + 1
+
+
+## A beat's flicker for a Camera Sway share `k` (DreadFx.picture_k: 1 full, 0.5 reduced, 0 off): [start s, end s,
+## depth 0..1, ramp s] dips; the last one is the darkest, the Watcher moves in its middle. Never a strobe at off.
+static func flicker_profile(k: float) -> Array:
+	if k >= 0.75:
+		return [[0.0, 0.07, 0.8, 0.0], [0.17, 0.25, 0.85, 0.0], [0.4, 0.95, 0.97, 0.03]]
+	if k > 0.0:
+		return [[0.0, 0.8, 0.9, 0.12]]
+	return [[0.0, 1.4, 0.6, 0.45]]
+
+
+## How dark a profile has the lights `t` s into the beat (0 = as lit, 1 = out).
+static func profile_dark(profile: Array, t: float) -> float:
+	var d: float = 0.0
+	for dip: Array in profile:
+		var a: float = float(dip[0])
+		var b: float = float(dip[1])
+		if t < a or t > b:
+			continue
+		var ramp: float = float(dip[3])
+		var env: float = 1.0
+		if ramp > 0.0:
+			env = minf(clampf((t - a) / ramp, 0.0, 1.0), clampf((b - t) / ramp, 0.0, 1.0))
+		d = maxf(d, float(dip[2]) * env)
+	return d
+
+
+static func profile_end(profile: Array) -> float:
+	var e: float = 0.0
+	for dip: Array in profile:
+		e = maxf(e, float(dip[1]))
+	return e
+
+
+## Starts a beat now (the timer calls it; tools and tests may too).
+func dread_beat_now() -> void:
+	_beat_profile = flicker_profile(DreadFx.picture_k())
+	_beat_t = 0.0
+	_beat_stepped = false
+	beats += 1
+	AudioDirector.play_2d("horror_whisper", -16.0, 0.05)
+	dread_beat.emit(beats)
+
+
+func _update_dread(delta: float) -> void:
+	if _beat_t < 0.0:
+		if dread_enabled:
+			_beat_in -= delta
+			if _beat_in <= 0.0:
+				_beat_in = _rng.randf_range(BEAT_EVERY.x, BEAT_EVERY.y)
+				dread_beat_now()
+		dread_dark = 0.0
+	else:
+		_beat_t += delta
+		dread_dark = profile_dark(_beat_profile, _beat_t)
+		var last: Array = _beat_profile.back()
+		if not _beat_stepped and _beat_t >= (float(last[0]) + float(last[1])) * 0.5:
+			_beat_stepped = true   # the darkest moment: nobody sees it move
+			watcher_step = next_watcher_step(watcher_step)
+			_place_watcher()
+			AudioDirector.play_2d("zombie_groan", -22.0, 0.08)
+		if _beat_t > profile_end(_beat_profile):
+			_beat_t = -1.0
+			dread_dark = 0.0
+	var lit: float = 1.0 - dread_dark
+	if _glow != null:
+		_glow.emission_energy_multiplier = GLOW_ENERGY * lit
+		_glow.albedo_color = Color(1.0, 0.72, 0.38).darkened(dread_dark * 0.85)
+	for sp: Array in _spills:
+		(sp[0] as OmniLight3D).light_energy = float(sp[1]) * lit
 
 
 func _lane_length() -> float:
@@ -879,7 +1008,8 @@ func census() -> Dictionary:
 		"objects": RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME),
 		"primitives": RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME),
 		"volumetric_fog": _env != null and _env.volumetric_fog_enabled, "sdfgi": _env != null and _env.sdfgi_enabled,
-		"mondlicht": mondlicht != null and mondlicht.visible, "radio": radio_on, "load_ms": load_ms}
+		"mondlicht": mondlicht != null and mondlicht.visible, "radio": radio_on, "load_ms": load_ms,
+		"watcher": watcher != null, "beats": beats}
 
 
 # ================================================================== the loop
@@ -890,9 +1020,10 @@ func _process(delta: float) -> void:
 	for z: Node3D in walkers:
 		_place_walker(z, delta)
 	_pose_squad()
+	_update_dread(delta)
 	if _fire != null:
 		var n: float = sin(_t * 11.0) * 0.5 + sin(_t * 17.3 + 1.2) * 0.3 + sin(_t * 5.1) * 0.4
-		_fire.light_energy = _fire_base * (1.0 + 0.12 * n)
+		_fire.light_energy = _fire_base * (1.0 + 0.12 * n) * (1.0 - dread_dark * 0.9)
 	if _silhouette != null:
 		# someone crossing the room now and then, pausing by the window
 		var sc: float = fmod(_t, 26.0)

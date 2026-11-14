@@ -12,6 +12,10 @@ extends Control
 ## Columns change with a 0.25 s cross-fade and a 20 px slide; every page (MenuScreen) opens over the scene with a
 ## darker shade. Keyboard and controller: up / down wrap, accept, Esc / pad B goes back a column.
 ## While an online connection is open (back from a match) the lobby opens straight away.
+## T-243 (the owner: "make the menu better and more scary"): MenuDread over the scene (a blood-rimmed vignette on a
+## heartbeat, the dread beats' dim), the focused link lit in dried blood and throbbing with that heartbeat, a blood
+## rule, and the tagline typing out a new line every TAGLINE_S seconds (the first line is the one it always had).
+## The scene's Watcher and its beats (MenuScene) pause while a page is open.
 
 const TEST_RANGE: String = "res://gravelight/maps/test_range/test_range.tscn"
 const HUB: String = "res://ui/main_menu.tscn"
@@ -19,6 +23,18 @@ const COL_X: float = 112.0
 const COL_Y: float = 372.0
 const WORDMARK_H: float = 184.0     # T-218: was 140; the lockup now starts on the column's rule
 const WORDMARK_PAD: float = 0.048   # the empty strip left of the letters in claude_zombies.png (99 of 2048 px)
+const BLOOD: Color = Color(0.66, 0.07, 0.05)
+const TAG_COL: Color = Color(0.8, 0.27, 0.22)
+const TAGLINE_S: float = 9.0
+const TYPE_CPS: float = 30.0
+const TAGLINES: PackedStringArray = [
+	"Silesia, winter 1944. The dead are keeping count.",
+	"Every round is a signature. They are collecting.",
+	"The fence will not hold. It never has.",
+	"Something at the treeline has learned your name.",
+	"Read the fine print. They already have.",
+	"Keep the fire lit. They hate what it shows them.",
+]
 
 var scene: MenuScene = null
 var column: String = "main"
@@ -32,6 +48,10 @@ var _hint_pad: int = -1
 var _version: Label = null
 var _screen: MenuScreen = null
 var _last_focus: Dictionary = {}     # column -> link name
+var dread: MenuDread = null
+var _tag: Label = null
+var _tag_i: int = 0
+var _tag_t: float = 0.0
 
 
 func _ready() -> void:
@@ -49,6 +69,9 @@ func _ready() -> void:
 	get_window().title = Game.GAME_MODE_NAME + " — " + Game.GAME_TITLE
 	scene = MenuScene.new()
 	add_child(scene)
+	dread = MenuDread.new()
+	dread.scene = scene
+	add_child(dread)
 	_build_shade()
 	_top = VBoxContainer.new()
 	_top.name = "Masthead"
@@ -65,9 +88,11 @@ func _ready() -> void:
 	tc.add_theme_color_override("font_color", MenuKit.PAPER.darkened(0.15))
 	MenuKit.outline(tc, "menu")
 	_top.add_child(tc)
-	var tag: Label = MenuKit.para("Silesia, winter 1944. The dead are keeping count.", 20, MenuKit.VIOLET.lightened(0.15))
+	var tag: Label = MenuKit.para(TAGLINES[0], 20, TAG_COL)
 	tag.autowrap_mode = TextServer.AUTOWRAP_OFF
+	tag.name = "Tagline"
 	_top.add_child(tag)
+	_tag = tag
 	for l: Label in [tc, tag]:   # the lines start where the letters of the wordmark start
 		var inset: StyleBoxEmpty = StyleBoxEmpty.new()
 		inset.content_margin_left = WORDMARK_H * 2048.0 / 940.0 * WORDMARK_PAD
@@ -112,8 +137,8 @@ func _ready() -> void:
 ## The left side darkens toward the column (readable over the scene), with a soft vignette at the foot.
 func _build_shade() -> void:
 	var grad: Gradient = Gradient.new()
-	grad.set_color(0, Color(0.0, 0.0, 0.02, 0.86))
-	grad.set_color(1, Color(0.0, 0.0, 0.02, 0.0))
+	grad.set_color(0, Color(0.02, 0.0, 0.0, 0.88))
+	grad.set_color(1, Color(0.02, 0.0, 0.0, 0.0))
 	var gt: GradientTexture2D = GradientTexture2D.new()
 	gt.gradient = grad
 	gt.fill_to = Vector2(0.62, 0.0)
@@ -179,11 +204,55 @@ static func hint_text(pad: bool) -> String:
 	return "A  select      B  back" if pad else "ENTER  select      ESC  back"
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	var pad: int = 1 if GLSettings.using_pad else 0
 	if _hint != null and pad != _hint_pad:
 		_hint_pad = pad
 		_hint.text = hint_text(pad == 1)
+	_type_tagline(delta)
+	_throb_focus()
+
+
+## The tagline: holds TAGLINE_S, then the next line types in (pure timing in tagline_text, tested).
+func _type_tagline(delta: float) -> void:
+	if _tag == null:
+		return
+	_tag_t += delta
+	if _tag_t >= TAGLINE_S:
+		_tag_t = 0.0
+		_tag_i = (_tag_i + 1) % TAGLINES.size()
+	_tag.text = tagline_text(_tag_i, _tag_t)
+
+
+## Line `i` as it reads `t` s after it started typing (line 0 is whole from the first frame).
+static func tagline_text(i: int, t: float) -> String:
+	var line: String = TAGLINES[posmod(i, TAGLINES.size())]
+	if i == 0 and t < TAGLINE_S:
+		return line
+	return line.substr(0, clampi(int(t * TYPE_CPS), 0, line.length()))
+
+
+## The focused link's dried-blood plate swells with the heartbeat.
+func _throb_focus() -> void:
+	if _links == null or dread == null:
+		return
+	var f: Control = get_viewport().gui_get_focus_owner()
+	if f == null or not _links.is_ancestor_of(f) or not f.has_meta("link_box"):
+		return
+	var sb: StyleBoxFlat = f.get_meta("link_box") as StyleBoxFlat
+	var k: float = DreadFx.picture_k()
+	sb.bg_color.a = 0.13 + 0.07 * dread.pulse * k
+	sb.shadow_color.a = 0.16 + 0.2 * dread.pulse * k
+
+
+## A link's plate in dried blood instead of the Marke violet (the tween in MenuKit.menu_link moves only the alphas).
+static func bleed_link(b: Button) -> void:
+	var sb: StyleBoxFlat = b.get_meta("link_box") as StyleBoxFlat
+	if sb == null:
+		return
+	sb.bg_color = Color(BLOOD.r, BLOOD.g, BLOOD.b, sb.bg_color.a)
+	sb.shadow_color = Color(BLOOD.r, BLOOD.g, BLOOD.b, sb.shadow_color.a)
+	sb.border_color = Color(BLOOD.r * 1.3, BLOOD.g * 1.3, BLOOD.b * 1.3, sb.border_color.a)
 
 
 func _unlock_name(item_id: String) -> String:
@@ -245,7 +314,7 @@ func show_column(which: String, animate: bool = true) -> void:
 	_links.add_theme_constant_override("separation", 2)
 	var rows: Array = column_rows(which)
 	var size_px: int = 40 if which == "main" else 36
-	var rule: ColorRect = MenuKit.rule(rows.size() * size_px * 1.55 + (rows.size() - 1) * 2.0)
+	var rule: ColorRect = MenuKit.rule(rows.size() * size_px * 1.55 + (rows.size() - 1) * 2.0, 2.0, BLOOD)
 	_col.add_child(rule)
 	_col.add_child(_links)
 	if which != "main":
@@ -258,6 +327,7 @@ func show_column(which: String, animate: bool = true) -> void:
 		_col.tree_exiting.connect(crumb.queue_free)
 	for r: Array in rows:
 		var b: Button = MenuKit.menu_link(str(r[0]), r[1] as Callable, size_px)
+		bleed_link(b)
 		if str(r[0]) == "Back":
 			b.add_theme_color_override("font_color", MenuKit.DIM)
 		_links.add_child(b)
@@ -325,6 +395,8 @@ func _show_screen(s: MenuScreen) -> MenuScreen:
 	_col_holder.visible = false
 	_top.modulate.a = 0.0
 	_foot.visible = false
+	if scene != null:
+		scene.dread_enabled = false   # no beats over a page
 	add_child(s)
 	s.closed.connect(_on_closed)
 	return s
@@ -336,6 +408,8 @@ func _exit_tree() -> void:
 
 func _on_closed() -> void:
 	_screen = null
+	if scene != null:
+		scene.dread_enabled = true
 	_col_holder.visible = true
 	_foot.visible = true
 	create_tween().tween_property(_top, "modulate:a", 1.0, 0.25)
