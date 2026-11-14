@@ -1032,7 +1032,7 @@
     "vm_back": 0.026,
     "vm_climb": 2.6,
     "smoke": false,
-    "eye_relief": 0.34,
+    "eye_relief": 0.2,
     "ads_zoom": 0.8
    },
    "name": "Bren Mk II",
