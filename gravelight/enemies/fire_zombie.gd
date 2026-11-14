@@ -63,14 +63,16 @@ func _ready() -> void:
 	zombie.set("_char", 0.9)
 	var headless: bool = DisplayServer.get_name() == "headless"
 	if not headless:
-		_flames.append(Props.flames(self, Vector3(0, 0.95, 0), 0.55, 0.9, 28))
-		_flames.append(Props.flames(self, Vector3(0, 0.45, 0), 0.45, 0.6, 16))
-		Props.embers(self, Vector3(0, 1.4, 0), 0.3, 12)
+		_flames.append(Props.flames(self, Vector3(0, 1.0, 0), 0.75, 1.2, 36))
+		_flames.append(Props.flames(self, Vector3(0, 0.45, 0), 0.6, 0.8, 22))
+		_flames.append(Props.flames(self, Vector3(0, 1.55, 0), 0.4, 0.9, 16))
+		Props.embers(self, Vector3(0, 1.5, 0), 0.4, 18)
+		Props.smoke(self, Vector3(0, 2.0, 0), 0.2, 1.2, 8)
 	_light = OmniLight3D.new()
 	_light.position = Vector3(0, 1.3, 0)
 	_light.light_color = Color(1.0, 0.52, 0.18)
-	_light.light_energy = 1.6
-	_light.omni_range = 5.0
+	_light.light_energy = 2.2
+	_light.omni_range = 6.0
 	_light.shadow_enabled = false
 	add_child(_light)
 	_snd = AudioDirector.make_loop_3d("firezed_burn", self, 0.0)

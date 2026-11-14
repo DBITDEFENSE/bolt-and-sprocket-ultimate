@@ -55,7 +55,7 @@ mostly indoors, out of its sight).
 
 **Round 40, the dive bomber.** The drone high up at 1 s, "AIRCRAFT! / A DIVE BOMBER IS COMING DOWN ON THE SHERMAN" at
 3 s; it comes in level from the north-west at 500 m, rolls into a 72-degree dive (its siren wailing up with the speed),
-lets the 500 kg bomb go at 110 m (about 11 s in), pulls out over the yard and climbs away. The crew fires the machine
+lets the 500 kg bomb go at 80 m (about 11 s in), pulls out low over the yard (about 40 m up) and climbs away. The crew fires the machine
 gun up at it. The bomb lands on the tank: it brews up and **burns where it stands for the rest of the match** (fire out of
 the turret ring and the engine deck, a column of smoke, a flickering light, the crackle). Anyone outside near it takes
 the bomb (the raid's damage).
@@ -81,7 +81,7 @@ metre of it. Then the all clear (OPR_M4A_RAID_CLEAR_01, "The fires are a feature
 | Its burst | 4 m: players 60 at the centre to 20 at the ring (Blastproof: nothing), the dead 35% of the round's health, the tank 600 if it was against the hull; a burning patch 2.2 m for 7 s: 16 a second to a player in it, the dead set alight |
 | Machine gun (assist) | bursts of 7 at 9/s every 2.2 s, 3% of the round's health per hit, 80% hits, 45 m |
 | 75 mm (assist) | every 11 s, 70% of the round's health within 2 m, 15% at 6 m; never within 5 m of a player |
-| Dive bomber | approach 500 m up, 500 m out; 72-degree dive at up to 95 m/s; release at 110 m; the bomb 1.3 s down |
+| Dive bomber | approach 500 m up, 500 m out; 72-degree dive at up to 95 m/s; release at 80 m, the pull-out about 40 m over the yard; the bomb 1.3 s down |
 | Air raid | warning + 20 s countdown; 60 s of bombs, one per 1.6 s (±0.5); 3 s telegraph; radius 6.5 m |
 | A bomb, outside | 110 at the centre to 30 at the ring (one bomb downs a full-health player only near its centre; two close ones down anyone; Blastproof halves it); inside the inn: nothing |
 | A bomb on the dead | 120% of the round's health at the centre, 50% at the ring (round 40: 18,234 health) |
@@ -166,4 +166,38 @@ mirrored: a peer joining mid-event sees the next state update only.
 Not touched: `gravelight/enemies/zombie*.gd`, `homage_boss.gd`, `homage_encounter.gd`, `boss_fx.gd`, `dread_fx.gd`,
 `gen_map00.gd`, the navmesh, PROGRESS, DECISIONS.
 
-RESULTS_PLACEHOLDER
+## 9. Verification (2026-11-14, headless on the owner's PC; renders under WSL / Xvfb, software GL)
+
+- `check_scripts.gd`: 929 scripts, 0 failed.
+- GUT: `test_sherman` 10/10 (new: the Inn only, the Fuhrmann resolution, the wave and its fire zombies, the burst and
+  the patch, the assist's damage, the raid's shelter rule and damage, the route outside the yard, the dive bomber's pass,
+  the model's parts, the tank rig and its edge-layer collider). Related, all passing: `test_horse*` 24, `test_boss*` 32,
+  `test_round*` 8, `test_map00*` 66, `test_homage*` 34, `test_bot_u10*` 55, `test_act_rounds` 3.
+- Smokes (`tools/run_smokes.sh .smoke_logs/t249 <filter>`): `smoke_sherman` PASS (41 checks: round 30 reserved, der
+  Fuhrmann's round on too, the tank heard beyond the edge, drives in, rolls over the barrier, parks outside the gate
+  facing it in ~17.6 s, the horse in at 21 s behind it; 32 of the dead for two players with 8 burning, the bar, the
+  counter; the dead on the hull; a fire zombie against the hull fuses, bursts, takes 600 off the tank and leaves a patch;
+  the team kills the rest, it holds, the Resupply; the machine gun and the 75 mm on the dead in its sight and nothing on
+  the players; round 31 still covering; round 40 the dive bomber's bomb on the tank, the wreck stays; the warning and the
+  countdown; a bot outside sent to shelter and inside the inn; a bomb by the human outside hurts them, the same player
+  inside against the wall is spared; bombs through the raid; the all clear). `smoke_horse`, `smoke_horse_boss` (79),
+  `smoke_coop`, `smoke_map00`, `smoke_map00_alive`, `smoke_map00_cellar_bay`, `smoke_map00_loop`, `smoke_act_bosses`,
+  `smoke_bosses`: all PASS.
+- Renders (`gravelight/tools_src/sherman_shots.tscn`): `docs/captures/u18_sherman/turntable/` (the tank from five sides,
+  its running gear and turret, the wreck, the dive bomber from below, the side and a quarter, the bomb) and
+  `docs/captures/u18_sherman/inn/` (the tank on the road outside the gate, close on it, from behind, the 75 mm firing, a
+  fire zombie in the yard, the wreck burning, the dive bomber pulling out over the yard, the air raid with its shadows,
+  rings, a burst and the HUD's warning). Night on the Inn under software GL is dark; a crew lamp through the open
+  cupola and the aircraft's exhaust glow were added after the first in-map frames so both read at night.
+
+## 10. Left / for the owner
+
+- A look in a real window: the tank's size against the gate, the night readability, the assault's balance with real
+  players (the smoke shoots the dead for the team; nobody has played the fight).
+- The assault counts the dead that are on the tank; a zombie the game recycles (stuck) leaves the wave and comes back
+  through a window as an ordinary one.
+- A co-op peer joining mid-event sees the tank from the next state update but not a fire zombie's dressing that began
+  before it joined; the boss bar and counter come with the next change.
+- The bots walk round the hull (danger discs) but nothing teaches them to defend the tank in particular: they fight the
+  dead near them, which during the assault are the dead on the tank.
+

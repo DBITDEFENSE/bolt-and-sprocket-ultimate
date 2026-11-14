@@ -163,8 +163,11 @@ func _run_map() -> void:
 	while (root.player == null or not root.player.is_inside_tree()) and t < 60.0:
 		await get_tree().process_frame
 		t += get_process_delta_time()
-	for i: int in 30:
+	# past the match's title card and the opening's first lines
+	var w: float = 0.0
+	while w < 14.0:
 		await get_tree().process_frame
+		w += get_process_delta_time()
 	GameState.god_mode = true
 	root.player.set_process_unhandled_input(false)
 	root.director.kill_all(true)
@@ -187,7 +190,7 @@ func _run_map() -> void:
 	for i: int in 90:
 		await get_tree().physics_frame
 	if _want("inn_tank_road"):
-		_cam.global_position = Vector3(15.5, 1.7, 44.0)
+		_cam.global_position = Vector3(15.0, 2.8, 45.0)
 		_cam.look_at(tk.global_position + Vector3(0, 1.4, 0), Vector3.UP)
 		await _frames(4)
 		await _shoot("inn_tank_road")
@@ -238,7 +241,7 @@ func _run_map() -> void:
 		plane.fly(tk.global_position + Vector3.UP, (Vector3(-260, 0, -320) - tk.global_position).normalized(), ev.cfg["stuka"])
 		plane.flying = false
 		var rd: float = float(plane.get("_release_d"))
-		plane.pose_at(rd - 40.0)
+		plane.pose_at(rd + 45.0)
 		_cam.global_position = Vector3(14.0, 1.6, 41.0)
 		_cam.look_at(plane.global_position, Vector3.UP)
 		_cam.fov = 50.0

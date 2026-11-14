@@ -110,6 +110,14 @@ func _cull_horde() -> void:
 		z.take_damage(z.hp + 1.0, &"head", &"m1911", 0, &"world")
 
 
+## Nothing but the bombs may touch the players while a bomb case runs: the queue held empty, every zombie down.
+func _quiet() -> void:
+	RoundManager.to_spawn = 0
+	for z: Zombie in _dir().active_zombies():
+		if not (z is HomageBoss):
+			z.take_damage(z.hp + 1.0, &"head", &"m1911", 0, &"world")
+
+
 func _load() -> void:
 	GameState.bot_count = 1
 	GameState.god_mode = true
@@ -290,12 +298,14 @@ func _round40(ev: ShermanEvent) -> void:
 		bot.max_hp = 1000.0
 		bot.hp = 1000.0
 		_place(bot, Vector3(21.0, 0.05, 14.5))
-	await _secs(0.3)
+	for i: int in 20:
+		_quiet()
+		await get_tree().physics_frame
 	var h0: float = _p().hp
 	var b0: float = bot.hp if bot != null else 0.0
 	var out_at: Vector3 = Vector3(15.5, 0.0, 42.0)
 	ev.raid.drop(out_at)
-	await _until(func() -> bool: return ev.raid.last_impacts.has(out_at), 6.0)
+	await _until(func() -> bool: return ev.raid.last_impacts.has(out_at), 6.0, _quiet)
 	_check(_p().hp < h0 - 50.0, "a bomb by the human outside hurts them (%d -> %d)" % [int(h0), int(_p().hp)])
 	# the same player inside, against the taproom's south wall, a bomb 4 m off on the other side of it
 	_place(_p(), Vector3(21.0, 0.05, 14.5))
@@ -304,7 +314,7 @@ func _round40(ev: ShermanEvent) -> void:
 	var spared0: int = ev.raid.spared_inside
 	var wall_at: Vector3 = Vector3(21.0, 0.0, 18.5)
 	ev.raid.drop(wall_at)
-	await _until(func() -> bool: return ev.raid.last_impacts.has(wall_at), 6.0)
+	await _until(func() -> bool: return ev.raid.last_impacts.has(wall_at), 6.0, _quiet)
 	_check(absf(_p().hp - h1) < 0.5 and ev.raid.spared_inside > spared0, "a bomb by the wall spares the same player inside (%d -> %d, spared %d)" % [int(h1), int(_p().hp), ev.raid.spared_inside - spared0])
 	_check(bot == null or absf(bot.hp - b0) < 0.5 or not ev.raid.is_sheltered(bot.global_position), "the bot inside is untouched (%d -> %d)" % [int(b0), int(bot.hp) if bot != null else 0])
 	GameState.god_mode = true

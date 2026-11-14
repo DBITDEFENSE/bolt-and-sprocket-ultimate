@@ -269,6 +269,30 @@ func build() -> void:
 	_bomb.position = Vector3(0, -0.98, -0.9)
 	add_child(_bomb)
 	_bomb.add_child(instance("bomb"))
+	# the exhaust flames along the cowling (what a night sky shows of it) and their light
+	var glow: StandardMaterial3D = StandardMaterial3D.new()
+	glow.albedo_color = Color(1.0, 0.55, 0.2)
+	glow.emission_enabled = true
+	glow.emission = Color(1.0, 0.45, 0.12)
+	glow.emission_energy_multiplier = 6.0
+	glow.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	for side: float in [-1.0, 1.0]:
+		for e: int in 6:
+			var f: MeshInstance3D = MeshInstance3D.new()
+			var bm: BoxMesh = BoxMesh.new()
+			bm.size = Vector3(0.05, 0.05, 0.16)
+			f.mesh = bm
+			f.material_override = glow
+			f.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			f.position = Vector3(side * 0.6, -0.22, -5.1 + 0.18 * float(e) + 0.06)
+			add_child(f)
+		var l: OmniLight3D = OmniLight3D.new()
+		l.position = Vector3(side * 0.9, -0.2, -4.6)
+		l.light_color = Color(1.0, 0.55, 0.22)
+		l.light_energy = 3.0
+		l.omni_range = 9.0
+		l.shadow_enabled = false
+		add_child(l)
 
 
 # ================================================================== the pass
@@ -301,7 +325,7 @@ func fly(at: Vector3, from_dir: Vector3, flight_cfg: Dictionary) -> void:
 func _plan() -> void:
 	var th: float = deg_to_rad(float(cfg.get("dive_deg", 72.0)))
 	var hi: float = float(cfg.get("approach_alt", 500.0))
-	var hr: float = float(cfg.get("release_alt", 110.0))
+	var hr: float = float(cfg.get("release_alt", 80.0))
 	var app: float = float(cfg.get("approach_m", 500.0))
 	var ddir: Vector3 = (-back * cos(th) + Vector3.DOWN * sin(th)).normalized()   # the dive's direction
 	var S: Vector3 = target - ddir * (hi / sin(th))                                    # where the dive starts (on its line)
@@ -310,7 +334,7 @@ func _plan() -> void:
 	var S0: Vector3 = S + back * turn + Vector3.UP * 12.0                              # level flight ends here
 	var A: Vector3 = S0 + back * app
 	var P: Vector3 = R + ddir * 55.0 + Vector3.UP * 0.0                              # the pull-out's bottom
-	P.y = maxf(P.y, target.y + 55.0)
+	P.y = maxf(P.y, target.y + 38.0)   # low over the yard as it pulls out: seen as well as heard
 	var E: Vector3 = P - back * 260.0 + Vector3.UP * 180.0
 	_path = PackedVector3Array()
 	_add_line(A, S0, 20.0)

@@ -178,6 +178,15 @@ func build() -> void:
 	_exhaust.name = "Exhaust"
 	_exhaust.position = Vector3(0, 0.75, 3.05)
 	body.add_child(_exhaust)
+	# the crew's lamp through the open cupola: a warm glow over the turret roof and the deck, so the tank reads at night
+	var lamp: OmniLight3D = OmniLight3D.new()
+	lamp.name = "CrewLamp"
+	lamp.position = Vector3(0.40, 1.05, 0.32)
+	lamp.light_color = Color(1.0, 0.78, 0.5)
+	lamp.light_energy = 1.4
+	lamp.omni_range = 7.0
+	lamp.shadow_enabled = false
+	turret.add_child(lamp)
 
 
 func _spun(part_name: String, at: Vector3, radius: float, side: float) -> void:
@@ -612,6 +621,9 @@ func wreck(explode: bool) -> void:
 		_engine.stop()
 	if _tracks_snd != null:
 		_tracks_snd.stop()
+	var lamp: Node = turret.get_node_or_null("CrewLamp")
+	if lamp != null:
+		lamp.queue_free()
 	_set_exhaust(false)
 	for mi: Node in find_children("*", "MeshInstance3D", true, false):
 		var m: MeshInstance3D = mi as MeshInstance3D
