@@ -58,7 +58,9 @@ def oga(asset_id, title, blend_rel, main=False, parts_map=None, game=None, real_
         "format": ("Blender .blend (one rigged mesh, one palette material, 8x8 PichuliruPalette.png) converted with "
                    "Blender 5.1 (tools_src/blender/convert_to_glb.py): the armature dropped, the mesh split by vertex "
                    "group into named parts, the palette exported as a nearest-filtered PNG"),
-        "downloaded": TODAY + " by Devin Blair (zip in assets/user_supplied/packs) and by Claude (main set zip); converted " + TODAY + " by Claude (T-087)",
+        "downloaded": (TODAY + " by Devin Blair (zip in assets/user_supplied/packs); converted 2026-11-14 by Claude (T-248)")
+        if kw.get("downloaded_note") == "T-248" else
+        (TODAY + " by Devin Blair (zip in assets/user_supplied/packs) and by Claude (main set zip); converted " + TODAY + " by Claude (T-087)"),
         "args": ["--split-vgroups", "--map", parts_map or "body=Body"],
         "game": game or [], "real_len": real_len, "notes": notes, **kw}
 
@@ -153,6 +155,23 @@ TABLE = [
     oga("tt-springfield-m1903", "Springfield M1903", os.path.join("Rifles", "Springfield M1903.blend"),
         parts_map="body=Body,bolt=Bolt,firingpin=Bolt,safety=Bolt,trigger=Trigger", game=["springfield"], real_len=1.10,
         parts={"bolt": "Bolt", "body": "Body", "trigger": "Trigger"}),
+    # --- T-248 (2026-11-14): four more guns from the same WW2 set ---
+    oga("tt-fg42", "FG 42", os.path.join("ARs", "FG 42.blend"),
+        parts_map="body=Body,charginghandle=Bolt,mag=Mag,trigger=Trigger", game=["fg42"], real_len=0.975,
+        notes="Left-side 20-round box magazine (Mag), charging handle (Bolt). Converted 2026-11-14 (T-248).",
+        parts=MAG_PARTS, downloaded_note="T-248"),
+    oga("tt-mosin-nagant", "Mosin Nagant", os.path.join("Rifles", "Mosin Nagant.blend"),
+        parts_map="body=Body,bolt=Bolt,bolthandle=Bolt,firingpin=Bolt,trigger=Trigger", game=["mosin_nagant"], real_len=1.23,
+        notes="Bolt with its handle and firing pin = Bolt; fixed 5-round magazine in the stock (stripper-clip loaded). Converted 2026-11-14 (T-248).",
+        parts={"bolt": "Bolt", "body": "Body", "trigger": "Trigger"}, downloaded_note="T-248"),
+    oga("tt-bren", "Bren", os.path.join("LMGs", "Bren.blend"),
+        parts_map="body=Body,charginghandle=Bolt,mag=Mag,trigger=Trigger", game=["bren"], real_len=1.156,
+        notes="Top-mounted curved 30-round magazine (Mag), charging handle (Bolt), folded bipod in the Body. Converted 2026-11-14 (T-248).",
+        parts=MAG_PARTS, downloaded_note="T-248"),
+    oga("tt-sten", "Sten", os.path.join("SMGs", "Sten.blend"),
+        parts_map="body=Body,mag=Mag,bullet=Mag,release=Body,bolt=Bolt", game=["sten"], real_len=0.762,
+        notes="Left-side 32-round box magazine with its rounds (Mag), cocking handle (Bolt), skeleton stock in the Body. Converted 2026-11-14 (T-248).",
+        parts={"mag": "Mag", "bolt": "Bolt", "body": "Body"}, downloaded_note="T-248"),
     oga("tt-double-barrel", "Double Barrel", os.path.join("Shotguns", "Double Barrel.blend"), main=True,
         parts_map="body=Body,breakaction=Barrels,breakrelease=Body,trigger=Trigger,trigger2=Trigger,safety=Body,shell=Shells,shell.001=Shells",
         game=["sawed_off"], real_len=1.13,
@@ -174,22 +193,26 @@ PRIMARY = {
     "stg44": "opengameart/tt-stg44", "trench_gun": "opengameart/tt-m1897-trench-gun", "bar": "opengameart/tt-bar-m1918",
     "ppsh41": "opengameart/tt-ppsh41", "mg42": "opengameart/tt-mg42", "springfield": "opengameart/tt-springfield-m1903",
     "sawed_off": "opengameart/tt-double-barrel",
+    "fg42": "opengameart/tt-fg42", "mosin_nagant": "opengameart/tt-mosin-nagant", "bren": "opengameart/tt-bren", "sten": "opengameart/tt-sten",
 }
 GREYBOX = {
     "luger_p08": "no Luger in either OGA set; FREE_ASSET_LIST pick: 'P08 Luger Standard' by I_Live (Sketchfab, CC-BY)",
     "m1919": "not in the packs; FREE_ASSET_LIST pick: 'Browning M1919' by MelvinEbbuts (Sketchfab, CC-BY; skip any '(Enlisted)' rip)",
-    "type100": "no free match found (FREE_ASSET_LIST); keeps the procedural model",
+    "type100": "no free match found (FREE_ASSET_LIST); modelled in-house since T-248 (tools_src/blender/guns/type100.py)",
     "ptrs41": "not in the packs; FREE_ASSET_LIST pick: 'PTRS-41 Modified' by Naudaff3D (162k faces, needs decimation)",
     "panzerschreck": "not in the packs; FREE_ASSET_LIST pick: 'Panzerschreck' by Tactical_Beard (Sketchfab, CC-BY)",
     "flamethrower": "no free match found (FREE_ASSET_LIST); keeps the procedural model",
 }
 WONDER = ["ashlight", "totenglocke", "elmsfeuer"]
+# conventional guns modelled in-house because no free model exists (T-248): models.json keeps their "ours" entry
+OURS_GUNS = ["type100"]
 # casing stand-ins from Pichuliru's modern cartridge set (nearest shape; nothing in the set is the exact WW2 round)
 CASINGS = {
     "m1911": "45_ACP", "thompson": "45_ACP", "walther_p38": "9x19mm", "luger_p08": "9x19mm", "mp40": "9x19mm", "type100": "9x19mm",
     "ppsh41": "9x19mm", "webley": "44_Magnum", "kar98k": "7_62x54mmR", "gewehr43": "7_62x54mmR", "mg42": "7_62x54mmR", "stg44": "7_62x39mm",
     "m1_garand": "7_62x51mm", "bar": "7_62x51mm", "m1919": "7_62x51mm", "springfield": "7_62x51mm", "m1_carbine": "7_62x39mm",
     "trench_gun": "12_Gauge", "sawed_off": "12_Gauge", "ptrs41": "50_BMG",
+    "fg42": "7_62x54mmR", "mosin_nagant": "7_62x54mmR", "bren": "7_62x51mm", "sten": "9x19mm",
 }
 
 
@@ -312,7 +335,7 @@ def build_models_json(entries, reports, weapons_ids):
         with open(MODELS_JSON, "r", encoding="utf-8") as f:
             prev = json.load(f)
     for wid in weapons_ids:
-        if wid in WONDER:
+        if wid in WONDER or wid in OURS_GUNS:
             old = prev.get("weapons", {}).get(wid, {})
             if old.get("source") == "ours" and old.get("glb"):
                 weapons[wid] = old
@@ -382,14 +405,31 @@ FIT_NOTES = {
     "mg42": "Cover hinges at its front for the belt reload; the belt drum, cover and handle are forced to metal in the shader (the palette's tan read as wood). T-182: the rear marker is in the V (it was under it).",
     "sawed_off": "Built from the full-length double: Barrels scaled to 42 %, the stock to 72 % about the action (part_scale); Barrels hinge at the action front. T-182: the eye rides 1.4 mm higher so the rib shows over the breech, and the support hand is 1.6 cm lower (its glove covered the rib).",
     "springfield": "Iron-sighted model; a procedural M73B1-style scope is added (model_fit scope) so the sniper keeps its scope picture.",
+    "type100": "T-248: modelled in-house (no free model exists), authored in the rig frame (grip at the origin, scale 1). The side magazine pulls out to the left on a reload (model_fit mag_dir, read by WeaponHolder and the extended-magazine attachment); support hand under the jacket.",
+    "fg42": "T-248: the magazine sticks out of the left side (mag_dir); the folding sights stand on tall posts above the receiver.",
+    "mosin_nagant": "T-248: bolt reload like the Kar98k (the holder's Handle wraps the bolt; an empty Mag node marks the stripper-clip guide).",
+    "bren": "T-248: top magazine (mag_dir up), so the sights sit offset to the left of it as on the real gun: both markers on the offset sights, the camera aims along them.",
+    "sten": "T-248: the magazine sticks out of the left side (mag_dir); skeleton stock, support hand on the barrel sleeve.",
 }
-SPARE_WW2 = ["FG 42", "C96", "Hi-Power", "Nagant M1895", "Welrod", "Bren", "DP 28", "Mosin Nagant", "SVT 40", "M3 Grease", "Sten"]
+DATED_NOTES = [
+    "**2026-11-12 (T-241 b):** the 13 OpenGameArt models were smooth-shaded and bevelled in place by `tools_src/blender/smooth_palette_guns.py` "
+    "(part nodes unchanged); their triangle counts in `models.json` are the new ones, the tables below still show the pack's originals.",
+    "",
+    "**2026-11-14 (T-248):** four more guns from the same WW2 set (FG 42, Mosin-Nagant, Bren, Sten), converted with "
+    "`python -I tools/intake_guns.py --only tt-fg42,tt-mosin-nagant,tt-bren,tt-sten --merge` (the new `--merge` updates only those entries "
+    "in models.json: the earlier guns' conversion reports are not in a fresh checkout) and smoothed like the rest; these rows were added by "
+    "hand in the generator's format. The Type 100 is no longer a greybox: it is modelled in-house (`tools_src/blender/guns/type100.py`, see "
+    "its row below and `docs/u18/t248_guns.md`), the one exception to \"downloaded only\" because no free model of it exists.",
+    "",
+]
+SPARE_WW2 = ["C96", "Hi-Power", "Nagant M1895", "Welrod", "DP 28", "SVT 40", "M3 Grease"]
 
 
 def write_weapon_models_md(doc, weapons):
     L = []
     L.append("# Weapon models: source, licence, parts, scale (generated)")
     L.append("")
+    L.extend(DATED_NOTES)
     L.append("Generated by `python -I tools/intake_guns.py` (T-087, UPDATE_05A section 3) from its intake table and the Blender conversion "
              "reports; the same data is `data/gravelight/weapons/models.json`. Do not edit the tables by hand: change the table in "
              "`tools/intake_guns.py` (or the `ANIMS` dict once phase 2 retargets pack animations) and re-run with `--no-convert`.")
@@ -410,6 +450,11 @@ def write_weapon_models_md(doc, weapons):
         wj = weapons.get(wid, {})
         name = wj.get("name", wid)
         cls = wj.get("class", "")
+        if w["source"] == "ours" and wid in OURS_GUNS and w.get("glb"):
+            parts = ", ".join("%s=%s" % (k, v) for k, v in w["parts"].items())
+            L.append("| `%s` | %s | %s | ours | `%s` (`%s`) | GRAVELIGHT (in-house, T-248) | Ours | %s | -Z, %.3f m -> x1.000, %d tris | %s |" % (
+                wid, name, cls, w["asset"], w.get("script", ""), parts, w["native"]["length_m"], w["native"]["tris"], ANIM_OURS))
+            continue
         if w["source"] == "ours":
             if w.get("glb"):
                 # the row tools/wonder_register.py writes (T-090)
@@ -510,6 +555,7 @@ def main():
     ap.add_argument("--no-convert", action="store_true")
     ap.add_argument("--user-supplied", default="")
     ap.add_argument("--previews", default="")
+    ap.add_argument("--merge", action="store_true", help="with --only: update only those guns in models.json (T-248)")
     a = ap.parse_args()
     user_supplied = a.user_supplied
     if not user_supplied:
@@ -560,6 +606,23 @@ def main():
             if a.no_convert or not need:
                 write_paperwork(e, folder, reports[e["id"]])
     doc = build_models_json(TABLE, reports, weapon_ids)
+    if a.merge:
+        # T-248: only the guns converted now change; every other entry stays as models.json has it (the earlier guns'
+        # conversion reports live in the ignored tools_src/_downloads/reports and are not in a fresh checkout)
+        with open(MODELS_JSON, "r", encoding="utf-8") as f:
+            prev = json.load(f)
+        mine = {e["source"] + "/" + e["id"] for e in TABLE if e["id"] in only}
+        for key in mine:
+            if key in doc["assets"]:
+                prev["assets"][key] = doc["assets"][key]
+        for wid, w in doc["weapons"].items():
+            if w.get("asset") in mine:
+                prev["weapons"][wid] = w
+                if wid in prev.get("greybox", []):
+                    prev["greybox"].remove(wid)
+        if "cartridges" in doc["extras"] and "cartridges" in prev.get("extras", {}):
+            prev["extras"]["cartridges"]["casing_for"] = doc["extras"]["cartridges"]["casing_for"]
+        doc = prev
     os.makedirs(os.path.dirname(MODELS_JSON), exist_ok=True)
     with open(MODELS_JSON, "w", encoding="utf-8", newline="\n") as f:
         json.dump(doc, f, indent=1)
