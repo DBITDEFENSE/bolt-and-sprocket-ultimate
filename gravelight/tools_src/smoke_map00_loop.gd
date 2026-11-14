@@ -250,6 +250,11 @@ func _start_field() -> void:
 	pl.global_position = FIELD
 	var dir: ZombieDirector = (_map as MapRoot).director
 	dir.kill_all(true)
+	# no relief squad in this check: round 4 is the event's first round (35 %), and a patrol coming in from the
+	# north-east kills the edge zombies before they reach the player (every FAIL of this check had one)
+	var rs: ReliefSquad = ReliefSquad.instance(get_tree())
+	if rs != null:
+		rs.last_round = 4
 	RoundManager.debug_set_round(4)
 	_phase = "field"
 	_phase_t = 0.0
