@@ -110,8 +110,8 @@ box (x -0.2..24.2, z -0.2..16.2, y -4..10.5). The stable is not the house (a woo
   zombie's path are untouched (T-240's rail rule).
 - `stuka_plane.gd` (`StukaPlane`): the dive bomber in code (inverted gull wings lofted through cambered sections, the
   trousered gear with the sirens, the long glazed canopy and its frames, slatted dive brakes, the tailplane on struts, fin
-  and rudder, the three-bladed airscrew, exhaust stubs, the 500 kg bomb on its crutch; dark green over pale blue, a cross
-  under each wing and on the fuselage) and its pass (a polyline it follows by time: level, a curve into the dive with a
+  and rudder, the three-bladed airscrew, exhaust stubs, the 500 kg bomb on its crutch; dark green over pale blue, no national
+  markings at all: a first render's cross under the wing read wrong in perspective, so the aircraft carries none) and its pass (a polyline it follows by time: level, a curve into the dive with a
   roll, the dive, the pull-out, the climb), the bomb's fall.
 - `gravelight/enemies/fire_zombie.gd` (`FireZombie`): the burning dead as a node under an ordinary pooled zombie (the
   zombie's own burn-char at 0.9, flames, embers, a light, the crackle); the fuse, the burst, its damage. No edit to

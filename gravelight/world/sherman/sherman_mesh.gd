@@ -130,8 +130,9 @@ static func material(key: String, burnt: bool = false) -> Material:
 			m.uv1_world_triplanar = false
 			m.uv1_triplanar = true
 			m.uv1_scale = Vector3(3, 3, 3)
-			m.roughness = 0.55
-			m.metallic = 0.6
+			m.albedo_color = Color(0.42, 0.4, 0.38)
+			m.roughness = 0.78
+			m.metallic = 0.3
 		"rubber":
 			m = StandardMaterial3D.new()
 			m.albedo_color = Color(0.05, 0.05, 0.05)
@@ -407,7 +408,7 @@ static func _turret(k: ProcKit) -> void:
 		k.box("glass", cu + d * 0.36 + Vector3(0, 0.08, 0), Vector3(0.10, 0.05, 0.01), Basis(Vector3.UP, -a + PI * 0.5))
 	for sgn: float in [-1.0, 1.0]:
 		var hinge: Vector3 = cu + Vector3(sgn * 0.33, 0.17, 0)
-		k.box("od", hinge + Vector3(sgn * 0.03, 0.20, 0), Vector3(0.04, 0.40, 0.56), Basis(Vector3.BACK, sgn * deg_to_rad(12.0)))
+		k.box("od", hinge + Vector3(sgn * 0.08, 0.15, 0), Vector3(0.035, 0.32, 0.50), Basis(Vector3.BACK, sgn * deg_to_rad(28.0)))
 	var lh: Vector3 = Vector3(-0.40, 0.81, 0.10)
 	k.cyl("od_dark", lh, lh + Vector3(0, 0.05, 0), 0.30, 0.29, 20)
 	k.cyl("od", lh + Vector3(0, 0.05, 0), lh + Vector3(0, 0.08, 0), 0.27, 0.25, 20)
@@ -490,7 +491,7 @@ static func _sprocket(k: ProcKit) -> void:
 		for i: int in 13:
 			var a: float = TAU * float(i) / 13.0
 			var d: Vector3 = Vector3(0, cos(a), sin(a))
-			k.box("steel", Vector3((x0 + x1) * 0.5, 0, 0) + d * (SPROCKET_R + 0.015), Vector3(0.045, 0.07, 0.05), Basis(Vector3.RIGHT, a))
+			k.box("steel", Vector3((x0 + x1) * 0.5, 0, 0) + d * (SPROCKET_R - 0.005), Vector3(0.045, 0.06, 0.05), Basis(Vector3.RIGHT, a))
 		for j: int in 6:   # lightening holes, the dark of them
 			var a2: float = TAU * float(j) / 6.0
 			var d2: Vector3 = Vector3(0, cos(a2), sin(a2))

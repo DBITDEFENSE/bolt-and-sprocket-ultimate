@@ -178,13 +178,14 @@ func _round30(ev: ShermanEvent) -> void:
 			with_prey += 1
 	_check(with_prey == ev.attackers.size() and with_prey > 0, "every one of them is after the tank (%d)" % with_prey)
 	# a fire zombie against the hull: the hiss, the burst, the tank hurt, the patch
-	var fz: FireZombie = null
+	var found: Array = []   # (a lambda gets copies of the locals: the find goes into an array)
 	await _until(func() -> bool:
 		for n: Node in get_tree().get_nodes_in_group(FireZombie.GROUP):
-			if not (n as FireZombie).burst_done:
-				fz = n as FireZombie
+			if not (n as FireZombie).burst_done and (n as FireZombie).zombie.state != Zombie.State.EMERGE:
+				found.append(n)
 				return true
 		return false, 30.0, _cull_horde)
+	var fz: FireZombie = found[0] as FireZombie if not found.is_empty() else null
 	_check(fz != null and float(fz.zombie.get("_char")) > 0.5 and fz.zombie.max_hp < float(RoundManager.current_health()) * 0.5, "a fire zombie: charred, alight, under half a zombie's health")
 	if fz != null:
 		var hp0: float = tk.hp
@@ -202,7 +203,7 @@ func _round30(ev: ShermanEvent) -> void:
 			if is_instance_valid(z2) and z2.is_active() and z2.state != Zombie.State.EMERGE:
 				z2.take_damage(z2.hp + 1.0, &"head", &"m1911", 1, &"bullet"))
 	_check(held and ev.outcome == "held" and not tk.is_wreck(), "the team beats them off: THE SHERMAN HOLDS (%d of %d health left)" % [int(tk.hp), int(tk.max_hp)])
-	_check(tk.assisting and not tk.attackable and ev._boss_hud.is_struck("sherman"), "it starts to help; the bar is laid down")
+	_check(tk.assisting and not tk.attackable and not ev._boss_hud.is_struck("sherman"), "it starts to help; its bar is laid down (greyed, not struck through)")
 	_check(_drops.has("resupply"), "a Resupply is thrown into the yard (%s)" % str(_drops))
 	_check(not ev.hud.counter.visible, "the counter is gone")
 
@@ -292,12 +293,20 @@ func _round40(ev: ShermanEvent) -> void:
 	await _secs(0.3)
 	var h0: float = _p().hp
 	var b0: float = bot.hp if bot != null else 0.0
-	var spared0: int = ev.raid.spared_inside
-	ev.raid.drop(Vector3(15.5, 0.0, 42.0))
-	ev.raid.drop(Vector3(21.0, 0.0, 18.5))
-	await _until(func() -> bool: return ev.raid.bombs_landed >= 2, 6.0)
+	var out_at: Vector3 = Vector3(15.5, 0.0, 42.0)
+	ev.raid.drop(out_at)
+	await _until(func() -> bool: return ev.raid.last_impacts.has(out_at), 6.0)
 	_check(_p().hp < h0 - 50.0, "a bomb by the human outside hurts them (%d -> %d)" % [int(h0), int(_p().hp)])
-	_check(bot == null or (absf(bot.hp - b0) < 0.5 and ev.raid.spared_inside > spared0), "a bomb by the wall spares the bot inside (%d -> %d, spared %d)" % [int(b0), int(bot.hp) if bot != null else 0, ev.raid.spared_inside])
+	# the same player inside, against the taproom's south wall, a bomb 4 m off on the other side of it
+	_place(_p(), Vector3(21.0, 0.05, 14.5))
+	await _secs(0.2)
+	var h1: float = _p().hp
+	var spared0: int = ev.raid.spared_inside
+	var wall_at: Vector3 = Vector3(21.0, 0.0, 18.5)
+	ev.raid.drop(wall_at)
+	await _until(func() -> bool: return ev.raid.last_impacts.has(wall_at), 6.0)
+	_check(absf(_p().hp - h1) < 0.5 and ev.raid.spared_inside > spared0, "a bomb by the wall spares the same player inside (%d -> %d, spared %d)" % [int(h1), int(_p().hp), ev.raid.spared_inside - spared0])
+	_check(bot == null or absf(bot.hp - b0) < 0.5 or not ev.raid.is_sheltered(bot.global_position), "the bot inside is untouched (%d -> %d)" % [int(b0), int(bot.hp) if bot != null else 0])
 	GameState.god_mode = true
 	_place(_p(), Vector3(10.0, 0.05, 9.0))
 	var clear: bool = await _until(func() -> bool: return ev.phase == ShermanEvent.Phase.DONE, 30.0, _cull_horde)

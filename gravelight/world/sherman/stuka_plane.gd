@@ -2,8 +2,7 @@ class_name StukaPlane
 extends Node3D
 ## The dive bomber of round 40 (T-249; our own work, built in code): a single-engined two-seat dive bomber of the
 ## German air force, inverted gull wings, fixed trousered gear with the siren on each leg, a long glazed canopy, slatted
-## dive brakes under the wings, a 500 kg bomb on the swing crutch under the belly. Dark green over pale blue, a cross
-## under each wing and on the fuselage.
+## dive brakes under the wings, a 500 kg bomb on the swing crutch under the belly. Dark green over pale blue, no markings.
 ## It flies one pass (`fly`): heard high up, level at approach_alt toward the target, the roll into a dive at dive_deg,
 ## the siren rising with the speed, the bomb let go at release_alt, the pull-out and the climb away; then it frees
 ## itself. The flight is a pure function of the time since it started (`pose_at`), so a co-op client flies the same
@@ -74,9 +73,11 @@ static func material(key: String) -> Material:
 		"black":
 			m.albedo_color = Color(0.03, 0.03, 0.03)
 			m.roughness = 0.7
+			m.cull_mode = BaseMaterial3D.CULL_DISABLED
 		"white":
 			m.albedo_color = Color(0.85, 0.85, 0.82)
 			m.roughness = 0.7
+			m.cull_mode = BaseMaterial3D.CULL_DISABLED
 		"bomb":
 			m.albedo_color = Color(0.32, 0.31, 0.24)
 			m.roughness = 0.55
@@ -137,8 +138,8 @@ static func airfoil(x: float, y: float, le: float, c: float, th: float, m: int =
 
 
 ## The wing's stations: [x, y of the chord line, leading edge z, chord, thickness ratio].
-const WING: Array = [[0.42, -0.40, -1.95, 2.80, 0.16], [1.30, -0.70, -1.90, 2.65, 0.15], [2.40, -0.96, -1.80, 2.45, 0.14],
-	[4.20, -0.70, -1.45, 1.95, 0.12], [6.10, -0.42, -1.10, 1.45, 0.10], [6.80, -0.32, -0.96, 1.08, 0.09], [SPAN_TIP, -0.30, -0.80, 0.60, 0.08]]
+const WING: Array = [[0.42, -0.30, -1.95, 2.80, 0.16], [1.30, -0.72, -1.90, 2.65, 0.15], [2.40, -1.08, -1.80, 2.45, 0.14],
+	[4.20, -0.74, -1.45, 1.95, 0.12], [6.10, -0.34, -1.10, 1.45, 0.10], [6.80, -0.20, -0.96, 1.08, 0.09], [SPAN_TIP, -0.17, -0.80, 0.60, 0.08]]
 
 ## The fuselage's sections: [z, half width, half height, centre y].
 const FUSE: Array = [[-5.52, 0.30, 0.34, 0.02], [-5.40, 0.44, 0.52, -0.02], [-4.90, 0.52, 0.67, -0.10], [-4.10, 0.55, 0.70, -0.06],
@@ -223,28 +224,8 @@ static func _body(k: ProcKit) -> void:
 	k.box("dark", Vector3(0, -0.72, -4.9), Vector3(0.5, 0.08, 0.3))
 	k.beam("frame", Vector3(-0.18, -0.55, -1.5), Vector3(-0.18, -0.92, -0.6), 0.04)
 	k.beam("frame", Vector3(0.18, -0.55, -1.5), Vector3(0.18, -0.92, -0.6), 0.04)
-	# the crosses: under each wing (what the yard sees), and on each side of the fuselage
+	# no national markings (the owner's rule: no insignia; a plain green and blue aircraft reads as the enemy by its shape and its siren)
 	k.belly = Color(0, 0, 0, 0)
-	for side3: float in [-1.0, 1.0]:
-		var cx: float = side3 * 4.9
-		var y: float = -0.66 - 0.06
-		_cross(k, Vector3(cx, y, -0.55), Vector3.DOWN, Vector3.FORWARD, 0.62)
-		_cross(k, Vector3(side3 * 0.405, 0.12, 2.6), Vector3(side3, 0, 0), Vector3.UP, 0.42)
-
-
-## A straight cross (black on a white border) facing `n` at `c`, arm half length r.
-static func _cross(k: ProcKit, c: Vector3, n: Vector3, up: Vector3, r: float) -> void:
-	var nz: Vector3 = n.normalized()
-	var ux: Vector3 = up.cross(nz).normalized()
-	var uy: Vector3 = nz.cross(ux).normalized()
-	for layer: Array in [["white", r, r * 0.42, 0.0], ["black", r * 0.86, r * 0.24, 0.006]]:
-		var a: float = float(layer[1])
-		var w: float = float(layer[2])
-		var o: Vector3 = c + nz * float(layer[3])
-		for arm: Array in [[ux, uy], [uy, ux]]:
-			var u: Vector3 = arm[0]
-			var v: Vector3 = arm[1]
-			k.quad(str(layer[0]), o - u * a - v * w * 0.5, o + u * a - v * w * 0.5, o + u * a + v * w * 0.5, o - u * a + v * w * 0.5)
 
 
 static func _propeller(k: ProcKit) -> void:
