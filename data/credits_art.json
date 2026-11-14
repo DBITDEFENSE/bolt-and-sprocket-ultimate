@@ -251,6 +251,20 @@
    ]
   },
   {
+   "folder": "assets/third_party/opengameart/tt-bren",
+   "source": "opengameart",
+   "id": "tt-bren",
+   "title": "Ultimate Low Poly Guns: Bren (World War 2 set)",
+   "author": "TastyTony (gun models); Pichuliru (pack, palette, rigs)",
+   "url": "https://opengameart.org/content/ultimate-low-poly-guns",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "files": [
+    "model.glb",
+    "textures/tt_bren_ultimatelowpolyguns_albedo.png"
+   ]
+  },
+  {
    "folder": "assets/third_party/opengameart/tt-double-barrel",
    "source": "opengameart",
    "id": "tt-double-barrel",
@@ -262,6 +276,20 @@
    "files": [
     "model.glb",
     "textures/tt_double_barrel_ultimatelowpolyguns_albedo.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/opengameart/tt-fg42",
+   "source": "opengameart",
+   "id": "tt-fg42",
+   "title": "Ultimate Low Poly Guns: FG 42 (World War 2 set)",
+   "author": "TastyTony (gun models); Pichuliru (pack, palette, rigs)",
+   "url": "https://opengameart.org/content/ultimate-low-poly-guns",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "files": [
+    "model.glb",
+    "textures/tt_fg42_ultimatelowpolyguns_albedo.png"
    ]
   },
   {
@@ -363,6 +391,20 @@
    ]
   },
   {
+   "folder": "assets/third_party/opengameart/tt-mosin-nagant",
+   "source": "opengameart",
+   "id": "tt-mosin-nagant",
+   "title": "Ultimate Low Poly Guns: Mosin Nagant (World War 2 set)",
+   "author": "TastyTony (gun models); Pichuliru (pack, palette, rigs)",
+   "url": "https://opengameart.org/content/ultimate-low-poly-guns",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "files": [
+    "model.glb",
+    "textures/tt_mosin_nagant_ultimatelowpolyguns_albedo.png"
+   ]
+  },
+  {
    "folder": "assets/third_party/opengameart/tt-mp40",
    "source": "opengameart",
    "id": "tt-mp40",
@@ -402,6 +444,20 @@
    "files": [
     "model.glb",
     "textures/tt_springfield_m1903_ultimatelowpolyguns_albedo.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/opengameart/tt-sten",
+   "source": "opengameart",
+   "id": "tt-sten",
+   "title": "Ultimate Low Poly Guns: Sten (World War 2 set)",
+   "author": "TastyTony (gun models); Pichuliru (pack, palette, rigs)",
+   "url": "https://opengameart.org/content/ultimate-low-poly-guns",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "files": [
+    "model.glb",
+    "textures/tt_sten_ultimatelowpolyguns_albedo.png"
    ]
   },
   {
@@ -1871,7 +1927,9 @@
    "titles": [
     "Ultimate Low Poly Guns: Cartridges (main set)",
     "Ultimate Low Poly Guns: BAR (World War 2 set)",
+    "Ultimate Low Poly Guns: Bren (World War 2 set)",
     "Ultimate Low Poly Guns: Double Barrel (main set)",
+    "Ultimate Low Poly Guns: FG 42 (World War 2 set)",
     "Ultimate Low Poly Guns: Gewehr 43 (World War 2 set)",
     "Ultimate Low Poly Guns: Kar 98K (World War 2 set)",
     "Ultimate Low Poly Guns: M1 Carbine (World War 2 set)",
@@ -1879,9 +1937,11 @@
     "Ultimate Low Poly Guns: M1897 (trench gun) (World War 2 set)",
     "Ultimate Low Poly Guns: M1911 (World War 2 set)",
     "Ultimate Low Poly Guns: MG 42 (World War 2 set)",
+    "Ultimate Low Poly Guns: Mosin Nagant (World War 2 set)",
     "Ultimate Low Poly Guns: MP 40 (World War 2 set)",
     "Ultimate Low Poly Guns: PPSH 41 (World War 2 set)",
     "Ultimate Low Poly Guns: Springfield M1903 (World War 2 set)",
+    "Ultimate Low Poly Guns: Sten (World War 2 set)",
     "Ultimate Low Poly Guns: STG 44 (World War 2 set)",
     "Ultimate Low Poly Guns: M1A1 Thompson (World War 2 set)",
     "Ultimate Low Poly Guns: Walther P38 (World War 2 set)",
@@ -1890,7 +1950,9 @@
    "folders": [
     "assets/third_party/opengameart/pichuliru-cartridges",
     "assets/third_party/opengameart/tt-bar-m1918",
+    "assets/third_party/opengameart/tt-bren",
     "assets/third_party/opengameart/tt-double-barrel",
+    "assets/third_party/opengameart/tt-fg42",
     "assets/third_party/opengameart/tt-gewehr-43",
     "assets/third_party/opengameart/tt-kar98k",
     "assets/third_party/opengameart/tt-m1-carbine",
@@ -1898,9 +1960,11 @@
     "assets/third_party/opengameart/tt-m1897-trench-gun",
     "assets/third_party/opengameart/tt-m1911",
     "assets/third_party/opengameart/tt-mg42",
+    "assets/third_party/opengameart/tt-mosin-nagant",
     "assets/third_party/opengameart/tt-mp40",
     "assets/third_party/opengameart/tt-ppsh41",
     "assets/third_party/opengameart/tt-springfield-m1903",
+    "assets/third_party/opengameart/tt-sten",
     "assets/third_party/opengameart/tt-stg44",
     "assets/third_party/opengameart/tt-thompson-m1a1",
     "assets/third_party/opengameart/tt-walther-p38",

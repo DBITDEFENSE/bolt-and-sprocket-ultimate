@@ -373,6 +373,26 @@ static func _mag_ext(b: WeaponModels, v: Dictionary) -> void:
 	if mag == null:
 		return
 	var a: AABB = _bounds(mag)
+	var dir: Vector3 = (b.root.get_meta("mag_dir", Vector3.DOWN) as Vector3).normalized()
+	if absf(dir.x) > 0.7 or dir.y > 0.7:
+		# T-248: a side magazine (Type 100, Sten, FG 42) grows out to the side, a top one (Bren) upward: the box
+		# continues the magazine the way it points, never down out of its flank
+		var ax: int = 0 if absf(dir.x) > 0.7 else 1
+		var sgn: float = signf(dir[ax])
+		var len_ax: float = a.size[ax] * float(v.get("ext", 0.4))
+		var edge: float = a.end[ax] if sgn > 0.0 else a.position[ax]
+		var c2: Vector3 = a.get_center()
+		c2[ax] = edge + sgn * (len_ax * 0.5 - 0.002)
+		var sz: Vector3 = a.size * 0.96
+		sz.z = minf(a.size.z, 0.06) * 0.96
+		sz[ax] = len_ax
+		b.box(sz, c2, "blued", Vector3.ZERO, mag)
+		var cap: Vector3 = sz * 1.09
+		cap[ax] = 0.005
+		var cc: Vector3 = c2
+		cc[ax] = edge + sgn * (len_ax + 0.0005)
+		b.box(cap, cc, "steel", Vector3.ZERO, mag)
+		return
 	if a.size.y < 0.01:
 		_trench_mag(b, v)
 		return

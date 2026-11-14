@@ -9,8 +9,9 @@ extends Node
 ## He is a bot-style Player (is_bot, is_companion, the fixed pid in the data) driven by the Update 03 brain
 ## through BotSquad.add_brain(player, options): his personality (personality_jakub.json), no kit / bonus perk /
 ## shopping of his own, ~70% of a player's accuracy, escort = the player who freed him, ammo boxes paid from that
-## player's Scrip at half price, revived after the humans and the bots. Tonics (T-127): he never buys one on his
-## own, but "Talk to Jakub" can send him for one ("Get yourself a tonic"): he walks to the nearest machine he can
+## player's Scrip at half price, revived after the humans and the bots. (T-177 / T-245: he now also shops with the
+## Scrip his own kills earn, tonics and the Requisition Crate included, and takes a wonder weapon from your hands.)
+## Tonics (T-127): "Talk to Jakub" can send him for one ("Get yourself a tonic"): he walks to the nearest machine he can
 ## drink from and it is paid from the talker's Scrip at the normal price (re-checked at the till); he holds them
 ## under the same cap and loses them on a down like anyone (PerkMachine.sell_to_companion, the brain's
 ## buy_tonic order). He is NOT a player: no id in
@@ -115,8 +116,8 @@ static func brain_options(escort: int, has_gun: bool) -> Dictionary:
 	return o
 
 
-## Why he won't take the gun in your hands ("" = he will): your only gun, a wonder weapon, nothing held, you are
-## down (pure, unit-tested).
+## Why he won't take the gun in your hands ("" = he will): your only gun, a class in `refused` (T-245: none by
+## default, a wonder weapon is welcome), nothing held, you are down (pure, unit-tested).
 static func offer_rule(slot_count: int, cls: StringName, last_stand: bool, refused: Array) -> String:
 	if last_stand:
 		return "down"
@@ -552,6 +553,7 @@ func _tick_joined(_delta: float) -> void:
 	if player.downed:
 		return
 	_tick_tonic()
+	_sync_armed()
 	# T-127: the first time he stands by a machine: wary of them, but he'd drink one if you sent him
 	if not _perk_near_done:
 		for n: Node in get_tree().get_nodes_in_group(&"perk_machines"):
@@ -796,9 +798,12 @@ func _receive(w: WeaponInstance, from: Player, bought: bool) -> void:
 	if state == State.WAITING:
 		_join(from.player_id, false)
 	var old: WeaponInstance = player.weapons.current()
-	player.weapons.slots.clear()
-	player.weapons.slots.append(w)
-	player.weapons.current_index = 0
+	# T-245: the gun in his hands is swapped for yours; guns he got on his own (the crate, a bench) stay in his slots
+	if old == null:
+		player.weapons.slots.append(w)
+		player.weapons.current_index = player.weapons.slots.size() - 1
+	else:
+		player.weapons.slots[clampi(player.weapons.current_index, 0, player.weapons.slots.size() - 1)] = w
 	if old != null and from != null and from.weapons != null and not bought:
 		if from.weapons.find_weapon(old.id) == null:
 			from.weapons.give_instance(old)   # "Take mine, then." (the very gun: its ammo and attachments)
@@ -812,6 +817,16 @@ func _receive(w: WeaponInstance, from: Player, bought: bool) -> void:
 	_set_armed(true)
 	_event("armed:%s" % w.id)
 	_later_say(0.9, gun_category(w.weapon_class()))
+
+
+## T-245: a gun he picked up on his own (the Requisition Crate, a wall, a built wonder on a bench) arms him like a
+## handed one (the brain's armed flag, the body's weapon).
+func _sync_armed() -> void:
+	if brain == null or player.weapons == null or player.weapons.current() == null:
+		return
+	if not bool(brain.options.get("armed", false)):
+		_set_armed(true)
+		_event("armed:%s" % player.weapons.current().id)
 
 
 func _set_armed(on: bool) -> void:
@@ -835,6 +850,8 @@ func _join(escort: int, arrival: bool) -> void:
 	player.add_to_group(&"players")
 	player.add_to_group(&"bots")
 	player.bot_damage_mult = 1.0
+	if player.remote_body != null:
+		player.remote_body.set_life(false)   # T-246: the brain has the body now
 	if player.remote_body != null and player.weapons.slots.is_empty():
 		player.remote_body.set_weapon(&"coal_shovel")
 	brain = squad.add_brain(player, brain_options(escort_pid, not player.weapons.slots.is_empty()))
@@ -1129,6 +1146,8 @@ func _pose(delta: float, speed: float, flags: int) -> void:
 	player.net_flags = flags
 	if player.remote_body != null:
 		player.remote_body.calm = speed < 0.3 and state != State.BREAKOUT
+		# T-246: while he waits (in the cage, freed, at his spot) he looks at you, at the dead, at a shot
+		player.remote_body.set_life(state == State.CAGED or state == State.FREED or state == State.WAITING)
 		player.remote_body.update_pose_lod(delta, speed, 0.0, flags)   # T-237: by what the camera sees
 
 

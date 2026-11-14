@@ -673,7 +673,7 @@ func _label(text: String, pos: Vector3, yaw: float, size: int = 40, color: Color
 	l.outline_size = 0
 	l.position = pos
 	l.rotation.y = deg_to_rad(yaw)
-	l.shaded = true
+	SurfaceText.apply(l)   # T-247: the surface look (period face, lit, toned down)
 	(parent if parent != null else dress).add_child(l)
 
 
@@ -1366,7 +1366,7 @@ func _dress_yard() -> void:
 	Props.embers(dress, Vector3(38.86, 1.1, 12.9), 0.2, 8)
 	lamp(Vector3(38.4, 1.6, 12.9), Color(1.0, 0.5, 0.2), 2.0, 9.0, 0.35, 0.6)
 	# crates by the winding house door, against its wall (they stood 0.75 m off it in the 3 m lane)
-	Props.crate(dress, Vector3(27.5, 0, 4.75), 0.9, 3.0, "SALZ")
+	Props.crate(dress, Vector3(27.5, 0, 4.75), 0.9, 3.0)
 	Props.crate(dress, Vector3(27.55, 0.9, 4.75), 0.6, -12.0)
 	# under the Administration's balcony: a crate and a sandbag wall, one line against the wall
 	Props.crate(dress, Vector3(0.62, 0, 10.35), 0.8, 3.0)
@@ -1491,7 +1491,7 @@ func _dress_yard_south() -> void:
 	_noshadow(Props.ball(dress, Vector3(34.6, 0.0, 29.9), Vector3(0.8, 0.2, 0.6), "ore_salt"))
 	# crates and sacks in the corner (the drift beyond them is the old one)
 	# (T-239: stacked square to the wall with the sacks on top of the bottom row; two sacks stood loose in front of it)
-	Props.crate(dress, Vector3(37.07, 0, 31.38), 0.9, 2.0, "SALZ")
+	Props.crate(dress, Vector3(37.07, 0, 31.38), 0.9, 2.0)
 	Props.crate(dress, Vector3(38.0, 0, 31.4), 0.86, -3.0)
 	Props.crate(dress, Vector3(37.4, 0.9, 31.48), 0.62, 9.0)
 	Props.sack(dress, Vector3(38.05, 0.86, 31.45), 70.0, 0.9)
@@ -1727,7 +1727,7 @@ func _dress_kaue() -> void:
 	B(Vector3(9.36, 1.56, z0), Vector3(10.64, 1.6, z0 + 0.06), "beam")
 	B(Vector3(9.36, 2.3, z0), Vector3(10.64, 2.34, z0 + 0.06), "beam")
 	_label("SCHICHT III - 23. XII.", Vector3(10.0, 2.1, z0 + 0.05), 0.0, 20, Color(0.9, 0.9, 0.86, 0.85))
-	_label("Seilfahrt 6.00 / 14.00 / 22.00", Vector3(10.0, 1.8, z0 + 0.05), 0.0, 14, Color(0.9, 0.9, 0.86, 0.75))
+	# (T-247: the timetable's small print under the shift board is gone)
 	# the broom and the bucket in the north-east corner, a coat on the wall, duckboards along the benches
 	Props.strut(dress, Vector3(15.55, 0.02, 26.6), Vector3(15.75, 1.45, 26.35), 0.025, "pine", true)
 	OB(Vector3(15.5, 0.03, 26.7), Vector3(0.3, 0.06, 0.1), "straw_floor", Vector3(0, -30, 0))
@@ -2016,7 +2016,7 @@ func _dress_admin_stair_strings() -> void:
 	for sh: float in [24.9, 25.55]:
 		_noshadow(B(Vector3(fx + 0.046, 1.8, sh), Vector3(fx + 0.049, 2.45, sh + 0.012), "black_paint", false))
 	_noshadow(B(Vector3(fx + 0.046, 1.78, 25.2), Vector3(fx + 0.049, 1.9, 25.5), "red_paint", false))
-	_label("GRUBENRISS  ·  SOHLE I - III", Vector3(fx + 0.052, 1.7, 25.3), 90.0, 12, Color(0.15, 0.12, 0.1, 0.9))
+	# (T-247: the mine plan's 12 px caption is gone)
 	# the notice board: orders, the ration list, a torn poster
 	B(Vector3(fx, 1.5, 26.6), Vector3(fx + 0.03, 2.55, 27.9), "linen")
 	for nf: Array in [[1.46, 1.5], [2.55, 2.59]]:
@@ -2027,7 +2027,7 @@ func _dress_admin_stair_strings() -> void:
 			[27.2, 1.78, 0.2, 0.26, 6.0], [27.62, 1.72, 0.2, 0.3, -2.0]]:
 		_noshadow(Props.obox(dress, Vector3(fx + 0.034, float(np[1]), float(np[0]) + float(np[2]) * 0.5), Vector3(0.004, float(np[3]), float(np[2])),
 			"paper", Vector3(float(np[4]), 0, 0)))
-	_label("BEKANNTMACHUNGEN", Vector3(fx + 0.05, 2.47, 27.25), 90.0, 12, Color(0.15, 0.12, 0.1, 0.9))
+	# (T-247: the notice board's 12 px heading is gone; the sheets on it stay)
 
 
 ## T-239: the Administration's upper floor was a 16 x 16 m room with one desk on a rug, and the radio room an empty

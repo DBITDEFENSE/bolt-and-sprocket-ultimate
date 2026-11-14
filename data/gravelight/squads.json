@@ -153,7 +153,7 @@
 			"_doc": "Crossroads Inn, Silesia, December 1944: the forest edges.",
 			"factions": [
 				{"id": "ak", "display": "Home Army partisans", "kit": "partisan", "marked": false, "weight": 0.6, "weapons": ["kar98k", "mp40", "kar98k", "walther_p38"], "barks_prefix": "SQD_AK", "edge_spawns": [[45.0, 0.0, 68.5], [2.0, 0.0, 68.5], [-24.5, 0.0, 44.0]]},
-				{"id": "sov", "display": "Soviet scout patrol", "kit": "soviet_scout", "marked": false, "weight": 0.4, "weapons": ["ppsh41", "ppsh41", "kar98k"], "barks_prefix": "SQD_SOV", "edge_spawns": [[64.5, 0.0, 46.0], [64.5, 0.0, -1.0], [47.0, 0.0, -34.5]]}
+				{"id": "sov", "display": "Soviet scout patrol", "kit": "soviet_scout", "marked": false, "weight": 0.4, "weapons": ["ppsh41", "ppsh41", "mosin_nagant"], "barks_prefix": "SQD_SOV", "edge_spawns": [[64.5, 0.0, 46.0], [64.5, 0.0, -1.0], [47.0, 0.0, -34.5]]}
 			]
 		},
 		"map01": {
@@ -166,7 +166,7 @@
 		"map02": {
 			"_doc": "Totenhafen: the sea side and the land gate.",
 			"factions": [
-				{"id": "cdo", "display": "British commandos", "kit": "commando", "marked": false, "weight": 0.6, "weapons": ["thompson", "thompson", "webley", "m1_garand"], "barks_prefix": "SQD_CDO", "edge_spawns": [[3.0, 0.0, 2.0], [-28.0, 0.0, 2.0], [60.0, 0.0, 2.0]]},
+				{"id": "cdo", "display": "British commandos", "kit": "commando", "marked": false, "weight": 0.6, "weapons": ["sten", "thompson", "webley", "m1_garand"], "barks_prefix": "SQD_CDO", "edge_spawns": [[3.0, 0.0, 2.0], [-28.0, 0.0, 2.0], [60.0, 0.0, 2.0]]},
 				{"id": "km", "display": "Kriegsmarine shore party", "kit": "shore_party", "marked": true, "weight": 0.4, "weapons": ["mp40", "kar98k", "walther_p38"], "barks_prefix": "SQD_KM", "edge_spawns": [[2.0, 0.0, 28.0], [-16.0, 0.0, 40.0], [48.0, 0.0, 38.0]]}
 			]
 		},

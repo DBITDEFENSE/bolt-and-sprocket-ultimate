@@ -25,13 +25,15 @@ func after_each() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 
-## The downloaded (conventional) guns with a GLB; the wonder weapons are ours and have their own test
-## (test_wonder_models, T-090).
+## The conventional guns with a GLB (downloaded, plus the Type 100 we modelled, T-248); the wonder weapons are ours
+## and have their own test (test_wonder_models, T-090).
 func _glb_ids() -> Array[String]:
 	var out: Array[String] = []
 	var w: Dictionary = WeaponGLB.models().get("weapons", {})
+	var rows: Dictionary = GLData.table("weapons")["weapons"]
 	for id: String in w.keys():
-		if WeaponGLB.glb_path(StringName(id)) != "" and str((w[id] as Dictionary).get("source", "")) != "ours":
+		var wonder: bool = str((rows.get(id, {}) as Dictionary).get("class", "")) == "wonder"
+		if WeaponGLB.glb_path(StringName(id)) != "" and not (str((w[id] as Dictionary).get("source", "")) == "ours" and wonder):
 			out.append(id)
 	return out
 
@@ -46,7 +48,7 @@ func _root_pos(root: Node3D, n: Node3D) -> Vector3:
 
 
 func test_sixteen_guns_are_mapped() -> void:
-	assert_eq(_glb_ids().size(), 16, "16 conventional guns have a downloaded model")
+	assert_eq(_glb_ids().size(), 21, "21 conventional guns have a model (16 downloaded, T-248: 4 more downloaded and the Type 100 of ours)")
 
 
 func test_every_glb_gun_builds_with_the_contract() -> void:
@@ -115,7 +117,7 @@ func test_upgraded_is_the_same_mesh_in_nachtglas() -> void:
 
 
 func test_greybox_fallbacks() -> void:
-	for id: String in ["luger_p08", "m1919", "type100", "ptrs41", "panzerschreck", "flamethrower"]:
+	for id: String in ["luger_p08", "m1919", "ptrs41", "panzerschreck", "flamethrower"]:   # T-248: the Type 100 has a model now
 		assert_false(WeaponGLB.wants(StringName(id)), id + " keeps the greybox")
 		var m: Node3D = WeaponModels.build(StringName(id))
 		assert_not_null(m.find_child("SightPoint", true, false), id + " procedural build still has its sights")

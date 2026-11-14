@@ -51,7 +51,7 @@ func test_shops_with_his_own_scrip() -> void:
 	var p: Dictionary = BotAIData.personality("jakub")
 	assert_false(bool(p["economy"]["refuses_perks"]), "his own shopping may pick a tonic")
 	assert_gt(float(p["actions"]["buy"]), 0.0, "and he shops")
-	assert_eq(float(p["actions"]["crate"]), 0.0, "never the Requisition Crate")
+	assert_gt(float(p["actions"]["crate"]), 0.0, "T-245: the Requisition Crate too (a wonder weapon is welcome)")
 	var o: Dictionary = JakubCompanion.brain_options(HUMAN, true)
 	assert_true(bool(o["perks"]) and bool(o["shopping"]), "perk buys and shopping on")
 	assert_false(bool(o["kit"]) or bool(o["bonus_perk"]), "still no spawn kit, no bonus perk")
@@ -205,7 +205,8 @@ func test_gun_rules() -> void:
 	var refused: Array = JakubCompanion.cfg()["refuses_classes"]
 	assert_eq(JakubCompanion.offer_rule(2, &"bolt", false, refused), "")
 	assert_eq(JakubCompanion.offer_rule(1, &"rifle", false, refused), "only_gun", "you keep your only gun")
-	assert_eq(JakubCompanion.offer_rule(2, &"wonder", false, refused), "refused", "he won't touch a wonder weapon")
+	assert_eq(JakubCompanion.offer_rule(2, &"wonder", false, refused), "", "T-245: he takes a wonder weapon")
+	assert_eq(JakubCompanion.offer_rule(2, &"wonder", false, ["wonder"]), "refused", "(a refused class still refuses)")
 	assert_eq(JakubCompanion.offer_rule(2, &"smg", true, refused), "down")
 	assert_eq(JakubCompanion.offer_rule(0, &"", false, refused), "empty")
 	assert_eq(JakubCompanion.gun_category(&"bolt"), "GUN_BOLT")

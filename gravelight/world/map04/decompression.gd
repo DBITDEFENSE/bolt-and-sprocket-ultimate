@@ -92,7 +92,6 @@ func _ready() -> void:
 	_wind.material_override = Mats.get_mat("lead")
 	add_child(_wind)
 	var l: Label3D = Interactable.add_label(self, "DRUCKSPANT · NICHT ANLEHNEN", Vector3(0, 2.15, -0.14), 14, Color(0.95, 0.4, 0.3))
-	l.outline_size = 3
 
 
 func hole() -> Vector3:

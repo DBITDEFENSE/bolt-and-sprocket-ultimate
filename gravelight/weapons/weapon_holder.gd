@@ -2750,6 +2750,10 @@ func _animate_reload(p: float) -> Variant:
 			var out_dir: Vector3 = Vector3(0, -1, 0) if _reload_kind != "capsule" else Vector3(0, 0, 1)
 			if _reload_kind == "drum":
 				out_dir = Vector3(0, -0.6, 0.3)
+			if _model.has_meta("mag_dir"):
+				# T-248: a magazine that is not under the gun pulls out the way it went in (the Type 100's, the
+				# Sten's and the FG 42's from the left side, the Bren's off the top)
+				out_dir = (_model.get_meta("mag_dir") as Vector3).normalized()
 			var well: Vector3 = mrest + out_dir * 0.02 + Vector3(0, -0.04, 0)
 			# old mag out (T-098: the Ashlight's capsule slides out of the back of the chamber only a little, then the hand
 			# carries it down: a capsule pulled 12 cm back toward the eye, and a fresh one fed in from 25 cm behind, swung

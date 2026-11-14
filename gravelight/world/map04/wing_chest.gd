@@ -50,7 +50,6 @@ func build_greybox() -> void:
 	_glow.shadow_enabled = false
 	add_child(_glow)
 	var l: Label3D = add_label(self, "NOTPROVIANT", Vector3(0, 0.45, -0.36), 14, Color(0.9, 0.85, 0.6))
-	l.outline_size = 3
 
 
 func get_prompt(_player: Player) -> String:

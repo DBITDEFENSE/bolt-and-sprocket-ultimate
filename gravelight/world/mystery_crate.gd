@@ -101,23 +101,12 @@ func build_greybox() -> void:
 	_body = Node3D.new()
 	add_child(_body)
 	_crate_part(_body, "Body", "crate_body", func(r: Node3D) -> void: CrateArt.body(r))
-	# stencilled requisition markings (invented): the lot number on the front, the works on the plate
-	var st: Label3D = add_label(_body, "LOS 44-117", Vector3(0, 0.2, -0.395), 24, Color(0.86, 0.84, 0.72, 0.85))
-	st.outline_size = 0
-	var st2: Label3D = add_label(_body, "NICHT KIPPEN  ·  INHALT UNBEKANNT", Vector3(0.0, 0.1, -0.395), 11, Color(0.86, 0.84, 0.72, 0.7))
-	st2.outline_size = 0
-	st2.pixel_size = 0.0025
-	var pl: Label3D = add_label(_body, "HELVETIA AUTOMATEN AG", Vector3(-0.41, 0.395, -0.405), 12, Color(0.12, 0.09, 0.03, 0.95))
-	pl.outline_size = 0
-	pl.pixel_size = 0.0022
+	# the lot number stencilled on the front (invented; T-247: the small print and the maker's plate are gone)
+	add_label(_body, "LOS 44-117", Vector3(0, 0.2, -0.395), 22, Color(0.8, 0.78, 0.68, 0.6))
 	_lid = Node3D.new()
 	_lid.position = Vector3(0, CrateArt.TOP + 0.1, CrateArt.HD)   # the hinge pins: the lid's top rear edge
 	_body.add_child(_lid)
 	_crate_part(_lid, "Lid", "crate_lid", func(r: Node3D) -> void: CrateArt.lid(r))
-	var lt: Label3D = add_label(_lid, "AUSGABE  ·  H.A. AG", Vector3(0, 0.009, -0.38), 12, Color(0.12, 0.09, 0.03, 0.95))
-	lt.outline_size = 0
-	lt.pixel_size = 0.0025
-	lt.rotation_degrees = Vector3(-90, 180, 0)   # reads from above, the top of the text toward the hinge
 	# inside: straw packing and the violet glow of whatever is in there
 	var inner: Node3D = Node3D.new()
 	_body.add_child(inner)
@@ -169,7 +158,7 @@ func build_greybox() -> void:
 	_body.add_child(_float)
 	_float_mesh = add_box(_float, Vector3(0.01, 0.01, 0.01), Vector3.ZERO, greybox_mat(Color(0.75, 0.6, 1.0), 3.0))
 	_float_mesh.hide()
-	_float_label = add_label(_float, "", Vector3(0, 0.3, 0), 32, Color(0.95, 0.9, 1.0))
+	_float_label = add_label(_float, "", Vector3(0, 0.3, 0), 28, Color(0.95, 0.9, 1.0), SurfaceText.FLOAT)
 	_float_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	_float.hide()
 	_drummer = Node3D.new()

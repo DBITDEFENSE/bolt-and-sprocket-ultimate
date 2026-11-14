@@ -93,7 +93,7 @@ func _ready() -> void:
 	var bulb: MeshInstance3D = Interactable.add_box(_cage, Vector3(0.12, 0.1, 0.12), Vector3(0, cage_size.y - 0.14, 0), Mats.get_mat("bulb_warm"))
 	bulb.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var plate: Label3D = Interactable.add_label(_cage, "FÖRDERKORB\nHÖCHSTLAST\n8 PERSONEN", Vector3(cage_size.x * 0.5 - 0.075, 1.65, -0.75), 14,
-		Color(0.12, 0.1, 0.08, 1.0))
+		Color(0.12, 0.1, 0.08, 1.0), SurfaceText.PRINT)
 	plate.rotation.y = -PI * 0.5
 	plate.outline_size = 0
 	# Controls: one inside the cage, one at each landing.

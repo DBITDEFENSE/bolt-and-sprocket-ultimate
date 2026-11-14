@@ -89,7 +89,22 @@
    "weight": 5
   },
   {
+   "id": "fg42",
+   "tier": "B",
+   "weight": 5
+  },
+  {
+   "id": "bren",
+   "tier": "B",
+   "weight": 5
+  },
+  {
    "id": "mp40",
+   "tier": "C",
+   "weight": 4
+  },
+  {
+   "id": "sten",
    "tier": "C",
    "weight": 4
   },
@@ -110,6 +125,11 @@
   },
   {
    "id": "kar98k",
+   "tier": "C",
+   "weight": 3
+  },
+  {
+   "id": "mosin_nagant",
    "tier": "C",
    "weight": 3
   }

@@ -45,7 +45,7 @@ func _ready() -> void:
 	v.add_theme_constant_override("separation", 8)
 	panel.add_child(v)
 	v.add_child(_label(title, font, 26, Color(0.72, 0.8, 0.62)))
-	var ask: String = "\"What do you need, friend?\"" if joined else ("\"So. Do I come with you as a man with a gun, or a man with a shovel?\"" if ask_text == "" else ask_text)
+	var ask: String = ask_text if ask_text != "" else ("\"What do you need, friend?\"" if joined else "\"So. Do I come with you as a man with a gun, or a man with a shovel?\"")   # (T-245: a map companion's own joined line)
 	v.add_child(_label(ask, font, 18, Color(0.9, 0.88, 0.8)))
 	var give: String = "[%s]  %s" % [GLSettings.action_label(&"interact"), give_label]
 	if bool(offer.get("ok", false)):

@@ -5,7 +5,7 @@ extends GutTest
 ## rifle-sized once the recorded scale is applied. Needs the editor import pass (`--headless --import`) to have run.
 
 const MODELS_PATH: String = "res://data/gravelight/weapons/models.json"
-const LONG_GUNS: PackedStringArray = ["kar98k", "m1_garand", "gewehr43", "m1_carbine", "springfield", "stg44", "bar", "mg42", "trench_gun", "sawed_off"]
+const LONG_GUNS: PackedStringArray = ["kar98k", "m1_garand", "gewehr43", "m1_carbine", "springfield", "stg44", "bar", "mg42", "trench_gun", "sawed_off", "fg42", "mosin_nagant", "bren"]
 
 var models: Dictionary
 

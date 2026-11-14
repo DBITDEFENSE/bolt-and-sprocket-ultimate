@@ -27,7 +27,7 @@ func _ready() -> void:
 
 func build_greybox() -> void:
 	InteractableArt.place(self, "note_paper", func(r: Node3D) -> void: InteractableArt.note_paper(r))
-	var l: Label3D = add_label(self, "%s\n%s" % [numeral, note_text], Vector3(-0.01, 0.007, 0), 14, Color(0.15, 0.12, 0.1))
+	var l: Label3D = add_label(self, "%s\n%s" % [numeral, note_text], Vector3(-0.01, 0.007, 0), 14, Color(0.15, 0.12, 0.1), SurfaceText.PRINT)
 	l.rotation.x = -PI * 0.5
 	l.outline_size = 0
 	var glint: OmniLight3D = OmniLight3D.new()

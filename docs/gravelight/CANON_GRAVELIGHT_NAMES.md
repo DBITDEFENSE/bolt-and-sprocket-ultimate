@@ -79,6 +79,10 @@ Every doc and every data file uses the names and IDs below. If a doc disagrees w
 | `m1919` | Browning M1919 | crate | **The Long Amen** | no overheat, penetration |
 | `sawed_off` | Double-Barrel Sawed-Off | crate | **Twin Coffins** | four-barrel volley |
 | `type100` | Type 100 | crate | **Hollow Blossom** | hollow-point: +limb damage, crawler chance up |
+| `fg42` | FG 42 | crate (T-248) | **Sturzflug** | hits stagger |
+| `mosin_nagant` | Mosin-Nagant M91/30 | crate (T-248) | **Second Opinion** | rounds ricochet twice |
+| `bren` | Bren Mk II | crate (T-248) | **Last Orders** | armor-piercing, bigger magazine |
+| `sten` | Sten Mk II | crate (T-248) | **Cheap Funeral** | incendiary rounds, bigger magazine |
 | `ptrs41` | PTRS-41 | crate | **Bear Tax** | penetrates everything, armor-ignore |
 | `springfield` | Springfield M1903 (scoped) | crate | **Long Goodbye** | headshot kills burst in a Nachtglas pop |
 | `panzerschreck` | Panzerschreck | crate | **Stovepipe Sermon** | cluster bomblets |

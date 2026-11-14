@@ -60,6 +60,7 @@ func setup(map_root: MapRoot, pid: String) -> void:
 		var row: Dictionary = {"id": str(b.get("person", "wiesner")), "person": str(b.get("person", "wiesner")),
 			"look": b.get("look", {}), "pose": str(b.get("pose", "stand"))}
 		pb.setup(row)
+		pb.enable_life()   # T-246: they look at you, at the dead, at a shot; idles, breath in the cold
 		bodies.append(pb)
 	talk = ExtraTalk.new()
 	talk.name = "Talk"
@@ -408,12 +409,37 @@ func _physics_process(delta: float) -> void:
 	if _check_t <= 0.0:
 		_check_t = 0.4
 		_react_to_dead()
+		_greet()
 	if rounds_left > 0 and GameState.phase == GameState.Phase.PLAYING:
 		match str((cfg.get("favour", {}) as Dictionary).get("reward", {}).get("kind", "")):
 			"revive_point":
 				_serve(delta)
 			"cover":
 				_cover(delta)
+
+
+## T-246: a survivor walking up gets one of the person's own talk lines (no new voice), once per approach and at
+## most every GREET_GAP_S; not while their card is open, not while the dead are close.
+const GREET_M: float = 3.5
+const GREET_GAP_S: float = 75.0
+var _greet_near: bool = false
+var _greet_at: float = -INF
+
+
+func _greet() -> void:
+	if not present() or _card != null:
+		return
+	var near: bool = _human_near(GREET_M) != null
+	if near and not _greet_near and _scared_t <= 0.0:
+		var now: float = Time.get_ticks_msec() / 1000.0
+		if now >= _greet_at + GREET_GAP_S and GameState.phase == GameState.Phase.PLAYING:
+			_greet_at = now
+			say("talk")
+			_event("greet")
+	if near:
+		_greet_near = true
+	elif _human_near(GREET_M * 2.0) == null:
+		_greet_near = false
 
 
 func _react_to_dead() -> void:

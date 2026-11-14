@@ -67,8 +67,10 @@ func build_greybox() -> void:
 	add_box(_lever, Vector3(0.08, 0.08, 0.08), Vector3(0, 0.34, 0), greybox_mat(Color(0.5, 0.1, 0.08)))
 	var plate: Label3D = add_label(self, "SCHLÜSSELGERÄT HAFEN", Vector3(0, 0.88, -0.36), 14, Color(0.9, 0.85, 0.7))
 	plate.rotation.y = 0.0
-	_paper = add_label(self, "", Vector3(0, 1.35, 0.2), 16, Color(0.1, 0.1, 0.1))
+	_paper = add_label(self, "", Vector3(0, 1.35, 0.2), 16, Color(0.1, 0.1, 0.1), SurfaceText.PRINT)
 	_paper.modulate = Color(0.12, 0.1, 0.08)
+	# the printed strip is the egg's clue: its pale outline is the paper behind the type, kept readable (T-247)
+	_paper.outline_size = 6
 	_paper.outline_modulate = Color(0.95, 0.92, 0.85)
 
 

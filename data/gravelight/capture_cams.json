@@ -12433,6 +12433,191 @@
           "note": "T-240: the Fuhrmann from his off side at night, the Totenross beyond him"
         }
       ]
+    },
+    "u18_text": {
+      "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "T-247 (docs/u18/t247_world_text.md): the owner's world-text screenshots of the Inn (2026-11-14), the same spots before and after the surface-text pass. Real light only (no 'bright'): the point is how the text reads under the cellar's own lamps.",
+      "cams": [
+        {
+          "name": "bay_arch",
+          "pos": [
+            30.9,
+            -3.2,
+            25.95
+          ],
+          "yaw": -90.0,
+          "pitch": 3.0,
+          "settle_s": 2.5,
+          "do": [
+            "power"
+          ],
+          "note": "T-247: the late-delivery bay through its arch from the vault, power on (the owner's 133444: NACHLIEFERUNG on the lintel, the machines' boards, the maker's name on the far wall)"
+        },
+        {
+          "name": "bay_arch_dark",
+          "pos": [
+            30.9,
+            -3.2,
+            25.95
+          ],
+          "yaw": -90.0,
+          "pitch": 3.0,
+          "settle_s": 2.5,
+          "do": [],
+          "note": "T-247: the same before the lever: only the bay's lantern"
+        },
+        {
+          "name": "bay_far_wall",
+          "pos": [
+            36.9,
+            -3.2,
+            25.95
+          ],
+          "yaw": -90.0,
+          "pitch": 0.0,
+          "settle_s": 2.5,
+          "do": [
+            "power"
+          ],
+          "note": "T-247: inside the bay: the far wall between Skyhook and Magpie (133450: the painted maker's name over the delivery note), the price plates"
+        },
+        {
+          "name": "bay_crates_nw",
+          "pos": [
+            38.6,
+            -3.2,
+            25.2
+          ],
+          "yaw": 35.0,
+          "pitch": -18.0,
+          "settle_s": 2.5,
+          "do": [],
+          "note": "T-247: the NW corner: Skyhook's crate and the one on it (133457: HELVETIA, ZWEIGWERK THALBACH; the top crate's seat)"
+        },
+        {
+          "name": "bay_crates_sw",
+          "pos": [
+            38.6,
+            -3.2,
+            26.8
+          ],
+          "yaw": 148.0,
+          "pitch": -18.0,
+          "settle_s": 2.5,
+          "do": [],
+          "note": "T-247: the SW corner: Magpie's olive crate and its lid (133453: THIS SIDE UP, the place name)"
+        },
+        {
+          "name": "vault_signs_w",
+          "pos": [
+            32.0,
+            -3.2,
+            25.0
+          ],
+          "yaw": 90.0,
+          "pitch": -4.0,
+          "settle_s": 2.5,
+          "do": [
+            "power"
+          ],
+          "note": "T-247: the vault's west row with the power on: the machines' name boards and price plates"
+        },
+        {
+          "name": "vault_ironhide",
+          "pos": [
+            27.2,
+            -3.2,
+            24.4
+          ],
+          "yaw": 50.0,
+          "pitch": 4.0,
+          "settle_s": 2.5,
+          "do": [
+            "power"
+          ],
+          "note": "T-247: a machine's board close up, power on"
+        },
+        {
+          "name": "keller_ii",
+          "pos": [
+            23.2,
+            -3.2,
+            18.4
+          ],
+          "yaw": 90.0,
+          "pitch": 0.0,
+          "settle_s": 2.5,
+          "do": [],
+          "note": "T-247: the Old Cellar's breach, the arrow to the Helvetia cellar (133435)"
+        },
+        {
+          "name": "old_cellar_foot",
+          "pos": [
+            -1.5,
+            -3.2,
+            17.3
+          ],
+          "yaw": -75.0,
+          "pitch": -3.0,
+          "settle_s": 2.5,
+          "do": [],
+          "note": "T-247: the Old Cellar from the stair foot (the annex wall carried VORSICHT STUFEN, 133519)"
+        },
+        {
+          "name": "old_cellar_cage",
+          "pos": [
+            4.2,
+            -3.2,
+            6.8
+          ],
+          "yaw": 50.0,
+          "pitch": -5.0,
+          "settle_s": 2.5,
+          "do": [],
+          "note": "T-247: the coal cage: the miner's greeting and the tag (kept, story)"
+        },
+        {
+          "name": "wall_buy_kar98k",
+          "pos": [
+            1.35,
+            0.0,
+            3.2
+          ],
+          "yaw": 90.0,
+          "pitch": -4.0,
+          "settle_s": 2.5,
+          "do": [],
+          "note": "T-247: the Kar98k's board close (133528: the name and price)"
+        },
+        {
+          "name": "wall_buy_kar98k_far",
+          "pos": [
+            3.5,
+            0.0,
+            3.3
+          ],
+          "yaw": 90.0,
+          "pitch": 0.0,
+          "settle_s": 2.5,
+          "do": [],
+          "note": "T-247: the same from 3.5 m"
+        },
+        {
+          "name": "ammo_box",
+          "pos": [
+            7.2,
+            0.0,
+            31.7
+          ],
+          "yaw": 90.0,
+          "pitch": -16.0,
+          "settle_s": 2.5,
+          "do": [],
+          "note": "T-247: the barn's ammo box (133544: AMMUNITION and its small print)"
+        }
+      ]
     }
   }
 }

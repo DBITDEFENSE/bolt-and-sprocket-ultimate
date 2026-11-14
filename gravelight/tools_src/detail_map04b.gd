@@ -144,7 +144,7 @@ static func placard(g: Variant, pos: Vector3, yaw: float, text: String, px: int 
 
 ## Chalk on a surface (crew tallies, the marks): pale, rough.
 static func chalk(g: Variant, pos: Vector3, yaw: float, text: String, px: int = 34) -> void:
-	Props.stencil(g.dress, pos, yaw, text, px, Color(0.92, 0.92, 0.86, 0.7))
+	Props.stencil(g.dress, pos, yaw, text, px, Color(0.92, 0.92, 0.86, 0.7), 0.004, SurfaceText.CHALK)
 
 
 ## Oxygen / compressed-air bottles standing in a wall cavity between two frames: x_face = the room face, s = +1 when

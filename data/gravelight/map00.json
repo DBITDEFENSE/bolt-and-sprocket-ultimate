@@ -211,7 +211,9 @@
     {
       "round": 30,
       "boss": "totenross_fuhrmann",
-      "count": 1
+      "count": 1,
+      "arrival": {"hooves_at": 16.0, "scream_at": 19.0, "spawn_at": 21.0},
+      "_doc": "T-249: on the Inn der Fuhrmann leads the round-30 horde that hits the Sherman (sherman_event): he is heard as the tank parks and comes in up the road behind it as the dead go for it"
     }
   ],
   "round_boss_arena": {
@@ -238,5 +240,18 @@
       42.0
     ],
     "_doc": "T-240 where a horse goes on the Inn: the yard, the grounds and the stable (a 2.0 m door and an open floor); never the taproom, the stairs or the cellar (furniture, a staircase, a hatch). It comes up the carters' road (arrive) and breaks the yard's gate open if it is still chained; a player elsewhere is not chased (the siege rule)."
+  },
+  "sherman_event": {
+    "_doc": "T-249 the Sherman (data/gravelight/sherman.json; ShermanEvent). Round 30: it comes in from beyond the south-east edge along the carters' road (route; it rolls over the sawhorse barrier at the road's exit), parks on the road outside the yard's gate facing it (park, park_yaw from the last leg) and the dead come for it; it covers the yard and the road from there for rounds 31..39 (it never moves into the yard: nothing baked changes, its hull collider is on the map-edge layer); round 40 a dive bomber kills it there and the bombs fall on the yard and the grounds (bomb_zones) while the inn (shelter_zones, inn_box) keeps everyone in it safe. A map without this block has no Sherman.",
+    "arrive_round": 30,
+    "stuka_round": 40,
+    "route": [[56.0, 0.0, 74.3], [45.0, 0.0, 68.0], [32.0, 0.0, 60.5], [22.8, 0.0, 52.8]],
+    "barrier": {"pos": [37.0, 0.0, 63.0], "half": [2.6, 0.4], "name": "Sawhorse"},
+    "assault_zones": ["GROUNDS"],
+    "shelter_zones": ["TAPROOM", "UPSTAIRS", "CELLAR", "OLD_CELLAR"],
+    "inn_box": [[-0.2, -4.0, -0.2], [24.2, 10.5, 16.2]],
+    "shelter_points": [[14.0, 0.0, 9.5], [21.0, 0.0, 12.5], [10.5, 0.0, 9.0]],
+    "bomb_zones": ["YARD", "GROUNDS"],
+    "stuka_from": [-260.0, 0.0, -320.0]
   }
 }

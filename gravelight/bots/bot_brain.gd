@@ -638,7 +638,9 @@ func context(now: float) -> Dictionary:
 	var esc: Player = escort_target()
 	c["escort"] = 1.0 if esc != null else 0.0
 	c["escort_far"] = clampf(_flat(esc.global_position, player.global_position) / 15.0, 0.0, 1.0) if esc != null else 0.0
-	if esc != null and in_break() and per.pressure < 0.3:
+	# T-245: a companion's calm mid-round tonic (BotEconomy.companion_tonic_now) isn't pulled back either
+	var tonic_errand: bool = player.is_companion and (str(task.get("kind", "")) == "perk" or str((b.get("buy", {}) as Dictionary).get("kind", "")) == "perk")
+	if esc != null and (in_break() or tonic_errand) and per.pressure < 0.3:
 		# T-177: in a calm break the escort's pull doesn't grow with distance: a companion's shopping errand isn't pulled
 		# back at 6 m, and the bench / bank (worth less than a tonic) can win over standing beside the player at all
 		# (escort x1.5 + hysteresis beat them forever); with nothing to buy, escort still wins and it walks back

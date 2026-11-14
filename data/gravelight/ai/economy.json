@@ -66,7 +66,11 @@
     "springfield": 2.6,
     "sawed_off": 2.6,
     "mp40": 3.2,
-    "type100": 3.3,
+    "type100": 3.4,
+    "sten": 3.1,
+    "mosin_nagant": 1.3,
+    "fg42": 4.3,
+    "bren": 4.4,
     "trench_gun": 3.3,
     "thompson": 3.6,
     "ptrs41": 3.4,
@@ -90,6 +94,7 @@
   "reteach_tier_bonus": 0.6,
   "weapon_max_round": {
     "kar98k": 10,
+    "mosin_nagant": 12,
     "m1_carbine": 14,
     "m1_garand": 18
   },
@@ -178,6 +183,7 @@
   "self_led_trip_margin_s": 5.0,
   "_self_led_mid_round_doc": "T-058: a squad with no human leading it shops beyond this distance from its home loop (or its leader) only between waves.",
   "bot_led_range_m": 60.0,
+  "companion_tonics": {"_doc": "T-245: a companion (Jakub, the map companions) shops between rounds only (T-177); mid-round it may still drink a tonic from its own Scrip when the fight around it is calm (perception pressure under calm_pressure) and the machine is within max_range_from_leader_m of the one it follows. Nothing else is bought mid-round.", "mid_round": true, "calm_pressure": 0.3},
   "bench": {"enabled": true, "min_round": 3, "keep_scrip": 1500, "only_in_break": true},
   "bank": {"enabled": true, "visits_per_round": 1, "min_move": 1000, "range_mult": 1.5, "withdraw_value": 0.85},
   "_bench_bank_doc": "T-177: squad bots and companions fit their main gun at the Armorer's Bench on their own (marks.json bench_prefs order, in a break, from round min_round, keeping the reserve + whatever the Crucible / the egg holds back + keep_scrip), and save at the bank in an account of their own for this match (BankAccount bot_*: the human's profile savings are never touched; the same interest; a campaign hop pays it into their pocket): once a round in a break they bank all but reserve + the price of the next thing they want (at least min_move), and take out what makes that next thing affordable (withdraw_value: before the purchase it enables). The bot-mode agent never banks (its bank is the owner's profile)."

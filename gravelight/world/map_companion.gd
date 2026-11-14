@@ -4,12 +4,18 @@ extends Node
 ## stable), Fw. August "Gustl" Ammer on Kaltenbrunn (the barracks stores), Hinnerk Petersen on Totenhafen (the
 ## signal tower), Jette Maurer on Fernflug (the station; she stays with you through Act III).
 ##
-## Simpler than Jakub (no cage, no breakout, no tonics, no wall-buys): it waits at its spot and calls out when a
-## survivor comes near; a talk opens the same choice card as Jakub (JakubChoice): give it the gun in your hands, or it
-## comes with its melee. With you it is a squad bot (BotSquad.add_brain, like Jakub's brain options), it can be
-## downed and revived, and a bleed-out leaves it out cold for the rest of the match. At the start of each round it
-## brings the one it follows a small gift while they stand near (a grenade, a magazine, some Scrip).
-## Offline only (like Jakub online). Its body is a bot-style Player outside the match's players until it joins.
+## Simpler than Jakub (no cage, no breakout, no wall-buys): it waits at its spot and calls out when a survivor comes
+## near; a talk opens the same choice card as Jakub (JakubChoice): give it the gun in your hands (a wonder weapon
+## too, T-245), or it comes with its melee. With you it is a squad bot (BotSquad.add_brain, like Jakub's brain
+## options), it can be downed and revived, and a bleed-out leaves it out cold for the rest of the match. At the start
+## of each round it brings the one it follows a small gift while they stand near (a grenade, a magazine, some Scrip).
+## Tonics (T-177, T-245): it drinks them from the Scrip its own kills earn (between rounds, or mid-round when calm and
+## near the one it follows), and Talk can send it for one on your Scrip (Jakub's T-127 errand); it holds them under
+## the same cap and loses them on a down like anyone. damage_taken 0.6 stood in for the armour tonic it could not
+## drink: with one of armour_tonics it takes damage_taken_armoured (1.0). It also uses the Requisition Crate
+## between rounds (a wonder weapon is a gun it keeps).
+## Online (T-138) it is simulated on the host and a puppet on every client (CompanionNet); its tonics and Scrip travel
+## in the host's state snapshot like everyone's. Its body is a bot-style Player outside the match's players until it joins.
 
 enum State { WAITING, JOINED, FALLEN }
 const STATE_NAMES: PackedStringArray = ["waiting", "joined", "fallen"]
@@ -37,6 +43,7 @@ var _scene_done: bool = false         # T-170: its waiting scene (companions.jso
 var _scene_pending: bool = false      # the scene was asked for; done only once the voice manager has started the line
 var _scene_fired_before: int = 0      # GLVO.fired count of the scene's category when it was submitted
 var _scene_wait: float = 0.0          # seconds left before the pending scene is submitted again
+var _tonic_pending: StringName = &""  # T-245: the tonic Talk sent it for (&"" none), as Jakub's T-127 errand
 var events: PackedStringArray = []   # tests / tools
 ## Online client (T-138): the body here is a puppet of the host's companion.
 var puppet: bool = false
@@ -112,6 +119,8 @@ func setup(map_root: MapRoot, cid: String) -> void:
 	puppet = CompanionNet.puppet_mode()
 	add_to_group(&"map_companion")
 	GLBus.round_started.connect(_on_round_started)
+	GLBus.perks_changed.connect(_on_perks_changed)
+	GLBus.perk_bought.connect(_on_perk_bought)
 	_connect_scene()
 	var cf: String = str(cfg.get("carry_flag", ""))
 	var carried: bool = cf != "" and flag_on(GameState.flags, cf) and not _found_here()
@@ -229,6 +238,9 @@ func _physics_process(delta: float) -> void:
 			var s: NetMatch = Net.session
 			if s != null and s.coop.is_dead(player.player_id):
 				_fall()
+				return
+			_sync_armed()
+			_tick_tonic()
 
 
 func _tick_waiting(delta: float) -> void:
@@ -240,6 +252,7 @@ func _tick_waiting(delta: float) -> void:
 	player.net_flags = NetMatch.PF_FLOOR
 	if player.remote_body != null:
 		player.remote_body.calm = true
+		player.remote_body.set_life(true)   # T-246: it looks at you, at the dead, at a shot; breath in the cold
 		player.remote_body.update_pose_lod(delta, 0.0, 0.0, NetMatch.PF_FLOOR)   # T-237: by what the camera sees
 	_tick_scene(delta)
 	_call_t -= delta
@@ -328,6 +341,11 @@ func talk_prompt(p: Player) -> String:
 	if state == State.WAITING or cfg.has("trade"):
 		return "Talk to %s" % str(cfg.get("name", id))
 	var o: Dictionary = gun_offer(p)
+	var t: Dictionary = tonic_offer(p)
+	if bool(o.get("ok", false)) and bool(t.get("ok", false)):
+		return "Talk to %s (a gun, or a tonic on your Scrip)" % _first_name()
+	if bool(t.get("ok", false)):
+		return "Send %s for a tonic: %s [%d, your Scrip]" % [_first_name(), str(t["name"]), int(t["price"])]
 	return ("Give %s your %s" % [_first_name(), str(o.get("name", "gun"))]) if bool(o.get("ok", false)) else ""
 
 
@@ -335,7 +353,7 @@ func can_talk(p: Player) -> bool:
 	if p == null or p.is_bot or p.downed or not talk_open():
 		return false
 	if state == State.JOINED:
-		return cfg.has("trade") or bool(gun_offer(p).get("ok", false))
+		return cfg.has("trade") or bool(gun_offer(p).get("ok", false)) or bool(tonic_offer(p).get("ok", false))
 	return true
 
 
@@ -346,7 +364,16 @@ func on_talk(p: Player) -> void:
 		_open_talk_card(p)   # T-143: the quartermaster's Talk card: the trade, and the way to take him along
 		return
 	if state == State.JOINED:
-		_take_gun(p)
+		# T-245: a gun, a tonic on your Scrip, or never mind (Jakub's T-127 card); the gun straight away when no tonic
+		var tonic: Dictionary = tonic_offer(p)
+		if bool(tonic.get("ok", false)) and CompanionNet.is_remote_human(p):
+			CompanionNet.send_card(self, p, gun_offer(p), tonic)   # online: the card on their screen (T-138)
+		elif bool(tonic.get("ok", false)) and p.is_local and DisplayServer.get_name() != "headless":
+			_open_card(p, tonic)
+		elif bool(gun_offer(p).get("ok", false)):
+			_take_gun(p)
+		elif bool(tonic.get("ok", false)):
+			choose_tonic(p)
 		return
 	_open_choice(p)
 
@@ -373,6 +400,10 @@ func _open_talk_card(p: Player) -> void:
 	var open: bool = ExtraPeople.trade_open(_trade_round, RoundManager.current_round, bool(tr.get("once_per_round", true)))
 	opts.append({"action": &"reload", "label": "TRADE  (ǂ %d): A RANDOM AMMO REFILL OR GRENADE PACK%s" % [int(tr.get("cost", 1500)), "" if open else "  (ONCE A ROUND)"],
 		"call": func(pl: Player) -> void: trade(pl), "enabled": open})
+	var t: Dictionary = tonic_offer(p)
+	if bool(t.get("ok", false)):   # T-245: once he is with you, a tonic on your Scrip
+		opts.append({"action": &"melee", "label": "GET YOURSELF A TONIC  (ǂ %d, YOUR SCRIP): %s" % [int(t["price"]), str(t["name"]).to_upper()],
+			"call": func(pl: Player) -> void: choose_tonic(pl), "enabled": true})
 	card.options = opts
 	card.close_after_s = float(ExtraPeople.cfg().get("card_close_s", 25.0))
 	_card = card
@@ -421,15 +452,21 @@ func _open_choice(p: Player) -> void:
 	_open_card(p)
 
 
-func _open_card(p: Player) -> void:
+func _open_card(p: Player, tonic: Dictionary = {}) -> void:
+	if _choice != null:
+		return
 	_choice = JakubChoice.new()
 	_choice.companion = self
 	_choice.player = p
 	_choice.offer = gun_offer(p)
+	_choice.tonic = tonic
+	_choice.joined = state == State.JOINED
 	_choice.title = str(cfg.get("title", str(cfg.get("name", id)).to_upper()))
 	_choice.ask_text = str(cfg.get("ask", ""))
 	var sc: Dictionary = cfg.get("scene", {})
-	if str(sc.get("said", "")) != "":
+	if _choice.joined:
+		_choice.ask_text = str(table().get("ask_joined", "\"What do you need?\""))   # T-245: the card once it is with you
+	elif str(sc.get("said", "")) != "":
 		_choice.ask_text = "%s\n\n%s" % [str(sc["said"]), _choice.ask_text]   # T-170: his scene on the card
 	_choice.unarmed_text = str(cfg.get("unarmed", "comes with you unarmed"))
 	_choice.give_label = "GIVE THEM A GUN"
@@ -472,8 +509,130 @@ func choose(p: Player, give: bool) -> void:
 		_say("JOIN_UNARMED")
 
 
-func choose_tonic(_p: Player) -> bool:
-	return false   # (the choice card's tonic line never shows for a map companion)
+## T-245: Talk sends it for the tonic tonic_offer(p) names, paid from `p`'s Scrip at the till (Jakub's T-127 errand:
+## the brain's buy_tonic order, PerkMachine.sell_to_companion). True when it set off.
+func choose_tonic(p: Player) -> bool:
+	if puppet:
+		CompanionNet.forward(self, &"net_by_choose_tonic", [])   # the host's companion goes (T-138)
+		return true
+	var t: Dictionary = tonic_offer(p)
+	if not bool(t.get("ok", false)):
+		return false
+	brain.options["perk_payer_pid"] = p.player_id
+	brain.tonic_result = &""
+	brain.on_order(&"buy_tonic", Vector3.INF, t["machine"] as Node)
+	_tonic_pending = t["perk"] as StringName
+	_event("tonic_sent:%s" % _tonic_pending)
+	_banner("%s GOES FOR %s" % [_first_name().to_upper(), str(t["name"]).to_upper()], 2.5)
+	return true
+
+
+## The nearest machine it can drink from on `p`'s Scrip (powered, its to buy, reachable, within tonic_range_m):
+## {ok, machine, perk, name, price} or {ok: false, code}. The rule is Jakub's (JakubCompanion.tonic_rule).
+func tonic_offer(p: Player) -> Dictionary:
+	if p == null or state != State.JOINED or player == null or player.downed or brain == null or puppet:
+		return {"ok": false, "code": "none"}
+	if not bool(table().get("tonics", true)):
+		return {"ok": false, "code": "off"}
+	if brain.order_id() == &"buy_tonic":
+		return {"ok": false, "code": "busy"}
+	var best: PerkMachine = null
+	var best_d: float = INF
+	var code: String = "none"
+	var range_m: float = float(table().get("tonic_range_m", 70.0))
+	var scrip: int = Economy.get_scrip(p.player_id)
+	for n: Node in get_tree().get_nodes_in_group(&"perk_machines"):
+		var pm: PerkMachine = n as PerkMachine
+		if pm == null or not pm.visible:
+			continue
+		var d: float = pm.global_position.distance_to(player.global_position)
+		if d > range_m:
+			continue
+		var why: String = JakubCompanion.tonic_rule(PerkManager.can_buy(player.player_id, pm.perk_id), scrip, PerkManager.price(pm.perk_id),
+			bool(pm.get("_drinking")) or bool(pm.get("_gone")))
+		if why == "" and not brain._reachable(BotBrain._front_of(pm)):
+			why = "unreachable"
+		if why != "":
+			if code == "none" or why == "scrip":
+				code = why
+			continue
+		if d < best_d:
+			best_d = d
+			best = pm
+	if best == null:
+		return {"ok": false, "code": code}
+	return {"ok": true, "machine": best, "perk": best.perk_id, "name": PerkManager.display_name(best.perk_id),
+		"price": PerkManager.price(best.perk_id)}
+
+
+## The errand's end: the machine's answer, or the order ran out (Jakub's _tick_tonic, without his voice lines).
+func _tick_tonic() -> void:
+	if _tonic_pending == &"" or brain == null:
+		return
+	var res: StringName = brain.tonic_result
+	if res != &"":
+		brain.tonic_result = &""
+		if res != &"ok":
+			_event("tonic_failed:%s" % res)
+			if res == &"no_scrip":
+				_banner("%s: NOT ENOUGH SCRIP FOR THE TONIC" % _first_name().to_upper(), 2.5)
+		_tonic_pending = &""
+	elif brain.order_id() != &"buy_tonic":
+		brain.options.erase("perk_payer_pid")
+		_event("tonic_dropped:%s" % _tonic_pending)
+		_tonic_pending = &""
+
+
+## T-245 pure: what it takes from a hit, by the tonics it holds: damage_taken (0.6) stood in for the armour tonic it
+## could not drink; with any of armour_tonics it takes damage_taken_armoured (1.0, a squad bot's and Jakub's), so the
+## tonic never stacks on the old discount.
+static func damage_mult_for(owned: Array, tbl: Dictionary) -> float:
+	for t: Variant in tbl.get("armour_tonics", []):
+		if owned.has(StringName(str(t))) or owned.has(str(t)):
+			return float(tbl.get("damage_taken_armoured", 1.0))
+	return float(tbl.get("damage_taken", 0.6))
+
+
+func _apply_damage_mult() -> void:
+	if player != null and is_instance_valid(player) and state == State.JOINED:
+		player.bot_damage_mult = damage_mult_for(PerkManager.owned(player.player_id), table())
+
+
+func _on_perks_changed(pid: int) -> void:
+	if player != null and is_instance_valid(player) and pid == player.player_id:
+		_apply_damage_mult()
+
+
+## A tonic it drank (its own Scrip or yours): a short banner while it is with you, so you see it happen.
+func _on_perk_bought(by: int, perk: StringName) -> void:
+	if player == null or not is_instance_valid(player) or by != player.player_id or state != State.JOINED:
+		return
+	_event("tonic:%s" % perk)
+	_apply_damage_mult()
+	_banner("%s DRANK %s" % [_first_name().to_upper(), PerkManager.display_name(perk).to_upper()], 2.5)
+
+
+func _banner(text: String, hold: float) -> void:
+	if map != null and map.hud != null:
+		map.hud.show_banner(text, hold)
+
+
+## T-245: a gun it picked up on its own (the Requisition Crate, a wall, a built wonder on a bench) arms it like a
+## handed one: the brain's armed flag, the body's weapon, the carried gun of a companion that travels (Jette).
+func _sync_armed() -> void:
+	if brain == null or player.weapons == null:
+		return
+	var w: WeaponInstance = player.weapons.current()
+	if w == null:
+		return
+	if not bool(brain.options.get("armed", false)):
+		brain.options["armed"] = true
+		_event("armed:%s" % w.id)
+	if player.remote_body != null and player.remote_body.get("_weapon_id") != null and player.remote_body.get("_weapon_id") != w.id:
+		player.remote_body.set_weapon(w.id)
+	var cf: String = str(cfg.get("carry_flag", ""))
+	if cf != "" and flag_str(GameState.flags, id + "_gun") != String(w.id):
+		_note_gun()
 
 
 func _take_gun(p: Player) -> void:
@@ -486,9 +645,12 @@ func _take_gun(p: Player) -> void:
 	if w == null:
 		return
 	var old: WeaponInstance = player.weapons.current()
-	player.weapons.slots.clear()
-	player.weapons.slots.append(w)
-	player.weapons.current_index = 0
+	# T-245: the gun in its hands is swapped for yours (it goes back to you); guns it got on its own stay in its slots
+	if old == null:
+		player.weapons.slots.append(w)
+		player.weapons.current_index = player.weapons.slots.size() - 1
+	else:
+		player.weapons.slots[clampi(player.weapons.current_index, 0, player.weapons.slots.size() - 1)] = w
 	if old != null and p.weapons.find_weapon(old.id) == null:
 		p.weapons.give_instance(old)   # its old gun goes back to you
 	if brain != null:
@@ -529,8 +691,12 @@ func _join(escort: int, arrival: bool) -> void:
 	Net.session.add_companion(player)
 	player.add_to_group(&"players")
 	player.add_to_group(&"bots")
-	player.bot_damage_mult = float(table().get("damage_taken", 0.6))   # sturdier than a squad bot: it has no perks
+	if player.remote_body != null:
+		player.remote_body.set_life(false)   # T-246: the brain has the body now
 	brain = squad.add_brain(player, brain_options(escort_pid, not player.weapons.slots.is_empty()))
+	# T-245: after the brain, whose setup resets bot_damage_mult to 1.0 (so since T-135 the 0.6 never held): 0.6, 1.0
+	# with an armour tonic
+	_apply_damage_mult()
 	var cf: String = str(cfg.get("carry_flag", ""))
 	if cf != "":
 		GameState.flags[StringName(cf)] = true
@@ -543,6 +709,7 @@ func _join(escort: int, arrival: bool) -> void:
 
 func _fall() -> void:
 	state = State.FALLEN
+	_tonic_pending = &""
 	_event("fallen")
 	if brain != null and map.squad != null:
 		map.squad.remove_brain(brain)
@@ -637,18 +804,25 @@ func _net_say(category: String) -> void:
 
 
 ## Client: the host opened its choice card for us.
-func _net_card(_offer: Dictionary, _tonic: Dictionary) -> void:
+func _net_card(_offer: Dictionary, tonic: Dictionary) -> void:
 	var me: Player = map.player
 	if me == null or not is_instance_valid(me):
 		return
 	if DisplayServer.get_name() == "headless":
 		choose(me, bool(gun_offer(me).get("ok", false)))
 		return
-	_open_card(me)
+	_open_card(me, tonic)   # T-245: with the tonic line the host found (sent without its machine node)
 
 
 func net_callable() -> Array:
-	return ["net_by_choose"]
+	return ["net_by_choose", "net_by_choose_tonic"]
+
+
+## Host: a client's card sent the companion for a tonic on their Scrip (T-245; the pid comes from the connection).
+func net_by_choose_tonic(pid: int) -> void:
+	var p: Player = CompanionNet.player_for(pid)
+	if p != null:
+		choose_tonic(p)
 
 
 ## Host: a client's card answer (the pid comes from the connection).

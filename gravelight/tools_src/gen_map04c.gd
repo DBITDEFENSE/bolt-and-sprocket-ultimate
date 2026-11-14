@@ -912,7 +912,7 @@ func _dress_lab() -> void:
 		Props.pipe(dress, Vector3(-20.4, py, 138.4), Vector3(-20.4, py, 149.6), 0.06, "iron")
 	B(Vector3(-20.6, LAB_Y + 2.8, 113.0), Vector3(-20.2, LAB_Y + 2.86, 149.6), "steel_grate")
 	for c: Vector3 in [Vector3(-22.0, LAB_Y, 116.0), Vector3(-22.0, LAB_Y, 117.2), Vector3(-22.4, LAB_Y + 0.8, 116.6)]:
-		Props.crate(dress, c, 0.8, 8.0, "SAMPLES")
+		Props.crate(dress, c, 0.8, 8.0)
 
 
 # ------------------------------------------------------------------ G: the silo

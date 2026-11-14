@@ -141,7 +141,7 @@ func build_greybox() -> void:
 	_float.position = Vector3(0, 1.2, -1.5)
 	add_child(_float)
 	add_box(_float, Vector3(0.7, 0.12, 0.08), Vector3.ZERO, greybox_mat(Color(0.65, 0.3, 1.0), 4.0))
-	_float_label = add_label(_float, "", Vector3(0, 0.25, 0), 34, Color(1.0, 0.85, 0.6))
+	_float_label = add_label(_float, "", Vector3(0, 0.25, 0), 30, Color(1.0, 0.85, 0.6), SurfaceText.FLOAT)
 	_float_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	_float.hide()
 

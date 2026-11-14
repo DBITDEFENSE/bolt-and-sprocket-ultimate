@@ -406,6 +406,12 @@ func _grip_plan() -> Dictionary:
 
 
 func _shelter_plan() -> Dictionary:
+	# T-249: the Inn's air raid (AirRaid, group "air_raid"): a bot outside goes in, to the nearest shelter point
+	var raid: Node = _first(&"air_raid")
+	if raid != null and raid.has_method("shelter_for"):
+		var to: Vector3 = raid.call("shelter_for", player)
+		if to != Vector3.INF:
+			return {"kind": "shelter", "to": brain.snap(to)}
 	var ms: Node = _first(&"meteor_shower")
 	if ms == null:
 		return {}

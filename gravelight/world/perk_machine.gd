@@ -223,7 +223,9 @@ func _refresh_power() -> void:
 	_panel_mat.emission = c if on else Color(0.35, 0.15, 0.55)
 	_panel_mat.emission_energy_multiplier = 2.5 if on else 0.22
 	if _sign != null:
-		_sign.modulate = Color(c.lightened(0.55), 1.0) * 1.6 if on else Color(0.3, 0.25, 0.35, 0.8)
+		# T-247 (the owner: "bright ... boxed labels over perk machines"): the name is paint on the board, lit by the
+		# machine's own glow when the power is on; never an HDR colour of its own any more
+		_sign.modulate = SurfaceText.tone(Color(c.lightened(0.45), 1.0) if on else Color(0.3, 0.25, 0.35, 0.8))
 	if _cab_neon != null:
 		_cab_refresh(on, c)
 		return
@@ -287,8 +289,9 @@ func _build_procedural() -> void:
 	# the dispenser (cached per perk), and its neon/lamp glass in a lit and an unlit set (shown by power state)
 	InteractableArt.place(_greybox, "perk_body_" + String(perk_id),
 		func(r: Node3D) -> void: InteractableArt.perk_body(r, shape, fp, brand))
+	# (T-247: the tube round the name board glows soft, glow_soft 1.4, not the full neon 4.5 that bloomed into a white box)
 	_lit = InteractableArt.place(_greybox, "perk_lit_" + String(perk_id),
-		func(r: Node3D) -> void: InteractableArt.perk_tubes(r, shape, fp, "neon:" + InteractableArt.hex(neon)), Vector3.ZERO, false)
+		func(r: Node3D) -> void: InteractableArt.perk_tubes(r, shape, fp, "glow_soft:" + InteractableArt.hex(neon)), Vector3.ZERO, false)
 	_unlit = InteractableArt.place(_greybox, "perk_unlit_" + shape,
 		func(r: Node3D) -> void: InteractableArt.perk_tubes(r, shape, fp, "neon_off"), Vector3.ZERO, false)
 	# the backlight behind the bottles: faint Nachtglas violet unpowered, the brand colour when powered
@@ -315,7 +318,6 @@ func _build_procedural() -> void:
 	var ss: Vector2 = lay["sign_size"]
 	var font: int = clampi(int((ss.x - 0.14) / (maxf(1.0, float(text.length())) * 0.0026)), 22, 42)
 	_sign = add_label(_greybox, text, lay["sign"], font)
-	_sign.outline_modulate = Color(0, 0, 0, 0.9)
 	add_label(_greybox, "%s  %d" % [d.get("name", perk_id), PerkManager.price(perk_id)], (lay["price"] as Vector3) + Vector3(0, 0, -0.035), 17, Color(1, 0.93, 0.75, 0.95))
 	# moving parts
 	match shape:
@@ -391,7 +393,6 @@ func _build_procedural() -> void:
 				ml.outline_size = 0
 			# "Cordial" in a smaller, friendlier line under the zigzag capitals
 			var sub: Label3D = add_label(_greybox, "Cordial", (lay["sign"] as Vector3) + Vector3(0, -0.085, -0.01), 14, Color(neon.lightened(0.6), 1.0) * 1.3)
-			sub.outline_modulate = Color(0, 0, 0, 0.9)
 			_arc_next = randf_range(1.5, 4.0)
 			GLBus.overclock_burst.connect(_on_overclock_burst)
 	_anim_shape = shape
@@ -611,10 +612,9 @@ func _build_lore() -> void:
 	plate.font_size = 20
 	plate.pixel_size = 0.0018
 	plate.modulate = Color(0.85, 0.72, 0.42)
-	plate.outline_size = 4
-	plate.outline_modulate = Color(0.1, 0.07, 0.03)
 	plate.position = Vector3(0, 0.09, front_z)
 	plate.rotation.y = PI   # Label3D faces +Z; the front is -Z
+	SurfaceText.apply(plate, SurfaceText.PRINT)   # T-247: engraved brass, lit by the room, no outline
 	add_child(plate)
 	_stencil = Label3D.new()
 	_stencil.name = "PlanStencil"
@@ -777,12 +777,10 @@ func _build_cabinet() -> bool:
 	_sign = add_label(art, text, Vector3(left + text_w * 0.5, text_y, sc.z - 0.004), font)
 	_sign.font = stamp
 	_sign.scale.x = cond
-	_sign.outline_modulate = Color(0, 0, 0, 0.9)
 	if not sub.is_empty():
 		var sl: Label3D = add_label(art, str(sub[0]), Vector3(left + text_w * 0.5 + float(sub[1]), sc.y + float(sub[2]) + 0.03, sc.z - 0.006), 14,
 			Color(neon.lightened(0.6), 1.0) * 1.3)
 		sl.font = MenuKit.font("type")
-		sl.outline_modulate = Color(0, 0, 0, 0.9)
 	var price: Label3D = add_label(art, "%s  %d" % [d.get("name", perk_id), PerkManager.price(perk_id)], (lay["price"] as Vector3) + Vector3(0, 0, -0.035), 17, Color(1, 0.93, 0.75, 0.95))
 	price.font = MenuKit.font("type")
 	# the moving parts
@@ -909,7 +907,9 @@ func _make_steam(at: Vector3) -> CPUParticles3D:
 
 
 func _cab_refresh(on: bool, c: Color) -> void:
-	_cab_neon.material_override = Mats.get_mat("neon:" + InteractableArt.hex(c)) if on else Mats.get_mat("neon_off")
+	# T-247 (the owner: the "bright ... boxed labels over perk machines"): the tube round the name board glows soft
+	# (glow_soft, 1.4) instead of the full neon (4.5) that bloomed into a white box in the dark
+	_cab_neon.material_override = Mats.get_mat("glow_soft:" + InteractableArt.hex(c)) if on else Mats.get_mat("neon_off")
 	_light.visible = on
 	if _cab_cap != null:
 		_cab_cap.modulate = Color(1.25, 1.25, 1.25) if on else Color(0.32, 0.3, 0.36)
@@ -991,7 +991,7 @@ func _cab_idle(delta: float) -> void:
 				_cab_on = 0.06
 			if _sign != null and _cab_on > 0.0:
 				_cab_on -= delta
-				_sign.modulate.a = 0.35 if _cab_on > 0.0 else 1.0
+				_sign.modulate.a = 0.35 if _cab_on > 0.0 else float(SurfaceText.MAX_ALPHA[SurfaceText.PAINT])
 		"twin":
 			# Pomp fires his pistols in turns: a kick and a cap-gun flash
 			if _cab_next <= 0.0:

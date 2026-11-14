@@ -652,6 +652,9 @@ func fire(w: WeaponInstance) -> void:
 		if w.mag <= 0 and w.reserve > 0:
 			start_reload()
 		return
+	if wonder_bolt(w):   # T-245: the Ashlight / Elmsfeuer bolt flies as the player's does (splash, ricochet, the Corona's arcs)
+		_fire_bolt(w, origin, basis)
+		return
 	# aimed like a player: down the sights when standing (or walking slowly) at anything not in its face, from the
 	# hip on the run or point-blank; bloom counts x (1 - 0.7 x ads), as WeaponHolder.spread_deg does
 	var ads: float = ads_amount()
@@ -694,6 +697,47 @@ func fire(w: WeaponInstance) -> void:
 	var danger: bool = brain.perception.sprinter_close or brain.perception.nearest_d < float(_r.get("near_block_m", 2.6))
 	if w.mag <= 0 and w.reserve > 0 and not (danger and _other_loaded() >= 0):
 		start_reload()
+
+
+## T-245: a wonder weapon that fires a bolt projectile (weapons.json projectile.kind "bolt": the Ashlight, the
+## Elmsfeuer). Bots traced those as plain bullets: no splash, no ricochet, no chain. Rockets keep the old trace.
+static func wonder_bolt(w: WeaponInstance) -> bool:
+	return w != null and w.weapon_class() == &"wonder" and w.data.has("projectile") \
+		and str((w.data["projectile"] as Dictionary).get("kind", "")) == "bolt"
+
+
+## The bolt itself, built as WeaponHolder._fire_projectile builds the player's (direct damage, splash, ricochets,
+## the upgraded Corona's chain), from the bot's eye down its facing with its aimed spread. The splash's self damage is
+## off: Explosion.detonate hurts whichever player is local on this machine, so a bot's bolt would otherwise hurt the
+## human beside it (a bot never takes its own splash either: it is not local).
+func _fire_bolt(w: WeaponInstance, origin: Vector3, basis: Basis) -> Projectile:
+	var pd: Dictionary = w.data["projectile"]
+	var dir: Vector3 = _spread_dir(basis, current_spread_deg(w))
+	var p: Projectile = Projectile.new()
+	p.kind = &"bolt"
+	p.weapon_id = w.id
+	p.by_player = player.player_id
+	p.velocity = dir * float(pd.get("speed", 45.0))
+	p.exclude = [player.get_rid()]
+	p.direct_damage = w.f("damage", 900.0) * PerkManager.shot_mult(player.player_id, ads_amount() >= 0.95)
+	p.ricochets = int(pd.get("ricochets", 1))
+	p.chain = int(w.property("chain", 0))
+	var chain_cfg: Dictionary = GLData.table("weapons").get("chain", {})
+	p.chain_radius = float(chain_cfg.get("radius", 6.0))
+	p.chain_mult = float(chain_cfg.get("mult", 0.7))
+	p.cfg = {"damage": float(w.property("splash", pd.get("splash", 0.0))), "radius": float(pd.get("radius", 2.0)), "edge_mult": float(pd.get("edge_mult", 0.3)),
+		"self_damage_near": 0.0, "self_near_m": 0.0, "self_damage_far": 0.0, "sound": "ashlight_splash", "sound_db": 0.0}
+	player.get_parent().add_child(p)
+	p.global_position = origin + dir * 0.7
+	_bloom = minf(_bloom + 1.0, 6.0)
+	player.remote_fire(1, w.id, origin, origin + dir * 2.0)
+	GLBus.mark_shot(player.player_id, false)
+	GLBus.weapon_fired.emit(player.player_id, w.id, w.upgraded, origin, dir)
+	if target != null:
+		brain.bonus_event("fire")
+	if w.mag <= 0 and w.reserve > 0:
+		start_reload()
+	return p
 
 
 ## The spread a shot would have now (degrees), as fire() computes it (without the random part).

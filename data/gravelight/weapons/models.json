@@ -692,12 +692,52 @@
    "notes": "A full-length side-by-side (1.13 m). The game's Sawed-Off is this gun with the barrels cut and the stock shortened: Barrels is a separate part, so phase 2 can clip it (the mesh's barrel geometry is a straight extrusion) or scale the long axis."
   },
   "type100": {
-   "source": null,
-   "asset": null,
-   "glb": null,
-   "parts": {},
+   "source": "ours",
+   "asset": "ours/weapons/type100",
+   "glb": "res://assets/ours/weapons/type100/model.glb",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "trigger": "Trigger",
+    "body": "Body"
+   },
+   "native": {
+    "forward": "-Z",
+    "up": "+Y",
+    "origin": "the right-hand grip (authored in the game frame)",
+    "length_m": 0.8654,
+    "real_length_m": 0.8654,
+    "scale": 1.0,
+    "size": [
+     0.2488,
+     0.1719,
+     0.8654
+    ],
+    "bbox_min": [
+     -0.2111,
+     -0.1035,
+     -0.396
+    ],
+    "bbox_max": [
+     0.0377,
+     0.0684,
+     0.4694
+    ],
+    "tris": 21144,
+    "materials": [
+     "type100_atlas"
+    ],
+    "textures": 3
+   },
    "alt": [],
-   "notes": "greybox (procedural WeaponModels): no free match found (FREE_ASSET_LIST); keeps the procedural model"
+   "nodes": {
+    "Body": 19296,
+    "Bolt": 408,
+    "Mag": 1236,
+    "Trigger": 204
+   },
+   "notes": "Modelled in-house (no free Type 100 exists): 1940 pattern, round receiver half-sunk in a one-piece wooden rifle stock (straight wrist, steel buttplate), perforated jacket (8 x 4 oblong slots cut through, the barrel inside), front band with the post between two ears, compensator with two side ports each side, bayonet lug bar under the jacket, tangent rear sight, 30-round curved magazine from the LEFT (Mag), cocking handle on the right (Bolt), Trigger.",
+   "script": "tools_src/blender/guns/type100.py"
   },
   "ptrs41": {
    "source": null,
@@ -996,12 +1036,188 @@
    "parts": {},
    "alt": [],
    "notes": "procedural (WeaponModels._w_undertow, UPDATE 10 T-153): a brass pressure cylinder on a shoulder stock, a pump handle under the barrel, a gauge, a Nachtglas harpoon on a dark chain; no CC0 harpoon gun fitted, a Blender model is optional later"
+  },
+  "fg42": {
+   "source": "opengameart",
+   "asset": "opengameart/tt-fg42",
+   "glb": "res://assets/third_party/opengameart/tt-fg42/model.glb",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 0.9564,
+    "real_length_m": 0.975,
+    "scale": 1.0194,
+    "size": [
+     0.9564,
+     0.2201,
+     0.2012
+    ],
+    "bbox_min": [
+     -0.4785,
+     -0.1119,
+     -0.1499
+    ],
+    "bbox_max": [
+     0.4779,
+     0.1082,
+     0.0513
+    ],
+    "tris": 16745,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.1007,
+     -0.04,
+     0.0
+    ]
+   },
+   "alt": [],
+   "notes": "Left-side 20-round box magazine (Mag), charging handle (Bolt). Converted 2026-11-14 (T-248)."
+  },
+  "mosin_nagant": {
+   "source": "opengameart",
+   "asset": "opengameart/tt-mosin-nagant",
+   "glb": "res://assets/third_party/opengameart/tt-mosin-nagant/model.glb",
+   "parts": {
+    "bolt": "Bolt",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 1.2346,
+    "real_length_m": 1.23,
+    "scale": 0.9963,
+    "size": [
+     1.2346,
+     0.189,
+     0.0752
+    ],
+    "bbox_min": [
+     -0.6213,
+     -0.1071,
+     -0.0165
+    ],
+    "bbox_max": [
+     0.6133,
+     0.0819,
+     0.0587
+    ],
+    "tris": 5595,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.2797,
+     0.0032,
+     -0.0039
+    ]
+   },
+   "alt": [],
+   "notes": "Bolt with its handle and firing pin = Bolt; fixed 5-round magazine in the stock (stripper-clip loaded). Converted 2026-11-14 (T-248)."
+  },
+  "bren": {
+   "source": "opengameart",
+   "asset": "opengameart/tt-bren",
+   "glb": "res://assets/third_party/opengameart/tt-bren/model.glb",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 1.0385,
+    "real_length_m": 1.156,
+    "scale": 1.1131,
+    "size": [
+     1.0385,
+     0.3788,
+     0.0847
+    ],
+    "bbox_min": [
+     -0.5254,
+     -0.1792,
+     -0.0358
+    ],
+    "bbox_max": [
+     0.5131,
+     0.1996,
+     0.0489
+    ],
+    "tris": 7371,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.2166,
+     -0.0945,
+     0.0
+    ]
+   },
+   "alt": [],
+   "notes": "Top-mounted curved 30-round magazine (Mag), charging handle (Bolt), folded bipod in the Body. Converted 2026-11-14 (T-248)."
+  },
+  "sten": {
+   "source": "opengameart",
+   "asset": "opengameart/tt-sten",
+   "glb": "res://assets/third_party/opengameart/tt-sten/model.glb",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "body": "Body"
+   },
+   "native": {
+    "forward": "-X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 0.7655,
+    "real_length_m": 0.762,
+    "scale": 0.9954,
+    "size": [
+     0.7655,
+     0.2102,
+     0.2459
+    ],
+    "bbox_min": [
+     -0.385,
+     -0.1036,
+     -0.2149
+    ],
+    "bbox_max": [
+     0.3805,
+     0.1066,
+     0.031
+    ],
+    "tris": 10591,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1
+   },
+   "alt": [],
+   "notes": "Left-side 32-round box magazine with its rounds (Mag), cocking handle (Bolt), skeleton stock in the Body. Converted 2026-11-14 (T-248)."
   }
  },
  "greybox": [
   "luger_p08",
   "m1919",
-  "type100",
   "ptrs41",
   "panzerschreck",
   "flamethrower",
@@ -3331,6 +3547,407 @@
     "textures": 1
    },
    "notes": "15 cartridges as named nodes (12_Gauge, 45_ACP, 9x19mm, 7_62x51mm, 7_62x54mmR, 50_BMG, 44_Magnum, 9x18mm, ...), metres, each standing on +Y at its own offset. Casings for the shell-ejection VFX (section 6)."
+  },
+  "opengameart/tt-sten": {
+   "glb": "res://assets/third_party/opengameart/tt-sten/model.glb",
+   "title": "Ultimate Low Poly Guns: Sten (World War 2 set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "body": "Body"
+   },
+   "nodes": [
+    "Body",
+    "Bolt",
+    "Mag"
+   ],
+   "part_bounds": {
+    "Body": [
+     [
+      -0.385,
+      -0.1036,
+      -0.0725
+     ],
+     [
+      0.3805,
+      0.1066,
+      0.0225
+     ]
+    ],
+    "Bolt": [
+     [
+      -0.0194,
+      0.0239,
+      -0.0117
+     ],
+     [
+      0.2062,
+      0.0885,
+      0.031
+     ]
+    ],
+    "Mag": [
+     [
+      -0.0194,
+      0.0239,
+      -0.2149
+     ],
+     [
+      0.1961,
+      0.0797,
+      0.0162
+     ]
+    ]
+   },
+   "part_tris": {
+    "Body": 8149,
+    "Bolt": 748,
+    "Mag": 1694
+   },
+   "native": {
+    "forward": "-X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 0.7655,
+    "real_length_m": 0.762,
+    "scale": 0.9954,
+    "size": [
+     0.7655,
+     0.2102,
+     0.2459
+    ],
+    "bbox_min": [
+     -0.385,
+     -0.1036,
+     -0.2149
+    ],
+    "bbox_max": [
+     0.3805,
+     0.1066,
+     0.031
+    ],
+    "tris": 10591,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1
+   },
+   "notes": "Left-side 32-round box magazine with its rounds (Mag), cocking handle (Bolt), skeleton stock in the Body. Converted 2026-11-14 (T-248)."
+  },
+  "opengameart/tt-mosin-nagant": {
+   "glb": "res://assets/third_party/opengameart/tt-mosin-nagant/model.glb",
+   "title": "Ultimate Low Poly Guns: Mosin Nagant (World War 2 set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {
+    "bolt": "Bolt",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "nodes": [
+    "Body",
+    "Bolt",
+    "Trigger"
+   ],
+   "part_bounds": {
+    "Body": [
+     [
+      -0.6213,
+      -0.1071,
+      -0.0165
+     ],
+     [
+      0.6133,
+      0.0819,
+      0.0165
+     ]
+    ],
+    "Bolt": [
+     [
+      -0.2973,
+      0.037,
+      -0.0116
+     ],
+     [
+      -0.1416,
+      0.0645,
+      0.0587
+     ]
+    ],
+    "Trigger": [
+     [
+      -0.2973,
+      -0.035,
+      -0.0101
+     ],
+     [
+      -0.2621,
+      0.0414,
+      0.0024
+     ]
+    ]
+   },
+   "part_tris": {
+    "Body": 4479,
+    "Bolt": 1000,
+    "Trigger": 116
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 1.2346,
+    "real_length_m": 1.23,
+    "scale": 0.9963,
+    "size": [
+     1.2346,
+     0.189,
+     0.0752
+    ],
+    "bbox_min": [
+     -0.6213,
+     -0.1071,
+     -0.0165
+    ],
+    "bbox_max": [
+     0.6133,
+     0.0819,
+     0.0587
+    ],
+    "tris": 5595,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.2797,
+     0.0032,
+     -0.0039
+    ]
+   },
+   "notes": "Bolt with its handle and firing pin = Bolt; fixed 5-round magazine in the stock (stripper-clip loaded). Converted 2026-11-14 (T-248)."
+  },
+  "opengameart/tt-bren": {
+   "glb": "res://assets/third_party/opengameart/tt-bren/model.glb",
+   "title": "Ultimate Low Poly Guns: Bren (World War 2 set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "nodes": [
+    "Body",
+    "Bolt",
+    "Mag",
+    "Trigger"
+   ],
+   "part_bounds": {
+    "Body": [
+     [
+      -0.5254,
+      -0.1792,
+      -0.0358
+     ],
+     [
+      0.5131,
+      0.0924,
+      0.0255
+     ]
+    ],
+    "Bolt": [
+     [
+      -0.2803,
+      -0.0785,
+      -0.011
+     ],
+     [
+      -0.1263,
+      -0.0379,
+      0.0489
+     ]
+    ],
+    "Mag": [
+     [
+      -0.2563,
+      -0.0785,
+      -0.0126
+     ],
+     [
+      -0.0064,
+      0.1996,
+      0.0126
+     ]
+    ],
+    "Trigger": [
+     [
+      -0.2563,
+      -0.1104,
+      -0.011
+     ],
+     [
+      -0.177,
+      -0.0785,
+      0.011
+     ]
+    ]
+   },
+   "part_tris": {
+    "Body": 6375,
+    "Bolt": 184,
+    "Mag": 704,
+    "Trigger": 108
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 1.0385,
+    "real_length_m": 1.156,
+    "scale": 1.1131,
+    "size": [
+     1.0385,
+     0.3788,
+     0.0847
+    ],
+    "bbox_min": [
+     -0.5254,
+     -0.1792,
+     -0.0358
+    ],
+    "bbox_max": [
+     0.5131,
+     0.1996,
+     0.0489
+    ],
+    "tris": 7371,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.2166,
+     -0.0945,
+     0.0
+    ]
+   },
+   "notes": "Top-mounted curved 30-round magazine (Mag), charging handle (Bolt), folded bipod in the Body. Converted 2026-11-14 (T-248)."
+  },
+  "opengameart/tt-fg42": {
+   "glb": "res://assets/third_party/opengameart/tt-fg42/model.glb",
+   "title": "Ultimate Low Poly Guns: FG 42 (World War 2 set)",
+   "author": "TastyTony (gun models)",
+   "license": "CC-BY 4.0",
+   "credit": "Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)",
+   "parts": {
+    "mag": "Mag",
+    "bolt": "Bolt",
+    "body": "Body",
+    "trigger": "Trigger"
+   },
+   "nodes": [
+    "Body",
+    "Bolt",
+    "Mag",
+    "Trigger"
+   ],
+   "part_bounds": {
+    "Body": [
+     [
+      -0.4785,
+      -0.1119,
+      -0.0582
+     ],
+     [
+      0.4779,
+      0.1082,
+      0.0333
+     ]
+    ],
+    "Bolt": [
+     [
+      -0.1714,
+      0.0016,
+      -0.008
+     ],
+     [
+      0.0397,
+      0.0177,
+      0.0513
+     ]
+    ],
+    "Mag": [
+     [
+      -0.1923,
+      0.0236,
+      -0.1499
+     ],
+     [
+      -0.0901,
+      0.05,
+      0.0009
+     ]
+    ],
+    "Trigger": [
+     [
+      -0.115,
+      -0.057,
+      -0.0035
+     ],
+     [
+      -0.0863,
+      -0.023,
+      0.0035
+     ]
+    ]
+   },
+   "part_tris": {
+    "Body": 15547,
+    "Bolt": 456,
+    "Mag": 634,
+    "Trigger": 108
+   },
+   "native": {
+    "forward": "+X",
+    "up": "+Y",
+    "origin": "bbox centre (the pack's own origin; not the grip)",
+    "length_m": 0.9564,
+    "real_length_m": 0.975,
+    "scale": 1.0194,
+    "size": [
+     0.9564,
+     0.2201,
+     0.2012
+    ],
+    "bbox_min": [
+     -0.4785,
+     -0.1119,
+     -0.1499
+    ],
+    "bbox_max": [
+     0.4779,
+     0.1082,
+     0.0513
+    ],
+    "tris": 16745,
+    "materials": [
+     "UltimateLowPolyGuns"
+    ],
+    "textures": 1,
+    "trigger_center": [
+     -0.1007,
+     -0.04,
+     0.0
+    ]
+   },
+   "notes": "Left-side 20-round box magazine (Mag), charging handle (Bolt). Converted 2026-11-14 (T-248)."
   }
  },
  "extras": {
@@ -3374,7 +3991,11 @@
     "m1_carbine": "7_62x39mm",
     "trench_gun": "12_Gauge",
     "sawed_off": "12_Gauge",
-    "ptrs41": "50_BMG"
+    "ptrs41": "50_BMG",
+    "fg42": "7_62x54mmR",
+    "mosin_nagant": "7_62x54mmR",
+    "bren": "7_62x51mm",
+    "sten": "9x19mm"
    },
    "notes": "nearest-shape stand-ins from a modern cartridge set; the ejected casing is the case only (phase 2 cuts the bullet, or scales)"
   },

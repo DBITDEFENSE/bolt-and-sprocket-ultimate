@@ -172,22 +172,10 @@ func build_greybox() -> void:
 		add_child(art)
 	else:
 		InteractableArt.place(self, "ammo_box", func(r: Node3D) -> void: AmmoBoxArt.body(r))
-	# stencils (painted through a card: no outline), front and ends
-	var s1: Label3D = add_label(self, "AMMUNITION", Vector3(0, 0.39, -0.286), 30, Color(0.86, 0.84, 0.7, 0.88))
-	s1.outline_size = 0
-	var s2: Label3D = add_label(self, "SMALL ARMS  ·  MIXED LOTS", Vector3(0, 0.3, -0.286), 13, Color(0.86, 0.84, 0.7, 0.75))
-	s2.outline_size = 0
-	s2.pixel_size = 0.0028
-	var s3: Label3D = add_label(self, "CAL .30  ·  7,92  ·  .45", Vector3(0, 0.21, -0.286), 13, Color(0.86, 0.84, 0.7, 0.7))
-	s3.outline_size = 0
-	s3.pixel_size = 0.0028
-	var s4: Label3D = add_label(self, "LOT 44-ZK-12", Vector3(0, 0.127, -0.292), 10, Color(0.08, 0.07, 0.03, 0.95))
-	s4.outline_size = 0
-	s4.pixel_size = 0.0025
-	for sx: float in [-1.0, 1.0]:
-		var e: Label3D = add_label(self, "AMMO", Vector3(sx * 0.523, 0.46, 0.0), 18, Color(0.86, 0.84, 0.7, 0.75))
-		e.outline_size = 0
-		e.rotation.y = sx * PI * 0.5   # read from outside each end
+	# T-247 (the owner's screenshot of this crate, its stencil and three lines of small print: "remove or make it more
+	# subtle"): one stencil on the front, through a card in the surface look; the small print, the lot plate and the
+	# two end stencils are gone
+	add_label(self, "AMMUNITION", Vector3(0, 0.36, -0.286), 24, Color(0.8, 0.78, 0.66, 0.6))
 	# the lantern's glass and its flickering light (the frame is in the merged mesh)
 	var lp: Vector3 = AmmoBoxArt.lantern_pos()
 	_glass = MeshInstance3D.new()

@@ -30,7 +30,6 @@ func build_greybox() -> void:
 	Props.block(self, Vector3(-0.8, 0.15, -0.18), Vector3(0.8, 2.3, 0.06), "machine_grey")
 	Props.block(self, Vector3(-0.82, 2.3, -0.2), Vector3(0.82, 2.38, 0.08), "iron")
 	var plate: Label3D = add_label(self, "BORDNETZ\nHILFSSAMMELSCHIENE", Vector3(0, 2.05, -0.19), 18, Color(0.95, 0.88, 0.62))
-	plate.outline_size = 4
 	# seven zone breakers in a row, each a small arm that flips up when its room comes on
 	for i: int in 7:
 		var x: float = -0.6 + 0.2 * float(i)
@@ -48,7 +47,6 @@ func build_greybox() -> void:
 	Props.cyl(_lever, Vector3(0, 0, -0.03), 0.16, 0.06, "black_paint", Vector3(90, 0, 0))
 	Props.block(_lever, Vector3(-0.03, 0.0, -0.09), Vector3(0.03, 0.22, -0.05), "red_paint")
 	var l2: Label3D = add_label(self, "AUS · EIN", Vector3(0, 0.68, -0.19), 13, Color(0.95, 0.9, 0.8))
-	l2.outline_size = 3
 	# AUS / EIN lamps (PowerSwitch._refresh_lamps drives them) and the beacon
 	for i2: int in 2:
 		var lamp: MeshInstance3D = MeshInstance3D.new()
