@@ -192,6 +192,7 @@ func _ready() -> void:
 		pb.global_position = _v3(row["start"])
 		pb.rotation.y = deg_to_rad(float(row.get("yaw", 0.0)))
 		pb.global_position = pb.global_position   # (keeps _last_pos honest on the first frame)
+		pb.enable_life()   # T-246: the patrons look up at the squad, start at a shot; outside, their breath shows
 		patrons[str(row["id"])] = pb
 		_st[str(row["id"])] = {"row": row, "stage": "idle", "pts": [], "i": 0, "exit": float(exits.get(str(row["id"]), 0.0)), "t0": 0.0}
 	GLBus.round_started.connect(_on_round_started)

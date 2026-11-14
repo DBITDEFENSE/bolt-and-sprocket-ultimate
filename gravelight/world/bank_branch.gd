@@ -62,6 +62,7 @@ func _ready() -> void:
 		add_child(teller)
 		teller.position = Vector3(0.0, 0.0, float(cfgb.get("teller_z", -0.75)))
 		teller.setup({"id": str(tcfg.get("id", "teller")), "pose": "clutch"})
+		teller.enable_life()   # T-246: the teller's eyes follow you to the counter
 	counter = BankCounter.new()
 	counter.name = "Counter"
 	counter.branch = self

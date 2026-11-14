@@ -240,6 +240,7 @@ func _tick_waiting(delta: float) -> void:
 	player.net_flags = NetMatch.PF_FLOOR
 	if player.remote_body != null:
 		player.remote_body.calm = true
+		player.remote_body.set_life(true)   # T-246: it looks at you, at the dead, at a shot; breath in the cold
 		player.remote_body.update_pose_lod(delta, 0.0, 0.0, NetMatch.PF_FLOOR)   # T-237: by what the camera sees
 	_tick_scene(delta)
 	_call_t -= delta
@@ -529,6 +530,8 @@ func _join(escort: int, arrival: bool) -> void:
 	Net.session.add_companion(player)
 	player.add_to_group(&"players")
 	player.add_to_group(&"bots")
+	if player.remote_body != null:
+		player.remote_body.set_life(false)   # T-246: the brain has the body now
 	player.bot_damage_mult = float(table().get("damage_taken", 0.6))   # sturdier than a squad bot: it has no perks
 	brain = squad.add_brain(player, brain_options(escort_pid, not player.weapons.slots.is_empty()))
 	var cf: String = str(cfg.get("carry_flag", ""))

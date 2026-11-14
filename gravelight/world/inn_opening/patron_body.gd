@@ -65,6 +65,10 @@ var aim_yaw: float = 0.0
 var aim_pitch: float = 0.0
 var _kick: float = 0.0
 var _held_gun: Node3D = null
+## T-246: the shared NPC life (NpcLife: the head follows you, a zombie, a shot; idles in the calm poses, the weight
+## shifting, hands up when a gun is aimed at them, half a step back when you crowd them, breath fog in the cold).
+## null = off (enable_life: the extra people, the survivors, the patrons, the tellers).
+var life: NpcLife = null
 
 
 ## Builds the body from a patron row (map00_opening.json patrons[]).
@@ -205,8 +209,18 @@ func _build_person(person_id: String = "") -> void:
 			(n as MeshInstance3D).visible = false
 
 
+## T-246: the shared life on (call once the body stands where it will be: the cold is read from that spot).
+func enable_life(idle_set: Array[StringName] = []) -> NpcLife:
+	if life == null and is_inside_tree():
+		var head: Node3D = person.attachment("Head") if person != null else _head
+		life = NpcLife.attach(self, head, patron_id + str(get_instance_id() % 97), idle_set)
+	return life
+
+
 ## The face for the pose (T-092).
 func _face_state() -> StringName:
+	if life != null and (life.hands_up > 0.4 or life.startle > 0.55) and pose != &"dead" and pose != &"fall":
+		return &"fear"   # T-246
 	match pose:
 		&"panic", &"run", &"push", &"struggle", &"clutch", &"cower":
 			return &"fear"
@@ -375,6 +389,16 @@ func _pose_body(delta: float) -> void:
 	var b_clutch: float = float(_blend[&"clutch"])
 	var b_cower: float = float(_blend[&"cower"])
 	var b_aim: float = float(_blend[&"aim"])
+	# T-246: the shared life. lookw: how much the head may follow it (not while running, pushing, fighting, falling);
+	# st: the calm standing pose its idles, weight shift and step back play over
+	var lookw: float = 0.0
+	var st: float = 0.0
+	if life != null:
+		life.busy = pose != &"stand"
+		life.tick(delta, self)
+		var fk0: float = _fall_k * _fall_k * (3.0 - 2.0 * _fall_k)
+		lookw = (1.0 - fk0) * (1.0 - b_run) * (1.0 - b_push) * (1.0 - b_strug) * (1.0 - 0.5 * b_clutch) * (0.0 if pose == &"dead" else 1.0)
+		st = lookw * (1.0 - b_clutch) * (1.0 - b_sit) * (1.0 - b_lean) * (1.0 - b_work) * (1.0 - b_panic) * (1.0 - b_cower) * (1.0 - b_aim) * (0.0 if moving else 1.0)
 	var tremble: float = sin(_t * 31.0) * 0.012 * b_cower
 	var swing: float = (0.5 + 0.35 * b_run) * clampf(_speed / 3.0, 0.0, 1.0) if moving else 0.0
 	# --- the fall: backwards about the feet, onto the back (as a knocked-down zombie lies)
@@ -389,17 +413,28 @@ func _pose_body(delta: float) -> void:
 	hip_y = lerpf(hip_y, 0.5, b_sit)
 	hip_y = lerpf(hip_y, 0.86, b_strug * 0.6)
 	hip_y = lerpf(hip_y, 0.17, b_cower)
-	_hips.position = Vector3(0, hip_y, lerpf(0.0, 0.08, b_sit) + 0.12 * b_cower)
+	_hips.position = Vector3(0.024 * (life.shift if life != null else 0.0) * st, hip_y, lerpf(0.0, 0.08, b_sit) + 0.12 * b_cower)
 	var chest_x: float = -0.32 * b_run - 0.12 * b_sit - 0.17 * b_lean - 0.2 * b_work + 0.25 * b_strug - 0.3 * b_clutch - 0.15 * b_push
 	chest_x += -0.42 * b_cower - 0.25 * _flinch * b_cower + tremble - 0.04 * b_aim
 	chest_x += 0.35 * _jolt + twitch + (aim_pitch * 0.6 + 0.12 * _kick) * b_aim
+	if life != null:
+		chest_x += 0.014 * life.breath * lookw + (0.2 * life.startle - 0.04 * life.idle_k * float(life.idle == &"hug")) * st
 	_chest.rotation.x = chest_x
 	_chest.rotation.y = sin(ph) * 0.1 * swing + 0.25 * b_strug * sin(_t * 9.0) + (0.22 + aim_yaw * 0.8) * b_aim
 	_chest.rotation.z = 0.12 * b_lean + 0.08 * b_clutch
+	if life != null:
+		_chest.rotation.y += 0.22 * life.look_yaw * lookw
+		_chest.rotation.z -= 0.035 * life.shift * st
+		_pivot.rotation.y = life.turn_yaw * st
+		_pivot.position = Vector3(life.back.x, 0.0, life.back.z) * st
 	# head: looking back over the shoulder now and then while running; down while clutching; shaking in a panic
 	var look_back: float = b_run * clampf(sin(_t * 0.9 + 1.0) * 2.0 - 1.2, 0.0, 1.0)
 	_head.rotation = Vector3(-0.1 * b_sit - 0.4 * b_clutch - 0.35 * b_cower * (1.0 + _flinch) + 0.05 * b_aim,
 		1.4 * look_back + 0.25 * b_panic * sin(_t * 7.0) + 0.3 * b_cower * sin(_t * 0.7) * (1.0 - _flinch) + (-0.2 + aim_yaw * 0.2) * b_aim, 0.0)
+	if life != null:
+		# T-246: the head follows the life's look (in a cower they watch the zombie); warming the hands it bows to them
+		_head.rotation.y += 0.78 * life.look_yaw * lookw * (1.0 - 0.6 * b_cower * (1.0 - _flinch))
+		_head.rotation.x += life.look_pitch * lookw - 0.18 * life.idle_k * float(life.idle == &"warm") * st
 	# --- legs (hip -> knee -> ankle in pivot space)
 	var stance: float = 0.1 * _build
 	for side: int in [0, 1]:
@@ -420,6 +455,11 @@ func _pose_body(delta: float) -> void:
 		if pose == &"dead" or pose == &"fall":
 			thigh_a = lerpf(thigh_a, (-0.3 if side == 0 else 0.5), fk)
 			knee_a = lerpf(knee_a, (-0.6 if side == 0 else -0.3), fk)
+		if st > 0.0:
+			# T-246: the leg that carries no weight eases at the knee (shift > 0: the weight on the right hip)
+			var relax: float = maxf(0.0, -life.shift if side == 1 else life.shift) * st
+			thigh_a += 0.07 * relax
+			knee_a -= 0.16 * relax
 		var knee: Vector3 = hip + Vector3(0, -cos(thigh_a) * THIGH, -sin(thigh_a) * THIGH)
 		var shin_dir: float = thigh_a + knee_a
 		var ankle: Vector3 = knee + Vector3(0, -cos(shin_dir) * SHIN, -sin(shin_dir) * SHIN)
@@ -474,11 +514,37 @@ func _pose_body(delta: float) -> void:
 	if pose == &"dead" or pose == &"fall":
 		tl = tl.lerp(Vector3(-0.55, 0.35, 0.1), fk)
 		tr = tr.lerp(Vector3(0.5, 0.45, -0.05), fk)
+	var pole_out: float = 0.0
+	var pole_down: float = 0.0
+	if st > 0.0:
+		# T-246: the idle's hands (warm, hug, adjust), then a startle's hands to the chest, then hands up
+		var ih: Array = NpcLife.idle_hands(life.idle, _t, 0.0 if person != null else 0.14)
+		if not ih.is_empty():
+			var ik: float = life.idle_k * st
+			if ih[0] != null:
+				tl = tl.lerp(ih[0] as Vector3, ik)
+			if ih[1] != null:
+				tr = tr.lerp(ih[1] as Vector3, ik)
+			if life.idle == &"hug":
+				pole_out = ik
+			elif life.idle == &"warm":
+				pole_down = ik
+		var sk: float = life.startle * st
+		tl = tl.lerp(Vector3(-0.1, 0.25, -0.2), sk * 0.7)
+		tr = tr.lerp(Vector3(0.1, 0.25, -0.2), sk * 0.7)
+		var hu: float = life.hands_up * lookw * (1.0 - b_cower) * (1.0 - b_aim) * (1.0 - b_sit * 0.5)
+		tl = tl.lerp(Vector3(-0.26, 0.5, -0.16), hu)
+		tr = tr.lerp(Vector3(0.26, 0.5, -0.16), hu)
+		pole_out = maxf(pole_out, hu)
 	for side2: int in [0, 1]:
 		var s2: String = "l" if side2 == 0 else "r"
 		var sh: Vector3 = _pivot.to_local(cp * Vector3((-0.24 if side2 == 0 else 0.24) * _build, 0.5, 0))
 		var hand: Vector3 = _pivot.to_local(cp * (tl if side2 == 0 else tr))
 		var pole: Vector3 = Vector3(-0.6 if side2 == 0 else 0.6, -1.0, 0.3)
+		if pole_out > 0.0:
+			pole = pole.lerp(Vector3(-1.0 if side2 == 0 else 1.0, -0.6, -0.15), pole_out)   # T-246: elbows out
+		if pole_down > 0.0:
+			pole = pole.lerp(Vector3(-0.3 if side2 == 0 else 0.3, -1.0, -0.5), pole_down)   # warming: elbows down, fingers up
 		var elbow: Vector3 = WeaponHolder._solve_elbow(sh, hand, UPPER, FORE, pole)
 		RemoteBody._place(_limbs["upper_" + s2] as MeshInstance3D, sh, elbow)
 		RemoteBody._place(_limbs["fore_" + s2] as MeshInstance3D, elbow, hand)

@@ -835,6 +835,8 @@ func _join(escort: int, arrival: bool) -> void:
 	player.add_to_group(&"players")
 	player.add_to_group(&"bots")
 	player.bot_damage_mult = 1.0
+	if player.remote_body != null:
+		player.remote_body.set_life(false)   # T-246: the brain has the body now
 	if player.remote_body != null and player.weapons.slots.is_empty():
 		player.remote_body.set_weapon(&"coal_shovel")
 	brain = squad.add_brain(player, brain_options(escort_pid, not player.weapons.slots.is_empty()))
@@ -1129,6 +1131,8 @@ func _pose(delta: float, speed: float, flags: int) -> void:
 	player.net_flags = flags
 	if player.remote_body != null:
 		player.remote_body.calm = speed < 0.3 and state != State.BREAKOUT
+		# T-246: while he waits (in the cage, freed, at his spot) he looks at you, at the dead, at a shot
+		player.remote_body.set_life(state == State.CAGED or state == State.FREED or state == State.WAITING)
 		player.remote_body.update_pose_lod(delta, speed, 0.0, flags)   # T-237: by what the camera sees
 
 
