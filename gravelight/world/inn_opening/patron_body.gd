@@ -69,6 +69,7 @@ var _held_gun: Node3D = null
 ## shifting, hands up when a gun is aimed at them, half a step back when you crowd them, breath fog in the cold).
 ## null = off (enable_life: the extra people, the survivors, the patrons, the tellers).
 var life: NpcLife = null
+var _life_st: float = 0.0
 
 
 ## Builds the body from a patron row (map00_opening.json patrons[]).
@@ -425,8 +426,9 @@ func _pose_body(delta: float) -> void:
 	if life != null:
 		_chest.rotation.y += 0.22 * life.look_yaw * lookw
 		_chest.rotation.z -= 0.035 * life.shift * st
-		_pivot.rotation.y = life.turn_yaw * st
-		_pivot.position = Vector3(life.back.x, 0.0, life.back.z) * st
+		_life_st = move_toward(_life_st, st, delta * 2.5)   # (eased: no pop when they start to walk)
+		_pivot.rotation.y = life.turn_yaw * _life_st
+		_pivot.position = Vector3(life.back.x, 0.0, life.back.z) * _life_st
 	# head: looking back over the shoulder now and then while running; down while clutching; shaking in a panic
 	var look_back: float = b_run * clampf(sin(_t * 0.9 + 1.0) * 2.0 - 1.2, 0.0, 1.0)
 	_head.rotation = Vector3(-0.1 * b_sit - 0.4 * b_clutch - 0.35 * b_cower * (1.0 + _flinch) + 0.05 * b_aim,
