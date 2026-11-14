@@ -377,6 +377,12 @@ static func apply_stage(stage: Node, grade_id: String) -> Dictionary:
 ## Which grade a cutscene cut takes: `cinema_reel` for the archive-reel history scenes (its file's `cuts` list),
 ## else the host map's own, else `menu` (the theatre, the prologue over the main menu).
 static func cinema_id(host: Node, cut_id: String) -> String:
+	# The new 3D treatment is consistent in the theatre and in a live campaign.
+	# Explicit archive replays still use their historical film presentation.
+	if CinemaArchive.plays_as_reel(cut_id):
+		return "cinema_reel"
+	if CinemaLibrary.has_cut(CinemaArchive.base_id(cut_id)):
+		return "cinema_horror"
 	var reel: Array = data("cinema_reel").get("cuts", [])
 	if reel.has(cut_id):
 		return "cinema_reel"

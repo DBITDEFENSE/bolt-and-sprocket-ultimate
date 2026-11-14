@@ -22,6 +22,8 @@ var guards: Array[CinemaPerson] = []
 var lamp_light: OmniLight3D
 var volkov_lantern: Node3D
 var step_lantern: Node3D
+const CRAFT = preload("res://gravelight/world/cinema_sets/cinema_craft.gd")
+const LIQUID = preload("res://gravelight/world/cinema_sets/relic_liquid.gdshader")
 
 
 func _build() -> void:
@@ -75,25 +77,21 @@ func _room() -> void:
 	for sx: float in [-2.1, 2.1]:
 		box(self, Vector3(sx, -1.4, (z0 + z1) * 0.5), Vector3(0.3, 2.2, 5.2), stone)
 	box(self, Vector3(0, -1.0, z1), Vector3(4.4, 3.4, 0.3), stone)
-	# the barrel vault: a half cylinder along the room
-	var vault: CylinderMesh = CylinderMesh.new()
-	vault.top_radius = 2.15
-	vault.bottom_radius = 2.15
-	vault.height = 5.2
-	vault.radial_segments = 20
-	vault.rings = 1
-	vault.cap_top = false
-	vault.cap_bottom = false
-	var vm: MeshInstance3D = MeshInstance3D.new()
-	vm.mesh = vault
+	# Only the upper barrel: a complete cylinder used to pass through the floor.
 	var vmat: Material = (mat(stone) as Material).duplicate() if mat(stone) != null else flat(Color(0.3, 0.28, 0.25))
 	if vmat is BaseMaterial3D:
 		(vmat as BaseMaterial3D).cull_mode = BaseMaterial3D.CULL_DISABLED
-	vm.material_override = vmat
-	vm.position = Vector3(0, -0.3, (z0 + z1) * 0.5)
-	vm.rotation_degrees = Vector3(90, 0, 0)
-	vm.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	add_child(vm)
+	CRAFT.mesh(self, CRAFT.vault(), vmat, "BarrelVault")
+	# Individual voussoirs catch the lamp light; damp mortar stays dark between them.
+	for rz: float in [-5.0, -7.2, -9.4]:
+		for k: int in 19:
+			var a: float = PI * (float(k) + 0.5) / 19.0
+			box(self, Vector3(cos(a) * 2.01, -0.3 + sin(a) * 2.01, rz), Vector3(0.15, 0.31, 0.18), stone, Vector3(0, 0, rad_to_deg(a)))
+	var damp: StandardMaterial3D = noisy(Color(0.055, 0.075, 0.06), Color(0.15, 0.17, 0.12), 0.25, 0.6, 0.75, 0.25)
+	for side: float in [-1.0, 1.0]:
+		for i: int in 12:
+			var h: float = rng.randf_range(0.18, 0.65)
+			box(self, Vector3(side * 1.94, -2.4 + h * 0.5, -4.9 - float(i) * 0.41), Vector3(0.01, h, rng.randf_range(0.1, 0.3)), damp)
 	box(self, Vector3(0, -1.9, z1 + 0.5), Vector3(1.5, 1.0, 0.75), "stone")        # the bare altar slab
 	box(self, Vector3(0, -2.3, z1 + 1.3), Vector3(2.0, 0.2, 0.65), "stone")        # the step before it
 	_vessel(Vector3(0, -2.2, z1 + 1.3))
@@ -101,9 +99,10 @@ func _room() -> void:
 
 func _vessel(at: Vector3) -> void:
 	vessel = group(self, "Vessel", at)
-	var metal: StandardMaterial3D = flat(Color(0.12, 0.1, 0.08), 0.42, 0.0, 0.7)
-	cyl(vessel, Vector3(0, 0.14, 0), 0.06, 0.28, metal)
-	cone(vessel, Vector3(0, 0.29, 0), 0.062, 0.05, 0.03, metal, 16)
+	var metal: StandardMaterial3D = noisy(Color(0.08, 0.085, 0.065), Color(0.24, 0.18, 0.1), 0.8, 0.08, 0.48)
+	metal.metallic = 0.72
+	metal.cull_mode = BaseMaterial3D.CULL_DISABLED
+	CRAFT.mesh(vessel, CRAFT.vessel_shell(), metal, "RelicShell")
 	lid = group(vessel, "VesselLid", Vector3(0, 0.3, 0))
 	ball(lid, Vector3(0, 0.02, 0), Vector3(0.13, 0.08, 0.13), metal)
 	seal = group(vessel, "VesselSeal", Vector3(0, 0.3, 0))
@@ -111,17 +110,25 @@ func _vessel(at: Vector3) -> void:
 	for a: int in 4:   # the cord
 		box(seal, Vector3(0, -0.06, 0), Vector3(0.134, 0.006, 0.006), flat(Color(0.3, 0.26, 0.2)), Vector3(0, 45.0 * a, 0))
 	# the inside, shown when it is opened: dark and wet (gore off), red (low and full), a drop down the lip (full)
-	var dark: StandardMaterial3D = flat(Color(0.03, 0.02, 0.02), 0.04)
-	dark.metallic_specular = 1.0
-	var red: StandardMaterial3D = flat(Color(0.24, 0.015, 0.01), 0.03)
-	red.metallic_specular = 1.0
+	var dark: ShaderMaterial = ShaderMaterial.new()
+	dark.shader = LIQUID
+	dark.set_shader_parameter("liquid_color", Color(0.025, 0.018, 0.012))
+	var red: ShaderMaterial = ShaderMaterial.new()
+	red.shader = LIQUID
+	var liquid_mesh: CylinderMesh = CylinderMesh.new()
+	liquid_mesh.top_radius = 0.052
+	liquid_mesh.bottom_radius = 0.052
+	liquid_mesh.height = 0.01
+	liquid_mesh.radial_segments = 64
 	var inside: Node3D = group(vessel, "VesselInside", Vector3(0, 0.27, 0))
-	var d1: MeshInstance3D = cyl(inside, Vector3.ZERO, 0.05, 0.01, dark, Vector3.ZERO, "Dark")
+	# Warm bounce from the lantern catches the meniscus below the metal lip.
+	omni(inside, Vector3(-0.035, 0.12, 0.03), [1.0, 0.72, 0.46], 0.12, 0.35)
+	var d1: MeshInstance3D = CRAFT.mesh(inside, liquid_mesh, dark, "Dark")
 	d1.add_to_group(&"gore_off")
-	var r1: MeshInstance3D = cyl(inside, Vector3.ZERO, 0.05, 0.01, red, Vector3.ZERO, "Red")
+	var r1: MeshInstance3D = CRAFT.mesh(inside, liquid_mesh, red, "Red")
 	r1.add_to_group(&"gore_low")
 	drop = group(vessel, "Drop", Vector3(0.058, 0.29, 0.0))
-	ball(drop, Vector3.ZERO, Vector3(0.008, 0.014, 0.008), red, "DropBead").add_to_group(&"gore_full")
+	ball(drop, Vector3.ZERO, Vector3(0.008, 0.014, 0.008), flat(Color(0.12, 0.006, 0.004), 0.12), "DropBead").add_to_group(&"gore_full")
 	inside.visible = false
 	drop.visible = false
 

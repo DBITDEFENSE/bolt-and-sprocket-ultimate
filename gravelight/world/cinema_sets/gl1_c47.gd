@@ -47,7 +47,7 @@ func _build() -> void:
 # ---------------------------------------------------------------- the hull
 
 func _hull() -> void:
-	var skin: StandardMaterial3D = noisy(Color(0.26, 0.28, 0.25), Color(0.36, 0.38, 0.34), 1.0, 0.6, 0.6)
+	var skin: Material = MaterialLibrary.build("kranich_skin", {"tint": [0.52, 0.56, 0.5], "wetness": 0.0, "frost": 0.1})
 	var frost: StandardMaterial3D = noisy(Color(0.5, 0.53, 0.56), Color(0.72, 0.74, 0.78), 2.0, 0.4, 0.5)
 	box(self, Vector3(0, -0.05, 0.7), Vector3(2.5, 0.1, 10.8), "floorboards")
 	var segs: Array = []
@@ -102,6 +102,8 @@ func _hull() -> void:
 		cargo.append(cg)
 	box(self, Vector3(0.6, 0.66, 4.35), Vector3(0.75, 0.04, 2.3), "net")
 	dome = omni(self, Vector3(0, 2.05, 0.6), [1.0, 0.12, 0.08], 1.3, 6.5)
+	for window_z: float in [-2.95, 0.35, 3.65]:
+		omni(self, Vector3(-1.2, 1.35, window_z), [0.32, 0.42, 0.65], 0.24, 2.4)
 	dome_mesh = ball(self, Vector3(0, 2.18, 0.6), Vector3(0.14, 0.08, 0.14), glow(Color(1.0, 0.15, 0.1), 2.2))
 	violet = omni(self, Vector3(1.0, 1.4, 0.3), [0.65, 0.38, 1.0], 0.0, 5.0)
 	marker("Faces", Vector3(-0.9, 1.05, 1.0))

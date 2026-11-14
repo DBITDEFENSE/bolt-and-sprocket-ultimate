@@ -1,0 +1,11 @@
+{
+ "_doc": "Replacement 3D cutscenes: restrained colour, readable shadow detail and fine grain. Individual sets retain their motivated lamps, sky and fog; explicit reel: replays retain the historical archive treatment.",
+ "map": "cinema_horror",
+ "tonemap": "filmic",
+ "white": 6.0,
+ "adjust": {"brightness": 1.04, "contrast": 1.06, "saturation": 0.78},
+ "tint": {"shadows": "#233039", "highlights": "#ded4be", "amount": 0.12},
+ "lift": 0.012,
+ "post": {"grain": 0.025, "vignette": 0.22, "edge_soft": 0.08, "ca": 0.0, "flicker": 0.0},
+ "web": {"adjust": {"saturation": 0.78}}
+}

@@ -26,11 +26,50 @@ func build() -> void:
 	built = true
 	rng.seed = hash(String(name) + variant)
 	_build()
+	_finish_light()
 	apply_gore()
 
 
 func _build() -> void:
 	pass
+
+
+## Real occlusion replaces the old unshadowed stage. Transparent atmosphere and
+## luminous cards stay shadowless; at most four local lamps cast shadow maps.
+func _finish_light() -> void:
+	var local_shadows: int = 0
+	for n: Node in find_children("*", "GeometryInstance3D", true, false):
+		if n is GPUParticles3D or n is Label3D:
+			continue
+		var g: GeometryInstance3D = n as GeometryInstance3D
+		var m: Material = g.material_override
+		if m == null and n is MeshInstance3D and (n as MeshInstance3D).mesh != null:
+			m = (n as MeshInstance3D).mesh.surface_get_material(0)
+		if m is BaseMaterial3D:
+			var bm: BaseMaterial3D = m as BaseMaterial3D
+			if bm.transparency != BaseMaterial3D.TRANSPARENCY_DISABLED or bm.shading_mode == BaseMaterial3D.SHADING_MODE_UNSHADED:
+				continue
+		g.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	for n: Node in find_children("*", "Light3D", true, false):
+		var l: Light3D = n as Light3D
+		l.light_specular = 0.65
+		if l is DirectionalLight3D:
+			l.shadow_enabled = true
+			(l as DirectionalLight3D).directional_shadow_max_distance = 90.0
+			l.light_angular_distance = 0.9
+		elif local_shadows < 4 and l.light_energy >= 0.7:
+			l.shadow_enabled = true
+			l.shadow_bias = 0.035
+			l.shadow_normal_bias = 0.7
+			local_shadows += 1
+	var we: WorldEnvironment = get_node_or_null("WorldEnvironment") as WorldEnvironment
+	if we != null and we.environment != null and not GLSettings.is_compat():
+		var e: Environment = we.environment
+		e.ssao_enabled = str(GLSettings.values.get("graphics_preset", "high")) not in ["low", "web"]
+		e.ssao_radius = 0.55
+		e.ssao_intensity = 1.25
+		e.ssao_light_affect = 0.3
+		e.glow_bloom = minf(e.glow_bloom, 0.035)
 
 
 func _ready() -> void:
@@ -216,6 +255,16 @@ static func noisy(lo: Color, hi: Color, freq: float, scale_m: float, rough: floa
 	t.height = 256
 	var m: StandardMaterial3D = StandardMaterial3D.new()
 	m.albedo_texture = t
+	var bump: NoiseTexture2D = NoiseTexture2D.new()
+	bump.noise = n
+	bump.seamless = true
+	bump.width = 256
+	bump.height = 256
+	bump.as_normal_map = true
+	bump.bump_strength = 0.8
+	m.normal_enabled = true
+	m.normal_texture = bump
+	m.normal_scale = 0.35
 	m.uv1_triplanar = true
 	m.uv1_world_triplanar = true
 	m.uv1_scale = Vector3.ONE / maxf(0.1, scale_m)
@@ -619,22 +668,43 @@ func birches(parent: Node3D, spots: Array, leaves: bool = false) -> void:
 	for s: Variant in spots:
 		var p: Vector3 = s
 		var hgt: float = rng.randf_range(9.0, 14.0)
-		var lean: Vector3 = Vector3(rng.randf_range(-4, 4), 0, rng.randf_range(-4, 4))
-		trunks.append(xf(p + Vector3(0, hgt * 0.5, 0), Vector3(0.22, hgt, 0.22), lean))
-		for k: int in 6:
-			var by: float = hgt * rng.randf_range(0.45, 0.92)
-			var a: float = rng.randf_range(0, 360)
-			var ln: float = rng.randf_range(1.2, 2.6)
-			twigs.append(xf(p + Vector3(cos(deg_to_rad(a)) * ln * 0.35, by, sin(deg_to_rad(a)) * ln * 0.35), Vector3(0.05, ln, 0.05),
-				Vector3(rng.randf_range(30, 60), a, 0)))
+		var tip: Vector3 = p + Vector3(rng.randf_range(-0.7, 0.7), hgt, rng.randf_range(-0.7, 0.7))
+		for t: int in 5:
+			var a0: Vector3 = p.lerp(tip, float(t) / 5.0)
+			var b0: Vector3 = p.lerp(tip, float(t + 1) / 5.0)
+			trunks.append(_branch_xf(a0, b0, 0.23 * (1.0 - float(t) * 0.17)))
+		for k: int in 16:
+			var fraction: float = 0.34 + float(k) * 0.038
+			var a: float = float(k) * 2.4 + rng.randf_range(-0.3, 0.3)
+			var reach: float = (1.0 - fraction) * 3.9
+			var start: Vector3 = p.lerp(tip, fraction)
+			var bend: Vector3 = start + Vector3(cos(a) * reach * 0.55, reach * 0.28, sin(a) * reach * 0.55)
+			var end: Vector3 = start + Vector3(cos(a) * reach, reach * 0.55, sin(a) * reach)
+			twigs.append(_branch_xf(start, bend, 0.06 * (1.0 - fraction)))
+			twigs.append(_branch_xf(bend, end, 0.035 * (1.0 - fraction)))
+			for fork: int in 3:
+				var root: Vector3 = bend.lerp(end, float(fork) * 0.28)
+				var fa: float = a + (-0.65 if fork % 2 == 0 else 0.65)
+				var ft: Vector3 = root + Vector3(cos(fa) * reach * 0.42, reach * 0.25, sin(fa) * reach * 0.42)
+				twigs.append(_branch_xf(root, ft, 0.013))
 		if leaves:
 			crowns.append(xf(p + Vector3(0, hgt * 0.78, 0), Vector3(3.4, 4.6, 3.4)))
 	if not _mats.has("_birch"):
 		_mats["_birch"] = noisy(Color(0.12, 0.11, 0.1), Color(0.86, 0.85, 0.8), 1.6, 0.5, 0.9)
 	multi(parent, Props.unit_cyl(), trunks, _mats["_birch"], "BirchTrunks")
-	multi(parent, Props.unit_box(), twigs, flat(Color(0.18, 0.14, 0.12)), "BirchTwigs")
+	var tapered: CylinderMesh = CylinderMesh.new()
+	tapered.top_radius = 0.12
+	tapered.bottom_radius = 0.5
+	tapered.height = 1.0
+	tapered.radial_segments = 6
+	multi(parent, tapered, twigs, flat(Color(0.18, 0.14, 0.12)), "BirchTwigs")
 	if leaves:
 		multi(parent, Props.unit_sphere(), crowns, noisy(Color(0.2, 0.3, 0.12), Color(0.42, 0.52, 0.24), 1.2, 1.0, 0.9), "BirchCrowns")
+
+
+func _branch_xf(start: Vector3, end: Vector3, diameter: float) -> Transform3D:
+	var axis: Vector3 = end - start
+	return Transform3D(Basis(Quaternion(Vector3.UP, axis.normalized())) * Basis.from_scale(Vector3(diameter, axis.length(), diameter)), (start + end) * 0.5)
 
 
 ## The grey lead case (the train in 1930, the vault in 1953): 40 x 25 x 25 cm, dull, two hasps, a rope handle.

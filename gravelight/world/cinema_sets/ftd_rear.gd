@@ -14,13 +14,14 @@ var post: Node3D
 var soldiers: Array[CinemaPerson] = []
 var walkers: Array[Node3D] = []
 var _walking: bool = false
+const CRAFT = preload("res://gravelight/world/cinema_sets/cinema_craft.gd")
 
 
 func _build() -> void:
 	env({"sky_top": [0.5, 0.52, 0.55], "sky_horizon": [0.62, 0.63, 0.64], "ground": [0.2, 0.18, 0.15], "ambient": [0.6, 0.62, 0.66], "ambient_e": 0.7,
 		"fog": [0.6, 0.61, 0.62], "fog_d": 0.0065, "glow_t": 1.5})
 	sun(Vector3(-28, -110, 0), [0.88, 0.88, 0.9], 0.5)
-	var mud: StandardMaterial3D = noisy(Color(0.2, 0.17, 0.13), Color(0.36, 0.31, 0.24), 0.08, 5.0, 0.85, 0.2)
+	var mud: Material = MaterialLibrary.build("dirt", {"tint": [0.5, 0.45, 0.38], "tile_m": 1.4, "wetness": 0.3})
 	plane(self, Vector3(0, 0, -100), Vector2(800, 800), mud)
 	var frost: StandardMaterial3D = noisy(Color(0.5, 0.5, 0.48), Color(0.72, 0.72, 0.7), 0.4, 2.0, 0.9)
 	var patches: Array = []
@@ -33,12 +34,16 @@ func _build() -> void:
 
 
 func _graves() -> void:
-	var earth: StandardMaterial3D = noisy(Color(0.16, 0.12, 0.09), Color(0.28, 0.22, 0.16), 0.9, 0.8, 0.85, 0.15)
+	var earth: Material = MaterialLibrary.build("dirt", {"tint": [0.4, 0.32, 0.25], "tile_m": 0.65, "wetness": 0.24})
 	var tin: StandardMaterial3D = flat(Color(0.55, 0.56, 0.56), 0.45, 0.0, 0.7)
 	for k: int in 8:
 		var x: float = -9.0 + 2.5 * float(k)
 		var g: Node3D = group(self, "Grave_%d" % k, Vector3(x, 0, 0))
-		var m: MeshInstance3D = ball(g, Vector3(0, 0.0, 0), Vector3(1.1, 0.7, 2.2), earth)
+		var m: MeshInstance3D = CRAFT.mesh(g, CRAFT.earth(1.35, 2.5, 0.35, 700 + k), earth, "Earth")
+		for clod: int in 15:
+			var a: float = rng.randf_range(0.0, TAU)
+			var sz: float = rng.randf_range(0.035, 0.085)
+			ball(g, Vector3(cos(a) * 0.63, 0.018, sin(a) * 1.12), Vector3(sz * 1.4, sz, sz), earth)
 		var marker_post: Node3D = group(g, "Marker", Vector3(0, 0.15, -1.25))
 		cone(marker_post, Vector3(0, 0.5, 0), 0.16, 0.03, 1.0, "planks", 4)
 		_star(marker_post, Vector3(0, 1.05, 0), 0.06, tin)
@@ -47,7 +52,9 @@ func _graves() -> void:
 			mound = g
 			mound.name = "Mound"
 			post = marker_post
-			ridge = ball(g, Vector3(0, 0.05, 0.15), Vector3(0.4, 0.2, 1.4), earth)
+			ridge = CRAFT.mesh(g, CRAFT.earth(1.0, 1.0, 0.5, 1204), earth, "Ridge")
+			ridge.position = Vector3(0, 0.05, 0.15)
+			ridge.scale = Vector3(0.4, 0.2, 1.4)
 			ridge.name = "Ridge"
 			var holder: Node3D = group(g, "MoundStain", Vector3.ZERO)
 			var stain: MeshInstance3D = plane(holder, Vector3(0, 0.37, 0.3), Vector2(0.5, 1.0), flat(Color(0.1, 0.02, 0.015, 0.8), 0.4), Vector3(0, 0, 0), "Stain")
