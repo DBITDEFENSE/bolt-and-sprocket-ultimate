@@ -1960,7 +1960,7 @@ func _dress_cellar() -> void:
 	_crucible_setting(g)
 	# (T-238: the installers' two crates stand at the bench's end in the north-east corner now, see below)
 	Props.fuse_box(g, Vector3(31.2, cy + 1.95, 19.15), 180.0, 0.5, 0.7)
-	Props.stencil(g, Vector3(31.2, cy + 2.62, 19.15), 180.0, "HELVETIA AUTOMATEN AG\nMONTAGE 7 · XI/44", 26, Color(0.8, 0.78, 0.68, 0.7), 0.0024)
+	# (T-247: the installers' name painted over the fuse box is gone; the owner: "remove or make it more subtle")
 	Props.pipe(g, Vector3(31.2, cy + 2.3, 19.25), Vector3(31.2, top - 0.08, 19.25), 0.02)
 	Props.pipe(g, Vector3(31.45, cy + 1.95, 19.25), Vector3(32.5, cy + 1.95, 19.25), 0.02)
 	Props.pipe(g, Vector3(32.5, cy + 1.95, 19.25), Vector3(32.5, cy + 2.15, 19.3), 0.02)
@@ -1983,9 +1983,7 @@ func _dress_cellar() -> void:
 	Props.workbench(g, Vector3(35.15, cy, 19.5), 180.0, 1.5, 0.7)
 	Props.crate(g, Vector3(33.96, cy, 19.5), 0.6, 180.0)
 	Props.crate(g, Vector3(33.98, cy + 0.6, 19.5), 0.5, 174.0)
-	Props.stencil(g, Vector3(33.96, cy + 0.36, 19.81), 180.0, "HELVETIA\nAUTOMATEN AG", 30, Color(0.85, 0.82, 0.7, 0.75), 0.0017)
-	Props.stencil(g, Vector3(33.98, cy + 0.86, 19.76), 174.0, "ZERBRECHLICH", 30, Color(0.7, 0.2, 0.15, 0.8), 0.0016)
-	Props.stencil(g, Vector3(35.2, cy + 1.9, 19.15), 180.0, "|||| |||| ||| ", 30, Color(0.85, 0.85, 0.8, 0.55), 0.004)
+	# (T-247: the glass crates' maker's stencil, ZERBRECHLICH and the chalk tally over the bench are gone)
 	# (T-238: the three shelves of preserves that stood in the machines' back-panel walks are gone: the walls behind
 	# the west and east rows are bare stone, the walk is its full 1.1 m, and the inn's stores are in the Old Cellar)
 	# ---- south wall, west half: a wine rack (bottles lying with their necks out)
@@ -2059,20 +2057,20 @@ func _dress_cellar_bay(parent: Node3D) -> void:
 	var zs: float = BAY_Z1 - T * 0.5
 	var am: float = (BAY_ARCH.x + BAY_ARCH.y) * 0.5
 	var cream: Color = Color(0.92, 0.9, 0.82, 0.8)
-	# ---- the arch: dressed stone jambs proud of both faces, a timber lintel, the bay's name painted on it both ways
+	# ---- the arch: dressed stone jambs proud of both faces, a timber lintel (T-247: the bay's name in big letters on
+	# its outer face is gone; the way out is still painted on the inner face, small)
 	for jz: Array in [[BAY_ARCH.x - 0.2, BAY_ARCH.x], [BAY_ARCH.y, BAY_ARCH.y + 0.2]]:
 		Props.block(g, Vector3(BAY_X0 - T * 0.5 - 0.05, cy, float(jz[0])), Vector3(BAY_X0 + T * 0.5 + 0.05, cy + DOOR_H, float(jz[1])), "cellar_stone")
 	Props.block(g, Vector3(BAY_X0 - T * 0.5 - 0.07, cy + DOOR_H, BAY_ARCH.x - 0.3), Vector3(BAY_X0 + T * 0.5 + 0.07, cy + DOOR_H + 0.24, BAY_ARCH.y + 0.3), "beam")
-	Props.stencil(g, Vector3(BAY_X0 - T * 0.5 - 0.075, cy + DOOR_H + 0.12, am), 90.0, "NACHLIEFERUNG", 34, cream, 0.0036)
-	Props.stencil(g, Vector3(BAY_X0 + T * 0.5 + 0.075, cy + DOOR_H + 0.12, am), -90.0, "AUSGANG · KELLER", 30, Color(cream, 0.6), 0.0032)
+	Props.stencil(g, Vector3(BAY_X0 + T * 0.5 + 0.075, cy + DOOR_H + 0.12, am), -90.0, "AUSGANG · KELLER", 24, Color(cream, 0.55), 0.003)
 	# a hanging enamel plate over the east aisle, in line with the arch (the east wall itself is behind the machines):
 	# seen from the stair foot and from the middle of the vault
 	var hp: Vector3 = Vector3(32.9, cy + 2.4, am)
 	Props.block(g, hp + Vector3(-0.02, -0.15, -0.5), hp + Vector3(0.02, 0.15, 0.5), "enamel_plate")
 	for cz: float in [-0.4, 0.4]:
 		Props.strut(g, hp + Vector3(0, 0.15, cz), Vector3(hp.x, top - 0.02, hp.z + cz), 0.008, "iron")
-	Props.stencil(g, hp + Vector3(-0.022, 0.0, 0.0), 90.0, "NACHLIEFERUNG →\nSKYHOOK SEKT · MAGPIE MEAD", 24, Color(0.12, 0.14, 0.18, 0.95), 0.0034)
-	Props.stencil(g, hp + Vector3(0.022, 0.0, 0.0), -90.0, "KELLER · TREPPE", 24, Color(0.12, 0.14, 0.18, 0.95), 0.0034)
+	Props.stencil(g, hp + Vector3(-0.022, 0.0, 0.0), 90.0, "NACHLIEFERUNG →", 24, Color(0.12, 0.14, 0.18, 0.9), 0.0032, SurfaceText.PRINT)   # T-247: the tonic names are gone
+	Props.stencil(g, hp + Vector3(0.022, 0.0, 0.0), -90.0, "KELLER · TREPPE", 24, Color(0.12, 0.14, 0.18, 0.9), 0.0032, SurfaceText.PRINT)
 	# ---- the vault: one rib down the bay's spine, corbelled on the north and south walls
 	var spring: float = cy + 2.05
 	_arch(g, Vector3(37.9, spring, zn), Vector3(37.9, spring, zs), (top - 0.1) - spring)
@@ -2083,16 +2081,15 @@ func _dress_cellar_bay(parent: Node3D) -> void:
 	Props.pendant(g, BAY_BULB, top - 0.02, _cellar_lit, "tin")
 	Props.pipe(g, Vector3(in0 + 0.05, cy + 2.7, zn + 0.07), Vector3(in1 - 0.05, cy + 2.7, zn + 0.07), 0.03, "iron")
 	Props.lantern(g, Vector3(36.75, cy + 2.15, 24.55), top - 0.02)   # lit by CellarBayLamp (build_cellar_gameplay)
-	# ---- the far wall between the machines: the maker's name and the delivery note pinned to a board
-	Props.stencil(g, Vector3(in1 - 0.005, cy + 2.15, am), 90.0, "HELVETIA AUTOMATEN AG\nNACHLIEFERUNG · 2 STÜCK", 30, cream, 0.0042)
+	# ---- the far wall between the machines: the delivery note pinned to a board (T-247: the maker's name painted
+	# over it and the note's typed lines are gone; the sheet reads as an old docket from across the bay)
 	Props.block(g, Vector3(in1 - 0.03, cy + 0.95, am - 0.36), Vector3(in1, cy + 1.55, am + 0.36), "board_wood")
 	Props.block(g, Vector3(in1 - 0.036, cy + 1.0, am - 0.27), Vector3(in1 - 0.03, cy + 1.48, am + 0.27), "paper_old", false)
-	Props.stencil(g, Vector3(in1 - 0.037, cy + 1.25, am), 90.0, "LIEFERSCHEIN 7b\n1 × SKYHOOK SEKT\n1 × MAGPIE MEAD\nnicht bestellt", 20, Color(0.16, 0.13, 0.1, 0.92), 0.0022)
 	Props.cyl(g, Vector3(in1 - 0.04, cy + 1.45, am), 0.012, 0.02, "brass", Vector3(0, 0, 90))   # the drawing pin
-	# ---- NW corner: Skyhook's crate (over the north BayCrateCol), lid off, the Thalbach consignment stencils
-	Props.crate(g, Vector3(in0 + 0.52, cy, zn + 0.5), 0.95, -90.0, "HELVETIA")
+	# ---- NW corner: Skyhook's crate (over the north BayCrateCol), a smaller one on it (T-247: the consignment
+	# stencils on both are gone)
+	Props.crate(g, Vector3(in0 + 0.52, cy, zn + 0.5), 0.95, -90.0)
 	Props.crate(g, Vector3(in0 + 0.5, cy + 0.95, zn + 0.47), 0.5, -80.0)
-	Props.stencil(g, Vector3(in0 + 0.52, cy + 0.5, zn + 0.985), 180.0, "ZWEIGWERK THALBACH\nW.T. · AUFRECHT", 24, Color(0.85, 0.82, 0.7, 0.7), 0.0026)
 	# ---- SW corner: Magpie's crate (over the south BayCrateCol), olive, open, straw in it; its lid against the wall
 	Props.block(g, Vector3(in0 + 0.05, cy, zs - 0.85), Vector3(in0 + 0.9, cy + 0.9, zs - 0.05), "olive_drab")
 	Props.block(g, Vector3(in0 + 0.11, cy + 0.86, zs - 0.79), Vector3(in0 + 0.84, cy + 0.92, zs - 0.11), "hay", false)
@@ -2102,9 +2099,8 @@ func _dress_cellar_bay(parent: Node3D) -> void:
 	for ry: Array in [[0.0, 0.09], [0.81, 0.9]]:
 		Props.block(g, Vector3(in0 + 0.9, cy + float(ry[0]), zs - 0.85), Vector3(in0 + 0.915, cy + float(ry[1]), zs - 0.05), "beam")
 		Props.block(g, Vector3(in0 + 0.05, cy + float(ry[0]), zs - 0.865), Vector3(in0 + 0.9, cy + float(ry[1]), zs - 0.85), "beam")
-	Props.stencil(g, Vector3(in0 + 0.905, cy + 0.5, zs - 0.45), -90.0, "THIS SIDE UP", 24, Color(0.9, 0.9, 0.84, 0.65), 0.0026)
+	# (T-247: the olive crate's English stencils are gone: THIS SIDE UP, and a real place name on its lid)
 	Props.obox(g, Vector3(in0 + 1.4, cy + 0.5, zs - 0.03), Vector3(0.85, 1.0, 0.05), "olive_drab")
-	Props.stencil(g, Vector3(in0 + 1.4, cy + 0.62, zs - 0.06), 0.0, "RANGE SUPPLY\nGROOM LAKE", 22, Color(0.9, 0.9, 0.84, 0.55), 0.0026)
 	Props.obox(g, Vector3(in0 + 2.0, cy + 0.46, zs - 0.08), Vector3(0.028, 0.92, 0.028), "iron", Vector3(9, 0, 6))   # the crowbar that opened them
 	var srng: RandomNumberGenerator = RandomNumberGenerator.new()
 	srng.seed = 179
@@ -2180,7 +2176,7 @@ func _dress_old_cellar() -> void:
 		Props.block(g, Vector3(OC_ANNEX_X - 0.26, 0.0, pz - 0.1), Vector3(OC_ANNEX_X - 0.12, 2.8, pz + 0.1), "beam")
 	Props.lantern(g, Vector3(-1.5, 2.15, 12.6), 2.8)
 	Props.wall_lamp(g, Vector3(OC_ANNEX_X + 0.15, cy + 2.2, 17.0), -90.0)
-	Props.stencil(g, Vector3(OC_ANNEX_X + 0.16, 1.7, 9.0), -90.0, "VORSICHT\nSTUFEN", 34, Color(0.88, 0.85, 0.75, 0.7), 0.004)
+	# (T-247: VORSICHT STUFEN on the annex wall is gone)
 	Props.crate(g, Vector3(-2.4, cy, 18.0), 0.55, 12.0)
 	for i: int in 5:
 		Props.cyl(g, Vector3(-2.55 + i * 0.09, cy + 0.6, 18.0), 0.035, 0.28, "bottle_green")
@@ -2204,17 +2200,16 @@ func _dress_old_cellar() -> void:
 	_wine_rack(g, Vector3(6.3, cy, 18.35), 0.0, 6.5, 6, 53)
 	_wine_rack(g, Vector3(0.15, cy, 10.6), -90.0, 3.1, 6, 54)
 	_wine_rack(g, Vector3(0.15, cy, 13.95), -90.0, 2.8, 6, 55)
-	for i: int in 3:   # the big casks on their cradles, heads to the room, vintages chalked on
+	for i: int in 3:   # the big casks on their cradles, heads to the room (T-247: the chalked vintages are gone)
 		var cz: float = 14.6 + i * 1.3
 		for sz: float in [-0.35, 0.35]:
 			Props.block(g, Vector3(9.9, cy, cz + sz - 0.06), Vector3(10.72, cy + 0.32, cz + sz + 0.06), "beam")
 		_lib_barrel(Vector3(10.3, cy + 0.12, cz), 90.0, 0.55, 0.82, true)
-		Props.stencil(g, Vector3(9.87, cy + 0.67, cz), 90.0, ["1937", "1941", "1943"][i], 40, Color(0.92, 0.9, 0.85, 0.75), 0.004)
 		Props.cyl(g, Vector3(9.84, cy + 0.32, cz), 0.03, 0.08, "brass", Vector3(0, 0, 90))   # the tap
 	_lib_barrel(Vector3(9.6, cy, 17.85), 20.0, 0.25, 0.6)
 	_lib_barrel(Vector3(0.55, cy, 17.9), -10.0, 0.25, 0.6)
 	# (T-238: the crate that stood in the corner in front of two racks is gone)
-	Props.stencil(g, Vector3(10.73, cy + 1.9, 15.9), 90.0, "RIESLING 38  ·  40 FL.\nROTWEIN 41  ·  22 FL.\nSCHNAPS  ·  —", 28, Color(0.9, 0.9, 0.85, 0.55), 0.0035)
+	# (T-247: the cellar book chalked on the wall is gone)
 	Props.puddle(g, Vector3(6.9, cy, 15.3), 1.2, 0.8, 15.0)
 	Props.puddle(g, Vector3(1.7, cy, 11.4), 0.9, 0.7, -20.0)
 	for c: Array in [[Vector3(0.15, top - 0.02, 8.15), 0.0], [Vector3(10.75, top - 0.02, 18.35), 180.0], [Vector3(0.15, top - 0.02, 18.35), 90.0]]:
@@ -2247,8 +2242,8 @@ func _dress_old_cellar() -> void:
 	Props.block(g, Vector3(0.3, cy, 5.6), Vector3(0.95, cy + 0.12, 6.3), "tarp")
 	Props.cyl(g, Vector3(1.9, cy + 0.05, 6.1), 0.045, 0.1, "tin")
 	Props.cyl(g, Vector3(0.45, cy + 0.17, 3.7), 0.15, 0.34, "iron")
-	Props.stencil(g, Vector3(0.16, cy + 1.45, 4.6), -90.0, "SZCZESC BOZE", 30, Color(0.92, 0.92, 0.88, 0.6), 0.0035)
-	Props.stencil(g, Vector3(0.16, cy + 1.1, 5.9), -90.0, "| |", 34, Color(0.92, 0.92, 0.88, 0.55), 0.0035)
+	Props.stencil(g, Vector3(0.16, cy + 1.45, 4.6), -90.0, "SZCZESC BOZE", 30, Color(0.92, 0.92, 0.88, 0.6), 0.0035, SurfaceText.CHALK)   # Jakub's cage: kept (story)
+	Props.stencil(g, Vector3(0.16, cy + 1.1, 5.9), -90.0, "| |", 34, Color(0.92, 0.92, 0.88, 0.55), 0.0035, SurfaceText.CHALK)
 	# outside: the guard's stool and crate with a mess tin and his cigarettes, the tag on the padlock, the lantern
 	# (T-238: against the east wall under his lamp, facing the cage. The stool stood in the middle of the walk and
 	# the crate half a metre inside the wine cellar's doorway, both without colliders)
@@ -2256,7 +2251,7 @@ func _dress_old_cellar() -> void:
 	Props.crate(g, Vector3(4.5, cy, 3.8), 0.55, -84.0, "WH")
 	Props.cyl(g, Vector3(4.45, cy + 0.6, 3.75), 0.09, 0.05, "steel")
 	Props.block(g, Vector3(4.5, cy + 0.55, 3.92), Vector3(4.6, cy + 0.57, 3.99), "paper")
-	Props.stencil(g, Vector3(2.62, cy + 0.82, 5.45), -90.0, "Häftling (Pole)\nFlucht aus K.\n22.XII.", 20, Color(0.22, 0.2, 0.18, 0.9), 0.0028)
+	Props.stencil(g, Vector3(2.62, cy + 0.82, 5.45), -90.0, "Häftling (Pole)\nFlucht aus K.\n22.XII.", 20, Color(0.22, 0.2, 0.18, 0.9), 0.0028, SurfaceText.PRINT)   # the tag on his cage: kept (story)
 	Props.block(g, Vector3(2.61, cy + 0.68, 5.32), Vector3(2.615, cy + 0.94, 5.6), "paper")
 	Props.lantern(g, Vector3(3.9, cy + 2.25, 3.9), top)
 	Props.cobweb(g, Vector3(0.15, top - 0.02, 0.15), 0.0, 0.8)
@@ -2309,7 +2304,7 @@ func _dress_old_cellar() -> void:
 	for k2: int in 3:
 		_chalk_figure(g, Vector3(8.14, cy + 0.8, 6.0 + k2 * 0.3), 90.0, 0.5)
 	_chalk_figure(g, Vector3(8.14, cy + 0.75, 7.6), 90.0, 0.75)
-	Props.stencil(g, Vector3(6.6, cy + 2.55, 5.16), 180.0, "EIS", 40, Color(0.75, 0.75, 0.72, 0.4), 0.004)
+	# (T-247: EIS over the ice room is gone)
 	Props.puddle(g, Vector3(6.4, cy, 5.9), 0.6, 0.45, 0.0)
 	Props.cobweb(g, Vector3(8.15, top - 0.02, 7.85), 180.0, 0.6)
 	# ---------------- the barrel vault: joists and summer beams, the pillars, the barrel stack, racks, the breach
@@ -2330,8 +2325,7 @@ func _dress_old_cellar() -> void:
 				_lib_barrel(Vector3(sx + side, cy + float(row[0]), zc), 90.0, float(row[2]), 1.45, true)
 	for cz2: float in [6.5, 9.5]:   # the cradles
 		Props.block(g, Vector3(st.position.x + 0.1, cy, cz2 - 0.08), Vector3(st.end.x - 0.1, cy + 0.2, cz2 + 0.08), "beam")
-	Props.stencil(g, Vector3(sx - 1.56, cy + 0.6, 8.0), 90.0, "KREUZWEG\nHAUSWEIN", 32, Color(0.92, 0.9, 0.85, 0.65), 0.004)
-	Props.stencil(g, Vector3(sx + 1.56, cy + 0.6, 8.0), -90.0, "1942", 40, Color(0.92, 0.9, 0.85, 0.65), 0.004)
+	# (T-247: the barrel stack's house-wine stencils are gone)
 	# (T-238: the three kegs that stood loose at the stack's corners, on the training loop's turns, are gone)
 	Props.lantern(g, Vector3(13.4, cy + 2.35, 8.0), top - 0.17)
 	Props.lantern(g, Vector3(21.6, cy + 2.35, 8.0), top - 0.17)
@@ -2343,7 +2337,7 @@ func _dress_old_cellar() -> void:
 	_wine_rack(g, Vector3(23.85, cy, 7.0), 90.0, 5.2, 6, 56)
 	_wine_rack(g, Vector3(17.45, cy, 15.85), 0.0, 3.7, 6, 57)
 	Props.block(g, Vector3(11.05, cy + 0.5, 0.15), Vector3(13.15, top, 0.17), "char")   # the hearth footing's soot
-	Props.stencil(g, Vector3(13.16, cy + 1.6, 0.75), -90.0, "KAMIN", 32, Color(0.85, 0.82, 0.75, 0.45), 0.004)
+	# (T-247: KAMIN on the hearth footing is gone)
 	Props.puddle(g, Vector3(20.6, cy, 4.4), 1.0, 0.7, 25.0)
 	# (T-238: the puddles left are the ones under a drip)
 	for c2: Array in [[Vector3(23.85, top - 0.02, 15.85), 180.0], [Vector3(11.05, top - 0.02, 15.85), 90.0], [Vector3(23.85, top - 0.02, 0.15), 270.0]]:
@@ -2355,7 +2349,7 @@ func _dress_old_cellar() -> void:
 	Props.pit_prop(g, Vector3(22.43, cy, 18.2), 0.0, 2.85, top - cy, "pine")
 	Props.cable(g, Vector3(23.8, top - 0.1, 20.3), Vector3(21.1, top - 0.1, 18.0), 0.08, 0.02, 8)
 	Props.cable(g, Vector3(21.1, top - 0.1, 18.0), Vector3(21.1, top - 0.1, 15.0), 0.08, 0.02, 6)
-	Props.stencil(g, Vector3(20.86 + 0.16, cy + 1.6, 18.6), -90.0, "→ HELVETIA\nKELLER II", 30, Color(0.92, 0.92, 0.88, 0.55), 0.004)
+	Props.stencil(g, Vector3(20.86 + 0.16, cy + 1.5, 18.6), -90.0, "→ KELLER II", 24, Color(0.9, 0.9, 0.86, 0.5), 0.0032, SurfaceText.CHALK)   # T-247: chalked, small: the way to the machines
 	Props.bulkhead_lamp(g, Vector3(23.83, cy + 2.1, 18.3), 90.0)
 	# ---------------- the windows: timber frames in the openings, snow blown in under them, the light wells
 	for wf: Array in [[Vector3(3.45, wy, 0.0), 0.0], [Vector3(24.0, wy, 1.8), -90.0]]:
@@ -3394,21 +3388,12 @@ func _dress_grounds() -> void:
 	sign.font_size = 34
 	sign.pixel_size = 0.0035
 	sign.modulate = Color(0.92, 0.84, 0.6)
-	sign.outline_size = 0
 	sign.position = Vector3(-1.65, 2.25, -1.84)
 	sign.rotation.y = PI
+	SurfaceText.apply(sign)   # T-247: painted on the board, lit by the yard
 	sh.add_child(sign)
-	var plate: Label3D = Label3D.new()
-	plate.text = "Spar- und Darlehenskasse
-Kreuzweg  ·  Zweigstelle"
-	plate.font_size = 22
-	plate.pixel_size = 0.003
-	plate.modulate = Color(0.2, 0.17, 0.12)
-	plate.outline_size = 0
-	plate.position = Vector3(-1.6, 1.5, -1.84)
-	plate.rotation.y = PI
+	# (T-247: the small print plate under the sign is gone; the cream panel it was on stays)
 	Props.block(sh, Vector3(-2.02, 1.38, -1.8), Vector3(-1.18, 1.62, -1.76), "paint_cream")
-	sh.add_child(plate)
 	Props.snow_drift(sh, Vector3(1.8, 0, -2.2), Vector3(2.2, 0.6, 1.2))
 	for row: int in 3:
 		for k: int in 5:
@@ -3552,9 +3537,9 @@ func _sawhorse(parent: Node3D, pos: Vector3, yaw: float, width: float) -> void:
 	l.font_size = 40
 	l.pixel_size = 0.004
 	l.modulate = Color(0.1, 0.08, 0.07)
-	l.outline_size = 0
 	l.position = Vector3(0, 0.6, -0.05)
 	l.rotation.y = PI
+	SurfaceText.apply(l)   # T-247
 	s.add_child(l)
 	Props._noshadow(Props.ball(s, Vector3(0, 0.98, 0), Vector3(width, 0.08, 0.12), "snow"))
 

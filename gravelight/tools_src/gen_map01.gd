@@ -673,7 +673,7 @@ func _label(text: String, pos: Vector3, yaw: float, size: int = 40, color: Color
 	l.outline_size = 0
 	l.position = pos
 	l.rotation.y = deg_to_rad(yaw)
-	l.shaded = true
+	SurfaceText.apply(l)   # T-247: the surface look (period face, lit, toned down)
 	(parent if parent != null else dress).add_child(l)
 
 

@@ -71,7 +71,6 @@ func build_greybox() -> void:
 		add_child(lamp)
 		_lamps.append(lamp)
 		var l: Label3D = add_label(self, "AUS" if i == 0 else "EIN", Vector3(-0.14 + i * 0.28, 0.77, -0.232), 14, Color(0.95, 0.9, 0.8, 0.9))
-		l.outline_size = 4
 	_beacon = OmniLight3D.new()
 	_beacon.position = Vector3(0, 1.1, -0.7)
 	_beacon.omni_range = 4.5

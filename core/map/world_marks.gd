@@ -109,9 +109,11 @@ func _make(m: Dictionary) -> Dictionary:
 	var l: Label3D = Label3D.new()
 	l.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	l.fixed_size = true
+	# T-247 (the owner's screenshot: "The Old Cellar · 22 m" over a painted wall sign): smaller, a thinner outline and
+	# a lower ceiling on its alpha (world.label_alpha), and it fades out close up and under the crosshair (_process)
 	l.pixel_size = 0.0011
-	l.font_size = 30
-	l.outline_size = 9
+	l.font_size = int(_wc.get("label_font_px", 24))
+	l.outline_size = 5
 	l.no_depth_test = true
 	l.double_sided = true
 	l.position = Vector3(0, float(_wc.get("label_height_m", 1.7)), 0)
@@ -185,9 +187,26 @@ func _process(_delta: float) -> void:
 			continue
 		shown += 1
 		var a: float = 1.0 if d <= fb else lerpf(1.0, low, clampf((d - fb) / maxf(1.0, hide_m - fb), 0.0, 1.0))
+		a *= label_fade(d, cam.unproject_position(l.global_position), get_viewport().get_visible_rect().size, _wc)
 		l.modulate.a = a
-		l.outline_modulate.a = a * 0.9
+		l.outline_modulate.a = a * 0.8
 		l.text = label_text(m, d)
+
+
+## T-247: how much of a label's alpha is left: world.label_alpha at most; fading out over world.near_fade_m past
+## near_hide_m (walking up to the mark), and down to world.center_alpha within world.center_fade_px of the screen's
+## centre (looking straight at it, so it never sits over what you are reading).
+static func label_fade(dist: float, screen_pos: Vector2, view: Vector2, wc: Dictionary) -> float:
+	var f: float = float(wc.get("label_alpha", 0.7))
+	var near0: float = float(wc.get("near_hide_m", 2.2))
+	var near_len: float = float(wc.get("near_fade_m", 4.0))
+	if near_len > 0.0:
+		f *= clampf((dist - near0) / near_len, 0.0, 1.0)
+	var cpx: float = float(wc.get("center_fade_px", 0.0)) * (view.y / 1080.0 if view.y > 0.0 else 1.0)
+	if cpx > 0.0:
+		var off: float = screen_pos.distance_to(view * 0.5) / cpx
+		f *= lerpf(float(wc.get("center_alpha", 0.3)), 1.0, smoothstep(0.35, 1.0, off))
+	return f
 
 
 ## The label over a mark: its letter, name and the distance ("$ Ironhide · Dutch · 14 m").

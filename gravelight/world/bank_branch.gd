@@ -141,7 +141,7 @@ func _build_pieces() -> void:
 		l.pixel_size = 0.0034
 		l.modulate = Color(0.78, 0.6, 1.0) if construct else Color(0.92, 0.84, 0.6)
 		l.outline_size = 0
-		l.shaded = true
+		SurfaceText.apply(l)   # T-247
 		add_child(l)
 		l.position = sp2 + Vector3(0, 0, 0.005)
 

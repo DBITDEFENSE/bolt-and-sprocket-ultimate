@@ -29,7 +29,6 @@ func build_greybox() -> void:
 	# a hazard-striped wall switch box with a stencil plate and a ready lamp; the arm hangs from its pivot
 	InteractableArt.place(self, "lever_box", func(r: Node3D) -> void: InteractableArt.lever_box(r))
 	var l: Label3D = add_label(self, str(STENCIL.get(trap_id, String(trap_id).to_upper())), Vector3(0, 1.35, -0.088), 13, Color(0.95, 0.88, 0.65))
-	l.outline_size = 3
 	_handle = Node3D.new()
 	_handle.position = Vector3(0, 1.1, -0.1)
 	add_child(_handle)

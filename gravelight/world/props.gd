@@ -360,6 +360,7 @@ static func crate(parent: Node3D, pos: Vector3, size: float, yaw: float, stencil
 		l.modulate = Color(0.85, 0.82, 0.7, 0.75)
 		l.position = Vector3(0, size * 0.72, -size * 0.51)
 		l.rotation.y = PI
+		SurfaceText.apply(l)   # T-247: stencilled paint, lit by the room
 		g.add_child(l)
 
 
@@ -456,9 +457,9 @@ static func signpost(parent: Node3D, pos: Vector3, signs: Array) -> void:
 			l.font_size = 46
 			l.pixel_size = 0.003
 			l.modulate = Color(0.08, 0.06, 0.05)
-			l.outline_size = 0
 			l.position = Vector3(0.06 * side, 0, 0.65)
 			l.rotation.y = PI * 0.5 * side
+			SurfaceText.apply(l)   # T-247: painted on the arm, lit by the scene
 			arm.add_child(l)
 		block(arm, Vector3(-0.07, 0.11, 0.05), Vector3(0.07, 0.16, 1.25), "snow", false)
 		y -= 0.36
@@ -1119,18 +1120,19 @@ static func newel(parent: Node3D, pos: Vector3, h: float = 1.05, key: String = "
 	ball(g, Vector3(0, h + 0.05, 0), Vector3(0.14, 0.14, 0.14), key)
 
 
-## Painted stencil text on a wall (local -Z faces the room; pos is on the wall face).
+## Painted stencil text on a wall (local -Z faces the room; pos is on the wall face). T-247: in the surface look
+## (SurfaceText: a period face, lit by the scene, no outline, toned down); `look` picks paint, chalk or print.
 static func stencil(parent: Node3D, pos: Vector3, yaw: float, text: String, size_px: int = 40, color: Color = Color(0.85, 0.82, 0.7, 0.75),
-		pixel: float = 0.004) -> Label3D:
+		pixel: float = 0.004, look: int = SurfaceText.PAINT) -> Label3D:
 	var g: Node3D = group(parent, "Stencil", pos, yaw)
 	var l: Label3D = Label3D.new()
 	l.text = text
 	l.font_size = size_px
 	l.pixel_size = pixel
 	l.modulate = color
-	l.outline_size = 0
 	l.position = Vector3(0, 0, -0.012)
 	l.rotation.y = PI
+	SurfaceText.apply(l, look)
 	g.add_child(l)
 	return l
 

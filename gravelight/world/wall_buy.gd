@@ -145,9 +145,10 @@ func build_greybox() -> void:
 		chalk_model.position += Vector3(-ca.get_center().x, -0.02 - ca.get_center().y, 0.0)
 	if board_mesh != null:
 		_mount_gun(chalk_model)
-	var lbl: Label3D = add_label(self, "%s  %d" % [d.get("name", weapon_id), price()], Vector3(0, 0.38, -0.03), 20, Color(0.8, 1, 0.8, 0.85))
-	if board_mesh != null:
-		lbl.font = MenuKit.font("stamp")
+	# T-247 (the owner: "this crappy font and text on stuff ... remove or make it more subtle"): the name and price are
+	# chalked over the board, lit by the buy lamp like the board itself, no outline, smaller; the
+	# prompt still names the gun and its price
+	add_label(self, "%s  %d" % [d.get("name", weapon_id), price()], Vector3(0, 0.37, -0.03), 17, Color(0.9, 0.9, 0.84, 0.66), SurfaceText.CHALK)
 	interact_offset = Vector3(0, 0, -0.12)
 	if area != null:
 		(area.get_child(0) as CollisionShape3D).position = interact_offset
