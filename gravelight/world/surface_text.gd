@@ -17,7 +17,8 @@ extends RefCounted
 ##   - low contrast: the colour pulled toward its own grey and a light one dimmed, alpha capped per look, so the
 ##     surface shows through;
 ##   - a hand-made wobble: a fraction of a degree off true, seeded from the text, so one sign is the same everywhere
-##     and two signs are never set dead level side by side.
+##     and two signs are never set dead level side by side;
+##   - a distance fade (about 20-25 m): the room you are in reads, the rest of the map is not a wall of words.
 ## Fixed to its surface: never a billboard, never fixed-size, always depth-tested.
 
 enum { PAINT, CHALK, PRINT, FLOAT }
@@ -37,6 +38,10 @@ const LIGHT_LUM: float = 0.5
 const LIGHT_DIM: float = 0.84
 ## The wobble: up to this many degrees either way about the text's own axis.
 const TILT_DEG: float = 0.9
+## Distance fade (metres from the camera): the text fades out over FADE_MARGIN_M around FADE_END_M
+## (GeometryInstance3D visibility range, fade self).
+const FADE_END_M: float = 22.0
+const FADE_MARGIN_M: float = 6.0
 
 static var _fonts: Dictionary = {}
 
@@ -81,6 +86,11 @@ static func apply(l: Label3D, look: int = PAINT) -> Label3D:
 	l.fixed_size = false
 	l.no_depth_test = false
 	l.modulate = tone(l.modulate, look)
+	l.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	# far off, text is noise: it fades out around FADE_END_M (the room you are in still reads)
+	l.visibility_range_end = FADE_END_M
+	l.visibility_range_end_margin = FADE_MARGIN_M
+	l.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 	if look != FLOAT:
 		l.rotation.z += deg_to_rad(wobble(l.text) * TILT_DEG)
 	l.set_meta("surface_text", look)

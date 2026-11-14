@@ -1727,7 +1727,7 @@ func _dress_kaue() -> void:
 	B(Vector3(9.36, 1.56, z0), Vector3(10.64, 1.6, z0 + 0.06), "beam")
 	B(Vector3(9.36, 2.3, z0), Vector3(10.64, 2.34, z0 + 0.06), "beam")
 	_label("SCHICHT III - 23. XII.", Vector3(10.0, 2.1, z0 + 0.05), 0.0, 20, Color(0.9, 0.9, 0.86, 0.85))
-	_label("Seilfahrt 6.00 / 14.00 / 22.00", Vector3(10.0, 1.8, z0 + 0.05), 0.0, 14, Color(0.9, 0.9, 0.86, 0.75))
+	# (T-247: the timetable's small print under the shift board is gone)
 	# the broom and the bucket in the north-east corner, a coat on the wall, duckboards along the benches
 	Props.strut(dress, Vector3(15.55, 0.02, 26.6), Vector3(15.75, 1.45, 26.35), 0.025, "pine", true)
 	OB(Vector3(15.5, 0.03, 26.7), Vector3(0.3, 0.06, 0.1), "straw_floor", Vector3(0, -30, 0))
@@ -2016,7 +2016,7 @@ func _dress_admin_stair_strings() -> void:
 	for sh: float in [24.9, 25.55]:
 		_noshadow(B(Vector3(fx + 0.046, 1.8, sh), Vector3(fx + 0.049, 2.45, sh + 0.012), "black_paint", false))
 	_noshadow(B(Vector3(fx + 0.046, 1.78, 25.2), Vector3(fx + 0.049, 1.9, 25.5), "red_paint", false))
-	_label("GRUBENRISS  ·  SOHLE I - III", Vector3(fx + 0.052, 1.7, 25.3), 90.0, 12, Color(0.15, 0.12, 0.1, 0.9))
+	# (T-247: the mine plan's 12 px caption is gone)
 	# the notice board: orders, the ration list, a torn poster
 	B(Vector3(fx, 1.5, 26.6), Vector3(fx + 0.03, 2.55, 27.9), "linen")
 	for nf: Array in [[1.46, 1.5], [2.55, 2.59]]:
@@ -2027,7 +2027,7 @@ func _dress_admin_stair_strings() -> void:
 			[27.2, 1.78, 0.2, 0.26, 6.0], [27.62, 1.72, 0.2, 0.3, -2.0]]:
 		_noshadow(Props.obox(dress, Vector3(fx + 0.034, float(np[1]), float(np[0]) + float(np[2]) * 0.5), Vector3(0.004, float(np[3]), float(np[2])),
 			"paper", Vector3(float(np[4]), 0, 0)))
-	_label("BEKANNTMACHUNGEN", Vector3(fx + 0.05, 2.47, 27.25), 90.0, 12, Color(0.15, 0.12, 0.1, 0.9))
+	# (T-247: the notice board's 12 px heading is gone; the sheets on it stay)
 
 
 ## T-239: the Administration's upper floor was a 16 x 16 m room with one desk on a rug, and the radio room an empty

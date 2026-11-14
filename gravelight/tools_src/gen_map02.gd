@@ -1623,7 +1623,7 @@ func _dress_workshop() -> void:
 		B(Vector3(34.0 + k * 0.6, 0, 26.3), Vector3(34.1 + k * 0.6, 0.07, 27.7), "beam")
 	for rz: float in [26.6, 27.4]:
 		B(Vector3(34.0, 0.07, rz - 0.03), Vector3(60.4, 0.14, rz + 0.03), "steel")
-	Props.stencil(dress, Vector3(40.0, 1.6, 29.99), 0.0, "ZERLEGUNG · LOS 44-209", 30, Color(0.85, 0.82, 0.7, 0.6))
+	# (T-247: the lot number stencilled on the pen wall is gone)
 	# lights: powered pendants over the cradles, a bulkhead over the pen door, emergency lamps
 	for px: float in [40.0, 50.0]:
 		for pz: float in [8.5, 14.5, 21.0]:
@@ -2139,7 +2139,7 @@ func _dress_u09_cannery() -> void:
 	Props.table_visual(dress, Vector3(-3.2, 0, 9.0), 1.2, 0.7, 0.85)
 	B(Vector3(-3.5, 0.85, 8.8), Vector3(-3.0, 0.9, 9.15), "leather")
 	B(Vector3(-3.48, 0.9, 8.82), Vector3(-3.02, 0.905, 9.13), "paper")
-	_label("LIEFERBUCH 1944/45", Vector3(-3.25, 0.91, 8.98), 0.0, 10, Color(0.15, 0.12, 0.1, 0.9))
+	# (T-247: the ledger's 10 px title is gone)
 	Props.stool(dress, Vector3(-3.2, 0, 9.8))
 	_streaks(Vector3(-29.84, 0.0, 0.5), Vector3(-29.84, 0.0, 29.5), Vector3(1, 0, 0), 5.8, 2.2, 5102)
 	_streaks(Vector3(-29.5, 0.0, 0.16), Vector3(-0.5, 0.0, 0.16), Vector3(0, 0, 1), 5.8, 2.4, 5103)
@@ -2168,7 +2168,7 @@ func _dress_u09_workshop() -> void:
 	Props.coffin(dress, Vector3(56.0, 0.76, 22.5), 0.0, "BLST-13", false)
 	var mf: Node3D = Props.group(dress, "Manifest", Vector3(54.0, 0, 16.0), 0.0)
 	Props.block(mf, Vector3(-0.3, 1.3, 0.04), Vector3(0.3, 1.75, 0.05), "paper")
-	_label("SPRENGKÖPFE: 0\nBALLAST: 14", Vector3(54.0, 1.55, 16.06), 180.0, 12, Color(0.15, 0.12, 0.1, 0.95))
+	# (T-247: the tally's 12 px lines are gone; the sheet stays)
 	_streaks(Vector3(32.16, 0.0, 0.5), Vector3(32.16, 0.0, 29.5), Vector3(1, 0, 0), 6.8, 2.6, 5201, "rust")
 	_streaks(Vector3(32.5, 0.0, 29.84), Vector3(61.5, 0.0, 29.84), Vector3(0, 0, -1), 6.8, 2.2, 5202)
 
@@ -2256,7 +2256,7 @@ func _dress_u09_uboat() -> void:
 	for k: int in 5:
 		B(Vector3(4.7, SY + 0.906, 58.0 + k * 0.22), Vector3(5.5, SY + 0.909, 58.01 + k * 0.22), "black_paint", false)
 	B(Vector3(4.9, SY + 0.905, 59.2), Vector3(5.3, SY + 0.95, 59.5), "leather")
-	_label("KTB U 1047", Vector3(5.1, SY + 0.955, 59.35), 0.0, 9, Color(0.85, 0.82, 0.7, 0.9))
+	# (T-247: the log book's 9 px title is gone)
 
 
 func _dress_u09_lowerpens() -> void:
@@ -2271,7 +2271,7 @@ func _dress_u09_lowerpens() -> void:
 	# the Pumpenschalter's backplate, conduit and signs; its lamp is the zone's key light (shadowed)
 	B(Vector3(51.86, y + 0.3, 68.8), Vector3(51.98, y + 2.4, 71.2), "machine_grey")
 	_label("PUMPENSCHALTER", Vector3(51.84, y + 2.6, 70.0), -90.0, 22, Color(0.85, 0.82, 0.7, 0.85))
-	_label("VORSICHT · HOCHSPANNUNG", Vector3(51.84, y + 0.55, 70.0), -90.0, 14, Color(0.9, 0.75, 0.1, 0.9))
+	# (T-247: the small warning under the pump switch's name is gone)
 	Props.pipe(dress, Vector3(51.9, y + 2.4, 70.0), Vector3(51.9, -0.4, 70.0), 0.04)
 	lamp(Vector3(50.6, y + 2.5, 70.0), INCAND, 1.0, 7.0, 0.06, 0.3, true, 6.0)
 	# the drowned sailors' effects by the columns, left as they were found: a sea chest, a cap, boots, a kit bag, a photograph
