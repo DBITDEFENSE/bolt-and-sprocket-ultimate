@@ -68,6 +68,8 @@ static func attach(map: Node) -> Array[HorseRound]:
 		hr.file_key = "bosses/horse"
 		hr.fcfg = HorseBoss.table()
 		hr.cfg = HorseBoss.block_of(hr.boss_id)
+		if (r as Dictionary).get("arrival") is Dictionary:   # T-249: a map's own arrival beats (the Inn's Fuhrmann comes in behind the Sherman)
+			hr.cfg = HorseBoss.merged(hr.cfg, {"arrival": (r as Dictionary)["arrival"]})
 		hr.name = "HorseRound_%d" % int((r as Dictionary)["round"])
 		hr.director = map.get("director") as ZombieDirector
 		map.add_child(hr)

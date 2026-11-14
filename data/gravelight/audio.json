@@ -6004,6 +6004,109 @@
         1.08
       ],
       "attenuation": "quiet"
+    },
+    "firezed_burn": {
+      "files": [
+        "res://gravelight/audio/sherman/firezed_burn.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -6.0,
+      "attenuation": "zombie",
+      "loop": true
+    },
+    "firezed_burst": {
+      "files": [
+        "res://gravelight/audio/sherman/firezed_burst_1.ogg",
+        "res://gravelight/audio/sherman/firezed_burst_2.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": 0.0,
+      "pitch": [
+        0.94,
+        1.06
+      ],
+      "max_voices": 4,
+      "attenuation": "loud"
+    },
+    "firezed_hiss": {
+      "files": [
+        "res://gravelight/audio/sherman/firezed_hiss.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -2.0,
+      "attenuation": "world"
+    },
+    "sherman_clang": {
+      "files": [
+        "res://gravelight/audio/sherman/sherman_clang_1.ogg",
+        "res://gravelight/audio/sherman/sherman_clang_2.ogg",
+        "res://gravelight/audio/sherman/sherman_clang_3.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -4.0,
+      "pitch": [
+        0.9,
+        1.1
+      ],
+      "max_voices": 4,
+      "attenuation": "world"
+    },
+    "sherman_cookoff": {
+      "files": [
+        "res://gravelight/audio/sherman/sherman_cookoff.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": 0.0,
+      "attenuation": "loud"
+    },
+    "sherman_engine": {
+      "files": [
+        "res://gravelight/audio/sherman/sherman_engine.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -4.0,
+      "attenuation": "loud",
+      "loop": true
+    },
+    "sherman_gun": {
+      "files": [
+        "res://gravelight/audio/sherman/sherman_gun_1.ogg",
+        "res://gravelight/audio/sherman/sherman_gun_2.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": 2.0,
+      "pitch": [
+        0.96,
+        1.04
+      ],
+      "max_voices": 2,
+      "attenuation": "loud"
+    },
+    "sherman_tracks": {
+      "files": [
+        "res://gravelight/audio/sherman/sherman_tracks.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -5.0,
+      "attenuation": "loud",
+      "loop": true
+    },
+    "stuka_dive": {
+      "files": [
+        "res://gravelight/audio/sherman/stuka_dive.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": 3.0,
+      "attenuation": "loud"
+    },
+    "stuka_engine": {
+      "files": [
+        "res://gravelight/audio/sherman/stuka_engine.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": 0.0,
+      "attenuation": "loud",
+      "loop": true
     }
   }
 }

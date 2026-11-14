@@ -128,6 +128,7 @@ func _ready() -> void:
 	EggModeTag.attach(self)   # T-181: the Easter Egg Mode practice tag (EggMode)
 	BoundsGuard.attach(self)   # T-185: anyone far outside the playable space is brought back down
 	HorseRound.attach(self)   # T-240: the undead horses' rounds (the map json's "round_bosses" rows)
+	ShermanEvent.attach(self)   # T-249: the Sherman, rounds 30..40 (the map json's "sherman_event" block; every peer, the host decides)
 	LazarusCinema.attach(self)   # T-194: the LAZARUS cutscenes at a match start (every peer; the host decides)
 	for q: String in quest_files:
 		QuestManager.load_quest(q)
