@@ -581,6 +581,7 @@ varying vec3 v_nrm;
 varying vec4 v_col;
 varying vec4 v_cus;
 varying float v_h;
+varying vec3 v_rest_nrm;
 """ + TRIPLANAR + """
 #include "res://gravelight/enemies/zombie_kit_detail.gdshaderinc"
 void vertex() {
@@ -589,6 +590,18 @@ void vertex() {
 	v_col = COLOR;
 	v_cus = CUSTOM0;
 	v_h = VERTEX.y;
+	// the rest-pose normal packed in CUSTOM1.w (ZombieBody.pack_rest_normal: octahedral, 12 bits a component, +1;
+	// 0 = none); an exact integer in the float attribute, so the split below is exact
+	v_rest_nrm = vec3(0.0);
+	if (CUSTOM1.w > 0.5) {
+		float q = CUSTOM1.w - 1.0;
+		float hi = floor(q / 4096.0);
+		vec2 e = vec2(hi, q - hi * 4096.0) / 4095.0 * 2.0 - 1.0;
+		vec3 rn = vec3(e, 1.0 - abs(e.x) - abs(e.y));
+		float t = max(-rn.z, 0.0);
+		rn.xy += mix(vec2(t), vec2(-t), step(vec2(0.0), rn.xy));
+		v_rest_nrm = normalize(rn);
+	}
 }
 void fragment() {
 	float n = tri(noise_tex, v_pos, v_nrm, 4.0).r;
@@ -604,8 +617,15 @@ void fragment() {
 		float sc = cls > 1.5 && cls < 2.5 ? knit_scale : (leathery ? leather_scale : fabric_scale);
 		vec3 weights = v_nrm;
 		if (zombie_pbr) {
-			// Keep colour, roughness and normals on the same stable rest-space projections.
-			weights = pow(abs(cross(dFdx(v_pos), dFdy(v_pos))), vec3(2.0));
+			// Keep colour, roughness and normals on the same stable rest-space projections. The weights come from
+			// the rest-pose normal: smooth across faces and fixed to the body under skinning (the skinned NORMAL
+			// would make the blend swim as a limb turns). A mesh without one falls back to the rest position's
+			// face normal (stable, but it facets on curved low-poly cloth).
+			if (dot(v_rest_nrm, v_rest_nrm) > 0.25) {
+				weights = pow(abs(normalize(v_rest_nrm)), vec3(4.0));
+			} else {
+				weights = pow(abs(cross(dFdx(v_pos), dFdy(v_pos))), vec3(2.0));
+			}
 			float weight_sum = weights.x + weights.y + weights.z;
 			weights = weight_sum > 0.0000000000000001 ? weights / weight_sum : vec3(0.0, 0.0, 1.0);
 		}
@@ -977,7 +997,7 @@ static func _merge_glb(base: Dictionary, kit: String, female: bool, living: bool
 			acc.norms.append(n[i])
 			acc.cols.append(Color(col.r * ao, col.g * ao, col.b * ao, 1.0))
 			acc.cus0.append_array(PackedFloat32Array([float(look[1]), float(look[2]), float(look[3]), float(DETAIL.get(kname, 0))]))
-			acc.cus1.append_array(PackedFloat32Array([v[i].x, v[i].y, v[i].z, 0.0]))
+			acc.cus1.append_array(PackedFloat32Array([v[i].x, v[i].y, v[i].z, pack_rest_normal(n[i])]))
 			for k: int in 4:
 				acc.bones.append(bones[i * stride + k] if k < stride else 0)
 				acc.weights.append(weights[i * stride + k] if k < stride else 0.0)
@@ -1272,10 +1292,11 @@ static func _skin_parts(parts_by_bone: Dictionary, kit: String, root_bone: Strin
 				var local: Vector3 = xf * verts[i]           # bone-local
 				var model: Vector3 = rest * local
 				acc.verts.append(model)
-				acc.norms.append((nb * norms[i]).normalized())
+				var rest_n: Vector3 = (nb * norms[i]).normalized()
+				acc.norms.append(rest_n)
 				acc.cols.append(look[0] as Color)
 				acc.cus0.append_array(PackedFloat32Array([float(look[1]), float(look[2]), float(look[3]), 0.0]))
-				acc.cus1.append_array(PackedFloat32Array([model.x, model.y, model.z, 0.0]))
+				acc.cus1.append_array(PackedFloat32Array([model.x, model.y, model.z, pack_rest_normal(rest_n)]))
 				var w_parent: float = 0.0
 				if LIMB_BONES.has(bone) and pi != bi and local.y > -blend and mkey != "eye":
 					w_parent = clampf(0.5 * (local.y + blend) / blend, 0.0, 0.5)
@@ -1302,8 +1323,37 @@ static func _skin_parts(parts_by_bone: Dictionary, kit: String, root_bone: Strin
 		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr, [], {}, flags)
 		var si: int = mesh.get_surface_count() - 1
 		mesh.surface_set_name(si, name)
-		mesh.surface_set_material(si, skin_material(_skin_look(kit)) if name == "skin" else kit_material())
+		# this builder makes zombies only (build_skinned's fallback), so they get the zombie kit material like the GLB bodies
+		mesh.surface_set_material(si, skin_material(_skin_look(kit)) if name == "skin" else kit_material(true))
 	return mesh
+
+
+## The rest-pose normal packed into one float for CUSTOM1.w: octahedral, 12 bits a component, +1 so 0 means none.
+## An integer below 2^24, so exact in the float32 vertex attribute. The zombie kit shader takes its triplanar
+## weights from it (T-242 b).
+static func pack_rest_normal(n: Vector3) -> float:
+	var l: float = absf(n.x) + absf(n.y) + absf(n.z)
+	if l < 1e-8:
+		return 0.0
+	var e: Vector2 = Vector2(n.x, n.y) / l
+	if n.z < 0.0:
+		e = Vector2((1.0 - absf(e.y)) * (1.0 if e.x >= 0.0 else -1.0), (1.0 - absf(e.x)) * (1.0 if e.y >= 0.0 else -1.0))
+	var u: int = clampi(roundi((e.x * 0.5 + 0.5) * 4095.0), 0, 4095)
+	var v: int = clampi(roundi((e.y * 0.5 + 0.5) * 4095.0), 0, 4095)
+	return float(u * 4096 + v + 1)
+
+
+## The inverse of pack_rest_normal (the shader's vertex() decode, for tests and tools). 0 -> Vector3.ZERO.
+static func unpack_rest_normal(p: float) -> Vector3:
+	if p < 0.5:
+		return Vector3.ZERO
+	var q: int = int(p) - 1
+	var e: Vector2 = Vector2(float(q >> 12), float(q & 4095)) / 4095.0 * 2.0 - Vector2.ONE
+	var n: Vector3 = Vector3(e.x, e.y, 1.0 - absf(e.x) - absf(e.y))
+	var t: float = maxf(-n.z, 0.0)
+	n.x += -t if n.x >= 0.0 else t
+	n.y += -t if n.y >= 0.0 else t
+	return n.normalized()
 
 
 static func _skin_look(kit: String) -> String:
