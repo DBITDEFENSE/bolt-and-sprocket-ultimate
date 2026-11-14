@@ -139,6 +139,7 @@
     "key_pose_seconds": 0.55,
     "corpse_seconds": [8.0, 12.0],
     "settle_freeze_seconds": 3.0,
+    "evict_after_seconds": 1.5,
     "explosive_launch": 3.5,
     "pool_pressure_free": 4,
     "pool_pressure_corpse_seconds": 1.6,

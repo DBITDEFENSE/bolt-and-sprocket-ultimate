@@ -2,8 +2,9 @@ class_name ZombieRagdoll
 extends RefCounted
 ## Full-body ragdoll for zombie deaths (ZOMBIE_ANIM_SPEC §4, T-041): a PhysicalBoneSimulator3D with one
 ## PhysicalBone3D per major bone (anim.json ragdoll.bones), built on the skeleton the moment a death clip reaches
-## its key pose and freed when the corpse dissolves. Caps: ragdoll.max_live simultaneous simulations (the oldest
-## freezes in place, settle_freeze_seconds after it started). Explosive deaths launch every bone.
+## its key pose and freed when the corpse dissolves. Caps: ragdoll.max_live simultaneous simulations (each freezes
+## in place settle_freeze_seconds after it started; at the cap the oldest freezes early if it is past
+## evict_after_seconds, else the new death keeps its clip). Explosive deaths launch every bone.
 
 static var _live: Array = []   # [PhysicalBoneSimulator3D, start msec]
 ## Below this global bone scale a bone counts as severed (ZombieGore collapses chains to 0.001).
@@ -42,8 +43,14 @@ static func start(skel: Skeleton3D, impulse: Vector3 = Vector3.ZERO, recorded_ve
 	var live_cap: int = int(c.get("max_live", 6))
 	if live_cap <= 0:
 		return null
+	# At the cap the oldest body gives up its simulation to the newest death, but only once it has had time to land
+	# (evict_after_seconds): settled bodies are frozen and pruned anyway, so a full budget means a burst of deaths
+	# (a grenade into a horde) and freezing a body a moment into its fall left it standing or hanging in the air.
+	# When every live body is that fresh, the new death plays its clip to the floor instead, as before.
+	var evict_ms: int = int(float(c.get("evict_after_seconds", 1.5)) * 1000.0)
 	while _live.size() >= live_cap:
-		# Preserve the settled pose, but spend the simulation budget on the newest death.
+		if Time.get_ticks_msec() - int(_live[0][1]) < evict_ms:
+			return null
 		var oldest: Array = _live.pop_front()
 		freeze(oldest[0] as PhysicalBoneSimulator3D)
 	var sim: PhysicalBoneSimulator3D = PhysicalBoneSimulator3D.new()

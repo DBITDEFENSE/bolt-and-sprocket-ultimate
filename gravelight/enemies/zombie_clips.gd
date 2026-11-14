@@ -26,6 +26,8 @@ static var _cfg: Dictionary = {}
 static var _bones: PackedStringArray = []
 static var _mocap: RefCounted
 static var _contact_events: Dictionary = {}
+static var _user_args: PackedStringArray = []
+static var _user_args_read: bool = false
 
 
 static func cfg() -> Dictionary:
@@ -65,9 +67,17 @@ static func mocap_info() -> Dictionary:
 	return {"loaded": _mocap.metadata.keys(), "errors": _mocap.errors, "runtime_enabled": mocap_enabled()}
 
 
+## The command line cannot change while the game runs: read once (these checks run per zombie per tick).
+static func _user_flag(flag: String) -> bool:
+	if not _user_args_read:
+		_user_args = OS.get_cmdline_user_args()
+		_user_args_read = true
+	return flag in _user_args
+
+
 static func mocap_enabled() -> bool:
 	library()
-	return bool(_mocap.config.get("runtime_enabled", false)) and not "--legacy-zombies" in OS.get_cmdline_user_args()
+	return bool(_mocap.config.get("runtime_enabled", false)) and not _user_flag("--legacy-zombies")
 
 
 ## A fresh checkout without the licensed local files retains the existing playable fallback.
@@ -130,7 +140,7 @@ static func turn_config() -> Dictionary:
 
 static func recorded_turns_enabled() -> bool:
 	var c: Dictionary = turn_config()
-	return mocap_enabled() and bool(c.get("enabled", false)) and not "--legacy-zombie-turns" in OS.get_cmdline_user_args() and _mocap.metadata.get(c.get("left", ""), {}).has("root_yaw") and _mocap.metadata.get(c.get("right", ""), {}).has("root_yaw")
+	return mocap_enabled() and bool(c.get("enabled", false)) and not _user_flag("--legacy-zombie-turns") and _mocap.metadata.get(c.get("left", ""), {}).has("root_yaw") and _mocap.metadata.get(c.get("right", ""), {}).has("root_yaw")
 
 
 static func turn_progress(clip: String, seconds: float) -> float:
