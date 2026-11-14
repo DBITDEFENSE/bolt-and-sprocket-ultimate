@@ -10,9 +10,11 @@ extends RefCounted
 ## Pure apart from the sound table: CinemaReel plays what `resolved()` returns.
 
 const PATH: String = "res://data/gravelight/cutscenes_lazarus.json"
+const DIRECTION_PATH: String = "res://data/gravelight/cinema_direction.json"
 const SQUAD: Array[String] = ["dutch", "peg", "deacon", "wren"]
 
 static var _data: Dictionary = {}
+static var _direction: Dictionary = {}
 
 
 static func data() -> Dictionary:
@@ -23,6 +25,7 @@ static func data() -> Dictionary:
 
 static func reload() -> void:
 	_data = {}
+	_direction = {}
 
 
 static func ids() -> Array[String]:
@@ -37,7 +40,19 @@ static func has_cut(id: String) -> bool:
 
 
 static func def(id: String) -> Dictionary:
-	return (data().get("cutscenes", {}) as Dictionary).get(id, {})
+	var d: Dictionary = ((data().get("cutscenes", {}) as Dictionary).get(id, {}) as Dictionary).duplicate(true)
+	if _direction.is_empty():
+		_direction = GLData.load_json(DIRECTION_PATH)
+	var edit: Dictionary = (_direction.get("cuts", {}) as Dictionary).get(id, {})
+	if edit.has("grade"):
+		d["grade"] = edit["grade"]
+	var shot_edits: Dictionary = edit.get("shots", {})
+	for shot: Dictionary in d.get("shots", []):
+		var key: String = str(int(round(float(shot.get("t", 0.0)) * 10.0)))
+		var values: Dictionary = shot_edits.get(key, {})
+		for field: String in values:
+			shot[field] = values[field]
+	return d
 
 
 ## The Archive's gallery rows: [{id, title, kind ("lazarus" | "exfil"), year}] in order.

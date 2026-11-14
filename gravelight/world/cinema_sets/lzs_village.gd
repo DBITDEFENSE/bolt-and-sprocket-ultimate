@@ -25,12 +25,14 @@ var rope: Node3D
 var belfry_men: Array[CinemaPerson] = []
 var _wheels: Array[Node3D] = []
 var _truck_moving: bool = false
+const CRAFT = preload("res://gravelight/world/cinema_sets/cinema_craft.gd")
+const PUDDLE = preload("res://gravelight/world/cinema_sets/puddle.gdshader")
 
 
 func _build() -> void:
 	var spring: bool = variant == "spring"
-	env({"sky_top": [0.62, 0.64, 0.66] if not spring else [0.55, 0.62, 0.72], "sky_horizon": [0.74, 0.75, 0.74] if not spring else [0.78, 0.78, 0.74],
-		"ground": [0.3, 0.28, 0.25], "ambient": [0.62, 0.64, 0.66], "ambient_e": 0.75, "fog": [0.7, 0.71, 0.7], "fog_d": 0.006 if not spring else 0.003,
+	env({"sky_top": [0.25, 0.29, 0.32] if not spring else [0.55, 0.62, 0.72], "sky_horizon": [0.45, 0.48, 0.49] if not spring else [0.78, 0.78, 0.74],
+		"ground": [0.3, 0.28, 0.25], "ambient": [0.55, 0.6, 0.66], "ambient_e": 0.45, "fog": [0.38, 0.42, 0.43], "fog_d": 0.0025 if not spring else 0.003,
 		"exposure": 1.0, "glow_t": 1.4})
 	sun(Vector3(-38, -150, 0), [0.92, 0.92, 0.9] if not spring else [1.0, 0.95, 0.85], 0.55 if not spring else 0.95)
 	_ground(spring)
@@ -63,18 +65,19 @@ func _build() -> void:
 
 func _ground(spring: bool) -> void:
 	var g: Node3D = group(self, "Ground")
-	var mud: StandardMaterial3D = noisy(Color(0.22, 0.18, 0.13), Color(0.36, 0.3, 0.22), 0.08, 6.0, 0.95) if not spring \
+	var mud: Material = MaterialLibrary.build("dirt", {"tint": [0.6, 0.52, 0.43], "tile_m": 1.5, "wetness": 0.3}) if not spring \
 		else noisy(Color(0.2, 0.28, 0.12), Color(0.36, 0.44, 0.2), 0.12, 5.0, 0.95)
 	plane(g, Vector3(0, 0, 40), Vector2(500, 500), mud)
-	var road: StandardMaterial3D = noisy(Color(0.16, 0.12, 0.09), Color(0.3, 0.24, 0.17), 0.2, 3.0, 0.8, 0.35 if not spring else 0.0)
+	var road: Material = MaterialLibrary.build("dirt", {"tint": [0.42, 0.34, 0.25], "tile_m": 1.2, "wetness": 0.45})
 	if spring:
 		road = noisy(Color(0.3, 0.26, 0.2), Color(0.42, 0.37, 0.28), 0.2, 3.0, 0.95)
 	plane(g, Vector3(0, 0.01, 72), Vector2(7.5, 136), road)
 	if not spring:
-		var water: StandardMaterial3D = flat(Color(0.12, 0.1, 0.08), 0.06)
-		water.metallic_specular = 0.9
+		var water: ShaderMaterial = ShaderMaterial.new()
+		water.shader = PUDDLE
 		for rx: float in [-1.0, 1.0]:
-			plane(g, Vector3(rx, 0.02, 72), Vector2(0.55, 134), water)
+			for r: int in 32:
+				plane(g, Vector3(rx + rng.randf_range(-0.08, 0.08), 0.025, 6.0 + float(r) * 4.1), Vector2(rng.randf_range(0.2, 0.5), rng.randf_range(1.2, 4.0)), water)
 		var snow: StandardMaterial3D = noisy(Color(0.66, 0.66, 0.64), Color(0.86, 0.86, 0.85), 0.5, 2.0, 0.9)
 		var drifts: Array = []
 		for i: int in 60:
@@ -82,7 +85,7 @@ func _ground(spring: bool) -> void:
 			drifts.append(xf(Vector3(side * rng.randf_range(4.4, 6.0), 0.0, rng.randf_range(6.0, 140.0)), Vector3(rng.randf_range(1.5, 3.5), 0.35, rng.randf_range(2.0, 6.0))))
 		for j: int in 40:
 			drifts.append(xf(Vector3(rng.randf_range(-60, 60), 0.0, rng.randf_range(-40, 150)), Vector3(rng.randf_range(2, 6), 0.3, rng.randf_range(2, 6))))
-		multi(g, Props.unit_sphere(), drifts, snow, "SnowInDitches")
+		multi(g, CRAFT.earth(1.0, 1.0, 0.5, 931), drifts, snow, "SnowInDitches")
 
 
 # ---------------------------------------------------------------- the church and the tower

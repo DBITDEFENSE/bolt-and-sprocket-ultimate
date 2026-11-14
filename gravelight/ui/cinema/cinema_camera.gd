@@ -106,8 +106,11 @@ func advance(dt: float) -> void:
 	else:
 		transform = xf
 	fov = clampf(f, 10.0, 120.0)
-	if _attr != null and shot.focus < 0.0:
-		_attr.dof_blur_far_distance = maxf(1.0, pos.distance_to(lk) + 2.5)
+	if _attr != null:
+		var dist: float = shot.focus if shot.focus > 0.0 else maxf(0.12, pos.distance_to(lk))
+		if shot.raw.has("focus_to"):
+			dist = lerpf(dist, maxf(0.12, float(shot.raw["focus_to"])), CinemaEase.apply("smooth", shot.progress(shot_t)))
+		_set_focus(dist)
 
 
 ## The frame the camera holds now (for tests and the director's checks).
@@ -122,15 +125,19 @@ func _apply_dof(s: CinemaShot) -> void:
 		return
 	if _attr == null:
 		_attr = CameraAttributesPractical.new()
-	var dist: float = s.focus if s.focus > 0.0 else maxf(1.0, s.from.distance_to(s.look))
-	_attr.dof_blur_far_enabled = true
-	_attr.dof_blur_far_distance = dist + 2.5
-	_attr.dof_blur_far_transition = maxf(2.0, dist * 0.8)
-	_attr.dof_blur_near_enabled = dist > 3.0
-	_attr.dof_blur_near_distance = maxf(0.3, dist * 0.35)
-	_attr.dof_blur_near_transition = maxf(0.3, dist * 0.25)
-	_attr.dof_blur_amount = 0.04 + 0.12 * s.blur
+	var dist: float = s.focus if s.focus > 0.0 else maxf(0.12, s.from.distance_to(s.look))
+	_set_focus(dist)
+	_attr.dof_blur_amount = 0.035 + 0.10 * s.blur
 	attributes = _attr
+
+
+func _set_focus(dist: float) -> void:
+	_attr.dof_blur_far_enabled = true
+	_attr.dof_blur_far_distance = dist + maxf(0.08, dist * 0.15)
+	_attr.dof_blur_far_transition = maxf(0.12, dist * 0.5)
+	_attr.dof_blur_near_enabled = dist > 0.35
+	_attr.dof_blur_near_distance = maxf(0.1, dist * 0.65)
+	_attr.dof_blur_near_transition = maxf(0.08, dist * 0.22)
 
 
 ## A shot looking straight up or down (the rocket's climb) has no usable world-up; use north as up then.

@@ -445,6 +445,12 @@ func _finish() -> void:
 
 func _exit_tree() -> void:
 	_release_vo()
+	# Cached stages are detached between shots. A scene change or early tool exit
+	# must free these too; the tree only frees the currently attached stage.
+	for s: Variant in _stages.values():
+		if is_instance_valid(s) and (s as Node).get_parent() == null:
+			(s as Node).free()
+	_stages.clear()
 	if not done:
 		get_tree().root.disable_3d = _root_3d_was
 		_restore_hud()

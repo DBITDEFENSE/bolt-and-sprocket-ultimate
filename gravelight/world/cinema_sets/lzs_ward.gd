@@ -10,10 +10,12 @@ extends CinemaSet
 var chest: MeshInstance3D
 var hand: Node3D
 var stain: MeshInstance3D
+const CRAFT = preload("res://gravelight/world/cinema_sets/cinema_craft.gd")
+const SHROUD = preload("res://gravelight/world/cinema_sets/shroud.gdshader")
 
 
 func _build() -> void:
-	env({"bg": [0.5, 0.5, 0.48], "ambient": [0.66, 0.68, 0.7], "ambient_e": 0.6, "fog": [0.6, 0.6, 0.6], "fog_d": 0.012, "glow_t": 1.3})
+	env({"bg": [0.06, 0.075, 0.08], "ambient": [0.44, 0.52, 0.58], "ambient_e": 0.3, "fog": [0.12, 0.15, 0.16], "fog_d": 0.006, "glow_t": 1.5})
 	var wash: Variant = "limewash"
 	box(self, Vector3(0, -0.05, -6), Vector3(6.4, 0.1, 13.0), "stone")
 	box(self, Vector3(0, 3.45, -6), Vector3(6.4, 0.1, 13.0), wash)
@@ -34,7 +36,8 @@ func _build() -> void:
 		box(self, Vector3(3.1, wy, -5.0), Vector3(0.06, 0.06, 1.2), "#d8d4c8")
 	box(self, Vector3(3.1, 1.9, -5.0), Vector3(0.06, 1.55, 0.06), "#d8d4c8")
 	spot(self, Vector3(2.6, 2.3, -5.0), Vector3(-1.5, 0.6, -4.0), [0.86, 0.9, 1.0], 2.4, 10.0, 48.0)
-	sun(Vector3(-55, 80, 0), [0.85, 0.88, 0.92], 0.25)
+	# A second soft bounce from the window keeps the sheet readable in shadow.
+	omni(self, Vector3(1.8, 2.0, -2.8), [0.65, 0.76, 0.85], 0.55, 8.0)
 	for i: int in 5:
 		_trestle(Vector3(-2.2, 0, -1.6 - 2.1 * float(i)), i < 3, i == 0)
 	# the tag on its nail by the nearest: a date, 18.IV.30
@@ -48,6 +51,15 @@ func _build() -> void:
 	var ll: OmniLight3D = omni(self, Vector3(-1.1, 1.2, -5.0), [1.0, 0.78, 0.5], 0.7, 6.0)
 	ll.set_meta("flicker", 0.7)
 	ll.add_to_group(&"cinema_flicker")
+	# Wainscot, uneven damp marks and exposed pipework give the room scale.
+	var damp: StandardMaterial3D = noisy(Color(0.21, 0.25, 0.23), Color(0.39, 0.42, 0.36), 0.12, 0.8)
+	for side: float in [-1.0, 1.0]:
+		box(self, Vector3(side * 3.12, 0.52, -6), Vector3(0.035, 1.04, 12.8), damp)
+		box(self, Vector3(side * 3.08, 1.07, -6), Vector3(0.045, 0.04, 12.8), "beam")
+	for pz: float in [-3.0, -7.5, -10.5]:
+		cyl(self, Vector3(3.0, 0.24, pz), 0.026, 4.0, "rust", Vector3(90, 0, 0))
+		for dz: float in [-1.4, 1.4]:
+			cyl(self, Vector3(3.0, 0.24, pz + dz), 0.04, 0.04, "iron", Vector3(90, 0, 0))
 
 
 ## A plank board on two trestles; `covered`: a body under a sheet drawn up over the face.
@@ -58,19 +70,22 @@ func _trestle(at: Vector3, covered: bool, nearest: bool) -> void:
 	box(g, Vector3(0, 0.74, 0), Vector3(2.0, 0.06, 0.7), "planks")
 	if not covered:
 		return
-	var sheet: StandardMaterial3D = flat(Color(0.84, 0.83, 0.79), 0.95)
-	ball(g, Vector3(-0.72, 0.85, 0), Vector3(0.26, 0.2, 0.24), sheet)
-	var c: MeshInstance3D = ball(g, Vector3(-0.25, 0.83, 0), Vector3(0.62, 0.2, 0.5), sheet)
-	ball(g, Vector3(0.45, 0.8, 0), Vector3(0.95, 0.14, 0.42), sheet)
-	box(g, Vector3(0.0, 0.78, 0), Vector3(1.95, 0.04, 0.74), sheet)
+	var sheet: ShaderMaterial = ShaderMaterial.new()
+	sheet.shader = SHROUD
+	var c: MeshInstance3D = CRAFT.mesh(g, CRAFT.shroud(), sheet, "Shroud")
 	if nearest:
 		g.name = "NearBoard"
 		chest = c
 		marker("NearSheet", at + Vector3(-0.2, 0.9, 0))
-		hand = group(g, "Hand", Vector3(-0.15, 0.8, 0.4))
-		box(hand, Vector3(0, 0, 0), Vector3(0.09, 0.03, 0.16), "linen")
+		hand = group(g, "Hand", Vector3(-0.15, 0.865, 0.4))
+		ball(hand, Vector3(0, 0, 0), Vector3(0.095, 0.035, 0.15), "linen")
+		for wrap: int in 7:
+			box(hand, Vector3(0, 0.018, -0.06 + float(wrap) * 0.019), Vector3(0.089, 0.004, 0.013), "linen", Vector3(0, -5, 0))
 		for f: int in 4:
-			box(hand, Vector3(-0.03 + 0.02 * float(f), 0, 0.1), Vector3(0.016, 0.018, 0.06), "#c9a891")
+			var length_m: float = [0.056, 0.065, 0.061, 0.046][f]
+			ball(hand, Vector3(-0.03 + 0.02 * float(f), 0, 0.052 + length_m * 0.5), Vector3(0.017, 0.019, length_m), "#a49a88")
+			ball(hand, Vector3(-0.03 + 0.02 * float(f), 0.01, 0.052 + length_m * 0.82), Vector3(0.011, 0.003, 0.012), "#b3ad9f")
+		ball(hand, Vector3(-0.053, -0.005, 0.035), Vector3(0.026, 0.024, 0.055), "#a49a88")
 		stain = plane(g, Vector3(-0.15, 0.802, 0.28), Vector2(0.01, 0.01), flat(Color(0.28, 0.04, 0.03, 0.85), 0.6), Vector3.ZERO, "Stain")
 		stain.add_to_group(&"gore_full")
 
@@ -79,11 +94,12 @@ func _trestle(at: Vector3, covered: bool, nearest: bool) -> void:
 func fx_sheet_breath(secs: float) -> void:
 	if chest == null:
 		return
-	var base: Vector3 = Vector3(0.62, 0.2, 0.5)
+	var cloth: ShaderMaterial = chest.material_override as ShaderMaterial
+	cloth.set_shader_parameter("breath", 0.0)
 	var tw: Tween = create_tween()
 	tw.tween_interval(secs * 0.25)
-	tw.tween_property(chest, "scale", Vector3(0.64, 0.27, 0.53), secs * 0.12).set_trans(Tween.TRANS_SINE)
-	tw.tween_property(chest, "scale", base, secs * 0.18).set_trans(Tween.TRANS_SINE)
+	tw.tween_method(func(v: float) -> void: cloth.set_shader_parameter("breath", v), 0.0, 0.055, secs * 0.12).set_trans(Tween.TRANS_SINE)
+	tw.tween_method(func(v: float) -> void: cloth.set_shader_parameter("breath", v), 0.055, 0.0, secs * 0.18).set_trans(Tween.TRANS_SINE)
 	tw.tween_property(hand, "rotation:z", PI * 0.85, secs * 0.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 

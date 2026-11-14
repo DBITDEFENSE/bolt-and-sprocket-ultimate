@@ -37,17 +37,39 @@ func _build() -> void:
 ## shirt cuff and the dark suit cuff over the wrist, the forearm running off to the right of the frame.
 func _hand(at: Vector3) -> void:
 	var h: Node3D = group(self, "HandRig", at, 70.0)
-	var skin: StandardMaterial3D = noisy(Color(0.62, 0.48, 0.4), Color(0.78, 0.63, 0.53), 18.0, 0.04, 0.6)
+	var skin: StandardMaterial3D = noisy(Color(0.49, 0.36, 0.29), Color(0.68, 0.53, 0.43), 3.0, 0.025, 0.72)
+	skin.normal_scale = 0.07
+	skin.metallic_specular = 0.22
 	var spots: StandardMaterial3D = flat(Color(0.45, 0.32, 0.24), 0.7)
-	box(h, Vector3(0, 0.0, 0), Vector3(0.085, 0.028, 0.1), skin)                      # the back of the hand
+	ball(h, Vector3(0, 0.002, 0), Vector3(0.085, 0.032, 0.115), skin)
+	ball(h, Vector3(-0.025, -0.003, 0.02), Vector3(0.045, 0.034, 0.065), skin)
+	ball(h, Vector3(0, 0.0, 0.065), Vector3(0.055, 0.032, 0.075), skin)
+	var nail: StandardMaterial3D = flat(Color(0.55, 0.46, 0.38), 0.48)
 	for k: int in 4:
 		var f: Node3D = group(h, "Finger_%d" % k, Vector3(-0.032 + 0.021 * float(k), 0.0, -0.05))
 		var ln: float = [0.075, 0.085, 0.082, 0.066][k]
-		cyl(f, Vector3(0, 0, -ln * 0.5), 0.0085, ln, skin, Vector3(90, 0, 0))
+		for joint: int in 3:
+			var seg: float = ln / 3.0
+			var radius: float = 0.0085 - float(joint) * 0.0008
+			var capsule: CapsuleMesh = CapsuleMesh.new()
+			capsule.radius = radius
+			capsule.height = seg + radius * 1.2
+			capsule.radial_segments = 16
+			capsule.rings = 6
+			var ph: MeshInstance3D = MeshInstance3D.new()
+			ph.mesh = capsule
+			ph.material_override = skin
+			ph.position = Vector3(0, -float(joint) * 0.002, -seg * (float(joint) + 0.45))
+			ph.rotation_degrees.x = 90.0
+			f.add_child(ph)
+		ball(f, Vector3(0, 0.006, -ln + 0.008), Vector3(0.011, 0.003, 0.014), nail)
+		ball(h, Vector3(-0.032 + 0.021 * float(k), 0.011, -0.043), Vector3(0.019, 0.013, 0.026), skin)
+		ball(h, Vector3(-0.027 + 0.018 * float(k), 0.014, -0.003), Vector3(0.006, 0.005, 0.068), skin)
 		f.rotation_degrees = Vector3(-8, 0, 0)
 		fingers.append(f)
 	var th: Node3D = group(h, "Thumb", Vector3(-0.05, -0.005, 0.0))
-	cyl(th, Vector3(-0.02, 0, -0.025), 0.009, 0.06, skin, Vector3(90, 40, 0))
+	ball(th, Vector3(-0.008, -0.002, -0.012), Vector3(0.023, 0.022, 0.052), skin)
+	ball(th, Vector3(-0.007, -0.005, -0.04), Vector3(0.017, 0.019, 0.03), skin)
 	for s: int in 5:   # liver spots
 		ball(h, Vector3(rng.randf_range(-0.035, 0.035), 0.0145, rng.randf_range(-0.04, 0.04)), Vector3(0.012, 0.002, 0.01), spots)
 	var ring: TorusMesh = TorusMesh.new()

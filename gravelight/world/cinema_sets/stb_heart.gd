@@ -11,6 +11,7 @@ var crystal: Node3D
 var reinholt: CinemaPerson
 var _t: float = 0.0
 var _hum: float = 1.0
+const NACHTGLAS = preload("res://gravelight/world/cinema_sets/nachtglas.gdshader")
 
 
 func _build() -> void:
@@ -22,10 +23,12 @@ func _build() -> void:
 		var a: float = TAU * float(k) / 10.0
 		box(self, Vector3(cos(a) * 8.0, 4.0, sin(a) * 8.0 - 2.0), Vector3(5.2, 8.0, 0.8), rock, Vector3(0, -rad_to_deg(a) + 90.0, 0))
 	crystal = group(self, "Heart", Vector3(0, 2.4, -5.0))
-	ball(crystal, Vector3.ZERO, Vector3(1.6, 2.1, 1.6), "nachtglas_crystal")
+	var mineral: ShaderMaterial = ShaderMaterial.new()
+	mineral.shader = NACHTGLAS
+	ball(crystal, Vector3.ZERO, Vector3(1.6, 2.1, 1.6), mineral)
 	for p: int in 7:
 		var a2: float = TAU * float(p) / 7.0
-		cone(crystal, Vector3(cos(a2) * 0.6, rng.randf_range(-0.6, 0.6), sin(a2) * 0.6), 0.22, 0.0, 1.2, "nachtglas_crystal", 6,
+		cone(crystal, Vector3(cos(a2) * 0.6, rng.randf_range(-0.6, 0.6), sin(a2) * 0.6), 0.22, 0.0, 1.2, mineral, 6,
 			Vector3(rng.randf_range(-50, 50), rad_to_deg(a2), rng.randf_range(40, 80)))
 	for b: int in 12:   # the cage
 		var a3: float = TAU * float(b) / 12.0
@@ -39,8 +42,9 @@ func _build() -> void:
 		rm.material_override = mat("iron")
 		rm.position = Vector3(0, ry, -5.0)
 		add_child(rm)
-	heart_light = omni(self, Vector3(0, 0.6, -4.0), [0.66, 0.36, 1.0], 4.0, 14.0)
-	omni(self, Vector3(0, 3.2, -5.0), [0.6, 0.32, 1.0], 2.0, 9.0)
+	heart_light = omni(self, Vector3(0, 0.6, -4.0), [0.66, 0.36, 1.0], 1.8, 14.0)
+	omni(self, Vector3(0, 3.2, -5.0), [0.6, 0.32, 1.0], 0.9, 9.0)
+	omni(self, Vector3(0.2, 1.45, -1.35), [0.9, 0.7, 0.43], 0.32, 2.0)
 	# the console and its dial
 	var c: Node3D = group(self, "Console", Vector3(0.4, 0, -1.4), 180.0)
 	box(c, Vector3(0, 0.55, 0), Vector3(1.6, 1.1, 0.7), "machine_green", Vector3(-12, 0, 0))
@@ -74,6 +78,6 @@ func _process(delta: float) -> void:
 	super._process(delta)
 	_t += delta
 	if heart_light != null:
-		heart_light.light_energy = 4.0 * _hum * (0.85 + 0.15 * sin(_t * 6.0 * _hum))
+		heart_light.light_energy = 1.8 * _hum * (0.85 + 0.15 * sin(_t * 6.0 * _hum))
 	if crystal != null:
 		crystal.rotation.y += delta * 0.1 * _hum

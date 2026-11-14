@@ -99,14 +99,16 @@ func test_every_grade_file_names_its_map_and_applies() -> void:
 	assert_true((rd.get("cuts", []) as Array).has("lazarus_saturday"), "the reel grade knows the prologue")
 
 
-func test_the_reel_grade_goes_to_the_history_cuts_and_the_map_grade_to_the_rest() -> void:
+func test_replacement_cuts_keep_their_grade_in_theatre_and_campaign() -> void:
 	var host: Node3D = Node3D.new()
 	host.set_script(load("res://gravelight/maps/map_root.gd"))
 	host.set("map_id", &"map00_crossroads")
-	assert_eq(LookGrade.cinema_id(host, "lazarus_saturday"), "cinema_reel", "the 1930 church is a reel")
-	assert_eq(LookGrade.cinema_id(host, "fourth_day"), "cinema_reel", "the 1944 release is a reel")
-	assert_eq(LookGrade.cinema_id(host, "gravelight_one"), "map00_crossroads", "the crash plays in Map 0's grade")
-	assert_eq(LookGrade.cinema_id(null, "gravelight_one"), "menu", "no host (the theatre): the menu's grade")
+	assert_eq(LookGrade.cinema_id(host, "lazarus_saturday"), "cinema_horror")
+	assert_eq(LookGrade.cinema_id(host, "fourth_day"), "cinema_horror")
+	assert_eq(LookGrade.cinema_id(host, "gravelight_one"), "cinema_horror")
+	assert_eq(LookGrade.cinema_id(null, "gravelight_one"), "cinema_horror")
+	assert_eq(LookGrade.cinema_id(null, "reel:lazarus_saturday"), "cinema_reel")
+	assert_eq(LookGrade.cinema_id(host, "exfil_m0_m1"), "map00_crossroads")
 	host.free()
 
 
