@@ -1,6 +1,6 @@
 extends GutTest
-## T-183: the left-side squad panel shows each teammate's name, state and tonics, and no numbers; the scoreboard
-## (hold ui_scoreboard) keeps the Scrip and kills; the HUD's own perk caps are smaller; every tonic's cap has its own
+## T-183: the left-side squad panel shows each teammate's name, state and tonics; T-243: and their Scrip (no kills);
+## the scoreboard (hold ui_scoreboard) keeps the Scrip and kills; the HUD's own perk caps are smaller; every tonic's cap has its own
 ## enamel and draws at the squad panel's 16 px with every tier.
 
 var _s: NetMatch
@@ -33,13 +33,20 @@ func after_all() -> void:
 	Economy.reset([1])
 
 
-func test_rows_are_the_teammates_with_no_numbers() -> void:
+func test_rows_are_the_teammates_with_their_scrip() -> void:
 	var me: int = Net.local_player_id()
+	Economy.grant_raw(3, 1250)
 	var rows: Array = CoopHud.squad_rows(_s, me)
 	var pids: Array = []
 	for r: Dictionary in rows:
 		pids.append(int(r["pid"]))
-		assert_false(r.has("scrip"), "no Scrip on the panel")
+		assert_true(r.has("scrip"), "the Scrip is on the panel (T-243)")
+		if bool(r["companion"]):
+			assert_eq(int(r["scrip"]), -1, "a companion has no account")
+			assert_eq(CoopHud.SquadPanel.scrip_text(r), "", "and shows none")
+		else:
+			assert_eq(int(r["scrip"]), Economy.get_scrip(int(r["pid"])))
+			assert_eq(CoopHud.SquadPanel.scrip_text(r), "ǂ%d" % Economy.get_scrip(int(r["pid"])))
 		assert_false(r.has("kills"), "no kills on the panel")
 		assert_false(r.has("health"), "no health bar on the panel")
 		assert_ne(str(r["name"]), "", "a name")
