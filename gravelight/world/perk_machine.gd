@@ -289,8 +289,9 @@ func _build_procedural() -> void:
 	# the dispenser (cached per perk), and its neon/lamp glass in a lit and an unlit set (shown by power state)
 	InteractableArt.place(_greybox, "perk_body_" + String(perk_id),
 		func(r: Node3D) -> void: InteractableArt.perk_body(r, shape, fp, brand))
+	# (T-247: the tube round the name board glows soft, glow_soft 1.4, not the full neon 4.5 that bloomed into a white box)
 	_lit = InteractableArt.place(_greybox, "perk_lit_" + String(perk_id),
-		func(r: Node3D) -> void: InteractableArt.perk_tubes(r, shape, fp, "neon:" + InteractableArt.hex(neon)), Vector3.ZERO, false)
+		func(r: Node3D) -> void: InteractableArt.perk_tubes(r, shape, fp, "glow_soft:" + InteractableArt.hex(neon)), Vector3.ZERO, false)
 	_unlit = InteractableArt.place(_greybox, "perk_unlit_" + shape,
 		func(r: Node3D) -> void: InteractableArt.perk_tubes(r, shape, fp, "neon_off"), Vector3.ZERO, false)
 	# the backlight behind the bottles: faint Nachtglas violet unpowered, the brand colour when powered
@@ -906,7 +907,9 @@ func _make_steam(at: Vector3) -> CPUParticles3D:
 
 
 func _cab_refresh(on: bool, c: Color) -> void:
-	_cab_neon.material_override = Mats.get_mat("neon:" + InteractableArt.hex(c)) if on else Mats.get_mat("neon_off")
+	# T-247 (the owner: the "bright ... boxed labels over perk machines"): the tube round the name board glows soft
+	# (glow_soft, 1.4) instead of the full neon (4.5) that bloomed into a white box in the dark
+	_cab_neon.material_override = Mats.get_mat("glow_soft:" + InteractableArt.hex(c)) if on else Mats.get_mat("neon_off")
 	_light.visible = on
 	if _cab_cap != null:
 		_cab_cap.modulate = Color(1.25, 1.25, 1.25) if on else Color(0.32, 0.3, 0.36)
