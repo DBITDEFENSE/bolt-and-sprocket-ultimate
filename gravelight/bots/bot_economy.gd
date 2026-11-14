@@ -270,6 +270,16 @@ func range_m() -> float:
 	return r
 
 
+## T-245 pure: may a companion (it shops between rounds only, T-177) drink a tonic mid-round? Its perks are on and the
+## fight around it is calm (perception pressure under economy.json companion_tonics.calm_pressure). The machine must
+## still be within the usual range of the one it follows (candidates), and nothing else is bought mid-round.
+static func companion_tonic_now(e: Dictionary, perks_on: bool, pressure: float) -> bool:
+	var ct: Dictionary = e.get("companion_tonics", {})
+	if not perks_on or not bool(ct.get("mid_round", true)):
+		return false
+	return pressure < float(ct.get("calm_pressure", 0.3))
+
+
 ## U10 T-172: on an egg shopping break (BotEE.shopping: the task paused to shop, or between two steps)?
 func ee_shopping() -> bool:
 	return brain.ee != null and brain.ee.shopping()
@@ -372,8 +382,11 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 	if not best_board.is_empty():
 		out.append(best_board)
 	var shopping: bool = bool(brain.options.get("shopping", true))
+	# T-245: mid-round a calm companion still drinks a tonic near the one it follows (only tonics: nothing else)
+	var tonics_only: bool = false
 	if player.is_companion and not brain.in_break():
 		shopping = false   # T-177: a companion shops between rounds only (mid-round it covers the one it follows)
+		tonics_only = companion_tonic_now(eco, bool(brain.options.get("perks", true)), brain.perception.pressure if brain.perception != null else 1.0)
 	if save:
 		return out
 	var econ: Dictionary = GLData.table("economy")
@@ -400,7 +413,7 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 		# empty taught Thompson rolled the crate for 950 and could no longer afford the 2500 refill)
 		if float(box_c.get("value", 0.0)) >= 1.0:
 			reserve += int(box_c.get("cost", 0))
-	if not shopping or order == &"revive":
+	if (not shopping and not tonics_only) or order == &"revive":
 		return out
 	# ---- the power (T-058): bots alone (no human in the match) open the way to the power switch and throw it;
 	# with a human in the match it waits for them (or an order), even while they sit out a round bled out. Other
@@ -409,7 +422,7 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 	var power_door: BuyDoor = null
 	var saving_for: int = 0
 	var self_led: bool = squad.bot_led()
-	if squad.bots_alone() and not GameState.power_on and may_touch("power", false, false, false, true) and rnd >= int(pw.get("min_round", 2)):
+	if shopping and squad.bots_alone() and not GameState.power_on and may_touch("power", false, false, false, true) and rnd >= int(pw.get("min_round", 2)):
 		var plan_p: Dictionary = power_plan(now)
 		if plan_p.has("switch"):
 			var sw: Node3D = plan_p["switch"]
@@ -464,7 +477,7 @@ func candidates(anc: Vector3, range_mult: float) -> Array[Dictionary]:
 				out.append({"node": pm3, "kind": "perk", "value": value_of(eco, "perk", _flat(pm3.global_position, me)) - 0.1,
 					"cost": int(ups[String(up)]), "label": "brew %s (%d Scrip)" % [PerkManager.tier_name(up, nt), int(ups[String(up)])]})
 
-	if perks_only:
+	if perks_only or not shopping:   # (T-245: a companion's calm mid-round errand is the tonic only)
 		return out
 	# ---- a wall gun good for the round
 	var walls: Dictionary = {}
