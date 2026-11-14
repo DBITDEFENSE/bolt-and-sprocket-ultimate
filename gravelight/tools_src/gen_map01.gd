@@ -1366,7 +1366,7 @@ func _dress_yard() -> void:
 	Props.embers(dress, Vector3(38.86, 1.1, 12.9), 0.2, 8)
 	lamp(Vector3(38.4, 1.6, 12.9), Color(1.0, 0.5, 0.2), 2.0, 9.0, 0.35, 0.6)
 	# crates by the winding house door, against its wall (they stood 0.75 m off it in the 3 m lane)
-	Props.crate(dress, Vector3(27.5, 0, 4.75), 0.9, 3.0, "SALZ")
+	Props.crate(dress, Vector3(27.5, 0, 4.75), 0.9, 3.0)
 	Props.crate(dress, Vector3(27.55, 0.9, 4.75), 0.6, -12.0)
 	# under the Administration's balcony: a crate and a sandbag wall, one line against the wall
 	Props.crate(dress, Vector3(0.62, 0, 10.35), 0.8, 3.0)
@@ -1491,7 +1491,7 @@ func _dress_yard_south() -> void:
 	_noshadow(Props.ball(dress, Vector3(34.6, 0.0, 29.9), Vector3(0.8, 0.2, 0.6), "ore_salt"))
 	# crates and sacks in the corner (the drift beyond them is the old one)
 	# (T-239: stacked square to the wall with the sacks on top of the bottom row; two sacks stood loose in front of it)
-	Props.crate(dress, Vector3(37.07, 0, 31.38), 0.9, 2.0, "SALZ")
+	Props.crate(dress, Vector3(37.07, 0, 31.38), 0.9, 2.0)
 	Props.crate(dress, Vector3(38.0, 0, 31.4), 0.86, -3.0)
 	Props.crate(dress, Vector3(37.4, 0.9, 31.48), 0.62, 9.0)
 	Props.sack(dress, Vector3(38.05, 0.86, 31.45), 70.0, 0.9)

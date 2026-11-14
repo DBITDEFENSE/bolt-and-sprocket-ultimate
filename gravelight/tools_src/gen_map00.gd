@@ -751,7 +751,7 @@ const LOFT_TOP_BALES: Array = [[Vector3(STB_X0 + 0.84, LOFT_TOP + 0.9, 33.42), 0
 ## door (x 18.5..21.5) and west of the stair's approach (x 23.35+), behind the hay heap and its ground spawn (22.5, 23.7).
 const STABLE_BALES: AABB = AABB(Vector3(21.62, 0.0, STB_Z0 + 0.15), Vector3(1.8, 0.9, 0.52))
 ## Crates on the loft: [floor position, size, yaw, stencil] (the salt-lamp crate over the great doors, MAPS.md).
-const LOFT_CRATES: Array = [[Vector3(16.9, LOFT_TOP, 33.1), 0.9, 12.0, "SALZ"], [Vector3(6.2, LOFT_TOP, 23.0), 0.75, -8.0, ""]]
+const LOFT_CRATES: Array = [[Vector3(16.9, LOFT_TOP, 33.1), 0.9, 12.0, ""], [Vector3(6.2, LOFT_TOP, 23.0), 0.75, -8.0, ""]]
 
 
 ## T-224: the attic (see ATT_* / ASTAIR_*). The old UpRoof slab is the attic floor, cut by the stair well; the walls stand
@@ -951,7 +951,7 @@ func _dress_tower(g: Node3D) -> void:
 	Props.lantern(g, Vector3(cx, dy + 1.55, cz), dy + 2.2)
 	Props.sandbags(g, Vector3(cx - h + 0.3, dy + 1.14, cz + h - 0.2), Vector3(cx + h - 0.3, dy + 1.14, cz + h - 0.2), 1)
 	Props.sandbags(g, Vector3(cx - h + 0.2, dy + 1.14, cz - h + 0.4), Vector3(cx - h + 0.2, dy + 1.14, cz + h - 0.5), 1)
-	Props.crate(g, Vector3(cx + 0.95, dy, cz + 0.95), 0.5, 12.0, "7.92")
+	Props.crate(g, Vector3(cx + 0.95, dy, cz + 0.95), 0.5, 12.0)
 	Props.cyl(g, Vector3(cx - 0.95, dy + 0.16, cz + 0.3), 0.15, 0.32, "zinc")
 	# the zip line: the bracket on the roof post, the cable down to the post (its stay, a snow cap, a coil of rope), the trodden landing
 	Props.block(g, ZIP_ANCHOR + Vector3(-0.08, -0.1, -0.08), ZIP_ANCHOR + Vector3(0.08, 0.1, 0.08), "iron")
@@ -2248,7 +2248,7 @@ func _dress_old_cellar() -> void:
 	# (T-238: against the east wall under his lamp, facing the cage. The stool stood in the middle of the walk and
 	# the crate half a metre inside the wine cellar's doorway, both without colliders)
 	_lib("stool_workshop", Vector3(4.5, cy, 4.75), 80.0, Vector3.ONE, false)
-	Props.crate(g, Vector3(4.5, cy, 3.8), 0.55, -84.0, "WH")
+	Props.crate(g, Vector3(4.5, cy, 3.8), 0.55, -84.0)
 	Props.cyl(g, Vector3(4.45, cy + 0.6, 3.75), 0.09, 0.05, "steel")
 	Props.block(g, Vector3(4.5, cy + 0.55, 3.92), Vector3(4.6, cy + 0.57, 3.99), "paper")
 	Props.stencil(g, Vector3(2.62, cy + 0.82, 5.45), -90.0, "Häftling (Pole)\nFlucht aus K.\n22.XII.", 20, Color(0.22, 0.2, 0.18, 0.9), 0.0028, SurfaceText.PRINT)   # the tag on his cage: kept (story)
@@ -2735,7 +2735,7 @@ func _dress_taproom() -> void:
 	Props.lantern(g, Vector3(14.0, 2.6, 8.0), TAP_H - 0.36)
 	# crates of the signals unit's kit against the east wall under the portrait (T-238: they stood 0.7 m off the east
 	# wall and 1.6 m off the north one, without a collider, between the front door and the Garand; TAP_CRATES is theirs)
-	Props.crate(g, Vector3(23.44, 0, 2.0), 0.7, 94.0, "WH  Nachr.")
+	Props.crate(g, Vector3(23.44, 0, 2.0), 0.7, 94.0)
 	Props.crate(g, Vector3(23.46, 0.7, 2.02), 0.55, 86.0)
 	Props.crate(g, Vector3(23.5, 0, 1.25), 0.6, 92.0)
 	# boarded-up feel: spare planks leaning on the west wall south of the window (clear of the Kar98k chalk at z 3.1 and
@@ -2927,7 +2927,7 @@ func _dress_attic() -> void:
 	for sy2: float in [0.3, 0.6, 0.9]:
 		Props.block(sl, Vector3(-0.28, sy2, -0.1 + sy2 * 0.2), Vector3(0.28, sy2 + 0.04, 0.0 + sy2 * 0.2), "planks")
 	# the Christmas boxes in the south-west corner (straw stars, the candle holders, the iron tree stand)
-	Props.crate(g, Vector3(1.6, y, 8.6), 0.8, 8.0, "WEIHNACHT")
+	Props.crate(g, Vector3(1.6, y, 8.6), 0.8, 8.0)
 	Props.crate(g, Vector3(2.25, y, 9.25), 0.7, -10.0)
 	Props.crate(g, Vector3(1.5, y + 0.8, 8.65), 0.45, 25.0)
 	for k5: int in 5:
