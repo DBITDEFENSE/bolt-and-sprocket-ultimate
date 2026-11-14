@@ -15,7 +15,7 @@ func _build() -> void:
 	env({"sky_top": [0.3, 0.32, 0.34], "sky_horizon": [0.42, 0.43, 0.44], "ground": [0.12, 0.11, 0.1], "ambient": [0.45, 0.47, 0.5], "ambient_e": 0.6,
 		"fog": [0.4, 0.41, 0.42], "fog_d": 0.0028, "glow_t": 1.5})
 	sun(Vector3(-60, -30, 0), [0.75, 0.78, 0.82], 0.35)
-	var mud: StandardMaterial3D = noisy(Color(0.17, 0.14, 0.1), Color(0.3, 0.25, 0.18), 0.1, 5.0, 0.7, 0.4)
+	var mud: Material = MaterialLibrary.build("dirt", {"tint": [0.48, 0.4, 0.31], "tile_m": 1.3, "wetness": 0.3})
 	plane(self, Vector3(0, 0, 226.0), Vector2(900, 450), mud)     # (the trench at z -1..1 is left open)
 	plane(self, Vector3(0, 0, -226.0), Vector2(900, 450), mud)
 	plane(self, Vector3(275, 0, 0), Vector2(450, 2.2), mud)
@@ -29,14 +29,32 @@ func _build() -> void:
 
 func _trench() -> void:
 	var t: Node3D = group(self, "GermanLine", Vector3.ZERO)
-	var mud_wall: StandardMaterial3D = noisy(Color(0.15, 0.12, 0.09), Color(0.26, 0.21, 0.15), 0.6, 1.0, 0.75, 0.3)
+	var mud_wall: Material = MaterialLibrary.build("dirt", {"tint": [0.42, 0.34, 0.26], "tile_m": 0.8, "wetness": 0.24})
 	# the cut: the ground on both sides stands proud of the trench (boxes down to its floor), water in the bottom
 	box(t, Vector3(0, -1.0, -3.2), Vector3(90, 2.0, 4.4), mud_wall)
 	box(t, Vector3(0, -1.0, 3.2), Vector3(90, 2.0, 4.4), mud_wall)
 	box(t, Vector3(0, -1.9, 0), Vector3(90, 0.2, 2.2), mud_wall)
-	var water: StandardMaterial3D = flat(Color(0.2, 0.15, 0.09), 0.05)
-	water.metallic_specular = 1.0
+	var water: ShaderMaterial = ShaderMaterial.new()
+	water.shader = preload("res://gravelight/world/cinema_sets/trench_water.gdshader")
 	plane(t, Vector3(0, -1.45, 0), Vector2(90, 2.0), water)
+	# Revetments break up the earth wall and give the low tracking shot depth.
+	# (their own seeded RNG, so the duckboards, wire and shell holes below keep the layout the shots were framed on)
+	var rv: RandomNumberGenerator = RandomNumberGenerator.new()
+	rv.seed = 1916
+	var braces: Array = []
+	var boards: Array = []
+	for side: float in [-1.0, 1.0]:
+		for bay: int in 45:
+			var bx: float = -44.0 + float(bay) * 2.0
+			braces.append(xf(Vector3(bx, -0.83, side * 0.94), Vector3(0.13, 1.7, 0.14), Vector3(rv.randf_range(-3, 3), 0, rv.randf_range(-4, 4))))
+			for row: int in 5:
+				if rv.randf() < 0.1:   # a board gone (shelled, burnt for firewood): bare earth shows through
+					continue
+				var sag: float = rv.randf_range(-0.05, 0.03) if rv.randf() < 0.25 else 0.0
+				boards.append(xf(Vector3(bx + 0.9, -1.38 + float(row) * 0.28 + sag, side * (0.975 - rv.randf_range(0.0, 0.02))),
+					Vector3(1.85, 0.2, 0.045), Vector3(rv.randf_range(-2, 2), 0, rv.randf_range(-3, 3) + sag * 60.0)))
+	multi(t, Props.unit_box(), braces, "beam", "TrenchBraces")
+	multi(t, Props.unit_box(), boards, "planks", "Revetments")
 	var duck: Array = []
 	for i: int in 70:
 		duck.append(xf(Vector3(-40.0 + 1.15 * float(i), -1.42, rng.randf_range(-0.1, 0.1)), Vector3(0.95, 0.06, 0.7), Vector3(0, rng.randf_range(-4, 4), rng.randf_range(-3, 3))))
@@ -64,9 +82,11 @@ func _trench() -> void:
 		if w < 17:
 			for wy: float in [0.35, 0.75]:
 				Props.cable(t, Vector3(wx, wy, 9.5), Vector3(wx + 4.6, wy, 9.5), 0.15, 0.005, 4, "rust")
-	for h: int in 9:   # shell holes full of water
+	# shell holes full of silted water: dull and still (the rippled shader is for the trench bottom only)
+	var pond: StandardMaterial3D = flat(Color(0.06, 0.045, 0.03), 0.7)
+	for h: int in 9:
 		var hp: Vector3 = Vector3(rng.randf_range(-40, 40), 0.02, rng.randf_range(5, 40))
-		cyl(t, hp, rng.randf_range(1.2, 2.6), 0.04, water)
+		cyl(t, hp, rng.randf_range(1.2, 2.6), 0.04, pond)
 	# the dead horse in the wire, far, never close
 	ball(t, Vector3(28.0, 0.35, 12.0), Vector3(2.2, 0.7, 0.9), "#2e2620")
 	# a roofless spire far off in the rain, a wrecked assault gun's silhouette
