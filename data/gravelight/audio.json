@@ -1721,6 +1721,70 @@
       "attenuation": "weapon",
       "vol_jitter_db": 0.8
     },
+    "fire_bren": {
+      "files": [
+        "res://gravelight/audio/sfx/weapons/fire_bren_01.wav",
+        "res://gravelight/audio/sfx/weapons/fire_bren_02.wav",
+        "res://gravelight/audio/sfx/weapons/fire_bren_03.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": 1.0,
+      "pitch": [
+        0.97,
+        1.03
+      ],
+      "max_voices": 6,
+      "attenuation": "weapon",
+      "vol_jitter_db": 0.8
+    },
+    "fire_fg42": {
+      "files": [
+        "res://gravelight/audio/sfx/weapons/fire_fg42_01.wav",
+        "res://gravelight/audio/sfx/weapons/fire_fg42_02.wav",
+        "res://gravelight/audio/sfx/weapons/fire_fg42_03.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": 1.0,
+      "pitch": [
+        0.97,
+        1.03
+      ],
+      "max_voices": 6,
+      "attenuation": "weapon",
+      "vol_jitter_db": 0.8
+    },
+    "fire_mosin_nagant": {
+      "files": [
+        "res://gravelight/audio/sfx/weapons/fire_mosin_nagant_01.wav",
+        "res://gravelight/audio/sfx/weapons/fire_mosin_nagant_02.wav",
+        "res://gravelight/audio/sfx/weapons/fire_mosin_nagant_03.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": 1.0,
+      "pitch": [
+        0.96,
+        1.02
+      ],
+      "max_voices": 6,
+      "attenuation": "weapon",
+      "vol_jitter_db": 0.8
+    },
+    "fire_sten": {
+      "files": [
+        "res://gravelight/audio/sfx/weapons/fire_sten_01.wav",
+        "res://gravelight/audio/sfx/weapons/fire_sten_02.wav",
+        "res://gravelight/audio/sfx/weapons/fire_sten_03.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": 2.0,
+      "pitch": [
+        0.97,
+        1.03
+      ],
+      "max_voices": 6,
+      "attenuation": "weapon",
+      "vol_jitter_db": 0.8
+    },
     "fire_type100": {
       "files": [
         "res://gravelight/audio/sfx/weapons/fire_type100_01.wav",

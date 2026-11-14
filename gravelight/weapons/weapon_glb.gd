@@ -317,9 +317,9 @@ static func build(weapon_id: StringName, is_upgraded: bool = false, camo_id: Str
 	var grip_xf: Transform3D = root.get_meta("grip_r", Transform3D(Basis(Vector3.RIGHT, deg_to_rad(-20.0)), Vector3(0, -0.045, 0.05)))
 	var lean: float = rad_to_deg(-grip_xf.basis.get_euler().x)
 	b.rhand(_v3(f.get("grip_r"), grip_xf.origin), float(f.get("grip_lean", lean)), float(f.get("grip_r_radius", root.get_meta("grip_r_radius", WeaponModels.HAND_R0))))
-	for key: String in ["port", "bore", "cylinder", "scope_mag", "eye_relief"]:
+	for key: String in ["port", "bore", "cylinder", "scope_mag", "eye_relief", "mag_dir"]:
 		if f.has(key):
-			root.set_meta(key if key != "scope_mag" else "scope", _v3(f[key]) if key == "port" else f[key])
+			root.set_meta(key if key != "scope_mag" else "scope", _v3(f[key]) if key in ["port", "mag_dir"] else f[key])
 	# empty nodes for the parts a reload kind expects but the pack has no mesh for
 	for part: String in ["Mag", "Bolt", "Pump", "Cover", "Barrels", "Rocket", "Valve"]:
 		if root.get_node_or_null(part) == null and proc.get_node_or_null(part) != null:

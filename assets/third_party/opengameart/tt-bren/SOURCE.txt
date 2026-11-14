@@ -1,0 +1,14 @@
+Title: Ultimate Low Poly Guns: Bren (World War 2 set)
+Author: TastyTony (gun models); Pichuliru (pack, palette, rigs)
+Source: https://opengameart.org/content/ultimate-low-poly-guns
+Author URL: https://sketchfab.com/TastyTony ; https://opengameart.org/users/pichuliru
+File: https://opengameart.org/sites/default/files/ultimate_low_poly_guns_world_war_2.zip (LMGs/Bren.blend)
+License: CC-BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+Credit line: Gun models by TastyTony, pack by Pichuliru (CC-BY 4.0)
+Format: Blender .blend (one rigged mesh, one palette material, 8x8 PichuliruPalette.png) converted with Blender 5.1 (tools_src/blender/convert_to_glb.py): the armature dropped, the mesh split by vertex group into named parts, the palette exported as a nearest-filtered PNG
+Downloaded: 2026-10-25 by Devin Blair (zip in assets/user_supplied/packs); converted 2026-11-14 by Claude (T-248)
+Files used: model.glb, textures/tt_bren_ultimatelowpolyguns_albedo.png
+Game use: bren
+Notes: Top-mounted curved 30-round magazine (Mag), charging handle (Bolt), folded bipod in the Body. Converted 2026-11-14 (T-248).
+
+Modified 2026-11-14: smooth-shaded with sharp edges at 35 deg, a 0.7 mm angle-limited bevel and weighted normals by tools_src/blender/smooth_palette_guns.py (geometry, part names and origins otherwise as published).

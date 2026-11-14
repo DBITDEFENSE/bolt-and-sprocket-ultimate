@@ -2516,6 +2516,44 @@
     }
    }
   },
+  "fg42": {
+   "options": {
+    "mag": {
+     "drum": null
+    }
+   }
+  },
+  "mosin_nagant": {
+   "options": {
+    "sights": {
+     "scope": {
+      "name": "PU Scope",
+      "desc": "A 3.5x sniper's scope in a side mount, the bolt handle turned down to clear it. Long, tight aimed shots; slower to come up."
+     }
+    }
+   }
+  },
+  "bren": {
+   "options": {
+    "mag": {
+     "extended": {
+      "name": "Long Box Magazine",
+      "desc": "A taller curved box welded up from two. More rounds on top before the long change; heavier to swing.",
+      "upgraded": {
+       "name": "Last Orders: Doubles",
+       "desc": "Same again, and the same again after that."
+      }
+     }
+    }
+   }
+  },
+  "sten": {
+   "options": {
+    "mag": {
+     "drum": null
+    }
+   }
+  },
   "kar98k": {
    "options": {
     "mag": {

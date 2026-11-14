@@ -157,7 +157,7 @@ static func merge_static(n: Node3D) -> void:
 static func known_ids() -> PackedStringArray:
 	return PackedStringArray(["m1911", "walther_p38", "luger_p08", "webley", "kar98k", "m1_garand", "gewehr43", "m1_carbine", "mp40", "thompson", "stg44",
 		"trench_gun", "bar", "ppsh41", "mg42", "m1919", "sawed_off", "type100", "ptrs41", "springfield", "panzerschreck",
-		"flamethrower", "ashlight", "totenglocke", "elmsfeuer", "lodestone", "undertow", "gramophone", "trench_knife", "etool", "frag"])
+		"fg42", "mosin_nagant", "bren", "sten", "flamethrower", "ashlight", "totenglocke", "elmsfeuer", "lodestone", "undertow", "gramophone", "trench_knife", "etool", "frag"])
 
 
 # ================================================================== materials
@@ -1553,9 +1553,127 @@ func _w_type100() -> void:
 	marker("Muzzle", Vector3(0, 0.032, -0.4))
 	rhand(Vector3(0, -0.025, 0.07), 36.0, 0.02)
 	lhand(Vector3(0, 0.006, -0.19), "z", 0.025)
+	prof(P([[-0.3, 0.012], [-0.36, 0.012], [-0.36, 0.0], [-0.3, 0.0]]), 0.008, "blued")                         # bayonet bar (T-248)
 	meta("mag", 0.87)
+	root.set_meta("mag_dir", Vector3(-1, -0.15, 0.0))      # T-248: the side magazine pulls out to the left
 	root.set_meta("port", Vector3(0.018, 0.04, -0.06))
 	root.set_meta("bore", 0.005)
+
+
+## T-248: the FG 42 (paratroopers' select-fire 7.92 rifle): steep pistol grip, sheet-steel butt, the 20-round box
+## magazine sticking out of the LEFT side of the receiver, folding sights on tall posts, folded bipod under the barrel.
+## The viewmodel is the OpenGameArt model (models.json); this twin gives it its metas and is the greybox fallback.
+func _w_fg42() -> void:
+	prof(P([[0.12, 0.058], [-0.24, 0.058], [-0.25, 0.045], [-0.25, 0.004], [0.12, 0.004]]), 0.034, "fieldgray")   # receiver
+	prof(P([[-0.07, 0.03], [-0.25, 0.03], [-0.25, 0.0], [-0.07, 0.0]]), 0.038, "bakelite")                          # handguard
+	prof(P([[0.12, 0.05], [0.37, 0.02], [0.38, -0.1], [0.33, -0.105], [0.12, 0.0]]), 0.036, "fieldgray")            # butt
+	box(Vector3(0.038, 0.13, 0.01), Vector3(0, -0.04, 0.38), "blued", Vector3(-10, 0, 0))
+	grip(0.03, 0.0, 0.11, "bakelite", 28.0, 0.04, 0.03)
+	tube(0.0085, 0.011, 0.42, Vector3(0, 0.032, -0.46), "blued")                                                      # barrel
+	tube(0.013, 0.013, 0.045, Vector3(0, 0.032, -0.66), "blued")                                                       # muzzle brake
+	tube(0.007, 0.007, 0.3, Vector3(0, 0.0, -0.38), "fieldgray")                                                     # gas tube
+	for s: float in [-1.0, 1.0]:                                                                                      # bipod, folded
+		tube(0.004, 0.004, 0.28, Vector3(s * 0.012, -0.012, -0.42), "fieldgray", "z").name = "BipodLeg%d" % int(s + 1.0)
+	box(Vector3(0.006, 0.05, 0.008), Vector3(0, 0.074, -0.56), "fieldgray")                                         # folding front post
+	front_blade(-0.56, 0.098, 0.106, "blued")
+	rear_aperture(0.05, 0.1, 0.058, "fieldgray", 0.0034, 0.0085)                                                   # folding diopter
+	trigger_group(0.02, 0.004, "fieldgray")
+	var bolt: Node3D = group("Bolt", Vector3(0.022, 0.03, -0.12))
+	box(Vector3(0.016, 0.01, 0.012), Vector3.ZERO, "steel", Vector3.ZERO, bolt)
+	var mag: Node3D = group("Mag", Vector3(-0.03, 0.032, -0.07))
+	box(Vector3(0.15, 0.024, 0.036), Vector3(-0.075, 0.0, 0.0), "blued", Vector3(0, 0, -4), mag)
+	marker("Muzzle", Vector3(0, 0.032, -0.69))
+	lhand(Vector3(0, 0.01, -0.2), "z", 0.024)
+	meta("mag", 0.975)
+	root.set_meta("mag_dir", Vector3(-1, -0.08, 0))
+	root.set_meta("port", Vector3(0.02, 0.04, -0.06))
+	root.set_meta("bore", 0.0045)
+
+
+## T-248: the Mosin-Nagant M91/30, the longer bolt rifle beside the Kar98k: straight bolt handle, hooded front post,
+## tangent rear leaf, two barrel bands, a fixed five-round magazine loaded by stripper clips.
+func _w_mosin_nagant() -> void:
+	_kar_stock("wood_red", -0.6)
+	tube(0.0175, 0.0175, 0.2, Vector3(0, 0.032, -0.03), "blued")                                                      # receiver
+	tube(0.0085, 0.013, 0.66, Vector3(0, 0.032, -0.5), "blued")                                                        # barrel
+	tube(0.024, 0.024, 0.016, Vector3(0, 0.014, -0.34), "blued")                                                       # barrel bands
+	tube(0.022, 0.022, 0.016, Vector3(0, 0.014, -0.58), "blued")
+	front_post(-0.81, 0.042, 0.058, "blued", true, 0.0105)
+	prof(P([[-0.13, 0.043], [-0.21, 0.043], [-0.21, 0.049], [-0.145, 0.054], [-0.13, 0.054]]), 0.02, "blued")    # tangent leaf base
+	rear_notch(-0.135, 0.052, 0.0105, "blued", 0.018, 0.0045)
+	box(Vector3(0.024, 0.008, 0.085), Vector3(0, -0.035, -0.06), "blued")                                            # magazine floorplate
+	trigger_group(0.01, 0.0)
+	_bolt_turned_down(0.055)
+	marker("Mag", Vector3(0, 0.055, -0.03))
+	marker("Muzzle", Vector3(0, 0.032, -0.835))
+	rhand(Vector3(0, -0.03, 0.065), 38.0, 0.02)
+	lhand(Vector3(0, 0.002, -0.36), "z", 0.026)
+	meta("bolt", 1.23)
+	root.set_meta("port", Vector3(0.012, 0.045, 0.0))
+	root.set_meta("bore", 0.0045)
+
+
+## T-248: the Bren Mk II: curved 30-round magazine on TOP of the receiver, so the sights sit offset to the left of it
+## (a drum rear sight on the receiver's left, the front blade on a left-hand bracket), carrying handle, conical
+## flash hider, butt with its strap, pistol grip.
+func _w_bren() -> void:
+	const SX: float = -0.032
+	prof(P([[0.12, 0.06], [-0.24, 0.06], [-0.24, -0.01], [0.12, -0.01]]), 0.046, "park")                            # receiver
+	prof(P([[0.12, 0.045], [0.4, 0.02], [0.41, -0.11], [0.36, -0.12], [0.12, -0.02]]), 0.04, "park")                 # butt
+	box(Vector3(0.044, 0.14, 0.01), Vector3(0, -0.045, 0.41), "park")
+	grip(0.05, -0.01, 0.1, "wood", 20.0, 0.04, 0.032)
+	tube(0.012, 0.016, 0.44, Vector3(0, 0.03, -0.46), "blued")                                                         # barrel
+	tube(0.022, 0.014, 0.07, Vector3(0, 0.03, -0.71), "blued")                                                         # flash hider
+	tube(0.008, 0.008, 0.36, Vector3(0, -0.004, -0.42), "park")                                                        # gas cylinder
+	box(Vector3(0.012, 0.03, 0.08), Vector3(0, 0.07, -0.3), "park")                                                   # carrying handle
+	for s: float in [-1.0, 1.0]:                                                                                       # bipod, folded
+		tube(0.0045, 0.0045, 0.3, Vector3(s * 0.016, -0.012, -0.5), "park", "z").name = "BipodLeg%d" % int(s + 1.0)
+	# offset sights (left of the magazine): drum rear on the receiver, the blade on a bracket by the barrel
+	box(Vector3(0.012, 0.04, 0.024), Vector3(SX, 0.08, 0.06), "park")
+	box(Vector3(0.016, 0.006, 0.008), Vector3(SX, 0.1, 0.06), "park")
+	sight_mark("SightPoint", Vector3(SX, 0.1035, 0.056))
+	box(Vector3(0.026, 0.008, 0.012), Vector3(SX * 0.5, 0.05, -0.64), "park")
+	box(Vector3(0.0028, 0.05, 0.004), Vector3(SX, 0.079, -0.64), "park")
+	sight_mark("FrontSight", Vector3(SX, 0.1035, -0.64))
+	trigger_group(0.06, -0.01, "park")
+	var bolt: Node3D = group("Bolt", Vector3(0.028, 0.025, -0.1))
+	box(Vector3(0.016, 0.012, 0.016), Vector3.ZERO, "steel", Vector3.ZERO, bolt)
+	var mag: Node3D = group("Mag", Vector3(0, 0.07, -0.08))
+	prof(P([[0.03, 0.0], [-0.035, 0.0], [-0.07, 0.17], [-0.03, 0.18]]), 0.032, "park", 0.0, mag)
+	marker("Muzzle", Vector3(0, 0.03, -0.75))
+	lhand(Vector3(0, -0.012, -0.3), "z", 0.026)
+	meta("mag", 1.156)
+	root.set_meta("mag_dir", Vector3(0, 1, 0.15))
+	root.set_meta("port", Vector3(0.0, -0.016, -0.06))
+	root.set_meta("bore", 0.0055)
+
+
+## T-248: the Sten Mk II: a steel tube receiver, the 32-round magazine sticking out of the LEFT side, a perforated
+## barrel sleeve, a skeleton tube stock and no pistol grip (the firing hand holds the trigger housing's wrist).
+func _w_sten() -> void:
+	tube(0.0175, 0.0175, 0.34, Vector3(0, 0.03, -0.05), "black")                                                       # receiver tube
+	tube(0.016, 0.016, 0.1, Vector3(0, 0.03, -0.27), "perforated")                                                     # barrel sleeve
+	tube(0.007, 0.007, 0.03, Vector3(0, 0.03, -0.335), "blued")                                                        # muzzle
+	prof(P([[0.06, 0.012], [-0.06, 0.012], [-0.06, -0.025], [-0.01, -0.03], [0.06, -0.012]]), 0.03, "black")       # trigger housing
+	tube(0.005, 0.005, 0.28, Vector3(0, 0.03, 0.26), "black")                                                          # skeleton stock: top bar
+	var low: MeshInstance3D = tube(0.005, 0.005, 0.3, Vector3(0, -0.035, 0.25), "black")                              # bottom bar
+	low.rotation_degrees = Vector3(90 - 13, 0, 0)
+	box(Vector3(0.012, 0.13, 0.016), Vector3(0, -0.02, 0.4), "black")                                                 # butt plate
+	box(Vector3(0.022, 0.03, 0.06), Vector3(-0.026, 0.03, -0.12), "black")                                           # magazine housing
+	rear_aperture(0.1, 0.06, 0.047, "black", 0.0032, 0.007, false)
+	front_blade(-0.31, 0.046, 0.06, "black")
+	trigger_group(0.0, -0.004, "black")
+	var bolt: Node3D = group("Bolt", Vector3(0.022, 0.03, 0.0))
+	box(Vector3(0.016, 0.008, 0.01), Vector3.ZERO, "steel", Vector3.ZERO, bolt)
+	var mag: Node3D = group("Mag", Vector3(-0.04, 0.03, -0.12))
+	box(Vector3(0.18, 0.022, 0.034), Vector3(-0.09, 0.0, 0.0), "blued", Vector3.ZERO, mag)
+	marker("Muzzle", Vector3(0, 0.03, -0.35))
+	rhand(Vector3(0, -0.035, 0.04), 30.0, 0.019)
+	lhand(Vector3(0, 0.012, -0.24), "z", 0.02)
+	meta("mag", 0.762)
+	root.set_meta("mag_dir", Vector3(-1, 0, 0))
+	root.set_meta("port", Vector3(0.02, 0.04, -0.06))
+	root.set_meta("bore", 0.0045)
 
 
 func _w_mg42() -> void:

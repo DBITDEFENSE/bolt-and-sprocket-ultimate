@@ -59,7 +59,11 @@ Legend: **Dmg** = per bullet/pellet. **Rel** = reload partial / empty (s). **ADS
 | `mg42` | MG42 | LMG | Crate | 90 | 1200 | Auto | 125 | 500 | 5.5 / 6.5 | 0.45 | 0.55 | 1 | 0.88 |
 | `m1919` | Browning M1919 | LMG | Crate | 110 | 500 | Auto | 125 | 500 | 5.8 / 6.8 | 0.45 | 0.50 | 1 | 0.88 |
 | `sawed_off` | Double-Barrel Sawed-Off | Shotgun | Crate | 60 ×10 | 400 | Semi (2) | 2 | 60 | — / 2.4 | 0.20 | 0.30 | 0 | 1.00 |
-| `type100` | Type 100 | SMG | Crate | 55 | 800 | Auto | 30 | 240 | 2.1 / 2.7 | 0.20 | 0.25 | 0 | 1.00 |
+| `type100` | Type 100 | SMG | Crate | 52 | 800 | Auto | 30 | 240 | 2.1 / 2.7 | 0.18 | 0.22 | 0 | 1.00 |
+| `fg42` | FG 42 | Assault (battle) rifle | Crate | 85 | 650 | Auto | 20 | 160 | 2.4 / 3.0 | 0.27 | 0.30 | 1 | 0.95 |
+| `mosin_nagant` | Mosin-Nagant M91/30 | Bolt rifle | Crate | 120 | 45 | Bolt | 5 | 50 | 0.65/rnd · 2.8 clip | 0.27 | 0.38 | 2 | 0.94 |
+| `bren` | Bren Mk II | LMG | Crate | 95 | 520 | Auto | 30 | 240 | 2.8 / 3.4 | 0.38 | 0.38 | 1 | 0.92 |
+| `sten` | Sten Mk II | SMG | Crate | 48 | 550 | Auto | 32 | 224 | 1.9 / 2.5 | 0.17 | 0.28 | 0 | 1.00 |
 | `ptrs41` | PTRS-41 | Anti-tank rifle | Crate | 1000 | 120 | Semi | 5 | 50 | — / 4.2 | 0.55 | 0.60 | 5 | 0.85 |
 | `springfield` | Springfield M1903 (scoped) | Sniper | Crate | 200 | 45 | Bolt | 5 | 60 | 0.7/rnd · 3.0 | 0.40 | 0.45 | 2 | 0.93 |
 | `panzerschreck` | Panzerschreck | Launcher | Crate | 1000 splash | 30 | Single | 1 | 10 | — / 3.5 | 0.50 | 0.45 | — | 0.88 |
@@ -92,7 +96,11 @@ Falloff: full damage up to **Start**, linear down to **Min ×** at **End**, then
 | `mg42` | 30 | 70 | 0.70 | | | | | | |
 | `m1919` | 30 | 70 | 0.70 | | | | | | Overheats after 8 s of firing; cools in 3 s |
 | `sawed_off` | 4 | 12 | 0.15 | 1.5 | 1.25 | | | | 10 pellets, 9° spread |
-| `type100` | 12 | 35 | 0.55 | | | | | 1.0 | |
+| `type100` | 14 | 40 | 0.60 | | | | | 1.0 | T-248: the steadiest SMG (recoil v 0.30, ADS spread 0.8°) |
+| `fg42` | 40 | 100 | 0.75 | | | | | | Climbs hard on auto (recoil v 0.72) |
+| `mosin_nagant` | 60 | 150 | 0.85 | | | | | | Bolt 1.3 s |
+| `bren` | 40 | 90 | 0.72 | | | | | | The accurate LMG (recoil v 0.6, ADS spread 0.8°) |
+| `sten` | 10 | 30 | 0.50 | | | | | | |
 | `ptrs41` | 100 | 200 | 0.90 | 2.0 | 1.5 | | | | Kicks the player back slightly |
 | `springfield` | 100 | 200 | 0.90 | 5.0 | 2.5 | | | | Scope 4×, hold breath to cut sway 80% for 4 s |
 | `panzerschreck` | — | — | — | 1.0 | 1.0 | 1.0 | 1.0 | 1.0 | 5 m radius, falloff to 25% at edge; self-damage 75 (none with Blastproof Bock) |
@@ -133,6 +141,10 @@ Every upgraded weapon gets: the **Nachtglas camo** (violet veins with amber crac
 | `m1919` | `m1919_up` | **The Long Amen** | 200 | 550 | 250 | 750 | 5.2 / 6.2 | 3 | `no_overheat` + `penetration: 3` |
 | `sawed_off` | `sawed_off_up` | **Twin Coffins** | 140 ×10 | 400 | 4 | 80 | — / 2.2 | 1 | `volley: 4`: four barrels; alt-fire dumps all four at once |
 | `type100` | `type100_up` | **Hollow Blossom** | 130 | 850 | 40 | 320 | 1.8 / 2.3 | 0 | `hollow_point`: limb mult ×1.5 and crawler chance 35% → 70% |
+| `fg42` | `fg42_up` | **Sturzflug** | 200 | 700 | 30 | 300 | 2.1 / 2.6 | 2 | `stagger: 0.3`: each hit has a 30% chance to stagger |
+| `mosin_nagant` | `mosin_nagant_up` | **Second Opinion** | 420 | 55 | 10 | 90 | 0.55/rnd · 2.4 | 4 | `ricochet: 2`: each round bounces twice toward the nearest zombie |
+| `bren` | `bren_up` | **Last Orders** | 200 | 560 | 45 | 360 | 2.5 / 3.0 | 2 | `armor_piercing`: ignores Glasshide armor and Foreman plate |
+| `sten` | `sten_up` | **Cheap Funeral** | 115 | 600 | 50 | 350 | 1.5 / 1.9 | 0 | `incendiary`: rounds ignite for 60 dmg/s for 3 s |
 | `ptrs41` | `ptrs41_up` | **Bear Tax** | 2000 | 130 | 8 | 80 | — / 3.6 | ∞ | `armor_ignore` + unlimited penetration |
 | `springfield` | `springfield_up` | **Long Goodbye** | 600 | 50 | 8 | 96 | 0.6/rnd · 2.6 | 3 | `headshot_pop: {dmg: 300, r: 2.0}`: headshot kills burst in a Nachtglas pop |
 | `panzerschreck` | `panzerschreck_up` | **Stovepipe Sermon** | 1500 splash | 30 | 2 | 20 | — / 3.2 | — | `cluster: {count: 6, dmg: 400, r: 2.5}`: bomblets scatter on impact |
@@ -341,13 +353,17 @@ Tier A = feels great. Tier B = solid. Tier C = "dud" (classic disappointment, st
 | STG-44 | B | 5 |
 | Trench Gun | B | 5 |
 | BAR | B | 5 |
+| FG 42 (T-248) | B | 5 |
+| Bren Mk II (T-248) | B | 5 |
 | MP40 | C | 4 |
+| Sten Mk II (T-248) | C | 4 |
 | M1 Carbine | C | 3 |
 | M1 Garand | C | 3 |
 | Gewehr 43 | C | 3 |
 | Kar98k | C | 3 |
+| Mosin-Nagant M91/30 (T-248) | C | 3 |
 
-Total base weight: 112 (A 43, B 53, C 16). The Totenglocke is never in the Crate.
+Total base weight: 112 (A 43, B 53, C 16) before T-248; the four T-248 guns add 17 (B 10, C 7). The live table (with the Elmsfeuer) is `data/gravelight/crate.json`. The Totenglocke is never in the Crate.
 
 ### Rules
 1. **Exclusions:** you can't roll a weapon you already hold, base or upgraded (a held `mp40_up` excludes `mp40`). In co-op, the Ashlight is excluded while any player holds one (one per match on the map, classic scarcity).
