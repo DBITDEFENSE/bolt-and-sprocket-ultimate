@@ -255,6 +255,10 @@ static func build(weapon_id: StringName, is_upgraded: bool = false, camo_id: Str
 		if wp.has(contract):
 			for item: Array in by_group[contract]:
 				_warp_mesh(item[0] as MeshInstance3D, item[1] as Transform3D, wp[contract])
+		var fo: Dictionary = f.get("fold", {})
+		if fo.has(contract):
+			for item: Array in by_group[contract]:
+				_fold_mesh(item[0] as MeshInstance3D, item[1] as Transform3D, fo[contract])
 		if pivots.has(contract):
 			pivot = _v3(pivots[contract])
 		else:
@@ -371,6 +375,91 @@ static func _warp_mesh(mi: MeshInstance3D, xf: Transform3D, d: Dictionary) -> vo
 		out.surface_set_material(si, mi.mesh.surface_get_material(si))
 		out.surface_set_name(si, mi.mesh.surface_get_name(si))
 	mi.mesh = out
+
+
+## model_fit "fold" {Part: [{min, max, pivot, axis, deg}]} (T-250): swings a loose piece of a one-piece mesh to
+## another position, e.g. the OGA Bren's raised carrying handle folded down to the right, off the offset sight line.
+## A piece is a mesh island (triangles joined by shared vertex positions); every island whose rig-space bounds lie
+## inside [min, max] turns `deg` degrees about `axis` through `pivot` (rig space), normals and tangents with it.
+## The mesh is copied like _warp_mesh's; a visual change only.
+static func _fold_mesh(mi: MeshInstance3D, xf: Transform3D, folds: Array) -> void:
+	if mi.mesh == null or folds.is_empty():
+		return
+	var inv: Transform3D = xf.affine_inverse()
+	var out: ArrayMesh = ArrayMesh.new()
+	for si: int in mi.mesh.get_surface_count():
+		var arr: Array = mi.mesh.surface_get_arrays(si)
+		var vs: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+		var idx: PackedInt32Array = arr[Mesh.ARRAY_INDEX] if arr[Mesh.ARRAY_INDEX] != null else PackedInt32Array()
+		if idx.is_empty():
+			idx.resize(vs.size())
+			for i: int in vs.size():
+				idx[i] = i
+		# islands: union-find over the triangles, vertices welded by position (glTF splits them at UV seams)
+		var par: Array = []   # an Array, not a packed one: _root shares it by reference
+		par.resize(vs.size())
+		var weld: Dictionary = {}
+		for i: int in vs.size():
+			var k: Vector3i = Vector3i((vs[i] * 10000.0).round())
+			par[i] = int(weld.get(k, i))
+			if not weld.has(k):
+				weld[k] = i
+		for t: int in range(0, idx.size() - 2, 3):
+			var r0: int = _root(par, idx[t])
+			for k2: int in [1, 2]:
+				var r1: int = _root(par, idx[t + k2])
+				if r1 != r0:
+					par[r1] = r0
+		var lo: Dictionary = {}
+		var hi: Dictionary = {}
+		var rig: PackedVector3Array = PackedVector3Array()
+		rig.resize(vs.size())
+		for i: int in vs.size():
+			rig[i] = xf * vs[i]
+			var r: int = _root(par, i)
+			lo[r] = (lo.get(r, rig[i]) as Vector3).min(rig[i])
+			hi[r] = (hi.get(r, rig[i]) as Vector3).max(rig[i])
+		var nrm: PackedVector3Array = arr[Mesh.ARRAY_NORMAL] if arr[Mesh.ARRAY_NORMAL] != null else PackedVector3Array()
+		var tan: PackedFloat32Array = arr[Mesh.ARRAY_TANGENT] if arr[Mesh.ARRAY_TANGENT] != null else PackedFloat32Array()
+		for fd: Variant in folds:
+			var d: Dictionary = fd as Dictionary
+			var bmin: Vector3 = _v3(d.get("min"), Vector3.ZERO)
+			var bmax: Vector3 = _v3(d.get("max"), Vector3.ZERO)
+			var pivot: Vector3 = _v3(d.get("pivot"), Vector3.ZERO)
+			var rot: Basis = Basis(_v3(d.get("axis"), Vector3.BACK).normalized(), deg_to_rad(float(d.get("deg", 0.0))))
+			var turn: Transform3D = inv * Transform3D(rot, pivot - rot * pivot) * xf
+			var nb: Basis = (inv.basis * rot * xf.basis).orthonormalized()
+			for i: int in vs.size():
+				var r: int = _root(par, i)
+				var a: Vector3 = lo[r]
+				var b: Vector3 = hi[r]
+				if a.x < bmin.x or a.y < bmin.y or a.z < bmin.z or b.x > bmax.x or b.y > bmax.y or b.z > bmax.z:
+					continue
+				vs[i] = turn * vs[i]
+				if i < nrm.size():
+					nrm[i] = (nb * nrm[i]).normalized()
+				if i * 4 + 3 < tan.size():
+					var tv: Vector3 = nb * Vector3(tan[i * 4], tan[i * 4 + 1], tan[i * 4 + 2])
+					tan[i * 4] = tv.x
+					tan[i * 4 + 1] = tv.y
+					tan[i * 4 + 2] = tv.z
+		arr[Mesh.ARRAY_VERTEX] = vs
+		if not nrm.is_empty():
+			arr[Mesh.ARRAY_NORMAL] = nrm
+		if not tan.is_empty():
+			arr[Mesh.ARRAY_TANGENT] = tan
+		out.add_surface_from_arrays(mi.mesh.surface_get_primitive_type(si), arr)
+		out.surface_set_material(si, mi.mesh.surface_get_material(si))
+		out.surface_set_name(si, mi.mesh.surface_get_name(si))
+	mi.mesh = out
+
+
+## Union-find root of `a` in `par` (path halving).
+static func _root(par: Array, a: int) -> int:
+	while int(par[a]) != a:
+		par[a] = par[int(par[a])]
+		a = int(par[a])
+	return a
 
 
 static func _host(root: Node3D, groups: Dictionary, name: String) -> Node3D:

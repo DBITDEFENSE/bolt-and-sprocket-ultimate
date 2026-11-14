@@ -80,7 +80,7 @@ All four come from the OpenGameArt "Ultimate Low Poly Guns" WW2 set (TastyTony /
   - `model_fit.json` places the sights from vertex scans and `ads_check --autofit`. All five guns pass `ads_check --headless --geometry` (markers and sight geometry).
   - Per gun:
     - the Sten's model faces backwards in the pack (`extra_rot` 180);
-    - the Bren's sights sit offset to the LEFT of its top magazine, as on the real gun;
+    - the Bren's sights sit offset to the LEFT of its top magazine, as on the real gun (the working rear sight is the aperture ring on the ladder base's left side; T-250 folds the raised carrying handle down to the right with model_fit `fold` and sets eye relief 0.20);
     - the Mosin-Nagant's model is 3.4 mm off centre, so its markers sit in the notch and on the post.
   - Casings: `models.json extras.cartridges.casing_for`.
   - Attachments: no drum on the Sten or FG 42; the Mosin's scope is a "PU Scope"; the Bren's extended magazine is a "Long Box Magazine".
