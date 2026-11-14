@@ -8,7 +8,8 @@ extends CanvasLayer
 ##    T-183 (the owner: "we don't need to see the kills ... the scores all the time; just their names, whether or not
 ##    they're down, and really small logos for what perks they have"): no kills or health bars on it. T-243 (the owner:
 ##    "make sure the player is able to see other players score without going into score board"): each teammate's
-##    Scrip is back, in gold in its own column after the name (companions have no account: blank).
+##    Scrip is back, in gold in its own column after the name (a companion shows its own once its kills opened an
+##    account, T-245; blank before).
 ##    States: DOWN with the bleed-out clock and a pulsing red cross, REVIVING (someone holds use on them), BLED OUT
 ##    (a human or bot, back next round), OUT COLD (a companion who bled out: gone for the match).
 ##  - the scoreboard (hold ui_scoreboard, Ctrl / Back): the full ledger, everyone including you: name, state, Scrip,
@@ -181,7 +182,7 @@ static func _row(s: NetMatch, pid: int, companion: bool) -> Dictionary:
 		state = "cold" if companion else "out"
 	return {"pid": pid, "name": Net.display_name(pid), "color": COMPANION_COL if companion else Net.player_color(pid),
 		"state": state, "bleed": s.coop.bleed_left(pid), "companion": companion,
-		"scrip": Economy.get_scrip(pid) if not companion else -1, "caps": caps_of(pid)}
+		"scrip": Economy.get_scrip(pid) if not companion or Economy.has_account(pid) else -1, "caps": caps_of(pid)}   # (T-245: a companion's own Scrip, T-177)
 
 
 ## A survivor's tonics as [[perk, tier, bonus]], the bonus perk first (as on the nameplates).

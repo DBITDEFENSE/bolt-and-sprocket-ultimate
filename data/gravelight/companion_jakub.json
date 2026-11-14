@@ -36,7 +36,7 @@
   "ammo_price_mult": 0.5,
   "revive_priority": 2
  },
- "refuses_classes": ["wonder"],
+ "refuses_classes": [],
  "discounts": {
   "map01_kaltenbrunn": {"door_stairs": 500}
  },
