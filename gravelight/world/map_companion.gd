@@ -252,6 +252,7 @@ func _tick_waiting(delta: float) -> void:
 	player.net_flags = NetMatch.PF_FLOOR
 	if player.remote_body != null:
 		player.remote_body.calm = true
+		player.remote_body.set_life(true)   # T-246: it looks at you, at the dead, at a shot; breath in the cold
 		player.remote_body.update_pose_lod(delta, 0.0, 0.0, NetMatch.PF_FLOOR)   # T-237: by what the camera sees
 	_tick_scene(delta)
 	_call_t -= delta
@@ -690,6 +691,8 @@ func _join(escort: int, arrival: bool) -> void:
 	Net.session.add_companion(player)
 	player.add_to_group(&"players")
 	player.add_to_group(&"bots")
+	if player.remote_body != null:
+		player.remote_body.set_life(false)   # T-246: the brain has the body now
 	brain = squad.add_brain(player, brain_options(escort_pid, not player.weapons.slots.is_empty()))
 	# T-245: after the brain, whose setup resets bot_damage_mult to 1.0 (so since T-135 the 0.6 never held): 0.6, 1.0
 	# with an armour tonic

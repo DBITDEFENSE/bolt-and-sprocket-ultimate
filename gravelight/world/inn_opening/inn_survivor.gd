@@ -59,6 +59,7 @@ func _ready() -> void:
 	look_row["pose"] = "cower"
 	body.setup(look_row)
 	body.name = "Body"
+	body.enable_life()   # T-246
 	position = _v3(row.get("hide", [0, 0, 0]))
 	rotation.y = deg_to_rad(float(row.get("hide_yaw", 0.0)))
 	_set_present(false)

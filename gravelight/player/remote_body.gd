@@ -48,10 +48,19 @@ const BUILDS: Dictionary = {
 	&"deacon": {"width": 1.04, "stance": 0.11, "gun_drop": 0.02, "lean": 0.03, "fidget": "tap"},
 	&"wren": {"width": 0.88, "stance": 0.09, "gun_drop": 0.0, "lean": 0.04, "fidget": "write"},
 	&"jakub": {"width": 0.86, "stance": 0.1, "gun_drop": 0.03, "lean": 0.07, "fidget": "warm"},
-	&"trudi": {"width": 0.9, "stance": 0.095, "gun_drop": 0.0, "lean": 0.0, "fidget": "watch"},
+	&"trudi": {"width": 0.9, "stance": 0.095, "gun_drop": 0.0, "lean": 0.0, "fidget": "warm"},
 	&"ammer": {"width": 1.1, "stance": 0.13, "gun_drop": 0.04, "lean": -0.03, "fidget": "stretch"},
 	&"petersen": {"width": 1.0, "stance": 0.12, "gun_drop": 0.03, "lean": 0.05, "fidget": "warm"},
 	&"jette": {"width": 0.88, "stance": 0.095, "gun_drop": 0.0, "lean": 0.02, "fidget": "tap"},
+}
+## T-246: the idle fidgets each one cycles through (the first is their own; one at a time, never the same twice
+## running): warm (rubbing the hands, breathing into them), hug (arms wrapped round / folded), look (a slow look
+## round, the gun kept as it is). Trudi checked a watch she does not wear (Peg's), the owner's 2026-11-14
+## screenshot: she warms her hands now.
+const FIDGETS: Dictionary = {
+	&"dutch": [&"stretch", &"look"], &"peg": [&"watch", &"look", &"hug"], &"deacon": [&"tap", &"look"],
+	&"wren": [&"write", &"look", &"hug"], &"jakub": [&"warm", &"hug", &"look"], &"trudi": [&"warm", &"hug", &"look"],
+	&"ammer": [&"stretch", &"hug", &"look"], &"petersen": [&"warm", &"look", &"hug"], &"jette": [&"tap", &"hug", &"look"],
 }
 ## Timed actions (seconds).
 const ACTION_SECONDS: Dictionary = {&"drink": 1.7, &"buy": 0.9, &"repair": 0.75, &"revive": 0.5}
@@ -99,6 +108,10 @@ var _ads_b: float = 0.0     # aimed down the sights (PF_ADS): stock in the shoul
 var _reload_ph: float = 0.0
 var _still_t: float = 0.0         # seconds standing still and calm
 var _fidget_t: float = 0.0        # seconds into the current fidget (< 0: waiting)
+var _fidget_kind: StringName = &""   # T-246: the fidget playing now (FIDGETS)
+## T-246: the shared NPC life (NpcLife) while an owner has it on (a companion or Jakub waiting): the head follows
+## the survivor near, a zombie, a shot; the weight shifts; breath fog in the cold. null = off (bots, joined).
+var life: NpcLife = null
 var _since_shot: float = 99.0
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 static var _fire_keys: Dictionary = {}
@@ -727,8 +740,35 @@ func _active_pose(downed: bool, moving: bool) -> StringName:
 	if float(_hold.get(&"buy", 0.0)) > 0.0 or (_act == &"buy" and _act_t > 0.0):
 		return &"buy"
 	if not moving and _fidget_t > 0.0:
-		return StringName(str(_build.get("fidget", "")))
+		if _fidget_kind == &"":
+			_fidget_kind = next_fidget(_rng.randf(), fidget_set(), &"")
+		return _fidget_kind
 	return &""
+
+
+## T-246: the fidgets this body cycles through (FIDGETS; the build's own one alone for anyone not listed).
+func fidget_set() -> Array[StringName]:
+	var out: Array[StringName] = []
+	for f: Variant in FIDGETS.get(character, [StringName(str(_build.get("fidget", "")))]):
+		if String(f) != "":
+			out.append(StringName(f))
+	return out
+
+
+## The next fidget (pure over a roll 0..1): not the one just played when there is a choice.
+static func next_fidget(roll: float, set_: Array[StringName], last: StringName) -> StringName:
+	return NpcLife.pick_idle(roll, set_, last)
+
+
+## T-246: the shared NPC life on (a companion or Jakub waiting) or off (joined: the brain has the body).
+func set_life(on: bool) -> void:
+	if on and life == null and is_inside_tree():
+		var head: Node3D = person.attachment("Head") if person != null else _head
+		life = NpcLife.attach(self, head, "%s_%d" % [character, pid], fidget_set())
+		life.busy = true   # its idles are this body's own fidgets
+	elif not on and life != null:
+		life.queue_free()
+		life = null
 
 
 ## T-237: update_pose for the bodies an AI drives (the bots, Jakub, the map's companion, the relief soldiers), at a
@@ -807,12 +847,13 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 			_fidget_t += delta
 			if _fidget_t > 4.2:
 				_fidget_t = -_rng.randf_range(5.0, 10.0)   # a pause, then the next one
+				_fidget_kind = next_fidget(_rng.randf(), fidget_set(), _fidget_kind)
 	else:
 		_still_t = 0.0
 		if _fidget_t > 0.0:
 			_fidget_t = -_rng.randf_range(1.0, 2.0)
 	var pose: StringName = _active_pose(downed, moving)
-	for name_k: StringName in [&"revive", &"repair", &"drink", &"buy", &"stretch", &"watch", &"tap", &"write", &"warm"]:
+	for name_k: StringName in [&"revive", &"repair", &"drink", &"buy", &"stretch", &"watch", &"tap", &"write", &"warm", &"hug", &"look"]:
 		_blend[name_k] = move_toward(float(_blend.get(name_k, 0.0)), 1.0 if pose == name_k else 0.0, delta * 5.0)
 	_down_b = move_toward(_down_b, 1.0 if downed else 0.0, delta * 3.0)
 	_crouch_b = move_toward(_crouch_b, 1.0 if crouch else 0.0, delta * 6.0)
@@ -846,8 +887,15 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 	var b_tap: float = float(_blend[&"tap"])
 	var b_write: float = float(_blend[&"write"])
 	var b_warm: float = float(_blend[&"warm"])   # Jakub blows into his cupped hands
+	var b_hug: float = float(_blend[&"hug"])     # T-246: arms wrapped round (the cold) / folded
+	var b_look: float = float(_blend[&"look"])   # T-246: a slow look round
+	# T-246: the shared life (a companion or Jakub waiting); its weight is the calm standing pose
+	var lw: float = 0.0
+	if life != null:
+		life.tick(delta, self)
+		lw = (1.0 - _down_b) * (1.0 - kneel) * (1.0 - _crouch_b) * (0.0 if moving else 1.0) * (1.0 - _ads_b)
 	# both hands busy: the gun goes on the sling across the back; one hand busy: held low in the other
-	var sling: float = maxf(maxf(kneel, b_rep), maxf(maxf(b_write, b_stretch), b_warm))
+	var sling: float = maxf(maxf(kneel, b_rep), maxf(maxf(b_write, b_stretch), maxf(b_warm, b_hug)))
 	var low: float = maxf(maxf(b_drink, b_buy), maxf(b_watch, b_tap))
 	# --- body
 	_pivot.rotation.x = lerpf(0.0, -1.47, _down_b)
@@ -856,24 +904,31 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 	var hip_y: float = 0.95 - 0.32 * _crouch_b - (absf(sin(p)) * 0.03 if moving else 0.0)
 	hip_y = lerpf(hip_y, 0.63, kneel)
 	_hips.position.y = hip_y
+	_hips.position.x = 0.022 * (life.shift if life != null else 0.0) * lw   # T-246: the weight on one hip
 	var lean: float = float(_build.get("lean", 0.0))
 	var t_now: float = Time.get_ticks_msec() * 0.001
 	var chest_x: float = -0.12 * _crouch_b - 0.18 * _sprint_b + lean * (1.0 - _sprint_b) + lerpf(0.0, 0.62, _down_b)
 	chest_x += -0.45 * kneel - 0.18 * b_rep + 0.38 * b_stretch * (0.8 + 0.2 * sin(t_now * 2.0)) - 0.12 * b_write - 0.08 * b_tap
+	if life != null:
+		chest_x += (0.012 * life.breath + 0.22 * life.startle) * lw - 0.05 * b_hug
 	_chest.rotation.x = chest_x
-	_chest.rotation.y = sin(p) * 0.08 * swing + 0.25 * b_stretch * sin(t_now * 1.3)
+	_chest.rotation.y = sin(p) * 0.08 * swing + 0.25 * b_stretch * sin(t_now * 1.3) + (0.22 * life.look_yaw * lw if life != null else 0.0)
+	_chest.rotation.z = (-0.03 * life.shift * lw) if life != null else 0.0
 	var aim: float = clampf(pitch, -1.2, 1.2)
 	var head_x: float = lerpf(aim * 0.6, 0.6, _down_b) - _chest.rotation.x * 0.4
 	head_x += 0.35 * b_drink * clampf((1.7 - _act_t) * 2.0, 0.0, 1.0) - 0.55 * b_watch - 0.5 * b_write - 0.25 * kneel + 0.3 * b_stretch - 0.12 * b_warm
 	var long_gun: bool = str(_gun_hold.get("kind", "long")) == "long"
 	head_x += (0.3 if long_gun else 0.12) * _ads_b   # cheek down onto the stock (behind a pistol the head stays up)
+	head_x += -0.1 * b_hug + (life.look_pitch * lw if life != null else 0.0)
 	_head.rotation.x = head_x
 	# T-099: behind a long gun the body turns side-on (the feet and hips with it), left shoulder forward, so the
 	# support hand reaches the handguard; the head and the gun turn back to the front
 	var blade_to: float = (0.55 + 0.2 * _ads_b) * (1.0 - low) * (1.0 - sling) * (1.0 - _down_b) * (1.0 - 0.6 * _sprint_b)
 	_blade = move_toward(_blade, blade_to if long_gun and _gun != null else 0.0, delta * 3.0)
 	_pivot.rotation.y = -_blade
-	_head.rotation.y = 0.35 * b_tap * sin(t_now * 0.7) + 0.9 * _blade
+	_head.rotation.y = 0.35 * b_tap * sin(t_now * 0.7) + 0.9 * _blade + 0.7 * b_look * sin(t_now * 0.55 + float(pid))
+	if life != null:
+		_head.rotation.y += 0.78 * life.look_yaw * lw
 	_head.rotation.z = (-0.16 if long_gun else 0.0) * _ads_b   # T-099: the head leans onto the stock
 	# gun: aimed in both hands -> held low -> slung on the back
 	var aim_xf: Transform3D = Transform3D(Basis(Vector3.UP, _blade) * Basis.from_euler(Vector3(lerpf(aim, -0.75, _sprint_b) - _chest.rotation.x + _recoil * 0.12, 0.0, 0.0)),
@@ -893,6 +948,15 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 	aim_xf.origin = (_hold_anchor(_ads_b) - aim_xf.basis * hold_pt).lerp(old_o, _down_b)
 	var low_xf: Transform3D = Transform3D(Basis.from_euler(Vector3(-1.05, 0.35, 0.0)), Vector3(-0.08, 0.22, -0.12))
 	var sling_xf: Transform3D = Transform3D(Basis.looking_at(Vector3(0.55, 0.83, 0.0), Vector3.BACK), Vector3(-0.2, 0.05, 0.24))
+	if _weapon_id == &"coal_shovel":
+		# T-246: Jakub's shovel on his back blade down, the handle over his right shoulder (blade up it stood over
+		# his head like a placard)
+		var sb: Basis = Basis.looking_at(Vector3(-0.32, -0.95, 0.0), Vector3.BACK)
+		sling_xf = Transform3D(sb, _sling_anchor(Vector3(0.1, 0.36, 0.17)) - sb * gun_at)
+	elif not long_gun:
+		# T-246: a knife or a pistol goes to the right hip, pointing down (it hung across the chest before)
+		var hb2: Basis = Basis.looking_at(Vector3(0.05, -1.0, -0.1), Vector3.BACK)
+		sling_xf = Transform3D(hb2, _sling_anchor(Vector3(0.155, -0.1, 0.0)) - hb2 * gun_at)
 	var gxf: Transform3D = aim_xf.interpolate_with(low_xf, low)
 	_gun_pivot.transform = gxf.interpolate_with(sling_xf, sling)
 	# --- legs (hip -> knee -> ankle in pivot space)
@@ -969,7 +1033,7 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 			r_job = cp * Vector3(0.14, 0.42 + 0.03 * reach, -0.5 - 0.06 * reach)
 		elif b_watch > 0.0:
 			r_job = right   # the gun hand stays put
-			left = left.lerp(cp * Vector3(-0.02, 0.42, -0.3), b_watch)
+			left = left.lerp(cp * Vector3(-0.02, 0.42 if person == null else 0.2, -0.3), b_watch)   # T-246: the wrist at chest height on a modelled body (it went to the face)
 		elif b_tap > 0.0:
 			var knock: float = maxf(0.0, sin(t_now * 9.0))
 			r_job = cp * Vector3(0.16, 0.34, -0.48 - 0.06 * knock)
@@ -996,9 +1060,18 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 			l_job = _hips.global_transform * Vector3(-0.12, 0.12, 0.16)
 			r_job2 = _hips.global_transform * Vector3(0.12, 0.12, 0.16)
 		elif b_warm > 0.0:
+			# T-246: on a modelled body the wrists under the chin, the cupped fingers at the mouth (0.6 put them on
+			# top of the head)
 			var rub: float = 0.012 * sin(t_now * 9.0)
-			l_job = cp2 * Vector3(-0.035 + rub, 0.6, -0.2)
-			r_job2 = cp2 * Vector3(0.035 - rub, 0.6, -0.2)
+			var wy: float = 0.6 if person == null else 0.37
+			l_job = cp2 * Vector3(-0.04 + rub, wy, -0.17)
+			r_job2 = cp2 * Vector3(0.04 - rub, wy, -0.17)
+		elif b_hug > 0.0:
+			# T-246: arms folded / wrapped round in the cold, the wrists crossed in front of the ribs
+			var hy: float = 0.3 if person == null else 0.16
+			var sway: float = 0.008 * sin(t_now * 1.7)
+			l_job = cp2 * Vector3(0.11, hy + sway, -0.16)
+			r_job2 = cp2 * Vector3(-0.11, hy + 0.03 + sway, -0.14)
 		left = left.lerp(l_job, sling)
 		right = right.lerp(r_job2, sling)
 	for side2: int in [0, 1]:
@@ -1015,6 +1088,10 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 			pole = pole.lerp(_pivot.global_transform.basis.inverse() * (_chest.global_transform.basis * gp), on)
 		if b_stretch > 0.5:
 			pole = Vector3(-1.0 if side2 == 0 else 1.0, 0.2, 0.3)
+		elif b_hug > 0.0:
+			pole = pole.lerp(Vector3(-1.0 if side2 == 0 else 1.0, -0.6, -0.15), b_hug)   # T-246: elbows out
+		if b_warm > 0.0 and person != null:
+			pole = pole.lerp(Vector3(-0.3 if side2 == 0 else 0.3, -1.0, -0.5), b_warm)   # elbows down, the fingers up to the mouth
 		var elbow: Vector3 = WeaponHolder._solve_elbow(sh, hand, UPPER, FORE, pole)
 		_hand_t[side2] = hand
 		_poles[side2] = pole
@@ -1038,6 +1115,11 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 			var cam: Camera3D = get_viewport().get_camera_3d() if is_inside_tree() else null
 			if cam != null and cam.global_position.distance_squared_to(global_position) < 400.0:
 				AudioDirector.play_3d("footstep_stone", global_position, -10.0, 0.1)
+
+
+## T-246: a point in the chest node's space on the body actually drawn (scaled with a modelled person).
+func _sling_anchor(v: Vector3) -> Vector3:
+	return v * s_k()
 
 
 ## T-099: the drawn person's height scale (1.0 for the primitives).
@@ -1158,7 +1240,9 @@ func _face_state(downed: bool, pose: StringName) -> StringName:
 		return &"fear"
 	if _since_shot < 2.0 or _reload_b > 0.5:
 		return &"determined"
-	if pose != &"" and _fidget_t > 1.5 and _fidget_t < 3.5 and pose == StringName(str(_build.get("fidget", ""))):
+	if life != null and life.startle > 0.45:
+		return &"fear"   # T-246: a shot or a blast close by
+	if pose != &"" and _fidget_t > 1.5 and _fidget_t < 3.5 and pose == _fidget_kind and pose != &"look":
 		return &"smile"
 	return &"neutral"
 
