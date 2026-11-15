@@ -1,0 +1,9 @@
+Title: GRAVELIGHT vehicle paint detail textures (grime / chipping / streak mask, steel normal)
+Author: GRAVELIGHT project (generated in-house by gravelight/tools_src/gen_vehicle_paint_tex.py, T-253)
+Source: this repository (gravelight/tools_src/gen_vehicle_paint_tex.py)
+License: Ours (original work, in-house)
+Credit line: none needed
+Format: PNG 512x512, tiling: paint_mask.png (RGBA masks), paint_normal.png (tangent normal, OpenGL)
+Downloaded: n/a (generated 2026-11-14 by Claude for Devin Blair; filtered noise, no photographs)
+Files used: paint_mask.png, paint_normal.png
+Game use: the weathering of the vehicles built in code (the Sherman, the dive bomber): gravelight/world/sherman/vehicle_paint.gdshaderinc (vehicle_paint.gdshader, vehicle_paint_sky.gdshader)

@@ -350,8 +350,19 @@ static func curtain(parent: Node3D, pos: Vector3, yaw: float, height: float, key
 
 static func crate(parent: Node3D, pos: Vector3, size: float, yaw: float, stencil: String = "") -> void:
 	var g: Node3D = group(parent, "Crate", pos, yaw)
-	block(g, Vector3(-size * 0.5, 0, -size * 0.5), Vector3(size * 0.5, size, size * 0.5), "planks")
-	block(g, Vector3(-size * 0.52, size * 0.45, -size * 0.52), Vector3(size * 0.52, size * 0.55, size * 0.52), "beam")
+	# T-253: a framed crate (it was a cube with one band): the planked box, battens along its twelve edges, a brace
+	# across each flank; inside the same 1.04 x 1.0 x 1.04 (x size) envelope as before
+	var h: float = size * 0.49
+	var t: float = size * 0.075
+	var o: float = size * 0.52
+	block(g, Vector3(-h, 0, -h), Vector3(h, size * 0.985, h), "planks")
+	for sx: float in [-1.0, 1.0]:
+		for sz: float in [-1.0, 1.0]:
+			block(g, Vector3(sx * o, 0, sz * o), Vector3(sx * (o - t), size, sz * (o - t)), "beam")
+		for y0: float in [0.0, size - t]:
+			block(g, Vector3(sx * o, y0, -o + t), Vector3(sx * (o - size * 0.03), y0 + t, o - t), "beam", false)
+			block(g, Vector3(-o + t, y0, sx * o), Vector3(o - t, y0 + t, sx * (o - size * 0.03)), "beam", false)
+		obox(g, Vector3(sx * (h + size * 0.012), size * 0.5, 0), Vector3(size * 0.024, size * 1.12, t * 0.9), "beam", Vector3(sx * 42.0, 0, 0))
 	if stencil != "":
 		var l: Label3D = Label3D.new()
 		l.text = stencil
@@ -373,16 +384,62 @@ static func hay_bale(parent: Node3D, pos: Vector3, yaw: float) -> void:
 		block(g, Vector3(s - 0.01, -0.005, -0.255), Vector3(s + 0.01, 0.455, 0.255), "beam", false)
 
 
+## A spoked wooden wheel with an iron tyre, standing in the plane across x at `c` (T-253): twelve felloes, ten
+## spokes, the hub and its cap.
+static func wagon_wheel(g: Node3D, c: Vector3, r: float) -> void:
+	var seg: float = 2.0 * r * tan(PI / 12.0) + 0.012
+	for i: int in 12:
+		var a: float = TAU * float(i) / 12.0
+		var d: Vector3 = Vector3(0, cos(a), sin(a))
+		obox(g, c + d * (r - 0.04), Vector3(0.06, 0.07, seg), "planks", Vector3(rad_to_deg(a), 0, 0))
+		obox(g, c + d * (r - 0.004), Vector3(0.066, 0.012, seg), "iron", Vector3(rad_to_deg(a), 0, 0))
+	for j: int in 10:
+		var a2: float = TAU * (float(j) + 0.5) / 10.0
+		obox(g, c + Vector3(0, cos(a2), sin(a2)) * (r * 0.5), Vector3(0.035, r - 0.1, 0.045), "beam", Vector3(rad_to_deg(a2), 0, 0))
+	cyl(g, c, 0.09, 0.11, "furniture", Vector3(0, 0, 90))
+	cyl(g, c, 0.045, 0.135, "iron", Vector3(0, 0, 90))
+
+
+## A farm wagon loaded with hay (T-253: four spoked wheels on their axles, the reach pole, a planked bed, flared
+## ladder sides on their stakes, the end boards, the drawbar and its swingletree; it was a slab on two discs). Inside
+## the 1.9 x 3.0 m box its colliders have always used; the drawbar runs out ahead as it did.
 static func cart(parent: Node3D, pos: Vector3, yaw: float) -> void:
 	var g: Node3D = group(parent, "Cart", pos, yaw)
-	block(g, Vector3(-0.8, 0.55, -1.3), Vector3(0.8, 0.65, 1.3), "planks")
-	for s: float in [-1.0, 1.0]:
-		block(g, Vector3(s * 0.8 - 0.04 * s, 0.65, -1.3), Vector3(s * 0.8, 1.05, 1.3), "planks")
-		cyl(g, Vector3(s * 0.95, 0.5, 0.4), 0.5, 0.08, "furniture", Vector3(0, 0, 90))
-		cyl(g, Vector3(s * 0.95, 0.5, 0.4), 0.12, 0.12, "iron", Vector3(0, 0, 90))
+	var axles: Array = [[-0.85, 0.42], [0.8, 0.52]]   # z, wheel radius (the front pair smaller, to turn under the bed)
+	for ax: Array in axles:
+		var z: float = float(ax[0])
+		var r: float = float(ax[1])
+		obox(g, Vector3(0, r, z), Vector3(1.78, 0.09, 0.1), "beam")
+		block(g, Vector3(-0.6, r + 0.045, z - 0.07), Vector3(0.6, 0.55, z + 0.07), "beam")
+		for s: float in [-1.0, 1.0]:
+			wagon_wheel(g, Vector3(s * 0.9, r, z), r)
+	obox(g, Vector3(0, 0.47, -0.02), Vector3(0.08, 0.08, 1.7), "beam", Vector3(-3.5, 0, 0))
+	# the bed: five boards on three sills
+	for i: int in 5:
+		var x0: float = -0.78 + 0.314 * float(i)
+		block(g, Vector3(x0, 0.56, -1.3), Vector3(x0 + 0.3, 0.6, 1.3), "planks")
+	for sz: float in [-1.1, 0.0, 1.1]:
+		block(g, Vector3(-0.8, 0.51, sz - 0.04), Vector3(0.8, 0.56, sz + 0.04), "beam", false)
+	for ez: float in [-1.3, 1.3]:
+		block(g, Vector3(-0.78, 0.6, ez - 0.02), Vector3(0.78, 0.84, ez + 0.02), "planks")
+	# the ladder sides, leaning out, on their stakes
+	for s2: float in [-1.0, 1.0]:
+		obox(g, Vector3(s2 * 0.78, 0.66, 0), Vector3(0.06, 0.06, 2.7), "beam")
+		obox(g, Vector3(s2 * 0.93, 1.1, 0), Vector3(0.06, 0.06, 2.84), "beam")
+		for k: int in 10:
+			obox(g, Vector3(s2 * 0.855, 0.88, -1.22 + 0.271 * float(k)), Vector3(0.03, 0.47, 0.03), "planks", Vector3(0, 0, -s2 * 18.8))
+		for stz: float in [-0.85, 0.8]:
+			obox(g, Vector3(s2 * 0.885, 0.8, stz), Vector3(0.05, 0.66, 0.05), "beam", Vector3(0, 0, -s2 * 9.0))
+	# the drawbar and its swingletree
 	obox(g, Vector3(0, 0.45, -2.2), Vector3(0.08, 0.08, 1.9), "beam", Vector3(8, 0, 0))
-	for i: int in 3:
-		hay_bale(g, Vector3(-0.3 + i * 0.3, 0.65, 0.3 - i * 0.5), 15.0 * i)
+	obox(g, Vector3(0, 0.33, -3.0), Vector3(0.9, 0.05, 0.05), "beam")
+	for s3: float in [-1.0, 1.0]:
+		obox(g, Vector3(s3 * 0.2, 0.44, -1.5), Vector3(0.05, 0.05, 0.75), "iron", Vector3(4, s3 * 28.0, 0))
+	# the load
+	for i2: int in 3:
+		hay_bale(g, Vector3(-0.3 + i2 * 0.3, 0.6, 0.3 - i2 * 0.5), 15.0 * i2)
+	ball(g, Vector3(0.1, 0.78, -0.75), Vector3(1.35, 0.6, 1.0), "hay")
+	ball(g, Vector3(-0.2, 0.8, 0.85), Vector3(1.3, 0.55, 0.8), "hay")
 
 
 ## A rail fence from a to b: square posts and two split rails per bay (T-093: the rails are hewn round poles in the
