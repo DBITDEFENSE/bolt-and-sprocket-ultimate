@@ -21,8 +21,24 @@ uniform float albedo_amount = 0.6;
 uniform float normal_strength = 0.6;
 uniform float orm_amount = 0.5;
 
+// the gore rework: blood on the hands and sleeves after a kill at arm's length (GoreFx.hands sets it, 0..1; it wears off)
+global uniform float gl_hand_blood;
+
 varying vec3 v_p;
 varying vec3 v_n;
+
+float blood_hash(vec3 p) {
+	return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453);
+}
+
+// value noise in object space (the arms have no shared UV layout)
+float blood_noise(vec3 p) {
+	vec3 i = floor(p);
+	vec3 f = fract(p);
+	f = f * f * (3.0 - 2.0 * f);
+	return mix(mix(mix(blood_hash(i), blood_hash(i + vec3(1, 0, 0)), f.x), mix(blood_hash(i + vec3(0, 1, 0)), blood_hash(i + vec3(1, 1, 0)), f.x), f.y),
+		mix(mix(blood_hash(i + vec3(0, 0, 1)), blood_hash(i + vec3(1, 0, 1)), f.x), mix(blood_hash(i + vec3(0, 1, 1)), blood_hash(i + vec3(1, 1, 1)), f.x), f.y), f.z);
+}
 
 void vertex() {
 	vec3 s = vec3(length(MODEL_MATRIX[0].xyz), length(MODEL_MATRIX[1].xyz), length(MODEL_MATRIX[2].xyz));
@@ -52,6 +68,13 @@ void fragment() {
 		// skin: the detail is only a grain; a little warmth in the creases
 		col = base_color.rgb * mix(0.94, 1.04, lum * 0.5);
 		r = roughness;
+	}
+	if (gl_hand_blood > 0.001) {
+		float bn = blood_noise(v_p * 34.0) * 0.65 + blood_noise(v_p * 90.0) * 0.35;
+		float edge = 1.0 - 0.5 * gl_hand_blood;                  // at most about half the surface
+		float bm = smoothstep(edge, edge + 0.1, bn);
+		col = mix(col, vec3(0.035, 0.002, 0.003), bm * 0.85);    // dark, not a red glove
+		r = mix(r, 0.3, bm);
 	}
 	ALBEDO = col;
 	ROUGHNESS = r;

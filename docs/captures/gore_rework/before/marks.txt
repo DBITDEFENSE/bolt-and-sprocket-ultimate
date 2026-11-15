@@ -1,0 +1,7 @@
+GoreFx's marks after each scene in order (wall, headshot, shotgun, pile, snow, lamp); empty on the build before the rework
+[shots_gore] scene done
+[shots_gore] scene done
+[shots_gore] scene done
+[shots_gore] scene done
+[shots_gore] scene done
+[shots_gore] scene done

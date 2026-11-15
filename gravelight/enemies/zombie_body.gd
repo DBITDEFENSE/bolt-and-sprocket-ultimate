@@ -119,7 +119,9 @@ const KEY_LOOK: Dictionary = {
 	"armband": [Color(0.08, 0.08, 0.09), 0.9, 0.0, 0.0],
 	"brass": [Color(0.6, 0.5, 0.25), 0.4, 0.8, 0.0],
 	"rope": [Color(0.5, 0.42, 0.28), 1.0, 0.0, 0.0],
-	"stump": [Color(0.3, 0.02, 0.03), 0.35, 0.0, 0.0],
+	"stump": [Color(0.4, 0.035, 0.04), 0.22, 0.0, 0.0],
+	"meat": [Color(0.2, 0.018, 0.022), 0.3, 0.0, 0.0],
+	"bone": [Color(0.6, 0.52, 0.42), 0.45, 0.0, 0.0],
 	"eye_white": [Color(0.74, 0.7, 0.64), 0.25, 0.0, 0.0],
 	"iris": [Color(0.16, 0.12, 0.09), 0.2, 0.0, 0.0],
 	"lip": [Color(0.4, 0.28, 0.3), 0.5, 0.0, 0.0],
@@ -342,21 +344,36 @@ static func material(variant: String, key: String) -> StandardMaterial3D:
 
 static func blood_material() -> StandardMaterial3D:
 	if _blood == null:
+		# the gore rework: a wound is a ragged dark hole with a wet torn rim, not a soft red disc
 		_blood = StandardMaterial3D.new()
-		var g: Gradient = Gradient.new()
-		g.set_color(0, Color(0.32, 0.02, 0.03, 1.0))
-		g.set_color(1, Color(0.2, 0.0, 0.01, 0.0))
-		g.add_point(0.55, Color(0.25, 0.01, 0.02, 0.9))
-		var t: GradientTexture2D = GradientTexture2D.new()
-		t.gradient = g
-		t.fill = GradientTexture2D.FILL_RADIAL
-		t.fill_from = Vector2(0.5, 0.5)
-		t.fill_to = Vector2(1.0, 0.5)
-		t.width = 32
-		t.height = 32
-		_blood.albedo_texture = t
+		var n: int = 48
+		var img: Image = Image.create(n, n, false, Image.FORMAT_RGBA8)
+		var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+		rng.seed = 1943
+		var lobes: Array[float] = []
+		for i: int in 7:
+			lobes.append(rng.randf_range(-1.0, 1.0))
+		for y: int in n:
+			for x: int in n:
+				var v: Vector2 = Vector2(x + 0.5 - n * 0.5, y + 0.5 - n * 0.5) / (n * 0.5)
+				var r: float = v.length()
+				var ang: float = atan2(v.y, v.x)
+				var wob: float = 0.0
+				for k: int in lobes.size():
+					wob += lobes[k] * sin(ang * float(k + 2) + float(k) * 1.7) / float(k + 2)
+				var hole: float = 0.3 * (1.0 + 0.6 * wob)
+				var rim: float = hole + 0.34 * (1.0 + 0.9 * wob)
+				var c: Color = Color(0, 0, 0, 0)
+				if r < hole:
+					c = Color(0.045, 0.004, 0.006, 1.0)                                  # the hole: near black
+				elif r < rim:
+					var t: float = (r - hole) / maxf(0.01, rim - hole)
+					c = Color(lerpf(0.4, 0.2, t), 0.03, 0.035, (1.0 - t * t) * (0.8 + 0.2 * rng.randf()))   # torn, wet
+				img.set_pixel(x, y, c)
+		_blood.albedo_texture = ImageTexture.create_from_image(img)
 		_blood.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-		_blood.roughness = 0.25
+		_blood.roughness = 0.14
+		_blood.metallic_specular = 0.7
 		_blood.cull_mode = BaseMaterial3D.CULL_DISABLED
 	return _blood
 
@@ -1607,10 +1624,17 @@ static func piece_mesh(kit: String, build: String, female: bool, root_bone: Stri
 static func stump_mesh() -> ArrayMesh:
 	if _stump != null:
 		return _stump
+	# the gore rework: a ragged ring of torn meat around the snapped end of the bone (the open side is -Y)
 	_stump = build_mesh("_", [
 		_cyl(0.055, 0.06, 0.03, Vector3(0, -0.01, 0), "dark", Vector3.ZERO, Vector3.ONE, 8),
-		_cyl(0.04, 0.045, 0.012, Vector3(0, -0.028, 0), "stump", Vector3.ZERO, Vector3.ONE, 8),
-		_sph(0.03, Vector3(0, -0.02, 0), "stump", Vector3(1.0, 0.5, 1.0))])
+		_cyl(0.04, 0.047, 0.012, Vector3(0, -0.028, 0), "stump", Vector3.ZERO, Vector3.ONE, 8),
+		_sph(0.022, Vector3(0.026, -0.03, 0.008), "stump", Vector3(1.0, 0.7, 1.0), false, 6),
+		_sph(0.018, Vector3(-0.022, -0.034, 0.02), "stump", Vector3(1.0, 0.9, 1.0), false, 6),
+		_sph(0.02, Vector3(-0.012, -0.03, -0.028), "stump", Vector3(1.0, 0.6, 1.0), false, 6),
+		_sph(0.015, Vector3(0.02, -0.036, -0.022), "meat", Vector3(1.0, 1.2, 1.0), false, 6),
+		_sph(0.014, Vector3(0.002, -0.038, 0.03), "meat", Vector3(1.0, 1.1, 1.0), false, 6),
+		_cyl(0.013, 0.016, 0.05, Vector3(0.004, -0.05, -0.002), "bone", Vector3(0.12, 0, -0.08), Vector3.ONE, 6),
+		_cyl(0.002, 0.011, 0.024, Vector3(0.008, -0.082, 0.001), "bone", Vector3(3.3, 0, 0.3), Vector3.ONE, 5)])
 	return _stump
 
 

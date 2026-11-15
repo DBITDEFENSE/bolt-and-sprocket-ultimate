@@ -349,6 +349,71 @@
       "volume_db": -5.0,
       "loop": true
     },
+    "gore_bone": {
+      "files": [
+        "res://gravelight/audio/sfx/zombies/gore_bone_01.wav",
+        "res://gravelight/audio/sfx/zombies/gore_bone_02.wav",
+        "res://gravelight/audio/sfx/zombies/gore_bone_03.wav"
+      ],
+      "volume_db": -5.0,
+      "max_voices": 2,
+      "bus": "SFX",
+      "attenuation": "zombie",
+      "pitch": [
+        0.9,
+        1.1
+      ],
+      "vol_jitter_db": 1.5
+    },
+    "gore_drip": {
+      "files": [
+        "res://gravelight/audio/sfx/zombies/gore_drip_01.wav",
+        "res://gravelight/audio/sfx/zombies/gore_drip_02.wav",
+        "res://gravelight/audio/sfx/zombies/gore_drip_03.wav"
+      ],
+      "volume_db": -14.0,
+      "max_voices": 2,
+      "bus": "SFX",
+      "attenuation": "quiet",
+      "pitch": [
+        0.88,
+        1.1
+      ],
+      "vol_jitter_db": 2.0
+    },
+    "gore_splat": {
+      "files": [
+        "res://gravelight/audio/sfx/zombies/gore_splat_01.wav",
+        "res://gravelight/audio/sfx/zombies/gore_splat_02.wav",
+        "res://gravelight/audio/sfx/zombies/gore_splat_03.wav",
+        "res://gravelight/audio/sfx/zombies/gore_splat_04.wav"
+      ],
+      "volume_db": -9.0,
+      "max_voices": 3,
+      "bus": "SFX",
+      "attenuation": "quiet",
+      "pitch": [
+        0.86,
+        1.12
+      ],
+      "vol_jitter_db": 2.0
+    },
+    "gore_spurt": {
+      "files": [
+        "res://gravelight/audio/sfx/zombies/gore_spurt_01.wav",
+        "res://gravelight/audio/sfx/zombies/gore_spurt_02.wav",
+        "res://gravelight/audio/sfx/zombies/gore_spurt_03.wav"
+      ],
+      "volume_db": -8.0,
+      "max_voices": 2,
+      "bus": "SFX",
+      "attenuation": "quiet",
+      "pitch": [
+        0.92,
+        1.08
+      ],
+      "vol_jitter_db": 1.5
+    },
     "kielholer_chain_drag": {
       "files": [
         "res://gravelight/audio/bosses/kielholer_chain_drag.ogg"

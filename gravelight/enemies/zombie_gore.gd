@@ -58,8 +58,8 @@ static func sever(z: Zombie, bone: String, impulse: Vector3, with_piece: bool = 
 	if blood_allowed():
 		var at: Node3D = z.bone_attachment(ZombieRig.parent_of(bone))
 		var p: Vector3 = at.to_global(ZombieRig.rest_offset(bone)) if at != null else z.global_position + Vector3.UP
-		for i: int in 2:
-			Effects.blood(p, impulse.normalized() if impulse.length_squared() > 0.01 else Vector3.UP)
+		if with_piece:   # (a zombie that spawns legless bled out long ago)
+			Effects.gore_burst(p, impulse.normalized() if impulse.length_squared() > 0.01 else Vector3.UP, true)
 	return true
 
 

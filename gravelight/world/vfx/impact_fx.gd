@@ -12,14 +12,23 @@ const CHUNKS: int = 16
 const SPARKS: int = 8
 const MIST: int = 8
 const DROPS: int = 8
+const DROPS_HEAVY: int = 6
+const DROPS_LIGHT_AMOUNT: int = 6
+const DROPS_HEAVY_AMOUNT: int = 13
+const HEAVY_FROM: int = 9
+const MIST_AMOUNT: int = 5
 const GLASS: int = 6
 
 var impacts: Dictionary = {}
+## Its own random stream: presentation never draws from the one gameplay uses.
+var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _puff: Array[CPUParticles3D] = []
 var _chunk: Array[CPUParticles3D] = []
 var _spark: Array[CPUParticles3D] = []
 var _mist: Array[CPUParticles3D] = []
 var _drops: Array[CPUParticles3D] = []
+var _drops_heavy: Array[CPUParticles3D] = []
+var _ndh: int = 0
 var _glass: Array[CPUParticles3D] = []
 var _np: int = 0
 var _nc: int = 0
@@ -78,35 +87,35 @@ func setup(impact_cfg: Dictionary, hits_cfg: Dictionary) -> void:
 	for i: int in SPARKS:
 		_spark.append(_make(spark_mat, 0.012, 7, 0.22, 3.0, 7.0, 35.0, Vector3(0, -9.8, 0),
 			_ramp(Color(1.0, 0.85, 0.5, 1.0), Color(1.0, 0.4, 0.1, 0.0)), 0.6, 1.0))
-	# blood: a mist that hangs, droplets that fly and fall
-	var mist_amount: int = int(hits_cfg.get("mist_amount", 7))
+	# blood (GoreFx drives these): a fine dark mist that hangs, streaks that fly and fall. Lit, never glowing.
+	var mist_amount: int = MIST_AMOUNT
+	var mist_mat: StandardMaterial3D = _puff_mat(soft, false)
+	mist_mat.vertex_color_is_srgb = true     # (a ramp colour read as linear came out a bright cartoon red)
 	for i: int in MIST:
-		_mist.append(_make(_puff_mat(soft, true), 0.11, mist_amount, 0.4, 0.4, 1.6, 30.0, Vector3(0, -1.5, 0),
-			_ramp(Color(0.5, 0.03, 0.04, 0.85), Color(0.3, 0.0, 0.01, 0.0)), 0.7, 2.6))
-	var drop_mat: StandardMaterial3D = StandardMaterial3D.new()
-	drop_mat.albedo_color = Color(0.36, 0.03, 0.04)
-	drop_mat.roughness = 0.35
-	var drop: SphereMesh = SphereMesh.new()
-	drop.radius = 0.011
-	drop.height = 0.022
+		_mist.append(_make(mist_mat, 0.13, mist_amount, 0.5, 0.4, 1.6, 34.0, Vector3(0, -1.5, 0),
+			_ramp(Color(0.34, 0.025, 0.03, 0.42), Color(0.16, 0.004, 0.008, 0.0)), 0.7, 2.8))
+	var drop: CapsuleMesh = CapsuleMesh.new()
+	drop.radius = 0.009
+	drop.height = 0.07
 	drop.radial_segments = 5
-	drop.rings = 2
-	drop.material = drop_mat
-	for i: int in DROPS:
+	drop.rings = 1
+	drop.material = GoreFx.blood_material()
+	for i: int in DROPS + DROPS_HEAVY:
 		var p: CPUParticles3D = CPUParticles3D.new()
 		p.emitting = false
 		p.one_shot = true
-		p.amount = int(hits_cfg.get("blood_droplets", 12))
+		p.amount = DROPS_LIGHT_AMOUNT if i < DROPS else DROPS_HEAVY_AMOUNT
 		p.lifetime = 0.6
 		p.explosiveness = 1.0
 		p.mesh = drop
 		p.direction = Vector3(0, 0, 1)
-		p.spread = 40.0
+		p.spread = 26.0
 		p.initial_velocity_min = 1.5
-		p.initial_velocity_max = 4.0
+		p.initial_velocity_max = 5.0
 		p.gravity = Vector3(0, -9.8, 0)
+		p.particle_flag_align_y = true      # a drop is a streak along its flight
 		p.scale_amount_min = 0.5
-		p.scale_amount_max = 1.3
+		p.scale_amount_max = 1.4
 		var c: Curve = Curve.new()
 		c.add_point(Vector2(0.0, 1.0))
 		c.add_point(Vector2(1.0, 0.4))
@@ -114,7 +123,10 @@ func setup(impact_cfg: Dictionary, hits_cfg: Dictionary) -> void:
 		p.local_coords = false
 		p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		add_child(p)
-		_drops.append(p)
+		if i < DROPS:
+			_drops.append(p)
+		else:
+			_drops_heavy.append(p)
 	# Nachtglas: violet-teal crystal glints (a taught weapon's hit, a Glasshide's plates)
 	var nc: Color = _col(hits_cfg.get("nachtglas_color", [0.72, 0.42, 1.0]))
 	var glass_mat: StandardMaterial3D = spark_mat.duplicate() as StandardMaterial3D
@@ -169,15 +181,30 @@ func burst(at: Vector3, normal: Vector3, surface: String, k: float = 1.0) -> voi
 
 ## A zombie hit at `at`, flying `toward`: the mist and the droplets (the caller gates gore).
 func blood(at: Vector3, toward: Vector3, k: float = 1.0) -> void:
+	blood_mist(at, toward, maxi(2, int(round(7.0 * k))))
+	blood_drops(at, toward, maxi(3, int(round(12.0 * k))))
+
+
+## The fine mist of a wound at `at`, drifting along `dir`. `amount` is what the caller would like: the emitters'
+## counts are fixed (changing a CPUParticles3D's amount rebuilds it), so a small wish is a chance of no mist.
+func blood_mist(at: Vector3, dir: Vector3, amount: int) -> void:
+	if amount < MIST_AMOUNT and _rng.randf() * float(MIST_AMOUNT) > float(amount):
+		return
 	var m: CPUParticles3D = _mist[_nm]
 	_nm = (_nm + 1) % MIST
-	_fire_at(m, at, toward)
-	var d: CPUParticles3D = _drops[_nd]
-	_nd = (_nd + 1) % DROPS
-	var want: int = maxi(3, int(round(12.0 * k)))
-	if d.amount != want:
-		d.amount = want
-	_fire_at(d, at, toward)
+	_fire_at(m, at, dir)
+
+
+## Drops thrown from `at` along `dir`: the heavy pool for `amount` >= HEAVY_FROM, else the light one.
+func blood_drops(at: Vector3, dir: Vector3, amount: int) -> void:
+	var d: CPUParticles3D
+	if amount >= HEAVY_FROM:
+		d = _drops_heavy[_ndh]
+		_ndh = (_ndh + 1) % DROPS_HEAVY
+	else:
+		d = _drops[_nd]
+		_nd = (_nd + 1) % DROPS
+	_fire_at(d, at, dir)
 
 
 ## Violet-teal glints at `at` flying `toward`: a taught weapon's hit, a bullet glancing off Nachtglas plates.

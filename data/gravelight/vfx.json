@@ -1,9 +1,9 @@
 {
   "_doc": "UPDATE 05 section 6 VFX (T-095). Read by Effects (gravelight/autoload/effects.gd) and the helpers under gravelight/world/vfx/. quality: GLSettings vfx_quality low/medium/high scales particle counts, the pooled flash-light budget, casings per shot, the near snow and the dust motes. flash.classes: one muzzle flash look per weapon class (weapons.json 'class'); size scales the whole flash, length the petals along the barrel, petals the number of radial planes, core the front bloom, light/light_range the pooled OmniLight pulse, life seconds, smoke the wisp strength (0 = none), color the additive HDR tint; skip = no flash (the flamethrower has its own flame). upgraded_fringe tints a Crucible-taught weapon's petals; wonder weapons are violet Nachtglas. first_person: 'effects' = the world-space flash is drawn for the local player too and the viewmodel's own star is suppressed; 'holder' = leave the viewmodel flash to WeaponHolder. casings: the OGA cartridge set (models.json extras.cartridges.casing_for picks the node per weapon); kind_default maps the holder's casing kind (weapons.json feel.casing) to a node when the weapon is unknown. surfaces.name_hints: ordered [substring-of-collider-name, surface] pairs tried after the collider's 'surface' meta; the first match wins (gen_map00 merges the static meshes, so the colliders carry no material: names and metas are all there is). impacts: per surface the decal (an Effects.DECALS key, '' = the plain dark mark), the puff colours [start, end], the chunk mesh (size m, colour, emissive), how many chunks, sparks (bool) and whether the rise's dirt pool is used (snow/earth kind).",
   "quality": {
-    "low": {"particles": 0.5, "flash_lights": 2, "casings": 0.5, "near_snow": 0.35, "motes": 0.35, "smoke": false, "flash_core": false},
-    "medium": {"particles": 0.75, "flash_lights": 3, "casings": 1.0, "near_snow": 0.65, "motes": 0.65, "smoke": true, "flash_core": true},
-    "high": {"particles": 1.0, "flash_lights": 4, "casings": 1.0, "near_snow": 1.0, "motes": 1.0, "smoke": true, "flash_core": true}
+    "low": {"gore": 0.5, "particles": 0.5, "flash_lights": 2, "casings": 0.5, "near_snow": 0.35, "motes": 0.35, "smoke": false, "flash_core": false},
+    "medium": {"gore": 0.75, "particles": 0.75, "flash_lights": 3, "casings": 1.0, "near_snow": 0.65, "motes": 0.65, "smoke": true, "flash_core": true},
+    "high": {"gore": 1.0, "particles": 1.0, "flash_lights": 4, "casings": 1.0, "near_snow": 1.0, "motes": 1.0, "smoke": true, "flash_core": true}
   },
   "flash": {
     "first_person": "effects",
@@ -66,6 +66,38 @@
     "nachtglas_sparks": 14,
     "nachtglas_color": [0.72, 0.42, 1.0],
     "shatter_slots": 4
+  },
+  "gore": {
+    "_doc": "The gore rework (docs/gore/gore_rework_2026-11.md), read by GoreFx (gravelight/world/vfx/gore_fx.gd). Only the Gore setting 'full' bleeds. budget: the hard cap of marks per kind on the world (all of them instances of one MultiMesh; a full kind reuses its oldest), scaled by quality.<level>.gore and by web_scale on the Compatibility renderer. per_frame: at most this many raycasts and new marks in one physics frame. horde: with more than 'from' live zombies the chances and particle counts below fall linearly to 'min' at 'to' zombies; zombies leave boot prints only while at most zombie_prints_max are alive. classes.<weapon class>: mist / drops / chunks = particles per hit (the mist leaves the entry, the drops and the meat the far side); exit = chance that a hit marks what is behind the body within reach metres, size [far, near] metres; floor = chance of drops on the floor under it; drip = chance that a wall spatter runs; screen = blood on the lens when it happens within screen.near_m of the camera (0..1 of a full spatter). 'default' is everything that is not a bullet (the knife, a sever, a bot's report without a weapon). wet_color / dry_color: sRGB, dark on purpose; it dries over dry_seconds. pool_size: metres across, pool_grow_seconds: how long it spreads. spurt: the neck after a head came off (slots at once, seconds). tracks: who treads in a pool younger than wet_seconds leaves print_steps boot prints; a crawler drags a smear for smear_steps marks; pools are checked every scan_seconds. screen: the lens spatter (fade_seconds, on_hurt = the amount when the player is hit, clear_radius = the middle of the view that always stays clean, 1 = the screen's half height). hands: blood on the first-person hands and sleeves (the arms shader's gl_hand_blood): each lens spatter adds per_spatter times its amount, and it wears off over seconds. death_spatters: cast-off marks laid around a body with its pool.",
+    "budget": {"splats": 192, "pools": 28, "drips": 48, "prints": 64, "smears": 40},
+    "web_scale": 0.5,
+    "per_frame": {"rays": 12, "marks": 6},
+    "horde": {"from": 12, "to": 40, "min": 0.35, "zombie_prints_max": 16},
+    "wet_color": [0.42, 0.03, 0.035],
+    "dry_color": [0.15, 0.028, 0.02],
+    "snow_halo": [0.42, 0.07, 0.08],
+    "dry_seconds": 50.0,
+    "pool_size": [1.1, 1.7],
+    "pool_grow_seconds": [6.0, 10.0],
+    "drip_seconds_per_m": [6.0, 11.0],
+    "chunk_slots": 6,
+    "spurt": {"slots": 3, "seconds": [2.2, 3.4]},
+    "tracks": {"wet_seconds": 35.0, "scan_seconds": 0.4, "print_steps": 9, "smear_steps": 14},
+    "screen": {"near_m": 2.0, "fade_seconds": 3.5, "max": 1.0, "on_hurt": 0.3, "clear_radius": 0.58},
+    "hands": {"per_spatter": 1.6, "seconds": 40.0},
+    "death_spatters": 2,
+    "classes": {
+      "default": {"mist": 5, "drops": 9,  "chunks": 0, "exit": 0.35, "reach": 1.6, "size": [0.2, 0.45],  "floor": 0.55, "drip": 0.5, "screen": 0.3},
+      "pistol":  {"mist": 4, "drops": 6,  "chunks": 0, "exit": 0.35, "reach": 2.2, "size": [0.18, 0.4],  "floor": 0.5,  "drip": 0.55, "screen": 0.08},
+      "smg":     {"mist": 3, "drops": 5,  "chunks": 0, "exit": 0.3,  "reach": 2.6, "size": [0.2, 0.45],  "floor": 0.35, "drip": 0.5, "screen": 0.05},
+      "assault": {"mist": 4, "drops": 7,  "chunks": 0, "exit": 0.5,  "reach": 3.4, "size": [0.25, 0.6],  "floor": 0.35, "drip": 0.6, "screen": 0.06},
+      "rifle":   {"mist": 5, "drops": 10, "chunks": 0, "exit": 0.7,  "reach": 4.0, "size": [0.3, 0.75],  "floor": 0.4,  "drip": 0.7,  "screen": 0.08},
+      "bolt":    {"mist": 6, "drops": 14, "chunks": 3, "exit": 0.9,  "reach": 5.0, "size": [0.4, 1.0],   "floor": 0.5,  "drip": 0.85, "screen": 0.15},
+      "sniper":  {"mist": 6, "drops": 14, "chunks": 3, "exit": 0.9,  "reach": 5.0, "size": [0.4, 1.0],   "floor": 0.5,  "drip": 0.85, "screen": 0.15},
+      "lmg":     {"mist": 3, "drops": 6,  "chunks": 0, "exit": 0.4,  "reach": 4.0, "size": [0.25, 0.6],  "floor": 0.3,  "drip": 0.55, "screen": 0.05},
+      "shotgun": {"mist": 3, "drops": 5,  "chunks": 2, "exit": 0.32, "reach": 3.0, "size": [0.3, 0.8],   "floor": 0.25, "drip": 0.65, "screen": 0.2},
+      "wonder":  {"mist": 4, "drops": 6,  "chunks": 0, "exit": 0.3,  "reach": 3.0, "size": [0.25, 0.6],  "floor": 0.3,  "drip": 0.55, "screen": 0.05}
+    }
   },
   "toll_ring": {"slots": 2, "seconds": 0.55, "strength": 0.06, "color": [0.72, 0.42, 1.0]},
   "tracer": {
