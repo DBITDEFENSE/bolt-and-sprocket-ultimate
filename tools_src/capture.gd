@@ -331,6 +331,7 @@ func _cam_set_maps(set_d: Dictionary) -> void:
 				_scene = null
 				await _secs(1.5)
 			Campaign.reset()
+			GameState.power_on = false   # a "power" camera on the map before would leave the next map's power lights on (its PowerSwitch readies before MapRoot resets the match)
 			map = _load(str(cam["map"])) as MapRoot
 			kept_path = str(cam["map"])
 			GameState.god_mode = true
