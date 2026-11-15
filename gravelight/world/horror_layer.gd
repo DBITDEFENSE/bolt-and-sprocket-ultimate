@@ -17,9 +17,9 @@ extends Node3D
 ##                stronger with the round; off in warm_zones and below cold_min_y (the salt mine's depths)
 ##   flies        flies over the dead in warm zones (zones, or "all"): a small swarm and its buzz where a body fell,
 ##                for seconds; the count follows the VFX quality (Effects.quality "flies"), none on low
-##   decals       blood pools under the dead (the Gore setting: full = blood, low = a small dark stain, off = none)
-##                and mud thrown up where they rise from the ground; a pool sized by VFX quality; none on the
-##                Compatibility renderer (no decals there)
+##   decals       a small dark stain under the dead with the Gore setting on "low" (on "full" the pool is GoreFx's,
+##                since the gore rework; off = none) and mud thrown up where they rise from the ground; a pool sized
+##                by VFX quality; none on the Compatibility renderer (no decals there)
 ##   grade        a darker night: the map's own adjustment brightness x brightness_mult (through GLSettings, so the
 ##                player's Brightness slider still scales it) and + contrast_add
 ##   lamps        the lanterns gutter: the map's FlickerLight lanterns get a deeper, more frequent gutter, and now and
@@ -325,7 +325,10 @@ func _on_killed_at(_enemy_id: StringName, at: Vector3, _by: int) -> void:
 	var dc: Dictionary = cfg.get("decals", {})
 	if not dc.is_empty():
 		var kind: String = blood_kind(ZombieGore.level())
-		if kind != "":
+		# The gore rework (docs/gore/gore_rework_2026-11.md): with Gore on "full" the pool under a body is GoreFx's
+		# (it spreads, dries, is trodden through and is one draw call; it also exists on the Compatibility renderer).
+		# This layer's projected decal stays for "low" (the small dark stain) so the two never lie on top of each other.
+		if kind == "stain":
 			_place_decal(at, kind, dc)
 
 
