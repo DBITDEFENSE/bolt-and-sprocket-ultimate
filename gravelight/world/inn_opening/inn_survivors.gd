@@ -63,6 +63,7 @@ func _ready() -> void:
 		add_child(s)
 		s.hp = float((cfg.get("ally", {}) as Dictionary).get("hidden_hp", 90.0))
 		survivors[s.sid] = s
+		PeopleBodies.warm_risen(s.sid, str(r.get("rise_variant", "villager")), bool(r.get("female", false)))   # (not in the tick they rise)
 	GLBus.door_opened.connect(_on_door_opened)
 	GLBus.weapon_fired.connect(_on_weapon_fired)
 
