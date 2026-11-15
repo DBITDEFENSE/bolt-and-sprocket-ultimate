@@ -27,6 +27,8 @@ void fragment() {
 """
 
 var near_sq: float = 4.0
+## Its own random stream: presentation never draws from the one gameplay uses.
+var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _rect: ColorRect
 var _mat: ShaderMaterial
 var _amount: float = 0.0
@@ -69,7 +71,7 @@ func add(a: float) -> void:
 	if a <= 0.0 or not GoreFx.enabled():
 		return
 	if _amount <= 0.02:
-		_mat.set_shader_parameter("seed", randf() * 13.0)
+		_mat.set_shader_parameter("seed", _rng.randf() * 13.0)
 	_amount = minf(_max, _amount + a)
 	_mat.set_shader_parameter("amount", _amount)
 	_rect.show()

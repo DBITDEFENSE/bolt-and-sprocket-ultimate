@@ -30,6 +30,8 @@ const HIDDEN: Transform3D = Transform3D(Basis(Vector3.ZERO, Vector3.ZERO, Vector
 enum { P_MIST, P_DROPS, P_CHUNKS, P_EXIT, P_REACH, P_SIZE_MIN, P_SIZE_MAX, P_FLOOR, P_DRIP, P_SCREEN, P_COUNT }
 
 var cfg: Dictionary = {}
+## Its own random stream: presentation never draws from the one gameplay uses.
+var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var screen: GoreScreen
 ## Marks placed / reused / refused, rays cast (tests, the dev overlay).
 var stats: Dictionary = {"marks": 0, "evicted": 0, "rejected": 0, "rays": 0, "pools": 0, "spurts": 0, "prints": 0, "sprays": 0, "walls": 0, "snow": 0}
@@ -357,9 +359,9 @@ func spray(pos: Vector3, toward: Vector3, weapon_id: StringName, through: bool, 
 			hands(prof[P_SCREEN] * _hands_per)
 	if _marks_left <= 0 or not is_inside_tree():
 		return
-	if randf() < prof[P_EXIT] * hk and (through or overhead or fly.y < 0.6):
+	if _rng.randf() < prof[P_EXIT] * hk and (through or overhead or fly.y < 0.6):
 		_exit_spatter(pos, fly, prof)
-	if randf() < prof[P_FLOOR] * hk:
+	if _rng.randf() < prof[P_FLOOR] * hk:
 		_floor_drops(pos, fly, prof)
 
 
@@ -374,7 +376,7 @@ func _ray(from: Vector3, to: Vector3) -> Dictionary:
 func _exit_spatter(pos: Vector3, fly: Vector3, prof: PackedFloat32Array) -> void:
 	if _rays_left < 6:
 		return
-	var d: Vector3 = (fly + Vector3(randf_range(-0.16, 0.16), randf_range(-0.1, 0.1), randf_range(-0.16, 0.16))).normalized()
+	var d: Vector3 = (fly + Vector3(_rng.randf_range(-0.16, 0.16), _rng.randf_range(-0.1, 0.1), _rng.randf_range(-0.16, 0.16))).normalized()
 	var reach: float = prof[P_REACH]
 	var hit: Dictionary = _ray(pos + fly * 0.1, pos + d * reach)
 	if hit.is_empty() or not Effects.persists_on(hit["collider"]):
@@ -384,15 +386,15 @@ func _exit_spatter(pos: Vector3, fly: Vector3, prof: PackedFloat32Array) -> void
 		return   # the ray began inside something
 	var at: Vector3 = hit["position"]
 	var near: float = 1.0 - clampf(pos.distance_to(at) / reach, 0.0, 1.0)
-	var size: float = lerpf(prof[P_SIZE_MIN], prof[P_SIZE_MAX], near) * randf_range(0.85, 1.2)
+	var size: float = lerpf(prof[P_SIZE_MIN], prof[P_SIZE_MAX], near) * _rng.randf_range(0.85, 1.2)
 	if absf(n.y) < 0.5:
 		# a wall: a burst where it struck, and often a run down from it
-		var t: Vector3 = Vector3.UP.cross(n).normalized().rotated(n, randf() * TAU)
-		if _mark(SPLAT, at, n, t, size, size * randf_range(0.8, 1.2), 1.0, 1.0, false, true):
+		var t: Vector3 = Vector3.UP.cross(n).normalized().rotated(n, _rng.randf() * TAU)
+		if _mark(SPLAT, at, n, t, size, size * _rng.randf_range(0.8, 1.2), 1.0, 1.0, false, true):
 			stats["walls"] = int(stats["walls"]) + 1
 			if size > 0.3:
 				AudioDirector.play_3d("gore_splat", at, -4.0 + 6.0 * near)
-			if absf(n.y) < 0.25 and randf() < prof[P_DRIP]:
+			if absf(n.y) < 0.25 and _rng.randf() < prof[P_DRIP]:
 				_drip(at + Vector3.DOWN * size * 0.12, n)
 	else:
 		# the floor (or a ceiling): cast off along the flight, longer the shallower it lands
@@ -407,7 +409,7 @@ func _floor_drops(pos: Vector3, fly: Vector3, prof: PackedFloat32Array) -> void:
 	if _rays_left < 2:
 		return
 	var flat: Vector3 = Vector3(fly.x, 0.0, fly.z)
-	var from: Vector3 = pos + flat * randf_range(0.25, 1.1) + Vector3(randf_range(-0.2, 0.2), 0.0, randf_range(-0.2, 0.2))
+	var from: Vector3 = pos + flat * _rng.randf_range(0.25, 1.1) + Vector3(_rng.randf_range(-0.2, 0.2), 0.0, _rng.randf_range(-0.2, 0.2))
 	var hit: Dictionary = _ray(from, from + Vector3.DOWN * 2.6)
 	if hit.is_empty() or not Effects.persists_on(hit["collider"]):
 		return
@@ -416,14 +418,14 @@ func _floor_drops(pos: Vector3, fly: Vector3, prof: PackedFloat32Array) -> void:
 		return
 	var t: Vector3 = flat - n * flat.dot(n)
 	t = t.normalized() if t.length_squared() > 0.001 else n.cross(Vector3.RIGHT).normalized()
-	var size: float = prof[P_SIZE_MIN] * randf_range(0.6, 1.1)
-	_mark(SPLAT, hit["position"], n, t, size * randf_range(1.0, 1.6), size, 1.0, 0.9, _is_snow(hit["collider"], hit["position"], n), false)
+	var size: float = prof[P_SIZE_MIN] * _rng.randf_range(0.6, 1.1)
+	_mark(SPLAT, hit["position"], n, t, size * _rng.randf_range(1.0, 1.6), size, 1.0, 0.9, _is_snow(hit["collider"], hit["position"], n), false)
 
 
 func _drip(top: Vector3, n: Vector3) -> void:
 	if _rays_left < 2:
 		return
-	var length: float = randf_range(0.45, 1.15)
+	var length: float = _rng.randf_range(0.45, 1.15)
 	var probe: Vector3 = top + Vector3.DOWN * length
 	if _ray(probe + n * 0.12, probe - n * 0.12).is_empty():
 		length *= 0.5
@@ -431,8 +433,8 @@ func _drip(top: Vector3, n: Vector3) -> void:
 		if _ray(probe + n * 0.12, probe - n * 0.12).is_empty():
 			return
 	var per_m: Array = (cfg.get("drip_seconds_per_m", [6.0, 11.0]) as Array)
-	_mark(DRIP, top + Vector3.DOWN * length * 0.5, n, Vector3.UP.cross(n).normalized(), randf_range(0.2, 0.3), length,
-		length * randf_range(float(per_m[0]), float(per_m[1])), 1.0, false, false)
+	_mark(DRIP, top + Vector3.DOWN * length * 0.5, n, Vector3.UP.cross(n).normalized(), _rng.randf_range(0.2, 0.3), length,
+		length * _rng.randf_range(float(per_m[0]), float(per_m[1])), 1.0, false, false)
 
 
 ## Is the floor at `at` snow? A "surface" meta on the collider (or its parent) says; otherwise, on a map whose
@@ -493,7 +495,7 @@ func _mark(kind: int, at: Vector3, n: Vector3, t: Vector3, sx: float, sy: float,
 	var i: int = _start[kind] + slot
 	# a hair further out for each newer mark, so two of a kind that overlap never fight
 	_mm.set_instance_transform(i, Transform3D(Basis(t * sx, b * sy, n), at + n * (LIFT[kind] + 0.000004 * float(slot))))
-	_mm.set_instance_custom_data(i, Color(_clock, maxf(0.01, grow), float(kind) + randf() * 0.99, clampf(strength, 0.0, 1.0) + (2.0 if snow else 0.0)))
+	_mm.set_instance_custom_data(i, Color(_clock, maxf(0.01, grow), float(kind) + _rng.randf() * 0.99, clampf(strength, 0.0, 1.0) + (2.0 if snow else 0.0)))
 	if kind == POOL:
 		_pool_pos[slot] = at
 		_pool_r[slot] = maxf(sx, sy) * 0.42
@@ -521,7 +523,7 @@ func death(body: Node3D, big: float = 1.0) -> void:
 	if _pend_t[slot] <= 0.0:
 		_pend_n += 1
 	_pend_id[slot] = id
-	_pend_t[slot] = _clock + randf_range(0.8, 1.5) + 0.001
+	_pend_t[slot] = _clock + _rng.randf_range(0.8, 1.5) + 0.001
 	_pend_big[slot] = big
 	set_process(true)
 
@@ -570,9 +572,9 @@ func pool_under(from: Vector3, big: float = 1.0) -> bool:
 	var at: Vector3 = hit["position"]
 	var sz: Array = cfg.get("pool_size", [1.1, 1.7])
 	var grow: Array = cfg.get("pool_grow_seconds", [6.0, 10.0])
-	var size: float = randf_range(float(sz[0]), float(sz[1])) * big * lerpf(1.0, 0.7, 1.0 - horde_k())
-	var t: Vector3 = n.cross(Vector3.FORWARD).normalized().rotated(n, randf() * TAU)
-	var ok: bool = _mark(POOL, at, n, t, size, size * randf_range(0.8, 1.0), randf_range(float(grow[0]), float(grow[1])), 1.0,
+	var size: float = _rng.randf_range(float(sz[0]), float(sz[1])) * big * lerpf(1.0, 0.7, 1.0 - horde_k())
+	var t: Vector3 = n.cross(Vector3.FORWARD).normalized().rotated(n, _rng.randf() * TAU)
+	var ok: bool = _mark(POOL, at, n, t, size, size * _rng.randf_range(0.8, 1.0), _rng.randf_range(float(grow[0]), float(grow[1])), 1.0,
 		_is_snow(hit["collider"], at, n), true)
 	if ok:
 		stats["pools"] = int(stats["pools"]) + 1
@@ -581,12 +583,12 @@ func pool_under(from: Vector3, big: float = 1.0) -> bool:
 		for i: int in int(round(float(cfg.get("death_spatters", 2)) * horde_k())):
 			if _rays_left < 2 or _marks_left <= 0:
 				break
-			var off: Vector3 = Vector3(randf_range(-1.0, 1.0), 0.0, randf_range(-1.0, 1.0)).normalized() * randf_range(0.5, 1.1) * big
+			var off: Vector3 = Vector3(_rng.randf_range(-1.0, 1.0), 0.0, _rng.randf_range(-1.0, 1.0)).normalized() * _rng.randf_range(0.5, 1.1) * big
 			var h2: Dictionary = _ray(at + off + Vector3.UP * 0.5, at + off + Vector3.DOWN * 0.6)
 			if h2.is_empty() or (h2["normal"] as Vector3).y < 0.75 or not Effects.persists_on(h2["collider"]):
 				continue
-			var s2: float = randf_range(0.28, 0.6)
-			_mark(SPLAT, h2["position"], h2["normal"], off.normalized(), s2 * randf_range(1.0, 1.7), s2, 1.0, 1.0, _is_snow(h2["collider"], h2["position"], n), false)
+			var s2: float = _rng.randf_range(0.28, 0.6)
+			_mark(SPLAT, h2["position"], h2["normal"], off.normalized(), s2 * _rng.randf_range(1.0, 1.7), s2, 1.0, 1.0, _is_snow(h2["collider"], h2["position"], n), false)
 	return ok
 
 
@@ -653,7 +655,7 @@ func spurt(at: Node3D) -> void:
 	var secs: Array = sc.get("seconds", [2.2, 3.4])
 	_spurt_id[i] = at.get_instance_id()
 	_spurt_t[i] = 0.0
-	_spurt_len[i] = randf_range(float(secs[0]), float(secs[1])) * lerpf(1.0, 0.6, 1.0 - horde_k())
+	_spurt_len[i] = _rng.randf_range(float(secs[0]), float(secs[1])) * lerpf(1.0, 0.6, 1.0 - horde_k())
 	_spurt_drop[i] = 0.25
 	stats["spurts"] = int(stats["spurts"]) + 1
 	AudioDirector.play_3d("gore_bone", at.global_position, 0.0)
@@ -681,13 +683,13 @@ func _tick_spurts(delta: float) -> void:
 		p.initial_velocity_min = 0.6 + 1.6 * fade
 		p.emitting = fmod(t, 0.44) < 0.27      # the heart still pumping
 		if t >= _spurt_drop[i] and _rays_left >= 2 and _marks_left > 0:
-			_spurt_drop[i] = t + randf_range(0.45, 0.8)
-			var side: Vector3 = Vector3(randf_range(-0.7, 0.7), 0.0, randf_range(-0.7, 0.7)) * fade
+			_spurt_drop[i] = t + _rng.randf_range(0.45, 0.8)
+			var side: Vector3 = Vector3(_rng.randf_range(-0.7, 0.7), 0.0, _rng.randf_range(-0.7, 0.7)) * fade
 			var hit: Dictionary = _ray(p.global_position + side, p.global_position + side + Vector3.DOWN * 2.6)
 			if not hit.is_empty() and (hit["normal"] as Vector3).y > 0.7 and Effects.persists_on(hit["collider"]):
 				var n: Vector3 = hit["normal"]
-				var size: float = randf_range(0.22, 0.5)
-				_mark(SPLAT, hit["position"], n, n.cross(Vector3.FORWARD).normalized().rotated(n, randf() * TAU), size, size, 1.0, 1.0,
+				var size: float = _rng.randf_range(0.22, 0.5)
+				_mark(SPLAT, hit["position"], n, n.cross(Vector3.FORWARD).normalized().rotated(n, _rng.randf() * TAU), size, size, 1.0, 1.0,
 					_is_snow(hit["collider"], hit["position"], n), false)
 
 
@@ -708,7 +710,7 @@ func _build_chunks(n: int) -> void:
 		p.name = "Chunks%d" % i
 		p.emitting = false
 		p.one_shot = true
-		p.amount = 8
+		p.amount = 6
 		p.lifetime = 0.9
 		p.explosiveness = 1.0
 		p.mesh = bit
@@ -732,9 +734,9 @@ func chunks(at: Vector3, dir: Vector3, amount: int) -> void:
 	if _chunks.is_empty() or not is_inside_tree():
 		return
 	var p: CPUParticles3D = _chunks[_nchunk]
+	if amount < 3 and _rng.randf() > 0.5:
+		return      # (the count is fixed: setting CPUParticles3D.amount rebuilds the emitter; a small wish is a coin toss)
 	_nchunk = (_nchunk + 1) % _chunks.size()
-	if p.amount != amount:
-		p.amount = amount
 	p.global_position = at
 	var f: Vector3 = dir.normalized() if dir.length_squared() > 0.0001 else Vector3.UP
 	p.global_basis = Basis.looking_at(-f, Vector3.UP if absf(f.dot(Vector3.UP)) < 0.98 else Vector3.RIGHT)
@@ -807,7 +809,7 @@ func _tick_walkers() -> void:
 		var strength: float = float(_w_left[i]) / float(maxi(1, _w_total[i]))
 		var snow: bool = _is_snow(hit["collider"], at, n)
 		if smear:
-			_mark(SMEAR, at - dir * 0.35, n, dir, randf_range(0.8, 1.05), randf_range(0.34, 0.5), 1.0, 0.5 + 0.5 * strength, snow, false)
+			_mark(SMEAR, at - dir * 0.35, n, dir, _rng.randf_range(0.8, 1.05), _rng.randf_range(0.34, 0.5), 1.0, 0.5 + 0.5 * strength, snow, false)
 		else:
 			var right: Vector3 = dir.cross(n).normalized()
 			_mark(PRINT, at + right * 0.11 * _w_side[i], n, right, 0.125, 0.3, 1.0, strength, snow, false)
