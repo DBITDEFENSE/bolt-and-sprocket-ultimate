@@ -307,7 +307,8 @@ func _prof(weapon_id: StringName) -> PackedFloat32Array:
 
 ## Blood from a wound at `pos`. `toward` is where the spray flies. `through` (a bullet): `toward` points back at the
 ## shooter; a little mist comes out of the entry, the body of it leaves the far side and marks what is behind.
-func spray(pos: Vector3, toward: Vector3, weapon_id: StringName, through: bool) -> void:
+## `overhead`: a spray flying up may mark a ceiling (a neck, a limb; not the blood off a burning body).
+func spray(pos: Vector3, toward: Vector3, weapon_id: StringName, through: bool, overhead: bool = false) -> void:
 	stats["sprays"] = int(stats["sprays"]) + 1
 	var prof: PackedFloat32Array = _prof(weapon_id)
 	var hk: float = horde_k()
@@ -326,7 +327,7 @@ func spray(pos: Vector3, toward: Vector3, weapon_id: StringName, through: bool) 
 			screen.add(prof[P_SCREEN])
 	if _marks_left <= 0 or not is_inside_tree():
 		return
-	if randf() < prof[P_EXIT] * hk:
+	if randf() < prof[P_EXIT] * hk and (through or overhead or fly.y < 0.6):
 		_exit_spatter(pos, fly, prof)
 	if randf() < prof[P_FLOOR] * hk:
 		_floor_drops(pos, fly, prof)

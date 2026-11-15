@@ -1277,7 +1277,77 @@ def gib(r):
     return reverb(x, r, 0.3, 0.1)
 
 
+# ---- the gore rework (docs/gore/gore_rework_2026-11.md): wet, close, small sounds
+
+def gore_splat(r):
+    """Blood thrown onto a wall or the boards: a wet slap and the patter of what came with it."""
+    x = zeros(0.5)
+    place(x, nrm(lp(white(r, 0.07), 3400)) * expenv(N(0.07), 0.013), 0.0, 0.9)                  # the slap
+    place(x, kick(r, 0.6, 150, 70, 0.03, 0.12), 0.0, 0.35)
+    for k in range(int(r.integers(5, 10))):                                                       # droplets after it
+        d = nrm(bp(white(r, 0.03), r.uniform(900, 2600), r.uniform(3200, 5200))) * expenv(N(0.03), r.uniform(0.004, 0.009))
+        place(x, d, r.uniform(0.02, 0.26), r.uniform(0.1, 0.35))
+    sq = nrm(lp(white(r, 0.18), 1800)) * expenv(N(0.18), 0.05) * (0.3 + 0.7 * smooth_rand(r, 0.18, 90, 0, 1))
+    place(x, sq, 0.01, 0.35)                                                                      # it clings
+    return x
+
+
+def gore_spurt(r):
+    """An opened artery: four or five weakening pulses of hiss with a wet patter under each."""
+    x = zeros(2.6)
+    t = 0.0
+    for k in range(5):
+        g = 1.0 - k * 0.17
+        n = r.uniform(0.2, 0.27)
+        hiss = nrm(bp(white(r, n), 1400, 5200)) * adsr(N(n), 0.02, 0.05, 0.6, 0.12) * (0.6 + 0.4 * smooth_rand(r, n, 60, 0, 1))
+        place(x, hiss, t, 0.5 * g)
+        for j in range(int(r.integers(3, 7))):
+            d = nrm(lp(white(r, 0.04), r.uniform(1500, 3200))) * expenv(N(0.04), 0.008)
+            place(x, d, t + r.uniform(0.12, 0.42), r.uniform(0.12, 0.3) * g)
+        t += r.uniform(0.4, 0.48)
+    return lp(x, 6500)
+
+
+def gore_bone(r):
+    """Bone giving way under it all: a dry double crack in a wet body."""
+    x = zeros(0.4)
+    for k, t0 in enumerate((0.0, r.uniform(0.035, 0.07))):
+        c = nrm(bp(white(r, 0.02), r.uniform(1800, 2600), r.uniform(6000, 8000))) * expenv(N(0.02), 0.003)
+        place(x, c, t0, 1.0 - 0.3 * k)
+        place(x, thunk(r, r.uniform(240, 380), 0.012, 0.06), t0, 0.5)
+    place(x, flesh_hit(r) * 0.5, 0.01, 0.6)
+    return x
+
+
+def gore_drip(r):
+    """Blood finding the floor under a body: a few slow, thick drops."""
+    x = zeros(2.2)
+    t = r.uniform(0.05, 0.2)
+    for k in range(int(r.integers(4, 7))):
+        f = r.uniform(260, 420)
+        n = N(0.09)
+        tone = np.sin(2 * np.pi * (f * (1.0 + 2.2 * np.exp(-tax(n) / 0.012))) * tax(n)) * expenv(n, 0.02)
+        place(x, tone, t, r.uniform(0.25, 0.5))
+        place(x, nrm(lp(white(r, 0.03), 2400)) * expenv(N(0.03), 0.006), t, r.uniform(0.2, 0.4))
+        t += r.uniform(0.18, 0.5)
+    return lp(x, 4200)
+
+
+def gen_gore():
+    for i in variants(4):
+        emit("gore_splat", f"sfx/zombies/gore_splat_{i:02d}", gore_splat(rng_for(f"goresplat{i}")), -3.0, volume_db=-9.0, max_voices=3,
+             bus="SFX", attenuation="quiet", pitch=[0.86, 1.12], vol_jitter_db=2.0)
+    for i in variants(3):
+        emit("gore_spurt", f"sfx/zombies/gore_spurt_{i:02d}", gore_spurt(rng_for(f"gorespurt{i}")), -3.0, volume_db=-8.0, max_voices=2,
+             bus="SFX", attenuation="quiet", pitch=[0.92, 1.08], vol_jitter_db=1.5)
+        emit("gore_bone", f"sfx/zombies/gore_bone_{i:02d}", gore_bone(rng_for(f"gorebone{i}")), -2.0, volume_db=-5.0, max_voices=2,
+             bus="SFX", attenuation="zombie", pitch=[0.9, 1.1], vol_jitter_db=1.5)
+        emit("gore_drip", f"sfx/zombies/gore_drip_{i:02d}", gore_drip(rng_for(f"goredrip{i}")), -6.0, volume_db=-14.0, max_voices=2,
+             bus="SFX", attenuation="quiet", pitch=[0.88, 1.1], vol_jitter_db=2.0)
+
+
 def gen_zombies():
+    gen_gore()
     zs = dict(bus="SFX", attenuation="zombie", pitch=[0.94, 1.06], vol_jitter_db=2.0)
     for i in variants(8):
         emit("zombie_groan", f"sfx/zombies/ganger_groan_{i:02d}", ganger_groan(rng_for(f"groan{i}"), i), -1.0, volume_db=-4.0, max_voices=6, **zs)

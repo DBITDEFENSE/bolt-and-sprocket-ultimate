@@ -404,7 +404,7 @@ func gore_burst(pos: Vector3, dir: Vector3, heavy: bool = false) -> void:
 	stats["hits"] = int(stats["hits"]) + 1
 	if not GoreFx.enabled():
 		return
-	gore.spray(pos, dir, &"", false)
+	gore.spray(pos, dir, &"", false, heavy)   # a limb or a neck may reach the ceiling
 	if heavy:
 		gore.chunks(pos, dir, maxi(3, int(round(7.0 * particles_k() * gore.horde_k()))))
 

@@ -16,6 +16,7 @@ const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 var _out: String = ""
 var _only: PackedStringArray = PackedStringArray()
 var _gore: String = "full"
+var _scale: float = 0.67
 var _map: MapRoot
 var _cam: Camera3D
 var _saved: int = 0
@@ -29,6 +30,8 @@ func _ready() -> void:
 			_only = a.substr(7).split(",")
 		elif a.begins_with("--gore="):
 			_gore = a.substr(7)
+		elif a.begins_with("--scale="):
+			_scale = float(a.substr(8))
 	if _out == "":
 		_out = ProjectSettings.globalize_path("res://").path_join("docs/captures/gore_rework/after")
 	DirAccess.make_dir_recursive_absolute(_out)
@@ -45,6 +48,9 @@ func _ready() -> void:
 	GameState.bot_ai_mode = "off"
 	GameState.god_mode = true
 	seed(4711)
+	# the movie is written at the project's 1920x1080 whatever --resolution says: draw the 3D at two thirds of it
+	# (1280x720's worth of pixels; software rendering is slow) unless --scale= says otherwise
+	get_viewport().scaling_3d_scale = _scale
 	_map = (load(MAP) as PackedScene).instantiate() as MapRoot
 	get_tree().root.add_child.call_deferred(_map)
 	get_tree().set_deferred("current_scene", _map)
@@ -121,6 +127,7 @@ func _stand(spots: Array, face: Vector3) -> Array[Zombie]:
 		var d: Vector3 = face - z.global_position
 		z.rotation.y = atan2(-d.x, -d.z)
 		z.velocity = Vector3.ZERO
+		z.set_physics_process(false)   # it stands where it was put until the shot that kills it
 	await get_tree().physics_frame
 	return mine
 
@@ -139,7 +146,10 @@ func _fire(z: Zombie, from: Vector3, limb: StringName, weapon: StringName, pelle
 		var pos: Vector3 = _bone(z, limb) + Vector3(randf_range(-0.08, 0.08), randf_range(-0.1, 0.1), randf_range(-0.08, 0.08)) * (1.0 if pellets > 1 else 0.3)
 		var dir: Vector3 = (pos - from).normalized()
 		Effects.zombie_hit(pos, -dir, weapon, false)
-		z.take_damage(z.hp + 1.0 if (kill and i == pellets - 1) else minf(20.0, z.hp * 0.2), limb, weapon, 1, &"bullet")
+		var last: bool = kill and i == pellets - 1
+		if last:
+			z.set_physics_process(true)
+		z.take_damage(z.hp + 1.0 if last else minf(20.0, z.hp * 0.2), limb, weapon, 1, &"bullet")
 
 
 ## Frames at `times` (seconds after the call) named <scene>_<nn>.
@@ -163,8 +173,12 @@ func _clear() -> void:
 
 
 func _run() -> void:
-	await _skip(4.0)
+	await _skip(14.0)     # the map's opening plays out
 	RoundManager.stop()
+	_map.director.kill_all(true)
+	for cl: Node in get_tree().root.find_children("*", "CanvasLayer", true, false):   # the HUD, subtitles, toasts
+		if not (cl is LookPost) and cl.get_class() == "CanvasLayer" and str(cl.name) != "Screen":   # the look and the lens spatter stay
+			(cl as CanvasLayer).visible = false
 	_cam = Camera3D.new()
 	_map.add_child(_cam)
 	var p: Player = _map.player
