@@ -23,6 +23,7 @@
     </div>
     <nav id="tabs">
       <button class="tab active" data-view="home">News</button>
+      <button class="tab" data-view="upcoming">Upcoming</button>
       <button class="tab" data-view="notes">Patch notes</button>
       <button class="tab" data-view="settings">Settings</button>
     </nav>
@@ -51,6 +52,7 @@
           <div class="hero-meta"><span class="tag" id="heroTag"></span><span class="date" id="heroDate"></span></div>
           <h1 id="heroTitle"></h1>
           <p id="heroSummary"></p>
+          <div class="hero-strip" id="heroStrip" aria-label="Pictures"></div>
           <div class="hero-actions">
             <button class="ghost" id="heroMore">Read more</button>
             <div class="hero-nav">
@@ -71,8 +73,20 @@
           <div class="panel-head"><h2 id="miniNotesTitle">Patch notes</h2><button class="link" data-goto="notes">All</button></div>
           <ul class="mini-notes" id="miniNotes"></ul>
         </div>
+        <button class="up-teaser" id="upTeaser" data-goto="upcoming"><b>Upcoming</b><span id="upTeaserText"></span><svg viewBox="0 0 8 12" aria-hidden="true"><path d="M1.5 1l5 5-5 5"/></svg></button>
         <div class="links" id="links"></div>
       </aside>
+    </section>
+
+    <!-- UPCOMING: proposals from feed.json "upcoming" -->
+    <section class="view" id="view-upcoming">
+      <div class="sheet">
+        <div class="sheet-head">
+          <h1 id="upTitle">Upcoming</h1>
+          <div class="sheet-sub" id="upNote"></div>
+        </div>
+        <ol class="up-list" id="upList"></ol>
+      </div>
     </section>
 
     <!-- PATCH NOTES -->
@@ -166,13 +180,18 @@
   <!-- article reader -->
   <div class="modal" id="article" hidden>
     <div class="modal-card article-card">
-      <div class="article-img" id="articleImg"></div>
+      <div class="article-img" id="articleImg">
+        <button class="arrow art-prev" id="articlePrev" title="Previous picture" aria-label="Previous picture" hidden><svg viewBox="0 0 8 12"><path d="M6.5 1L1.5 6l5 5"/></svg></button>
+        <button class="arrow art-next" id="articleNext" title="Next picture" aria-label="Next picture" hidden><svg viewBox="0 0 8 12"><path d="M1.5 1l5 5-5 5"/></svg></button>
+        <div class="art-caption" id="articleCaption"></div>
+      </div>
+      <div class="article-strip" id="articleStrip" hidden></div>
       <div class="article-body">
         <div class="hero-meta"><span class="tag" id="articleTag"></span><span class="date" id="articleDate"></span></div>
         <h1 id="articleTitle"></h1>
         <div id="articleText"></div>
       </div>
-      <button class="modal-x" data-close>&times;</button>
+      <button class="modal-x" data-close aria-label="Close">&times;</button>
     </div>
   </div>
 
@@ -195,6 +214,7 @@
   </div>
 
   <div id="toasts"></div>
+  <script src="feed.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

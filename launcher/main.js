@@ -47,8 +47,10 @@ app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(
 protocol.registerSchemesAsPrivileged([{ scheme: 'game', privileges: { standard: true, secure: true, supportFetchAPI: true } }]);
 
 function createWindow() {
+  // screenshots only: CZ_CAPTURE_SIZE=1080x660 captures at another window size (the window is never shown)
+  const size = /^(\d{3,4})x(\d{3,4})$/.exec((CAPTURE && process.env.CZ_CAPTURE_SIZE) || '');
   win = new BrowserWindow({
-    width: 1280, height: 760, minWidth: 1080, minHeight: 660,
+    width: size ? Number(size[1]) : 1280, height: size ? Number(size[2]) : 760, minWidth: 1080, minHeight: 660,
     frame: false, backgroundColor: '#08070c', show: false, title: CONFIG.productName,
     icon: path.join(ROOT, 'build', 'icon.png'),
     webPreferences: { preload: path.join(ROOT, 'preload.js'), contextIsolation: true, sandbox: true, nodeIntegration: false, spellcheck: false },
