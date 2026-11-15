@@ -393,6 +393,12 @@ spread perks randomly around the map". What changed in the section below:
   twice, the Lagering Vault, the Dynamo Room): `PerkLayout` from the match seed, rules in
   `data/gravelight/perk_layout.json`; a spot without a machine shows a nailed shipping crate. Machines still need the
   lever (Second Wind pours without it solo, never stands in the taproom and is always one door from it).
+  Since T-255 every spot but the yard's west fence is **flush**: the cabinet or the crate stands with its back on
+  the wall and the machine's fine print hangs on its open side (on the yard's west fence it stands a walk out, the
+  fine print on its back, as T-251 had them all). The taproom's spot is the north-west corner itself (it stood 1.25 m
+  out in the west walk); the Old Cellar's second spot is on the vault's east wall south of the racks.
+- **Before the lever** the Lagering Vault, the Dynamo Room and the bay are lit by two oil lanterns each (one inside
+  the door or the arch, one over the far half): readable, and dimmer than the bulbs make them (T-255).
 
 ## Map 0 cellar: the Helvetia machines (T&C M2, DECISIONS T-027)
 Door 3 (**1500**, zone `CELLAR`) is in the taproom's east wall at z 10.7–12.3. The M1 Garand wall-buy moved north along that wall to z 4. Through the door:

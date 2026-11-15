@@ -592,6 +592,7 @@ const STENCIL_FADE: float = 0.4
 var _stencil: Label3D = null
 var _stencil_t: float = 0.0
 var _stencil_always: bool = false
+var _panel_side: int = 0
 
 
 ## Maker's plate (front), the plan-ID stencil under the enamel (front, low), and the fine-print panel (back).
@@ -633,19 +634,7 @@ func _build_lore() -> void:
 		_stencil.modulate.a = 0.55
 	else:
 		GLBus.weapon_fired.connect(_on_weapon_fired)
-	var panel: FinePrintPanel = FinePrintPanel.new()
-	panel.name = "FinePrintPanel"
-	panel.perk_id = perk_id
-	panel.width = fp.x
-	panel.position = Vector3(0, 0, fp.z * 0.5 + 0.03)
-	if str(_data().get("shape", "cabinet")) == "barrel":
-		# 2026-11-12: a flat 0.62 m plate stood up to 0.18 m off the barrel's curve (the owner's "beige panel"): a
-		# narrower plate sits on the staves (the barrel's widest band is 0.98 of its half-width)
-		panel.width = 0.54
-		panel.read_width = fp.x
-		panel.position = Vector3(0, 0, fp.x * 0.5 * 0.98 + 0.012)
-	panel.rotation.y = PI   # its -Z (reader side) points out of the machine's back
-	add_child(panel)
+	_build_panel()
 	# the maker's plate as something you can read (T-075): a thin box just in front of the machine's own, at its foot
 	var plaque: LorePlaque = LorePlaque.new()
 	plaque.name = "MakersPlatePlaque"
@@ -654,6 +643,63 @@ func _build_lore() -> void:
 	plaque.interact_offset = Vector3(0, 0.17, -(fp.z * 0.5 + 0.33))
 	add_child(plaque)
 
+
+
+## The fine-print panel: on the machine's back (side 0), or, where the machine stands with its back on a wall
+## (a flush PerkSpot, T-255), on its local +X (1) or -X (-1) side.
+func _build_panel() -> void:
+	var old: Node = get_node_or_null("FinePrintPanel")
+	if old != null:
+		remove_child(old)
+		old.queue_free()
+	if FinePrintReader.lore(perk_id).is_empty():
+		return
+	var fp: Vector3 = _footprint
+	var panel: FinePrintPanel = FinePrintPanel.new()
+	panel.name = "FinePrintPanel"
+	panel.perk_id = perk_id
+	var barrel: bool = str(_data().get("shape", "cabinet")) == "barrel"
+	# its -Z (reader side) points out of the machine: out of its back, or out of the side it hangs on
+	var out: Vector3 = Vector3(0, 0, 1) if _panel_side == 0 else Vector3(float(_panel_side), 0, 0)
+	var half: float = fp.z * 0.5 if _panel_side == 0 else fp.x * 0.5
+	panel.width = fp.x if _panel_side == 0 else fp.z
+	panel.position = out * (half + 0.03)
+	if barrel:
+		# 2026-11-12: a flat 0.62 m plate stood up to 0.18 m off the barrel's curve (the owner's "beige panel"): a
+		# narrower plate sits on the staves (the barrel's widest band is 0.98 of its half-width)
+		panel.width = 0.54
+		panel.read_width = fp.x
+		panel.position = out * (fp.x * 0.5 * 0.98 + 0.012)
+	if _panel_side != 0:
+		panel.read_width = maxf(0.3, (0.54 if barrel else fp.z) - 0.3)   # (short of the front corner, where the buy prompt's box is)
+	panel.rotation.y = atan2(-out.x, -out.z)
+	add_child(panel)
+
+
+## T-255: PerkLayout tells the machine which way its spot leaves open for the fine print (see _build_panel).
+func set_panel_side(side: int) -> void:
+	side = clampi(side, -1, 1)
+	if side == _panel_side:
+		return
+	_panel_side = side
+	if is_inside_tree():
+		_build_panel()
+
+
+## The cabinet's depth (front to back), for PerkSpot.stand_transform.
+func depth() -> float:
+	return _footprint.z
+
+
+## T-255: how far a flush PerkSpot stood this machine back from its own origin (PerkSpot.stand_offset). The bots'
+## approach point is 1 m past interact_offset (BotBrain._front_of), and the navmesh in front of a spot is cut for the
+## deepest machine: a 0.6 m cabinet stood 0.3 m back had its approach point on the very edge of the navmesh (0.03 to
+## 0.16 m off it), and a bot sent there could stand a step short of it for good (smoke_bots_shop_m0: the companion
+## 500 s at Second Wind on the stable's spot). So interact_offset is measured from the spot's front line, which puts
+## the approach point where it is for a cabinet on the spot's origin. Only the property moves: the use box the
+## player aims at (the Area built in _ready) stays on the cabinet's face.
+func set_stand_back(back: float) -> void:
+	interact_offset = Vector3(0, 1.0, -(_footprint.z * 0.5 + 0.12 + maxf(0.0, back)))
 
 
 static func _short_human(h: String) -> String:

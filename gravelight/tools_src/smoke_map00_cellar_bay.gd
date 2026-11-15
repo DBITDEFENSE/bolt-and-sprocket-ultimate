@@ -125,7 +125,7 @@ func _run() -> void:
 	for n: Node in machines:
 		var pm: PerkMachine = n as PerkMachine
 		var sp: PerkSpot = _map.get_node_or_null("Gameplay/PerkSpot_" + pl.spot_of(pm.perk_id)) as PerkSpot
-		if sp != null and pm.global_position.distance_to(sp.global_position) < 0.01 and absf(angle_difference(pm.global_rotation.y, sp.global_rotation.y)) < 0.01 and sp.machine == pm:
+		if sp != null and pm.global_position.distance_to(sp.stand_transform(pm.depth()).origin) < 0.01 and absf(angle_difference(pm.global_rotation.y, sp.global_rotation.y)) < 0.01 and sp.machine == pm:
 			on_spot += 1
 		if sp != null and ZoneVolume.zone_at(tree, BotBrain._front_of(pm) + Vector3.UP * 0.5) == sp.zone_id:
 			zone_ok += 1

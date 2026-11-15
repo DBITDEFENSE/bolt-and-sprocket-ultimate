@@ -15,8 +15,8 @@
     944,
     1056
   ],
-  "baked_at": "2026-11-14T23:34:42",
-  "poi_signature": "3f84c3b6675f674cb0714c79d149f79e",
+  "baked_at": "2026-11-15T08:13:27",
+  "poi_signature": "0533d2304e4a5d3ceca9b43a090e0f62",
   "floors": [
     {
       "id": "cellar",
@@ -1484,9 +1484,9 @@
       "id": "perk:Gameplay/Perk_blastproof_bock",
       "type": "perk",
       "pos": [
-        14.25,
+        14.6,
         0.0,
-        32.0
+        33.28
       ],
       "floor": 1,
       "label": "Blastproof Bock",
@@ -1501,9 +1501,9 @@
       "id": "perk:Gameplay/Perk_hawkeye_brandy",
       "type": "perk",
       "pos": [
-        27.5,
+        26.08,
         0.0,
-        32.5
+        31.9
       ],
       "floor": 1,
       "label": "Hawkeye Brandy",
@@ -1520,7 +1520,7 @@
       "pos": [
         16.0,
         7.1,
-        8.0
+        9.15
       ],
       "floor": 3,
       "label": "Ironhide Stout",
@@ -1535,9 +1535,9 @@
       "id": "perk:Gameplay/Perk_ledger_lager",
       "type": "perk",
       "pos": [
-        25.6,
+        25.95,
         -3.2,
-        35.0
+        36.38
       ],
       "floor": 0,
       "label": "Ledger Lager",
@@ -1554,7 +1554,7 @@
       "pos": [
         42.3,
         -3.2,
-        37.0
+        38.42
       ],
       "floor": 0,
       "label": "Magpie Mead",
@@ -1569,9 +1569,9 @@
       "id": "perk:Gameplay/Perk_marathon_malt",
       "type": "perk",
       "pos": [
-        2.25,
+        1.1,
         0.0,
-        2.0
+        0.7
       ],
       "floor": 1,
       "label": "Marathon Malt",
@@ -1586,7 +1586,7 @@
       "id": "perk:Gameplay/Perk_overclock_cordial",
       "type": "perk",
       "pos": [
-        40.25,
+        41.65,
         -3.2,
         25.95
       ],
@@ -1603,9 +1603,9 @@
       "id": "perk:Gameplay/Perk_packmule_porter",
       "type": "perk",
       "pos": [
-        19.0,
+        23.33,
         -3.2,
-        13.75
+        12.5
       ],
       "floor": 0,
       "label": "Packmule Porter",
@@ -1622,7 +1622,7 @@
       "pos": [
         15.0,
         -3.2,
-        2.0
+        0.55
       ],
       "floor": 0,
       "label": "Second Wind Schnapps",
@@ -1637,9 +1637,9 @@
       "id": "perk:Gameplay/Perk_skyhook_sekt",
       "type": "perk",
       "pos": [
-        32.0,
+        33.45,
         0.0,
-        46.5
+        46.0
       ],
       "floor": 1,
       "label": "Skyhook Sekt",
@@ -1656,7 +1656,7 @@
       "pos": [
         15.0,
         0.0,
-        50.0
+        48.63
       ],
       "floor": 1,
       "label": "Trigger Tonic",
@@ -1671,9 +1671,9 @@
       "id": "perk:Gameplay/Perk_twin_barrel",
       "type": "perk",
       "pos": [
-        18.6,
+        20.6,
         3.8,
-        7.9
+        9.33
       ],
       "floor": 2,
       "label": "Twin Barrel Bitters",

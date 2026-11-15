@@ -188,8 +188,10 @@ func _poll() -> void:
 	var cb: BotBrain = _brain_of(_comp_pid)
 	if cb != null and _t - _cdiag_t > 8.0:
 		_cdiag_t = _t
-		_note("companion t=%.0f: action %s, task '%s' (%s), %.1f m from the human, buy %.2f escort %.2f" % [_t, cb.action, str(cb.task.get("label", "")),
-			str(cb.task.get("state", "")), cb.player.global_position.distance_to(_human().global_position), float(cb.scores.get("buy", 0.0)), float(cb.scores.get("escort", 0.0))])
+		var tn: Node3D = cb.task.get("node") as Node3D   # (T-255: where she stands and where the thing she is sent to is)
+		_note("companion t=%.0f: action %s, task '%s' (%s), %.1f m from the human, buy %.2f escort %.2f, at %s%s" % [_t, cb.action, str(cb.task.get("label", "")),
+			str(cb.task.get("state", "")), cb.player.global_position.distance_to(_human().global_position), float(cb.scores.get("buy", 0.0)), float(cb.scores.get("escort", 0.0)),
+			str(cb.player.global_position.snapped(Vector3(0.1, 0.1, 0.1))), (", the thing at %s" % str(tn.global_position.snapped(Vector3(0.1, 0.1, 0.1)))) if tn != null and is_instance_valid(tn) else ""])
 	for pid: Variant in _who.keys():
 		var p: Player = _player_of(int(pid))
 		if p == null:

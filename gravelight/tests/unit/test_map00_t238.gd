@@ -84,9 +84,12 @@ func test_the_helvetia_cellar_is_thinned() -> void:
 		for zi: int in 5:
 			var p: Vector3 = Vector3(31.2 + xi * 0.2, -3.2 + 0.4, 19.5 + zi * 0.25)
 			assert_eq(_solid_at(p), "", "the lever's approach is clear at %s" % str(p))
-	# the walk behind Twin Barrel is open at both ends (it ended in the corner's heap)
+	# the strip along the east wall south of the bench: T-238 opened it as the walk behind Twin Barrel (it ended in
+	# the corner's heap). Since T-255 perk spot vault_east stands there on the wall: its own bake box is the one
+	# thing that may be in the strip (the heap stays gone)
 	for zi2: int in 8:
-		assert_eq(_solid_at(Vector3(35.2, -2.6, 20.1 + zi2 * 0.3)), "", "behind the east row at z %.1f" % (20.1 + zi2 * 0.3))
+		var solid: String = _solid_at(Vector3(35.2, -2.6, 20.1 + zi2 * 0.3))
+		assert_true(solid == "" or solid == "NavBlock_PerkSpot_vault_east", "the east wall's strip at z %.1f holds %s" % [20.1 + zi2 * 0.3, solid])
 
 
 func test_the_taproom_crates_are_solid_in_their_corner() -> void:

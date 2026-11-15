@@ -13263,6 +13263,595 @@
         }
       ]
     },
+    "u19_fixes": {
+      "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "T-255 (UPDATE 19 fixes, docs/u19/t255_fixes.md): the owner's three reports on Map 0 after UPDATE 19: the taproom perk spot, Kaethe's drawing off its wall, the cellar rooms too dark before the lever. Judge brightness on Forward+ (Vulkan on lavapipe under WSL Xvfb), not on the Compatibility renderer of tools/wsl_godot.sh: the note has the command. Deal pinned with --perk-seed=251. Order matters: everything unpowered first, then 'power', then every perk spot.",
+      "cams": [
+        {
+          "name": "tap_ref_unlit",
+          "pos": [
+            14.5,
+            0.0,
+            13.6
+          ],
+          "yaw": 0.0,
+          "pitch": 0.0,
+          "settle_s": 3.0,
+          "do": [
+            "hud_off"
+          ],
+          "note": "T-255: the taproom from the spawn before the lever: the readability the cellar rooms are matched to"
+        },
+        {
+          "name": "tap_nook_owner",
+          "pos": [
+            3.3,
+            0.0,
+            4.9
+          ],
+          "yaw": 45.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-255: the taproom's north-west corner as the owner's screenshot looked at it (the west wall's clock and photo, the north wall): perk spot taproom_nook"
+        },
+        {
+          "name": "tap_nook_south",
+          "pos": [
+            2.3,
+            0.0,
+            6.6
+          ],
+          "yaw": 0.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-255: the same from the west walk, looking north"
+        },
+        {
+          "name": "tap_nook_east",
+          "pos": [
+            5.6,
+            0.0,
+            1.3
+          ],
+          "yaw": 90.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-255: the same from the mouth of the service walk behind the bar, looking west"
+        },
+        {
+          "name": "tap_nook_floor",
+          "pos": [
+            2.9,
+            0.0,
+            2.9
+          ],
+          "yaw": 28.0,
+          "pitch": -34.0,
+          "settle_s": 2.0,
+          "note": "T-255: the foot of the taproom's north wall by the corner: the violet light on the floor in the owner's screenshot (the match's Intel pickups, all lying inside the wall corner)"
+        },
+        {
+          "name": "hall_drawing",
+          "pos": [
+            2.4,
+            3.8,
+            8.4
+          ],
+          "yaw": 14.0,
+          "pitch": -4.0,
+          "settle_s": 2.0,
+          "note": "T-255: Kaethe's drawing from the head of the stairs (INT_M0_11)"
+        },
+        {
+          "name": "hall_drawing_side",
+          "pos": [
+            3.9,
+            3.8,
+            6.2
+          ],
+          "yaw": 75.0,
+          "pitch": -6.0,
+          "settle_s": 2.0,
+          "note": "T-255: the same from the side: is it on the wall"
+        },
+        {
+          "name": "guest_room_spot",
+          "pos": [
+            21.0,
+            3.8,
+            1.5
+          ],
+          "yaw": 122.0,
+          "pitch": -4.0,
+          "settle_s": 2.0,
+          "note": "T-255: perk spot guest_room and the east guest room's swing door"
+        },
+        {
+          "name": "guest_room_from_door",
+          "pos": [
+            20.25,
+            3.8,
+            5.9
+          ],
+          "yaw": 20.0,
+          "pitch": -4.0,
+          "settle_s": 2.0,
+          "note": "T-255: the east guest room from its door in the hall"
+        },
+        {
+          "name": "vault_south_unlit",
+          "pos": [
+            26.0,
+            -3.2,
+            23.5
+          ],
+          "yaw": 180.0,
+          "pitch": 0.0,
+          "settle_s": 3.0,
+          "do": [
+            "open:Door_Cellar"
+          ],
+          "note": "T-255: the Helvetia vault before the lever, down the west aisle (the reference for an unpowered cellar room)"
+        },
+        {
+          "name": "vault_north_unlit",
+          "pos": [
+            28.6,
+            -3.2,
+            27.5
+          ],
+          "yaw": 0.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-255: the Helvetia vault before the lever, looking north to the stair foot"
+        },
+        {
+          "name": "bay_unlit",
+          "pos": [
+            37.0,
+            -3.2,
+            25.95
+          ],
+          "yaw": -90.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-255: the late-delivery bay before the lever"
+        },
+        {
+          "name": "oldcellar_unlit",
+          "pos": [
+            15.0,
+            -3.2,
+            9.5
+          ],
+          "yaw": 0.0,
+          "pitch": 0.0,
+          "settle_s": 3.0,
+          "do": [
+            "open:Door_OldCellar"
+          ],
+          "note": "T-255: the Old Cellar's barrel vault before the lever"
+        },
+        {
+          "name": "lager_unlit",
+          "pos": [
+            24.9,
+            -3.2,
+            31.9
+          ],
+          "yaw": -111.0,
+          "pitch": 0.0,
+          "settle_s": 3.0,
+          "do": [
+            "open:Door_Lager"
+          ],
+          "note": "T-255: the Lagering Vault from its north-west corner before the lever"
+        },
+        {
+          "name": "lager_west_unlit",
+          "pos": [
+            33.2,
+            -3.2,
+            36.2
+          ],
+          "yaw": 74.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-255: the Lagering Vault from its east end before the lever: the perk spot opposite Door_Lager"
+        },
+        {
+          "name": "lager_door_unlit",
+          "pos": [
+            30.5,
+            -3.2,
+            35.6
+          ],
+          "yaw": -84.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-255: Door_Dynamo from the Lagering Vault"
+        },
+        {
+          "name": "lager_zombie_unlit",
+          "pos": [
+            25.4,
+            -3.2,
+            32.4
+          ],
+          "yaw": -118.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "kind": "zombie",
+          "subject": [
+            29.6,
+            -3.2,
+            35.7
+          ],
+          "note": "T-255: a zombie in the south aisle of the Lagering Vault before the lever"
+        },
+        {
+          "name": "dynamo_unlit",
+          "pos": [
+            34.8,
+            -3.2,
+            38.2
+          ],
+          "yaw": -50.0,
+          "pitch": 0.0,
+          "settle_s": 3.0,
+          "do": [
+            "open:Door_Dynamo"
+          ],
+          "note": "T-255: the Dynamo Room from its south-west corner before the lever"
+        },
+        {
+          "name": "dynamo_east_unlit",
+          "pos": [
+            43.3,
+            -3.2,
+            34.2
+          ],
+          "yaw": 71.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-255: the Dynamo Room from the east before the lever"
+        },
+        {
+          "name": "dynamo_lever_unlit",
+          "pos": [
+            40.9,
+            -3.2,
+            33.9
+          ],
+          "yaw": 8.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-255: the cellar lever and the fuse board before the lever is thrown"
+        },
+        {
+          "name": "dynamo_spot_unlit",
+          "pos": [
+            42.3,
+            -3.2,
+            33.7
+          ],
+          "yaw": 180.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-255: perk spot dynamo before the lever"
+        },
+        {
+          "name": "dynamo_zombie_unlit",
+          "pos": [
+            35.0,
+            -3.2,
+            33.0
+          ],
+          "yaw": -140.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "kind": "zombie",
+          "subject": [
+            40.5,
+            -3.2,
+            37.6
+          ],
+          "note": "T-255: a zombie in the south-east of the Dynamo Room before the lever"
+        },
+        {
+          "name": "dynamo_lit",
+          "pos": [
+            34.8,
+            -3.2,
+            38.2
+          ],
+          "yaw": -50.0,
+          "pitch": 0.0,
+          "settle_s": 4.0,
+          "do": [
+            "power"
+          ],
+          "note": "T-255: the Dynamo Room, the lever thrown"
+        },
+        {
+          "name": "dynamo_east_lit",
+          "pos": [
+            43.3,
+            -3.2,
+            34.2
+          ],
+          "yaw": 71.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-255: the Dynamo Room lit, from the east"
+        },
+        {
+          "name": "lager_lit",
+          "pos": [
+            24.9,
+            -3.2,
+            31.9
+          ],
+          "yaw": -111.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-255: the Lagering Vault lit"
+        },
+        {
+          "name": "lager_west_lit",
+          "pos": [
+            33.2,
+            -3.2,
+            36.2
+          ],
+          "yaw": 74.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-255: the Lagering Vault lit, from its east end"
+        },
+        {
+          "name": "vault_south_lit",
+          "pos": [
+            26.0,
+            -3.2,
+            23.5
+          ],
+          "yaw": 180.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-255: the Helvetia vault lit"
+        },
+        {
+          "name": "tap_ref_lit",
+          "pos": [
+            14.5,
+            0.0,
+            13.6
+          ],
+          "yaw": 0.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-255: the taproom lit"
+        },
+        {
+          "name": "spot_taproom_nook",
+          "pos": [
+            2.8,
+            0.0,
+            4.25
+          ],
+          "yaw": 26.6,
+          "pitch": -4.0,
+          "settle_s": 2.0,
+          "note": "T-255: perk spot taproom_nook (TAPROOM; flush on its wall, the fine print on that side) from its front and its left side, the room's own light"
+        },
+        {
+          "name": "spot_guest_room",
+          "pos": [
+            20.15,
+            3.8,
+            1.3
+          ],
+          "yaw": 114.4,
+          "pitch": -4.0,
+          "settle_s": 2.0,
+          "note": "T-255: perk spot guest_room (UPSTAIRS; flush on its wall, the fine print on that side) from its front and its left side, the room's own light"
+        },
+        {
+          "name": "spot_guest_hall",
+          "pos": [
+            22.2,
+            3.8,
+            5.83
+          ],
+          "yaw": 153.4,
+          "pitch": -4.0,
+          "settle_s": 2.0,
+          "note": "T-255: perk spot guest_hall (UPSTAIRS; flush on its wall, the fine print on that side) from its front and its right side, the room's own light"
+        },
+        {
+          "name": "spot_attic",
+          "pos": [
+            17.8,
+            7.1,
+            5.85
+          ],
+          "yaw": 151.4,
+          "pitch": -4.0,
+          "settle_s": 2.0,
+          "note": "T-255: perk spot attic (UPSTAIRS; flush on its wall, the fine print on that side) from its front and its right side, the room's own light"
+        },
+        {
+          "name": "spot_stable",
+          "pos": [
+            13.0,
+            0.0,
+            29.75
+          ],
+          "yaw": -154.8,
+          "pitch": -4.0,
+          "settle_s": 2.0,
+          "note": "T-255: perk spot stable (STABLE; flush on its wall, the fine print on that side) from its front and its left side, the room's own light"
+        },
+        {
+          "name": "spot_hayloft",
+          "pos": [
+            14.3,
+            3.5,
+            29.85
+          ],
+          "yaw": 151.4,
+          "pitch": -4.0,
+          "settle_s": 2.0,
+          "note": "T-255: perk spot hayloft (STABLE; flush on its wall, the fine print on that side) from its front and its right side, the room's own light"
+        },
+        {
+          "name": "spot_yard_east",
+          "pos": [
+            29.6,
+            0.0,
+            47.2
+          ],
+          "yaw": -71.6,
+          "pitch": -4.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-255: perk spot yard_east (YARD; flush on its wall, the fine print on that side) from its front and its left side, work light"
+        },
+        {
+          "name": "spot_yard_west",
+          "pos": [
+            7.85,
+            0.0,
+            41.1
+          ],
+          "yaw": 66.0,
+          "pitch": -4.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-255: perk spot yard_west (YARD; a walk behind it, the fine print on its back) from its front and its right side, work light"
+        },
+        {
+          "name": "spot_behind_stable",
+          "pos": [
+            30.15,
+            0.0,
+            33.4
+          ],
+          "yaw": 68.5,
+          "pitch": -4.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-255: perk spot behind_stable (GROUNDS; flush on its wall, the fine print on that side) from its front and its right side, work light"
+        },
+        {
+          "name": "spot_carters_road",
+          "pos": [
+            13.2,
+            0.0,
+            52.7
+          ],
+          "yaw": -25.3,
+          "pitch": -4.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-255: perk spot carters_road (GROUNDS; flush on its wall, the fine print on that side) from its front and its right side, work light"
+        },
+        {
+          "name": "spot_vault_east",
+          "pos": [
+            31.85,
+            -3.2,
+            22.4
+          ],
+          "yaw": -65.6,
+          "pitch": -4.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-255: perk spot vault_east (CELLAR; flush on its wall, the fine print on that side) from its front and its left side, work light"
+        },
+        {
+          "name": "spot_vault_south",
+          "pos": [
+            33.25,
+            -3.2,
+            26.85
+          ],
+          "yaw": 155.6,
+          "pitch": -4.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-255: perk spot vault_south (CELLAR; flush on its wall, the fine print on that side) from its front and its right side, work light"
+        },
+        {
+          "name": "spot_bay",
+          "pos": [
+            38.15,
+            -3.2,
+            24.55
+          ],
+          "yaw": -113.6,
+          "pitch": -4.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-255: perk spot bay (CELLAR; flush on its wall, the fine print on that side) from its front and its right side, work light"
+        },
+        {
+          "name": "spot_old_vault_north",
+          "pos": [
+            16.6,
+            -3.2,
+            4.15
+          ],
+          "yaw": 25.9,
+          "pitch": -4.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-255: perk spot old_vault_north (OLD_CELLAR; flush on its wall, the fine print on that side) from its front and its left side, work light"
+        },
+        {
+          "name": "spot_old_vault_south",
+          "pos": [
+            19.85,
+            -3.2,
+            14.1
+          ],
+          "yaw": -64.1,
+          "pitch": -4.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-255: perk spot old_vault_south (OLD_CELLAR; flush on its wall, the fine print on that side) from its front and its left side, work light"
+        },
+        {
+          "name": "spot_lager",
+          "pos": [
+            24.65,
+            -3.2,
+            33.25
+          ],
+          "yaw": -155.9,
+          "pitch": -4.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-255: perk spot lager (LAGERKELLER; flush on its wall, the fine print on that side) from its front and its left side, work light"
+        },
+        {
+          "name": "spot_dynamo",
+          "pos": [
+            40.7,
+            -3.2,
+            34.95
+          ],
+          "yaw": -153.4,
+          "pitch": -4.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-255: perk spot dynamo (MASCHINENRAUM; flush on its wall, the fine print on that side) from its front and its left side, work light"
+        }
+      ]
+    },
     "u18_text": {
       "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
       "bots": 0,

@@ -332,12 +332,26 @@ func _spawn_intel() -> void:
 	await get_tree().physics_frame
 	await get_tree().physics_frame
 	var rid: RID = get_world_3d().navigation_map
+	# T-255 (the owner's screenshot of Map 0's taproom: a violet light on the floor in the north-west corner): the
+	# navigation map takes its regions a few frames after the map enters the tree, and until it has them
+	# map_get_random_point answers (0, 0, 0) (and map_get_closest_point too, whatever the iteration id says). Two
+	# physics frames were not enough, so every pickup of the match went to the map's origin, which on Map 0 is inside
+	# the taproom's corner walls: their glints shone out of the wall and nobody could see the pickups. Wait until the
+	# map answers with a real point, and never take the origin.
+	var waited: int = 0
+	while waited < 600 and NavigationServer3D.map_get_random_point(rid, 0x7FFFFFFF, true) == Vector3.ZERO:
+		await get_tree().physics_frame
+		waited += 1
+	if not is_inside_tree() or player == null or waited >= 600:
+		return
 	var count: int = mini(pool.size(), randi_range(3, 5))
 	var placed: int = 0
 	var tries: int = 0
 	while placed < count and tries < 200:
 		tries += 1
 		var p: Vector3 = NavigationServer3D.map_get_random_point(rid, 0x7FFFFFFF, true)
+		if p == Vector3.ZERO or NavigationServer3D.map_get_closest_point(rid, p).distance_squared_to(p) > 0.04:
+			continue
 		if ZoneVolume.zone_at(get_tree(), p) == &"" or p.distance_to(player.global_position) < 6.0:
 			continue
 		var row: Dictionary = pool[placed]
@@ -347,7 +361,9 @@ func _spawn_intel() -> void:
 		n.kind = str(row.get("type", "DOC"))
 		n.name = "Intel_%s" % str(row["id"])
 		add_child(n)
-		n.global_position = p
+		# (the navmesh floats a cell above the floor it was baked from: lay the pickup on the floor under the point)
+		var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(p + Vector3.UP * 0.2, p + Vector3.DOWN * 1.0, 1))
+		n.global_position = hit["position"] if not hit.is_empty() else p
 		placed += 1
 
 

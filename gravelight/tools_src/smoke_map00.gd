@@ -48,6 +48,7 @@ func _physics_process(delta: float) -> void:
 			_fails.append("no zombie ever hit the player")
 		if not _state_hist.has("CHASE"):
 			_fails.append("no zombie reached CHASE (never got inside)")
+		_check_intel()
 		dir.kill_all(false)
 		_phase = 1
 	# Phase 1: kill everything as it spawns until round 3 starts.
@@ -70,6 +71,28 @@ func _physics_process(delta: float) -> void:
 			print("[smoke] RESULT FAIL")
 		get_tree().quit(0 if _fails.is_empty() else 1)
 		set_physics_process(false)
+
+
+## T-255: the match's Intel pickups lie on the navmesh, apart from each other. They were all at (0, 0, 0), inside
+## the taproom's north-west wall corner: MapRoot asked the navigation map for random points before its first sync.
+func _check_intel() -> void:
+	var rid: RID = _map.get_world_3d().navigation_map
+	var at: Array[Vector3] = []
+	for c: Node in _map.get_children():
+		if c is IntelPickup:
+			at.append((c as IntelPickup).global_position)
+	print("[smoke] intel pickups: %d at %s" % [at.size(), str(at)])
+	if at.size() < 3:
+		_fails.append("the match placed %d Intel pickups (3 to 5)" % at.size())
+	for i: int in at.size():
+		var on_nav: Vector3 = NavigationServer3D.map_get_closest_point(rid, at[i])   # (the navmesh floats 0.3 to 0.5 m over the floor the pickup lies on)
+		if Vector2(on_nav.x - at[i].x, on_nav.z - at[i].z).length() > 0.3 or on_nav.y - at[i].y > 0.8 or on_nav.y < at[i].y - 0.1:
+			_fails.append("an Intel pickup at %s is not on the navmesh's floor (nearest %s)" % [str(at[i]), str(on_nav)])
+		if Vector2(at[i].x, at[i].z).length() < 0.6 and absf(at[i].y) < 0.5:
+			_fails.append("an Intel pickup lies in the taproom's wall corner (the map's origin)")
+		for j: int in i:
+			if at[i].distance_to(at[j]) < 0.5:
+				_fails.append("two Intel pickups lie on one spot (%s)" % str(at[i]))
 
 
 ## T-032: Map 0 has a Crucible, in the Helvetia cellar (below ground, south of the stair hall).
