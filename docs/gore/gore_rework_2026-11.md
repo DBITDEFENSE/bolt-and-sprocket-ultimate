@@ -124,6 +124,42 @@ layer's decal. The frames of that build (`after_gorefx_pools_only/pile_08_floor.
 ten kills nearly clean: GoreFx's pools, once dried, do not read on the dark boards. `52e7e5b2` reverts it. The
 consequence stands: two systems draw a pool for each death.
 
+## Verification
+
+All headless (`--headless --audio-driver Dummy`), on this branch as committed unless a line says otherwise.
+
+- `check_scripts`: 956 scripts, 0 failed.
+- `python -I tools/assets_manifest.py --check`: current (117 folders). No file was added under `assets/` except the hunk in `arms.gdshader`.
+- New tests, `gravelight/tests/unit/test_gore_fx.gd`: 12, all pass. They cover: the data is dark and has a profile
+  for every weapon class that reports bullet hits; a hit in front of a wall marks it; budgets hold under a burst
+  (marks per kind, marks and rays per frame, no node added); the oldest pool is reused first; Gore off and low leave
+  nothing; the web profile and `vfx_quality` cut the budget; a horde cuts the marks; nothing sticks to a door or
+  hangs over a ledge; a body pools and whoever treads in it leaves a fixed number of prints; a match start wipes
+  everything; the lens spatter and the hands fade; damage numbers are the same with gore off and full.
+  They run on the dummy renderer: they count marks, they cannot see them.
+- Full GUT, run twice: 2378 tests (master's 2366 + these 12).
+  - Run 1: 2376 passing, **1 failing**, 1 risky.
+  - Run 2: 2377 passing, 0 failing, 1 risky.
+  - The risky one is `test_neural_lines_are_loudness_normalised`, known on master.
+  - The failure was `test_hud_stamp_perks.gd :: test_round_stamp_fits_high_rounds` with the engine error "Lambda
+    capture at index 0 was freed": a callback left by an earlier test firing during this one. **The same error
+    line appears twice in both runs**, in the same stretch of the suite; in run 2 it fell where the runner did not
+    count it. This branch adds no lambda, timer callback or tween to the game. The HUD test passes alone; the
+    twelve scripts around it pass with and without the new test. Its source was not found, and master's suite was
+    not run here to see whether the line is there too.
+- Smokes (`tools/run_smokes.sh .smoke_logs/gore <name>`), no script errors in any:
+  - PASS: `smoke_coop`, `smoke_sherman` (41 checks), `smoke_zombie_anim`, `smoke_bots`, `smoke_bots_shop`,
+    `smoke_bots_u10`, `smoke_map00`, `smoke_map00_alive`, `smoke_map00_cellar_bay`, `smoke_map00_loop`.
+  - **FAIL: `smoke_bots_shop_m0`, 0 passes in 4 runs on this branch** ("no squad bot did 'bench'" three times,
+    "the companion bought no tonic" once). On the code this branch was cut from: **2 passes in 3** (the failure
+    there: "the companion bought no tonic"). So the smoke is unreliable on the base too, and the branch looks
+    worse, but 0 of 4 against 2 of 3 does not settle it. No cause was found: the branch touches no bot or economy
+    code and adds no gameplay randomness. **If the branch does change what the bots do, it is not presentation
+    only; this is the first thing to check after a merge.**
+  - Not run: `smoke_marks` (known to fail on master) and every other smoke.
+- Co-op: `smoke_coop` passes. No new network message was added, so there was nothing new to test in it; what a
+  second peer sees was not looked at.
+
 ## Files
 
 New: `gravelight/world/vfx/gore_fx.gd`, `gore_screen.gd`, `blood_decal.gdshader`;
@@ -158,6 +194,7 @@ New: `gravelight/world/vfx/gore_fx.gd`, `gore_screen.gd`, `blood_decal.gdshader`
 
 ## Open items
 
+0. **`smoke_bots_shop_m0` fails 4 of 4 on this branch and 1 of 3 on its base** (see Verification). Unexplained.
 1. **Dried blood on dark wood.** The order asks for near-black when dry; on this map's boards that is invisible.
    Unresolved, and the reason two pool systems still overlap.
 2. **Two pools per death** at Gore "full" (the horror layer's decal and GoreFx's). Pick one owner once (1) is
