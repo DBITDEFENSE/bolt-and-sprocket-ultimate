@@ -1,0 +1,12 @@
+Title: Brown Mud Dry
+Authors: Rob Tuytel
+Source: https://polyhaven.com/a/brown_mud_dry
+File: https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/brown_mud_dry/brown_mud_dry_diff_2k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/brown_mud_dry/brown_mud_dry_nor_gl_2k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brown_mud_dry/brown_mud_dry_arm_1k.jpg
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Brown Mud Dry" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
+Format: PNG texture set at 2k (albedo, normal OpenGL +Y, ORM at 1k)
+Tile size: 1.30 x 1.30 m
+Poly Haven id: brown_mud_dry
+Library key: frozen_mud
+Downloaded: 2026-11-14 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: textures/brown_mud_dry_albedo.png, textures/brown_mud_dry_normal.png, textures/brown_mud_dry_orm.png

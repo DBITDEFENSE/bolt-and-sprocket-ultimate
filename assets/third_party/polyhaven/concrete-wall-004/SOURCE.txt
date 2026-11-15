@@ -1,12 +1,12 @@
 Title: Concrete Wall 004
 Authors: Dario Barresi (Processing), Charlotte Baglioni (Photography)
 Source: https://polyhaven.com/a/concrete_wall_004
-File: https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_wall_004/concrete_wall_004_diff_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_wall_004/concrete_wall_004_nor_gl_1k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_wall_004/concrete_wall_004_arm_1k.jpg
+File: https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/concrete_wall_004/concrete_wall_004_diff_2k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/concrete_wall_004/concrete_wall_004_nor_gl_2k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_wall_004/concrete_wall_004_arm_1k.jpg
 License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
 Credit line: "Concrete Wall 004" by Dario Barresi (Processing), Charlotte Baglioni (Photography) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
-Format: PNG texture set at 1k (albedo, normal OpenGL +Y, ORM at 1k)
+Format: PNG texture set at 2k (albedo, normal OpenGL +Y, ORM at 1k)
 Tile size: 2.00 x 2.00 m
 Poly Haven id: concrete_wall_004
 Library key: m2_bunker
-Downloaded: 2026-11-01 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Downloaded: 2026-11-14 by Claude Code (tools/fetch_cc0_materials.py) (tools/fetch_cc0_materials.py)
 Files used: textures/concrete_wall_004_albedo.png, textures/concrete_wall_004_normal.png, textures/concrete_wall_004_orm.png

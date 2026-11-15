@@ -7,18 +7,138 @@
       "settle_s": 6.0,
       "_doc": "2026-11-12 the owner's screenshots: hall, stairs, bar walkway, wall-buys, the extra people",
       "cams": [
-        {"name": "widow", "pos": [21.0, 3.8, 9.3], "yaw": 0.0, "pitch": -4.0, "note": "the owner's screenshot: Hanne Ebert's white smears"},
-        {"name": "hall_east", "pos": [23.2, 3.8, 7.8], "yaw": 90.0, "pitch": -3.0, "note": "the upstairs hall west along the attic flight"},
-        {"name": "hall_west", "pos": [4.6, 3.8, 7.6], "yaw": -90.0, "pitch": -3.0, "note": "the upstairs hall east from the main stair head"},
-        {"name": "stair_vestibule", "pos": [5.3, 0.0, 15.4], "yaw": 15.0, "pitch": 12.0, "note": "the main flight from Door 1"},
-        {"name": "bar_walk", "pos": [12.0, 0.0, 9.1], "yaw": 90.0, "pitch": -6.0, "note": "the walkway between the bar front and the stair wall"},
-        {"name": "wallbuy_kar", "pos": [1.8, 0.0, 3.1], "yaw": 90.0, "pitch": 8.0, "note": "the Kar98k wall-buy"},
-        {"name": "wallbuy_garand", "pos": [22.0, 0.0, 4.0], "yaw": -90.0, "pitch": 8.0, "note": "the M1 Garand wall-buy"},
-        {"name": "vault_from_stairs", "pos": [28.6, -3.2, 20.2], "yaw": 180.0, "pitch": -4.0, "note": "the owner's screenshot: the Helvetia vault from the stair foot, Ironhide Stout on the right"},
-        {"name": "vault_ironhide_back", "pos": [27.6, -3.2, 21.0], "yaw": -150.0, "pitch": -2.0, "note": "behind Ironhide Stout: the beige board"},
-        {"name": "vault_north_west", "pos": [29.5, -3.2, 25.0], "yaw": 30.0, "pitch": -4.0, "note": "the vault's north end and the Crucible from the middle"},
-        {"name": "vault_ironhide_close", "pos": [27.2, -3.2, 24.4], "yaw": 50.0, "pitch": 4.0, "note": "the pale panel between Ironhide Stout and the west wall"},
-        {"name": "vault_fineprint", "pos": [24.6, -3.2, 21.2], "yaw": -35.0, "pitch": 6.0, "note": "Ironhide Stout's fine-print plate from the wall side"}
+        {
+          "name": "widow",
+          "pos": [
+            21.0,
+            3.8,
+            9.3
+          ],
+          "yaw": 0.0,
+          "pitch": -4.0,
+          "note": "the owner's screenshot: Hanne Ebert's white smears"
+        },
+        {
+          "name": "hall_east",
+          "pos": [
+            23.2,
+            3.8,
+            7.8
+          ],
+          "yaw": 90.0,
+          "pitch": -3.0,
+          "note": "the upstairs hall west along the attic flight"
+        },
+        {
+          "name": "hall_west",
+          "pos": [
+            4.6,
+            3.8,
+            7.6
+          ],
+          "yaw": -90.0,
+          "pitch": -3.0,
+          "note": "the upstairs hall east from the main stair head"
+        },
+        {
+          "name": "stair_vestibule",
+          "pos": [
+            5.3,
+            0.0,
+            15.4
+          ],
+          "yaw": 15.0,
+          "pitch": 12.0,
+          "note": "the main flight from Door 1"
+        },
+        {
+          "name": "bar_walk",
+          "pos": [
+            12.0,
+            0.0,
+            9.1
+          ],
+          "yaw": 90.0,
+          "pitch": -6.0,
+          "note": "the walkway between the bar front and the stair wall"
+        },
+        {
+          "name": "wallbuy_kar",
+          "pos": [
+            1.8,
+            0.0,
+            3.1
+          ],
+          "yaw": 90.0,
+          "pitch": 8.0,
+          "note": "the Kar98k wall-buy"
+        },
+        {
+          "name": "wallbuy_garand",
+          "pos": [
+            22.0,
+            0.0,
+            4.0
+          ],
+          "yaw": -90.0,
+          "pitch": 8.0,
+          "note": "the M1 Garand wall-buy"
+        },
+        {
+          "name": "vault_from_stairs",
+          "pos": [
+            28.6,
+            -3.2,
+            20.2
+          ],
+          "yaw": 180.0,
+          "pitch": -4.0,
+          "note": "the owner's screenshot: the Helvetia vault from the stair foot, Ironhide Stout on the right"
+        },
+        {
+          "name": "vault_ironhide_back",
+          "pos": [
+            27.6,
+            -3.2,
+            21.0
+          ],
+          "yaw": -150.0,
+          "pitch": -2.0,
+          "note": "behind Ironhide Stout: the beige board"
+        },
+        {
+          "name": "vault_north_west",
+          "pos": [
+            29.5,
+            -3.2,
+            25.0
+          ],
+          "yaw": 30.0,
+          "pitch": -4.0,
+          "note": "the vault's north end and the Crucible from the middle"
+        },
+        {
+          "name": "vault_ironhide_close",
+          "pos": [
+            27.2,
+            -3.2,
+            24.4
+          ],
+          "yaw": 50.0,
+          "pitch": 4.0,
+          "note": "the pale panel between Ironhide Stout and the west wall"
+        },
+        {
+          "name": "vault_fineprint",
+          "pos": [
+            24.6,
+            -3.2,
+            21.2
+          ],
+          "yaw": -35.0,
+          "pitch": 6.0,
+          "note": "Ironhide Stout's fine-print plate from the wall side"
+        }
       ]
     },
     "u16_fix_m01": {
@@ -27,16 +147,106 @@
       "settle_s": 6.0,
       "_doc": "2026-11-12 the owner's mine tunnel screenshot (a box of sky at its end)",
       "cams": [
-        {"name": "rampF_up", "pos": [20.0, -18.0, 100.0], "yaw": 0.0, "pitch": 12.0},
-        {"name": "rampG_up", "pos": [44.5, -18.0, 100.0], "yaw": 0.0, "pitch": 12.0},
-        {"name": "corrH_east", "pos": [50.5, -18.0, 115.0], "yaw": -90.0, "pitch": 2.0},
-        {"name": "rampH_up", "pos": [74.0, -18.0, 116.0], "yaw": 0.0, "pitch": 12.0},
-        {"name": "rampF_down", "pos": [20.0, -12.0, 91.0], "yaw": 180.0, "pitch": -12.0},
-        {"name": "rampH_down", "pos": [74.0, -12.0, 99.0], "yaw": 180.0, "pitch": -12.0},
-        {"name": "corrH_mid", "pos": [62.0, -18.0, 115.0], "yaw": -90.0, "pitch": 3.0},
-        {"name": "corrH_end", "pos": [69.5, -18.0, 115.0], "yaw": -90.0, "pitch": 6.0},
-        {"name": "corrH_corner_up", "pos": [73.5, -18.0, 114.0], "yaw": 0.0, "pitch": 45.0},
-        {"name": "corrH_corner_e", "pos": [73.5, -18.0, 115.0], "yaw": -90.0, "pitch": 15.0}
+        {
+          "name": "rampF_up",
+          "pos": [
+            20.0,
+            -18.0,
+            100.0
+          ],
+          "yaw": 0.0,
+          "pitch": 12.0
+        },
+        {
+          "name": "rampG_up",
+          "pos": [
+            44.5,
+            -18.0,
+            100.0
+          ],
+          "yaw": 0.0,
+          "pitch": 12.0
+        },
+        {
+          "name": "corrH_east",
+          "pos": [
+            50.5,
+            -18.0,
+            115.0
+          ],
+          "yaw": -90.0,
+          "pitch": 2.0
+        },
+        {
+          "name": "rampH_up",
+          "pos": [
+            74.0,
+            -18.0,
+            116.0
+          ],
+          "yaw": 0.0,
+          "pitch": 12.0
+        },
+        {
+          "name": "rampF_down",
+          "pos": [
+            20.0,
+            -12.0,
+            91.0
+          ],
+          "yaw": 180.0,
+          "pitch": -12.0
+        },
+        {
+          "name": "rampH_down",
+          "pos": [
+            74.0,
+            -12.0,
+            99.0
+          ],
+          "yaw": 180.0,
+          "pitch": -12.0
+        },
+        {
+          "name": "corrH_mid",
+          "pos": [
+            62.0,
+            -18.0,
+            115.0
+          ],
+          "yaw": -90.0,
+          "pitch": 3.0
+        },
+        {
+          "name": "corrH_end",
+          "pos": [
+            69.5,
+            -18.0,
+            115.0
+          ],
+          "yaw": -90.0,
+          "pitch": 6.0
+        },
+        {
+          "name": "corrH_corner_up",
+          "pos": [
+            73.5,
+            -18.0,
+            114.0
+          ],
+          "yaw": 0.0,
+          "pitch": 45.0
+        },
+        {
+          "name": "corrH_corner_e",
+          "pos": [
+            73.5,
+            -18.0,
+            115.0
+          ],
+          "yaw": -90.0,
+          "pitch": 15.0
+        }
       ]
     },
     "u05": {
@@ -12616,6 +12826,470 @@
           "settle_s": 2.5,
           "do": [],
           "note": "T-247: the barn's ammo box (133544: AMMUNITION and its small print)"
+        }
+      ]
+    },
+    "u19_textures": {
+      "_doc": "UPDATE 19 (T-252): the surface pass's before / after frames: per map the ground, a wall, the sky and one interior, free cameras (eye positions), one load per map (keep_map). Rendered under WSL Xvfb: tools/wsl_godot.sh --path . res://tools_src/capture.tscn -- --set=u19_textures --label=before|after --out=<abs dir>.",
+      "mode": "maps",
+      "keep_map": true,
+      "settle_s": 7.0,
+      "cams": [
+        {
+          "name": "m00_front",
+          "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+          "pos": [
+            -17.0,
+            1.7,
+            -10.5
+          ],
+          "yaw": -122.6,
+          "pitch": 4.0,
+          "note": "the inn from the west road: snow, the plastered front, the sky",
+          "fov": 62.0,
+          "settle_s": 6.0
+        },
+        {
+          "name": "m00_sky",
+          "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+          "pos": [
+            -17.0,
+            1.7,
+            -10.5
+          ],
+          "yaw": -122.6,
+          "pitch": 32.0,
+          "note": "the sky over the inn"
+        },
+        {
+          "name": "m00_snow",
+          "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+          "pos": [
+            9.0,
+            1.7,
+            35.5
+          ],
+          "yaw": 150.0,
+          "pitch": -14.0,
+          "note": "the yard snow at walking distance"
+        },
+        {
+          "name": "m00_wall",
+          "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+          "pos": [
+            12.0,
+            1.7,
+            -4.5
+          ],
+          "yaw": 180.0,
+          "pitch": 4.0,
+          "note": "the inn north wall from four metres"
+        },
+        {
+          "name": "m00_road",
+          "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+          "pos": [
+            -9.0,
+            1.7,
+            -6.0
+          ],
+          "yaw": -90.0,
+          "pitch": -10.0,
+          "note": "the west road: snow into frozen mud"
+        },
+        {
+          "name": "m00_taproom",
+          "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+          "pos": [
+            15.0,
+            1.62,
+            9.0
+          ],
+          "yaw": 0.0,
+          "pitch": -2.0,
+          "note": "the taproom from the spawn"
+        },
+        {
+          "name": "m00_cellar",
+          "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+          "pos": [
+            26.0,
+            -1.58,
+            19.8
+          ],
+          "yaw": -150.0,
+          "pitch": -3.0,
+          "note": "the cellar vault: stone, brick, flags"
+        },
+        {
+          "name": "m01_yard",
+          "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+          "pos": [
+            6.0,
+            1.7,
+            26.0
+          ],
+          "yaw": -20.0,
+          "pitch": 9.0,
+          "note": "the minehead yard north to the ridges",
+          "settle_s": 6.0
+        },
+        {
+          "name": "m01_yard_se",
+          "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+          "pos": [
+            38.5,
+            1.7,
+            28.5
+          ],
+          "yaw": 50.0,
+          "pitch": 4.0,
+          "note": "the yard from the south-east: headframe, brick, snow"
+        },
+        {
+          "name": "m01_ground",
+          "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+          "pos": [
+            38.5,
+            1.7,
+            28.5
+          ],
+          "yaw": 50.0,
+          "pitch": -16.0,
+          "note": "the yard ground at walking distance"
+        },
+        {
+          "name": "m01_sky",
+          "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+          "pos": [
+            6.0,
+            1.7,
+            26.0
+          ],
+          "yaw": -20.0,
+          "pitch": 34.0,
+          "note": "the sky over the yard"
+        },
+        {
+          "name": "m01_barracks",
+          "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+          "pos": [
+            -14.0,
+            1.62,
+            39.0
+          ],
+          "yaw": -90.0,
+          "pitch": -0.2,
+          "note": "the barracks"
+        },
+        {
+          "name": "m01_chapel",
+          "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+          "pos": [
+            12.0,
+            -10.4,
+            63.0
+          ],
+          "yaw": 180.0,
+          "pitch": 11.3,
+          "note": "the salt chapel"
+        },
+        {
+          "name": "m01_barracks_lit",
+          "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+          "pos": [
+            -14.0,
+            1.62,
+            39.0
+          ],
+          "yaw": -90.0,
+          "pitch": -0.2,
+          "do": [
+            "power"
+          ],
+          "settle_s": 4.0,
+          "note": "the barracks with the power on (the unpowered frame is black under the Compatibility renderer)"
+        },
+        {
+          "name": "m01_chapel_lit",
+          "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+          "pos": [
+            12.0,
+            -10.4,
+            63.0
+          ],
+          "yaw": 180.0,
+          "pitch": 11.3,
+          "note": "the salt chapel with the power on"
+        },
+        {
+          "name": "m01_generator_lit",
+          "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+          "pos": [
+            30.0,
+            -10.4,
+            52.0
+          ],
+          "yaw": 90.0,
+          "pitch": 2.0,
+          "note": "the depths east of the chapel with the power on: concrete and rock"
+        },
+        {
+          "name": "m01_wall_close",
+          "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+          "pos": [
+            33.0,
+            1.7,
+            24.0
+          ],
+          "yaw": 20.0,
+          "pitch": 6.0,
+          "note": "the headframe building's render and brick from a few metres"
+        },
+        {
+          "name": "m02_quay",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            2.0,
+            1.62,
+            15.0
+          ],
+          "yaw": -67.8,
+          "pitch": -0.3,
+          "note": "the quay to the cutter and the hut",
+          "settle_s": 6.0
+        },
+        {
+          "name": "m02_ground",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            2.0,
+            1.62,
+            15.0
+          ],
+          "yaw": -67.8,
+          "pitch": -18.0,
+          "note": "the quay stone at walking distance"
+        },
+        {
+          "name": "m02_sky",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            2.0,
+            1.62,
+            15.0
+          ],
+          "yaw": -67.8,
+          "pitch": 30.0,
+          "note": "the sky over the harbour"
+        },
+        {
+          "name": "m02_cannery",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            -1.0,
+            1.62,
+            15.0
+          ],
+          "yaw": 90.0,
+          "pitch": -0.4,
+          "note": "the cannery hall"
+        },
+        {
+          "name": "m02_pens",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            -10.0,
+            1.62,
+            35.0
+          ],
+          "yaw": -147.8,
+          "pitch": 0.7,
+          "note": "the pen hall to U-1047"
+        },
+        {
+          "name": "m04a_street",
+          "map": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+          "pos": [
+            20.0,
+            3.0,
+            2.0
+          ],
+          "yaw": 180.0,
+          "pitch": 0.0,
+          "note": "the Siedlung street north",
+          "settle_s": 6.0
+        },
+        {
+          "name": "m04a_ground",
+          "map": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+          "pos": [
+            14.0,
+            1.62,
+            14.0
+          ],
+          "yaw": -129.3,
+          "pitch": -12.0,
+          "note": "the courtyard ground and the crater"
+        },
+        {
+          "name": "m04a_sky",
+          "map": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+          "pos": [
+            20.0,
+            3.0,
+            2.0
+          ],
+          "yaw": 180.0,
+          "pitch": 30.0,
+          "note": "the raid sky"
+        },
+        {
+          "name": "m04a_yard",
+          "map": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+          "pos": [
+            20.0,
+            1.62,
+            31.0
+          ],
+          "yaw": 180.0,
+          "pitch": 0.9,
+          "note": "the Bahnhof yard: brick and corrugated iron"
+        },
+        {
+          "name": "m04a_kantine",
+          "map": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+          "pos": [
+            -1.0,
+            1.62,
+            41.5
+          ],
+          "yaw": 111.7,
+          "pitch": -0.8,
+          "note": "the Kantine hall"
+        },
+        {
+          "name": "m04b_cockpit",
+          "map": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+          "pos": [
+            0.0,
+            1.7,
+            63.4
+          ],
+          "yaw": 180.0,
+          "pitch": 7.0,
+          "note": "the cockpit glass and the sky",
+          "settle_s": 6.0
+        },
+        {
+          "name": "m04b_galley",
+          "map": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+          "pos": [
+            -4.6,
+            1.62,
+            43.0
+          ],
+          "yaw": 90.0,
+          "pitch": 8.0,
+          "note": "the galley"
+        },
+        {
+          "name": "m04c_wreck",
+          "map": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+          "pos": [
+            -30.0,
+            1.7,
+            -45.0
+          ],
+          "yaw": -142.0,
+          "pitch": -0.2,
+          "note": "the wreck from the salt",
+          "settle_s": 6.0
+        },
+        {
+          "name": "m04c_ground",
+          "map": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+          "pos": [
+            -30.0,
+            1.7,
+            -45.0
+          ],
+          "yaw": -142.0,
+          "pitch": -14.0,
+          "note": "the salt at walking distance"
+        },
+        {
+          "name": "m04c_sky",
+          "map": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+          "pos": [
+            -30.0,
+            1.7,
+            -45.0
+          ],
+          "yaw": -60.0,
+          "pitch": 28.0,
+          "note": "the desert sky"
+        },
+        {
+          "name": "m04c_motorpool",
+          "map": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+          "pos": [
+            -45.0,
+            1.62,
+            61.0
+          ],
+          "yaw": 180.0,
+          "pitch": 0.8,
+          "note": "the motor pool"
+        },
+        {
+          "name": "m04d_yard",
+          "map": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+          "pos": [
+            0.0,
+            2.4,
+            3.0
+          ],
+          "yaw": 180.0,
+          "pitch": 8.0,
+          "note": "north over the yard, the Earth",
+          "settle_s": 6.0
+        },
+        {
+          "name": "m04d_ground",
+          "map": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+          "pos": [
+            0.0,
+            1.62,
+            62.0
+          ],
+          "yaw": 180.0,
+          "pitch": -12.0,
+          "note": "the regolith at walking distance"
+        },
+        {
+          "name": "m04d_sky",
+          "map": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+          "pos": [
+            0.0,
+            1.62,
+            62.0
+          ],
+          "yaw": 180.0,
+          "pitch": 34.0,
+          "note": "the lunar sky"
+        },
+        {
+          "name": "m04d_hall",
+          "map": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+          "pos": [
+            28.0,
+            1.62,
+            23.0
+          ],
+          "yaw": 0.0,
+          "pitch": 2.1,
+          "note": "the retention hall"
         }
       ]
     }

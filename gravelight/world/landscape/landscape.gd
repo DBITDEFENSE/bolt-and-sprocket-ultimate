@@ -222,6 +222,9 @@ static func _near_land_textures(near: ShaderMaterial) -> void:
 		near.set_shader_parameter("uv_scale", 1.0 / maxf(0.05, float(e.get("tile_m", 2.0))))
 		var t: Array = e.get("tint", [1, 1, 1])
 		near.set_shader_parameter("snow_tint", Vector3(float(t[0]), float(t[1]), float(t[2])))
+		for p: String in MaterialLibrary.VARIATION:   # T-252: the slab's drift / second sample / sparkle, so the seam stays hidden
+			if e.has(p):
+				near.set_shader_parameter(p, float(e[p]))
 	else:
 		var snow: StandardMaterial3D = Mats.get_mat("snow") as StandardMaterial3D
 		if snow != null:
@@ -233,6 +236,9 @@ static func _near_land_textures(near: ShaderMaterial) -> void:
 		near.set_shader_parameter("mud_tex", MaterialLibrary.texture("frozen_mud", "albedo"))
 		near.set_shader_parameter("mud_normal_tex", MaterialLibrary.texture("frozen_mud", "normal"))
 		near.set_shader_parameter("mud_uv_scale", 1.0 / maxf(0.05, float(m.get("tile_m", 2.0))))
+		if bool(m.get("live", false)):   # T-252: the frozen earth's own tint (the shader's default was made for Snow015's white)
+			var mt: Array = m.get("tint", [1, 1, 1])
+			near.set_shader_parameter("mud_tint", Vector3(float(mt[0]), float(mt[1]), float(mt[2])))
 		near.set_shader_parameter("use_mud", true)
 
 

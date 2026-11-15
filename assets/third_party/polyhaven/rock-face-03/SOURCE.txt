@@ -1,0 +1,12 @@
+Title: Rock Face 03
+Authors: Dario Barresi (Photography), Rico Cilliers (Processing)
+Source: https://polyhaven.com/a/rock_face_03
+File: https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_face_03/rock_face_03_diff_2k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_face_03/rock_face_03_nor_gl_2k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rock_face_03/rock_face_03_arm_1k.jpg
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Rock Face 03" by Dario Barresi (Photography), Rico Cilliers (Processing) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
+Format: PNG texture set at 2k (albedo, normal OpenGL +Y, ORM at 1k)
+Tile size: 2.70 x 2.70 m
+Poly Haven id: rock_face_03
+Library key: m1_rock
+Downloaded: 2026-11-14 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: textures/rock_face_03_albedo.png, textures/rock_face_03_normal.png, textures/rock_face_03_orm.png

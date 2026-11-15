@@ -660,6 +660,22 @@
    "eff": "24301e",
    "sat": 0.695,
    "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/brown-mud-dry/textures/brown_mud_dry_albedo.png|ebdbd6": {
+   "sat": 0.453,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/factory-brick/textures/factory_brick_albedo.png|e68570": {
+   "sat": 0.274,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/grey-plaster-03/textures/grey_plaster_03_albedo.png|fff2e6": {
+   "sat": 0.738,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/white-plaster-rough-01/textures/white_plaster_rough_01_albedo.png|ffffff": {
+   "sat": 0.718,
+   "val": 1.0
   }
  },
  "detail_classes": [

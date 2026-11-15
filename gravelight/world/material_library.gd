@@ -13,9 +13,13 @@ const DATA: String = "res://data/gravelight/materials.json"
 const TEX_ROOT: String = "res://assets/third_party/"
 const MAPS: Array = ["albedo", "normal", "orm", "height"]
 
+## UPDATE 19 (T-252): surface_pbr's variation uniforms (materials.json: macro_var, macro_scale, detile, sparkle).
+const VARIATION: Array = ["macro_var", "macro_scale", "detile", "sparkle"]
+
 static var _data: Dictionary = {}
 static var _cache: Dictionary = {}
 static var _shader: Shader = null
+static var _built: Dictionary = {}   # instance id -> true: made by build() in this session (already current)
 
 
 static func data() -> Dictionary:
@@ -85,18 +89,27 @@ static func build(key: String, overrides: Dictionary = {}) -> ShaderMaterial:
 	if e.is_empty():
 		return null
 	e.merge(overrides, true)
-	var alb: Texture2D = texture(key, "albedo")
-	var nrm: Texture2D = texture(key, "normal")
-	var orm: Texture2D = texture(key, "orm")
-	if alb == null or nrm == null or orm == null:
-		push_warning("MaterialLibrary: '%s' is missing a map under %s" % [key, texture_path(key, "albedo").get_base_dir()])
-		return null
 	var sh: Shader = shader()
 	if sh == null:
 		return null
 	var m: ShaderMaterial = ShaderMaterial.new()
 	m.shader = sh
 	m.resource_name = "lib_" + key
+	if not _configure(m, key, e):
+		push_warning("MaterialLibrary: '%s' is missing a map under %s" % [key, texture_path(key, "albedo").get_base_dir()])
+		return null
+	_built[m.get_instance_id()] = true
+	return m
+
+
+## The entry `e` of `key` written to `m`: the set's three maps and every parameter. False when a map is missing
+## (nothing is written then).
+static func _configure(m: ShaderMaterial, key: String, e: Dictionary) -> bool:
+	var alb: Texture2D = texture(key, "albedo")
+	var nrm: Texture2D = texture(key, "normal")
+	var orm: Texture2D = texture(key, "orm")
+	if alb == null or nrm == null or orm == null:
+		return false
 	m.set_shader_parameter("albedo_tex", alb)
 	m.set_shader_parameter("normal_tex", nrm)
 	m.set_shader_parameter("orm_tex", orm)
@@ -112,14 +125,49 @@ static func build(key: String, overrides: Dictionary = {}) -> ShaderMaterial:
 	m.set_shader_parameter("rough_min", float(r[0]))
 	m.set_shader_parameter("rough_max", float(r[1]))
 	m.set_shader_parameter("normal_strength", float(e.get("normal_strength", 1.0)))
-	for p: String in ["grime", "wetness", "frost", "frost_height", "frost_up", "grime_floor_y", "grime_height", "grime_scale", "metallic_mul", "ao_strength", "specular_amount"]:
+	for p: String in ["grime", "wetness", "frost", "frost_height", "frost_up", "grime_floor_y", "grime_height", "grime_scale", "metallic_mul", "ao_strength", "specular_amount", "albedo_saturation"]:
 		if e.has(p):
 			m.set_shader_parameter(p, float(e[p]))
 	if e.has("grime_tint"):
 		m.set_shader_parameter("grime_tint", _col(e["grime_tint"]))
 	if e.has("frost_tint"):
 		m.set_shader_parameter("frost_tint", _col(e["frost_tint"]))
-	return m
+	_variation(m, e)
+	return true
+
+
+static func _variation(m: ShaderMaterial, e: Dictionary) -> void:
+	for p: String in VARIATION:
+		if e.has(p):
+			m.set_shader_parameter(p, float(e[p]))
+
+
+## UPDATE 19 (T-252): a map scene bakes its library materials (sub-resources named lib_<key>), so a change to
+## materials.json reached a map only when its generator ran again. This brings a baked material up to the data when
+## its map loads: 0 = not a library material (or one build() made in this session), 1 = the variation values
+## (macro_var, macro_scale, detile, sparkle; by the material's lib_<key> name, else by its albedo file in
+## `by_texture`), 2 = the whole entry, textures included, for a key the data marks `"live": true` (a set that was
+## swapped after the scenes were baked: the trodden snow, the frozen mud, the inn's plaster). Presentation only.
+static func apply_runtime(mat: Material) -> int:
+	var m: ShaderMaterial = mat as ShaderMaterial
+	if m == null or m.shader == null or m.shader != shader() or _built.has(m.get_instance_id()):
+		return 0
+	var nm: String = String(m.resource_name)
+	var key: String = nm.substr(4) if nm.begins_with("lib_") else ""
+	var e: Dictionary = entry(key) if key != "" else {}
+	if e.is_empty():
+		var t: Texture2D = m.get_shader_parameter("albedo_tex") as Texture2D
+		var by: Variant = (data().get("by_texture", {}) as Dictionary).get(t.resource_path.get_file() if t != null else "")
+		if not (by is Dictionary):
+			return 0
+		_variation(m, by as Dictionary)
+		return 1
+	if bool(e.get("live", false)):
+		if _configure(m, key, e):
+			_built[m.get_instance_id()] = true
+			return 2
+	_variation(m, e)
+	return 1
 
 
 ## The library material the generator should use for a procedural Mats key, or null to keep the procedural one:
@@ -146,6 +194,7 @@ static func reset() -> void:
 	_data = {}
 	_cache = {}
 	_shader = null
+	_built = {}
 
 
 static func _col(a: Variant) -> Color:

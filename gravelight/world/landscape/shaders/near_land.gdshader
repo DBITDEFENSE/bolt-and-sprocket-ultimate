@@ -3,8 +3,12 @@
 // at the slab edge disappears. The vertex-colour masks: r = the roads running on into the dark, where the snow is
 // height-blended into the frozen-mud set (the snow's own brightness is its height, so mud shows in the hollows
 // first) with two cart ruts; g = the frozen stream; b = the pines' needle litter. Uses the map's own fog.
+// UPDATE 19 (T-252): the slab's macro drift, second-sample blend and sparkle (surface_variation.gdshaderinc), with the
+// slab material's own values (Landscape._near_land_textures), so the terrain still meets the slab without a seam.
 shader_type spatial;
 render_mode diffuse_burley, specular_schlick_ggx;
+
+#include "res://assets/materials/shaders/surface_variation.gdshaderinc"
 
 uniform sampler2D albedo_tex : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D normal_tex : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
@@ -19,6 +23,10 @@ uniform vec3 road_tint : source_color = vec3(0.6, 0.61, 0.66);
 uniform vec3 ice : source_color = vec3(0.22, 0.29, 0.38);
 uniform vec3 litter : source_color = vec3(0.16, 0.17, 0.16);
 uniform float blend_soft : hint_range(0.01, 0.5) = 0.12;
+uniform float macro_var : hint_range(0.0, 1.0) = 0.18;
+uniform float macro_scale : hint_range(1.0, 40.0) = 7.0;
+uniform float detile : hint_range(0.0, 1.0) = 0.0;
+uniform float sparkle : hint_range(0.0, 1.0) = 0.0;
 
 varying vec3 wpos;
 
@@ -36,8 +44,16 @@ void vertex() {
 
 void fragment() {
 	vec2 uv = wpos.xz * uv_scale;
-	vec3 snow = texture(albedo_tex, uv).rgb * snow_tint;
+	vec3 snow = texture(albedo_tex, uv).rgb;
 	vec3 nrm = texture(normal_tex, uv).rgb;
+	float cam_dist = length(CAMERA_POSITION_WORLD - wpos);
+	if (detile > 0.001) {
+		float dk = sv_detile_k(wpos, cam_dist, detile);
+		vec2 uv2 = uv * SV_DETILE_SCALE + SV_DETILE_OFFSET.xz;
+		snow = mix(snow, texture(albedo_tex, uv2).rgb, dk);
+		nrm = mix(nrm, texture(normal_tex, uv2).rgb, dk);
+	}
+	snow *= snow_tint * sv_macro(wpos, macro_scale, macro_var);
 	vec3 c = snow;
 	float rough = 0.7;
 	// ruts: two darker lines along the road band's middle
@@ -60,11 +76,22 @@ void fragment() {
 	vec3 ice_c = mix(ice * (0.8 + 0.4 * vnoise(wpos.xz * 0.35)), c * 0.9, crack * 0.7 + vnoise(wpos.xz * 2.5) * 0.25);
 	c = mix(c, ice_c, COLOR.g);
 	c = mix(c, litter, COLOR.b * 0.45 * smoothstep(0.3, 0.8, vnoise(wpos.xz * 0.6)));
+	float rgh = mix(rough, 0.12, COLOR.g);
+	float spec = mix(0.5, 0.9, COLOR.g);
+	float nd = mix(1.0, 0.3, COLOR.g);
+	if (sparkle > 0.001) {
+		vec3 gl = sv_glint(wpos, cam_dist, sparkle);
+		float gk = gl.z * (1.0 - clamp(COLOR.r + COLOR.g + COLOR.b, 0.0, 1.0));
+		nrm = mix(nrm, vec3(0.5 + gl.xy * 0.13, 1.0), gk);
+		nd = mix(nd, 1.0, gk);
+		rgh = mix(rgh, 0.14, gk);
+		spec = mix(spec, 1.0, gk);
+	}
 	ALBEDO = c;
-	ROUGHNESS = mix(rough, 0.12, COLOR.g);
-	SPECULAR = mix(0.5, 0.9, COLOR.g);
+	ROUGHNESS = rgh;
+	SPECULAR = spec;
 	NORMAL_MAP = nrm;
-	NORMAL_MAP_DEPTH = mix(1.0, 0.3, COLOR.g);
+	NORMAL_MAP_DEPTH = nd;
 	vec3 t = (VIEW_MATRIX * vec4(1.0, 0.0, 0.0, 0.0)).xyz;
 	TANGENT = normalize(t - NORMAL * dot(NORMAL, t));
 	BINORMAL = normalize(cross(NORMAL, TANGENT));

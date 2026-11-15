@@ -293,6 +293,8 @@ func _cam_set_maps(set_d: Dictionary) -> void:
 	GameState.bot_count = 0
 	GameState.bot_ai_mode = "off"
 	var cams: Array = set_d.get("cams", [])
+	var keep_map: bool = bool(set_d.get("keep_map", false))
+	var kept_path: String = ""
 	for i: int in cams.size():
 		var cam: Dictionary = cams[i]
 		var cname: String = str(cam.get("name", "cam%02d" % i))
@@ -319,21 +321,34 @@ func _cam_set_maps(set_d: Dictionary) -> void:
 		if not ResourceLoader.exists(str(cam.get("map", ""))):
 			print("[capture] missing map for %s" % cname)
 			continue
-		Campaign.reset()
-		var map: MapRoot = _load(str(cam["map"])) as MapRoot
-		GameState.god_mode = true
-		await _secs(float(set_d.get("settle_s", 6.0)))
-		RoundManager.stop()
-		if map.director != null:
-			map.director.kill_all(true)
-		for cl: Node in get_tree().root.find_children("*", "CanvasLayer", true, false):   # the HUD, subtitles, toasts
-			if not (cl is LookPost):   # the post stack (PostFx on a map, the menu's LookPost) stays: it is the look (T-208)
-				(cl as CanvasLayer).visible = false
-		var c3: Camera3D = Camera3D.new()
-		c3.name = "PreviewCamera"
+		# T-252 (the u19_textures set, "keep_map": true on the set): cameras that follow each other on one map share
+		# one load (seven maps, five cameras each: seven loads instead of thirty-five under llvmpipe)
+		var map: MapRoot = _scene as MapRoot if keep_map and _scene != null and is_instance_valid(_scene) and kept_path == str(cam["map"]) else null
+		var c3: Camera3D = map.get_node_or_null("PreviewCamera") as Camera3D if map != null else null
+		if map == null:
+			if _scene != null and is_instance_valid(_scene):
+				_scene.queue_free()
+				_scene = null
+				await _secs(1.5)
+			Campaign.reset()
+			GameState.power_on = false   # a "power" camera on the map before would leave the next map's power lights on (its PowerSwitch readies before MapRoot resets the match)
+			map = _load(str(cam["map"])) as MapRoot
+			kept_path = str(cam["map"])
+			GameState.god_mode = true
+			await _secs(float(set_d.get("settle_s", 6.0)))
+			RoundManager.stop()
+			if map.director != null:
+				map.director.kill_all(true)
+			for cl: Node in get_tree().root.find_children("*", "CanvasLayer", true, false):   # the HUD, subtitles, toasts
+				if not (cl is LookPost):   # the post stack (PostFx on a map, the menu's LookPost) stays: it is the look (T-208)
+					(cl as CanvasLayer).visible = false
+		if c3 == null:
+			c3 = Camera3D.new()
+			c3.name = "PreviewCamera"
+			c3.far = 1500.0
+			map.add_child(c3)
 		c3.fov = float(cam.get("fov", 64.0))
-		c3.far = 1500.0
-		map.add_child(c3)
+		await _cam_do(map, cam.get("do", []))
 		var eye: Vector3
 		var yaw: float = deg_to_rad(float(cam.get("yaw", 0.0)))
 		var pitch: float = deg_to_rad(float(cam.get("pitch", -6.0)))
@@ -370,9 +385,10 @@ func _cam_set_maps(set_d: Dictionary) -> void:
 			map.player.visible = false
 		await _secs(float(cam.get("settle_s", 2.0)))
 		await _shot(cname)
-		_scene.queue_free()
-		_scene = null
-		await _secs(1.5)
+		if not keep_map:
+			_scene.queue_free()
+			_scene = null
+			await _secs(1.5)
 
 
 ## A camera's `do` list: see tools_src/capture_do.gd (shared with the tour clips, T-167).
