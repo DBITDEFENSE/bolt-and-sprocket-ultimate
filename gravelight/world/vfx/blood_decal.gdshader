@@ -12,8 +12,8 @@ uniform sampler2D noise_tex : repeat_enable, filter_linear_mipmap;
 uniform float now = 0.0;
 uniform float dry_seconds = 50.0;
 uniform float pool_start = 0.22;
-uniform vec3 wet_color : source_color = vec3(0.30, 0.012, 0.018);
-uniform vec3 dry_color : source_color = vec3(0.075, 0.018, 0.012);
+uniform vec3 wet_color : source_color = vec3(0.42, 0.03, 0.035);
+uniform vec3 dry_color : source_color = vec3(0.15, 0.028, 0.02);
 uniform vec3 snow_halo : source_color = vec3(0.42, 0.07, 0.08);
 
 varying float v_age;

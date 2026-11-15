@@ -80,12 +80,14 @@ func setup(impact_cfg: Dictionary, hits_cfg: Dictionary) -> void:
 			_ramp(Color(1.0, 0.85, 0.5, 1.0), Color(1.0, 0.4, 0.1, 0.0)), 0.6, 1.0))
 	# blood (GoreFx drives these): a fine dark mist that hangs, streaks that fly and fall. Lit, never glowing.
 	var mist_amount: int = int(hits_cfg.get("mist_amount", 7))
+	var mist_mat: StandardMaterial3D = _puff_mat(soft, false)
+	mist_mat.vertex_color_is_srgb = true     # (a ramp colour read as linear came out a bright cartoon red)
 	for i: int in MIST:
-		_mist.append(_make(_puff_mat(soft, false), 0.1, mist_amount, 0.45, 0.4, 1.6, 30.0, Vector3(0, -1.5, 0),
-			_ramp(Color(0.3, 0.014, 0.02, 0.8), Color(0.13, 0.0, 0.004, 0.0)), 0.7, 2.6))
+		_mist.append(_make(mist_mat, 0.13, mist_amount, 0.5, 0.4, 1.6, 34.0, Vector3(0, -1.5, 0),
+			_ramp(Color(0.34, 0.025, 0.03, 0.42), Color(0.16, 0.004, 0.008, 0.0)), 0.7, 2.8))
 	var drop: CapsuleMesh = CapsuleMesh.new()
-	drop.radius = 0.007
-	drop.height = 0.05
+	drop.radius = 0.009
+	drop.height = 0.07
 	drop.radial_segments = 5
 	drop.rings = 1
 	drop.material = GoreFx.blood_material()

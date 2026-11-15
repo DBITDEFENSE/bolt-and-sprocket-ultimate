@@ -17,6 +17,7 @@ var _out: String = ""
 var _only: PackedStringArray = PackedStringArray()
 var _gore: String = "full"
 var _scale: float = 0.67
+var _hide_ui: bool = false
 var _map: MapRoot
 var _cam: Camera3D
 var _saved: int = 0
@@ -82,12 +83,25 @@ func _frames(n: int) -> void:
 
 
 func _shot(name: String) -> void:
+	if DisplayServer.get_name() == "headless":
+		print("[shots_gore] (headless: no picture) ", name, _stats())
+		return
 	await RenderingServer.frame_post_draw
 	var img: Image = get_viewport().get_texture().get_image()
 	var path: String = _out.path_join(name + ".png")
 	img.save_png(path)
 	_saved += 1
 	print("[shots_gore] ", path)
+
+
+## What GoreFx holds right now (nothing on a build without it: the "before" run).
+func _stats() -> String:
+	var g: Variant = Effects.get("gore")
+	if g == null:
+		return ""
+	var fx: GoreFx = g as GoreFx
+	return "  marks: spatter %d, pools %d, drips %d, prints %d, smears %d  %s" % [fx.live(GoreFx.SPLAT), fx.live(GoreFx.POOL),
+		fx.live(GoreFx.DRIP), fx.live(GoreFx.PRINT), fx.live(GoreFx.SMEAR), str(fx.stats)]
 
 
 func _look(from: Vector3, at: Vector3, fov: float = 60.0) -> void:
@@ -98,7 +112,16 @@ func _look(from: Vector3, at: Vector3, fov: float = 60.0) -> void:
 
 
 func _wants(scene: String) -> bool:
+	if _hide_ui:
+		_hide_layers()
 	return _only.is_empty() or _only.has(scene)
+
+
+## The HUD, subtitles and toasts off; the look (LookPost) and the lens spatter (GoreFx's "Screen") stay.
+func _hide_layers() -> void:
+	for cl: Node in get_tree().root.find_children("*", "CanvasLayer", true, false):
+		if not (cl is LookPost) and str(cl.name) != "Screen":
+			(cl as CanvasLayer).visible = false
 
 
 ## `n` Gangers standing at `spots` (risen, awake), facing `face`.
@@ -167,6 +190,7 @@ func _sequence(scene: String, times: Array, first: int = 0) -> void:
 
 
 func _clear() -> void:
+	print("[shots_gore] scene done", _stats())
 	for z: Zombie in _map.director.active_zombies():
 		z.deactivate()
 	await _skip(0.3)
@@ -176,19 +200,18 @@ func _run() -> void:
 	await _skip(14.0)     # the map's opening plays out
 	RoundManager.stop()
 	_map.director.kill_all(true)
-	for cl: Node in get_tree().root.find_children("*", "CanvasLayer", true, false):   # the HUD, subtitles, toasts
-		if not (cl is LookPost) and cl.get_class() == "CanvasLayer" and str(cl.name) != "Screen":   # the look and the lens spatter stay
-			(cl as CanvasLayer).visible = false
+	_hide_ui = true
 	_cam = Camera3D.new()
 	_map.add_child(_cam)
 	var p: Player = _map.player
 	if p != null:
-		p.global_position = Vector3(6.0, 0.2, 12.0)   # out of every frame
-	# ---- wall: a Ganger in front of the taproom's east wall, shot from the west
+		p.global_position = Vector3(8.0, 0.2, 3.0)   # out of every frame
+	# The taproom: floor y = 0, the east wall's face x = 23.85, clear floor along z = 3, 7 and 13.
+	# ---- wall: a Ganger a metre in front of the east wall, shot from the west
 	if _wants("wall"):
-		var spot: Vector3 = Vector3(20.6, 0.0, 8.0)
-		var from: Vector3 = Vector3(17.2, 1.5, 8.0)
-		_look(Vector3(18.6, 1.55, 10.3), Vector3(21.0, 1.15, 7.8), 62.0)
+		var spot: Vector3 = Vector3(18.6, 0.0, 1.15)      # the north wall's face is z = 0.15
+		var from: Vector3 = Vector3(18.6, 1.5, 4.8)
+		_look(Vector3(16.2, 1.6, 3.1), Vector3(18.9, 1.2, 0.4), 62.0)
 		var zs: Array[Zombie] = await _stand([spot], from)
 		await _shot("wall_00")
 		for k: int in 3:
@@ -201,9 +224,9 @@ func _run() -> void:
 		await _clear()
 	# ---- headshot
 	if _wants("headshot"):
-		var spot2: Vector3 = Vector3(20.4, 0.0, 5.2)
-		var from2: Vector3 = Vector3(17.0, 1.6, 5.2)
-		_look(Vector3(18.7, 1.7, 6.9), Vector3(20.6, 1.45, 5.1), 55.0)
+		var spot2: Vector3 = Vector3(22.6, 0.0, 3.0)
+		var from2: Vector3 = Vector3(19.2, 1.6, 3.0)
+		_look(Vector3(20.9, 1.75, 5.2), Vector3(23.2, 1.45, 2.7), 58.0)
 		var zs2: Array[Zombie] = await _stand([spot2], from2)
 		await _shot("headshot_00")
 		_fire(zs2[0], from2, &"head", &"kar98k", 1, true)
@@ -211,22 +234,22 @@ func _run() -> void:
 		await _clear()
 	# ---- shotgun
 	if _wants("shotgun"):
-		var spot3: Vector3 = Vector3(20.4, 0.0, 10.6)
-		var from3: Vector3 = Vector3(18.3, 1.45, 10.6)
-		_look(Vector3(18.4, 1.6, 12.6), Vector3(20.8, 1.1, 10.5), 62.0)
+		var spot3: Vector3 = Vector3(16.6, 0.0, 1.15)
+		var from3: Vector3 = Vector3(16.6, 1.45, 3.2)
+		_look(Vector3(18.7, 1.6, 3.2), Vector3(16.4, 1.0, 0.4), 62.0)
 		var zs3: Array[Zombie] = await _stand([spot3], from3)
 		await _shot("shotgun_00")
 		_fire(zs3[0], from3, &"torso", &"trench_gun", 8, true)
 		await _sequence("shotgun", [0.04, 0.12, 0.25, 0.5, 1.2, 3.0, 7.0], 1)
 		await _clear()
-	# ---- pile: ten in front of the bar
+	# ---- pile: ten cut down between the tables and the east wall
 	if _wants("pile"):
-		var c: Vector3 = Vector3(13.0, 0.0, 8.0)
+		var c: Vector3 = Vector3(20.6, 0.0, 7.0)
 		var spots: Array = []
 		for i: int in 10:
-			spots.append(c + Vector3(float(i % 4) * 0.9 - 1.3, 0.0, float(i / 4) * 1.0 - 1.0))
-		var from4: Vector3 = Vector3(8.5, 1.5, 8.0)
-		_look(Vector3(9.6, 2.3, 11.6), c + Vector3(0, 0.5, 0), 68.0)
+			spots.append(c + Vector3(float(i % 4) * 0.85 - 1.3, 0.0, float(i / 4) * 0.9 - 0.9))
+		var from4: Vector3 = Vector3(15.6, 1.5, 7.0)
+		_look(Vector3(17.3, 2.5, 10.4), c + Vector3(0.4, 0.4, 0), 68.0)
 		var zs4: Array[Zombie] = await _stand(spots, from4)
 		await _shot("pile_00")
 		for i: int in zs4.size():
@@ -236,34 +259,31 @@ func _run() -> void:
 			if i == 4:
 				await _shot("pile_01")
 		await _sequence("pile", [0.3, 1.5, 4.0, 9.0, 18.0, 30.0], 2)
-		_look(c + Vector3(1.6, 1.5, 2.2), c + Vector3(0, 0.0, 0), 60.0)
+		_look(c + Vector3(-1.4, 1.5, 2.4), c + Vector3(0.6, 0.0, 0), 60.0)
 		await _frames(2)
 		await _shot("pile_08_floor")
+		_look(Vector3(21.6, 1.5, 7.0), Vector3(23.85, 1.2, 7.0), 70.0)
+		await _frames(2)
+		await _shot("pile_09_wall")
 		await _clear()
-	# ---- snow: out in the yard
+	# ---- snow: open ground north of the inn
 	if _wants("snow"):
-		var spot5: Vector3 = Vector3(21.0, 0.0, 42.0)
-		var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(spot5 + Vector3.UP * 3.0, spot5 + Vector3.DOWN * 3.0, 1)
-		var r: Dictionary = _map.get_world_3d().direct_space_state.intersect_ray(q)
-		if not r.is_empty():
-			spot5 = r["position"]
-		var from5: Vector3 = spot5 + Vector3(-3.0, 1.5, 0.0)
-		_look(spot5 + Vector3(-1.2, 2.2, 2.8), spot5 + Vector3(0.6, 0.4, 0.0), 62.0)
+		var spot5: Vector3 = Vector3(15.0, 0.0, -8.0)
+		var from5: Vector3 = spot5 + Vector3(-3.4, 1.5, 0.0)
+		_look(spot5 + Vector3(-1.0, 2.3, -2.9), spot5 + Vector3(0.9, 0.3, 0.0), 62.0)
 		var zs5: Array[Zombie] = await _stand([spot5], from5)
 		await _shot("snow_00")
 		for k: int in 2:
 			_fire(zs5[0], from5, &"torso", &"thompson", 1, false)
 			await _secs(0.12)
-		_fire(zs5[0], from5, &"torso", &"thompson", 1, true)
+		_fire(zs5[0], from5, &"torso", &"m1_garand", 1, true)
 		await _sequence("snow", [0.07, 0.3, 1.2, 3.0, 7.0, 16.0], 1)
 		await _clear()
-	# ---- lamp: the cellar vault
+	# ---- lamp: the cellar vault (floor y = -3.2, the west wall's face x = 24.15, the lantern at 28.2, -1.1, 25)
 	if _wants("lamp"):
-		var foot: Vector3 = Vector3(26.0, -3.2, 19.8)
-		var fwd: Vector3 = Vector3(-sin(deg_to_rad(-150.0)), 0.0, -cos(deg_to_rad(-150.0)))
-		var spot6: Vector3 = foot + fwd * 4.0
-		var from6: Vector3 = foot + fwd * 1.0 + Vector3.UP * 1.5
-		_look(foot + Vector3.UP * 1.6 + fwd.cross(Vector3.UP) * 1.2, spot6 + Vector3.UP * 0.9, 62.0)
+		var spot6: Vector3 = Vector3(25.15, -3.2, 24.5)
+		var from6: Vector3 = Vector3(28.4, -1.7, 24.5)
+		_look(Vector3(26.9, -1.6, 21.9), Vector3(24.4, -2.3, 24.9), 62.0)
 		var zs6: Array[Zombie] = await _stand([spot6], from6)
 		await _shot("lamp_00")
 		_fire(zs6[0], from6, &"torso", &"trench_gun", 8, false)
@@ -271,6 +291,23 @@ func _run() -> void:
 		_fire(zs6[0], from6, &"head", &"kar98k", 1, true)
 		await _sequence("lamp", [0.07, 0.3, 1.2, 3.0, 7.0, 16.0], 1)
 		await _clear()
+	# ---- lens: the player's own view after a kill at arm's length
+	if _wants("lens") and p != null and Effects.get("gore") != null:
+		_hide_ui = false
+		for cl: Node in get_tree().root.find_children("*", "CanvasLayer", true, false):
+			(cl as CanvasLayer).visible = true
+		p.global_position = Vector3(19.0, 0.1, 9.5)
+		p.rotation.y = -PI * 0.5      # facing east
+		var pc: Array[Node] = p.find_children("*", "Camera3D", true, false)
+		if not pc.is_empty():
+			(pc[0] as Camera3D).make_current()
+		await _skip(0.6)
+		await _shot("lens_00")
+		(Effects.get("gore") as GoreFx).screen.add(1.0)
+		(Effects.get("gore") as GoreFx).hands(1.0)
+		await _frames(3)
+		await _shot("lens_01")
+		await _sequence("lens", [1.2, 2.6], 2)
 	print("[shots_gore] stats ", str(Effects.stats))
 	print("[shots_gore] %d screenshots in %s" % [_saved, _out])
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(ProfileSave.path))

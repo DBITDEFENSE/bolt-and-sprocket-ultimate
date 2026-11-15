@@ -72,9 +72,10 @@ func test_the_data_is_dark_and_covers_every_weapon_class() -> void:
 		assert_true(classes.has(cls), "a gore profile for class " + cls)
 	for key: String in ["wet_color", "dry_color"]:
 		var c: Array = g[key]
-		assert_lt(float(c[0]), 0.4, key + " is a dark red, not a bright one")
+		assert_lt(float(c[0]), 0.5, key + " is a dark red, not a bright one")
 		assert_lt(float(c[1]) + float(c[2]), 0.08, key + " has next to no green or blue")
 	assert_lt(float((g["dry_color"] as Array)[0]), float((g["wet_color"] as Array)[0]) * 0.5, "it dries much darker")
+	assert_lt(float((g["dry_color"] as Array)[0]), 0.2, "dried blood is close to black")
 	assert_false(GoreFx.blood_material().emission_enabled, "blood never glows")
 	assert_lt(GoreFx.blood_material().roughness, 0.3, "wet: it catches a lamp")
 	assert_not_null(load(GoreFx.SHADER), "the mark shader loads")
@@ -166,6 +167,8 @@ func test_gore_off_and_low_leave_nothing() -> void:
 		gore.spurt(body)
 		gore.crawler(body)
 		gore.screen.add(1.0)
+		gore.hands(1.0)
+		assert_eq(gore.hands_amount(), 0.0, level + ": clean hands")
 		assert_eq(gore.live_total(), 0, level + ": no mark")
 		assert_eq(int(gore.stats["sprays"]), 0, level + ": no spray")
 		assert_eq(gore._pend_n, 0, level + ": no body waits to pool")
@@ -290,9 +293,11 @@ func test_a_match_start_wipes_the_blood() -> void:
 		gore.pool_under(Vector3(float(i) * 0.5 - 7.0, 100.5, 3.0))
 		Effects.zombie_hit(Vector3(3.0, 101.2, float(i) * 0.3), Vector3(-1, 0, 0), &"kar98k", false)
 	gore.screen.add(0.5)
+	gore.hands(0.8)
 	assert_gt(gore.live_total(), 10)
 	Effects.clear_marks()
 	assert_eq(gore.live_total(), 0)
+	assert_eq(gore.hands_amount(), 0.0, "clean hands in a new match")
 	assert_eq(gore.screen.amount(), 0.0)
 	assert_false(gore.is_processing(), "the clock rests until there is blood again")
 
@@ -311,6 +316,13 @@ func test_the_lens_spatter_is_small_and_fades() -> void:
 	gore.screen._process(float(s["fade_seconds"]))
 	assert_eq(gore.screen.amount(), 0.0, "gone")
 	assert_false((gore.screen.get_node("Spatter") as CanvasItem).visible)
+	# the hands: bloodied by what bloodies the lens, worn clean in hands.seconds
+	gore.hands(0.6)
+	assert_almost_eq(gore.hands_amount(), 0.6, 0.001)
+	gore._process(float(Effects.vfx["gore"]["hands"]["seconds"]) * 0.5)
+	assert_almost_eq(gore.hands_amount(), 0.1, 0.01)
+	gore._process(float(Effects.vfx["gore"]["hands"]["seconds"]))
+	assert_eq(gore.hands_amount(), 0.0)
 
 
 func test_gore_changes_no_damage_number() -> void:

@@ -23,6 +23,7 @@ const KIND_KEYS: PackedStringArray = ["splats", "pools", "drips", "prints", "sme
 const LIFT: PackedFloat32Array = [0.004, 0.006, 0.005, 0.008, 0.007]
 const SHADER: String = "res://gravelight/world/vfx/blood_decal.gdshader"
 const PENDING: int = 12
+const HANDS_GLOBAL: StringName = &"gl_hand_blood"
 const WALKERS: int = 10
 const HIDDEN: Transform3D = Transform3D(Basis(Vector3.ZERO, Vector3.ZERO, Vector3.ZERO), Vector3.ZERO)
 # a class profile row (PackedFloat32Array), see _profile()
@@ -86,6 +87,11 @@ var _scan_every: float = 0.4
 var _print_steps: int = 9
 var _smear_steps: int = 14
 var _zombie_prints_max: int = 16
+var _snow_map: StringName = &"?"
+var _snow_open: bool = false
+var _hands: float = 0.0
+var _hands_per: float = 1.6
+var _hands_seconds: float = 40.0
 
 
 func setup(c: Dictionary) -> void:
@@ -116,6 +122,11 @@ func setup(c: Dictionary) -> void:
 	for cls: String in classes.keys():
 		_profiles[cls] = _profile(classes[cls] as Dictionary)
 	_default = _profiles.get("default", _profile({}))
+	var hc: Dictionary = c.get("hands", {})
+	_hands_per = float(hc.get("per_spatter", 1.6))
+	_hands_seconds = maxf(1.0, float(hc.get("seconds", 40.0)))
+	# not in project.godot (shader_globals): it exists once this adds it (as ZombieBody.ensure_globals does)
+	RenderingServer.global_shader_parameter_add(HANDS_GLOBAL, RenderingServer.GLOBAL_VAR_TYPE_FLOAT, 0.0)
 	_q = PhysicsRayQueryParameters3D.new()
 	_q.collision_mask = 1
 	# the marks
@@ -125,8 +136,8 @@ func setup(c: Dictionary) -> void:
 	_mat.shader = load(SHADER) as Shader
 	_mat.set_shader_parameter("noise_tex", noise_texture())
 	_mat.set_shader_parameter("dry_seconds", float(c.get("dry_seconds", 50.0)))
-	_mat.set_shader_parameter("wet_color", _col(c.get("wet_color", [0.3, 0.012, 0.018])))
-	_mat.set_shader_parameter("dry_color", _col(c.get("dry_color", [0.075, 0.018, 0.012])))
+	_mat.set_shader_parameter("wet_color", _col(c.get("wet_color", [0.42, 0.03, 0.035])))
+	_mat.set_shader_parameter("dry_color", _col(c.get("dry_color", [0.15, 0.028, 0.02])))
 	_mat.set_shader_parameter("snow_halo", _col(c.get("snow_halo", [0.42, 0.07, 0.08])))
 	_mat.render_priority = 1
 	quad.material = _mat
@@ -264,12 +275,30 @@ func clear() -> void:
 	_mat.set_shader_parameter("now", 0.0)
 	if screen != null:
 		screen.clear()
+	_hands = 0.0
+	RenderingServer.global_shader_parameter_set(HANDS_GLOBAL, 0.0)
 	set_process(false)
 
 
 func _process(delta: float) -> void:
 	_clock += delta
 	_mat.set_shader_parameter("now", _clock)
+	if _hands > 0.0:
+		_hands = maxf(0.0, _hands - delta / _hands_seconds)
+		RenderingServer.global_shader_parameter_set(HANDS_GLOBAL, _hands)
+
+
+## Blood on the first-person hands and sleeves (0..1; the arms shader's gl_hand_blood). It wears off.
+func hands(a: float) -> void:
+	if a <= 0.0 or not enabled():
+		return
+	_hands = minf(1.0, _hands + a)
+	RenderingServer.global_shader_parameter_set(HANDS_GLOBAL, _hands)
+	set_process(true)
+
+
+func hands_amount() -> float:
+	return _hands
 
 
 ## A new physics frame: the ray and mark allowances are whole again.
@@ -325,6 +354,7 @@ func spray(pos: Vector3, toward: Vector3, weapon_id: StringName, through: bool, 
 		var cam: Camera3D = get_viewport().get_camera_3d()
 		if cam != null and cam.global_position.distance_squared_to(pos) < screen.near_sq:
 			screen.add(prof[P_SCREEN])
+			hands(prof[P_SCREEN] * _hands_per)
 	if _marks_left <= 0 or not is_inside_tree():
 		return
 	if randf() < prof[P_EXIT] * hk and (through or overhead or fly.y < 0.6):
@@ -344,7 +374,7 @@ func _ray(from: Vector3, to: Vector3) -> Dictionary:
 func _exit_spatter(pos: Vector3, fly: Vector3, prof: PackedFloat32Array) -> void:
 	if _rays_left < 6:
 		return
-	var d: Vector3 = (fly + Vector3(randf_range(-0.16, 0.16), randf_range(-0.14, 0.06), randf_range(-0.16, 0.16))).normalized()
+	var d: Vector3 = (fly + Vector3(randf_range(-0.16, 0.16), randf_range(-0.1, 0.1), randf_range(-0.16, 0.16))).normalized()
 	var reach: float = prof[P_REACH]
 	var hit: Dictionary = _ray(pos + fly * 0.1, pos + d * reach)
 	if hit.is_empty() or not Effects.persists_on(hit["collider"]):
@@ -405,9 +435,23 @@ func _drip(top: Vector3, n: Vector3) -> void:
 		length * randf_range(float(per_m[0]), float(per_m[1])), 1.0, false, false)
 
 
-func _is_snow(collider: Object, at: Vector3, n: Vector3) -> bool:
-	_rays_left -= 1
-	return Effects.surface_of(collider, at, n, get_world_3d().direct_space_state) == "snow"
+## Is the floor at `at` snow? A "surface" meta on the collider (or its parent) says; otherwise, on a map whose
+## open ground is snow (vfx.json surfaces.open_ground), anything with the sky over it is.
+func _is_snow(collider: Object, at: Vector3, _n: Vector3) -> bool:
+	var node: Node = collider as Node
+	if node != null:
+		if node.has_meta("surface"):
+			return str(node.get_meta("surface")) == "snow"
+		var par: Node = node.get_parent()
+		if par != null and par.has_meta("surface"):
+			return str(par.get_meta("surface")) == "snow"
+	if GameState.map_id != _snow_map:
+		_snow_map = GameState.map_id
+		var og: Dictionary = (Effects.vfx.get("surfaces", {}) as Dictionary).get("open_ground", {})
+		_snow_open = str(og.get(String(_snow_map), "")) == "snow"
+	if not _snow_open:
+		return false
+	return _ray(at + Vector3.UP * 0.3, at + Vector3.UP * 14.0).is_empty()
 
 
 ## True when the four corners of a mark (half extents hx, hy along t, b) all lie on something.
@@ -522,6 +566,16 @@ func pool_under(from: Vector3, big: float = 1.0) -> bool:
 	if ok:
 		stats["pools"] = int(stats["pools"]) + 1
 		AudioDirector.play_3d("gore_drip", at, -6.0)
+		# what was thrown off the body as it went down
+		for i: int in int(round(float(cfg.get("death_spatters", 2)) * horde_k())):
+			if _rays_left < 2 or _marks_left <= 0:
+				break
+			var off: Vector3 = Vector3(randf_range(-1.0, 1.0), 0.0, randf_range(-1.0, 1.0)).normalized() * randf_range(0.5, 1.1) * big
+			var h2: Dictionary = _ray(at + off + Vector3.UP * 0.5, at + off + Vector3.DOWN * 0.6)
+			if h2.is_empty() or (h2["normal"] as Vector3).y < 0.75 or not Effects.persists_on(h2["collider"]):
+				continue
+			var s2: float = randf_range(0.28, 0.6)
+			_mark(SPLAT, h2["position"], h2["normal"], off.normalized(), s2 * randf_range(1.0, 1.7), s2, 1.0, 1.0, _is_snow(h2["collider"], h2["position"], n), false)
 	return ok
 
 
@@ -569,7 +623,7 @@ static var _blood_mat: StandardMaterial3D
 static func blood_material() -> StandardMaterial3D:
 	if _blood_mat == null:
 		_blood_mat = StandardMaterial3D.new()
-		_blood_mat.albedo_color = Color(0.26, 0.012, 0.016)
+		_blood_mat.albedo_color = Color(0.42, 0.03, 0.035)
 		_blood_mat.roughness = 0.12
 		_blood_mat.metallic_specular = 0.7
 	return _blood_mat
@@ -591,6 +645,7 @@ func spurt(at: Node3D) -> void:
 	_spurt_len[i] = randf_range(float(secs[0]), float(secs[1])) * lerpf(1.0, 0.6, 1.0 - horde_k())
 	_spurt_drop[i] = 0.25
 	stats["spurts"] = int(stats["spurts"]) + 1
+	AudioDirector.play_3d("gore_bone", at.global_position, 0.0)
 	AudioDirector.play_3d("gore_spurt", at.global_position, -2.0)
 
 
@@ -634,7 +689,7 @@ func _build_chunks(n: int) -> void:
 	bit.radial_segments = 5
 	bit.rings = 2
 	var m: StandardMaterial3D = StandardMaterial3D.new()
-	m.albedo_color = Color(0.2, 0.03, 0.03)
+	m.albedo_color = Color(0.3, 0.035, 0.035)
 	m.roughness = 0.3
 	bit.material = m
 	for i: int in n:

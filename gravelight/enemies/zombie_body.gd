@@ -119,8 +119,8 @@ const KEY_LOOK: Dictionary = {
 	"armband": [Color(0.08, 0.08, 0.09), 0.9, 0.0, 0.0],
 	"brass": [Color(0.6, 0.5, 0.25), 0.4, 0.8, 0.0],
 	"rope": [Color(0.5, 0.42, 0.28), 1.0, 0.0, 0.0],
-	"stump": [Color(0.24, 0.016, 0.022), 0.22, 0.0, 0.0],
-	"meat": [Color(0.13, 0.01, 0.014), 0.3, 0.0, 0.0],
+	"stump": [Color(0.4, 0.035, 0.04), 0.22, 0.0, 0.0],
+	"meat": [Color(0.2, 0.018, 0.022), 0.3, 0.0, 0.0],
 	"bone": [Color(0.6, 0.52, 0.42), 0.45, 0.0, 0.0],
 	"eye_white": [Color(0.74, 0.7, 0.64), 0.25, 0.0, 0.0],
 	"iris": [Color(0.16, 0.12, 0.09), 0.2, 0.0, 0.0],
@@ -368,7 +368,7 @@ static func blood_material() -> StandardMaterial3D:
 					c = Color(0.045, 0.004, 0.006, 1.0)                                  # the hole: near black
 				elif r < rim:
 					var t: float = (r - hole) / maxf(0.01, rim - hole)
-					c = Color(lerpf(0.2, 0.11, t), 0.012, 0.016, (1.0 - t * t) * (0.8 + 0.2 * rng.randf()))   # torn, wet
+					c = Color(lerpf(0.4, 0.2, t), 0.03, 0.035, (1.0 - t * t) * (0.8 + 0.2 * rng.randf()))   # torn, wet
 				img.set_pixel(x, y, c)
 		_blood.albedo_texture = ImageTexture.create_from_image(img)
 		_blood.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
