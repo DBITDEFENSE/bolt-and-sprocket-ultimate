@@ -1,6 +1,77 @@
 {
-  "_comment": "The launcher reads this file from the branch of the channel the player is on (origin/<branch>:launcher/feed.json), so news goes live with a push, no launcher rebuild. Images: 'art/<file>' = bundled with the launcher (launcher/assets/art), 'repo:<path>' = a file in the game repo (shown once installed). Items with 'channels' only show on those channels. 'hero': true puts it in the big carousel.",
+  "_comment": "The launcher reads this file from the branch of the channel the player is on (origin/<branch>:launcher/feed.json), so news goes live with a push, no launcher rebuild. Images: 'art/<file>' = bundled with the launcher (launcher/assets/art); 'repo:<path>' = a file in the game repo (shown once installed); 'repo:launcher/assets/news/<file>' = both (a launcher built after the picture shows it at once, an older one after UPDATE). 'images' adds a gallery to the article ({src, caption} or a plain path). Items with 'channels' only show on those channels. 'hero': true puts it in the big carousel. 'upcoming' is the Upcoming tab: proposals, no dates. How to add things: launcher/README.md.",
   "news": [
+    {
+      "id": "gore-1",
+      "date": "2026-11-15",
+      "tag": "BLOOD",
+      "title": "Blood stays where it lands",
+      "summary": "A hit now marks the wall and the floor behind a zombie. Blood runs down plaster and brick, pools under the dead, and a head that comes off leaves the neck spurting.",
+      "body": "Until now a hit threw a puff of red and left the room clean. Now a round that goes through marks what is behind the body: a spatter on the wall, drops on the floor, a run creeping down the brick. About a second after a zombie falls, a pool spreads under it. Wet blood is dark and glossy and dries darker still.\n\nA head that comes off leaves the neck spurting for a few seconds. A stump is torn meat round a snapped bone instead of a flat red cap, and wounds are ragged dark holes. Walk through a fresh pool and you leave boot prints; a zombie that loses its legs drags a smear behind it. A kill at arm's length puts a few drops at the edges of your view and blood on your hands. Both fade in seconds, and the crosshair, ammo and Scrip stay clear. New sounds go with all of it.\n\nWhere you will notice it most: on walls, in lit stone rooms and on headshots. Where you will not, yet: on the taproom's dark floorboards and on snow, where the marks barely show. That is on the Upcoming list.\n\nNo damage number, hit box or zombie timing changed. Everything new appears only with Gore set to Full; Low and Off look as they did. Parts of this have only been checked by the automated tests so far (the boot prints, the smears, the sounds), so tell us what looks or sounds wrong.",
+      "image": "repo:launcher/assets/news/gore_wall.jpg",
+      "images": [
+        { "src": "repo:launcher/assets/news/gore_wall.jpg", "caption": "The taproom after a fight: a spatter and a run on the plaster beside the boarded window." }
+      ],
+      "hero": true
+    },
+    {
+      "id": "u19-fixes",
+      "date": "2026-11-15",
+      "tag": "FIXES",
+      "title": "After the first playtest of Update 19",
+      "summary": "Tonic machines stand against their walls, the cellar can be read before the power is on, Käthe's drawing is back on its wall, and Intel pickups are no longer stacked in one corner.",
+      "body": "Tonic machines. Every machine stood a metre out from the wall behind it, and the taproom's stood in the middle of the walk to the Old Cellar door. Sixteen of the seventeen places now put the machine's back on the wall, and the taproom's is tucked into the north-west corner. The fine print moved from the back of the machine to its side.\n\nThe cellar before the lever. The two new rooms had one flickering lantern each, for rooms ten metres long. Each now has two brighter, steady lanterns, and so does the cellar bay, so you can find the doors and the far corners before the power is on. It is still a cellar at night.\n\nKäthe's drawing hung in the air a metre in front of the upstairs hall's wall. It is flat on the wall at the top of the stairs again, and the unsent letter in Room 3 lies on the bed instead of half over its edge.\n\nIntel pickups. Each match's three to five random Intel pickups all landed on a single point. On the Inn that point is inside the taproom's corner wall, so only their blue glint showed on the floor. They are spread over the map now, lying on the floor where you can pick them up.",
+      "image": "repo:launcher/assets/news/fix_perk_wall.jpg",
+      "images": [
+        { "src": "repo:launcher/assets/news/fix_perk_wall.jpg", "caption": "A tonic machine with its back on the vault's wall." },
+        { "src": "repo:launcher/assets/news/fix_perk_road.jpg", "caption": "The place on the carters' road, against the yard's fence." },
+        { "src": "repo:launcher/assets/news/fix_cellar_before.jpg", "caption": "Before: the Lagering Vault with the power off." },
+        { "src": "repo:launcher/assets/news/fix_cellar_after.jpg", "caption": "After: the same view, the door to the Dynamo Room in sight." }
+      ]
+    },
+    {
+      "id": "movement-perf",
+      "date": "2026-11-15",
+      "tag": "MOVEMENT",
+      "title": "The same feel at every frame rate",
+      "summary": "Recoil, the landing dip, the gun's sway and a controller's turn now behave the same at 30, 60, 144 and 240 FPS. Hitches from bodies built in the middle of a round are gone.",
+      "body": "Your body always moved the same at any frame rate. What changed with the frame rate was what is drawn every frame: at 240 FPS the recoil kick was up to 2.8 times larger than at 60, the landing dip 1.6 times deeper, the gun's sway in a fast turn a third of its size, and a controller's stick turned the view on only one frame in four. All four now give the 60 FPS result at every rate. No speed, jump height or timing changed, and nothing changes if you play at 60.\n\nHitches. Several things were built in the middle of play the first time they were needed: a relief squad's soldiers, the Inn's risen dead, the pieces of a zombie that loses a limb. They are built while the map loads or in the background now. A relief squad can arrive up to 0.6 seconds after its round starts, and the Inn takes about half a second longer to load. Every chasing zombie also does less work per tick.\n\nWhat we can and cannot say. In our test scenes (round 15, 24 zombies, a full squad) the game's own work per frame fell by 6 to 16 %, and the worst frame of a live round fell to a third. That was measured without a graphics card. Frame rates on your GPU were not measured, and some one-off hitches are left; they lead the Upcoming list.",
+      "image": "repo:launcher/assets/news/u19_snow.jpg",
+      "hero": true
+    },
+    {
+      "id": "u19",
+      "date": "2026-11-15",
+      "tag": "UPDATE 19",
+      "title": "A deeper cellar and a rebuilt Sherman",
+      "summary": "The Inn's cellar is 75 % bigger, with power and the Crucible two doors deeper. Tonic machines are dealt to new places every match. New snow, ground, walls and night sky; the tank, the dive bomber and the aircraft rebuilt.",
+      "body": "The cellar. Two rooms behind two new doors: the Lagering Vault (750) and the Dynamo Room (1000). The power lever and the Crucible stand in the Dynamo Room now, two doors deeper than before: getting the power on costs 3250 from the taproom, where it used to cost 1500. From round 4 the dead come up through the floor of the new rooms too.\n\nTonics. On the Inn the twelve machines are dealt onto seventeen places at the start of every match, the same deal for everyone in a co-op match. A nailed crate stands on every place that stays empty. Second Wind is always within one door of the taproom.\n\nSurfaces and sky. New walked snow, frozen mud, the Inn's plaster, and Kaltenbrunn's render and rock. Surfaces repeat less, and snow sparkles. The night sky has a moon and clouds with form; Totenhafen has a sky dome too.\n\nModels. The Sherman is rebuilt in detail, the dive bomber has camouflage, a crew and flaps, and the six aircraft that cross the sky, the cart and the crates are new.\n\nThe Requisition Crate stands under a tall column of light that marks where it is, rolls through the real weapon models, and sinks and rises when it moves. The Crucible is built into the wall behind it: fully on the Inn, Totenhafen and Thalbach, with a back plate and flue on the other maps for now.",
+      "image": "repo:launcher/assets/news/u19_taproom.jpg",
+      "images": [
+        { "src": "repo:launcher/assets/news/u19_taproom.jpg", "caption": "The taproom with the new plaster and timber." },
+        { "src": "repo:launcher/assets/news/u19_lagering_vault.jpg", "caption": "The Lagering Vault, one of the two new cellar rooms (work light on for the picture)." },
+        { "src": "repo:launcher/assets/news/u19_sherman.jpg", "caption": "The rebuilt Sherman." },
+        { "src": "repo:launcher/assets/news/u19_crate_column.jpg", "caption": "The Requisition Crate under its column of light." },
+        { "src": "repo:launcher/assets/news/u19_crucible.jpg", "caption": "The Crucible, built into its wall." },
+        { "src": "repo:launcher/assets/news/u19_snow.jpg", "caption": "New snow in the Inn's yard." },
+        { "src": "repo:launcher/assets/news/u19_chapel.jpg", "caption": "Kaltenbrunn's chapel with the new surfaces." }
+      ],
+      "hero": true
+    },
+    {
+      "id": "u18",
+      "date": "2026-11-14",
+      "tag": "UPDATE 18",
+      "title": "Companions drink, new guns, a tank at the gate",
+      "summary": "Companions buy tonics and carry wonder weapons. Four new guns in the Requisition Crate. On the Inn, a Sherman arrives on round 30 and an air raid on round 40.",
+      "body": "Companions. Trudi and the other companions buy tonics from their own Scrip when the fight around them is calm, or on yours if you ask (Talk: GET YOURSELF A TONIC). You can hand them a wonder weapon. Like you, they lose their tonics when they go down.\n\nPeople. Everyone who waits in the world watches you come, shifts their weight, startles at shots, breathes fog in the cold and greets you. Civilians put their hands up if you aim at them.\n\nGuns. The FG 42, the Mosin-Nagant, the Bren and the Sten come out of the Requisition Crate, each with its own Crucible upgrade. The Type 100 has a new model and steadier handling. None of the four is a wall-buy yet.\n\nThe Inn, round 30. A Sherman comes up the carters' road and parks outside the yard gate, and a horde goes for it. Keep the dead off it and it fights beside you through rounds 31 to 39; lose it and a second one comes on round 32. On round 40 a dive bomber destroys it and the air raid begins: a siren, twenty seconds to get inside the Inn, then a minute of bombs. Indoors you are safe.\n\nSigns. Text in the world is painted, chalked or printed onto its surface instead of floating in front of it, and there is less of it.",
+      "image": "repo:launcher/assets/news/u18_air_raid.jpg",
+      "images": [
+        { "src": "repo:launcher/assets/news/u18_air_raid.jpg", "caption": "Round 40 on the Inn: the rings on the snow show where the bombs will land." },
+        { "src": "repo:launcher/assets/news/u18_type100.jpg", "caption": "The Type 100's new model." }
+      ],
+      "hero": true
+    },
     {
       "id": "launcher-1",
       "date": "2026-11-12",
@@ -8,8 +79,7 @@
       "title": "The launcher is here",
       "summary": "One button installs everything a new recruit needs: Git, the engine, the game. It keeps you on the newest build and tells you what changed.",
       "body": "The launcher installs Git for Windows (with Git LFS and the GitHub sign-in helper) if it is missing, downloads Godot 4.7.2 and verifies it, pulls the game from GitHub and prepares the assets on first launch. After that it checks for updates every time it opens. Pick Stable for the build that always launches or Preview for the newest work.",
-      "image": "art/map00_crossroads.png",
-      "hero": true
+      "image": "art/map00_crossroads.png"
     },
     {
       "id": "u15",
@@ -18,9 +88,7 @@
       "title": "Horses, movement and two inns rebuilt",
       "summary": "A rideable horse in the Carters' Yard, das Totenross on round 20 and der Fuhrmann on 30. Step assist, coyote time and jump buffering.",
       "body": "Movement: step assist over small ledges, coyote time and a jump buffer. Bots: fewer hitches when the squad is busy. The Inn: the vault thinned, the hay rebuilt. Kaltenbrunn: 65 props made solid, green timber. Horses: a rideable horse in the Carters' Yard, plus two horse bosses.",
-      "image": "art/map01_kaltenbrunn.png",
-      "hero": true,
-      "channels": ["preview"]
+      "image": "art/map01_kaltenbrunn.png"
     },
     {
       "id": "bosses",
@@ -28,9 +96,7 @@
       "tag": "BOSSES",
       "title": "All ten bosses reworked",
       "summary": "Every boss has new telegraphs, effects and sound, built on one shared kit.",
-      "image": "art/map04d_mondlicht.png",
-      "hero": true,
-      "channels": ["preview"]
+      "image": "art/map04d_mondlicht.png"
     },
     {
       "id": "zombies",
@@ -38,8 +104,7 @@
       "tag": "ZOMBIES",
       "title": "The dead move like the dead",
       "summary": "Licensed motion capture for gaits, swipes, deaths and turns. Zombies turn in place in co-op too, and their feet stay planted.",
-      "image": "art/map02_totenhafen.png",
-      "hero": true
+      "image": "art/map02_totenhafen.png"
     },
     {
       "id": "maps",
@@ -58,6 +123,72 @@
       "image": "art/map04c_groomlake.png"
     }
   ],
+  "upcoming": {
+    "title": "Upcoming",
+    "note": "What we propose to work on next. Proposed, not promised: no dates, and the order is not a schedule.",
+    "items": [
+      {
+        "id": "up-fps",
+        "area": "PERFORMANCE",
+        "title": "Hold 60 FPS and above, always",
+        "summary": "Remove the one-off hitches that are left (a squad bot's first shots, a spawn tick, a survivor getting back up) and measure on a real graphics card instead of on the CPU alone."
+      },
+      {
+        "id": "up-bots",
+        "area": "SQUAD",
+        "title": "Smarter squad bots",
+        "summary": "No more standing under a tonic machine that is on another floor, and reliable use of the workbench."
+      },
+      {
+        "id": "up-gore-2",
+        "area": "BLOOD",
+        "title": "Gore, second pass",
+        "summary": "Blood that reads on snow and on dark floorboards, boot prints laid by your real footfalls, and blood on the weapon in your hands."
+      },
+      {
+        "id": "up-tonic-spots",
+        "area": "MAPS",
+        "title": "Random tonic places on the other maps",
+        "summary": "Today only the Inn deals its tonic machines to new places every match. The other maps should too."
+      },
+      {
+        "id": "up-crucible-walls",
+        "area": "MAPS",
+        "title": "The Crucible walled into its room everywhere",
+        "summary": "On Kaltenbrunn and the remaining Groom Lake maps it has a back plate and a flue. It should be built into the wall as it is on the Inn."
+      },
+      {
+        "id": "up-models",
+        "area": "ART",
+        "title": "More detailed big models",
+        "summary": "Kaltenbrunn's locomotive and boxcar, Groom Lake's trucks and bomber, the ships off Totenhafen. The C-47 wreck should be readable at night; today it is as dark as the sky behind it."
+      },
+      {
+        "id": "up-wallbuys",
+        "area": "WEAPONS",
+        "title": "Wall-buys for the new guns",
+        "summary": "The FG 42, the Mosin-Nagant, the Bren and the Sten only come out of the Requisition Crate today."
+      },
+      {
+        "id": "up-jakub",
+        "area": "STORY",
+        "title": "Jakub's breakout, protected",
+        "summary": "A relief patrol can shoot the zombie at his cage before he reaches it. His moment with the coal shovel should play every time."
+      },
+      {
+        "id": "up-crucible-snag",
+        "area": "FIXES",
+        "title": "The invisible snag in front of the Crucible",
+        "summary": "A chest-high collider nobody can see stands in front of the Crucible on every map. It should go."
+      },
+      {
+        "id": "up-power-lights",
+        "area": "FIXES",
+        "title": "Power lights that reset between maps",
+        "summary": "Lights that belong to the power can stay lit when a map loads after one where the power was on."
+      }
+    ]
+  },
   "links": [
     { "label": "GitHub", "url": "https://github.com/DBITDEFENSE/bolt-and-sprocket-ultimate" },
     { "label": "Report a bug", "url": "https://github.com/DBITDEFENSE/bolt-and-sprocket-ultimate/issues/new" }

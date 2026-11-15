@@ -34,9 +34,20 @@ player is on** (read with `git show origin/<branch>:launcher/feed.json` after ea
 launcher shows it on its next start. No launcher rebuild.
 
 - `news[]`: `id`, `date` (YYYY-MM-DD), `tag`, `title`, `summary`, optional `body` (paragraphs split by a blank line),
-  `image`, `hero: true` for the big carousel, `channels: ["preview"]` to show an item on one channel only.
+  `image`, `hero: true` for the big carousel, `channels: ["preview"]` to show an item on one channel only. Newest
+  first; items of one day keep their order in the file.
 - `image`: `art/<file>` is bundled with the launcher (`launcher/assets/art`); `repo:<path>` is any image in the game
-  repo (shown once the game is installed).
+  repo (shown once the game is installed). **New pictures go in `launcher/assets/news/` and are written
+  `repo:launcher/assets/news/<file>`**: a launcher built after the picture shows its bundled copy at once, an older
+  launcher finds it in the game folder after UPDATE. A picture that cannot be loaded falls back to the key art.
+- `images` (launcher 1.1.0 and newer): a gallery for the article and the strip under the carousel text, a list of
+  `{ "src": ..., "caption": ... }` or plain paths. `image` leads; repeat it in `images` to give it a caption. At most
+  12. Pictures are 16:9 (960x540 JPEG): add a row to `tools/news_images.py` and run it from the repo root; it cuts,
+  resizes and compresses from `docs/captures/`.
+- `upcoming` (launcher 1.1.0 and newer; the **Upcoming** tab and the line under the patch notes):
+  `{ "title", "note", "items": [{ "id", "area", "title", "summary" }] }`. Proposals, not promises: no dates. The tab
+  hides itself when the list is empty. `channels` works on an item as it does on news.
+- A launcher older than 1.1.0 ignores `images` and `upcoming` and shows the rest.
 - Optional overrides: `channels` (id, name, branch, description), `godot.version`, `mainScene`, `exclude` (repo
   folders players never download).
 - Patch notes need nothing: they are the branch's first-parent commit subjects.
@@ -51,6 +62,8 @@ npm install
 npm start                       # run it
 npm run check                   # offline unit checks (progress parsing, errors, install-folder safety, feed)
 npm run shots -- <out dir>      # screenshots of every state, no window shown
+npm run shots -- <out dir> upcoming article:u19:2 hero:u18   # chosen states: an article at a picture, a carousel slide
+                                # CZ_CAPTURE_SIZE=1080x660 for another window size, CZ_CAPTURE_DELAY=4000 to wait longer
 node tests/live.js <dir> [channel]   # real end-to-end install from GitHub into <dir> (downloads ~2 GB), then a headless boot
 npm run dist                    # dist/ClaudeZombiesLauncher-Setup-<v>.exe and -portable.exe
 ```

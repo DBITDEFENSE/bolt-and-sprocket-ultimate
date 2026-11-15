@@ -22,11 +22,25 @@ function ago(d) {
 }
 function fmtBytes(n) { if (!n) return '0 B'; const u = ['B', 'KB', 'MB', 'GB']; let i = 0; while (n >= 1024 && i < 3) { n /= 1024; i++; } return `${n.toFixed(i >= 2 ? 1 : 0)} ${u[i]}`; }
 function fmtEta(s) { if (!isFinite(s) || s <= 0) return ''; if (s < 60) return `${Math.ceil(s)} s left`; if (s < 3600) return `${Math.ceil(s / 60)} min left`; return `${(s / 3600).toFixed(1)} h left`; }
-function imgUrl(src) {
-  if (!src) return '../assets/art/map00_crossroads.png';
-  if (src.startsWith('art/')) return '../assets/' + src;
-  if (src.startsWith('repo:')) return S.status.installed ? 'game://img/' + src.slice(5).split('/').map(encodeURIComponent).join('/') : '../assets/art/map00_crossroads.png';
-  return '../assets/art/map00_crossroads.png';
+// A picture from the feed, with fallbacks: each candidate is probed off-screen and the first that loads is shown, so a
+// missing file never leaves a hole (the boxes have fixed sizes; nothing moves when a picture arrives).
+const imgOk = new Map(); // src|installed -> url that loaded
+function setBg(node, src) {
+  const key = `${src}|${S.status.installed ? 1 : 0}`;
+  const ticket = (node._bg = (node._bg || 0) + 1);
+  const show = (url) => { if (node._bg === ticket) node.style.backgroundImage = `url("${url}")`; };
+  if (imgOk.has(key)) return show(imgOk.get(key));
+  const list = Feed.candidates(src, !!S.status.installed);
+  let i = 0;
+  const next = () => {
+    if (i >= list.length) return;
+    const url = list[i++];
+    const im = new Image();
+    im.onload = () => { imgOk.set(key, url); show(url); };
+    im.onerror = next;
+    im.src = url;
+  };
+  next();
 }
 function toast(title, msg, kind = '') {
   const t = el('div', 'toast ' + kind);
@@ -81,24 +95,22 @@ async function setChannel(id) {
 }
 
 // ---------- news ----------
-function visibleNews() {
-  const ch = (S.status.channel || {}).id;
-  const items = ((S.feed && S.feed.news) || []).filter((n) => !n.channels || n.channels.includes(ch));
-  return items.sort((a, b) => String(b.date).localeCompare(String(a.date)));
-}
+function visibleNews() { return Feed.visibleNews(S.feed, (S.status.channel || {}).id); }
 function renderNews() {
   const items = visibleNews();
   S.hero = items.filter((n) => n.hero);
   if (!S.hero.length) S.hero = items.slice(0, 3);
   if (S.heroIdx >= S.hero.length) S.heroIdx = 0;
   const dots = $('heroDots');
-  dots.replaceChildren(...S.hero.map((_, i) => { const b = el('button'); b.onclick = () => showHero(i, true); return b; }));
+  dots.replaceChildren(...S.hero.map((n, i) => { const b = el('button'); b.title = n.title; b.setAttribute('aria-label', n.title); b.onclick = () => showHero(i, true); return b; }));
   showHero(S.heroIdx, false);
   const list = $('newsList');
   list.replaceChildren();
   for (const n of items) {
     const b = el('button', 'news-item');
-    const th = el('div', 'thumb'); th.style.backgroundImage = `url("${imgUrl(n.image)}")`;
+    const th = el('div', 'thumb'); setBg(th, n.image);
+    const pics = Feed.gallery(n).length;
+    if (pics > 1) th.append(el('span', 'pics', `${pics} pictures`));
     const right = el('div');
     const m = el('div', 'm'); m.append(el('b', null, n.tag || 'NEWS'), el('span', null, fmtDate(n.date)));
     right.append(m, el('div', 't', n.title));
@@ -109,6 +121,29 @@ function renderNews() {
   if (!items.length) list.append(el('div', 'empty-state', 'No news yet.'));
   const links = $('links');
   links.replaceChildren(...((S.feed && S.feed.links) || []).map((l) => { const b = el('button', null, l.label); b.onclick = () => api.openExternal(l.url); return b; }));
+  renderUpcoming();
+}
+// ---------- upcoming (feed.json "upcoming": proposals, no dates) ----------
+function renderUpcoming() {
+  const up = Feed.upcoming(S.feed, (S.status.channel || {}).id);
+  $('upTitle').textContent = up.title;
+  $('upNote').textContent = up.note;
+  const list = $('upList');
+  list.replaceChildren();
+  up.items.forEach((it, i) => {
+    const li = el('li', 'up-item');
+    const head = el('div', 'up-head');
+    head.append(el('span', 'up-n', String(i + 1).padStart(2, '0')));
+    if (it.area) head.append(el('span', 'tag violet', it.area));
+    head.append(el('span', 'up-state', 'Proposed'));
+    li.append(head, el('h3', null, it.title));
+    if (it.summary) li.append(el('p', null, it.summary));
+    list.append(li);
+  });
+  if (!up.items.length) list.append(el('li', 'empty-state', 'Nothing proposed yet.'));
+  $('upTeaser').hidden = !up.items.length;
+  $('upTeaserText').textContent = up.items.length ? `${up.items.length} proposed change${up.items.length === 1 ? '' : 's'}: ${up.items[0].title}` : '';
+  document.querySelector('.tab[data-view="upcoming"]').hidden = !up.items.length;
 }
 let heroTimer = null; let heroT0 = 0; const HERO_MS = 8000; let bgFlip = false;
 function showHero(i, user) {
@@ -123,10 +158,22 @@ function showHero(i, user) {
   $('heroSummary').textContent = n.summary || '';
   $('heroMore').onclick = () => openArticle(n);
   [...$('heroDots').children].forEach((d, k) => d.classList.toggle('on', k === S.heroIdx));
+  // the item's pictures as a strip (fixed-size boxes; hidden when the item has one picture or none)
+  const strip = $('heroStrip');
+  const pics = Feed.gallery(n);
+  strip.replaceChildren(...(pics.length > 1 ? pics.slice(0, 5) : []).map((g, k) => {
+    const b = el('button', 'strip-thumb');
+    b.title = g.caption || `Picture ${k + 1}`; b.setAttribute('aria-label', b.title);
+    setBg(b, g.src);
+    b.onclick = () => openArticle(n, k);
+    return b;
+  }));
+  strip.classList.toggle('empty', pics.length < 2);
+  if (pics.length > 5) { const more = el('button', 'strip-more', `+${pics.length - 5}`); more.setAttribute('aria-label', 'More pictures'); more.onclick = () => openArticle(n, 5); strip.append(more); }
   // crossfade the background
   bgFlip = !bgFlip;
   const a = $(bgFlip ? 'bgA' : 'bgB'); const b = $(bgFlip ? 'bgB' : 'bgA');
-  a.style.backgroundImage = `url("${imgUrl(n.image)}")`;
+  setBg(a, n.image);
   a.classList.add('show'); b.classList.remove('show');
   heroT0 = performance.now();
   if (user) heroT0 += 4000; // linger a little after a click
@@ -139,14 +186,38 @@ function heroTick(now) {
   }
   requestAnimationFrame(heroTick);
 }
-function openArticle(n) {
-  $('articleImg').style.backgroundImage = `url("${imgUrl(n.image)}")`;
+const ART = { pics: [], idx: 0 };
+function showArticlePic(i) {
+  if (!ART.pics.length) return;
+  ART.idx = (i + ART.pics.length) % ART.pics.length;
+  const g = ART.pics[ART.idx];
+  setBg($('articleImg'), g.src);
+  const many = ART.pics.length > 1;
+  $('articleCaption').textContent = g.caption ? (many ? `${ART.idx + 1} / ${ART.pics.length}  ·  ${g.caption}` : g.caption) : (many ? `${ART.idx + 1} / ${ART.pics.length}` : '');
+  [...$('articleStrip').children].forEach((b, k) => { b.classList.toggle('on', k === ART.idx); b.setAttribute('aria-current', k === ART.idx ? 'true' : 'false'); });
+}
+function openArticle(n, picIdx) {
+  ART.pics = Feed.gallery(n);
+  if (!ART.pics.length) ART.pics = [{ src: n.image, caption: '' }];
+  const many = ART.pics.length > 1;
+  $('articlePrev').hidden = $('articleNext').hidden = $('articleStrip').hidden = !many;
+  $('articleStrip').replaceChildren(...(many ? ART.pics : []).map((g, k) => {
+    const b = el('button', 'strip-thumb');
+    b.title = g.caption || `Picture ${k + 1}`; b.setAttribute('aria-label', b.title);
+    setBg(b, g.src);
+    b.onclick = () => showArticlePic(k);
+    return b;
+  }));
+  $('articleImg').style.backgroundImage = '';
+  showArticlePic(picIdx || 0);
   $('articleTag').textContent = n.tag || 'NEWS';
   $('articleDate').textContent = fmtDate(n.date);
   $('articleTitle').textContent = n.title;
   const body = $('articleText'); body.replaceChildren();
   for (const p of String(n.body || n.summary || '').split(/\n{2,}/)) body.append(el('p', null, p));
   $('article').hidden = false;
+  $('article').querySelector('.article-body').scrollTop = 0;
+  $('article').querySelector('.modal-x').focus();
 }
 
 // ---------- patch notes ----------
@@ -320,7 +391,12 @@ function wire() {
   document.querySelectorAll('[data-win]').forEach((b) => b.onclick = () => api.win(b.dataset.win));
   document.querySelectorAll('[data-close]').forEach((b) => b.onclick = () => { b.closest('.modal').hidden = true; });
   document.querySelectorAll('.modal').forEach((m) => m.addEventListener('mousedown', (e) => { if (e.target === m) m.hidden = true; }));
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelectorAll('.modal').forEach((m) => { m.hidden = true; }); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') document.querySelectorAll('.modal').forEach((m) => { m.hidden = true; });
+    if (!$('article').hidden && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) showArticlePic(ART.idx + (e.key === 'ArrowLeft' ? -1 : 1));
+  });
+  $('articlePrev').onclick = () => showArticlePic(ART.idx - 1);
+  $('articleNext').onclick = () => showArticlePic(ART.idx + 1);
   $('channelBtn').onclick = (e) => { e.stopPropagation(); $('channelMenu').classList.toggle('open'); };
   document.addEventListener('click', () => $('channelMenu').classList.remove('open'));
   $('heroPrev').onclick = () => showHero(S.heroIdx - 1, true);
@@ -403,6 +479,13 @@ function applyDemo(kind) {
   renderAll(); renderNotes();
   if (kind === 'notes') go('notes');
   if (kind === 'settings') go('settings');
+  if (kind === 'upcoming') go('upcoming');
+  if (kind.startsWith('article')) { // article, article:<news id>, article:<news id>:<picture>
+    const [, id, pic] = kind.split(':');
+    const n = visibleNews().find((x) => x.id === id) || S.hero[0];
+    if (n) openArticle(n, Number(pic) || 0);
+  }
+  if (kind.startsWith('hero:')) { const i = S.hero.findIndex((x) => x.id === kind.slice(5)); if (i >= 0) showHero(i, true); }
   if (kind === 'fresh') showWelcome();
 }
 

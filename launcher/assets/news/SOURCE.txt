@@ -1,0 +1,18 @@
+News pictures for the launcher. Our own work: renders of the game made by this project
+(docs/captures/), cut to 960x540 JPEG by launcher/tools/news_images.py. No third-party images.
+
+file                     source (repo path)                                              crop
+gore_wall.jpg            docs/captures/gore_rework/after/pile_09_wall.jpg
+fix_perk_wall.jpg        docs/captures/u19_fixes/after/spot_vault_east.jpg
+fix_perk_road.jpg        docs/captures/u19_fixes/after/spot_carters_road.jpg
+fix_cellar_before.jpg    docs/captures/u19_fixes/pairs/lager_door_unlit.jpg              left half
+fix_cellar_after.jpg     docs/captures/u19_fixes/pairs/lager_door_unlit.jpg              right half
+u19_snow.jpg             docs/captures/u19_textures/after/m00_snow.jpg
+u19_taproom.jpg          docs/captures/u19_textures/after/m00_taproom.jpg
+u19_chapel.jpg           docs/captures/u19_textures/after/m01_chapel_lit.jpg
+u19_lagering_vault.jpg   docs/captures/u19_cellar/after/26_lager_tuns_work.jpg
+u19_sherman.jpg          docs/captures/u19_models/turntable/tank_eye_3m.jpg
+u19_crate_column.jpg     docs/captures/u19_box_crucible/after/map00_crate_well_idle.jpg
+u19_crucible.jpg         docs/captures/u19_box_crucible/after/map00_crucible_forge_front.jpg
+u18_type100.jpg          docs/captures/u18_guns/type100_blender_front34.png             centre 16:9
+u18_air_raid.jpg         docs/captures/u18_sherman/inn/inn_raid.png                      560,180 to 1698,820
