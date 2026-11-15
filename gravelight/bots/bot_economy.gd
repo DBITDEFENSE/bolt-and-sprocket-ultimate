@@ -747,6 +747,12 @@ func power_plan(now: float) -> Dictionary:
 	return _power
 
 
+## T-251: drop the cached way to the power (BotBrain.forget_reach: a door opened).
+func forget_power_plan() -> void:
+	_power_t = -1e9
+	_power = {}
+
+
 ## The closed door to buy on the way to `goal_pos` (the navmesh runs through doors: the nearest closed door the path
 ## crosses whose near side this bot can reach); null when the way is open or there is none. The power switch's
 ## (power_plan) and, since T-251, a tonic machine the match's deal stood behind a door (AgentPlan.errand_for).
@@ -823,6 +829,11 @@ func _near_enough(p: Vector3) -> bool:
 		return true   # (U10 T-172: an egg bot's shopping break is already off on its own, by its egg spot)
 	var home: Vector3 = squad.home.center() if squad.home != null else anchor()
 	var near: bool = _flat(p, home) <= float(eco.get("self_led_mid_round_m", 16.0)) and absf(p.y - home.y) < 2.5
+	# T-251: it stands at the thing already (it just bought the last door on the way to Map 0's lever, three doors down
+	# and 37 m from the taproom: the trip home never fits a 10-15 s break and the lever is never "near home", so the
+	# agent opened the Dynamo Room and walked back out without throwing the lever 8 m in front of it)
+	if _flat(player.global_position, p) <= float(eco.get("self_led_at_hand_m", 12.0)) and absf(p.y - player.global_position.y) < 2.5:
+		return true
 	if brain.in_break():
 		# U10 (T-163, Q-19): a far errand in a break only if the trip there and back fits in what is left of it
 		# (an act skip's 14 s arrival grace sent a bot 50 m off to the Kranich's gun blisters, and the first wave

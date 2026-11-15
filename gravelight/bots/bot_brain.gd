@@ -424,6 +424,13 @@ func think_slot() -> bool:
 ## T-237: forgets what was in or out of reach (a door opened, the bot was moved).
 func forget_reach() -> void:
 	_reach_cache.clear()
+	# T-251: and where to stand to use things, and the way to the power. A door just opened: the agent bought the last
+	# door on the way to Map 0's lever (three doors down since UPDATE 19), still held "no stand point at the lever"
+	# (4 s) and "no way to the power" (3 s) from its walk up to the door, found nothing to do and ran back to the
+	# taproom with the lever 8 m in front of it (ai_soak botmode: power_round 0 in three of four runs)
+	_stand_cache.clear()
+	if economy != null:
+		economy.forget_power_plan()
 
 
 ## T-071: the player bot's body is the local Player: its camera and viewmodel follow what the brain did this frame.

@@ -177,3 +177,42 @@ the path to the switch (generic, `BotEconomy.door_toward`); the agent's plan nam
    read the .tscn) still find twelve `Perk_<id>` nodes on valid spots.
 10. **The vault keeps its bench, bulbs, coal corner and bay**; three spots are in zone CELLAR (the vault's east and
     south walls, the bay's far wall).
+11. **Bots (three flaws the new layout exposed, fixed at the root):**
+    - *A zone whose bought door is shut is not reachable* (`BotBrain.shut_door_of`, used by `_reachable_now`). Map 0's
+      navmesh reaches the Old Cellar through the bolted hatch's climb link (T-229) without crossing a bought door, so
+      the Old Cellar's ammo box counted as reachable with Door_OldCellar shut. `smoke_bots` caught it: a dry bot
+      standing in the taproom over that box (3 m on the flat, a floor below) chose it and stood there 137 s. It was
+      there before this work (the gewehr43 chalk and that box), and with tonics dealt into the Old Cellar it would
+      have bitten more often. `BotEconomy.door_toward` falls back to the door that opens the goal's zone.
+    - *An errand at hand goes ahead* (`economy.json` `self_led_at_hand_m` 12): a self-led bot (the squad alone, the
+      agent) only did far errands when the trip home fitted the break; the lever is now 37 m from the taproom, so the
+      agent opened the Dynamo Room and walked out again.
+    - *A door opening drops the stand-point and power-plan caches too* (`BotBrain.forget_reach`): the agent held "no
+      stand point at the lever" for 4 s after buying the last door.
+12. **`smoke_marks` and `smoke_jakub` pin a deal** (`PerkLayout.seed_where`) instead of opening every door: their
+    stories need a machine behind the doors they open.
+
+## Files
+
+- Generator and scene: `gravelight/tools_src/gen_map00.gd` (`LAG_*`, `DYN_*`, `PERK_SPOTS`, `build_deep_cellar`,
+  `build_deep_cellar_gameplay`, `build_perk_gameplay`, `_dress_deep_cellar`, `_wash_copper`, `_crucible_setting(g, cx,
+  zf)`, `_audit_perk_spots`, `_survey_perk_spots`, `WINDOWS` as a constant, the root-script guard),
+  `gravelight/maps/map00_crossroads/map00.tscn` (regenerated).
+- New runtime: `gravelight/world/perk_shuffle.gd` (pure deal), `perk_layout.gd` (per match), `perk_spot.gd` (the
+  spot and its crate), `data/gravelight/perk_layout.json` (rules).
+- Hooks: `maps/map_root.gd` (attach after `match_started`), `net/net_match.gd` (snapshot key `pl`),
+  `ui/dev_console.gd` (`perks`), `core/map/map_state.gd` (`refresh_live_pois`), `ui/pause_menu.gd` (the loadout's
+  "where").
+- Bots: `bots/bot_brain.gd`, `bots/bot_economy.gd`, `bots/agent_plan.gd`, `data/gravelight/ai/player_bot.json`,
+  `data/gravelight/ai/economy.json`.
+- Data: `data/maps/bake_config.json` (zone names), `data/maps/map00_crossroads/*` (rebaked under WSL: 9 zones,
+  41 POIs, the cellar and ground floor images), `data/gravelight/map00.json` (shelter zones), `vo_rooms.json`,
+  `objectives.json`, `crucible_rooms.json` (map00 `zone`, `note` only), `machine_lore.json` (rebuilt),
+  `capture_cams.json` (set `u19_cellar`).
+- Docs: `docs/gravelight/PERKS_LORE.md` section 4, `docs/gravelight/MAPS.md`, this note.
+- Tests: new `gravelight/tests/unit/test_perk_layout.gd`; rewritten `test_map00_cellar_bay.gd`; updated
+  `test_map00_art.gd` (navmesh fingerprints), `test_map00_fences.gd`, `test_mapdata.gd`, `test_objective_log.gd`,
+  `test_perk_caps.gd`.
+- Smokes and tools: `smoke_map00_cellar_bay.gd` (rewritten), `smoke_map00.gd`, `smoke_map00_loop.gd`,
+  `smoke_coop.gd`, `smoke_bots.gd`, `smoke_jakub.gd`, `smoke_marks.gd`, `play_ledger.gd`, `play_marks.gd`,
+  `tools_src/shots_cellar.gd`.
