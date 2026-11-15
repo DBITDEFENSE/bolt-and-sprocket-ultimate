@@ -99,9 +99,9 @@ func _stats() -> String:
 	var g: Variant = Effects.get("gore")
 	if g == null:
 		return ""
-	var fx: GoreFx = g as GoreFx
-	return "  marks: spatter %d, pools %d, drips %d, prints %d, smears %d  %s" % [fx.live(GoreFx.SPLAT), fx.live(GoreFx.POOL),
-		fx.live(GoreFx.DRIP), fx.live(GoreFx.PRINT), fx.live(GoreFx.SMEAR), str(fx.stats)]
+	var fx: Object = g as Object      # (untyped on purpose: the build before the rework has no GoreFx that compiles)
+	return "  marks: spatter %d, pools %d, drips %d, prints %d, smears %d  %s" % [int(fx.call("live", 0)), int(fx.call("live", 1)),
+		int(fx.call("live", 2)), int(fx.call("live", 3)), int(fx.call("live", 4)), str(fx.get("stats"))]
 
 
 func _look(from: Vector3, at: Vector3, fov: float = 60.0) -> void:
@@ -304,8 +304,8 @@ func _run() -> void:
 			(pc[0] as Camera3D).make_current()
 		await _skip(0.6)
 		await _shot("lens_00")
-		(Effects.get("gore") as GoreFx).screen.add(0.6)      # about three close shotgun pellets' worth
-		(Effects.get("gore") as GoreFx).hands(1.0)
+		((Effects.get("gore") as Object).get("screen") as Object).call("add", 0.6)      # about three close shotgun pellets' worth
+		(Effects.get("gore") as Object).call("hands", 1.0)
 		await _frames(3)
 		await _shot("lens_01")
 		await _sequence("lens", [1.2, 2.6], 2)
