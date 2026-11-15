@@ -17,6 +17,9 @@ const SPAN_TIP: float = 6.95
 ## T-253: the plain straight-armed crosses on the wings and the fuselage (the paint shader draws them). false: an
 ## unmarked aircraft, as T-249 had it. Nothing else is ever drawn on it (docs/ART_FACTIONS.md).
 const CROSSES: bool = true
+## T-253: how much of its own colour the paint gives back in the dark (the shader's night_lift), so the aircraft is a
+## shape against the night sky and not only its exhaust flames. One number to turn by eye in a real window.
+const NIGHT_LIFT: float = 2.2
 
 var target: Vector3 = Vector3.ZERO
 var back: Vector3 = Vector3(0, 0, 1)   # horizontal: from the target toward where it comes from
@@ -58,12 +61,12 @@ static func material(key: String) -> Material:
 		var p: Dictionary = {}
 		match key:
 			"paint":
-				p = {"tint": Color(0.2, 0.245, 0.17), "camo_b": Color(0.095, 0.12, 0.1), "belly_color": Color(0.5, 0.6, 0.67), "scheme": 1.0, "night_lift": 0.4,
+				p = {"tint": Color(0.2, 0.245, 0.17), "camo_b": Color(0.095, 0.12, 0.1), "belly_color": Color(0.5, 0.6, 0.67), "scheme": 1.0, "night_lift": NIGHT_LIFT, "lift_hemi": 0.0,
 					"crosses": 1.0 if CROSSES else 0.0, "rough": 0.56, "metal": 0.25, "bump": 0.25, "grime": 0.45, "chips": 0.3, "streaks": 0.25, "tex_scale": 0.5}
 			"frame":
-				p = {"tint": Color(0.13, 0.155, 0.12), "night_lift": 0.3, "rough": 0.6, "metal": 0.3, "bump": 0.3, "grime": 0.4, "chips": 0.4, "streaks": 0.0}
+				p = {"tint": Color(0.13, 0.155, 0.12), "night_lift": NIGHT_LIFT, "lift_hemi": 0.0, "rough": 0.6, "metal": 0.3, "bump": 0.3, "grime": 0.4, "chips": 0.4, "streaks": 0.0}
 			"bomb":
-				p = {"tint": Color(0.3, 0.32, 0.27), "night_lift": 0.3, "rough": 0.5, "metal": 0.35, "bump": 0.4, "grime": 0.5, "chips": 0.35, "streaks": 0.0, "tex_scale": 1.5}
+				p = {"tint": Color(0.3, 0.32, 0.27), "night_lift": NIGHT_LIFT * 0.5, "lift_hemi": 0.0, "rough": 0.5, "metal": 0.35, "bump": 0.4, "grime": 0.5, "chips": 0.35, "streaks": 0.0, "tex_scale": 1.5}
 		var sm: ShaderMaterial = ProcKit.paint_material(p, true)
 		_mats[key] = sm
 		return sm

@@ -27,7 +27,74 @@ func _ready() -> void:
 			props_src = a.substr(8)
 	_out = ProjectSettings.globalize_path("res://").path_join("docs/captures/u19_models").path_join(label)
 	DirAccess.make_dir_recursive_absolute(_out)
+	if OS.get_cmdline_user_args().has("--night"):
+		_run_night.call_deferred()
+		return
 	_run.call_deferred(planes_src, props_src)
+
+
+## --night: the Sherman and the dive bomber with no light at all but their own (black sky, no sun, no ambient): what
+## the paint's night lift and their lamps give by themselves. A check of the shader, not a look.
+func _run_night() -> void:
+	get_tree().current_scene = self
+	var env: WorldEnvironment = WorldEnvironment.new()
+	var e: Environment = Environment.new()
+	e.background_mode = Environment.BG_COLOR
+	e.background_color = Color.BLACK
+	e.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	e.ambient_light_color = Color.BLACK
+	e.ambient_light_energy = 0.0
+	env.environment = e
+	add_child(env)
+	_cam = Camera3D.new()
+	_cam.fov = 40.0
+	add_child(_cam)
+	_cam.current = true
+	# the calibration frame: three boxes with a known emission and nothing else (from the left: the paint with a
+	# night lift of 1.0, the paint with 0.1, a plain material emitting 0.1 grey), to read the lift's scale off the frame
+	if not DisplayServer.get_name() == "headless":
+		var mats: Array[Material] = []
+		var std: StandardMaterial3D = StandardMaterial3D.new()
+		std.albedo_color = Color.BLACK
+		std.emission_enabled = true
+		std.emission = Color(0.1, 0.1, 0.1)
+		mats.append(std)
+		for lift: float in [0.1, 1.0]:
+			mats.append(ProcKit.paint_material({"tint": Color.WHITE, "grime": 0.0, "chips": 0.0, "streaks": 0.0, "snow": 0.0, "bump": 0.0, "night_lift": lift}))
+		var boxes: Array[MeshInstance3D] = []
+		for i0: int in mats.size():
+			var b: MeshInstance3D = MeshInstance3D.new()
+			b.mesh = BoxMesh.new()
+			b.material_override = mats[i0]
+			b.position = Vector3(-2.0 + 2.0 * float(i0), 50.0, 0)
+			add_child(b)
+			boxes.append(b)
+		await _look(Vector3(0, 50, 0), 0.0, 0.0, 8.0)
+		for w: int in 12:
+			await get_tree().process_frame
+		await _shoot("night_calibration")
+		for b2: MeshInstance3D in boxes:
+			b2.queue_free()
+	var tank: ShermanTank = ShermanTank.new()
+	tank.setup(ShermanEvent.table()["tank"], ShermanEvent.table()["assist"], 8000.0)
+	add_child(tank)
+	for i: int in 30:
+		await get_tree().physics_frame
+	await _look(Vector3(0, 1.3, 0), 90.0, 0.6, 10.0)
+	await _shoot("night_tank_side")
+	await _look(Vector3(0, 1.3, 0), 145.0, 1.5, 10.0)
+	await _shoot("night_tank_rear_quarter")
+	tank.visible = false
+	var plane: StukaPlane = StukaPlane.new()
+	plane.build()
+	add_child(plane)
+	plane.position = Vector3(0, 30, 0)
+	await _look(Vector3(0, 30, 0), 30.0, -22.0, 40.0)
+	await _shoot("night_stuka_below_45m")
+	await _look(Vector3(0, 30, 0), 90.0, 3.0, 60.0)
+	await _shoot("night_stuka_side_60m")
+	print("RESULT u19_model_shots: done")
+	get_tree().quit()
 
 
 func _shoot(name_: String) -> void:

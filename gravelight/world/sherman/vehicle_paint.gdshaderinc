@@ -29,6 +29,7 @@ uniform vec3 mud_color : source_color = vec3(0.2, 0.16, 0.12);
 uniform vec2 mud_y = vec2(0.3, 1.1);     // model y: full mud below x, none above y
 uniform float burnt = 0.0;
 uniform float glow = 0.0;                // a lamp's lens: emission of the base colour
+uniform float lift_hemi = 1.0;
 uniform float night_lift = 0.0;          // a little of its own colour given back in the dark, so its shape and paint read at night
 // the aircraft's scheme (off when scheme < 0.5)
 uniform float scheme = 0.0;
@@ -186,7 +187,7 @@ void fragment() {
 		float lie = smoothstep(0.74, 0.96, nw.y);
 		float patch = smoothstep(1.0 - sn, 1.0 - sn + 0.22, m.r * 0.55 + m2.r * 0.6 + m.a * 0.15);
 		float cover = lie * patch;
-		cover = max(cover, smoothstep(0.2, 0.9, nw.y) * sn * 0.22 * smoothstep(0.3, 0.8, m.g));
+		cover = max(cover, smoothstep(0.2, 0.9, nw.y) * sn * 0.1 * smoothstep(0.3, 0.8, m.g));
 		base = mix(base, snow_color * (0.9 + 0.1 * m.a), cover);
 		rgh = mix(rgh, 0.82, cover);
 		mtl *= 1.0 - cover;
@@ -197,7 +198,10 @@ void fragment() {
 	ROUGHNESS = clamp(rgh, 0.05, 1.0);
 	METALLIC = clamp(mtl, 0.0, 1.0);
 	NORMAL = nv;
-	// the night's lift comes as the sky's light would: more on what faces up, a little blue
+	// the night's lift: a little of the paint's own colour given back, so the shape reads where no lamp reaches. It
+	// comes as the sky's light would (more on what faces up, a little blue; lift_hemi 0 makes it even, for an aircraft
+	// seen from below) and it is pressed flat for pale paint, so a white star or a pale belly never glows.
 	vec3 nl = (INV_VIEW_MATRIX * vec4(nv, 0.0)).xyz;
-	EMISSION = base * glow + base * vec3(0.8, 0.9, 1.15) * (night_lift * (0.6 + 0.4 * nl.y));
+	vec3 soft = base / (1.0 + 6.0 * base);
+	EMISSION = base * glow + soft * vec3(0.8, 0.9, 1.15) * (night_lift * mix(1.0, 0.6 + 0.4 * nl.y, lift_hemi));
 }

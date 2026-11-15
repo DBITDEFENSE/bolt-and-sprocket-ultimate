@@ -49,6 +49,9 @@ const COAX_AT: Vector3 = Vector3(0.24, 0.02, -0.30)  # the coax's muzzle, gun fr
 const BOW_MG_AT: Vector3 = Vector3(0.52, 1.62, -2.27)
 const HEADLAMPS: Array[Vector3] = [Vector3(-0.98, 1.47, -2.70), Vector3(0.98, 1.47, -2.70)]   # the lenses (hull frame)
 
+## T-253: how much of its own colour the paint gives back in the dark (the shader's night_lift; 0 = none: the tank
+## is then only what the map's lamps and its own make of it). One number to turn by eye in a real window.
+const NIGHT_LIFT: float = 3.2
 const DETAIL_RANGE: float = 38.0   # the small parts are drawn within this
 const FAR_RANGE: float = 48.0      # the wheels and links go plain beyond this
 
@@ -132,10 +135,10 @@ static func material(key: String, burnt: bool = false) -> Material:
 	match key:
 		"od":
 			p = {"tint": Color(0.235, 0.25, 0.145), "rough": 0.74, "metal": 0.12, "chips": 0.3, "grime": 0.55, "streaks": 0.4,
-				"snow": 0.62, "mud": 0.85, "mud_y": Vector2(0.5, 1.3)}
+				"snow": 0.46, "mud": 0.85, "mud_y": Vector2(0.5, 1.3)}
 		"od_dark":
 			p = {"tint": Color(0.18, 0.19, 0.115), "rough": 0.7, "metal": 0.15, "chips": 0.38, "grime": 0.6, "streaks": 0.3,
-				"snow": 0.62, "mud": 0.85, "mud_y": Vector2(0.5, 1.3)}
+				"snow": 0.46, "mud": 0.85, "mud_y": Vector2(0.5, 1.3)}
 		"gear":
 			p = {"tint": Color(0.225, 0.235, 0.14), "rough": 0.8, "metal": 0.12, "chips": 0.45, "grime": 0.7, "streaks": 0.0,
 				"snow": 0.25, "mud": 0.5, "mud_y": Vector2(50.0, 51.0)}
@@ -200,7 +203,7 @@ static func material(key: String, burnt: bool = false) -> Material:
 		_:
 			p = {"tint": Color(0.3, 0.3, 0.3)}
 	if m == null:
-		p["night_lift"] = 0.14 if burnt else 0.36
+		p["night_lift"] = NIGHT_LIFT * (0.5 if burnt else 1.0)
 		if burnt:
 			p["burnt"] = 1.0
 			p["snow"] = 0.0
