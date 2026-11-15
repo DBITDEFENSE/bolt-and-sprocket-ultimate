@@ -301,6 +301,18 @@ func test_a_flush_spot_stands_things_back_and_turns_the_fine_print() -> void:
 	panel = m.get_node_or_null("FinePrintPanel") as Node3D
 	if panel != null:
 		assert_almost_eq((panel.basis * Vector3(0, 0, -1)).z, 1.0, 0.001, "and back on its back when the deal moves it to a spot with a walk behind")
+	# the bots' approach point (1 m past interact_offset) is measured from the spot's front line, wherever the cabinet
+	# stands on it: a cabinet stood back on a flush spot is approached from where one on the spot's origin is
+	var use_box: Vector3 = ((m.area.get_child(0)) as CollisionShape3D).position
+	var front_origin: Vector3 = BotBrain._front_of(m)
+	var back: float = ps.stand_offset(fp.z).z
+	m.position = ps.stand_offset(fp.z)
+	m.set_stand_back(back)
+	assert_gt(back, 0.1, "the cabinet is shallower than the spot")
+	assert_almost_eq(BotBrain._front_of(m), front_origin, Vector3(0.001, 0.001, 0.001), "the approach point does not move back with the cabinet")
+	assert_almost_eq(((m.area.get_child(0)) as CollisionShape3D).position, use_box, Vector3(0.001, 0.001, 0.001), "the use box stays on the cabinet's face")
+	m.set_stand_back(0.0)
+	assert_almost_eq(m.interact_offset.z, -(fp.z * 0.5 + 0.12), 0.001, "and on a spot with a walk behind it is the cabinet's own again")
 
 
 func test_bots_and_tools_do_not_know_the_old_rows() -> void:

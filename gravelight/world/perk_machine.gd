@@ -691,6 +691,17 @@ func depth() -> float:
 	return _footprint.z
 
 
+## T-255: how far a flush PerkSpot stood this machine back from its own origin (PerkSpot.stand_offset). The bots'
+## approach point is 1 m past interact_offset (BotBrain._front_of), and the navmesh in front of a spot is cut for the
+## deepest machine: a 0.6 m cabinet stood 0.3 m back had its approach point on the very edge of the navmesh (0.03 to
+## 0.16 m off it), and a bot sent there could stand a step short of it for good (smoke_bots_shop_m0: the companion
+## 500 s at Second Wind on the stable's spot). So interact_offset is measured from the spot's front line, which puts
+## the approach point where it is for a cabinet on the spot's origin. Only the property moves: the use box the
+## player aims at (the Area built in _ready) stays on the cabinet's face.
+func set_stand_back(back: float) -> void:
+	interact_offset = Vector3(0, 1.0, -(_footprint.z * 0.5 + 0.12 + maxf(0.0, back)))
+
+
 static func _short_human(h: String) -> String:
 	h = h.split(" (")[0].split(",")[0].strip_edges().trim_suffix(".")
 	return h.substr(0, 1).to_upper() + h.substr(1)
