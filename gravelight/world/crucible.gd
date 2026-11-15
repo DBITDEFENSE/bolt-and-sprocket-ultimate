@@ -230,12 +230,14 @@ func _build_live() -> void:
 	for c: Node in _float.get_children():
 		if c is MeshInstance3D:
 			(c as MeshInstance3D).hide()   # the old violet bar: the upgraded weapon itself hangs here now
-	_halo = CrateFx.halo(1.5, Color(1.0, 0.72, 0.42, 0.0))
+	_halo = CrateFx.halo(2.0, Color(1.0, 0.72, 0.42, 0.0))
 	_halo.name = "OutHalo"
 	_halo.position = Vector3(0, 0, 0.12)
 	_float.add_child(_halo)
+	# the name hangs under the weapon, over the dark hearth, on a dark card (over the white-hot mouth it was lost)
+	_float_label.position = Vector3(0, -0.34, 0)
 	_float_label.render_priority = 2
-	_plate = CrateFx.name_plate()   # the name reads against the white-hot mouth
+	_plate = CrateFx.name_plate()
 	_plate.position = _float_label.position
 	_plate.hide()
 	_float.add_child(_plate)
@@ -484,7 +486,7 @@ func _offer() -> void:
 	_free_out()
 	if _fire != null and _float != null and is_inside_tree():
 		# (no overlay on it: the taught weapons' own shader moves their surface and a second pass speckles over it)
-		_out = _weapon_holder(base_of(_result), true, 1.0)
+		_out = _weapon_holder(base_of(_result), true, 1.2)
 		_float.add_child(_out)
 		CrateFx.fit_plate(_plate, _float_label)
 		_float.position.z = -0.85

@@ -220,7 +220,7 @@ func build_greybox() -> void:
 	_lamp.position = lp
 	add_child(_lamp)
 	# T-254: the lantern's glow from across a room, and what the crate leaves behind at a spot it is not at
-	_halo = CrateFx.halo(0.62, Color(1.0, 0.7, 0.4, 0.5))
+	_halo = CrateFx.halo(0.9, Color(1.0, 0.7, 0.4, 0.5))
 	_halo.position = lp
 	add_child(_halo)
 	_away = Node3D.new()
@@ -415,7 +415,7 @@ func _process(delta: float) -> void:
 		elif _arrive_t >= 0.0:
 			live = clampf(_arrive_t / 0.9, 0.0, 1.0)
 		_lamp.light_energy = (1.1 + 0.1 * sin(_lamp_t * 5.3) + 0.06 * sin(_lamp_t * 13.7)) * live
-		(_halo.material_override as StandardMaterial3D).albedo_color.a = 0.5 * live
+		(_halo.material_override as StandardMaterial3D).albedo_color.a = 0.6 * live
 	_fx_process(delta)
 	var clearance_here: bool = GameState.has_flag(&"clearance")
 	if phase == Phase.HIDDEN and clearance_here:
@@ -530,11 +530,11 @@ func _fx_process(delta: float) -> void:
 		var open_e: float = 2.5 * (1.0 + 0.07 * sin(_idle_t * 9.0) + 0.05 * sin(_idle_t * 23.0))
 		_glow.light_energy = lerpf(breathe if phase == Phase.CLOSED else 0.0, open_e, _open_k) + _flash * 3.2
 		var pulse: float = 0.5 + 0.5 * sin(_idle_t * 1.7)
-		_seam_mat.emission_energy_multiplier = lerpf(0.9 + 1.5 * pulse, 4.0, _open_k) + _flash * 3.0
-		(_floor_glow.material_override as StandardMaterial3D).albedo_color.a = lerpf(0.1 + 0.07 * pulse, 0.26, _open_k) + _flash * 0.15
+		_seam_mat.emission_energy_multiplier = lerpf(0.9 + 1.3 * pulse, 2.6, _open_k) + _flash * 2.0
+		(_floor_glow.material_override as StandardMaterial3D).albedo_color.a = lerpf(0.16 + 0.08 * pulse, 0.34, _open_k) + _flash * 0.15
 		_spill.visible = _open_k > 0.01
 		if _spill.visible:
-			(_spill.material_override as ShaderMaterial).set_shader_parameter("energy", 0.55 * _open_k + _flash * 0.5)
+			(_spill.material_override as ShaderMaterial).set_shader_parameter("energy", 0.85 * _open_k + _flash * 0.6)
 	if _ring_t >= 0.0:
 		_ring_t += delta / 0.75
 		(_ring.material_override as ShaderMaterial).set_shader_parameter("progress", minf(_ring_t, 1.0))
@@ -561,7 +561,7 @@ func _fx_process(delta: float) -> void:
 	if _pool.visible:
 		(_pool.material_override as ShaderMaterial).set_shader_parameter("radius", _pool_k)
 	if _away.visible and _vein_mat != null:
-		_vein_mat.emission_energy_multiplier = 1.0 + 0.6 * sin(_idle_t * 0.9 + float(spot_index) * 1.7)
+		_vein_mat.emission_energy_multiplier = 0.6 + 0.35 * sin(_idle_t * 0.9 + float(spot_index) * 1.7)
 
 
 ## The crate comes up at this spot (every peer, from the move): the pool, the rise, the knock of the skids.

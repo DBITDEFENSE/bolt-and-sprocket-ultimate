@@ -2,7 +2,7 @@ extends Node
 ## Dev tool (T-254, UPDATE 19): the Requisition Crate and the Crucible in their maps, the same cameras before and after.
 ## Renders through WSL + Xvfb only (never a window on the owner's PC):
 ##   tools/wsl_godot.sh --path . res://gravelight/tools_src/shots_u19_box.tscn -- --label=after [--only=map00,map01] [--what=crate,crucible]
-## -> docs/captures/u19_box_crucible/<label>/<map>_<shot>.png
+## -> docs/captures/u19_box_crucible/<label>/<map>_<shot>.jpg
 ## Crucible (every map in --only): unpowered (where it needs the lever), powered idle, mid-forge, the offer, each from
 ## a front and a wide camera placed in the machine's own frame (pulled in when a wall is in the way).
 ## Crate (map00): the Hearth spot idle, mid-roll, the offer, empty; the Well spot (outdoors) idle; the locator from
@@ -56,8 +56,8 @@ func _secs(s: float) -> void:
 func _shot(shot_name: String) -> void:
 	await RenderingServer.frame_post_draw
 	var img: Image = get_viewport().get_texture().get_image()
-	var path: String = _out.path_join(shot_name + ".png")
-	img.save_png(path)
+	var path: String = _out.path_join(shot_name + ".jpg")
+	img.save_jpg(path, 0.88)
 	print("[shots_u19] ", path)
 
 

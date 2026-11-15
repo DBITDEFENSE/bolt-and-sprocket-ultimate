@@ -104,6 +104,7 @@ var _wisp: CPUParticles3D = null
 var _light_src: Array = []         # [Light3D, its json]
 var _fx_src: Array = []            # [CPUParticles3D, its json]
 var _sound_src: Dictionary = {}
+var _wall_mat: Material = null     # what the wall behind the machine is drawn with (the housing is built of it)
 
 
 # ================================================================== attach
@@ -191,6 +192,8 @@ func _build_geometry() -> void:
 	_labels = 0
 	var kit: Kit = Kit.new(marke_mat)
 	var s: Dictionary = data.get("surround", {})
+	if _wall_mat != null:
+		kit.custom["wall"] = _wall_mat
 	if not s.is_empty():
 		kit.begin()
 		kit.frame = Transform3D.IDENTITY
@@ -243,14 +246,43 @@ static func room_default(d: Dictionary) -> Dictionary:
 	return out
 
 
-func _ray(space: PhysicsDirectSpaceState3D, from: Vector3, dir: Vector3, reach: float) -> float:
+func _ray(space: PhysicsDirectSpaceState3D, from: Vector3, dir: Vector3, reach: float, who: Array = []) -> float:
 	var a: Vector3 = global_transform * from
 	var b: Vector3 = global_transform * (from + dir * reach)
 	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(a, b, 1)
 	if _sur_body != null and is_instance_valid(_sur_body):
 		q.exclude = [_sur_body.get_rid()]
 	var hit: Dictionary = space.intersect_ray(q)
+	if not hit.is_empty():
+		who.append(hit.get("collider"))
 	return -1.0 if hit.is_empty() else a.distance_to(hit["position"])
+
+
+## The material a solid thing is drawn with: the generators' boxes are a body with its mesh as a child (or the
+## other way round), the mesh a scaled unit box under a world-triplanar material, which lies right on anything.
+static func material_of(collider: Object) -> Material:
+	var n: Node = collider as Node
+	if n == null:
+		return null
+	var cands: Array = [n] + n.get_children()
+	var par: Node = n.get_parent()
+	if par != null and (par is MeshInstance3D or par.get_child_count() <= 4):
+		cands.append(par)
+		if par.get_child_count() <= 4:
+			cands.append_array(par.get_children())
+	for c: Variant in cands:
+		var mi: MeshInstance3D = c as MeshInstance3D
+		if mi == null or not mi.visible or mi.mesh == null:
+			continue
+		var m: Material = mi.material_override
+		if m == null and mi.mesh.get_surface_count() > 0:
+			m = mi.get_active_material(0)
+		if m is ShaderMaterial:
+			return m
+		var sm: StandardMaterial3D = m as StandardMaterial3D
+		if sm != null and sm.transparency == BaseMaterial3D.TRANSPARENCY_DISABLED and sm.uv1_triplanar:
+			return m
+	return null
 
 
 ## Rays from the machine on the world layer: {back, ceil, left, right}. A direction where nothing is found within
@@ -265,12 +297,18 @@ func probe_room() -> Dictionary:
 	var up0: float = _ray(space, Vector3(0.0, 0.6, -0.3), Vector3.UP, 16.0)
 	var head: float = (up0 + 0.6) if up0 >= 0.0 else 99.0
 	var backs: Array = []
-	for x: float in [-0.8, 0.0, 0.8]:
+	var walls: Array = []
+	for x: float in [0.0, -0.8, 0.8]:
 		for y: float in [minf(1.75, head - 0.75), minf(2.3, head - 0.3)]:
-			var d: float = _ray(space, Vector3(x, y, 0.3), Vector3(0, 0, 1), 7.0)
+			var d: float = _ray(space, Vector3(x, y, 0.3), Vector3(0, 0, 1), 7.0, walls)
 			backs.append(d + 0.3 if d >= 0.0 else 99.0)
 	backs.sort()
 	out["back"] = float(backs[2])
+	_wall_mat = null
+	for wc: Variant in walls:
+		_wall_mat = material_of(wc)
+		if _wall_mat != null:
+			break
 	# the ceiling over the machine and over the housing: the highest hit (the housing may stand up into a vault, never
 	# short of it); nothing overhead at all: 99
 	var zc: Array = [-0.3, clampf((0.62 + minf(float(out["back"]), 2.6)) * 0.5, 0.3, 1.6)]
@@ -838,6 +876,11 @@ func _surround(k: Kit, s: Dictionary) -> void:
 		w_back = w
 		z1 = PLINTH_BACK
 		zm = z1
+	if housed and _wall_mat != null and bool(s.get("match_wall", true)):
+		# built of what the wall is built of: the very material the wall behind is drawn with, so the two are one mass
+		body = "wall"
+		if Mats.get_mat(trim) == _wall_mat:
+			trim = str(st["body"])
 	var meets: bool = roofed and ceil_y <= top_max
 	var top: float = ceil_y + 0.06 if meets else minf(top_max, 4.2)
 	sur = {"w": w, "w_back": w_back, "zm": zm, "z0": z0, "z1": z1, "top": top, "housed": housed, "meets_ceiling": meets, "style": style}
@@ -1374,6 +1417,7 @@ class Kit:
 	## Small-part materials folded into a neighbour so a room stays a dozen draw calls (they read the same at arm's length).
 	const ALIAS: Dictionary = {"walnut": "furniture", "beam": "furniture", "linen": "paper", "olive_drab": "olive_steel", "rust": "iron"}
 	var marke: Material
+	var custom: Dictionary = {}    # key -> Material that is not a Mats key (T-254: "wall", the probed wall's own)
 	var parts: Array = []          # the AABB (machine frame) of every primitive of the piece being built
 	var _ab: AABB
 	var _has: bool = false
@@ -1390,6 +1434,8 @@ class Kit:
 		return _ab if _has else AABB(frame.origin, Vector3.ZERO)
 
 	func _mat(key: String) -> Material:
+		if custom.has(key):
+			return custom[key]
 		return marke if key == "marke" else Mats.get_mat(key)
 
 	func _add(mesh: Mesh, xf: Transform3D, key: String, shadow: int) -> void:

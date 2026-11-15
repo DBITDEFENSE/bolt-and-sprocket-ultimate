@@ -215,8 +215,8 @@ static func name_plate() -> MeshInstance3D:
 	m.cull_mode = BaseMaterial3D.CULL_DISABLED
 	m.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
 	m.disable_receive_shadows = true
-	m.albedo_texture = halo_tex()
-	m.albedo_color = Color(0.03, 0.015, 0.06, 0.92)
+	m.albedo_texture = disc_tex(0.6)
+	m.albedo_color = Color(0.03, 0.015, 0.06, 0.9)
 	m.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
 	m.billboard_keep_scale = true
 	m.render_priority = 1
@@ -247,6 +247,25 @@ static func halo_tex() -> GradientTexture2D:
 	return _halo_tex
 
 
+## A disc that holds its strength out to `hold` of its radius and is gone at the rim (a pool of light on a floor
+## whose middle is hidden under what makes it; a card behind a line of text).
+static func disc_tex(hold: float = 0.45) -> GradientTexture2D:
+	var key: String = "disc_%.2f" % hold
+	if not _meshes.has(key):
+		var g: Gradient = Gradient.new()
+		g.offsets = PackedFloat32Array([0.0, hold, (hold + 1.0) * 0.5, 1.0])
+		g.colors = PackedColorArray([Color(1, 1, 1, 1), Color(1, 1, 1, 0.85), Color(1, 1, 1, 0.3), Color(1, 1, 1, 0)])
+		var t: GradientTexture2D = GradientTexture2D.new()
+		t.width = 64
+		t.height = 64
+		t.fill = GradientTexture2D.FILL_RADIAL
+		t.fill_from = Vector2(0.5, 0.5)
+		t.fill_to = Vector2(0.5, 0.0)
+		t.gradient = g
+		_meshes[key] = t
+	return _meshes[key]
+
+
 ## A camera-facing glow `size` metres across. Its own material: tint it through albedo_color (alpha = strength).
 static func halo(size: float, color: Color, flat: bool = false) -> MeshInstance3D:
 	if not _meshes.has("quad"):
@@ -261,7 +280,7 @@ static func halo(size: float, color: Color, flat: bool = false) -> MeshInstance3
 	m.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
 	m.disable_receive_shadows = true
 	m.disable_fog = true
-	m.albedo_texture = halo_tex()
+	m.albedo_texture = disc_tex(0.42) if flat else halo_tex()
 	m.albedo_color = color
 	if not flat:
 		m.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED

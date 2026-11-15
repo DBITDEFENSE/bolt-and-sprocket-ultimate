@@ -267,10 +267,10 @@ static func snow_lid(g: Node3D) -> void:
 ## ends, a thin lip in front. Low and soft: no collider.
 static func snow_base(g: Node3D) -> void:
 	# long low banks, most of each under the ground: a rise of a hand's width, never a lump
-	Props.ball(g, Vector3(0.0, -0.05, HD + 0.2), Vector3(2.5, 0.3, 0.9), "snow")
-	Props.ball(g, Vector3(-(HW + 0.28), -0.06, 0.05), Vector3(1.0, 0.28, 1.5), "snow")
-	Props.ball(g, Vector3(HW + 0.3, -0.06, 0.02), Vector3(0.95, 0.26, 1.4), "snow")
-	Props.ball(g, Vector3(0.1, -0.05, -(HD + 0.24)), Vector3(2.3, 0.17, 0.6), "snow")
+	# (only behind it and at its rear corners: banks in front and at the ends read as sacks under a warm lantern)
+	Props.ball(g, Vector3(0.0, -0.06, HD + 0.22), Vector3(2.4, 0.3, 0.8), "snow")
+	Props.ball(g, Vector3(-(HW + 0.1), -0.07, HD + 0.05), Vector3(0.8, 0.24, 0.7), "snow")
+	Props.ball(g, Vector3(HW + 0.12, -0.07, HD + 0.02), Vector3(0.75, 0.22, 0.66), "snow")
 
 
 ## Where the lantern hangs (its glass centre), in crate space.

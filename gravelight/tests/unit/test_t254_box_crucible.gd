@@ -17,7 +17,7 @@ func after_each() -> void:
 	GameState.map_id = &""
 
 
-func _wall(root: Node3D, lo: Vector3, hi: Vector3) -> void:
+func _wall(root: Node3D, lo: Vector3, hi: Vector3, mat_key: String = "") -> void:
 	var sb: StaticBody3D = StaticBody3D.new()
 	sb.collision_layer = 1
 	var cs: CollisionShape3D = CollisionShape3D.new()
@@ -26,6 +26,12 @@ func _wall(root: Node3D, lo: Vector3, hi: Vector3) -> void:
 	cs.shape = bs
 	sb.position = (lo + hi) * 0.5
 	sb.add_child(cs)
+	if mat_key != "":   # drawn the way the generators draw a wall: a scaled unit box under a Mats material
+		var mi: MeshInstance3D = MeshInstance3D.new()
+		mi.mesh = Props.unit_box()
+		mi.scale = hi - lo
+		mi.material_override = Mats.get_mat(mat_key)
+		sb.add_child(mi)
 	root.add_child(sb)
 
 
@@ -35,8 +41,8 @@ func _room(north_z: float, east_x: float, ceil_y: float, ceil_east: float) -> No
 	var root: Node3D = Node3D.new()
 	add_child(root)
 	_free.append(root)
-	_wall(root, Vector3(-6, 0, north_z), Vector3(6, 8, north_z + 0.5))
-	_wall(root, Vector3(east_x, 0, -6), Vector3(east_x + 0.5, 8, 6))
+	_wall(root, Vector3(-6, 0, north_z), Vector3(6, 8, north_z + 0.5), "plaster_cellar")
+	_wall(root, Vector3(east_x, 0, -6), Vector3(east_x + 0.5, 8, 6), "concrete")
 	_wall(root, Vector3(-6, ceil_y, 0), Vector3(2.0, ceil_y + 0.4, 6))
 	_wall(root, Vector3(2.0, ceil_east, -6), Vector3(6, ceil_east + 0.4, 6))
 	return root
@@ -78,6 +84,13 @@ func test_the_room_probes_its_wall_and_ceiling_and_follows_the_machine() -> void
 	assert_gte(float(room.sur["top"]), 3.4, "and into the ceiling")
 	var body: StaticBody3D = room.get_node_or_null("SurroundBody") as StaticBody3D
 	assert_not_null(body, "solid where it is drawn")
+	# built of what the wall is built of
+	assert_eq(room._wall_mat, Mats.get_mat("plaster_cellar"), "the room read the wall's material off the ray's hit")
+	var of_wall: int = 0
+	for mi: Node in room.get_node("Dressing").get_children():
+		if (mi as MeshInstance3D).material_override == Mats.get_mat("plaster_cellar"):
+			of_wall += 1
+	assert_eq(of_wall, 1, "the housing's mass is one mesh in the wall's own material")
 	assert_eq(room._n("ceil-0.04"), float(room.probe["ceil"]) - 0.04, "an anchored coordinate follows the probe")
 	assert_eq(room._n("back-0.3"), float(room.probe["back"]) - 0.3)
 	assert_eq(room._n("-w-1.35"), -float(room.sur["w"]) - 1.35)
@@ -96,6 +109,7 @@ func test_the_room_probes_its_wall_and_ceiling_and_follows_the_machine() -> void
 	assert_almost_eq(room.global_position.x, 3.1, 0.001, "the room follows the machine")
 	assert_almost_eq(float(room.probe["back"]), 0.9, 0.03, "the other wall, by ray")
 	assert_almost_eq(float(room.probe["ceil"]), 2.9, 0.03, "the other ceiling")
+	assert_eq(room._wall_mat, Mats.get_mat("concrete"), "and the other wall's material")
 	assert_true(bool(room.sur["housed"]))
 	assert_almost_eq(float(room.sur["z1"]), 0.95, 0.04)
 	assert_eq(room.find_children("SurroundBody", "StaticBody3D", true, false).size(), 1, "one housing body after the rebuild, not two")
@@ -177,6 +191,7 @@ func test_the_crucible_collides_with_its_art_alone_and_keeps_its_numbers() -> vo
 	cr.call("_offer")
 	assert_not_null(cr.get("_out"), "the upgraded weapon is shown")
 	assert_true((cr.get("_float") as Node3D).visible)
+	assert_true((cr.get("_plate") as MeshInstance3D).visible, "its name hangs on a dark card")
 	cr.call("_reset")
 	assert_eq(cr.phase, Crucible.Phase.IDLE)
 	assert_eq(Crucible.base_of(&"kar98k_up"), &"kar98k")

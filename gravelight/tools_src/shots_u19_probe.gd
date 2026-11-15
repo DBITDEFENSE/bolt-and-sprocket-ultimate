@@ -4,7 +4,7 @@ extends Node3D
 ## free in the middle of the floor; each time the room probes with rays and builds its housing into what it finds.
 ## WSL + Xvfb only:
 ##   tools/wsl_godot.sh --path . res://gravelight/tools_src/shots_u19_probe.tscn -- [--out=<dir>]
-## -> docs/captures/u19_box_crucible/probe/probe_<north|east|free>_<front|side>.png, and the probe's numbers on stdout.
+## -> docs/captures/u19_box_crucible/probe/probe_<north|east|free>_<front|side>.jpg, and the probe's numbers on stdout.
 
 var _out: String = ""
 var _cam: Camera3D
@@ -69,8 +69,8 @@ func _slab(lo: Vector3, hi: Vector3, key: String) -> void:
 
 func _shot(shot_name: String) -> void:
 	await RenderingServer.frame_post_draw
-	get_viewport().get_texture().get_image().save_png(_out.path_join(shot_name + ".png"))
-	print("[probe] ", _out.path_join(shot_name + ".png"))
+	get_viewport().get_texture().get_image().save_jpg(_out.path_join(shot_name + ".jpg"), 0.88)
+	print("[probe] ", _out.path_join(shot_name + ".jpg"))
 
 
 func _run() -> void:
