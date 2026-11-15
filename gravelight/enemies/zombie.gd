@@ -901,9 +901,7 @@ func _update_chase(delta: float) -> void:
 		spd = maxf(spd, float(GLData.table("enemies")["tiers"]["jog"]))
 	_nav_move(target.global_position, spd, delta, interval)
 	# Wedged well above the walkable floor (pushed out of an overlap into a ceiling, etc.): recycle it now.
-	_wedge_t = _wedge_t + delta if _off_navmesh_height() > 1.0 else 0.0
-	if _wedge_t > 3.0:
-		_wedge_t = 0.0
+	if _wedged(delta):
 		recycle()
 		return
 	# Stuck check: barely moved for a long time while far from the player -> recycle into the queue.
@@ -1016,7 +1014,9 @@ func _update_hop(delta: float, dist: float) -> bool:
 		return true
 	var hc: Dictionary = hop_cfg()
 	var kind_hops: bool = bool(_cfg.get("leap_hop", true))
-	if target != null and hop_due(GameState.gravity_scale, kind_hops, is_on_floor(), dist, _clear_to(target), ZoneVolume.vacuum_at(get_tree(), global_position), is_crawler, _hop_cd, hc):
+	# (the cheap gates first: at 1 g, out of range or on cooldown no hop is due whatever the line of sight says, so
+	# the two rays of _clear_to and the zone lookup are not made for it; they were, every tick, for every chaser)
+	if target != null and hop_due(GameState.gravity_scale, kind_hops, is_on_floor(), dist, true, false, is_crawler, _hop_cd, hc) 			and hop_due(GameState.gravity_scale, kind_hops, is_on_floor(), dist, _clear_to(target), ZoneVolume.vacuum_at(get_tree(), global_position), is_crawler, _hop_cd, hc):
 		_hop_tele = float(hc.get("telegraph_seconds", 0.5))
 		_halt(delta)
 		return true
@@ -1457,6 +1457,28 @@ func _on_velocity_computed(safe: Vector3) -> void:
 
 
 var _wedge_t: float = 0.0
+## Seconds between two looks for a wedged body (the chase), the time to this body's next look (the pool's bodies
+## start on different ticks, so a horde's looks are spread) and the chase time since its last one.
+const WEDGE_CHECK_S: float = 0.2
+var _wedge_look: float = WEDGE_CHECK_S * float(get_instance_id() % 12) / 12.0
+var _wedge_since: float = 0.0
+
+
+## One chase tick of the wedge check: true once the body has been well above the walkable floor for 3 s (the
+## caller recycles it). The navmesh is asked every WEDGE_CHECK_S, not every tick: its closest point was the
+## dearest single call of a chaser's tick (0.05 ms each, a quarter of the chase), and a body wedged for 3 s is
+## still wedged a fifth of a second later. Each look counts the chase time since the last one, so the 3 s stand.
+func _wedged(delta: float) -> bool:
+	_wedge_since += delta
+	_wedge_look -= delta
+	if _wedge_look <= 0.0:
+		_wedge_t = _wedge_t + _wedge_since if _off_navmesh_height() > 1.0 else 0.0
+		_wedge_since = 0.0
+		_wedge_look = WEDGE_CHECK_S
+	if _wedge_t > 3.0:
+		_wedge_t = 0.0
+		return true
+	return false
 var _blocked_t: float = 0.0
 var _corner_t: float = 0.0        # seconds left steering back onto a path corner it cut (T-057)
 var _corner_pt: Vector3 = Vector3.ZERO

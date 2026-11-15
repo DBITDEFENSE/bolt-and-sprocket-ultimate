@@ -17,6 +17,7 @@ extends CharacterBody3D
 
 signal prompt_denied
 
+const TickSpring: GDScript = preload("res://gravelight/player/tick_spring.gd")   # springs stepped at 60 Hz at any frame rate
 const LAYER_PLAYER: int = 1 << 1
 const MASK_MOVE: int = 1 | (1 << 2) | (1 << 5) | (1 << 8) | (1 << 10)   # world, zombie bodies, barricades, doors, the map's edge (T-084: shots pass it, bodies don't)
 const MASK_INTERACT: int = 1 | (1 << 4) | (1 << 8)          # world, interactables, doors
@@ -92,11 +93,15 @@ var _cfg: Dictionary = {}
 var _pitch: float = 0.0
 var _rk: Vector2 = Vector2.ZERO          # recoil camera offset (pitch, yaw) radians, spring back to 0
 var _rk_v: Vector2 = Vector2.ZERO
+var _rk_acc: float = 0.0                 # the recoil and landing springs step at 60 Hz whatever the frame rate
+var _rk_show: Vector2 = Vector2.ZERO     # (TickSpring): the time past the last step, and what this frame draws
 var _rk_w: float = 12.0                  # recoil spring angular frequency (per weapon, from data)
 var _fov_punch: float = 0.0
 var _shake_t: float = 0.0
 var _step_count: int = 0
 var _look_delta: Vector2 = Vector2.ZERO
+var _look_frame: Vector2 = Vector2.ZERO  # the same look input, for the viewmodel's sway at the render rate (take_frame_look)
+var _pad_assist: bool = false            # the crosshair was on an enemy at the last tick (the pad's aim-assist slowdown)
 var _since_hit: float = 99.0
 var _stamina: float = 4.0
 var _stamina_wait: float = 0.0
@@ -169,6 +174,8 @@ var _roll: float = 0.0                   # strafe roll (radians)
 var _bob_k: float = 0.0
 var _land_dip: float = 0.0               # head dip on landing (spring)
 var _land_dip_v: float = 0.0
+var _land_acc: float = 0.0
+var _land_show: float = 0.0
 var _punch_roll: float = 0.0             # damage punch roll (decays)
 var ext_roll_deg: float = 0.0            # UPDATE 07: the Kranich banks (FlightController sets it; eased in the camera tick)
 var _ext_roll: float = 0.0
@@ -302,6 +309,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			sens *= GLSettings.get_f("ads_sensitivity")
 		_apply_look(mm.relative * sens)
 		_look_delta += mm.relative
+		if smooth_view:
+			_look_frame += mm.relative
 	elif event is InputEventMouseButton and event.is_pressed():
 		var mb: InputEventMouseButton = event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_WHEEL_UP or mb.button_index == MOUSE_BUTTON_WHEEL_DOWN:
@@ -315,6 +324,7 @@ var _wheel_swap: bool = false
 ## T-133: the smooth-motion switch (Settings > Video), applied live.
 func set_smooth_view(on: bool) -> void:
 	smooth_view = on
+	_look_frame = Vector2.ZERO
 	_tick_prev = Vector3.INF
 	_tick_cur = Vector3.INF
 	if weapons != null:
@@ -328,6 +338,7 @@ func _process(delta: float) -> void:
 	if not _view_live or GameState.phase != GameState.Phase.PLAYING or downed or spectating or GameState.input_blocked:
 		_view_live = false
 		return
+	_pad_look(delta, true)   # the right stick turns the view every rendered frame, like the mouse (it stepped at 60 Hz)
 	_update_camera(delta)
 	if _tick_prev.is_finite() and _tick_cur.is_finite():
 		var interp: Vector3 = _tick_prev.lerp(_tick_cur, Engine.get_physics_interpolation_fraction())
@@ -345,18 +356,40 @@ func _apply_look(rel: Vector2) -> void:
 		_rc_pool.x = maxf(0.0, _rc_pool.x - (before - _pitch))   # pulling down already paid back that much recoil
 
 
-func _pad_look(delta: float) -> void:
+## The pad's right stick. `per_frame`: called from _process with the frame's time (smooth motion); the aim-assist
+## ray is then the last tick's (_pad_assist), not a ray a frame.
+func _pad_look(delta: float, per_frame: bool = false) -> void:
 	var v: Vector2 = Input.get_vector(&"look_left", &"look_right", &"look_up", &"look_down", 0.15)
 	if v.length_squared() < 0.0001 or BotCommandWheel.capturing:
+		_pad_assist = false
 		return   # (the squad command wheel uses the stick while it is open)
 	v = v * v.length()   # response curve
 	var rate: float = 2.8 * GLSettings.get_f("pad_sensitivity")
 	if weapons.ads_t > 0.5:
 		rate *= 0.55
-	if _crosshair_on_enemy():
+	if not per_frame:
+		_pad_assist = _crosshair_on_enemy()
+	if _pad_assist:
 		rate *= 0.6     # aim-assist slowdown
 	_apply_look(v * rate * delta)
-	_look_delta += v * 8.0
+	var sway_in: Vector2 = v * (480.0 * delta)   # (8 a tick at 60 ticks a second: the viewmodel's look sway)
+	_look_delta += sway_in
+	if smooth_view:
+		_look_frame += sway_in
+
+
+## The pad's aim-assist ray for the frames until the next tick (smooth motion: the stick itself is read per frame).
+func _pad_assist_tick() -> void:
+	var v: Vector2 = Input.get_vector(&"look_left", &"look_right", &"look_up", &"look_down", 0.15)
+	_pad_assist = v.length_squared() >= 0.0001 and not BotCommandWheel.capturing and _crosshair_on_enemy()
+
+
+## The look input since the last call (mouse counts and the stick's equivalent): the viewmodel's sway reads it once
+## a rendered frame with smooth motion, so the turn rate it sees is the frame's own (WeaponHolder._process).
+func take_frame_look() -> Vector2:
+	var l: Vector2 = _look_frame
+	_look_frame = Vector2.ZERO
+	return l
 
 
 func _crosshair_on_enemy() -> bool:
@@ -425,7 +458,10 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		_update_health(delta)   # keep regen + heartbeat in step while a radio/switchboard UI is open
 		return
-	_pad_look(delta)
+	if smooth_view and _view_live:
+		_pad_assist_tick()   # (the stick turns the view in _process, every rendered frame)
+	else:
+		_pad_look(delta)
 	if carry != null and not is_instance_valid(carry):
 		end_carry(carry)
 	_eye_prev = _eye                 # T-236: last tick's values, for the render-rate camera's blend
@@ -480,7 +516,7 @@ func drive_bot(delta: float, intent: MoveIntent) -> void:
 func bot_view_tick(delta: float, reloading: bool, reload_left: float, ads: bool = false) -> void:
 	if not is_local or not bot_driven:
 		return
-	_pitch = clampf(head.rotation.x - _rk.x + mantle_k() * 0.06, deg_to_rad(-88.0), deg_to_rad(88.0))
+	_pitch = clampf(head.rotation.x - _rk_show.x + mantle_k() * 0.06, deg_to_rad(-88.0), deg_to_rad(88.0))
 	if GameState.phase != GameState.Phase.PLAYING or spectating:
 		return
 	if downed and not last_stand:
@@ -1605,14 +1641,19 @@ func _probe_interactable() -> Interactable:
 func _update_camera(delta: float) -> void:
 	# Recoil: a critically damped spring pulls the kicked view back (the share of each kick that stays
 	# in _pitch is the part you pull down yourself).
-	var steps: int = 1 if delta <= 1.0 / 50.0 else 2
-	var dt: float = delta / float(steps)
-	for i: int in steps:
-		_rk_v += (-_rk * _rk_w * _rk_w - _rk_v * 2.0 * _rk_w) * dt
-		_rk += _rk_v * dt
-		# landing head dip: a stiffer spring of its own
-		_land_dip_v += (-_land_dip * 196.0 - _land_dip_v * 2.0 * 14.0) * dt
-		_land_dip += _land_dip_v * dt
+	# Both step at 60 Hz whatever the frame rate (TickSpring): stepped with the frame's time, the same kick peaked
+	# up to 2.8 times higher at 240 frames a second than at 60.
+	var rk: Array = TickSpring.advance(_rk, _rk_v, Vector2.ZERO, _rk_w, 1.0, _rk_acc, delta)
+	_rk = rk[0]
+	_rk_v = rk[1]
+	_rk_acc = rk[2]
+	_rk_show = rk[3]
+	# landing head dip: a stiffer spring of its own
+	var ld: Array = TickSpring.advance(_land_dip, _land_dip_v, 0.0, 14.0, 1.0, _land_acc, delta)
+	_land_dip = ld[0]
+	_land_dip_v = ld[1]
+	_land_acc = ld[2]
+	_land_show = ld[3]
 	_tick_recoil_recovery(delta)
 	var S: Dictionary = _cfg.get("slide", {})
 	var C: Dictionary = _mv.get("camera", {})
@@ -1629,7 +1670,7 @@ func _update_camera(delta: float) -> void:
 		amp = float(C.get("bob_crouch", 0.006))
 	var walk: float = float(_cfg["walk_speed"])
 	var moving: float = clampf(horizontal_speed() / maxf(0.1, walk), 0.0, 1.3) if on_floor else 0.0
-	_bob_k = lerpf(_bob_k, moving * amp * lerpf(1.0, float(C.get("bob_ads_mult", 0.25)), weapons.ads_t), clampf(delta * 8.0, 0.0, 1.0))
+	_bob_k = lerpf(_bob_k, moving * amp * lerpf(1.0, float(C.get("bob_ads_mult", 0.25)), weapons.ads_t), _ease60(8.0, delta))
 	var bob_scale: float = lerpf(0.4, 1.0, clampf(shake_setting(), 0.0, 1.0))
 	var ph: float = step_phase() * PI
 	var sw: float = sin(ph)
@@ -1641,10 +1682,10 @@ func _update_camera(delta: float) -> void:
 	# the eye eases after a step up / down instead of jumping with the body (T-236; at the render rate the tick
 	# blend in _process carries it: _tick_cur includes the offset)
 	var step_off: Vector3 = global_basis.inverse() * _view_off if vf >= 1.0 else Vector3.ZERO
-	head.position.y = lerpf(_eye_prev, _eye, vf) - dip + bob_y + _land_dip - mk * 0.08 + step_off.y + carry_head.y
+	head.position.y = lerpf(_eye_prev, _eye, vf) - dip + bob_y + _land_show - mk * 0.08 + step_off.y + carry_head.y
 	head.position.z = step_off.z + carry_head.z
-	head.rotation.x = _pitch + _rk.x - mk * 0.06 + carry_pitch
-	head.rotation.y = _rk.y
+	head.rotation.x = _pitch + _rk_show.x - mk * 0.06 + carry_pitch
+	head.rotation.y = _rk_show.y
 	# lean (and the slide's roll: the body leans into the slide direction)
 	var lean_in: float = 0.0
 	if bool(GLSettings.values.get("lean_enabled", true)):
@@ -1674,8 +1715,15 @@ func _update_camera(delta: float) -> void:
 	fov *= lerpf(1.0, float(S.get("fov_mult", 1.09)), slide_k)
 	if _fov_base <= 0.0:
 		_fov_base = camera.fov
-	_fov_base = lerpf(_fov_base, fov, clampf(delta * 12.0, 0.0, 1.0))
+	_fov_base = lerpf(_fov_base, fov, _ease60(12.0, delta))
 	camera.fov = _fov_base + _fov_punch
+
+
+## The blend weight of an ease written as `lerp(a, b, rate * delta)`, made the same curve at every frame rate: at
+## 60 frames a second it is exactly rate / 60 (what the ease always did there); at any other rate it is the weight
+## that leaves the same share after the same time (the plain product eased 12 % faster at 30 than at 240).
+static func _ease60(rate: float, delta: float) -> float:
+	return 1.0 - pow(clampf(1.0 - rate / 60.0, 0.0, 1.0), delta * 60.0)
 
 
 # ---------------------------------------------------------------- API used by weapons / zombies / world

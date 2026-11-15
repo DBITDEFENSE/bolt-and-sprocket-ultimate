@@ -110,6 +110,25 @@ static func zombie_variant(tag: String) -> String:
 	return str(roll_look(str(t["kit"]), int(t["seed"])).get("base", "soldier"))
 
 
+## Has worker threads merge this look's two bodies (living, and risen for when it dies) and warms the zombie body
+## its rise is activated on and its severed pieces are cut from; bodies_ready says when the living one is in.
+static func request_bodies(look: Dictionary) -> void:
+	var base: String = str(look.get("base", "soldier"))
+	var build: String = str(look.get("build", "medium"))
+	var female: bool = bool(look.get("female", false))
+	for living: bool in [true, false]:
+		ZombieBody.request_dressed(base, build, female, look.get("tone", Color(0.62, 0.5, 0.44)), look.get("palette", {}), living)
+
+
+static func bodies_ready(looks: Array) -> bool:
+	for l: Variant in looks:
+		var look: Dictionary = l
+		if not ZombieBody.dressed_ready(str(look.get("base", "soldier")), str(look.get("build", "medium")), bool(look.get("female", false)),
+				look.get("tone", Color(0.62, 0.5, 0.44)), look.get("palette", {}), true):
+			return false
+	return true
+
+
 static func body_mesh(look: Dictionary, living: bool) -> ArrayMesh:
 	return ZombieBody.build_dressed(str(look.get("base", "soldier")), str(look.get("build", "medium")), bool(look.get("female", false)),
 		look.get("tone", Color(0.62, 0.5, 0.44)), look.get("palette", {}), living)

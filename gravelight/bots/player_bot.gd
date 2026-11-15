@@ -193,7 +193,7 @@ func _disable(reason: String) -> void:
 	if p != null and is_instance_valid(p):
 		p.bot_driven = false
 		p.set("_mi", MoveIntent.new())
-		p.set("_pitch", clampf(p.head.rotation.x - float((p.get("_rk") as Vector2).x), deg_to_rad(-88.0), deg_to_rad(88.0)))
+		p.set("_pitch", clampf(p.head.rotation.x - float((p.get("_rk_show") as Vector2).x), deg_to_rad(-88.0), deg_to_rad(88.0)))
 		if p.weapons != null:
 			p.weapons.bot_view_release()
 	if map != null and map.squad != null:

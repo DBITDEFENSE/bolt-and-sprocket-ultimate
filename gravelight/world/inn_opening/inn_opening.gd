@@ -194,6 +194,8 @@ func _ready() -> void:
 		pb.global_position = pb.global_position   # (keeps _last_pos honest on the first frame)
 		pb.enable_life()   # T-246: the patrons look up at the squad, start at a shot; outside, their breath shows
 		patrons[str(row["id"])] = pb
+		if str(row.get("fate", "")) in ["caught", "bitten"] and str(row.get("rise_variant", "")) != "":
+			PeopleBodies.warm_risen(str(row["id"]), str(row["rise_variant"]), bool(row.get("female", false)))   # (not in the tick they rise)
 		_st[str(row["id"])] = {"row": row, "stage": "idle", "pts": [], "i": 0, "exit": float(exits.get(str(row["id"]), 0.0)), "t0": 0.0}
 	GLBus.round_started.connect(_on_round_started)
 	if not (cfg.get("title_card", {}) as Dictionary).is_empty():

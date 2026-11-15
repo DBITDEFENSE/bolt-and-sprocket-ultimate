@@ -341,6 +341,17 @@ static func dress_risen(z: Node, id: String) -> void:
 	z.set_meta("person", id)
 
 
+## Builds, at map load, what a person's rise needs: their risen mesh and the zombie body the rise is activated on
+## (`variant` in each build of its kit, the person's sex). Merging these took 40-100 ms in the tick the person got
+## up (the inn's survivors and the patrons of the opening: the worst frames of a live round on Map 0).
+static func warm_risen(id: String, variant: String, female: bool) -> void:
+	if available(id):
+		ZombieBody.warm_mesh_pieces("person:" + id, mesh(id, true))   # and the limbs they can lose, on a worker
+	var kit: Dictionary = (GLData.table("anim")["kits"] as Dictionary).get(variant, {})
+	for b: Variant in kit.get("builds", []):
+		ZombieBody.build_skinned(variant, str(b), female)
+
+
 ## T-099: a severed piece of a risen person (ZombieGore._throw_piece): the person's risen mesh cut by dominant bone
 ## at `root_bone` (ZombieBody._cut_piece, the same split the zombie bodies use), so a turned patron's arm flies off in
 ## their own sleeve, not the generic villager kit. null without a built GLB (the caller falls back to the kit piece).
@@ -353,7 +364,9 @@ static func piece_mesh(id: String, root_bone: String) -> ArrayMesh:
 	var m: ArrayMesh = mesh(id, true)
 	if m == null:
 		return null
-	var cut: ArrayMesh = ZombieBody._cut_piece(m, root_bone)
+	var cut: ArrayMesh = ZombieBody.take_mesh_piece("person:" + id, root_bone, m)   # (cut ahead by warm_risen's worker)
+	if cut == null:
+		cut = ZombieBody._cut_piece(m, root_bone)
 	cut.set_meta("person", id)
 	_meshes[key] = cut
 	return cut

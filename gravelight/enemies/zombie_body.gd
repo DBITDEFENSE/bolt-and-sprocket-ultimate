@@ -775,10 +775,21 @@ static func _linear_mean(t: Texture2D) -> float:
 
 ## Builds the kits a map uses up front (avoids a hitch on first spawn).
 static func warm_up(kits: PackedStringArray = KITS) -> void:
+	var kit_rows: Dictionary = GLData.table("anim")["kits"]
 	for k: String in kits:
 		for b: String in BUILDS:
 			build_skinned(k, b, false)
+			warm_pieces(k, b, false)
 		build_skinned(k, "thin", true)
+		warm_pieces(k, "thin", true)
+		# a kit that spawns women spawns them in every build of its row (Zombie._apply_variant): the villager's,
+		# the lab staff's and the dock worker's medium and heavy women were first built in the tick that spawned
+		# one (20 ms each in the middle of a round; two in one spawn tick made a 42 ms frame)
+		var row: Dictionary = kit_rows.get(k, {})
+		if float(row.get("female", 0.0)) > 0.0:
+			for fb: Variant in row.get("builds", []):
+				build_skinned(k, str(fb), true)
+				warm_pieces(k, str(fb), true)
 	skin_material("base")
 	skin_material("glass")
 	kit_material()
@@ -845,18 +856,87 @@ static func build_living(kit: String, build: String = "medium", female: bool = f
 ## cloth2, hair, leather...), living (the human_base GLB, the living skin, plain eyes, skin `tone`) or risen (the zombie
 ## base GLB, the kit's dead skin and the violet eyes). Same layout, rig and LODs as every body. Cached per argument set.
 static func build_dressed(kit: String, build: String, female: bool, tone: Color, palette: Dictionary, living: bool = true) -> ArrayMesh:
-	var pk: PackedStringArray = []
-	for k: Variant in palette.keys():
-		pk.append("%s=%s" % [str(k), (palette[k] as Color).to_html()])
-	pk.sort()
-	var key: String = "dressed:%s:%s:%s:%s" % [("living" if living else "risen"), _cache_key(kit, build, female), tone.to_html(), ",".join(pk)]
+	var key: String = _dressed_key(kit, build, female, tone, palette, living)
 	if _meshes.has(key):
 		return _meshes[key]
+	var ahead: ArrayMesh = _take_dressed(key)   # (merged by a worker: request_dressed)
+	if ahead != null:
+		_meshes[key] = ahead
+		return ahead
 	var base: Dictionary = base_parts(build, female, living)
 	if not base.has("Body"):
 		return build_living(kit, build, female, tone) if living else build_skinned(kit, build, female)
 	var mesh: ArrayMesh = _merge_glb(base, kit, female, living, Color(tone.r, tone.g, tone.b, 1.0) if living else Color(0, 0, 0, 0), palette)
 	_meshes[key] = mesh
+	return mesh
+
+
+static func _dressed_key(kit: String, build: String, female: bool, tone: Color, palette: Dictionary, living: bool) -> String:
+	var pk: PackedStringArray = []
+	for k: Variant in palette.keys():
+		pk.append("%s=%s" % [str(k), (palette[k] as Color).to_html()])
+	pk.sort()
+	return "dressed:%s:%s:%s:%s" % [("living" if living else "risen"), _cache_key(kit, build, female), tone.to_html(), ",".join(pk)]
+
+
+# ------------------------------------------------------------------ dressed bodies, merged ahead of time
+# A relief squad's soldiers are dressed per soldier (a rolled tone and palette), so their bodies cannot be built at
+# map load; each merge is 20 ms of script loops and LOD generation. A squad of three to six arriving merged all of
+# its bodies in one tick (60-120 ms), and every soldier that died merged its risen body in the tick it got up.
+# request_dressed has a worker thread do the merge; build_dressed takes the result when it is in and merges on the
+# spot when it is not (as before). The mesh is the same either way (_merge_glb). Off with piece_warm and in the
+# browser build.
+static var _dressed_lock: Mutex = Mutex.new()
+static var _dressed_done: Dictionary = {}    # key -> ArrayMesh, written by the worker under the lock
+static var _dressed_tasks: Dictionary = {}   # key -> WorkerThreadPool task id (until its mesh is taken)
+
+
+## Asks for build_dressed's mesh ahead of time. Everything the merge reads from shared tables is made on the calling
+## thread first (the body's parts, the two materials); the worker then only reads.
+static func request_dressed(kit: String, build: String, female: bool, tone: Color, palette: Dictionary, living: bool = true) -> void:
+	if not piece_warm or legacy_bodies or OS.has_feature("web"):
+		return
+	var key: String = _dressed_key(kit, build, female, tone, palette, living)
+	if _meshes.has(key) or _dressed_tasks.has(key):
+		return
+	var base: Dictionary = base_parts(build, female, living)
+	if not base.has("Body"):
+		return
+	char_cfg()
+	skin_material("living" if living else _skin_look(kit))
+	kit_material(not living)
+	_dressed_tasks[key] = WorkerThreadPool.add_task(_dressed_job.bind(key, base, kit, female, living, tone, palette.duplicate(true)), true, "dressed body")
+
+
+static func _dressed_job(key: String, base: Dictionary, kit: String, female: bool, living: bool, tone: Color, palette: Dictionary) -> void:
+	var mesh: ArrayMesh = _merge_glb(base, kit, female, living, Color(tone.r, tone.g, tone.b, 1.0) if living else Color(0, 0, 0, 0), palette)
+	_dressed_lock.lock()
+	_dressed_done[key] = mesh
+	_dressed_lock.unlock()
+
+
+## True when build_dressed would not merge on the calling thread now (cached, or a worker's merge is in).
+static func dressed_ready(kit: String, build: String, female: bool, tone: Color, palette: Dictionary, living: bool = true) -> bool:
+	var key: String = _dressed_key(kit, build, female, tone, palette, living)
+	if _meshes.has(key):
+		return true
+	return _dressed_tasks.has(key) and WorkerThreadPool.is_task_completed(int(_dressed_tasks[key]))
+
+
+## The mesh a worker merged for `key`, or null (none asked for, or not finished: the caller merges on the spot and
+## the worker's copy is dropped when it arrives).
+static func _take_dressed(key: String) -> ArrayMesh:
+	if not _dressed_tasks.has(key):
+		return null
+	var id: int = int(_dressed_tasks[key])
+	if not WorkerThreadPool.is_task_completed(id):
+		return null
+	WorkerThreadPool.wait_for_task_completion(id)
+	_dressed_tasks.erase(key)
+	_dressed_lock.lock()
+	var mesh: ArrayMesh = _dressed_done.get(key) as ArrayMesh
+	_dressed_done.erase(key)
+	_dressed_lock.unlock()
 	return mesh
 
 
@@ -1027,16 +1107,30 @@ static func _merge_glb(base: Dictionary, kit: String, female: bool, living: bool
 ## The triangles of a merged body under `root_bone`'s chain (by dominant weight), unskinned, in that bone's rest
 ## frame, keeping every vertex attribute and the surface materials.
 static func _cut_piece(body: ArrayMesh, root_bone: String) -> ArrayMesh:
+	var src: Array = []
+	for si: int in body.get_surface_count():
+		var a: Array = body.surface_get_arrays(si)
+		src.append([a, dominant_bones(a)])
+	return _cut_mesh(body, _cut_arrays(src, _cut_chain(root_bone), ZombieRig.rest_global(root_bone).origin))
+
+
+## The rig bone indices under `root_bone` (itself included), as a set.
+static func _cut_chain(root_bone: String) -> Dictionary:
 	var chain: Dictionary = {}
 	for bn: String in ZombieRig.chain_of(root_bone):
 		chain[ZombieRig.bone_index(bn)] = true
-	var origin: Vector3 = ZombieRig.rest_global(root_bone).origin
-	var flags: int = (Mesh.ARRAY_CUSTOM_RGBA_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM0_SHIFT) | (Mesh.ARRAY_CUSTOM_RGBA_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM1_SHIFT)
-	var out: ArrayMesh = ArrayMesh.new()
-	for si: int in body.get_surface_count():
-		var a: Array = body.surface_get_arrays(si)
+	return chain
+
+
+## The cut itself: per surface of `src` ([[surface arrays, dominant bones], ...]) that has a triangle wholly inside
+## `chain`, [surface index, the piece's arrays] with `origin` taken off every vertex. It reads nothing but its
+## arguments: warm_pieces runs it on a worker thread.
+static func _cut_arrays(src: Array, chain: Dictionary, origin: Vector3) -> Array:
+	var cut: Array = []
+	for si: int in src.size():
+		var a: Array = src[si][0]
 		var v: PackedVector3Array = a[Mesh.ARRAY_VERTEX]
-		var dom: PackedInt32Array = dominant_bones(a)
+		var dom: PackedInt32Array = src[si][1]
 		var idx: PackedInt32Array = a[Mesh.ARRAY_INDEX]
 		var remap: Dictionary = {}
 		var nidx: PackedInt32Array = []
@@ -1070,17 +1164,129 @@ static func _cut_piece(body: ArrayMesh, root_bone: String) -> ArrayMesh:
 			na[Mesh.ARRAY_TEX_UV] = uv
 		for slot: int in [Mesh.ARRAY_TANGENT, Mesh.ARRAY_CUSTOM0, Mesh.ARRAY_CUSTOM1]:
 			if a[slot] != null:
-				var src: PackedFloat32Array = a[slot]
+				var src_f: PackedFloat32Array = a[slot]
 				var dst: PackedFloat32Array = []
 				for o: int in order:
-					dst.append_array(src.slice(o * 4, o * 4 + 4))
+					dst.append_array(src_f.slice(o * 4, o * 4 + 4))
 				na[slot] = dst
 		na[Mesh.ARRAY_INDEX] = nidx
-		out.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, na, [], {}, flags)
+		cut.append([si, na])
+	return cut
+
+
+## The piece mesh of a cut (_cut_arrays) of `body`: one surface per cut surface, with the body's names and materials.
+static func _cut_mesh(body: ArrayMesh, cut: Array) -> ArrayMesh:
+	var flags: int = (Mesh.ARRAY_CUSTOM_RGBA_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM0_SHIFT) | (Mesh.ARRAY_CUSTOM_RGBA_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM1_SHIFT)
+	var out: ArrayMesh = ArrayMesh.new()
+	for c: Array in cut:
+		var si: int = c[0]
+		out.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, c[1], [], {}, flags)
 		var s2: int = out.get_surface_count() - 1
 		out.surface_set_name(s2, body.surface_get_name(si))
 		out.surface_set_material(s2, body.surface_get_material(si))
 	return out
+
+
+# ------------------------------------------------------------------ the pieces, cut ahead of time
+# The first limb a body kind loses was cut from its skinned mesh in the frame that severed it: 2.5-5.5 ms a piece
+# in script (a crawler is two legs: 9 ms in one tick; a grenade in a pack made the worst ticks of a round). The
+# cache made every later one free, but a map has its kits x 4 bodies x 10 pieces to meet, all match long.
+# warm_pieces has a worker thread cut a body's ten pieces when the body is built at map load (warm_up); a piece
+# asked for before its cut is in is cut on the spot, as before. The meshes are the same either way (_cut_arrays).
+
+## The bones a body can lose (ZombieGore.STUMP_SCALE).
+const PIECE_BONES: PackedStringArray = ["LeftUpperArm", "RightUpperArm", "LeftLowerArm", "RightLowerArm",
+	"LeftUpperLeg", "RightUpperLeg", "LeftLowerLeg", "RightLowerLeg", "Head", "Jaw"]
+## Off: nothing is cut ahead (a test of the on-the-spot path; never in the browser build, which has no threads).
+static var piece_warm: bool = true
+static var _piece_lock: Mutex = Mutex.new()
+static var _piece_cuts: Dictionary = {}     # piece cache key -> its cut (_cut_arrays), written by the worker under the lock
+static var _piece_queued: Dictionary = {}   # skinned-body cache key -> true once its pieces were handed to a worker
+static var _piece_tasks: PackedInt64Array = []
+
+
+## Hands the ten pieces of a GLB-built body to a worker thread (once per body kind). The body's arrays are read
+## here, on the calling thread; the worker only computes.
+static func warm_pieces(kit: String, build: String, female: bool) -> void:
+	_reap_piece_tasks()
+	if not piece_warm or legacy_bodies or OS.has_feature("web") or not base_parts(build, female).has("Body"):
+		return
+	var bkey: String = _cache_key(kit, build, female)
+	if _piece_queued.has(bkey):
+		return
+	_piece_queued[bkey] = true
+	var jobs: Array = []
+	for bone: String in PIECE_BONES:
+		var key: String = "piece:%s:%s" % [bkey, bone]
+		if not _meshes.has(key):
+			jobs.append([key, _cut_chain(bone), ZombieRig.rest_global(bone).origin])
+	if jobs.is_empty():
+		return
+	var body: ArrayMesh = build_skinned(kit, build, female)
+	var arrays: Array = []
+	for si: int in body.get_surface_count():
+		arrays.append(body.surface_get_arrays(si))
+	_piece_tasks.append(WorkerThreadPool.add_task(_piece_job.bind(arrays, jobs), true, "zombie pieces"))
+
+
+## The same for any skinned body on the rig (a named person's risen mesh): its ten pieces cut by a worker, kept
+## under "<prefix>:<bone>" until take_mesh_piece asks for one.
+static func warm_mesh_pieces(prefix: String, body: ArrayMesh) -> void:
+	_reap_piece_tasks()
+	if not piece_warm or OS.has_feature("web") or body == null or _piece_queued.has(prefix):
+		return
+	_piece_queued[prefix] = true
+	var jobs: Array = []
+	for bone: String in PIECE_BONES:
+		jobs.append(["%s:%s" % [prefix, bone], _cut_chain(bone), ZombieRig.rest_global(bone).origin])
+	var arrays: Array = []
+	for si: int in body.get_surface_count():
+		arrays.append(body.surface_get_arrays(si))
+	_piece_tasks.append(WorkerThreadPool.add_task(_piece_job.bind(arrays, jobs), true, "body pieces"))
+
+
+## The piece of `body` a worker cut under `prefix`, or null when none is in (the caller cuts it on the spot).
+static func take_mesh_piece(prefix: String, bone: String, body: ArrayMesh) -> ArrayMesh:
+	var cut: Variant = _take_piece_cut("%s:%s" % [prefix, bone])
+	return _cut_mesh(body, cut as Array) if cut != null else null
+
+
+static func _piece_job(arrays: Array, jobs: Array) -> void:
+	var src: Array = []
+	for a: Array in arrays:
+		src.append([a, dominant_bones(a)])
+	for j: Array in jobs:
+		var cut: Array = _cut_arrays(src, j[1], j[2])
+		_piece_lock.lock()
+		_piece_cuts[j[0]] = cut
+		_piece_lock.unlock()
+
+
+## Finished worker tasks are waited for (the pool keeps a task's record until someone does).
+static func _reap_piece_tasks() -> void:
+	var i: int = _piece_tasks.size() - 1
+	while i >= 0:
+		if WorkerThreadPool.is_task_completed(_piece_tasks[i]):
+			WorkerThreadPool.wait_for_task_completion(_piece_tasks[i])
+			_piece_tasks.remove_at(i)
+		i -= 1
+
+
+## True while a worker still has pieces to cut (tools and tests wait on it).
+static func pieces_warming() -> bool:
+	_reap_piece_tasks()
+	return not _piece_tasks.is_empty()
+
+
+## The cut a worker made for this piece key, or null (taken out of the table: the caller caches the mesh).
+static func _take_piece_cut(key: String) -> Variant:
+	if _piece_queued.is_empty():
+		return null
+	_piece_lock.lock()
+	var cut: Variant = _piece_cuts.get(key)
+	_piece_cuts.erase(key)
+	_piece_lock.unlock()
+	return cut
 
 
 ## Dominant rig bone of every vertex of a surface's arrays (the gore split, tests).
@@ -1382,7 +1588,8 @@ static func piece_mesh(kit: String, build: String, female: bool, root_bone: Stri
 		return _meshes[key]
 	var mesh: ArrayMesh
 	if not legacy_bodies and base_parts(build, female).has("Body"):
-		mesh = _cut_piece(build_skinned(kit, build, female), root_bone)
+		var warmed: Variant = _take_piece_cut(key)   # (cut ahead of time by warm_pieces; else on the spot)
+		mesh = _cut_mesh(build_skinned(kit, build, female), warmed as Array) if warmed != null else _cut_piece(build_skinned(kit, build, female), root_bone)
 	else:
 		var all: Dictionary = body_parts(kit, build, female)
 		var parts: Array = []

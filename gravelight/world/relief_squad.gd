@@ -171,9 +171,23 @@ func setup(map_root: MapRoot) -> void:
 		map.director.set_soldiers_alive(0)
 	GLBus.round_started.connect(_on_round_started)
 	GLBus.round_ended.connect(_on_round_ended)
+	_warm_bodies()
 	var con: Node = get_node_or_null("/root/GLConsole")
 	if con != null and con.has_method("register"):
 		con.call("register", "squad", _cmd, "squad force|now|status|clear: the relief squads (T-142)")
+
+
+## At map load: the zombie bodies this map's squads rise on and lose their limbs from (a soldier's base kit in its
+## own build and sex: a soldier kit has women where the zombie kit has none). The first risen soldier to lose a
+## limb merged that body in the tick it was hit (20 ms).
+func _warm_bodies() -> void:
+	for fac: Dictionary in map_factions():
+		var k: Dictionary = SoldierKits.kit(str(fac.get("kit", "partisan")))
+		for base: Variant in (k.get("bases", {"soldier": 1.0}) as Dictionary).keys():
+			for b: Variant in k.get("builds", ["medium"]):
+				for female: bool in ([false, true] if float(k.get("female", 0.0)) > 0.0 else [false]):
+					ZombieBody.build_skinned(str(base), str(b), female)
+					ZombieBody.warm_pieces(str(base), str(b), female)
 
 
 func map_factions() -> Array[Dictionary]:
@@ -204,12 +218,12 @@ func _on_round_started(r: int, special: bool) -> void:
 	var forced: bool = force_next
 	if forced and not GameState.in_event():
 		force_next = false
-		spawn_squad()
+		_spawn_squad_soon()
 		return
 	if EggMode.on():
 		return   # T-181 Easter Egg Mode: no relief squads (their fight and their risen dead are the pressure it removes)
 	if roll(r, last_round, 1 if active() else 0, blocked_now(special, g), g, rng):
-		spawn_squad()
+		_spawn_squad_soon()
 
 
 func _on_round_ended(_r: int) -> void:
@@ -220,12 +234,43 @@ func _on_round_ended(_r: int) -> void:
 
 ## Brings a squad in now (the roll, a dev command, the smoke). Returns the soldiers made (0: no faction or spawn).
 func spawn_squad(fid: String = "") -> int:
+	var plan: Dictionary = _plan_squad(fid)
+	return 0 if plan.is_empty() else _field_squad(plan)
+
+
+## A round's squad: rolled now (the same draws in the same order as spawn_squad), fielded as soon as worker
+## threads have merged its soldiers' bodies (a few frames; ARRIVE_WAIT_MS at most, then merged on the spot as
+## before). A squad of three to six merged all its bodies in the tick it arrived: a 60-120 ms frame.
+const ARRIVE_WAIT_MS: int = 600
+var _arriving: bool = false
+
+
+func _spawn_squad_soon() -> void:
+	if _arriving:
+		return
+	var plan: Dictionary = _plan_squad("")
+	if plan.is_empty():
+		return
+	_arriving = true
+	for l: Variant in plan["looks"]:
+		SoldierKits.request_bodies(l as Dictionary)
+	var t0: int = Time.get_ticks_msec()
+	while is_inside_tree() and not SoldierKits.bodies_ready(plan["looks"]) and Time.get_ticks_msec() - t0 < ARRIVE_WAIT_MS:
+		await get_tree().physics_frame
+	_arriving = false
+	if not is_inside_tree() or active() or GameState.in_event():
+		return
+	_field_squad(plan)
+
+
+## The draws of a squad (faction, edge, stay, size, each soldier's seed), nothing fielded yet. {} when none can come.
+func _plan_squad(fid: String) -> Dictionary:
 	if active():
-		return 0
+		return {}
 	var fs: Array[Dictionary] = map_factions()
 	if fs.is_empty():
 		events.append("no_factions")
-		return 0
+		return {}
 	var want: String = fid if fid != "" else force_faction
 	faction = faction_by_id(map_key(String(map.map_id)), want, table()) if want != "" else {}
 	if faction.is_empty():
@@ -233,24 +278,40 @@ func spawn_squad(fid: String = "") -> int:
 	var at: Vector3 = _pick_edge(faction)
 	if at == Vector3.INF:
 		events.append("no_edge")
-		return 0
+		return {}
+	var g: Dictionary = cfg()
+	var stay: float = pick_stay(g, rng)
+	var n: int = pick_size(g, rng)
+	var seeds: Array = []
+	var looks: Array = []
+	var kit_id: String = str(faction.get("kit", "partisan"))
+	for i: int in n:
+		seeds.append(rng.randi())
+		looks.append(SoldierKits.roll_look(kit_id, int(seeds[i]), SoldierKits.kit(kit_id)))
+	return {"faction": faction, "at": at, "stay": stay, "n": n, "seeds": seeds, "looks": looks}
+
+
+func _field_squad(plan: Dictionary) -> int:
+	faction = plan["faction"]
+	var at: Vector3 = plan["at"]
 	var g: Dictionary = cfg()
 	squad_id += 1
 	last_round = RoundManager.current_round
 	entry_point = at
 	exit_point = at
-	stay_left = pick_stay(g, rng)
+	stay_left = float(plan["stay"])
 	phase = &"holding"
 	_contact_said = false
 	_escaped = 0
 	_survived_home = false
 	_crate_dropped = false
-	var n: int = pick_size(g, rng)
+	var n: int = int(plan["n"])
 	var weapons: Array = faction.get("weapons", ["kar98k"])
 	var nav: RID = map.get_world_3d().navigation_map
 	for i: int in n:
 		var s: Soldier = Soldier.new()
-		var seed_v: int = rng.randi()
+		var seed_v: int = int((plan["seeds"] as Array)[i])
+		SoldierKits.request_bodies((plan["looks"] as Array)[i] as Dictionary)   # (its risen body, for the tick it gets up)
 		s.setup(self, i, faction, seed_v, StringName(str(weapons[i % weapons.size()])), true)
 		s.net_id = _next_net
 		_next_net = (_next_net + 1) % 250
