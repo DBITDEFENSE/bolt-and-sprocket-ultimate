@@ -25,6 +25,10 @@ extends Node
 ## script, and the worst ticks with what ran in them (which brain thought, its action, BotProf's sections).
 ## `--bots=N` (0-3), `--no-companions` (no Jakub, the map's companion left waiting), `--ai=off|squad|local` (the
 ## planner bot), `--secs=N` (the sampled window, 15 by default), `--live` (the round keeps running: kills, spawns).
+## `--ab=no_piece_warm` leaves the zombies' severed pieces to be cut in the frame that first needs each (the
+## before of ZombieBody.warm_pieces, docs/perf/movement_perf_2026-11.md). `--seed=N` seeds the global random
+## number generator before the map loads (a `--live` round then starts from the same rolls; it still plays out
+## differently run to run, the loader threads' timing is not seeded).
 
 const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 const SPIKE_MS: float = 40.0
@@ -104,6 +108,11 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	BotProf.on = _hitch
 	BotProf.reset()
+	if "no_piece_warm" in _ab:   # (set through the script object: this tool also runs on a build without the switch)
+		(load("res://gravelight/enemies/zombie_body.gd") as GDScript).set("piece_warm", false)
+	for a: String in OS.get_cmdline_user_args():
+		if a.begins_with("--seed="):
+			seed(int(a.substr(7)))
 	if "--ab=t237_off" in OS.get_cmdline_user_args():   # T-237: the "before" side (the optimisations off, same build)
 		BotProf.opt = false
 		StreamWarm.enabled = false
