@@ -116,7 +116,7 @@ func test_live_and_kaltenbrunn_keys_resolve() -> void:
 func test_sky_dome_keeps_its_contract() -> void:
 	var names: Array = _uniforms("res://gravelight/world/landscape/shaders/sky_dome.gdshader")
 	for want: String in ["zenith", "horizon", "cloud_tint", "moon_dir", "moon_color", "town_dir", "town_strength", "cloud_cover", "exposure",
-			"flashes", "flash_cols", "beams", "moon_size", "moon_gain", "star_gain", "high_veil"]:
+			"flashes", "flash_cols", "beams", "moon_size", "moon_gain", "star_gain", "high_veil", "deck_light"]:
 		assert_true(names.has(want), "sky_dome exposes %s (Landscape / MapAmbience / the grades write it)" % want)
 
 
