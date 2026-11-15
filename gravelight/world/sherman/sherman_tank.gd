@@ -117,19 +117,26 @@ func build() -> void:
 		acc += _path[i].distance_to(_path[(i + 1) % _path.size()])
 	_path_len = acc
 	_n_links = int(floor(_path_len / ShermanMesh.LINK_PITCH))
-	var lm: Array = ShermanMesh.part("link")
+	# (T-253) the full link near, a plain slab beyond FAR_RANGE: two MultiMeshes a side, laid together
 	for s2: float in [-1.0, 1.0]:
-		var mm: MultiMesh = MultiMesh.new()
-		mm.transform_format = MultiMesh.TRANSFORM_3D
-		mm.mesh = lm[0]
-		mm.instance_count = _n_links
-		var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
-		mmi.name = "TrackL" if s2 < 0.0 else "TrackR"
-		mmi.multimesh = mm
-		mmi.material_override = ShermanMesh.material("steel")
-		mmi.position = Vector3(s2 * ShermanMesh.TRACK_X, 0, 0)
-		body.add_child(mmi)
-		_links.append(mm)
+		for far: bool in [false, true]:
+			var mm: MultiMesh = MultiMesh.new()
+			mm.transform_format = MultiMesh.TRANSFORM_3D
+			mm.mesh = ShermanMesh.part("link_far" if far else "link")[0]
+			mm.instance_count = _n_links
+			var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
+			mmi.name = ("TrackL" if s2 < 0.0 else "TrackR") + ("Far" if far else "")
+			mmi.multimesh = mm
+			mmi.material_override = ShermanMesh.material("track")
+			mmi.position = Vector3(s2 * ShermanMesh.TRACK_X, 0, 0)
+			if far:
+				mmi.visibility_range_begin = ShermanMesh.FAR_RANGE
+				mmi.visibility_range_begin_margin = 4.0
+			else:
+				mmi.visibility_range_end = ShermanMesh.FAR_RANGE
+				mmi.visibility_range_end_margin = 4.0
+			body.add_child(mmi)
+			_links.append(mm)
 	_lay_links()
 	# the hull's collider: the map-edge layer only (players and bots stop, zombies and shots pass)
 	_collider = AnimatableBody3D.new()
@@ -187,6 +194,19 @@ func build() -> void:
 	lamp.omni_range = 7.0
 	lamp.shadow_enabled = false
 	turret.add_child(lamp)
+	# (T-253) the headlamps: a low pool of light on the road ahead of the bow, so the hull's front and the snow under
+	# it read at night (no shadows; a look, nothing in the fight reads it)
+	var head: SpotLight3D = SpotLight3D.new()
+	head.name = "HeadLamp"
+	head.position = Vector3(0, 1.47, -2.75)
+	head.rotation_degrees = Vector3(-14.0, 0, 0)
+	head.light_color = Color(1.0, 0.86, 0.62)
+	head.light_energy = 2.6
+	head.spot_range = 16.0
+	head.spot_angle = 42.0
+	head.spot_attenuation = 1.4
+	head.shadow_enabled = false
+	body.add_child(head)
 
 
 func _spun(part_name: String, at: Vector3, radius: float, side: float) -> void:
@@ -625,18 +645,12 @@ func wreck(explode: bool) -> void:
 	if lamp != null:
 		lamp.queue_free()
 	_set_exhaust(false)
-	for mi: Node in find_children("*", "MeshInstance3D", true, false):
-		var m: MeshInstance3D = mi as MeshInstance3D
-		var mk: Array = []
-		for part_name: String in ["hull", "turret", "gun", "wheel", "sprocket", "idler", "roller"]:
-			if m.mesh == (ShermanMesh.part(part_name)[0] as Mesh):
-				mk = ShermanMesh.part(part_name)
-		if mk.is_empty():
-			continue
-		for i: int in (mk[1] as Array).size():
-			m.set_surface_override_material(i, ShermanMesh.material(str((mk[1] as Array)[i]), true))
+	ShermanMesh.burn(self)
 	for mmi: Node in find_children("Track*", "MultiMeshInstance3D", true, false):
-		(mmi as MultiMeshInstance3D).material_override = ShermanMesh.material("steel", true)
+		(mmi as MultiMeshInstance3D).material_override = ShermanMesh.material("track", true)
+	var hl: Node = body.get_node_or_null("HeadLamp")
+	if hl != null:
+		hl.queue_free()
 	turret.rotation = Vector3(deg_to_rad(-6.0), turret.rotation.y + deg_to_rad(28.0), deg_to_rad(7.0))
 	turret.position = ShermanMesh.TURRET_AT + Vector3(0.12, 0.14, 0.05)
 	gun.rotation.x = deg_to_rad(-9.0)

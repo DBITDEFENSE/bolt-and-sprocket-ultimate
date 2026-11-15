@@ -4,6 +4,7 @@ extends Node3D
 ##   --map: the Inn itself (map00): the Sherman parked on the road outside the gate, close on it, a fire zombie, the
 ##          air raid (the warning on the HUD, the bombs' shadows and rings, a burst), the dive bomber in its dive over
 ##          the yard, the wreck burning. One map load (~8 min under WSL's software GL).
+##   --dir=<name>: write under docs/captures/<name>/<label> (T-253 uses u19_models).
 ##   sh tools/wsl_godot.sh --res=1920x1080 --path . res://gravelight/tools_src/sherman_shots.tscn -- --label=<label> [--map] [--only=a,b]
 ## Never with a window on the owner's PC (WSL / Xvfb only).
 
@@ -23,6 +24,12 @@ const TURN: Array = [
 	["stuka_side", "stuka", 90.0, 1.0, 19.0, Vector3(0, 0, 0)],
 	["stuka_quarter", "stuka", 35.0, 4.0, 17.0, Vector3(0, 0, 0)],
 	["bomb", "bomb", 70.0, 0.6, 3.2, Vector3(0, 0.6, 0)],
+	# T-253: the fourth side of the aircraft, the wreck from behind, the tank at a player's eye from 3 m
+	["stuka_rear_quarter", "stuka", 150.0, 3.0, 18.0, Vector3(0, 0, 0)],
+	["stuka_top", "stuka", 20.0, 15.0, 9.0, Vector3(0, 0, 0)],
+	["wreck_rear_quarter", "wreck", 150.0, 2.4, 10.0, Vector3(0, 1.3, 0.0)],
+	["tank_eye_3m", "tank", 62.0, 1.7, 4.9, Vector3(0, 1.45, -0.6)],
+	["tank_rear_deck", "tank", 160.0, 3.3, 5.2, Vector3(0, 2.0, 1.6)],
 ]
 
 var _out: String = ""
@@ -33,14 +40,17 @@ var _cam: Camera3D
 
 func _ready() -> void:
 	var label: String = "look"
+	var dir: String = "u18_sherman"
 	for a: String in OS.get_cmdline_user_args():
 		if a.begins_with("--label="):
 			label = a.substr(8)
 		elif a.begins_with("--only="):
 			_only = a.substr(7).split(",", false)
+		elif a.begins_with("--dir="):
+			dir = a.substr(6)   # T-253: docs/captures/<dir>/<label>
 		elif a == "--map":
 			_map_mode = true
-	_out = ProjectSettings.globalize_path("res://").path_join("docs/captures/u18_sherman").path_join(label)
+	_out = ProjectSettings.globalize_path("res://").path_join("docs/captures").path_join(dir).path_join(label)
 	DirAccess.make_dir_recursive_absolute(_out)
 	if _map_mode:
 		_run_map.call_deferred()
@@ -199,6 +209,17 @@ func _run_map() -> void:
 		_cam.look_at(tk.global_transform * Vector3(0, 1.3, 0), Vector3.UP)
 		await _frames(4)
 		await _shoot("inn_tank_close")
+	# T-253: at a player's eye height, 3 m and 15 m from the hull
+	if _want("inn_tank_3m"):
+		_cam.global_position = tk.global_transform * Vector3(-3.6, 1.7, -3.4)
+		_cam.look_at(tk.global_transform * Vector3(0, 1.5, -0.6), Vector3.UP)
+		await _frames(4)
+		await _shoot("inn_tank_3m")
+	if _want("inn_tank_15m"):
+		_cam.global_position = tk.global_transform * Vector3(-9.0, 1.7, -12.5)
+		_cam.look_at(tk.global_transform * Vector3(0, 1.4, 0), Vector3.UP)
+		await _frames(4)
+		await _shoot("inn_tank_15m")
 	if _want("inn_tank_rear"):
 		_cam.global_position = tk.global_transform * Vector3(4.0, 2.4, 7.0)
 		_cam.look_at(tk.global_transform * Vector3(0, 1.3, 0), Vector3.UP)
@@ -247,6 +268,12 @@ func _run_map() -> void:
 		_cam.fov = 50.0
 		await _frames(3)
 		await _shoot("inn_stuka")
+		if _want("inn_stuka_dive"):   # T-253: in the dive, just before it lets go
+			plane.pose_at(rd - 60.0)
+			_cam.look_at(plane.global_position, Vector3.UP)
+			_cam.fov = 28.0
+			await _frames(3)
+			await _shoot("inn_stuka_dive")
 		plane.queue_free()
 		_cam.fov = 60.0
 	# the air raid: the warning, the shadows and rings, a burst

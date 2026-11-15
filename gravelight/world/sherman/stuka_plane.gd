@@ -2,7 +2,8 @@ class_name StukaPlane
 extends Node3D
 ## The dive bomber of round 40 (T-249; our own work, built in code): a single-engined two-seat dive bomber of the
 ## German air force, inverted gull wings, fixed trousered gear with the siren on each leg, a long glazed canopy, slatted
-## dive brakes under the wings, a 500 kg bomb on the swing crutch under the belly. Dark green over pale blue, no markings.
+## dive brakes under the wings, a 500 kg bomb on the swing crutch under the belly. Two dark greens over pale blue, plain
+## straight-armed crosses on the wings and the fuselage, a yellow band; no other marking (T-253).
 ## It flies one pass (`fly`): heard high up, level at approach_alt toward the target, the roll into a dive at dive_deg,
 ## the siren rising with the speed, the bomb let go at release_alt, the pull-out and the climb away; then it frees
 ## itself. The flight is a pure function of the time since it started (`pose_at`), so a co-op client flies the same
@@ -13,6 +14,9 @@ signal bomb_released(at: Vector3)
 signal impact(at: Vector3)
 
 const SPAN_TIP: float = 6.95
+## T-253: the plain straight-armed crosses on the wings and the fuselage (the paint shader draws them). false: an
+## unmarked aircraft, as T-249 had it. Nothing else is ever drawn on it (docs/ART_FACTIONS.md).
+const CROSSES: bool = true
 
 var target: Vector3 = Vector3.ZERO
 var back: Vector3 = Vector3(0, 0, 1)   # horizontal: from the target toward where it comes from
@@ -44,29 +48,43 @@ func _init() -> void:
 
 # ================================================================== the model
 
+## The aircraft's materials (T-253: the vehicle paint shader with its scheme on: two dark greens in straight-edged
+## fields over a pale blue underside, panel lines, a plain straight-armed cross on and under each wing and on each
+## side of the fuselage, a yellow band round the rear fuselage; no other marking of any kind).
 static func material(key: String) -> Material:
 	if _mats.has(key):
 		return _mats[key]
+	if key == "paint" or key == "frame" or key == "bomb":
+		var p: Dictionary = {}
+		match key:
+			"paint":
+				p = {"tint": Color(0.2, 0.245, 0.17), "camo_b": Color(0.095, 0.12, 0.1), "belly_color": Color(0.5, 0.6, 0.67), "scheme": 1.0, "night_lift": 0.4,
+					"crosses": 1.0 if CROSSES else 0.0, "rough": 0.56, "metal": 0.25, "bump": 0.25, "grime": 0.45, "chips": 0.3, "streaks": 0.25, "tex_scale": 0.5}
+			"frame":
+				p = {"tint": Color(0.13, 0.155, 0.12), "night_lift": 0.3, "rough": 0.6, "metal": 0.3, "bump": 0.3, "grime": 0.4, "chips": 0.4, "streaks": 0.0}
+			"bomb":
+				p = {"tint": Color(0.3, 0.32, 0.27), "night_lift": 0.3, "rough": 0.5, "metal": 0.35, "bump": 0.4, "grime": 0.5, "chips": 0.35, "streaks": 0.0, "tex_scale": 1.5}
+		var sm: ShaderMaterial = ProcKit.paint_material(p, true)
+		_mats[key] = sm
+		return sm
 	var m: StandardMaterial3D = StandardMaterial3D.new()
 	m.vertex_color_use_as_albedo = true
+	m.disable_fog = true
 	match key:
-		"paint":
-			m.albedo_color = Color(0.17, 0.2, 0.15)
-			m.roughness = 0.62
-			m.metallic = 0.2
 		"glass":
-			m.albedo_color = Color(0.55, 0.62, 0.66, 0.38)
+			m.albedo_color = Color(0.5, 0.6, 0.66, 0.34)
 			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 			m.roughness = 0.05
 			m.metallic = 0.3
 			m.vertex_color_use_as_albedo = false
-		"frame":
-			m.albedo_color = Color(0.14, 0.16, 0.12)
-			m.roughness = 0.6
+			m.cull_mode = BaseMaterial3D.CULL_DISABLED
 		"dark":
 			m.albedo_color = Color(0.06, 0.055, 0.05)
 			m.roughness = 0.5
 			m.metallic = 0.6
+		"crew":
+			m.albedo_color = Color(0.2, 0.17, 0.13)
+			m.roughness = 0.9
 		"rubber":
 			m.albedo_color = Color(0.04, 0.04, 0.04)
 			m.roughness = 0.85
@@ -78,13 +96,16 @@ static func material(key: String) -> Material:
 			m.albedo_color = Color(0.85, 0.85, 0.82)
 			m.roughness = 0.7
 			m.cull_mode = BaseMaterial3D.CULL_DISABLED
-		"bomb":
-			m.albedo_color = Color(0.32, 0.31, 0.24)
-			m.roughness = 0.55
-			m.metallic = 0.3
 		"blade":
-			m.albedo_color = Color(0.08, 0.09, 0.07)
-			m.roughness = 0.5
+			m.albedo_color = Color(0.07, 0.085, 0.07)
+			m.roughness = 0.45
+			m.metallic = 0.3
+		"disc":
+			m.albedo_color = Color(0.05, 0.05, 0.05, 0.13)
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			m.cull_mode = BaseMaterial3D.CULL_DISABLED
+			m.vertex_color_use_as_albedo = false
 	_mats[key] = m
 	return m
 
@@ -148,21 +169,50 @@ const FUSE: Array = [[-5.52, 0.30, 0.34, 0.02], [-5.40, 0.44, 0.52, -0.02], [-4.
 
 
 static func _body(k: ProcKit) -> void:
-	k.belly = Color(0.52, 0.6, 0.66, 1.0)
+	# the fuselage: its sections, and one more between each pair so the cowling and the tail cone run fair
 	var rings: Array = []
-	for s: Array in FUSE:
-		rings.append(ProcKit.superellipse(Vector3(0, float(s[3]), float(s[0])), Vector3.RIGHT, Vector3.UP, float(s[1]), float(s[2]), 2.3, 24))
+	for i: int in FUSE.size():
+		var s: Array = FUSE[i]
+		rings.append(ProcKit.superellipse(Vector3(0, float(s[3]), float(s[0])), Vector3.RIGHT, Vector3.UP, float(s[1]), float(s[2]), 2.3, 28))
+		if i < FUSE.size() - 1:
+			var a: Array = FUSE[maxi(i - 1, 0)]
+			var b: Array = FUSE[i + 1]
+			var e: Array = FUSE[mini(i + 2, FUSE.size() - 1)]
+			var v: Array = []
+			for j: int in 4:
+				v.append(cubic_interpolate(float(s[j]), float(b[j]), float(a[j]), float(e[j]), 0.5))
+			v[1] = clampf(float(v[1]), minf(float(s[1]), float(b[1])), maxf(float(s[1]), float(b[1])) + 0.01)
+			v[2] = clampf(float(v[2]), minf(float(s[2]), float(b[2])), maxf(float(s[2]), float(b[2])) + 0.01)
+			rings.append(ProcKit.superellipse(Vector3(0, float(v[3]), float(v[0])), Vector3.RIGHT, Vector3.UP, float(v[1]), float(v[2]), 2.3, 28))
 	k.loft("paint", rings, true, true, true)
-	# the wings, each side, through their stations (the inverted gull: down to the knee, up to the tip)
+	# the chin radiator under the engine: its bath and the dark of its mouth
+	var chin: Array = []
+	for c: Array in [[-5.25, 0.20, 0.10, -0.52], [-5.05, 0.30, 0.20, -0.66], [-4.6, 0.32, 0.22, -0.74], [-4.1, 0.28, 0.18, -0.74], [-3.6, 0.16, 0.08, -0.70]]:
+		chin.append(ProcKit.superellipse(Vector3(0, float(c[3]), float(c[0])), Vector3.RIGHT, Vector3.UP, float(c[1]), float(c[2]), 2.6, 14))
+	k.loft("paint", chin, true, true, true)
+	k.box("dark", Vector3(0, -0.56, -5.262), Vector3(0.3, 0.13, 0.01))
+	# the wings, each side, through their stations (the inverted gull: down to the knee, up to the tip), and the
+	# separate flap and aileron hung under the trailing edge on their brackets
 	for side: float in [-1.0, 1.0]:
 		var wr: Array = []
 		for w: Array in WING:
-			var ring: PackedVector3Array = airfoil(side * float(w[0]), float(w[1]), float(w[2]), float(w[3]), float(w[4]), 9, deg_to_rad(1.5))
+			var ring: PackedVector3Array = airfoil(side * float(w[0]), float(w[1]), float(w[2]), float(w[3]), float(w[4]), 11, deg_to_rad(1.5))
 			if side < 0.0:
 				ring.reverse()
 			wr.append(ring)
 		k.loft("paint", wr, true, true, true)
-		# the dive brake: slats on two struts under the outer wing, standing out in the dive
+		var fr: Array = []
+		for wi: int in [1, 2, 3, 4, 5]:
+			var w2: Array = WING[wi]
+			var fc: float = 0.34 if wi < 5 else 0.22
+			var ring2: PackedVector3Array = airfoil(side * float(w2[0]), float(w2[1]) - 0.10, float(w2[2]) + float(w2[3]) - 0.05, fc, 0.11, 5, deg_to_rad(6.0))
+			if side < 0.0:
+				ring2.reverse()
+			fr.append(ring2)
+			k.beam("frame", Vector3(side * float(w2[0]), float(w2[1]) - 0.02, float(w2[2]) + float(w2[3]) - 0.22),
+				Vector3(side * float(w2[0]), float(w2[1]) - 0.10, float(w2[2]) + float(w2[3]) + 0.05), 0.03, 0.05)
+		k.loft("paint", fr, true, true, true)
+		# the dive brake: slats on three struts under the outer wing, standing out in the dive
 		for bx: float in [3.3, 4.4, 5.4]:
 			k.beam("frame", Vector3(side * bx, -0.80, -1.05), Vector3(side * bx, -1.05, -1.18), 0.04)
 		for sl: float in [0.0, 0.11]:
@@ -170,90 +220,130 @@ static func _body(k: ProcKit) -> void:
 		# the landing gear: a trousered leg from the knee down to a spatted wheel, the siren on its front
 		var top: Vector3 = Vector3(side * 2.45, -1.05, -1.25)
 		var gr: Array = []
-		for g: Array in [[0.0, 0.30, 0.55], [-0.45, 0.20, 0.42], [-0.9, 0.17, 0.36], [-1.15, 0.22, 0.48], [-1.32, 0.24, 0.55], [-1.45, 0.18, 0.40], [-1.52, 0.06, 0.12]]:
-			var c: Vector3 = top + Vector3(0, float(g[0]), 0.10 * float(g[0]))
-			gr.append(ProcKit.superellipse(c, Vector3.RIGHT, Vector3.BACK, float(g[1]), float(g[2]), 2.0, 14))
-		var gk: ProcKit = k
-		gk.loft("paint", gr, true, true, true)
-		k.cyl("rubber", top + Vector3(-0.07, -1.37, -0.14), top + Vector3(0.07, -1.37, -0.14), 0.34, 0.34, 18)
+		for g: Array in [[0.0, 0.30, 0.55], [-0.25, 0.23, 0.47], [-0.45, 0.20, 0.42], [-0.9, 0.17, 0.36], [-1.15, 0.22, 0.48], [-1.32, 0.24, 0.55], [-1.45, 0.18, 0.40], [-1.52, 0.06, 0.12]]:
+			var c2: Vector3 = top + Vector3(0, float(g[0]), 0.10 * float(g[0]))
+			gr.append(ProcKit.superellipse(c2, Vector3.RIGHT, Vector3.BACK, float(g[1]), float(g[2]), 2.0, 16))
+		k.loft("paint", gr, true, true, true)
+		k.lathe("rubber", top + Vector3(-0.08, -1.37, -0.14), Vector3(1, 0, 0), PackedVector2Array([Vector2(0.0, 0.0), Vector2(0.27, 0.0), Vector2(0.34, 0.03),
+			Vector2(0.34, 0.13), Vector2(0.27, 0.16), Vector2(0.0, 0.16)]), 18)
 		var sir: Vector3 = top + Vector3(0, -0.38, -0.58)
-		k.cyl("dark", sir, sir + Vector3(0, 0, 0.22), 0.07, 0.09, 10)
-		for b: int in 2:
-			var a: float = PI * float(b) + 0.4
-			k.box("blade", sir + Vector3(cos(a) * 0.09, sin(a) * 0.09, -0.02), Vector3(0.16, 0.035, 0.012), Basis(Vector3.BACK, a))
+		k.lathe("dark", sir + Vector3(0, 0, 0.24), Vector3(0, 0, -1), PackedVector2Array([Vector2(0.0, 0.0), Vector2(0.09, 0.02), Vector2(0.085, 0.2), Vector2(0.05, 0.26), Vector2(0.0, 0.28)]), 10)
+		for b: int in 4:
+			var a2: float = PI * 0.5 * float(b) + 0.4
+			k.box("blade", sir + Vector3(cos(a2) * 0.10, sin(a2) * 0.10, -0.03), Vector3(0.17, 0.04, 0.012), Basis(Vector3.BACK, a2) * Basis(Vector3.RIGHT, 0.5))
 		# the exhaust stubs on the cowling's side, a row of six
-		for e: int in 6:
-			k.box("dark", Vector3(side * 0.53, -0.22, -5.1 + 0.18 * float(e)), Vector3(0.09, 0.06, 0.1))
-	# the tailplane on its struts, the fin and rudder
+		for ex: int in 6:
+			k.bbox("dark", Vector3(side * 0.535, -0.22, -5.1 + 0.18 * float(ex)), Vector3(0.09, 0.07, 0.11), Basis(Vector3.UP, side * 0.35), 0.012)
+		# two small bombs on their racks under the outer wing
+		for rx: float in [3.75, 4.9]:
+			var wy: float = lerpf(-0.86, -0.60, (rx - 3.6) / 1.5)
+			k.bbox("frame", Vector3(side * rx, wy - 0.1, -0.55), Vector3(0.06, 0.14, 0.5), Basis.IDENTITY, 0.01)
+			k.xf = Transform3D(Basis.IDENTITY, Vector3(side * rx, wy - 0.26, -0.55))
+			bomb_mesh(k, 0.42, 10)
+			k.xf = Transform3D.IDENTITY
+	# a pitot on the right wing
+	k.cyl("dark", Vector3(5.6, -0.46, -1.15), Vector3(5.6, -0.46, -1.75), 0.015, 0.012, 5)
+	# the tailplane on its struts, the fin and rudder, the tail wheel
 	for side2: float in [-1.0, 1.0]:
 		var tp: Array = []
-		for w2: Array in [[0.1, 0.36, 4.45, 1.20, 0.09], [1.6, 0.40, 4.70, 0.95, 0.08], [2.65, 0.42, 4.95, 0.62, 0.07]]:
-			var r2: PackedVector3Array = airfoil(side2 * float(w2[0]), float(w2[1]), float(w2[2]), float(w2[3]), float(w2[4]), 7)
+		for w3: Array in [[0.1, 0.36, 4.45, 1.20, 0.09], [1.6, 0.40, 4.70, 0.95, 0.08], [2.55, 0.42, 4.80, 0.86, 0.07], [2.65, 0.42, 4.95, 0.62, 0.05]]:
+			var r2: PackedVector3Array = airfoil(side2 * float(w3[0]), float(w3[1]), float(w3[2]), float(w3[3]), float(w3[4]), 7)
 			if side2 < 0.0:
 				r2.reverse()
 			tp.append(r2)
 		k.loft("paint", tp, true, true, true)
-		k.beam("frame", Vector3(side2 * 1.2, 0.36, 5.0), Vector3(side2 * 0.12, -0.05, 4.8), 0.035)
+		k.beam("frame", Vector3(side2 * 1.2, 0.36, 5.0), Vector3(side2 * 0.12, -0.05, 4.8), 0.03, 0.07)
+		k.beam("frame", Vector3(side2 * 1.25, 0.36, 5.25), Vector3(side2 * 0.10, -0.02, 5.05), 0.03, 0.07)
 	var fin: Array = []
-	for f: Array in [[0.18, 4.10, 1.60], [1.10, 4.45, 1.20], [1.75, 4.80, 0.80], [1.95, 5.05, 0.45]]:
+	for f: Array in [[0.18, 4.10, 1.60], [0.7, 4.28, 1.40], [1.10, 4.45, 1.20], [1.75, 4.80, 0.80], [1.95, 5.05, 0.45]]:
 		var rf: PackedVector3Array = PackedVector3Array()
 		for p: Vector3 in airfoil(0.0, 0.0, float(f[1]), float(f[2]), 0.09, 7):
 			rf.append(Vector3(p.y, float(f[0]), p.z))   # the airfoil stood on edge: thickness across x
 		fin.append(rf)
 	k.loft("paint", fin, true, true, true)
-	# the canopy: a long greenhouse, its frames
+	k.beam("frame", Vector3(0, -0.02, 4.75), Vector3(0, -0.36, 4.95), 0.05, 0.07)
+	k.lathe("rubber", Vector3(-0.045, -0.40, 4.97), Vector3(1, 0, 0), PackedVector2Array([Vector2(0.0, 0.0), Vector2(0.11, 0.0), Vector2(0.14, 0.02), Vector2(0.14, 0.07),
+		Vector2(0.11, 0.09), Vector2(0.0, 0.09)]), 10)
+	# the canopy: a long greenhouse, its frames and sills, the crew under it
 	var gl: Array = []
-	for c2: Array in [[-2.75, 0.30, 0.18], [-2.40, 0.42, 0.40], [-1.6, 0.45, 0.50], [-0.4, 0.44, 0.50], [0.55, 0.40, 0.42], [1.05, 0.30, 0.20]]:
-		var ring2: PackedVector3Array = PackedVector3Array()
-		for i: int in 13:
-			var a2: float = PI * float(i) / 12.0
-			ring2.append(Vector3(cos(a2) * float(c2[1]), 0.48 + sin(a2) * float(c2[2]), float(c2[0])))
-		gl.append(ring2)
-	k.loft("glass", gl, false, true, true)
-	for fz: float in [-2.4, -1.8, -1.2, -0.6, 0.0, 0.55]:
-		var fr: Array = []
+	for c3: Array in [[-2.75, 0.30, 0.18], [-2.40, 0.42, 0.40], [-1.6, 0.45, 0.50], [-0.4, 0.44, 0.50], [0.55, 0.40, 0.42], [1.05, 0.30, 0.20]]:
+		var ring3: PackedVector3Array = PackedVector3Array()
 		for i2: int in 13:
 			var a3: float = PI * float(i2) / 12.0
-			var rr: float = 0.455 if absf(fz) < 1.7 else 0.43
-			fr.append(Vector3(cos(a3) * rr, 0.48 + sin(a3) * 0.51, fz))
-		for j: int in fr.size() - 1:
-			k.beam("frame", fr[j], fr[j + 1], 0.03)
-	k.beam("frame", Vector3(0, 0.99, -2.4), Vector3(0, 0.99, 0.55), 0.035)
-	# the rear gunner's twin gun, the radiator's intake, the bomb crutch
-	k.cyl("dark", Vector3(0.05, 0.75, 0.9), Vector3(0.05, 0.92, 1.9), 0.02, 0.02, 6)
-	k.box("dark", Vector3(0, -0.72, -4.9), Vector3(0.5, 0.08, 0.3))
+			ring3.append(Vector3(cos(a3) * float(c3[1]), 0.48 + sin(a3) * float(c3[2]), float(c3[0])))
+		gl.append(ring3)
+	k.loft("glass", gl, false, true, true)
+	for fz: float in [-2.4, -1.8, -1.2, -0.6, 0.0, 0.55]:
+		var frp: PackedVector3Array = PackedVector3Array()
+		var rr: float = 0.455 if absf(fz) < 1.7 else 0.43
+		var hh: float = 0.51 if fz > -2.0 and fz < 0.3 else 0.43
+		for i3: int in 9:
+			var a4: float = PI * float(i3) / 8.0
+			frp.append(Vector3(cos(a4) * rr, 0.48 + sin(a4) * hh, fz))
+		k.tube("frame", frp, 0.018, 4, false, false)
+	for sx: float in [-1.0, 0.0, 1.0]:
+		var a5: float = PI * 0.5 + sx * 0.82
+		k.tube("frame", PackedVector3Array([Vector3(cos(a5) * 0.43, 0.48 + sin(a5) * 0.42, -2.4), Vector3(cos(a5) * 0.455, 0.48 + sin(a5) * 0.51, -1.8),
+			Vector3(cos(a5) * 0.455, 0.48 + sin(a5) * 0.51, 0.0), Vector3(cos(a5) * 0.42, 0.48 + sin(a5) * 0.43, 0.55)]), 0.018, 4, false, false)
+	for sx2: float in [-1.0, 1.0]:
+		k.beam("frame", Vector3(sx2 * 0.44, 0.49, -2.6), Vector3(sx2 * 0.42, 0.49, 0.9), 0.03, 0.04)
+	# the pilot and the gunner (back to back), their seats' armour
+	for cr: Array in [[-1.75, 1.0], [-0.25, -1.0]]:
+		var cz: float = float(cr[0])
+		k.blob("crew", Vector3(0, 0.80, cz), Vector3(0.105, 0.125, 0.115), Basis.IDENTITY, 0.03, 5, 8, 4, 0.0, 2.0)
+		k.blob("crew", Vector3(0, 0.50, cz + 0.05 * float(cr[1])), Vector3(0.23, 0.20, 0.14), Basis.IDENTITY, 0.04, 6, 8, 4, 0.0, 2.4)
+		k.bbox("dark", Vector3(0, 0.55, cz + 0.2 * float(cr[1])), Vector3(0.42, 0.56, 0.03), Basis.IDENTITY, 0.01)
+	# the aerial mast and its wire to the fin
+	k.cyl("frame", Vector3(0, 0.98, -0.9), Vector3(0, 1.45, -0.8), 0.022, 0.012, 5)
+	k.cyl("dark", Vector3(0, 1.44, -0.8), Vector3(0, 1.93, 4.95), 0.006, 0.006, 3, false)
+	# the rear gunner's gun, the bomb crutch
+	k.cyl("dark", Vector3(0.0, 0.80, 0.55), Vector3(0.0, 0.98, 1.55), 0.022, 0.016, 6)
+	k.bbox("dark", Vector3(0.0, 0.78, 0.5), Vector3(0.06, 0.1, 0.22), Basis(Vector3.RIGHT, 0.18), 0.01)
 	k.beam("frame", Vector3(-0.18, -0.55, -1.5), Vector3(-0.18, -0.92, -0.6), 0.04)
 	k.beam("frame", Vector3(0.18, -0.55, -1.5), Vector3(0.18, -0.92, -0.6), 0.04)
-	# no national markings (the owner's rule: no insignia; a plain green and blue aircraft reads as the enemy by its shape and its siren)
-	k.belly = Color(0, 0, 0, 0)
+	k.beam("frame", Vector3(-0.18, -0.92, -0.6), Vector3(0.18, -0.92, -0.6), 0.04)
 
 
 static func _propeller(k: ProcKit) -> void:
-	k.cyl("dark", Vector3(0, 0, 0.12), Vector3(0, 0, -0.42), 0.30, 0.04, 16)
+	# the spinner, three blades with their twist, the hub
+	k.lathe("dark", Vector3(0, 0, 0.14), Vector3(0, 0, -1), PackedVector2Array([Vector2(0.0, 0.0), Vector2(0.30, 0.0), Vector2(0.30, 0.06), Vector2(0.27, 0.22), Vector2(0.19, 0.40),
+		Vector2(0.09, 0.53), Vector2(0.0, 0.57)]), 18)
 	for b: int in 3:
 		var a: float = TAU * float(b) / 3.0
-		var dirb: Vector3 = Vector3(cos(a), sin(a), 0)
-		var bs: Basis = Basis(Vector3.BACK, a) * Basis(Vector3.RIGHT, 0.35)
-		k.box("blade", dirb * 0.95, Vector3(1.45, 0.22, 0.05), bs)
+		var rot: Basis = Basis(Vector3.BACK, a)
+		var rings: Array = []
+		for st: Array in [[0.22, 0.09, 0.07, 0.9], [0.55, 0.14, 0.05, 0.65], [1.0, 0.16, 0.035, 0.42], [1.4, 0.13, 0.022, 0.28], [1.62, 0.07, 0.012, 0.2]]:
+			var tw: Basis = Basis(Vector3.RIGHT, float(st[3]))
+			var ring: PackedVector3Array = PackedVector3Array()
+			for q: int in 6:
+				var qa: float = TAU * float(q) / 6.0
+				ring.append(rot * (Vector3(float(st[0]), 0, 0) + tw * Vector3(0, cos(qa) * float(st[1]), sin(qa) * float(st[2]))))
+			rings.append(ring)
+		k.loft("blade", rings, true, true, true)
+	# the blur of the turning blades
+	k.cyl("disc", Vector3(0, 0, -0.012), Vector3(0, 0, -0.01), 1.62, 1.62, 28)
 
 
 ## A bomb's body (SC 500 at scale 1): the ogive nose, the cylinder, the tail cone, four fins in a ring. Along -Z (nose).
-static func bomb_mesh(k: ProcKit, s: float) -> void:
+static func bomb_mesh(k: ProcKit, s: float, seg: int = 16) -> void:
 	var r: float = 0.2 * s
 	var L: float = 1.3 * s
-	k.cyl("bomb", Vector3(0, 0, L * 0.25), Vector3(0, 0, -L * 0.3), r, r, 16, false)
-	var nose: Array = []
-	for i: int in 6:
-		var u: float = float(i) / 5.0
-		var rr: float = r * sqrt(maxf(0.0, 1.0 - u * u)) + 0.005
-		nose.append(ProcKit.superellipse(Vector3(0, 0, -L * 0.3 - u * r * 1.6), Vector3.RIGHT, Vector3.UP, rr, rr, 2.0, 16))
-	k.loft("bomb", nose, true, true, true)
-	k.cyl("bomb", Vector3(0, 0, L * 0.25), Vector3(0, 0, L * 0.62), r, r * 0.35, 16)
+	var prof: PackedVector2Array = PackedVector2Array()
+	for i: int in 7:
+		var u: float = 1.0 - float(i) / 6.0
+		prof.append(Vector2(r * sqrt(maxf(0.0, 1.0 - u * u)), (1.0 - u) * r * 1.6))
+	var z0: float = r * 1.6
+	prof.append(Vector2(r, z0 + L * 0.55))
+	prof.append(Vector2(r * 0.35, z0 + L * 0.92))
+	prof.append(Vector2(0.0, z0 + L * 0.92))
+	k.lathe("bomb", Vector3(0, 0, -L * 0.3 - r * 1.6), Vector3(0, 0, 1), prof, seg)
+	# the carrying band and the fuze's pocket
+	k.lathe("bomb", Vector3(0, 0, -L * 0.05), Vector3(0, 0, 1), PackedVector2Array([Vector2(r, 0.0), Vector2(r * 1.03, 0.0), Vector2(r * 1.03, 0.05 * s), Vector2(r, 0.05 * s)]), seg)
 	for f: int in 4:
 		var a: float = TAU * float(f) / 4.0 + PI * 0.25
 		var d: Vector3 = Vector3(cos(a), sin(a), 0)
-		k.box("bomb", Vector3(0, 0, L * 0.6) + d * r * 0.75, Vector3(0.012, r * 1.5, L * 0.32), Basis(Vector3.BACK, a + PI * 0.5))
-	k.ring("bomb", Vector3(0, 0, L * 0.68), Vector3(0, 0, L * 0.8), r * 1.15, r * 1.08, 16)
+		k.box("bomb", Vector3(0, 0, L * 0.6) + d * r * 0.75, Vector3(0.012 * maxf(s, 0.6), r * 1.5, L * 0.32), Basis(Vector3.BACK, a + PI * 0.5))
+	k.ring("bomb", Vector3(0, 0, L * 0.68), Vector3(0, 0, L * 0.8), r * 1.15, r * 1.08, seg)
 	k.cyl("dark", Vector3(0, 0, -L * 0.3 - r * 1.62), Vector3(0, 0, -L * 0.3 - r * 1.75), 0.03 * s, 0.025 * s, 8)
 
 
