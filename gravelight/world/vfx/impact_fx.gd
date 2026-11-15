@@ -78,20 +78,17 @@ func setup(impact_cfg: Dictionary, hits_cfg: Dictionary) -> void:
 	for i: int in SPARKS:
 		_spark.append(_make(spark_mat, 0.012, 7, 0.22, 3.0, 7.0, 35.0, Vector3(0, -9.8, 0),
 			_ramp(Color(1.0, 0.85, 0.5, 1.0), Color(1.0, 0.4, 0.1, 0.0)), 0.6, 1.0))
-	# blood: a mist that hangs, droplets that fly and fall
+	# blood (GoreFx drives these): a fine dark mist that hangs, streaks that fly and fall. Lit, never glowing.
 	var mist_amount: int = int(hits_cfg.get("mist_amount", 7))
 	for i: int in MIST:
-		_mist.append(_make(_puff_mat(soft, true), 0.11, mist_amount, 0.4, 0.4, 1.6, 30.0, Vector3(0, -1.5, 0),
-			_ramp(Color(0.5, 0.03, 0.04, 0.85), Color(0.3, 0.0, 0.01, 0.0)), 0.7, 2.6))
-	var drop_mat: StandardMaterial3D = StandardMaterial3D.new()
-	drop_mat.albedo_color = Color(0.36, 0.03, 0.04)
-	drop_mat.roughness = 0.35
-	var drop: SphereMesh = SphereMesh.new()
-	drop.radius = 0.011
-	drop.height = 0.022
+		_mist.append(_make(_puff_mat(soft, false), 0.1, mist_amount, 0.45, 0.4, 1.6, 30.0, Vector3(0, -1.5, 0),
+			_ramp(Color(0.3, 0.014, 0.02, 0.8), Color(0.13, 0.0, 0.004, 0.0)), 0.7, 2.6))
+	var drop: CapsuleMesh = CapsuleMesh.new()
+	drop.radius = 0.007
+	drop.height = 0.05
 	drop.radial_segments = 5
-	drop.rings = 2
-	drop.material = drop_mat
+	drop.rings = 1
+	drop.material = GoreFx.blood_material()
 	for i: int in DROPS:
 		var p: CPUParticles3D = CPUParticles3D.new()
 		p.emitting = false
@@ -101,12 +98,13 @@ func setup(impact_cfg: Dictionary, hits_cfg: Dictionary) -> void:
 		p.explosiveness = 1.0
 		p.mesh = drop
 		p.direction = Vector3(0, 0, 1)
-		p.spread = 40.0
+		p.spread = 26.0
 		p.initial_velocity_min = 1.5
-		p.initial_velocity_max = 4.0
+		p.initial_velocity_max = 5.0
 		p.gravity = Vector3(0, -9.8, 0)
+		p.particle_flag_align_y = true      # a drop is a streak along its flight
 		p.scale_amount_min = 0.5
-		p.scale_amount_max = 1.3
+		p.scale_amount_max = 1.4
 		var c: Curve = Curve.new()
 		c.add_point(Vector2(0.0, 1.0))
 		c.add_point(Vector2(1.0, 0.4))
@@ -169,15 +167,26 @@ func burst(at: Vector3, normal: Vector3, surface: String, k: float = 1.0) -> voi
 
 ## A zombie hit at `at`, flying `toward`: the mist and the droplets (the caller gates gore).
 func blood(at: Vector3, toward: Vector3, k: float = 1.0) -> void:
+	blood_mist(at, toward, maxi(2, int(round(7.0 * k))))
+	blood_drops(at, toward, maxi(3, int(round(12.0 * k))))
+
+
+## The fine mist of a wound at `at`, drifting along `dir` (`amount` puffs).
+func blood_mist(at: Vector3, dir: Vector3, amount: int) -> void:
 	var m: CPUParticles3D = _mist[_nm]
 	_nm = (_nm + 1) % MIST
-	_fire_at(m, at, toward)
+	if m.amount != amount:
+		m.amount = amount
+	_fire_at(m, at, dir)
+
+
+## `amount` drops thrown from `at` along `dir`.
+func blood_drops(at: Vector3, dir: Vector3, amount: int) -> void:
 	var d: CPUParticles3D = _drops[_nd]
 	_nd = (_nd + 1) % DROPS
-	var want: int = maxi(3, int(round(12.0 * k)))
-	if d.amount != want:
-		d.amount = want
-	_fire_at(d, at, toward)
+	if d.amount != amount:
+		d.amount = amount
+	_fire_at(d, at, dir)
 
 
 ## Violet-teal glints at `at` flying `toward`: a taught weapon's hit, a bullet glancing off Nachtglas plates.

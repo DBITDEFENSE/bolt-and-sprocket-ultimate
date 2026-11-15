@@ -1962,6 +1962,7 @@ func become_crawler() -> void:
 		ZombieGore.sever(self, leg, Vector3(randf_range(-1.5, 1.5), 2.0, randf_range(-1.5, 1.5)))
 	if ZombieGore.blood_allowed():
 		Effects.blood(global_position + Vector3.UP * 0.9, Vector3.UP)
+		Effects.gore.crawler(self)   # it drags a smear behind it (gore rework)
 	_set_crawl_pose(true)
 	if state == State.EMERGE and _staged_emerge():
 		_emerge_switch_variant("crawler")   # legs blown off while rising: it finishes the rise on its elbows
@@ -2057,6 +2058,8 @@ func _start_death() -> void:
 	_death_velocity.clear()
 	var rd: Array = _anim["ragdoll"].get("corpse_seconds", [8.0, 12.0])
 	_corpse_seconds = randf_range(float(rd[0]), float(rd[1]))
+	if not _death_sink and enemy_id != &"glasshide":
+		Effects.gore.death(self, 1.3 if _death_explosive else 1.0)   # the pool under the body (gore rework)
 	if has_rig():
 		_look.active = false
 		_modifier.ik_weight = 0.0
@@ -2757,8 +2760,8 @@ func _pop_head() -> void:
 	if ZombieGore.blood_allowed():
 		var at: Node3D = bone_attachment("Neck")
 		var p: Vector3 = at.global_position if at != null else global_position + Vector3.UP * 1.6
-		for i: int in 3:
-			Effects.blood(p, Vector3(randf_range(-0.4, 0.4), 1.0, randf_range(-0.4, 0.4)))
+		Effects.gore_burst(p, Vector3(randf_range(-0.3, 0.3), 1.0, randf_range(-0.3, 0.3)), true)
+		Effects.gore.spurt(at)   # the neck keeps pumping (gore rework)
 
 
 ## A wound decal on the struck limb (cheap quads, recycled per zombie).

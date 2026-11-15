@@ -1,6 +1,9 @@
 extends Node3D
-## Pooled, cheap greybox VFX: bullet impacts, blood puffs, tracers, explosions, Overclock static bursts.
+## Pooled, cheap greybox VFX: bullet impacts, blood, tracers, explosions, Overclock static bursts.
 ## Presentation only.
+##
+## Blood (the gore rework, docs/gore/gore_rework_2026-11.md) is GoreFx (`gore`, gravelight/world/vfx/gore_fx.gd):
+## blood() and zombie_hit() hand it every wound; it throws the particles and lays the marks, pools and tracks.
 ##
 ## Update 02 section 8 (T-053): bullet holes in the static world persist for the match (one MultiMesh per surface
 ## kind, HOLES_PER_SURFACE each; when a kind is full its oldest hole is reused, so the cost is capped), except in
@@ -23,7 +26,6 @@ extends Node3D
 ##   menu_settings.gd: a "VFX quality" option for GLSettings "vfx_quality" (low / medium / high)
 
 const IMPACTS: int = 48
-const BLOOD: int = 16
 const TRACERS: int = 48
 const BLASTS: int = 4
 const STATICS: int = 4
@@ -76,7 +78,6 @@ void fragment() {
 var _impacts: Array[MeshInstance3D] = []
 var _decal_mats: Dictionary = {}       # surface -> material (DECALS); "" = the plain dark mark
 var _impact_life: Array[float] = []
-var _blood: Array[CPUParticles3D] = []
 var _dirt: Array[CPUParticles3D] = []    # the rise from the ground (T-085): snow / earth / stone sprays and puffs
 var _dirt_meshes: Dictionary = {}        # surface class -> Mesh
 var _ndirt: int = 0
@@ -92,7 +93,6 @@ var _blast_life: Array[float] = []
 var _statics: Array[Node3D] = []
 var _static_life: Array[float] = []
 var _ni: int = 0
-var _nb: int = 0
 var _nt: int = 0
 var _nx: int = 0
 var _ns: int = 0
@@ -108,6 +108,7 @@ var vfx: Dictionary = {}                 # data/gravelight/vfx.json
 var flash: FlashPool
 var casings: CasingPool
 var impact_fx: ImpactFx
+var gore: GoreFx
 var _shatters: Array[Node3D] = []
 var _shatter_life: PackedFloat32Array = PackedFloat32Array()
 var _nsh: int = 0
@@ -141,6 +142,10 @@ func _ready() -> void:
 	impact_fx.name = "Impacts"
 	impact_fx.setup(vfx.get("impacts", {}), vfx.get("hits", {}))
 	add_child(impact_fx)
+	gore = GoreFx.new()
+	gore.name = "Gore"
+	gore.setup(vfx.get("gore", {}))
+	add_child(gore)
 	_build_shatters()
 	_build_toll_rings()
 	if not GLBus.weapon_fired.is_connected(_on_weapon_fired):
@@ -168,28 +173,6 @@ func _ready() -> void:
 	_build_scorches()
 	if not GLBus.match_started.is_connected(_on_match_started):
 		GLBus.match_started.connect(_on_match_started)
-	var blood_mat: StandardMaterial3D = StandardMaterial3D.new()
-	blood_mat.albedo_color = Color(0.32, 0.03, 0.04)
-	var blood_mesh: BoxMesh = BoxMesh.new()
-	blood_mesh.size = Vector3(0.04, 0.04, 0.04)
-	blood_mesh.material = blood_mat
-	for i: int in BLOOD:
-		var p: CPUParticles3D = CPUParticles3D.new()
-		p.emitting = false
-		p.one_shot = true
-		p.amount = 10
-		p.lifetime = 0.45
-		p.explosiveness = 1.0
-		p.mesh = blood_mesh
-		p.direction = Vector3(0, 0, 1)
-		p.spread = 35.0
-		p.initial_velocity_min = 1.5
-		p.initial_velocity_max = 3.5
-		p.gravity = Vector3(0, -9.0, 0)
-		p.scale_amount_min = 0.6
-		p.scale_amount_max = 1.4
-		add_child(p)
-		_blood.append(p)
 	_build_dirt()
 	_build_tracers()
 	var fire_mat: StandardMaterial3D = StandardMaterial3D.new()
@@ -392,30 +375,38 @@ static func _decal_mat(d: Dictionary) -> StandardMaterial3D:
 	return m
 
 
+## Blood from a wound at `pos`, the spray flying `toward` (gore-gated). A call in the same physics frame as a shot
+## is that shot's hit (bots and soldiers report theirs this way, with `toward` pointing back at the shooter): the
+## round goes through, and a Crucible-taught weapon throws Nachtglas sparks too. The local player's own hits come
+## through zombie_hit(), which knows the weapon.
 func blood(pos: Vector3, toward: Vector3) -> void:
-	# T-095 bridge: a hit in the same physics frame as a Crucible-taught weapon's shot throws Nachtglas sparks too
-	# (the holder calls blood() right after weapon_fired; zombie_hit() is the proper call once the holder passes the weapon)
+	var through: bool = false
+	var weapon: StringName = &""
 	if not _skip_bridge:
 		var frame: int = Engine.get_physics_frames()
 		for pid: Variant in _last_shot.keys():
 			var s: Dictionary = _last_shot[pid]
-			if int(s.get("frame", -1)) == frame and bool(s.get("upgraded", false)):
-				nachtglas_spark(pos, toward)
+			if int(s.get("frame", -1)) == frame:
+				through = true
+				weapon = s.get("weapon", &"")
+				if bool(s.get("upgraded", false)):
+					nachtglas_spark(pos, toward)
 				break
 	stats["hits"] = int(stats["hits"]) + 1
-	if str(GLSettings.values.get("gore", "full")) != "full":
-		return   # the Gore setting (MZ, T-041): Off and Low show no spray
-	if impact_fx != null:
-		impact_fx.blood(pos, toward, particles_k())   # the mist and the droplets (T-095)
-	var p: CPUParticles3D = _blood[_nb]
-	_nb = (_nb + 1) % BLOOD
-	p.global_position = pos
-	if toward.length_squared() > 0.001:
-		var fwd: Vector3 = toward.normalized()
-		var up: Vector3 = Vector3.UP if absf(fwd.dot(Vector3.UP)) < 0.98 else Vector3.RIGHT
-		p.global_basis = Basis.looking_at(-fwd, up)
-	p.restart()
-	p.emitting = true
+	if not GoreFx.enabled():
+		return   # the Gore setting (MZ, T-041): Off and Low show no blood
+	gore.spray(pos, toward, weapon, through)
+
+
+## Blood thrown from `pos` along `dir` by something that is not a bullet (a limb coming off, a neck): never read as
+## a shot's hit. `heavy` adds bits of meat.
+func gore_burst(pos: Vector3, dir: Vector3, heavy: bool = false) -> void:
+	stats["hits"] = int(stats["hits"]) + 1
+	if not GoreFx.enabled():
+		return
+	gore.spray(pos, dir, &"", false)
+	if heavy:
+		gore.chunks(pos, dir, maxi(3, int(round(7.0 * particles_k() * gore.horde_k()))))
 
 
 # ================================================================== the rise from the ground (T-085)
@@ -770,8 +761,10 @@ func scorch_count() -> int:
 	return n
 
 
-## A new match: every persistent hole and scorch goes.
+## A new match: every persistent hole, scorch and bloodstain goes.
 func clear_marks() -> void:
+	if gore != null:
+		gore.clear()
 	for surf: String in _holes.keys():
 		var mm: MultiMesh = _holes[surf]
 		for i: int in HOLES_PER_SURFACE:
@@ -979,12 +972,12 @@ func muzzle_smoke(at: Vector3, dir: Vector3, strength: float = 1.0) -> void:
 
 ## A bullet hit on a zombie at `pos`, the spray flying `toward`: blood (gore-gated) plus, from a Crucible-taught
 ## weapon, the violet Nachtglas spark burst. The proper hook for WeaponHolder._trace (see the TODO at the top).
-func zombie_hit(pos: Vector3, toward: Vector3, _weapon_id: StringName, upgraded: bool) -> void:
+func zombie_hit(pos: Vector3, toward: Vector3, weapon_id: StringName, upgraded: bool) -> void:
 	if upgraded:
 		nachtglas_spark(pos, toward)
-	_skip_bridge = true   # no second burst from blood()'s same-frame bridge
-	blood(pos, toward)
-	_skip_bridge = false
+	stats["hits"] = int(stats["hits"]) + 1
+	if GoreFx.enabled():
+		gore.spray(pos, toward, weapon_id, true)   # the weapon's class decides what it leaves (vfx.json gore.classes)
 
 
 ## Violet-teal glints at `pos` flying `toward` (Nachtglas: a taught weapon's hit, a Glasshide's crystal plates).
