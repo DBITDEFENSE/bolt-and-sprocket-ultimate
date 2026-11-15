@@ -346,7 +346,7 @@ static func dress_risen(z: Node, id: String) -> void:
 ## up (the inn's survivors and the patrons of the opening: the worst frames of a live round on Map 0).
 static func warm_risen(id: String, variant: String, female: bool) -> void:
 	if available(id):
-		mesh(id, true)
+		ZombieBody.warm_mesh_pieces("person:" + id, mesh(id, true))   # and the limbs they can lose, on a worker
 	var kit: Dictionary = (GLData.table("anim")["kits"] as Dictionary).get(variant, {})
 	for b: Variant in kit.get("builds", []):
 		ZombieBody.build_skinned(variant, str(b), female)
@@ -364,7 +364,9 @@ static func piece_mesh(id: String, root_bone: String) -> ArrayMesh:
 	var m: ArrayMesh = mesh(id, true)
 	if m == null:
 		return null
-	var cut: ArrayMesh = ZombieBody._cut_piece(m, root_bone)
+	var cut: ArrayMesh = ZombieBody.take_mesh_piece("person:" + id, root_bone, m)   # (cut ahead by warm_risen's worker)
+	if cut == null:
+		cut = ZombieBody._cut_piece(m, root_bone)
 	cut.set_meta("person", id)
 	_meshes[key] = cut
 	return cut

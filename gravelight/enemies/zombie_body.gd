@@ -1229,6 +1229,28 @@ static func warm_pieces(kit: String, build: String, female: bool) -> void:
 	_piece_tasks.append(WorkerThreadPool.add_task(_piece_job.bind(arrays, jobs), true, "zombie pieces"))
 
 
+## The same for any skinned body on the rig (a named person's risen mesh): its ten pieces cut by a worker, kept
+## under "<prefix>:<bone>" until take_mesh_piece asks for one.
+static func warm_mesh_pieces(prefix: String, body: ArrayMesh) -> void:
+	_reap_piece_tasks()
+	if not piece_warm or OS.has_feature("web") or body == null or _piece_queued.has(prefix):
+		return
+	_piece_queued[prefix] = true
+	var jobs: Array = []
+	for bone: String in PIECE_BONES:
+		jobs.append(["%s:%s" % [prefix, bone], _cut_chain(bone), ZombieRig.rest_global(bone).origin])
+	var arrays: Array = []
+	for si: int in body.get_surface_count():
+		arrays.append(body.surface_get_arrays(si))
+	_piece_tasks.append(WorkerThreadPool.add_task(_piece_job.bind(arrays, jobs), true, "body pieces"))
+
+
+## The piece of `body` a worker cut under `prefix`, or null when none is in (the caller cuts it on the spot).
+static func take_mesh_piece(prefix: String, bone: String, body: ArrayMesh) -> ArrayMesh:
+	var cut: Variant = _take_piece_cut("%s:%s" % [prefix, bone])
+	return _cut_mesh(body, cut as Array) if cut != null else null
+
+
 static func _piece_job(arrays: Array, jobs: Array) -> void:
 	var src: Array = []
 	for a: Array in arrays:

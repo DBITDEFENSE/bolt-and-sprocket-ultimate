@@ -381,3 +381,87 @@ func test_warm_up_builds_every_body_a_kit_can_spawn() -> void:
 	assert_gt(checked, 10)
 	while ZombieBody.pieces_warming():
 		await wait_frames(1)
+
+
+# ================================================================== bodies merged and cut on worker threads
+
+func test_a_dressed_body_merged_ahead_is_the_body_merged_on_the_spot() -> void:
+	if not ZombieBody.base_parts("medium", false, true).has("Body"):
+		pass_test("no built human body GLB in this checkout")
+		return
+	ZombieBody.piece_warm = true
+	var tone: Color = Color(0.61, 0.52, 0.43)
+	var pal: Dictionary = {"cloth": Color(0.21, 0.33, 0.27), "hair": Color(0.2, 0.1, 0.05)}
+	for living: bool in [true, false]:
+		var key: String = ZombieBody._dressed_key("soldier", "medium", false, tone, pal, living)
+		ZombieBody._meshes.erase(key)
+		assert_false(ZombieBody.dressed_ready("soldier", "medium", false, tone, pal, living), "not there yet")
+		ZombieBody.request_dressed("soldier", "medium", false, tone, pal, living)
+		var waited: int = 0
+		while not ZombieBody.dressed_ready("soldier", "medium", false, tone, pal, living) and waited < 600:
+			await wait_frames(1)
+			waited += 1
+		assert_true(ZombieBody.dressed_ready("soldier", "medium", false, tone, pal, living), "the worker's merge came in (%d frames)" % waited)
+		var ahead: ArrayMesh = ZombieBody.build_dressed("soldier", "medium", false, tone, pal, living)
+		assert_same(ZombieBody.build_dressed("soldier", "medium", false, tone, pal, living), ahead, "cached once taken")
+		assert_false(ZombieBody._dressed_tasks.has(key), "the task is waited for and forgotten")
+		ZombieBody._meshes.erase(key)
+		var spot: ArrayMesh = ZombieBody.build_dressed("soldier", "medium", false, tone, pal, living)   # merged here
+		assert_true(_mesh_arrays_equal(ahead, spot), "living %s: the body merged ahead is the body merged on the spot" % str(living))
+		for si: int in ahead.get_surface_count():
+			assert_true((ahead.surface_get_arrays(si)[Mesh.ARRAY_COLOR] as PackedColorArray) == (spot.surface_get_arrays(si)[Mesh.ARRAY_COLOR] as PackedColorArray), "the same colours")
+
+
+func test_a_body_asked_for_before_its_merge_is_in_is_merged_on_the_spot() -> void:
+	if not ZombieBody.base_parts("thin", false, true).has("Body"):
+		pass_test("no built human body GLB in this checkout")
+		return
+	var tone: Color = Color(0.5, 0.45, 0.4)
+	var pal: Dictionary = {"cloth": Color(0.4, 0.1, 0.1)}
+	ZombieBody._meshes.erase(ZombieBody._dressed_key("soldier", "thin", false, tone, pal, true))
+	ZombieBody.request_dressed("soldier", "thin", false, tone, pal, true)
+	var m: ArrayMesh = ZombieBody.build_dressed("soldier", "thin", false, tone, pal, true)   # at once: no waiting on the worker
+	assert_gt(m.get_surface_count(), 0, "the body is there in the same call")
+	assert_same(ZombieBody.build_dressed("soldier", "thin", false, tone, pal, true), m)
+	await wait_frames(30)   # (the worker's own copy arrives and is never taken)
+
+
+func test_a_squads_plan_rolls_the_look_the_soldier_rolls() -> void:
+	var kit_id: String = "partisan"
+	var k: Dictionary = SoldierKits.kit(kit_id)
+	for seed_v: int in [1, 77, 2451175291]:
+		var a: Dictionary = SoldierKits.roll_look(kit_id, seed_v, k)
+		var b: Dictionary = SoldierKits.roll_look(kit_id, seed_v, SoldierKits.kit(kit_id))
+		assert_eq(str(a), str(b), "seed %d: one look" % seed_v)
+	var look: Dictionary = SoldierKits.roll_look(kit_id, 1, k)
+	SoldierKits.request_bodies(look)
+	var waited: int = 0
+	while not SoldierKits.bodies_ready([look]) and waited < 600:
+		await wait_frames(1)
+		waited += 1
+	assert_true(SoldierKits.bodies_ready([look]), "a requested look's living body comes in (%d frames)" % waited)
+	assert_not_null(SoldierKits.body_mesh(look, true))
+	await wait_frames(30)
+
+
+func test_a_persons_pieces_cut_ahead_are_the_on_the_spot_pieces() -> void:
+	var id: String = "kubiak"
+	if not PeopleBodies.available(id):
+		pass_test("no built person GLB in this checkout")
+		return
+	while ZombieBody.pieces_warming():
+		await wait_frames(1)
+	var body: ArrayMesh = PeopleBodies.mesh(id, true)
+	ZombieBody._piece_queued.erase("person:" + id)
+	PeopleBodies._meshes.erase("piece:%s:LeftUpperArm" % id)
+	ZombieBody.piece_warm = true
+	PeopleBodies.warm_risen(id, "villager", false)
+	var waited: int = 0
+	while ZombieBody.pieces_warming() and waited < 600:
+		await wait_frames(1)
+		waited += 1
+	assert_true(ZombieBody._piece_cuts.has("person:%s:LeftUpperArm" % id), "the arm was cut ahead")
+	var ahead: ArrayMesh = PeopleBodies.piece_mesh(id, "LeftUpperArm")
+	assert_false(ZombieBody._piece_cuts.has("person:%s:LeftUpperArm" % id), "taken once")
+	assert_eq(str(ahead.get_meta("person", "")), id, "the piece knows whose it is")
+	assert_true(_mesh_arrays_equal(ahead, ZombieBody._cut_piece(body, "LeftUpperArm")), "the piece cut ahead is the piece cut on the spot")
