@@ -18,7 +18,7 @@ const MAPS: Dictionary = {
 }
 const STAND: Vector3 = Vector3(0.0, 0.0, -1.95)   # 0.95 (the use box) + 1 m out, BotBrain._front_of
 const SHRINK: float = 0.05                         # a footprint's edge may graze the navmesh's border cells
-const DRAW_BUDGET: int = 24                        # meshes + labels a room may add (C4: <= 2500 a frame in view)
+const DRAW_BUDGET: int = 30                        # meshes + labels a room may add (C4: <= 2500 a frame in view); T-254: was 24 before the housing (its two materials, the soot, two gauge needles)
 
 var _free: Array = []
 
@@ -121,7 +121,10 @@ func test_props_stay_off_the_navmesh_and_the_stand_point_is_on_it() -> void:
 				while x <= x1 + 0.001:
 					var z: float = z0
 					while z <= z1 + 0.001:
-						if _on_nav(polys, cx * Vector3(x, 0.0, z)):
+						# T-254: the housing's part that stands on the machine's own plinth (the model is 2.6 x 2.2 m there and
+						# already solid) is the machine, wherever a map baked its navmesh under it (Kaltenbrunn has no block)
+						var own: bool = str((e[1] as Dictionary).get("kind")) == "surround" and absf(x) <= 1.32 and z >= -1.12 and z <= 1.12
+						if not own and _on_nav(polys, cx * Vector3(x, 0.0, z)):
 							bad += 1
 							if bad < 6:
 								fail_test("%s: a %s part %s stands on the navmesh at local (%.2f, %.2f)" % [key, str((e[1] as Dictionary).get("kind")), ab, x, z])

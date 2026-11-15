@@ -15,6 +15,7 @@ extends RefCounted
 const HW: float = 0.7      # half width (X)
 const HD: float = 0.35     # half depth (Z)
 const TOP: float = 0.6     # body top (lid hinge height)
+const AWAY_Y: float = 0.024   # T-254: where the empty spot's marks lie (over the drawn floor)
 
 
 static func B(g: Node3D, a: Vector3, b: Vector3, key: String) -> MeshInstance3D:
@@ -196,6 +197,80 @@ static func spot(g: Node3D) -> void:
 	for k: int in 4:
 		var a: float = TAU * float(k) / 4.0
 		S(g, lc + Vector3(cos(a) * 0.052, -0.09, sin(a) * 0.052), lc + Vector3(cos(a) * 0.052, 0.1, sin(a) * 0.052), 0.008, "iron")
+
+
+# ================================================================== T-254: the spot while the crate is elsewhere
+
+## What the crate left behind (shown only at a spot the crate is not at): the scrapes of its two skids, wisps of its
+## packing straw, and hairline cracks in the floor where it stood, with Nachtglas still in them (dormant: MysteryCrate
+## gives them a dim breathing material). All flat (under 1.5 cm): nothing to walk into, nothing baked.
+static func away(g: Node3D) -> void:
+	# (everything sits AWAY_Y up: the maps' drawn floors stand a centimetre or two proud of the spot's origin, and
+	# the model's own chalk, at 4 mm, is under them)
+	for sz: float in [-0.26, 0.26]:
+		# each skid dragged a little as the crate went down: a long scrape and a shorter one beside it
+		OB(g, Vector3(0.04, AWAY_Y, sz), Vector3(2.0 * HW + 0.1, 0.004, 0.09), "char", Vector3(0, 1.5 * signf(sz), 0))
+		OB(g, Vector3(-0.2, AWAY_Y, sz + 0.075 * signf(sz)), Vector3(0.7, 0.004, 0.022), "char", Vector3(0, -3.0, 0))
+	# straw that fell out when the lid last stood open
+	for i: int in 16:
+		var c: Vector3 = Vector3(_j(i, 21, 0.8), AWAY_Y + 0.004, _j(i, 22, 0.42))
+		OB(g, c, Vector3(0.14 + absf(_j(i, 23, 0.09)), 0.006, 0.009), "hay", Vector3(0, _j(i, 24, 90.0), 0))
+	# a splinter of plank, a bent nail, the broken half of the wax seal
+	OB(g, Vector3(0.52, AWAY_Y + 0.004, -0.3), Vector3(0.18, 0.012, 0.035), "planks", Vector3(0, 28, 0))
+	OB(g, Vector3(-0.44, AWAY_Y + 0.002, 0.22), Vector3(0.06, 0.006, 0.006), "steel", Vector3(0, -40, 0))
+	C(g, Vector3(0.1, AWAY_Y + 0.004, -0.42), 0.04, 0.008, "red_paint")
+	# the chalk the installers drew round it, redrawn where the floor shows it: corners, and the cross at the front
+	var chalk: Material = chalk_mat()
+	var w: float = HW + 0.07
+	var d: float = HD + 0.07
+	for sx: float in [-1.0, 1.0]:
+		for sz2: float in [-1.0, 1.0]:
+			OB(g, Vector3(sx * (w - 0.17), AWAY_Y, sz2 * d), Vector3(0.34, 0.004, 0.022), "cream").material_override = chalk
+			OB(g, Vector3(sx * w, AWAY_Y, sz2 * (d - 0.13)), Vector3(0.022, 0.004, 0.26), "cream").material_override = chalk
+	OB(g, Vector3(0, AWAY_Y, -d - 0.1), Vector3(0.12, 0.004, 0.016), "cream", Vector3(0, 45, 0)).material_override = chalk
+	OB(g, Vector3(0, AWAY_Y, -d - 0.1), Vector3(0.12, 0.004, 0.016), "cream", Vector3(0, -45, 0)).material_override = chalk
+
+
+## Outdoors in the snow the crate leaves the bare ground it stood on: a dark rectangle inside the drift.
+static func away_bare(g: Node3D) -> void:
+	OB(g, Vector3(0, AWAY_Y - 0.004, 0), Vector3(2.0 * HW + 0.04, 0.006, 2.0 * HD + 0.04), "dirt")
+
+
+## The cracks under the footprint: jittered hairlines from the middle outward (one mesh, MysteryCrate's material).
+static func away_veins(g: Node3D) -> void:
+	for root_v: Array in [[Vector2(-0.1, 0.02), Vector2(-0.68, -0.26), 5], [Vector2(0.06, -0.04), Vector2(0.66, 0.2), 5],
+			[Vector2(0.0, 0.05), Vector2(0.18, 0.33), 3], [Vector2(-0.05, -0.05), Vector2(-0.3, -0.34), 3],
+			[Vector2(0.3, 0.05), Vector2(0.62, -0.3), 3]]:
+		var a: Vector2 = root_v[0]
+		var b: Vector2 = root_v[1]
+		var n: int = int(root_v[2])
+		var prev: Vector2 = a
+		for k: int in n:
+			var t: float = float(k + 1) / float(n)
+			var p: Vector2 = a.lerp(b, t) + Vector2(_j(k, n + 30, 0.035), _j(k + 3, n + 30, 0.035))
+			S(g, Vector3(prev.x, AWAY_Y + 0.002, prev.y), Vector3(p.x, AWAY_Y + 0.002, p.y), lerpf(0.02, 0.008, t), "nachtglas_vein")
+			prev = p
+
+
+# ================================================================== T-254: a crate that stands outside
+
+## Snow on the lid (lid frame: the origin is the hinge pins, the lid's top is y 0): three soft overlapping drifts,
+## thicker toward the hinge side where the wind left it. It slides off when the lid first opens.
+static func snow_lid(g: Node3D) -> void:
+	# one even blanket over the whole lid, a little deeper toward the hinges, its edge rounded over the lid's rim
+	Props.ball(g, Vector3(0.0, 0.0, -0.345), Vector3(1.5, 0.11, 0.76), "snow")
+	Props.ball(g, Vector3(-0.1, 0.012, -0.2), Vector3(1.2, 0.12, 0.42), "snow")
+	Props.ball(g, Vector3(0.3, 0.008, -0.42), Vector3(0.8, 0.1, 0.5), "snow")
+
+
+## Snow drifted against the spot (spot frame; there whether or not the crate is): banked up behind it and at both
+## ends, a thin lip in front. Low and soft: no collider.
+static func snow_base(g: Node3D) -> void:
+	# long low banks, most of each under the ground: a rise of a hand's width, never a lump
+	Props.ball(g, Vector3(0.0, -0.05, HD + 0.2), Vector3(2.5, 0.3, 0.9), "snow")
+	Props.ball(g, Vector3(-(HW + 0.28), -0.06, 0.05), Vector3(1.0, 0.28, 1.5), "snow")
+	Props.ball(g, Vector3(HW + 0.3, -0.06, 0.02), Vector3(0.95, 0.26, 1.4), "snow")
+	Props.ball(g, Vector3(0.1, -0.05, -(HD + 0.24)), Vector3(2.3, 0.17, 0.6), "snow")
 
 
 ## Where the lantern hangs (its glass centre), in crate space.

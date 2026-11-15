@@ -1,31 +1,33 @@
 {
-  "_doc": "T-175: the Crucible's room on every map, built at load by gravelight/world/crucible_room.gd (MapRoot attaches it). Every position is in the Crucible's own frame: origin = the floor under its centre, local -Z = its front (where you stand to feed it), +Y up, metres. A map is keyed by its id up to the first underscore. pieces: box, cyl, pipe (points, r, glass, valve), tank (r, h, face), bench (w, d, h; yaw turns it about `at`; its work side is local -Z), ledger (stacks of the Ledger's books on a surface at h), cable (a, b, sag), grate (lo, hi: the flat dais), ring (Marke dashes on the floor round `at`), frame (a portal round the machine), hood, rack (wall tools), drum, crate, lamp (a fixture; its light is a `lights` entry), notice (paper + Label3D text, local -Z out of the wall), chain. Rules (tests/unit/test_crucible_rooms.gd): a piece's primitives stay off the baked navmesh unless flat on the floor (<= 0.06 m) or over head height (>= 2.05 m), nothing but a flat piece enters the approach in front of the machine, one shadowed light per room (the key). mat keys are Mats keys; 'marke' is the room's own violet glow, which breathes at idle, ramps with the forge and flares when the weapon comes out. Bilingual notices are in-world (1944 or the test range), never a real brand.",
+  "_doc": "T-175: the Crucible's room on every map, built at load by gravelight/world/crucible_room.gd (MapRoot attaches it). Every position is in the Crucible's own frame: origin = the floor under its centre, local -Z = its front (where you stand to feed it), +Y up, metres. A map is keyed by its id up to the first underscore. pieces: box, cyl, pipe (points, r, glass, valve), tank (r, h, face), bench (w, d, h; yaw turns it about `at`; its work side is local -Z), ledger (stacks of the Ledger's books on a surface at h), cable (a, b, sag), grate (lo, hi: the flat dais), ring (Marke dashes on the floor round `at`), frame (a portal round the machine), hood, rack (wall tools), drum, crate, lamp (a fixture; its light is a `lights` entry), notice (paper + Label3D text, local -Z out of the wall), chain. Rules (tests/unit/test_crucible_rooms.gd): a piece's primitives stay off the baked navmesh unless flat on the floor (<= 0.06 m) or over head height (>= 2.05 m), nothing but a flat piece enters the approach in front of the machine, one shadowed light per room (the key). mat keys are Mats keys; 'marke' is the room's own violet glow, which breathes at idle, ramps with the forge and flares when the weapon comes out. Bilingual notices are in-world (1944 or the test range), never a real brand. T-254: `room` is the room round the machine in its own frame as the probe would find it (back: metres to the wall behind along +Z, ceil: the ceiling's height, left / right: metres to the side walls along the back wall; 99 = none): the fallback where no physics runs, replaced at load by rays (CrucibleRoom.probe_room). Any coordinate may be an anchor string instead of a number: ceil, back, left, right, top (the housing's top), w / -w (its half width), with an offset: \"ceil-0.04\", \"back-0.3\", \"-w-1.3\". `surround` is the housing that builds the machine into the room (style: brick, plate, concrete, hull, chrome, cradle; w / w_back: half widths beside the machine and behind z_back (default the plinth's back), narrowed at load to what stays off the navmesh; z0: its front face; top: the tallest it stands when the ceiling is higher; max_depth: further from the wall than this and the machine gets a stack on its own plinth instead; flue: collar, up, elbow, cap; arch, quoins, seams, straps, gauges, ash, wisp, stack: true / false; soot: 0..1).",
   "maps": {
     "map00": {
       "zone": "CELLAR",
       "note": "the Helvetia cellar, the brick alcove on the north wall between the stair mouth and the lever (T-032): feed pipes down from the vault into the machine's shoulders, a Ledger rack and form by the installers' bench, the crate the drawings came in, a key lamp, the Marke arc round the feed grate",
       "marke_energy": 2.2,
+      "room": {"back": 0.8, "ceil": 3.0, "left": 5.0, "right": 2.2},
+      "surround": {"style": "brick", "w": 1.55, "fiction": "a company machine bricked into the old vault: a chimney breast of cellar brick with dressed-stone quoins and a relieving arch, the drum strapped to it, the flue through the vault"},
       "pieces": [
-        {"kind": "pipe", "mat": "copper", "r": 0.055, "glass": true, "valve": 1, "points": [[0.85, 2.96, 0.2], [0.85, 2.52, 0.2], [0.55, 2.32, 0.2]]},
-        {"kind": "pipe", "mat": "iron", "r": 0.055, "valve": 1, "points": [[-0.85, 2.96, 0.2], [-0.85, 2.52, 0.2], [-0.55, 2.32, 0.2]]},
-        {"kind": "pipe", "mat": "iron", "r": 0.07, "points": [[-1.6, 2.9, 0.2], [1.6, 2.9, 0.2], [2.3, 2.9, -0.4]]},
-        {"kind": "cable", "mat": "rubber", "a": [1.6, 2.94, 0.0], "b": [0.3, 2.9, -1.9], "sag": 0.12, "r": 0.016},
-        {"kind": "lamp", "at": [0.0, 2.99, -2.05], "drop": 0.12, "shade": true},
+        {"kind": "pipe", "mat": "copper", "r": 0.055, "glass": true, "valve": 1, "points": [[0.85, "ceil-0.04", 0.2], [0.85, "ceil-0.48", 0.2], [0.55, 2.32, 0.2]]},
+        {"kind": "pipe", "mat": "iron", "r": 0.055, "valve": 1, "points": [[-0.85, "ceil-0.04", 0.2], [-0.85, "ceil-0.48", 0.2], [-0.55, 2.32, 0.2]]},
+        {"kind": "pipe", "mat": "iron", "r": 0.07, "points": [["-w-0.05", "ceil-0.1", 0.2], ["w+0.05", "ceil-0.1", 0.2], ["w+0.75", "ceil-0.1", -0.4]]},
+        {"kind": "cable", "mat": "rubber", "a": ["w+0.05", "ceil-0.06", 0.0], "b": [0.3, "ceil-0.1", -1.9], "sag": 0.12, "r": 0.016},
+        {"kind": "lamp", "at": [0.0, "ceil-0.01", -2.05], "drop": 0.12, "shade": true},
         {"kind": "ring", "at": [0.0, 0.0, -1.4], "r": 1.08, "segments": 14, "from": 100, "to": 260, "w": 0.05},
-        {"kind": "rack", "at": [-2.9, 1.55, 0.79], "w": 1.0, "h": 0.5, "mat": "beam"},
-        {"kind": "notice", "at": [-2.9, 2.18, 0.785], "w": 0.36, "h": 0.42, "title": "LEDGER · FORM R-E 7", "body": "UMSCHULUNG / RE-EDUCATION\nItem fed: ________\nTeaching: I · II · III\nNot taken in 15 s: returned to stock.", "stripe": "red_paint"},
+        {"kind": "rack", "at": ["-w-1.35", 1.55, "back-0.01"], "w": 1.0, "h": 0.5, "mat": "beam"},
+        {"kind": "notice", "at": ["-w-1.35", 2.18, "back-0.015"], "w": 0.36, "h": 0.42, "title": "LEDGER · FORM R-E 7", "body": "UMSCHULUNG / RE-EDUCATION\nItem fed: ________\nTeaching: I · II · III\nNot taken in 15 s: returned to stock.", "stripe": "red_paint"},
         {"kind": "notice", "at": [-1.7, 0.78, 0.185], "w": 0.34, "h": 0.26, "paper": "paper", "title": "KÜHLANLAGE", "body": "Lieferung 1944 · Zeichnungen anbei\nNicht öffnen. Gez. Fasbender", "title_px": 34, "body_px": 20},
         {"kind": "ledger", "at": [-5.8, 0.0, 0.45], "yaw": 8, "h": 0.9, "stacks": 2, "loose": false}
       ],
       "lights": [
-        {"kind": "spot", "role": "key", "at": [0.0, 2.72, -2.05], "aim": [0.0, 1.05, 0.0], "color": "#ffe0bd", "energy": 3.2, "range": 6.5, "angle": 34, "shadow": true},
+        {"kind": "spot", "role": "key", "at": [0.0, "ceil-0.28", -2.05], "aim": [0.0, 1.05, 0.0], "color": "#ffe0bd", "energy": 3.2, "range": 6.5, "angle": 34, "shadow": true},
         {"kind": "omni", "role": "marke", "at": [0.0, 0.35, -1.5], "energy": 0.8, "range": 3.2},
         {"kind": "omni", "role": "work", "at": [-4.6, 2.3, 0.2], "color": "#ffb36b", "energy": 0.7, "range": 3.5}
       ],
       "sound": {"key": "crucible_hum", "db": -4.0, "at": [0.0, 1.2, 0.0], "unit_size": 2.0, "max_distance": 16.0},
       "fx": [
-        {"kind": "steam", "at": [0.85, 2.52, 0.05], "dir": [0.3, -0.4, -1.0], "on": ["started", "taken", "expired"]},
-        {"kind": "steam", "at": [-0.85, 2.52, 0.05], "dir": [-0.3, -0.4, -1.0], "on": ["started", "taken"], "sound": ""},
+        {"kind": "steam", "at": [0.85, "ceil-0.48", 0.05], "dir": [0.3, -0.4, -1.0], "on": ["started", "taken", "expired"]},
+        {"kind": "steam", "at": [-0.85, "ceil-0.48", 0.05], "dir": [-0.3, -0.4, -1.0], "on": ["started", "taken"], "sound": ""},
         {"kind": "sparks", "at": [0.0, 1.2, -0.9], "dir": [0.0, 0.5, -1.0], "on": ["ready"]}
       ]
     },
@@ -33,6 +35,8 @@
       "zone": "I_CORE",
       "note": "the Core Vault's east wall: Nachtglas tanks either side of the riveted plate feeding the machine overhead, chains off the lintel, a key lamp on a jib from the lintel, notices on the plate, the Marke arc round the grate",
       "marke_energy": 2.6,
+      "room": {"back": 2.75, "ceil": 12.0, "left": 99, "right": 99},
+      "surround": {"style": "plate", "w": 1.02, "max_depth": 0.0, "fiction": "the Core Vault: the machine stands free on the cavern floor (the dead walk behind it), so its housing is a riveted back-plate on its own plinth and a stack up into the dark"},
       "pieces": [
         {"kind": "tank", "at": [1.55, 0.0, 2.42], "r": 0.21, "h": 1.5, "mat": "machine_grey", "band": "brass", "face": [0.0, 0.0, -1.0]},
         {"kind": "tank", "at": [-1.55, 0.0, 2.42], "r": 0.21, "h": 1.5, "mat": "machine_grey", "band": "brass", "face": [0.0, 0.0, -1.0]},
@@ -65,6 +69,8 @@
       "vis_group": "E",
       "note": "U-1047's bow compartment, the Crucible strapped against the forward bulkhead: air flasks and a fold-down bench on the starboard hull, pressure lines along both sides into the machine, the captain's order, a key lamp under the deckhead",
       "marke_energy": 2.4,
+      "room": {"back": 2.0, "ceil": 2.6, "left": 2.5, "right": 2.5},
+      "surround": {"style": "hull", "w": 1.42, "w_back": 2.45, "z_back": 1.56, "fiction": "U-1047's bow: plated into the forward bulkhead from hull side to hull side, the flue through the deckhead"},
       "pieces": [
         {"kind": "pipe", "mat": "copper", "r": 0.045, "glass": true, "valve": 1, "valve_out": [-1.0, 0.0, 0.0], "points": [[2.35, 2.2, -6.5], [2.35, 2.2, 0.3], [0.6, 2.36, 0.3]]},
         {"kind": "pipe", "mat": "iron", "r": 0.04, "points": [[2.42, 2.38, -7.0], [2.42, 2.38, 1.3]]},
@@ -94,6 +100,8 @@
       "zone": "G_PRUEFSTAND",
       "note": "Werk Thalbach's Messbunker (a bare concrete box before): air tanks in the back corner piped across the wall into the machine, a fitter's bench and rack on the east wall, the test-stand order and the Ledger form, a ledger stack on the desk, a key lamp, the dais and the Marke arc",
       "marke_energy": 2.4,
+      "room": {"back": 1.5, "ceil": 4.0, "left": 6.0, "right": 4.0},
+      "surround": {"style": "concrete", "w": 1.16, "w_back": 1.8, "fiction": "the Messbunker: cast into a board-marked concrete housing against the bunker wall, a steel lintel over the firebox, the flue up through the slab"},
       "pieces": [
         {"kind": "tank", "at": [3.52, 0.0, 1.08], "r": 0.24, "h": 1.75, "mat": "olive_steel", "band": "iron", "face": [-1.0, 0.0, 0.0]},
         {"kind": "tank", "at": [2.95, 0.0, 1.12], "r": 0.19, "h": 1.5, "mat": "machine_grey", "band": "iron", "face": [0.0, 0.0, -1.0]},
@@ -126,6 +134,8 @@
       "zone": "B_MITTELRUMPF",
       "note": "der Kranich's centre body, the Crucible as cargo (turned to face the body, T-175): tie-down straps to the deck rings, oxygen bottles and a parts crate on the port hull behind it, feed lines down from the frames, the cargo list, a key lamp off a frame",
       "marke_energy": 2.4,
+      "room": {"back": 3.0, "ceil": 99, "left": 99, "right": 99},
+      "surround": {"style": "cradle", "soot": 0.55, "fiction": "cargo in der Kranich: nothing is built round it; a deck plate under the plinth, a capped flue, the straps"},
       "pieces": [
         {"kind": "box", "at": [1.18, 0.81, -0.45], "size": [0.012, 1.64, 0.06], "mat": "canvas", "rot": [0.0, 0.0, 12.5], "shadow": 0},
         {"kind": "box", "at": [-1.18, 0.81, -0.45], "size": [0.012, 1.64, 0.06], "mat": "canvas", "rot": [0.0, 0.0, -12.5], "shadow": 0},
@@ -158,6 +168,8 @@
       "zone": "G_SILO",
       "note": "the test silo's control room, the Crucible turned to face the room (T-175) with its bay behind it: two recovered pressure tanks feeding it, a test-range bench and rack, the property notice and the Ledger form, a key lamp, the dais and the Marke arc",
       "marke_energy": 2.4,
+      "room": {"back": 3.9, "ceil": 99, "left": 99, "right": 99},
+      "surround": {"style": "concrete", "w": 1.02, "top": 3.9, "flue": "cap", "fiction": "the test range: recovered equipment stood on the control room floor with its bay behind it; a back-plate and a short stack on its own plinth"},
       "pieces": [
         {"kind": "tank", "at": [1.75, 0.0, 2.65], "r": 0.5, "h": 1.9, "mat": "grey_paint", "band": "iron", "face": [0.0, 0.0, -1.0]},
         {"kind": "tank", "at": [-1.95, 0.0, 2.95], "r": 0.4, "h": 1.6, "mat": "olive_steel", "band": "iron", "face": [0.0, 0.0, -1.0]},
@@ -191,6 +203,8 @@
       "vis_group": "B_CONCOURSE",
       "note": "Mondlicht's concourse: Crucible 001 turned to face the concourse (T-175) inside its lit alcove, now framed by a chrome portal, chrome tanks feeding it, the service log, a cold key light, the dais",
       "marke_energy": 2.8,
+      "room": {"back": 3.6, "ceil": 99, "left": 99, "right": 99},
+      "surround": {"style": "chrome", "w": 1.02, "top": 3.3, "flue": "cap", "stack": false, "soot": 0.45, "fiction": "Mondlicht's Unit 001 in its lit alcove under the chrome portal: a chrome back-plate inside the portal, a capped flue"},
       "pieces": [
         {"kind": "frame", "w": 3.3, "h": 3.4, "col": 0.2, "z": 1.05, "mat": "chrome_worn"},
         {"kind": "tank", "at": [1.25, 0.0, 3.2], "r": 0.34, "h": 1.9, "mat": "chrome", "band": "black_paint", "face": [0.0, 0.0, -1.0]},

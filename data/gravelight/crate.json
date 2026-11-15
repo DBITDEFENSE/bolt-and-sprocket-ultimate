@@ -7,6 +7,12 @@
  "drummer_after_uses_max": 12,
  "pity_first_pulls": 3,
  "move_beam_seconds": 20.0,
+ "look": {
+  "_doc": "T-254, presentation only: what lies on a crate that stands under the open sky, per map id up to its first underscore (cover: snow or none).",
+  "default": {"cover": "none"},
+  "map00": {"cover": "snow"},
+  "map01": {"cover": "snow"}
+ },
  "pool": [
   {
    "id": "ppsh41",

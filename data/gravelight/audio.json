@@ -6171,6 +6171,141 @@
       "volume_db": 0.0,
       "attenuation": "loud",
       "loop": true
+    },
+    "crate_arrive": {
+      "files": [
+        "res://gravelight/audio/sfx/world/crate_arrive_01.ogg"
+      ],
+      "volume_db": -3.0,
+      "max_voices": 1,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "attenuation": "loud",
+      "bus": "SFX"
+    },
+    "crate_close": {
+      "files": [
+        "res://gravelight/audio/sfx/world/crate_close_01.ogg"
+      ],
+      "volume_db": -4.0,
+      "max_voices": 2,
+      "pitch": [
+        0.94,
+        1.06
+      ],
+      "bus": "SFX",
+      "attenuation": "world"
+    },
+    "crate_hum": {
+      "files": [
+        "res://gravelight/audio/sfx/world/crate_hum_01.ogg"
+      ],
+      "bus": "SFX",
+      "volume_db": -16.0,
+      "max_voices": 2,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "attenuation": "world",
+      "loop": true
+    },
+    "crate_settle": {
+      "files": [
+        "res://gravelight/audio/sfx/world/crate_settle_01.ogg"
+      ],
+      "volume_db": -4.0,
+      "max_voices": 1,
+      "pitch": [
+        0.97,
+        1.03
+      ],
+      "bus": "SFX",
+      "attenuation": "world"
+    },
+    "crate_sink": {
+      "files": [
+        "res://gravelight/audio/sfx/world/crate_sink_01.ogg"
+      ],
+      "volume_db": -3.0,
+      "max_voices": 1,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "bus": "SFX",
+      "attenuation": "world"
+    },
+    "crate_spill": {
+      "files": [
+        "res://gravelight/audio/sfx/world/crate_spill_01.ogg"
+      ],
+      "volume_db": -5.0,
+      "max_voices": 1,
+      "pitch": [
+        0.98,
+        1.02
+      ],
+      "bus": "SFX",
+      "attenuation": "world"
+    },
+    "crucible_clank": {
+      "files": [
+        "res://gravelight/audio/sfx/world/crucible_clank_01.ogg",
+        "res://gravelight/audio/sfx/world/crucible_clank_02.ogg",
+        "res://gravelight/audio/sfx/world/crucible_clank_03.ogg"
+      ],
+      "volume_db": -5.0,
+      "max_voices": 3,
+      "pitch": [
+        0.92,
+        1.08
+      ],
+      "bus": "SFX",
+      "attenuation": "world"
+    },
+    "crucible_feed": {
+      "files": [
+        "res://gravelight/audio/sfx/world/crucible_feed_01.ogg"
+      ],
+      "volume_db": -2.0,
+      "max_voices": 1,
+      "pitch": [
+        0.96,
+        1.04
+      ],
+      "bus": "SFX",
+      "attenuation": "world"
+    },
+    "crucible_out": {
+      "files": [
+        "res://gravelight/audio/sfx/world/crucible_out_01.ogg"
+      ],
+      "volume_db": -3.0,
+      "max_voices": 1,
+      "pitch": [
+        0.98,
+        1.02
+      ],
+      "bus": "SFX",
+      "attenuation": "world"
+    },
+    "crucible_tick": {
+      "files": [
+        "res://gravelight/audio/sfx/world/crucible_tick_01.ogg",
+        "res://gravelight/audio/sfx/world/crucible_tick_02.ogg",
+        "res://gravelight/audio/sfx/world/crucible_tick_03.ogg"
+      ],
+      "volume_db": -12.0,
+      "max_voices": 2,
+      "pitch": [
+        0.9,
+        1.12
+      ],
+      "bus": "SFX",
+      "attenuation": "world"
     }
   }
 }
