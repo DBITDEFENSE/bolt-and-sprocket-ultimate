@@ -143,6 +143,13 @@ func _load(scene: String, character: StringName) -> void:
 		await get_tree().process_frame
 	GameState.character_id = character
 	GameState.god_mode = true
+	if scene == MAP0:
+		# T-251: the inn's machines are dealt onto perk spots all over the map. This smoke's tonic errand has every
+		# machine shut away until the Helvetia cellar's door opens: it pins a deal with none in the taproom or the Old
+		# Cellar (the two zones open by then) and one in the Helvetia cellar
+		PerkLayout.forced_seed = PerkLayout.seed_where(MAP0, func(zones: Dictionary, _deal: Dictionary) -> bool:
+			var z: Array = zones.values()
+			return z.has("CELLAR") and not z.has("TAPROOM") and not z.has("OLD_CELLAR"))
 	_map = (load(scene) as PackedScene).instantiate() as Node3D
 	get_tree().root.add_child(_map)
 	get_tree().current_scene = _map

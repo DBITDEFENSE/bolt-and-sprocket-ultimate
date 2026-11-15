@@ -203,11 +203,17 @@ logged them, as he logged everything, as *Beutewaffe, Herkunft ungeklärt*: capt
 
 **Archive map:** 0
 
+*UPDATE 19 (T-251): the cabinets no longer stand in the rows the docket lists. The night GRAVELIGHT ONE came down
+the patrol had the carters clear the Helvetia vault, and the cabinets went wherever a hand truck would go: the
+guest rooms, the stable, the yard, the old cellar, the two rooms the installers kept locked. Each match deals them
+onto the inn's perk spots (PerkLayout); a spot without one holds a crate that was never opened. So no entry below
+says where its cabinet stands. The lever and the Crucible are in the installers' Dynamo Room, two doors past the vault.*
+
 ### perk.ironhide_stout
 **Plate:** Replacement unit 1 of 8 · Kessler recipe · held at the Kreuzweg, 9.X.44
-**Archive:** Maker's Plate: Ironhide Stout (the Kreuzweg cellar)
+**Archive:** Maker's Plate: Ironhide Stout (the Kreuzweg)
 
-A riveted brass plate at the foot of the iron-red barrel cabinet, the first in the west row. Under the maker's line, a paper delivery tag is still wired to the hoop.
+A riveted brass plate at the foot of the iron-red barrel cabinet. Under the maker's line, a paper delivery tag is still wired to the hoop.
 
 HELVETIA AUTOMATEN AG · BASEL · SEIT 1921. Hygienic beverage dispenser, barrel pattern. Formula: O. Kessler. Replacement unit 1 of 8, for the barracks mess at Kaltenbrunn, Abt. III. To be held until called for.
 
@@ -217,17 +223,17 @@ This is the replacement for Kessler's own cabinet in the Kaltenbrunn mess, where
 **Plate:** Cabinet 2 · please do not disconnect · V.
 **Archive:** Maker's Plate: Second Wind (Cabinet 2)
 
-The pale-blue apothecary cabinet beside the barrel. Behind the louvres, under the coin works, a small brass-cased battery glows on its own.
+The pale-blue apothecary cabinet. Behind the louvres, under the coin works, a small brass-cased battery glows on its own.
 
 HELVETIA AUTOMATEN AG · BASEL. Hygienic beverage dispenser, cabinet pattern. Formula: Schw. A. W. Replacement unit 2 of 8. Under it, scratched into the brass with the point of a screwdriver, very neat: "Cabinet 2: please do not disconnect. V."
 
-The docket on the pillar says the same thing (INT_M0_13). This is the one cabinet in the cellar that does not wait for the lever: Vendelin fitted a standby cell behind the token slot, as he did in every Second Wind he built after the laborers' barracks pattern, so that the nurse's schnapps could be poured on a night the facility cut the power to punish someone. It still pours. Three times, the free trial says, and no more: he could not take that out.
+The docket on the pillar says the same thing (INT_M0_13). This is the one cabinet at the Kreuzweg that does not wait for the lever: Vendelin fitted a standby cell behind the token slot, as he did in every Second Wind he built after the laborers' barracks pattern, so that the nurse's schnapps could be poured on a night the facility cut the power to punish someone. It still pours. Three times, the free trial says, and no more: he could not take that out.
 
 ### perk.trigger_tonic
 **Plate:** Replacement unit 3 of 8 · Dr. I. Vogt · for the generator hall
-**Archive:** Maker's Plate: Trigger Tonic (the Kreuzweg cellar)
+**Archive:** Maker's Plate: Trigger Tonic (the Kreuzweg)
 
-The crate-shaped cabinet at the south end of the west row, its tin hare running across the glass.
+The crate-shaped cabinet with the tin hare running across its glass.
 
 HELVETIA AUTOMATEN AG · BASEL. Formula: Dr. I. Vogt, Kaltwerk Chemie. Replacement unit 3 of 8, generator hall, Abt. II/III. Pour-time adjusted to the shift quota.
 
@@ -235,9 +241,9 @@ Ilse Vogt worked reload times out the way her chemical works worked out shift qu
 
 ### perk.twin_barrel
 **Plate:** Replacement unit 4 of 8 · by order of Maj. A. Brück
-**Archive:** Maker's Plate: Twin Barrel Bitters (the Kreuzweg cellar)
+**Archive:** Maker's Plate: Twin Barrel Bitters (the Kreuzweg)
 
-The twin-barrelled cabinet in the east row, with the Major's moustache in enamel over the dispensing spouts.
+The twin-barrelled cabinet with the Major's moustache in enamel over the dispensing spouts.
 
 HELVETIA AUTOMATEN AG · BASEL. Formula selected by Maj. A. Brück, ordnance, "for the morale of the line". Replacement unit 4 of 8.
 
@@ -245,9 +251,9 @@ The Major chose the bitters for other men and had his own profile painted on the
 
 ### perk.marathon_malt
 **Plate:** Replacement unit 5 of 8 · family recipe, Grindelwald
-**Archive:** Maker's Plate: Marathon Malt (the Kreuzweg cellar)
+**Archive:** Maker's Plate: Marathon Malt (the Kreuzweg)
 
-The tall teardrop cabinet in the east row, its runner mascot frozen mid-stride.
+The tall teardrop cabinet, its runner mascot frozen mid-stride.
 
 HELVETIA AUTOMATEN AG · BASEL. Formula: Gähwiler family (Grindelwald). Replacement unit 5 of 8.
 
@@ -255,9 +261,9 @@ Marathon is Res Gähwiler's grandmother's remedy, gentian and lady's mantle and 
 
 ### perk.hawkeye_brandy
 **Plate:** Replacement unit 6 of 8 · Abt. I · the owl is not on the drawings
-**Archive:** Maker's Plate: Hawkeye Brandy (the Kreuzweg cellar)
+**Archive:** Maker's Plate: Hawkeye Brandy (the Kreuzweg)
 
-The periscope cabinet at the end of the east row. Its brass head turns to follow whoever stands in front of it. Painted small under the hawk on the glass, where the enamel is thinnest, is an owl.
+The periscope cabinet. Its brass head turns to follow whoever stands in front of it. Painted small under the hawk on the glass, where the enamel is thinnest, is an owl.
 
 HELVETIA AUTOMATEN AG · BASEL. Formula: Abt. I (derived). Replacement unit 6 of 8.
 
@@ -265,9 +271,9 @@ The formula card for this one says "Donor: Kurek, H. (Polish woman). Consent: no
 
 ### perk.packmule_porter
 **Plate:** Replacement unit 7 of 8 · counted, logged, signed: G. Ammer, Fw.
-**Archive:** Maker's Plate: Packmule Porter (the Kreuzweg cellar)
+**Archive:** Maker's Plate: Packmule Porter (the Kreuzweg)
 
-The wagon-shaped cabinet in the south row, its tin sign still swinging when nobody has touched it.
+The wagon-shaped cabinet, its tin sign still swinging when nobody has touched it.
 
 HELVETIA AUTOMATEN AG · BASEL. Formula: Fw. A. Ammer, quartermaster. Replacement unit 7 of 8. Inventory: 1 dispenser, porter pattern; 1 wagon sign (tin); 1 sign chain; 4 castors, of which 3 turn.
 
@@ -275,9 +281,9 @@ Gustl Ammer counted everything, and logged the extra "training loads" of the cap
 
 ### perk.blastproof_bock
 **Plate:** Replacement unit 8 of 8 · Pionierschule, Kaltenbrunn detachment
-**Archive:** Maker's Plate: Blastproof Bock (the Kreuzweg cellar)
+**Archive:** Maker's Plate: Blastproof Bock (the Kreuzweg)
 
-The safe-shaped cabinet at the east end of the south row; its dial gives a quarter turn every few seconds.
+The safe-shaped cabinet; its dial gives a quarter turn every few seconds.
 
 HELVETIA AUTOMATEN AG · BASEL. Formula: Pionierschule, Kaltenbrunn field detachment. Replacement unit 8 of 8. Not to be stored near open flame (a joke, the instructors insisted).
 
@@ -287,7 +293,7 @@ The demolitions instructors' favourite. In 1943 Res Gähwiler smuggled a bottle 
 **Plate:** No docket · no delivery · fresh solder
 **Archive:** Maker's Plate: Overclock Cordial (the ninth cabinet)
 
-The tall teal cabinet between Packmule and Blastproof, crowned with a copper coil that snaps a violet arc to a brass ball. Its plate is not riveted on: it is held by four new screws, and the stencil under the enamel is crooked.
+The tall teal cabinet crowned with a copper coil that snaps a violet arc to a brass ball. Its plate is not riveted on: it is held by four new screws, and the stencil under the enamel is crooked.
 
 HELVETIA AUTOMATEN AG · BASEL · Prototyp · Rezeptur: ein Freund.
 
@@ -295,39 +301,39 @@ The docket nailed to the pillar lists eight dispensers. This is the ninth. The l
 
 ### perk.ledger_lager
 **Plate:** Replacement unit 3 of 8 · Fenske recipe · held at the Kreuzweg, 9.X.44
-**Archive:** Maker's Plate: Ledger Lager (the Kreuzweg cellar)
+**Archive:** Maker's Plate: Ledger Lager (the Kreuzweg)
 
-The amber cash register at the cellar's south-east corner, standing in for a cabinet: a brass till on an iron base with a drum of violet digits on top, and a paper card in its window that says ZAHLTAG.
+The amber cash register standing in for a cabinet: a brass till on an iron base with a drum of violet digits on top, and a paper card in its window that says ZAHLTAG.
 
 HELVETIA AUTOMATEN AG · BASEL. Formula: R. Fenske. Replacement unit 3 of 8, held at the Kreuzweg for the pay parades. A line pencilled under the plate: the tally drum "to be read weekly by the pay office".
 
-Nobody came to read it. The drum has been turning since the day it was bolted down, one digit for every sum somebody earned in the cellar above, and it is the only thing in the vault that is exactly on time. Fenske made the lager at Kaltenbrunn; this is the unit the Provider sent south to be ready for a payday that never reached the crossroads.
+Nobody came to read it. The drum has been turning since the day it was bolted down, one digit for every sum somebody earned under this roof, and it is the only thing at the Kreuzweg that is exactly on time. Fenske made the lager at Kaltenbrunn; this is the unit the Provider sent south to be ready for a payday that never reached the crossroads.
 
 ### perk.skyhook_sekt
 **Plate:** Nachlieferung · Consignment W.T. · Cabinet 1 of 2 · ELEVATION · J. Maurer
-**Archive:** Maker's Plate: Skyhook Sekt (the late-delivery bay)
+**Archive:** Maker's Plate: Skyhook Sekt (the late delivery)
 
-The pale sky-blue glider-nosed cabinet on the far wall of the bay behind the cellar's east arch, its little propeller ticking round whenever somebody jumps near it, its crate still in the corner with ZWEIGWERK THALBACH on the side.
+The pale sky-blue glider-nosed cabinet, its little propeller ticking round whenever somebody jumps near it. Its crate, ZWEIGWERK THALBACH on the side, is still in the corner of the bay behind the cellar's east arch.
 
 HELVETIA AUTOMATEN AG · BASEL. Hygienic beverage dispenser, glider pattern. Formula: H. Maurer, Windkanal Thalbach. Consignment Werk Thalbach, "Nachlieferung", 1 of 2. "Leicht · Lieber · Landen."
 
-It came down the salt road a month after the eight replacement units, on a delivery note the landlord never ordered from, and there was no room for it in the vault, so the installers knocked an arch through to the old ice store under the field and stood it there. Jette Maurer made the Sekt so a tired crew would land well; nobody at the Kreuzweg has ever flown, but the hayloft's bale drop is a long way down.
+It came down the salt road a month after the eight replacement units, on a delivery note the landlord never ordered from, and there was no room for it in the vault, so the installers knocked an arch through to the old ice store under the field and stood it there, until the night the vault was cleared. Jette Maurer made the Sekt so a tired crew would land well; nobody at the Kreuzweg has ever flown, but the hayloft's bale drop is a long way down.
 
 ### perk.magpie_mead
 **Plate:** Not on any docket · olive drab · RANGE SUPPLY · D. MARCHETTI · "nothing goes to waste"
-**Archive:** Maker's Plate: Magpie Mead (the late-delivery bay)
+**Archive:** Maker's Plate: Magpie Mead (the late delivery)
 
-The olive-drab cabinet with the one-armed-bandit lever beside Skyhook in the late-delivery bay, a magpie cut from a ration tin on its front, its open crate in the corner with the straw still in it and RANGE SUPPLY · GROOM LAKE stencilled on the lid in English.
+The olive-drab cabinet with the one-armed-bandit lever, a magpie cut from a ration tin on its front. Its open crate is in the corner of the late-delivery bay, the straw still in it and RANGE SUPPLY · GROOM LAKE stencilled on the lid in English.
 
-RANGE SUPPLY · GROOM LAKE. Formula: Sgt. D. Marchetti. Not a Helvetia pattern. The delivery note pinned between the two cabinets lists it in the landlord's hand under the Thalbach cabinet, with two words after it: "nicht bestellt".
+RANGE SUPPLY · GROOM LAKE. Formula: Sgt. D. Marchetti. Not a Helvetia pattern. The delivery note pinned to the bay's far wall lists it in the landlord's hand under the Thalbach cabinet, with two words after it: "nicht bestellt".
 
 Nobody on the salt road had heard of the range on the lid, and nobody can say who carried the crate in. Like the ninth cabinet, it is simply there. The back panel is bare metal with one line scratched in: "No fine print. You take what the dead drop. That's the deal."
 
 ### crucible
 **Plate:** MOD. R-E · PAT. PEND. BLZ-40417 · crate 2/3, off the docket
-**Archive:** The Crucible in the Alcove (crate 2/3)
+**Archive:** The Crucible in the Dynamo Room (crate 2/3)
 
-A brass plate riveted to the furnace's feed door, in a brick alcove on the vault's north wall. Behind the furnace, against the bricks, the empty crate it came in: KÜHLANLAGE, and a stencilled 2/3.
+A brass plate riveted to the furnace's feed door, in a brick alcove on the north wall of the installers' Dynamo Room, two doors past the vault. Behind the furnace, against the bricks, the empty crate it came in: KÜHLANLAGE, and a stencilled 2/3.
 
 MOD. R-E · PAT. PEND. BLZ-40417.
 

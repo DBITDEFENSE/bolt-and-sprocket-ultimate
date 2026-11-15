@@ -850,6 +850,11 @@ func _relay(sn: StringName, args: Array) -> void:
 
 # ---------------------------------------------------------------- state snapshot (host)
 
+func _perk_seed() -> int:
+	var pl: PerkLayout = PerkLayout.current(get_tree())
+	return pl.seed_value if pl != null else -1
+
+
 func _send_state(delta_since: float) -> void:
 	var d: Dictionary = {
 		"r": [int(RoundManager.state), RoundManager.current_round, RoundManager.is_special_round, RoundManager.to_spawn,
@@ -860,6 +865,7 @@ func _send_state(delta_since: float) -> void:
 		"sw": [PerkManager.solo_self_revives_left, PerkManager.second_wind_gone],
 		"pw": GameState.power_on, "z": GameState.open_zones.keys(), "f": GameState.flags,
 		"cr": CrateManager.location_index, "pu": PowerupManager._timers,
+		"pl": _perk_seed(),   # T-251: the seed the tonic machines were dealt from (-1: this map deals none)
 		"co": coop.to_net(),
 		"ph": int(GameState.phase),
 	}
@@ -1221,6 +1227,11 @@ func on_state(d: Dictionary) -> void:
 		for n: Node in get_tree().get_nodes_in_group(&"crate_spots"):
 			n.call("refresh")
 	PowerupManager._timers = (d.get("pu", {}) as Dictionary).duplicate()
+	var pl_seed: int = int(d.get("pl", -1))
+	if pl_seed >= 0:
+		var pl: PerkLayout = PerkLayout.current(get_tree())
+		if pl != null and pl.seed_value != pl_seed:
+			pl._net_apply(pl_seed)   # T-251: the host dealt from another seed than ours (a pinned one, a re-deal)
 	coop.from_net(d.get("co", {}))
 	if d.has("q"):
 		QuestManager.apply_net_state(d["q"] as Dictionary)

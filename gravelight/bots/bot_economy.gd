@@ -741,9 +741,25 @@ func power_plan(now: float) -> Dictionary:
 	if st != Vector3.INF:
 		_power = {"switch": sw, "stand": st}
 		return _power
+	var best: BuyDoor = door_toward(sw.global_position)
+	if best != null:
+		_power = {"door": best}
+	return _power
+
+
+## T-251: drop the cached way to the power (BotBrain.forget_reach: a door opened).
+func forget_power_plan() -> void:
+	_power_t = -1e9
+	_power = {}
+
+
+## The closed door to buy on the way to `goal_pos` (the navmesh runs through doors: the nearest closed door the path
+## crosses whose near side this bot can reach); null when the way is open or there is none. The power switch's
+## (power_plan) and, since T-251, a tonic machine the match's deal stood behind a door (AgentPlan.errand_for).
+func door_toward(goal_pos: Vector3) -> BuyDoor:
 	var me: Vector3 = player.global_position
 	var nav: RID = player.get_world_3d().navigation_map
-	var goal: Vector3 = brain.snap(sw.global_position)
+	var goal: Vector3 = brain.snap(goal_pos)
 	var path: PackedVector3Array = BotProf.nav_path(nav, me, goal, true, brain.squad.nav_mask())
 	if path.is_empty() or path[path.size() - 1].distance_to(goal) > 2.0:
 		# (a path that stops short is the server's partial path to the closest reachable point, not a way there)
@@ -754,7 +770,7 @@ func power_plan(now: float) -> Dictionary:
 		var zb: Dictionary = brain.squad.map.director.zone_bits if brain.squad.map != null and brain.squad.map.director != null else {}
 		path = BotProf.nav_path(nav, me, goal, true, plan_mask_of(zb, pw_avoid_zones()))
 	if path.is_empty():
-		return _power
+		return null
 	var best: BuyDoor = null
 	var best_d: float = INF
 	for d: BuyDoor in brain.loco_doors():
@@ -764,9 +780,13 @@ func power_plan(now: float) -> Dictionary:
 		if dd < best_d and brain.reachable(BotBrain._door_side(d, me)):
 			best_d = dd
 			best = d
-	if best != null:
-		_power = {"door": best}
-	return _power
+	if best == null:
+		# T-251: the path crossed no bought door, yet the goal's zone is shut (Map 0's Old Cellar: the navmesh gets in
+		# through the bolted hatch's climb link): the door to buy is the one that opens that zone
+		var zd: BuyDoor = brain.shut_door_of(goal)
+		if zd != null and brain.reachable(BotBrain._door_side(zd, me)):
+			best = zd
+	return best
 
 
 ## The nav layer mask for planning a way across the whole map: every zone's bit (and the always-on layer 1)
@@ -809,6 +829,11 @@ func _near_enough(p: Vector3) -> bool:
 		return true   # (U10 T-172: an egg bot's shopping break is already off on its own, by its egg spot)
 	var home: Vector3 = squad.home.center() if squad.home != null else anchor()
 	var near: bool = _flat(p, home) <= float(eco.get("self_led_mid_round_m", 16.0)) and absf(p.y - home.y) < 2.5
+	# T-251: it stands at the thing already (it just bought the last door on the way to Map 0's lever, three doors down
+	# and 37 m from the taproom: the trip home never fits a 10-15 s break and the lever is never "near home", so the
+	# agent opened the Dynamo Room and walked back out without throwing the lever 8 m in front of it)
+	if _flat(player.global_position, p) <= float(eco.get("self_led_at_hand_m", 12.0)) and absf(p.y - player.global_position.y) < 2.5:
+		return true
 	if brain.in_break():
 		# U10 (T-163, Q-19): a far errand in a break only if the trip there and back fits in what is left of it
 		# (an act skip's 14 s arrival grace sent a bot 50 m off to the Kranich's gun blisters, and the first wave

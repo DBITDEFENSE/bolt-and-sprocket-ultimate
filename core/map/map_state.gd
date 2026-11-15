@@ -58,6 +58,7 @@ var _next_marker: int = 1
 var _providers: Array[Callable] = []
 var _quest_nodes: Array[Node] = []
 var _node_cache: Dictionary = {}       # poi id -> Node (or null)
+var _own_data: bool = false            # `data` is this match's own copy (refresh_live_pois changed its rows)
 var _live_frame: int = -1
 var _live: Array[Dictionary] = []
 var _obj_t: float = 0.0
@@ -333,6 +334,35 @@ func poi_node(p: Dictionary) -> Node:
 		n = level_root.get_node_or_null(NodePath(path))
 	_node_cache[id] = n
 	return n
+
+
+## T-251 (Map 0's tonic machines are dealt onto their perk spots each match, PerkLayout): the POIs of `types` whose
+## node stands somewhere else than it was baked take its live position and floor, and are forgotten (found again
+## where they stand), so the pause map, the minimap, the pings and the loadout tab's "where" follow the match. The
+## rows changed are this match's own copy; the cached MapData keeps the baked ones. Returns how many moved.
+func refresh_live_pois(types: Array) -> int:
+	if data == null or level_root == null or not is_instance_valid(level_root):
+		return 0
+	var moved: int = 0
+	for i: int in data.pois.size():
+		var p: Dictionary = data.pois[i]
+		if not types.has(str(p["type"])):
+			continue
+		var n: Node = poi_node(p)
+		if not (n is Node3D) or not (n as Node3D).is_inside_tree():
+			continue
+		var pos: Vector3 = (n as Node3D).global_position
+		if pos.distance_to(p["pos"] as Vector3) < 0.01:
+			continue
+		if not _own_data:
+			data = MapData.from_dict(data.to_dict())
+			_own_data = true
+			p = data.pois[i]
+		p["pos"] = pos
+		p["floor"] = data.floor_at(pos + Vector3.UP * 0.3)
+		forget(str(p["id"]))
+		moved += 1
+	return moved
 
 
 ## Where the POI is now (its node's position when it has one, else the baked one).

@@ -1,0 +1,15 @@
+{
+  "_doc": "T-251 (UPDATE 19; the owner: 'spread perks randomly around the map'): the rules of the per-match deal of tonic machines onto a map's perk spots (PerkShuffle.assign, gravelight/world/perk_shuffle.gd; PerkLayout applies it at match start from the match seed, the same on every peer; gen_map00 saves the scene with the seed-0 deal). A map takes part when its scene has PerkSpot nodes (group perk_spots) and a row under maps (the key is the map id up to its first underscore). max_per_zone: at most this many machines in one zone, the rest of its spots show their filler crate. outdoor_shapes: the perks.json cabinet shapes that may stand under the snow (the barrel, the wagon, the safe, the crate, the periscope, the glider on its tail, the twin pump and the teardrop pump are weather kit; the schnapps cabinet, the bare coil, the brass cash register and the bandit are not). start_max_cost: a spot in the start room (PerkSpot.start) takes only tonics up to this price. not_in_start: never in the start room (Second Wind pours without the power solo: it would be a free self-revive at the spawn). near_start: only on a spot one bought door from the start room (PerkSpot.near), so a solo player can always reach Second Wind early. fixed_seed: a number here pins the deal on every match (null: the match seed); `perks seed <n>` in the dev console and --perk-seed=<n> on the command line pin the next match's.",
+  "max_per_zone": 2,
+  "outdoor_shapes": ["barrel", "wagon", "safe", "crate", "periscope", "glider", "twin", "teardrop"],
+  "start_max_cost": 2000,
+  "not_in_start": ["second_wind"],
+  "near_start": ["second_wind"],
+  "fixed_seed": null,
+  "maps": {
+    "map00": {
+      "perks": ["ironhide_stout", "second_wind", "trigger_tonic", "twin_barrel", "marathon_malt", "hawkeye_brandy", "ledger_lager", "packmule_porter",
+        "blastproof_bock", "overclock_cordial", "skyhook_sekt", "magpie_mead"]
+    }
+  }
+}

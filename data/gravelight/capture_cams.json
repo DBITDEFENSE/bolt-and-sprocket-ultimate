@@ -12644,6 +12644,625 @@
         }
       ]
     },
+    "u19_cellar": {
+      "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "T-251 (UPDATE 19, docs/u19/t251_cellar.md): Map 0's cellar past the vault (the Lagering Vault and the Dynamo Room, unlit and lit by the lever), the vault's old Crucible alcove, and the perk spots round the map with the machines and filler crates of one pinned deal. Run with the deal pinned: tools/wsl_godot.sh --path . res://tools_src/capture.tscn -- --set=u19_cellar --label=after --perk-seed=251. The first five cameras (vault_*, bay_far_wall) are the before/after pairs against the scene before T-251 (--only=vault_alcove,vault_alcove_close,vault_south,vault_east_row,bay_far_wall --label=before). Order matters: the rooms are shot dark first, then 'power'.",
+      "cams": [
+        {
+          "name": "vault_alcove",
+          "pos": [
+            28.6,
+            -3.2,
+            23.6
+          ],
+          "yaw": 0.0,
+          "pitch": 0.0,
+          "settle_s": 3.0,
+          "do": [
+            "hud_off",
+            "open:Door_Cellar"
+          ],
+          "note": "T-251: the vault's north wall from between the pillars: the old Crucible alcove (the wash copper now), the fuse box, where the lever stood"
+        },
+        {
+          "name": "vault_alcove_work",
+          "pos": [
+            28.6,
+            -3.2,
+            23.6
+          ],
+          "yaw": 0.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: the same under a work light (the shapes; the room's own light is the frame before)"
+        },
+        {
+          "name": "vault_alcove_close",
+          "pos": [
+            30.4,
+            -3.2,
+            21.6
+          ],
+          "yaw": 28.0,
+          "pitch": -6.0,
+          "settle_s": 2.0,
+          "note": "T-251: the alcove close up"
+        },
+        {
+          "name": "vault_south",
+          "pos": [
+            26.0,
+            -3.2,
+            23.5
+          ],
+          "yaw": 180.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-251: down the vault's west aisle from the stair foot: the south wall (Door_Lager now; the wine rack and three machines before)"
+        },
+        {
+          "name": "vault_east_row",
+          "pos": [
+            30.9,
+            -3.2,
+            21.5
+          ],
+          "yaw": -90.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-251: the vault's east wall north of the bay's arch (perk spot vault_east; Twin Barrel's place before)"
+        },
+        {
+          "name": "bay_far_wall",
+          "pos": [
+            37.0,
+            -3.2,
+            25.95
+          ],
+          "yaw": -90.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-251: the late-delivery bay's far wall (perk spot bay: the crate on seed 251; Skyhook and Magpie before)"
+        },
+        {
+          "name": "lager_unlit",
+          "pos": [
+            24.9,
+            -3.2,
+            31.9
+          ],
+          "yaw": -111.0,
+          "pitch": 0.0,
+          "settle_s": 3.0,
+          "do": [
+            "open:Door_Lager"
+          ],
+          "note": "T-251: the Lagering Vault from its north-west corner, before the lever: the tuns, the south wall, Door_Dynamo at the far end"
+        },
+        {
+          "name": "lager_west_unlit",
+          "pos": [
+            33.2,
+            -3.2,
+            36.2
+          ],
+          "yaw": 74.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-251: the Lagering Vault from its east end, before the lever: the tuns' south side, the perk spot opposite Door_Lager"
+        },
+        {
+          "name": "lager_door_unlit",
+          "pos": [
+            30.5,
+            -3.2,
+            35.6
+          ],
+          "yaw": -84.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-251: Door_Dynamo from the Lagering Vault, shut"
+        },
+        {
+          "name": "dynamo_unlit",
+          "pos": [
+            34.8,
+            -3.2,
+            38.2
+          ],
+          "yaw": -50.0,
+          "pitch": 0.0,
+          "settle_s": 3.0,
+          "do": [
+            "open:Door_Dynamo"
+          ],
+          "note": "T-251: the Dynamo Room from its south-west corner, before the lever: the generator set, the Crucible's alcove and the lever on the north wall"
+        },
+        {
+          "name": "dynamo_east_unlit",
+          "pos": [
+            43.3,
+            -3.2,
+            34.2
+          ],
+          "yaw": 71.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-251: the Dynamo Room from the east: the set, the Crucible's alcove, Door_Dynamo"
+        },
+        {
+          "name": "dynamo_lever_unlit",
+          "pos": [
+            40.9,
+            -3.2,
+            33.9
+          ],
+          "yaw": 8.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-251: the cellar lever (its AUS lamp lit), the fuse board, the bench in the corner"
+        },
+        {
+          "name": "dynamo_lever_lit",
+          "pos": [
+            40.9,
+            -3.2,
+            33.9
+          ],
+          "yaw": 8.0,
+          "pitch": 0.0,
+          "settle_s": 3.5,
+          "do": [
+            "power"
+          ],
+          "note": "T-251: the lever thrown: the Dynamo Room's bulbs"
+        },
+        {
+          "name": "dynamo_lit",
+          "pos": [
+            34.8,
+            -3.2,
+            38.2
+          ],
+          "yaw": -50.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-251: the Dynamo Room lit"
+        },
+        {
+          "name": "dynamo_east_lit",
+          "pos": [
+            43.3,
+            -3.2,
+            34.2
+          ],
+          "yaw": 71.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-251: the Dynamo Room lit, from the east"
+        },
+        {
+          "name": "dynamo_crucible_lit",
+          "pos": [
+            37.5,
+            -3.2,
+            35.2
+          ],
+          "yaw": 0.0,
+          "pitch": 4.0,
+          "settle_s": 2.0,
+          "note": "T-251: the Crucible in its alcove on the Dynamo Room's north wall (its dressing is T-254's)"
+        },
+        {
+          "name": "dynamo_spot_lit",
+          "pos": [
+            42.3,
+            -3.2,
+            33.7
+          ],
+          "yaw": 180.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-251: perk spot dynamo (Overclock Cordial on seed 251) against the south wall, the sump's corner to the right"
+        },
+        {
+          "name": "lager_lit",
+          "pos": [
+            24.9,
+            -3.2,
+            31.9
+          ],
+          "yaw": -111.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-251: the Lagering Vault lit"
+        },
+        {
+          "name": "lager_west_lit",
+          "pos": [
+            33.2,
+            -3.2,
+            36.2
+          ],
+          "yaw": 74.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-251: the Lagering Vault lit, from its east end (Marathon Malt on perk spot lager)"
+        },
+        {
+          "name": "lager_tuns_lit",
+          "pos": [
+            30.05,
+            -3.2,
+            31.6
+          ],
+          "yaw": 180.0,
+          "pitch": -8.0,
+          "settle_s": 2.0,
+          "note": "T-251: the three tuns from the north aisle: taps, drip trays, the gutter"
+        },
+        {
+          "name": "vault_alcove_lit",
+          "pos": [
+            28.6,
+            -3.2,
+            23.6
+          ],
+          "yaw": 0.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-251: the vault's north wall lit"
+        },
+        {
+          "name": "vault_south_lit",
+          "pos": [
+            26.0,
+            -3.2,
+            23.5
+          ],
+          "yaw": 180.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-251: the vault's west aisle lit: Door_Lager open, Ledger Lager on perk spot vault_south"
+        },
+        {
+          "name": "vault_east_row_lit",
+          "pos": [
+            30.9,
+            -3.2,
+            21.5
+          ],
+          "yaw": -90.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-251: Blastproof Bock on perk spot vault_east"
+        },
+        {
+          "name": "bay_far_wall_lit",
+          "pos": [
+            37.0,
+            -3.2,
+            25.95
+          ],
+          "yaw": -90.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-251: the bay lit: the filler crate on perk spot bay"
+        },
+        {
+          "name": "lager_work",
+          "pos": [
+            24.9,
+            -3.2,
+            31.9
+          ],
+          "yaw": -111.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: the Lagering Vault, work light"
+        },
+        {
+          "name": "lager_west_work",
+          "pos": [
+            33.2,
+            -3.2,
+            36.2
+          ],
+          "yaw": 74.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: the Lagering Vault from its east end, work light"
+        },
+        {
+          "name": "lager_tuns_work",
+          "pos": [
+            30.05,
+            -3.2,
+            31.6
+          ],
+          "yaw": 180.0,
+          "pitch": -8.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: the tuns, work light"
+        },
+        {
+          "name": "dynamo_work",
+          "pos": [
+            34.8,
+            -3.2,
+            38.2
+          ],
+          "yaw": -50.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: the Dynamo Room, work light"
+        },
+        {
+          "name": "dynamo_east_work",
+          "pos": [
+            43.3,
+            -3.2,
+            34.2
+          ],
+          "yaw": 71.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: the Dynamo Room from the east, work light"
+        },
+        {
+          "name": "dynamo_set_work",
+          "pos": [
+            41.6,
+            -3.2,
+            37.6
+          ],
+          "yaw": 52.0,
+          "pitch": -6.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: the generator set from the south-east, work light"
+        },
+        {
+          "name": "dynamo_door_work",
+          "pos": [
+            36.9,
+            -3.2,
+            37.0
+          ],
+          "yaw": 70.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: Door_Dynamo and the drums' corner from inside, work light"
+        },
+        {
+          "name": "spot_bay_work",
+          "pos": [
+            37.0,
+            -3.2,
+            25.95
+          ],
+          "yaw": -90.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: the filler crate on perk spot bay, work light"
+        },
+        {
+          "name": "spot_lager_work",
+          "pos": [
+            25.6,
+            -3.2,
+            32.0
+          ],
+          "yaw": 180.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: Marathon Malt on perk spot lager, from Door_Lager, work light"
+        },
+        {
+          "name": "spot_old_vault_north",
+          "pos": [
+            15.0,
+            -3.2,
+            5.4
+          ],
+          "yaw": 0.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: Second Wind on perk spot old_vault_north (the Old Cellar's barrel vault), work light"
+        },
+        {
+          "name": "spot_old_vault_south",
+          "pos": [
+            19.0,
+            -3.2,
+            10.5
+          ],
+          "yaw": 180.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: Hawkeye Brandy on perk spot old_vault_south, work light"
+        },
+        {
+          "name": "spot_taproom_nook",
+          "pos": [
+            2.3,
+            0.0,
+            5.6
+          ],
+          "yaw": 0.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-251: the filler crate on perk spot taproom_nook (the taproom's north-west corner, behind the back-bar)"
+        },
+        {
+          "name": "spot_taproom_nook_side",
+          "pos": [
+            0.9,
+            0.0,
+            4.4
+          ],
+          "yaw": -32.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: the same from beside the kar98k chalk, work light"
+        },
+        {
+          "name": "spot_guest_room",
+          "pos": [
+            21.2,
+            3.8,
+            3.3
+          ],
+          "yaw": 90.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: Twin Barrel Bitters on perk spot guest_room (the east guest room), work light"
+        },
+        {
+          "name": "spot_guest_hall",
+          "pos": [
+            18.6,
+            3.8,
+            5.5
+          ],
+          "yaw": 180.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: the filler crate on perk spot guest_hall (the upstairs hall's east end), work light"
+        },
+        {
+          "name": "spot_attic",
+          "pos": [
+            16.0,
+            7.1,
+            4.8
+          ],
+          "yaw": 180.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: Skyhook Sekt on perk spot attic, work light"
+        },
+        {
+          "name": "spot_stable",
+          "pos": [
+            14.25,
+            0.0,
+            28.4
+          ],
+          "yaw": 180.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: Magpie Mead on perk spot stable (under the hayloft, the south wall), work light"
+        },
+        {
+          "name": "spot_hayloft",
+          "pos": [
+            12.5,
+            3.5,
+            28.6
+          ],
+          "yaw": 180.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: Trigger Tonic on perk spot hayloft, work light"
+        },
+        {
+          "name": "spot_yard_east",
+          "pos": [
+            28.2,
+            0.0,
+            46.3
+          ],
+          "yaw": -90.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: Packmule Porter on perk spot yard_east (the yard's south-east corner), work light"
+        },
+        {
+          "name": "spot_yard_east_night",
+          "pos": [
+            27.4,
+            0.0,
+            44.0
+          ],
+          "yaw": -62.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-251: the same in the yard's own light"
+        },
+        {
+          "name": "spot_yard_west",
+          "pos": [
+            7.8,
+            0.0,
+            39.7
+          ],
+          "yaw": 90.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: the filler crate on perk spot yard_west (snow on its lid), work light"
+        },
+        {
+          "name": "spot_behind_stable",
+          "pos": [
+            31.2,
+            0.0,
+            32.4
+          ],
+          "yaw": 90.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: the filler crate on perk spot behind_stable (the stable's east wall, out on the grounds), work light"
+        },
+        {
+          "name": "spot_carters_road",
+          "pos": [
+            15.2,
+            0.0,
+            53.6
+          ],
+          "yaw": 0.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "bright": true,
+          "note": "T-251: Ironhide Stout on perk spot carters_road (outside the yard's south fence, west of the gate), work light"
+        },
+        {
+          "name": "spot_carters_road_night",
+          "pos": [
+            18.5,
+            0.0,
+            53.0
+          ],
+          "yaw": 40.0,
+          "pitch": 0.0,
+          "settle_s": 2.0,
+          "note": "T-251: the same in the road's own light"
+        }
+      ]
+    },
     "u18_text": {
       "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
       "bots": 0,

@@ -377,7 +377,8 @@ func _bots_by_id(pid: int) -> Player:
 	return null
 
 
-## Round 9, the power on, the cellar door open (Map 0), 7000 Scrip per bot: the Crucible is affordable and lit.
+## Round 9, the power on, the three doors down to the Dynamo Room open (Map 0; T-251), 7000 Scrip per bot: the Crucible
+## is affordable and lit.
 func _crucible_setup(root: MapRoot) -> void:
 	root.director.kill_all(true)
 	RoundManager.debug_set_round(9)
@@ -388,7 +389,7 @@ func _crucible_setup(root: MapRoot) -> void:
 		GLBus.power_activated.emit()
 	for n: Node in get_tree().get_nodes_in_group(&"doors"):
 		var d: BuyDoor = n as BuyDoor
-		if d != null and d.door_id == &"door_cellar" and not d.is_open:
+		if d != null and d.door_id in [&"door_cellar", &"door_lager", &"door_dynamo"] and not d.is_open:   # (T-251: the Crucible is three doors deep)
 			d.open()
 	for pid: int in GameState.bot_ids:
 		Economy.grant(pid, 7000)

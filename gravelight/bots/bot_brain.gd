@@ -424,6 +424,13 @@ func think_slot() -> bool:
 ## T-237: forgets what was in or out of reach (a door opened, the bot was moved).
 func forget_reach() -> void:
 	_reach_cache.clear()
+	# T-251: and where to stand to use things, and the way to the power. A door just opened: the agent bought the last
+	# door on the way to Map 0's lever (three doors down since UPDATE 19), still held "no stand point at the lever"
+	# (4 s) and "no way to the power" (3 s) from its walk up to the door, found nothing to do and ran back to the
+	# taproom with the lever 8 m in front of it (ai_soak botmode: power_round 0 in three of four runs)
+	_stand_cache.clear()
+	if economy != null:
+		economy.forget_power_plan()
 
 
 ## T-071: the player bot's body is the local Player: its camera and viewmodel follow what the brain did this frame.
@@ -1322,10 +1329,38 @@ func _reachable(p: Vector3) -> bool:
 	return ok
 
 
+## T-251 (found by smoke_bots; there since the cellar hatch's climb link of T-229): the closed bought door `pos` waits
+## behind: the nearest shut BuyDoor that opens its zone; null when the zone is open, `pos` is in no zone, or no door
+## opens it (the start room, open ground). Map 0's navmesh reaches the Old Cellar through the bolted hatch's link
+## without crossing a bought door, so a path check alone called the Old Cellar's ammo box (and, now that the tonic
+## machines are dealt all over the map, a machine down there) reachable while Door_OldCellar was shut: a dry bot
+## standing in the taproom over that box, 3 m away on the flat and a floor below, chose it and stood there.
+func shut_door_of(pos: Vector3) -> BuyDoor:
+	var zone: StringName = ZoneVolume.zone_at(get_tree(), pos + Vector3.UP * 0.3)
+	if zone == &"" or GameState.is_zone_open(zone):
+		return null
+	if ZoneVolume.zone_at(get_tree(), player.global_position + Vector3.UP * 0.3) == zone:
+		return null   # (it stands in that zone itself: a test or a script put it there)
+	var best: BuyDoor = null
+	var best_d: float = INF
+	for d: BuyDoor in _doors:
+		if not is_instance_valid(d) or not (d.opens_zone == zone or d.also_opens.has(String(zone))):
+			continue
+		if d.is_open:
+			return null
+		var dd: float = _flat(d.global_position, player.global_position)
+		if dd < best_d:
+			best_d = dd
+			best = d
+	return best
+
+
 func _reachable_now(p: Vector3) -> bool:
 	var dest: Vector3 = snap(p)
 	if dest.distance_to(p) > 2.0:
 		return false
+	if shut_door_of(dest) != null:
+		return false   # T-251: in a zone whose bought door is still shut, whatever the navmesh says (see shut_door_of)
 	var path: PackedVector3Array = open_path(player.global_position, dest)
 	return not path.is_empty() and path[path.size() - 1].distance_to(dest) < 1.5
 

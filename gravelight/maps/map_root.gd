@@ -119,6 +119,7 @@ func _ready() -> void:
 	JakubCompanion.attach(self)   # the prisoner companion (U02 section 6.2): his cage on Map 0, or he travels with you
 	PlayerBot.attach(self)   # player bot mode (T-071): off until F6 / the pause menu / `botmode on` / --botmode
 	GLBus.match_started.emit(map_id)
+	PerkLayout.attach(self)   # T-251: the tonic machines dealt onto the map's perk spots from the match seed (every peer the same)
 	Campaign.restore_flags(self)   # UPDATE 07 (T-114): the acts' carried flags (london_seen, bomb_*, ...)
 	BankBranch.attach(self)   # T-136: the savings bank's interest on every map, a branch on Map 0 and Kaltenbrunn
 	MapCompanion.attach(self)   # T-135: one more companion per map (after the flags: Jette follows you between acts)

@@ -105,7 +105,17 @@ func test_perk_where_price_and_zone() -> void:
 	var md: MapData = MapData.for_map(&"map00_crossroads")
 	assert_not_null(md)
 	if md != null:
-		assert_eq(PauseMenu.perk_where(&"ironhide_stout", md), "2,500 Scrip  ·  Helvetia Cellar", "the Inn's cabinets stand in the cellar")
+		# T-251: the Inn's cabinets are dealt onto perk spots all over the map: the line names the zone of the row's place
+		# (the baked rows hold the seed-0 deal; a match re-reads them where its own deal stands the machines)
+		var row: Dictionary = {}
+		for p: Dictionary in md.pois_of_type("perk"):
+			if str((p.get("data", {}) as Dictionary).get("perk_id", "")) == "ironhide_stout":
+				row = p
+		assert_false(row.is_empty(), "the Inn has an Ironhide row")
+		if not row.is_empty():
+			var zone: String = md.zone_label_at(row["pos"] as Vector3)
+			assert_ne(zone, "", "the machine stands in a named zone")
+			assert_eq(PauseMenu.perk_where(&"ironhide_stout", md), "2,500 Scrip  ·  " + zone, "the Inn's cabinet, where it stands")
 	var kb: MapData = MapData.for_map(&"map01_kaltenbrunn")
 	if kb != null:
 		assert_true(PauseMenu.perk_where(&"twin_barrel", kb).ends_with("Salt Chapel"), "Kaltenbrunn: the Major's bitters in the chapel")

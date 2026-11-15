@@ -164,6 +164,7 @@ func _register_builtins() -> void:
 	register("perk_mastery", _cmd_perk_mastery, "perk_mastery <id|all> <points>: add mastery (unlocks tiers)")
 	register("powerup", _cmd_powerup, "powerup <id>: resupply|deaths_door|double_scrip|blackout|fortify|clearance")
 	register("crate_move", _cmd_crate_move, "Move the Requisition Crate now")
+	register("perks", _cmd_perks, "perks list|shuffle [seed]|seed <n>: where the tonic machines stand this match; deal them again now; pin the next match's deal")
 	register("crate", _cmd_crate, "crate <weapon_id>: the next crate pull gives this weapon")
 	register("fps", _cmd_fps, "Toggle FPS counter")
 	register("zombies", _cmd_zombies, "Toggle live zombie count")
@@ -619,6 +620,21 @@ func _cmd_powerup(a: PackedStringArray) -> String:
 	if a.size() > 0 and PowerupManager.force_drop(StringName(a[0])):
 		return "Dropped " + a[0]
 	return "usage: powerup resupply|deaths_door|double_scrip|blackout|fortify|clearance"
+
+
+## T-251: the per-match deal of the tonic machines onto the map's perk spots (PerkLayout).
+func _cmd_perks(a: PackedStringArray) -> String:
+	if a.size() >= 2 and a[0] == "seed":
+		PerkLayout.forced_seed = maxi(0, int(a[1]))
+		return "The next match deals its perk machines from seed %d" % PerkLayout.forced_seed
+	var pl: PerkLayout = PerkLayout.current(get_tree())
+	if pl == null:
+		return "This map does not deal its perk machines"
+	if not a.is_empty() and a[0] == "shuffle":
+		if not Net.is_authority():
+			return "Only the host deals"
+		pl.reshuffle(maxi(0, int(a[1])) if a.size() >= 2 else int(randi() & 0x7FFFFFFF))
+	return "perk seed %d: %s" % [pl.seed_value, pl.describe()]
 
 
 func _cmd_crate_move(_a: PackedStringArray) -> String:

@@ -374,6 +374,26 @@ A warm refuge you're about to lose, in a bitterly cold, huge night. All of it is
 
 A salt mine and research complex at night under snow. The map descends: **surface → administration → mine depths (level −2) → the heart (level −3).**
 
+## Map 0 cellar since UPDATE 19 (T-251; docs/u19/t251_cellar.md)
+The owner, 2026-11-14: "expand the cellar in the first map by 75% make the crucible and power two addtional doors down,
+spread perks randomly around the map". What changed in the section below:
+- **Two more rooms in a chain past the vault** (+140 m2 on 187.4, +74.7 %), floor y -3.2 like the vault:
+  the vault -> **Door_Lager (750**, zone `LAGERKELLER`, in the vault's south wall at x 25-27) -> **the Lagering Vault**
+  (x 24-34, z 31-37: brick, three tuns on cradles down its middle to loop round, a floor drain that is a ground spawn
+  from round 4) -> **Door_Dynamo (1000**, zone `MASCHINENRAUM`, in its east wall at z 34.4-36.4) -> **the Dynamo Room**
+  (x 34-44, z 31-39: whitewashed, the generator set on its plinth to loop round, the sump a ground spawn from round 4).
+- **The cellar lever and the Crucible stand in the Dynamo Room**, on its north wall (the Crucible at x 37.5, the lever at
+  x 40.5, the bench in the north-east corner: the measure they had in the vault). From the taproom they are three doors
+  deep (1500 + 750 + 1000). The lever's sweep runs Dynamo Room, Lagering Vault, vault, Old Cellar, taproom, upstairs,
+  stable; the power-on burst rises at the drain and the sump.
+- **The vault's alcove** holds the inn's wash copper under the old flue. No machine row stands in the vault any more.
+- **The twelve tonic machines are dealt onto 17 perk spots all over the map each match** (the taproom's north-west
+  corner, the east guest room, the upstairs hall, the attic, the stable, the hayloft, the yard's two fences, the
+  stable's east wall and the carters' road outside, the vault's east and south walls, the bay, the Old Cellar's vault
+  twice, the Lagering Vault, the Dynamo Room): `PerkLayout` from the match seed, rules in
+  `data/gravelight/perk_layout.json`; a spot without a machine shows a nailed shipping crate. Machines still need the
+  lever (Second Wind pours without it solo, never stands in the taproom and is always one door from it).
+
 ## Map 0 cellar: the Helvetia machines (T&C M2, DECISIONS T-027)
 Door 3 (**1500**, zone `CELLAR`) is in the taproom's east wall at z 10.7–12.3. The M1 Garand wall-buy moved north along that wall to z 4. Through the door:
 - **Stair hall** (x 24–28, z 10–19): a ramp down from the ground landing to the cellar floor (y −3.2).

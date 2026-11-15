@@ -182,7 +182,10 @@ func _check_static() -> void:
 	# zones
 	for zc: Array in [[Vector3(20, 0, -8), &"GROUNDS", true], [Vector3(45, 0, 30), &"GROUNDS", true], [Vector3(18, 0, 56), &"GROUNDS", true],
 			[Vector3(3.45, -1.3, -1.0), &"GROUNDS", true], [TAPROOM, &"TAPROOM", false], [Vector3(18, 0, 41), &"YARD", false],
-			[Vector3(19.5, 3.8, -1.5), &"", false], [Vector3(30, -3.2, 25), &"CELLAR", false], [Vector3(12, -3.2, 8), &"OLD_CELLAR", false]]:
+			[Vector3(19.5, 3.8, -1.5), &"", false], [Vector3(30, -3.2, 25), &"CELLAR", false], [Vector3(12, -3.2, 8), &"OLD_CELLAR", false],
+			# T-251: the two rooms past the vault are zones of their own; the yard and the field over them are not cellar
+			[Vector3(30, -3.2, 34.9), &"LAGERKELLER", false], [Vector3(41.5, -3.2, 36.5), &"MASCHINENRAUM", false],
+			[Vector3(30, 0, 35.5), &"YARD", false], [Vector3(40, 0, 35.5), &"GROUNDS", true]]:
 		var zid: StringName = ZoneVolume.zone_at(get_tree(), zc[0])
 		var roam: bool = ZoneVolume.roam_at(get_tree(), zc[0])
 		var okz: bool = zid == zc[1] and roam == bool(zc[2])

@@ -437,7 +437,15 @@ static func errand_for(step: Dictionary, brain: BotBrain) -> Dictionary:
 			if pm == null or String(pm.perk_id) != str(step["perk"]) or not pm.can_interact(brain.player) or not pm.is_powered():
 				continue
 			var price: int = PerkManager.price(pm.perk_id)
-			if scrip < price + keep or not brain.squad.can_claim(pm, pid) or not brain.reachable(BotBrain._front_of(pm)):
+			if not brain.reachable(BotBrain._front_of(pm)):
+				# T-251: this match's deal stood the machine behind a door the plan has not opened (Map 0's tonics are
+				# dealt onto perk spots all over the map): the step's errand is the closed door on the way to it
+				var gate: BuyDoor = brain.economy.door_toward(BotBrain._front_of(pm)) if brain.economy != null else null
+				if gate != null and gate.can_interact(brain.player) and scrip >= gate.cost + keep and brain.squad.can_claim(gate, pid):
+					return {"node": gate, "kind": "door", "value": 0.9, "cost": gate.cost,
+						"label": "open the %s (%d Scrip) (the way to %s)" % [BotBrain.door_label(gate), gate.cost, PerkManager.display_name(pm.perk_id)]}
+				continue
+			if scrip < price + keep or not brain.squad.can_claim(pm, pid):
 				continue
 			return {"node": pm, "kind": "perk", "value": 0.9, "cost": price, "label": "drink %s (%d Scrip) (the plan)" % [PerkManager.display_name(pm.perk_id), price]}
 	elif step.has("gun"):

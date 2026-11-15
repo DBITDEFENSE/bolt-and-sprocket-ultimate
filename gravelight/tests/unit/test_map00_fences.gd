@@ -61,8 +61,13 @@ func test_fences_stop_shots_only_where_drawn() -> void:
 
 func test_crate_spot_footprints_are_bake_only() -> void:
 	var blocks: int = 0
+	var spots: int = 0
 	for n: Node in _all(map, []):
 		if n.is_in_group(&"bake_only"):
-			blocks += 1
 			assert_true(n is StaticBody3D, "%s is a baked footprint" % n.name)
+			if String(n.name).begins_with("NavBlock_PerkSpot_"):
+				spots += 1   # T-251: a perk spot's footprint (the machine's or the filler crate's own body stops you)
+			else:
+				blocks += 1
 	assert_eq(blocks, GEN.CRATES.size(), "one switched-off footprint per crate spot")
+	assert_eq(spots, GEN.PERK_SPOTS.size(), "and one per perk spot")

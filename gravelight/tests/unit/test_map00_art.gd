@@ -25,9 +25,14 @@ const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 ## north-east corner (the bench and two crates 0.75 m deep; the 2.65 x 1.65 m heap and the crates between the Crucible
 ## and the lever are gone), the taproom's signals crates against the east wall (TapCrates). The polygons round those four
 ## places changed; the doors, stairs, loops and spawns are where they were (smoke_map00, smoke_map00_loop).
+## Re-baked by T-251 (UPDATE 19, the owner: "expand the cellar in the first map by 75% ... spread perks randomly around the
+## map"; a layout change, not an art pass): the Lagering Vault and the Dynamo Room past the vault (gen_map00 LAG_* /
+## DYN_*) with their two doorways, the Crucible's footprint in the Dynamo Room and the wash copper's in the vault's
+## alcove, the twelve machine footprints out of the vault, and one footprint box on each of the 17 perk spots
+## (PERK_SPOTS) all over the map.
 const NAV_FP: Dictionary = {
-	"Navigation": "34288fbef085dcf414f4e581e7c11ed94161479c",   # 2026-11-12: the upstairs hall 5 m deep, the attic flight 2.1 m, the bar walkway 2.25 m
-	"NavigationBreachOpen": "d169f3d7d34a588e1d9dc661e47825847187d8a8",
+	"Navigation": "8b41645470fe8d58baf336e8a89bf148297cde80",   # 2026-11-14 (T-251)
+	"NavigationBreachOpen": "e70b4bc9a7fc2573546fdb645154ccfe157b97a2",
 }
 ## Library-prop triangles within CAM_RADIUS of any capture camera (data/gravelight/capture_cams.json).
 const CAM_RADIUS: float = 12.0
