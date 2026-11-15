@@ -10,6 +10,7 @@ extends GutTest
 
 const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 const GEN = preload("res://gravelight/tools_src/gen_map00.gd")
+const Facing: GDScript = preload("res://gravelight/tools_src/interactable_facing.gd")
 const BAY_PERKS: Array[String] = ["skyhook_sekt", "magpie_mead"]
 const CY: float = -3.2
 
@@ -270,6 +271,64 @@ func test_each_room_has_lights_a_lamp_a_spawn_and_a_burst_point() -> void:
 				bursts += 1
 		assert_gte(spawns, 1, "%s has a zombie entry of its own" % zone)
 		assert_gte(bursts, 1, "%s has a power-on burst point" % zone)
+
+
+## T-255 (the owner: "while the lights and powr are off the room in the cellar is too dark"): before the lever each
+## of the two rooms is lit by two oil lanterns you can see hanging there, no corner is further than 8 m from one (the
+## single lantern inside each door left corners 9 to 11 m away, past its reach), and the lever's bulbs still add
+## about as much light again. The bay has a second lantern over its far half.
+func test_the_rooms_are_readable_before_the_lever() -> void:
+	var bodies: Array = map.find_children("LanternBody", "MeshInstance3D", true, false)
+	var rooms: Dictionary = {
+		"LAGERKELLER": Rect2(GEN.LAG_X0, GEN.LAG_Z0, GEN.LAG_X1 - GEN.LAG_X0, GEN.LAG_Z1 - GEN.LAG_Z0),
+		"MASCHINENRAUM": Rect2(GEN.DYN_X0, GEN.DYN_Z0, GEN.DYN_X1 - GEN.DYN_X0, GEN.DYN_Z1 - GEN.DYN_Z0)}
+	for zone: String in rooms.keys():
+		var rect: Rect2 = rooms[zone]
+		var lamps: Array[OmniLight3D] = []
+		var lamp_sum: float = 0.0
+		var bulb_sum: float = 0.0
+		for c: Node in map.get_children():
+			var l: OmniLight3D = c as OmniLight3D
+			if l == null or l.position.y > -0.2 or not rect.has_point(Vector2(l.position.x, l.position.z)):
+				continue
+			if l.is_in_group(&"power_lights"):
+				bulb_sum += float(l.get_meta("energy", l.light_energy))
+			elif l.visible and l.light_energy > 0.3:
+				lamps.append(l)
+				lamp_sum += l.light_energy
+				assert_gte(l.omni_range, 10.0, "%s reaches across the room (%.1f m)" % [l.name, l.omni_range])
+				assert_lte(float(l.get("amount")), 0.15, "%s burns steadily (a 35 %% flicker dipped the room to black)" % l.name)
+				var seen: bool = false
+				for b: Node in bodies:
+					if Facing.gxf(b).origin.distance_to(l.position) < 0.5:
+						seen = true
+				assert_true(seen, "%s has its lantern hanging there: the light has a source" % l.name)
+		assert_eq(lamps.size(), 2, "%s has two lanterns that are always lit" % zone)
+		assert_gte(lamp_sum, 3.0, "%s: readable before the lever (lanterns %.2f; the one lantern was 1.35)" % [zone, lamp_sum])
+		assert_gte(bulb_sum, lamp_sum * 0.8, "%s: the lever's bulbs (%.2f) add about as much light again as the lanterns give (%.2f)" % [zone, bulb_sum, lamp_sum])
+		for corner: Vector2 in [rect.position, Vector2(rect.end.x, rect.position.y), rect.end, Vector2(rect.position.x, rect.end.y)]:
+			var near: float = INF
+			for l2: OmniLight3D in lamps:
+				near = minf(near, Vector2(l2.position.x, l2.position.z).distance_to(corner))
+			assert_lt(near, 8.0, "%s: the corner at %s is %.1f m from a lantern" % [zone, str(corner), near])
+	var bay_lamps: int = 0
+	for row: Array in GEN.BAY_LAMPS:
+		var bay: OmniLight3D = map.get_node_or_null(str(row[0])) as OmniLight3D
+		assert_not_null(bay, "%s is in the scene" % row[0])
+		if bay == null:
+			continue
+		bay_lamps += 1
+		assert_true(bay.visible and bay.light_energy >= 1.5, "%s is lit before the lever" % row[0])
+		assert_lte(float(bay.get("amount")), 0.15, "%s burns steadily" % row[0])
+		var hung: bool = false
+		for b2: Node in bodies:
+			if Facing.gxf(b2).origin.distance_to(bay.position) < 0.5:
+				hung = true
+		assert_true(hung, "%s has its lantern hanging there" % row[0])
+	assert_eq(bay_lamps, 2, "the bay has a lantern at its arch and one over its far half")
+	var far: OmniLight3D = map.get_node_or_null("CellarBayLamp2") as OmniLight3D
+	if far != null:
+		assert_lt(GEN.BAY_X1 - far.position.x, 3.0, "the second lantern hangs within 3 m of the bay's far wall (the arch's is %.1f m from it)" % (GEN.BAY_X1 - 36.75))
 
 
 func test_the_data_that_lists_the_zones_follows() -> void:

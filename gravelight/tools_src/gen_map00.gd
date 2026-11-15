@@ -1320,43 +1320,63 @@ const CELLAR_TOP: float = -0.2
 ## print on its back is read from there, JINGLES.md section 0.3) with PERK_FRONT m of floor in front; _audit_perk_spots
 ## checks every spot against everything built and drawn before the scene is saved.
 const PERK_SPOTS: Array = [
-	# the taproom's north-west corner, behind the back-bar: its back to the north wall, facing down the west walk
-	["taproom_nook", "TAPROOM", Vector3(2.25, 0, 2.0), 180.0, {"start": true}],
-	# the east guest room (the crate's room), against the wall it shares with the middle room, seen from its door
-	["guest_room", "UPSTAIRS", Vector3(18.0, UP_Y, 3.3), -90.0, {"near": true}],
-	# the upstairs hall's east end, against its south wall
-	["guest_hall", "UPSTAIRS", Vector3(18.6, UP_Y, 7.9), 0.0, {"near": true}],
-	# the attic, against the south wall east of the stair well
-	["attic", "UPSTAIRS", Vector3(16.0, ATT_Y, 8.0), 0.0, {"near": true}],
-	# the stable under the hayloft, the south wall between the window and the great doors
-	["stable", "STABLE", Vector3(14.25, 0, 32.0), 0.0, {"near": true}],
+	# T-255: every spot but the yard's west fence is flush: the back on the wall, the fine print on the side named (see
+	# PERK_FLUSH_GAP). The taproom's stood at (2.25, 2.0), 1.25 m out from the north wall in the middle of the west walk
+	# (the owner: "a bad spot"); it stands in the north-west corner itself now, its back on the north wall and its side
+	# 0.1 m from the west wall, out of the walk to the Old Cellar door and 2.4 m from the Kar98k's chalk, the clock and
+	# the photograph on the west wall.
+	["taproom_nook", "TAPROOM", Vector3(1.1, 0, 0.85), 180.0, {"start": true, "flush": -1}],
+	# the east guest room (the crate's room), on the wall it shares with the middle room, seen from its door (it stood
+	# 1.85 m out in the room, 1.5 m from the swing door: the leaf's tip is 1.8 m from its walk now)
+	["guest_room", "UPSTAIRS", Vector3(16.85, UP_Y, 2.8), -90.0, {"near": true, "flush": -1}],
+	# the upstairs hall's east end, on its south wall east of the landscape painting
+	["guest_hall", "UPSTAIRS", Vector3(20.6, UP_Y, 9.03), 0.0, {"near": true, "flush": 1}],
+	# the attic, on the south wall east of the stair well
+	["attic", "UPSTAIRS", Vector3(16.0, ATT_Y, 9.15), 0.0, {"near": true, "flush": 1}],
+	# the stable under the hayloft, on the south wall between the window and the great doors
+	["stable", "STABLE", Vector3(14.6, 0, 33.15), 0.0, {"near": true, "flush": -1}],
 	# the hayloft's south wall
-	["hayloft", "STABLE", Vector3(12.5, LOFT_TOP, 32.0), 0.0, {"near": true}],
-	# the yard's south-east corner, against the east fence south of the trough
-	["yard_east", "YARD", Vector3(32.0, 0, 46.5), 90.0, {"outdoor": true}],
-	# the yard's west fence, north of its gap
+	["hayloft", "STABLE", Vector3(12.5, LOFT_TOP, 33.15), 0.0, {"near": true, "flush": 1}],
+	# the yard's south-east corner, on the east fence between the trough and the south fence
+	["yard_east", "YARD", Vector3(33.2, 0, 46.0), 90.0, {"outdoor": true, "flush": -1}],
+	# the yard's west fence, north of its gap (a walk behind it: the fence's snow bank lies there)
 	["yard_west", "YARD", Vector3(4.25, 0, 39.5), -90.0, {"outdoor": true}],
-	# out on the grounds: against the stable's east wall, facing the field and the wreck
-	["behind_stable", "GROUNDS", Vector3(27.5, 0, 32.5), -90.0, {"outdoor": true}],
-	# on the carters' road outside the yard, against its south fence west of the gate
-	["carters_road", "GROUNDS", Vector3(15.0, 0, 50.0), 180.0, {"outdoor": true}],
-	# the Helvetia vault: the east wall north of the bay's arch (where Twin Barrel stood), the south wall, and the
-	# late-delivery bay's far wall, facing its arch
-	["vault_east", "CELLAR", Vector3(34.0, CELLAR_Y, 21.4), 90.0, {"near": true}],
-	["vault_south", "CELLAR", Vector3(31.75, CELLAR_Y, 29.0), 0.0, {"near": true}],
-	["bay", "CELLAR", Vector3(40.25, CELLAR_Y, 25.95), 90.0, {"near": true}],
-	# the Old Cellar's barrel vault: its north wall west of the loop, its south wall west of the breach
-	["old_vault_north", "OLD_CELLAR", Vector3(15.0, CELLAR_Y, 2.0), 180.0, {"near": true}],
-	["old_vault_south", "OLD_CELLAR", Vector3(19.0, CELLAR_Y, 13.75), 0.0, {"near": true}],
-	# the Lagering Vault, against its south wall opposite Door_Lager; the Dynamo Room's south wall east of the set
-	["lager", "LAGERKELLER", Vector3(25.6, CELLAR_Y, 35.0), 0.0, {}],
-	["dynamo", "MASCHINENRAUM", Vector3(42.3, CELLAR_Y, 37.0), 0.0, {}],
+	# out on the grounds: on the stable's east wall, facing the field and the wreck
+	["behind_stable", "GROUNDS", Vector3(26.35, 0, 31.9), -90.0, {"outdoor": true, "flush": 1}],
+	# on the carters' road outside the yard, on its south fence west of the gate
+	["carters_road", "GROUNDS", Vector3(15.0, 0, 48.9), 180.0, {"outdoor": true, "flush": 1}],
+	# the Helvetia vault: on the east wall north of the bay's arch, beside the bench (where Twin Barrel stood), on the
+	# south wall, and on the late-delivery bay's far wall, facing its arch. (T-255: on their walls too. With the rows
+	# gone a cabinet or a crate a metre out from a cellar wall stood as free on the floor as the taproom's did.)
+	["vault_east", "CELLAR", Vector3(35.15, CELLAR_Y, 20.9), 90.0, {"near": true, "flush": -1}],
+	["vault_south", "CELLAR", Vector3(31.75, CELLAR_Y, 30.15), 0.0, {"near": true, "flush": 1}],
+	["bay", "CELLAR", Vector3(41.35, CELLAR_Y, 25.95), 90.0, {"near": true, "flush": 1}],
+	# the Old Cellar's barrel vault: on its north wall west of the loop, and on its east wall south of the racks (the
+	# id is from T-251, when it stood out from the south wall's wine rack: a new id would move every seed's deal)
+	["old_vault_north", "OLD_CELLAR", Vector3(15.0, CELLAR_Y, 0.85), 180.0, {"near": true, "flush": -1}],
+	["old_vault_south", "OLD_CELLAR", Vector3(23.15, CELLAR_Y, 12.5), 90.0, {"near": true, "flush": -1}],
+	# the Lagering Vault, on its south wall opposite Door_Lager; the Dynamo Room's south wall east of the set
+	["lager", "LAGERKELLER", Vector3(25.95, CELLAR_Y, 36.15), 0.0, {"flush": -1}],
+	["dynamo", "MASCHINENRAUM", Vector3(42.3, CELLAR_Y, 38.15), 0.0, {"flush": -1}],
 ]
+## The guest rooms' swing doors (SwingDoor, build_reactive): [hinge x, flipped (the leaf runs along -X), room]. They
+## open into the room (-Z) from the hall wall's north face; _spot_grid_build keeps the perk spots out of their swing.
+const ROOM_DOORS: Array = [[6.5, true, 1], [11.0, false, 2], [19.5, false, 3]]
+const ROOM_DOOR_W: float = 1.5
+const ROOM_DOOR_OPEN: float = 100.0
 ## The floor a spot keeps: the widest machine (the Packmule wagon, 1.7 m) by the deepest (the Ironhide barrel, 1.2 m).
 const PERK_SPOT_W: float = 1.7
 const PERK_SPOT_D: float = 1.2
 const PERK_BACK: float = 1.0
 const PERK_FRONT: float = 1.2
+## T-255 (the owner, on the taproom's spot: "this perk location is a bad spot": a crate standing 1.25 m out from the
+## wall, in the walk): a spot flagged "flush" stands with its back on the wall (the deepest machine PERK_FLUSH_GAP off
+## the wall's face; PerkSpot.stand_transform moves a shallower cabinet and the filler crate back to the same line) and
+## the machine's fine print hangs on its side instead of its back: "flush": 1 on its local +X side, -1 on -X, with
+## PERK_SIDE m of walk kept beside it there. Every spot is flush but the yard's west fence (the fence's snow bank
+## lies where the cabinet would stand, so that one keeps T-251's walk behind it and the fine print on its back).
+const PERK_FLUSH_GAP: float = 0.1
+const PERK_SIDE: float = 0.9
 const PerkShuffleScript: Script = preload("res://gravelight/world/perk_shuffle.gd")
 ## T-179 (the owner: "two perks that aren't in any of the maps ... expand the cellar area a little bit, add those
 ## perks"): the NACHLIEFERUNG bay, a 6.2 x 7 m vault east of the Helvetia cellar under the field (x 36..42.2,
@@ -1402,6 +1422,24 @@ const DYN_SET: Rect2 = Rect2(37.8, 34.7, 2.4, 1.2)   # the generator set's plint
 const DYN_CRUCIBLE: Vector3 = Vector3(DYN_X1 - 6.5, CELLAR_Y, DYN_Z0 + 0.95)
 const DYN_LEVER: Vector3 = Vector3(DYN_X1 - 3.5, CELLAR_Y + 0.3, DYN_Z0 + 0.35)
 const DYN_BULBS: Array = [Vector3(35.9, CELLAR_Y + 2.55, 37.0), Vector3(41.6, CELLAR_Y + 2.55, 33.3), Vector3(40.6, CELLAR_Y + 2.55, 37.4)]
+## T-255 (the owner: "while the lights and powr are off the room in the cellar is too dark"): each room had one oil
+## lantern inside its door (energy 0.9, range 6 m, flickering by 35 %) for a room 10 m long, so its far half was
+## black before the lever (Forward+ frames: 87 to 98 % of the picture under 12/255; the Helvetia vault 42 to 49 %, the
+## Old Cellar 47 %). Two lanterns a room now, hung where the player sees them as the source: one inside the door, one
+## over the far aisle, with a steady flame (0.12). The brick Lagering Vault takes less than the bigger whitewashed
+## Dynamo Room; both stay under what the lever's three bulbs add. [light name, glass position, energy, range];
+## _dress_deep_cellar hangs the lanterns, build_deep_cellar_gameplay makes the lights 0.15 m under them.
+const DEEP_LAMPS: Array = [
+	["LagerLamp", Vector3(27.6, CELLAR_Y + 2.2, 31.75), 1.15, 9.0], ["LagerLamp2", Vector3(31.6, CELLAR_Y + 2.2, 36.05), 1.05, 9.0],
+	["DynamoLamp", Vector3(34.7, CELLAR_Y + 2.2, 33.6), 1.75, 10.0], ["DynamoLamp2", Vector3(41.9, CELLAR_Y + 2.2, 35.3), 1.75, 10.0],
+]
+## T-255: the late-delivery bay had its one lantern at the arch (0.7 over 4.5 m): its dark stone walls took nothing
+## from it and the far wall, where a perk spot is, was black before the lever (98 % of the frame under 12/255). The
+## arch's lantern is 1.1 over 7 m now and a second hangs over the bay's south half. [light name, glass position,
+## energy, range].
+const BAY_LAMPS: Array = [
+	["CellarBayLamp", Vector3(36.75, CELLAR_Y + 2.15, 24.55), 1.1, 7.0], ["CellarBayLamp2", Vector3(39.7, CELLAR_Y + 2.15, 27.9), 1.3, 7.5],
+]
 var _lager_lit: Node3D    # the lit bulb glass of the two new rooms (shown with their first bulb light)
 var _dynamo_lit: Node3D
 ## Same as PerkMachine._shape_footprint (that script needs the autoloads, which a --script run doesn't have).
@@ -2205,7 +2243,8 @@ func _dress_cellar_bay(parent: Node3D) -> void:
 	Props.cable(g, Vector3(in0, cl, am), Vector3(BAY_BULB.x, cl, am), 0.05, 0.015, 6)
 	Props.pendant(g, BAY_BULB, top - 0.02, _cellar_lit, "tin")
 	Props.pipe(g, Vector3(in0 + 0.05, cy + 2.7, zn + 0.07), Vector3(in1 - 0.05, cy + 2.7, zn + 0.07), 0.03, "iron")
-	Props.lantern(g, Vector3(36.75, cy + 2.15, 24.55), top - 0.02)   # lit by CellarBayLamp (build_cellar_gameplay)
+	for bl: Array in BAY_LAMPS:   # lit by CellarBayLamp, CellarBayLamp2 (build_cellar_gameplay)
+		Props.lantern(g, bl[1], top - 0.02)
 	# ---- the far wall between the machines: the delivery note pinned to a board (T-247: the maker's name painted
 	# over it and the note's typed lines are gone; the sheet reads as an old docket from across the bay)
 	Props.block(g, Vector3(in1 - 0.03, cy + 0.95, am - 0.36), Vector3(in1, cy + 1.55, am + 0.36), "board_wood")
@@ -2640,7 +2679,8 @@ func _dress_deep_cellar(parent: Node3D) -> void:
 	Props.cable(g, Vector3((LAG_BULBS[2] as Vector3).x, cl, (LAG_BULBS[2] as Vector3).z), Vector3(lx1, cl, 35.4), 0.04, 0.015, 5)
 	for bp: Vector3 in LAG_BULBS:
 		Props.pendant(g, bp, top - 0.02, _lager_lit, "tin")
-	Props.lantern(g, Vector3(27.6, cy + 2.2, 31.75), top - 0.02)   # lit by LagerLamp (build_deep_cellar_gameplay)
+	for dl: Array in DEEP_LAMPS:   # lit by LagerLamp, LagerLamp2, DynamoLamp, DynamoLamp2 (build_deep_cellar_gameplay)
+		Props.lantern(g, dl[1], top - 0.02)
 	Props.pipe(g, Vector3(lx0 + 0.07, cy + 2.7, lz0 + 0.05), Vector3(lx0 + 0.07, cy + 2.7, lz1 - 0.05), 0.035, "iron")
 	Props.cobweb(g, Vector3(lx0, top - 0.02, lz1), 90.0, 0.9)
 	Props.cobweb(g, Vector3(lx1, top - 0.02, lz0), -90.0, 0.8)
@@ -2714,7 +2754,6 @@ func _dress_deep_cellar(parent: Node3D) -> void:
 	Props.cable(g, Vector3((DYN_BULBS[1] as Vector3).x, cl, (DYN_BULBS[1] as Vector3).z), Vector3(fx, cl, dz0 + 0.12), 0.05, 0.015, 6)
 	for bp2: Vector3 in DYN_BULBS:
 		Props.pendant(g, bp2, top - 0.02, _dynamo_lit, "tin")
-	Props.lantern(g, Vector3(34.7, cy + 2.2, 33.6), top - 0.02)   # lit by DynamoLamp
 	Props.cobweb(g, Vector3(dx1, top - 0.02, dz1), 180.0, 0.9)
 	Props.cobweb(g, Vector3(dx0, top - 0.02, dz1), 90.0, 0.7)
 	for holder: Node3D in [_lager_lit, _dynamo_lit]:
@@ -4430,9 +4469,9 @@ func build_reactive() -> void:
 		r.add_child(paper)
 	# the guest rooms' doors, left ajar, opening into the room: Room 1's hinged on its east jamb so the leaf never
 	# hides the MP40 on the west wall from the doorway; Rooms 2 and 3 on their west jambs
-	for dd: Array in [[6.5, true, 1], [11.0, false, 2], [19.5, false, 3]]:
+	for dd: Array in ROOM_DOORS:
 		var sd: Node3D = _scripted(Node3D.new(), "res://gravelight/world/reactive/swing_door.gd", "RoomDoor%d" % int(dd[2]), {
-			"width": 1.5, "height": 2.15, "rest_deg": 70.0, "open_deg": 100.0, "flip": dd[1]})
+			"width": ROOM_DOOR_W, "height": 2.15, "rest_deg": 70.0, "open_deg": ROOM_DOOR_OPEN, "flip": dd[1]})
 		sd.position = Vector3(float(dd[0]), UP_Y, HALL_Z0 - T * 0.5)
 		r.add_child(sd)
 	# hay that puffs underfoot: the straw on the stable floor, the hay pile, the loft's boards
@@ -4574,6 +4613,16 @@ func _spot_grid_build() -> void:
 	for lp: Array in _lib_props:
 		var o: Vector3 = (lp[1] as Transform3D).origin
 		_spot_grid_add(AABB(o + Vector3(-0.3, 0.0, -0.3), Vector3(0.6, 0.8, 0.6)), "lib:" + str(lp[0]))
+	# T-255: the guest rooms' swing doors are built at load (SwingDoor), so nothing above sees them: the box each leaf
+	# sweeps from shut to pushed right open (T-251's guest-room spot had the leaf's tip in the corner of its walk)
+	for dd: Array in ROOM_DOORS:
+		var hinge: Vector3 = Vector3(float(dd[0]), UP_Y, HALL_Z0 - T * 0.5)
+		var dir: float = -1.0 if bool(dd[1]) else 1.0   # (a flipped leaf runs along -X from its hinge)
+		var tip_shut: float = hinge.x + dir * ROOM_DOOR_W
+		var tip_open: float = hinge.x + dir * ROOM_DOOR_W * cos(deg_to_rad(ROOM_DOOR_OPEN))
+		var x0: float = minf(minf(hinge.x, tip_shut), tip_open)
+		var x1: float = maxf(maxf(hinge.x, tip_shut), tip_open)
+		_spot_grid_add(AABB(Vector3(x0, UP_Y + 0.05, hinge.z - ROOM_DOOR_W), Vector3(x1 - x0, 2.1, ROOM_DOOR_W)), "the swing of RoomDoor%d" % int(dd[2]))
 	# what a machine must keep away from: [label, position, radius]
 	_spot_keep.clear()
 	for d: Array in [["Door_Upstairs", Vector3(STAIR_X1, 0, 15.1)], ["Door_Stable", Vector3(20.0, 0, 16.0)], ["Door_Yard", Vector3(8.0, 0, 34.0)],
@@ -4670,13 +4719,18 @@ func _spot_grid_build() -> void:
 
 ## The boxes a machine on a spot keeps (world AABBs; yaw is a multiple of 90): [the footprint to the tallest cabinet's
 ## top, the walk in front and the walk behind to head height].
-func _spot_boxes(pos: Vector3, yaw: float) -> Array:
+func _spot_boxes(pos: Vector3, yaw: float, flush: int = 0) -> Array:
 	var b: Basis = Basis(Vector3.UP, deg_to_rad(yaw))
 	var out: Array = []
-	for r: Array in [[Vector3(-PERK_SPOT_W * 0.5, 0.08, -PERK_SPOT_D * 0.5), Vector3(PERK_SPOT_W * 0.5, 2.45, PERK_SPOT_D * 0.5)],
+	var rows: Array = [[Vector3(-PERK_SPOT_W * 0.5, 0.08, -PERK_SPOT_D * 0.5), Vector3(PERK_SPOT_W * 0.5, 2.45, PERK_SPOT_D * 0.5)],
 			[Vector3(-PERK_SPOT_W * 0.5, 0.08, -PERK_SPOT_D * 0.5 - PERK_FRONT), Vector3(PERK_SPOT_W * 0.5, 2.0, -PERK_SPOT_D * 0.5)],
 			[Vector3(-PERK_SPOT_W * 0.5, 0.08, PERK_SPOT_D * 0.5), Vector3(PERK_SPOT_W * 0.5, 2.0, PERK_SPOT_D * 0.5 + PERK_BACK)],
-			[Vector3(-0.3, 0.5, PERK_SPOT_D * 0.5 + PERK_BACK), Vector3(0.3, 1.5, PERK_SPOT_D * 0.5 + PERK_BACK + 0.6)]]:   # the wall behind
+			[Vector3(-0.3, 0.5, PERK_SPOT_D * 0.5 + PERK_BACK), Vector3(0.3, 1.5, PERK_SPOT_D * 0.5 + PERK_BACK + 0.6)]]   # the wall behind
+	if flush != 0:   # T-255: the walk beside it (the fine print's side), and the wall right behind it (within 0.3 m)
+		var s: float = float(flush)
+		rows[2] = [Vector3(s * PERK_SPOT_W * 0.5, 0.08, -PERK_SPOT_D * 0.5), Vector3(s * (PERK_SPOT_W * 0.5 + PERK_SIDE), 2.0, PERK_SPOT_D * 0.5 - 0.15)]
+		rows[3] = [Vector3(-0.3, 0.5, PERK_SPOT_D * 0.5 + 0.02), Vector3(0.3, 1.5, PERK_SPOT_D * 0.5 + 0.3)]
+	for r: Array in rows:
 		var p0: Vector3 = pos + b * (r[0] as Vector3)
 		var p1: Vector3 = pos + b * (r[1] as Vector3)
 		out.append(AABB(p0.min(p1), (p1 - p0).abs()))
@@ -4730,10 +4784,10 @@ static func _seg_dist(p: Vector3, a: Vector3, b: Vector3) -> float:
 
 
 ## What is wrong with a machine at `pos` facing `yaw` ([] = nothing). `fast`: stop at the first problem (the survey).
-func _spot_problems(pos: Vector3, yaw: float, need_wall: bool, need_nav: bool, fast: bool = false) -> PackedStringArray:
+func _spot_problems(pos: Vector3, yaw: float, need_wall: bool, need_nav: bool, fast: bool = false, flush: int = 0) -> PackedStringArray:
 	var out: PackedStringArray = []
-	var boxes: Array = _spot_boxes(pos, yaw)
-	var names: Array = ["the machine", "the walk in front", "the walk behind"]
+	var boxes: Array = _spot_boxes(pos, yaw, flush)
+	var names: Array = ["the machine", "the walk in front", "the walk behind" if flush == 0 else "the walk beside it"]
 	for i: int in 3:
 		var hits: PackedStringArray = _spot_hits(boxes[i])
 		if not hits.is_empty():
@@ -4777,12 +4831,12 @@ func _audit_perk_spots() -> int:
 	var ids: Dictionary = {}
 	for sp: Array in PERK_SPOTS:
 		var flags: Dictionary = sp[4]
-		var probs: PackedStringArray = _spot_problems(sp[2], float(sp[3]), not bool(flags.get("free", false)), true)
+		var probs: PackedStringArray = _spot_problems(sp[2], float(sp[3]), not bool(flags.get("free", false)), true, false, int(flags.get("flush", 0)))
 		if ids.has(str(sp[0])):
 			probs.append("its id is used twice")
 		ids[str(sp[0])] = true
 		per_zone[str(sp[1])] = int(per_zone.get(str(sp[1]), 0)) + 1
-		print("PERKSPOT_AUDIT %-14s %-13s %s%s" % [str(sp[0]), str(sp[1]), "clear" if probs.is_empty() else "BLOCKED: ", "; ".join(probs)])
+		print("PERKSPOT_AUDIT %-14s %-13s %-6s %s%s" % [str(sp[0]), str(sp[1]), "flush" if int(flags.get("flush", 0)) != 0 else "walk", "clear" if probs.is_empty() else "BLOCKED: ", "; ".join(probs)])
 		if not probs.is_empty():
 			bad += 1
 	for z: String in per_zone.keys():
@@ -4799,7 +4853,16 @@ func _audit_perk_spots() -> int:
 ## "SURVEY <region> <x> <z> <yaw>" lines. GL_PERK_SURVEY=free also lists the ones with nothing behind them.
 func _survey_perk_spots() -> void:
 	_spot_grid_build()
+	# T-255: GL_PERK_PROBE="x,y,z,yaw,flush;x,y,z,yaw,flush": what is wrong with a machine at exactly these places
+	if OS.get_environment("GL_PERK_PROBE") != "":
+		for row: String in OS.get_environment("GL_PERK_PROBE").split(";", false):
+			var v: PackedFloat64Array = row.split_floats(",")
+			if v.size() >= 5:
+				var probs: PackedStringArray = _spot_problems(Vector3(v[0], v[1], v[2]), v[3], true, true, false, int(v[4]))
+				print("PROBE %s: %s" % [row, "clear" if probs.is_empty() else "; ".join(probs)])
+		return
 	var free_too: bool = OS.get_environment("GL_PERK_SURVEY") == "free"
+	var flush_mode: bool = OS.get_environment("GL_PERK_SURVEY") == "flush"
 	var regions: Array = [
 		["TAPROOM", 0.0, Rect2(0.15, 0.15, 23.7, 15.7), 0.25], ["UPSTAIRS", UP_Y, Rect2(0.15, 0.15, 23.7, 9.7), 0.25], ["ATTIC", ATT_Y, Rect2(0.15, 0.15, 23.7, 9.7), 0.25],
 		["STABLE", 0.0, Rect2(STB_X0, STB_Z0, STB_X1 - STB_X0, STB_Z1 - STB_Z0), 0.25], ["LOFT", LOFT_TOP, Rect2(STB_X0, STB_Z0, STB_X1 - STB_X0, STB_Z1 - STB_Z0), 0.25],
@@ -4811,7 +4874,7 @@ func _survey_perk_spots() -> void:
 	]
 	for r: Array in regions:
 		var rect: Rect2 = r[2]
-		var step: float = float(r[3])
+		var step: float = float(r[3]) * (0.5 if flush_mode else 1.0)   # (a flush spot's wall must be within 0.3 m of its back)
 		var n: int = 0
 		var x: float = rect.position.x
 		while x <= rect.end.x:
@@ -4819,6 +4882,12 @@ func _survey_perk_spots() -> void:
 			while z <= rect.end.y:
 				for yaw: float in [0.0, 90.0, 180.0, -90.0]:
 					var pos: Vector3 = Vector3(x, float(r[1]), z)
+					if flush_mode:   # T-255: back on the wall, the fine print's walk on either side
+						for side: int in [1, -1]:
+							if _spot_problems(pos, yaw, true, false, true, side).is_empty() and _spot_problems(pos, yaw, true, true, false, side).is_empty():
+								print("SURVEY %s %.2f %.2f %d flush %d" % [str(r[0]), x, z, int(yaw), side])
+								n += 1
+						continue
 					if _spot_problems(pos, yaw, true, false, true).is_empty():
 						if _spot_problems(pos, yaw, true, true).is_empty():
 							print("SURVEY %s %.2f %.2f %d wall" % [str(r[0]), x, z, int(yaw)])
@@ -5478,7 +5547,9 @@ func build_cellar_gameplay() -> void:
 	_lamp("CellarHallLamp", Vector3(26.0, 2.5, 10.8), Color(1.0, 0.72, 0.45), 1.0, 7.0, false, true)
 	_lamp("CellarStairLamp", Vector3(26.0, cy + 2.3, 19.6), Color(1.0, 0.7, 0.4), 1.0, 6.5, false, true)
 	# T-179: the late-delivery bay's oil lantern by the arch, always lit, so its two machines read before the lever
-	_lamp("CellarBayLamp", Vector3(36.75, cy + 1.95, 24.55), Color(1.0, 0.7, 0.42), 0.7, 4.5, false, true)
+	# (T-255: two, with a steady flame: BAY_LAMPS)
+	for bl: Array in BAY_LAMPS:
+		_lamp(str(bl[0]), (bl[1] as Vector3) - Vector3(0, 0.2, 0), Color(1.0, 0.7, 0.42), float(bl[2]), float(bl[3]), false, true, 0.12)
 	var first_bulb: OmniLight3D = null
 	for lp: Vector3 in CELLAR_BULBS + [BAY_BULB]:
 		var l: OmniLight3D = OmniLight3D.new()
@@ -5541,8 +5612,8 @@ func build_deep_cellar_gameplay() -> void:
 	sw.position = DYN_LEVER
 	sw.rotation.y = deg_to_rad(180)
 	gameplay.add_child(sw)
-	_lamp("LagerLamp", Vector3(27.6, cy + 2.05, 31.75), Color(1.0, 0.7, 0.4), 0.9, 6.0, false, true)
-	_lamp("DynamoLamp", Vector3(34.7, cy + 2.05, 33.6), Color(1.0, 0.7, 0.42), 0.9, 6.0, false, true)
+	for dl: Array in DEEP_LAMPS:   # T-255: two always-lit lanterns a room (they were one of 0.9 over 6 m each)
+		_lamp(str(dl[0]), (dl[1] as Vector3) - Vector3(0, 0.15, 0), Color(1.0, 0.7, 0.41), float(dl[2]), float(dl[3]), false, true, 0.12)
 	for set_: Array in [[LAG_BULBS, &"LAGERKELLER", "LagerBulb", _lager_lit], [DYN_BULBS, &"MASCHINENRAUM", "DynamoBulb", _dynamo_lit]]:
 		var first: OmniLight3D = null
 		for lp: Vector3 in (set_[0] as Array):
@@ -5590,7 +5661,7 @@ func build_perk_gameplay() -> void:
 		var flags: Dictionary = sp[4]
 		var ps: Node3D = _scripted(Node3D.new(), "res://gravelight/world/perk_spot.gd", "PerkSpot_" + str(sp[0]), {
 			"spot_id": StringName(str(sp[0])), "zone_id": StringName(str(sp[1])), "outdoor": bool(flags.get("outdoor", false)),
-			"start": bool(flags.get("start", false)), "near": bool(flags.get("near", false))})
+			"start": bool(flags.get("start", false)), "near": bool(flags.get("near", false)), "flush": int(flags.get("flush", 0))})
 		ps.position = sp[2]
 		ps.rotation.y = deg_to_rad(float(sp[3]))
 		gameplay.add_child(ps)
@@ -5614,6 +5685,9 @@ func build_perk_gameplay() -> void:
 		var m: Node3D = _scripted(Node3D.new(), "res://gravelight/world/perk_machine.gd", "Perk_" + str(pk["id"]), {"perk_id": StringName(str(pk["id"]))})
 		m.position = at[2]
 		m.rotation.y = deg_to_rad(float(at[3]))
+		if int((at[4] as Dictionary).get("flush", 0)) != 0:   # T-255: back on the wall (PerkSpot.stand_transform does the same each match)
+			var fpz: float = (MACHINE_FOOTPRINTS.get(str(pk["shape"]), Vector3(1.0, 2.0, 0.7)) as Vector3).z
+			m.position += Basis(Vector3.UP, m.rotation.y) * Vector3(0, 0, maxf(0.0, (PERK_SPOT_D - fpz) * 0.5))
 		gameplay.add_child(m)
 	print("perk spots: %d, machines: %d (seed-0 deal: %s)" % [PERK_SPOTS.size(), perks.size(), str(deal)])
 

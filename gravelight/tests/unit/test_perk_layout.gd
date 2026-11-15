@@ -8,6 +8,8 @@ extends GutTest
 
 const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 const GEN = preload("res://gravelight/tools_src/gen_map00.gd")
+const Facing: GDScript = preload("res://gravelight/tools_src/interactable_facing.gd")
+const Mount: GDScript = preload("res://gravelight/tools_src/story_prop_mount.gd")
 
 var map: Node
 var rules: Dictionary
@@ -68,6 +70,7 @@ func test_the_table_and_the_scene_agree() -> void:
 		assert_eq(bool(n.get("outdoor")), bool((sp[4] as Dictionary).get("outdoor", false)))
 		assert_eq(bool(n.get("start")), bool((sp[4] as Dictionary).get("start", false)))
 		assert_eq(bool(n.get("near")), bool((sp[4] as Dictionary).get("near", false)))
+		assert_eq(int(n.get("flush")), int((sp[4] as Dictionary).get("flush", 0)), "%s: flush as the table says" % id)
 	for z: String in per_zone.keys():
 		assert_lte(int(per_zone[z]), 3, "at most three spots in %s" % z)
 	assert_gte(per_zone.size(), 8, "spread over the map's zones (%s)" % str(per_zone.keys()))
@@ -115,7 +118,9 @@ func test_the_scene_holds_the_seed_zero_deal() -> void:
 		assert_not_null(m, "Perk_%s is in the scene" % pk["id"])
 		assert_not_null(s, "its spot %s is in the scene" % str(deal.get(pk["id"], "?")))
 		if m != null and s != null:
-			assert_almost_eq(m.position, s.position, Vector3(0.01, 0.01, 0.01), "%s stands on %s in the saved scene" % [pk["id"], s.name])
+			# (T-255: on a flush spot a cabinet shallower than the spot stands back on the wall)
+			var at: Vector3 = s.position + s.basis * (s as PerkSpot).stand_offset(PerkMachine._shape_footprint(str(pk["shape"])).z)
+			assert_almost_eq(m.position, at, Vector3(0.01, 0.01, 0.01), "%s stands on %s in the saved scene" % [pk["id"], s.name])
 			assert_almost_eq(m.rotation.y, s.rotation.y, 0.001)
 
 
@@ -231,6 +236,71 @@ func test_the_layout_moves_the_machines_and_shows_the_fillers() -> void:
 	one.set_machine(null)
 	assert_true((one.get_node("Filler") as Node3D).visible, "the crate is back when the machine leaves")
 	assert_eq(one.row()["id"], String(one.spot_id))
+
+
+## T-255 (the owner on the taproom's spot: "this perk location is a bad spot"; it stood 1.25 m out from the wall, in the
+## walk): the spots in the inn's rooms, the stable and outdoors are flush, with their wall right behind them.
+func test_flush_spots_stand_on_their_wall() -> void:
+	var geo: Dictionary = Facing.index_geometry(map)
+	var flush_n: int = 0
+	for sp: Array in GEN.PERK_SPOTS:
+		var side: int = int((sp[4] as Dictionary).get("flush", 0))
+		if str(sp[1]) == "TAPROOM":
+			assert_ne(side, 0, "the taproom's spot is flush against its wall")
+		if side == 0:
+			continue
+		flush_n += 1
+		assert_true(side == 1 or side == -1, "%s: flush names the fine print's side (1 or -1)" % sp[0])
+		var b: Basis = Basis(Vector3.UP, deg_to_rad(float(sp[3])))
+		# (from just behind the spot's own bake box, whose back face is the spot's back edge)
+		var back: Vector3 = (sp[2] as Vector3) + b * Vector3(0, 1.0, GEN.PERK_SPOT_D * 0.5 + 0.02)
+		var gap: float = Mount._gap(geo, back, b * Vector3(0, 0, 1)) + 0.02
+		assert_between(gap, 0.03, 0.3, "%s: the wall is right behind the spot's back edge (%.2f m)" % [sp[0], gap])
+		# nothing solid in the walk beside it, where the fine print is read
+		var beside: Vector3 = (sp[2] as Vector3) + b * Vector3(float(side) * (GEN.PERK_SPOT_W * 0.5 + 0.45), 1.0, 0.0)
+		assert_eq(Mount._inside(geo, beside), "", "%s: the walk on the fine print's side is open" % sp[0])
+	assert_gte(flush_n, 5, "the inn's and the stable's spots are flush (%d)" % flush_n)
+
+
+func test_a_flush_spot_stands_things_back_and_turns_the_fine_print() -> void:
+	var ps: PerkSpot = PerkSpot.new()
+	ps.spot_id = &"t255"
+	assert_eq(ps.stand_offset(0.6), Vector3.ZERO, "a spot with the walk behind it stands a cabinet on its origin")
+	ps.flush = -1
+	assert_almost_eq(ps.stand_offset(0.6).z, 0.3, 0.001, "a 0.6 m cabinet stands 0.3 m back on a flush spot: its back on the deepest machine's line")
+	assert_almost_eq(ps.stand_offset(PerkSpot.DEPTH).z, 0.0, 0.001, "the deepest machine does not move")
+	assert_almost_eq(PerkSpot.DEPTH, GEN.PERK_SPOT_D, 0.001, "PerkSpot and the generator agree on the spot's depth")
+	add_child_autofree(ps)
+	await get_tree().process_frame
+	var filler: Node3D = ps.get_node_or_null("Filler") as Node3D
+	assert_not_null(filler)
+	if filler != null:
+		assert_almost_eq(filler.position.z, (PerkSpot.DEPTH - PerkSpot.CRATE.z) * 0.5, 0.001, "the filler crate stands back against the wall too")
+	var m: PerkMachine = PerkMachine.new()
+	m.perk_id = &"trigger_tonic"
+	add_child_autofree(m)
+	var fp: Vector3 = PerkMachine._shape_footprint(str(GLData.table("perks")["perks"]["trigger_tonic"]["shape"]))
+	var panel: Node3D = m.get_node_or_null("FinePrintPanel") as Node3D
+	assert_not_null(panel, "the machine has its fine print")
+	if panel == null:
+		return
+	assert_almost_eq(panel.position.z, fp.z * 0.5 + 0.03, 0.001, "on its back by default")
+	m.set_panel_side(-1)
+	panel = m.get_node_or_null("FinePrintPanel") as Node3D
+	assert_not_null(panel, "the fine print is still there on a flush spot")
+	if panel != null:
+		assert_almost_eq(panel.position.x, -(fp.x * 0.5 + 0.03), 0.001, "on its -X side")
+		assert_almost_eq(panel.position.z, 0.0, 0.001)
+		assert_almost_eq((panel.basis * Vector3(0, 0, -1)).x, -1.0, 0.001, "its reader side points out of that side")
+	m.set_panel_side(1)
+	panel = m.get_node_or_null("FinePrintPanel") as Node3D
+	if panel != null:
+		assert_almost_eq(panel.position.x, fp.x * 0.5 + 0.03, 0.001, "on its +X side")
+		assert_almost_eq((panel.basis * Vector3(0, 0, -1)).x, 1.0, 0.001)
+	m.set_panel_side(0)
+	panel = m.get_node_or_null("FinePrintPanel") as Node3D
+	if panel != null:
+		assert_almost_eq((panel.basis * Vector3(0, 0, -1)).z, 1.0, 0.001, "and back on its back when the deal moves it to a spot with a walk behind")
 
 
 func test_bots_and_tools_do_not_know_the_old_rows() -> void:
