@@ -1,6 +1,6 @@
 # The launcher's news, pictures and Upcoming tab, November 2026
 
-Branch `claude/launcher-news`, cut from master at `fce13444`. Not merged, not pushed.
+Branch `claude/launcher-news`, cut from master at `479f177b`. Not merged, not pushed.
 
 ## The order
 
