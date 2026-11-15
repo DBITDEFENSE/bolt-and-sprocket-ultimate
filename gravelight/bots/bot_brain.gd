@@ -1083,6 +1083,10 @@ func hold_spot() -> Dictionary:
 	for back: float in [sb, sb + 1.2, sb - 1.0, sb - 1.8]:   # T-058: back from the sill, so what climbs in is shot before it reaches us
 		for wide: float in [1.0, 2.2, -1.0]:
 			var c: Vector3 = snap(front + out_dir * back + side * wide)
+			# bot AI pass 2026-11: on the window's own floor (a taproom window's spot snapped into the cellar under it:
+			# two bots paced the bar for it in round 1), with nothing between it and the window's room side, and a way there
+			if absf(c.y - snap(front).y) > 1.0 or BotLocomotion.walled(player, front, c) or not _reachable(c):
+				continue
 			if not squad.on_human_line(c) and squad.choke_at(c).is_empty():
 				p = c
 				break
@@ -1414,6 +1418,62 @@ func reachable(p: Vector3) -> bool:
 	return _reachable(p)
 
 
+# ---------------------------------------------------------------- tactical spots (bot AI pass 2026-11)
+
+## Navmesh path checks walkable_from may still make this physics frame (TAC_PATHS a frame per bot: a retreat
+## scores a dozen spots, and only the ones a ray can't vouch for cost a path).
+const TAC_PATHS: int = 3
+var _tac_frame: int = -1
+var _tac_left: int = 0
+var tac_rejects: int = 0   # spots refused (the soak's report)
+
+
+## Pure: a path is a fair way to a spot `flat_m` away: it gets there (within 0.8 m, on its storey) and is no longer
+## than detour x the straight line + slack_m. The way round a wall to a spot 5 m off is 30 m: that is not "5 m away".
+static func path_fair(path: PackedVector3Array, dest: Vector3, flat_m: float, detour: float = 1.8, slack_m: float = 2.0) -> bool:
+	if not BotLocomotion.path_reaches(path, dest, 0.8, 1.5):
+		return false
+	var l: float = 0.0
+	for i: int in range(1, path.size()):
+		l += path[i].distance_to(path[i - 1])
+	return l <= flat_m * detour + slack_m
+
+
+## Can a body at `from` (a navmesh spot or where a player stands) step to the navmesh spot `p` more or less
+## directly? Yes when nothing a body can't pass stands between them (BotLocomotion.blocked_between: a wall, a fence,
+## a shut door, the map's edge, a sill) on one storey; otherwise only when the navmesh path there is a fair one
+## (path_fair) and crosses no shut door. Retreat, back-off, cover, hold and reload spots are tested with this:
+## `snap()` alone hands back the nearest navmesh point, which for a spot aimed at a wall is the yard on its far
+## side: the bot then stood facing the wall with no way (ai_soak bots3: four downs of one bot like that) or leaned
+## on the fence nearest to it.
+func walkable_from(from: Vector3, p: Vector3, detour: float = 1.8) -> bool:
+	if not p.is_finite() or not from.is_finite():
+		return false
+	if absf(p.y - from.y) <= 1.0 and not BotLocomotion.blocked_between(player, from, p):
+		return true
+	var f: int = Engine.get_physics_frames()
+	if f != _tac_frame:
+		_tac_frame = f
+		_tac_left = TAC_PATHS
+	if _tac_left <= 0:
+		tac_rejects += 1
+		return false   # out of path checks this frame: not vouched for, so not taken
+	_tac_left -= 1
+	var ok: bool = path_fair(open_path(snap(from), p), p, _flat(from, p), detour)
+	if not ok:
+		tac_rejects += 1
+	return ok
+
+
+## `want` snapped onto the navmesh as a spot to step to from where the bot stands: INF when the snap moved it more
+## than max_snap_m, it is on another storey, or it isn't walkable_from here.
+func step_spot(want: Vector3, max_snap_m: float = 1.5, max_dy: float = 1.2) -> Vector3:
+	var p: Vector3 = snap(want)
+	if p.distance_to(want) > max_snap_m or absf(p.y - player.global_position.y) > max_dy:
+		return Vector3.INF
+	return p if walkable_from(player.global_position, p) else Vector3.INF
+
+
 func flat_distance(p: Vector3) -> float:
 	return _flat(p, player.global_position)
 
@@ -1437,7 +1497,7 @@ func open_path(from: Vector3, dest: Vector3) -> PackedVector3Array:
 	for d: BuyDoor in _doors:
 		if is_instance_valid(d) and not d.is_open and ZombieDirector.door_crossed(d, path):
 			return PackedVector3Array()
-	return path
+	return BotLocomotion.cut_at_edge(player, path)   # bot AI pass 2026-11: not through the map's edge into a spawn pocket
 
 
 ## Where to stand to use `node`: its use box's front, its own spot, or a ring around it, on the navmesh and

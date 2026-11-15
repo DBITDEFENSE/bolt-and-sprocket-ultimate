@@ -57,6 +57,8 @@ func walk_to(p: Vector3, tol: float, e: Dictionary, delta: float) -> bool:
 				e["state"] = "failed"
 		else:
 			e["nopath_t"] = 0.0
+	if brain.loco.gave_up():
+		e["state"] = "failed"   # bot AI pass 2026-11: the stuck ladder ran out of steps on the way: drop the errand, not lean on what is in the way
 	if not brain.aim.update(delta, true):
 		brain.idle_look(delta)
 	return false

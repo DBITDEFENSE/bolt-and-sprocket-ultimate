@@ -64,7 +64,17 @@
     "mantle_land_y": 0.3,
     "marooned_up_m": 0.4,
     "marooned_reach_m": 1.5,
-    "drop_after_s": 2.0
+    "drop_after_s": 2.0,
+    "_doc_2026_11": "Bot AI pass 2026-11. A goal with no way to it (no path, or a path that ends short of it: behind a fence or a shut door, on a floor with no way up): the body waits where the path ends instead of leaning on what is in the way; after giveup_no_way_s the brain is told (BotLocomotion.gave_up) and picks another spot or drops the errand. A follower with no way to its leader for cutoff_s, the leader cutoff_m away (or a storey apart) and not even a climb link between them, catches up by the unseen teleport. A body more than off_mesh_m beside the navmesh walks to the nearest navmesh point first (the path starts there); still off after off_mesh_snap_s without moving, it steps onto that point when it is within off_mesh_reach_m (logged as a snap). The ladder's end for a bot in plain sight, counted from its first nudge for as long as it has neither left the stuck spot (escape_m) nor arrived: after giveup_after_nudge_s the brain is told; after teleport_seen_after_nudge_s the bot itself may be in view when it is teleported (the spot it appears at still may not), after teleport_any_after_nudge_s both.",
+    "off_mesh_m": 0.55,
+    "off_mesh_snap_s": 3.0,
+    "off_mesh_reach_m": 2.5,
+    "giveup_no_way_s": 2.5,
+    "giveup_after_nudge_s": 6.0,
+    "teleport_seen_after_nudge_s": 16.0,
+    "teleport_any_after_nudge_s": 36.0,
+    "cutoff_s": 8.0,
+    "cutoff_m": 10.0
   },
   "formation": {
     "_doc": "follow(): a loose wedge round the leader, slots [angle_deg from the heading, radius_m]. still = the leader stands (heading = where they look); moving = the leader moves faster than moving_mps (heading = their velocity, the slot predicted lead_s ahead): beside and a little ahead, never in the space behind them the horde follows. A slot further than run_m away is run to. Angles are spread wide so the squad never lines up in one cone.",

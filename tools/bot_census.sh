@@ -27,6 +27,7 @@ case "$SET" in
 	tour02) F="--scenario=totenhafen --max-round=12 --tour --god --open-doors=all --power --ee=off" ;;
 	late) F="--scenario=player3 --map=map00 --max-round=30 --god --player-kit=realistic --give=mg42_up --ee=off --max-minutes=260" ;;
 	late01) F="--scenario=kaltenbrunn --max-round=30 --god --player-kit=realistic --give=mg42_up --ee=off --max-minutes=260" ;;
+	latetour) F="--scenario=player3 --map=map00 --max-round=30 --tour --god --open-doors=all --power --give=mg42_up --ee=off --max-minutes=260" ;;
 	alone) F="--scenario=bots3 --map=map00 --max-round=35 --ee=off --max-minutes=260" ;;
 	*) echo "unknown set $SET"; exit 2 ;;
 esac

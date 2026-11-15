@@ -162,6 +162,8 @@ func _build_route() -> void:
 				break
 			var q: Vector3 = NavigationServer3D.map_get_random_point(_nav(), _mask(), true)
 			var way: PackedVector3Array = NavigationServer3D.map_get_path(_nav(), here, q, true, _mask())
+			# (not a point in a spawn pocket beyond the map's edge: the navmesh runs out there, a player can't)
+			way = BotLocomotion.cut_at_edge(player, way)
 			if way.size() >= 2 and _flat(way[way.size() - 1], q) < 0.6 and absf(way[way.size() - 1].y - q.y) < 0.8:
 				pts.append(q)
 		route_name = "tour (%d points)" % pts.size()

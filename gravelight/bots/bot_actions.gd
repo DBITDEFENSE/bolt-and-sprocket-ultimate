@@ -296,8 +296,8 @@ func _spread_from_boss() -> bool:
 	var side: Vector3 = Vector3(-to_boss.z, 0.0, to_boss.x).normalized()
 	if side.dot(player.global_position - mate.global_position) < 0.0:
 		side = -side
-	var p: Vector3 = brain.snap(player.global_position + side * 2.5)
-	if brain.in_danger(p) or p.distance_to(player.global_position) < 0.8:
+	var p: Vector3 = brain.step_spot(player.global_position + side * 2.5)
+	if p == Vector3.INF or brain.in_danger(p) or p.distance_to(player.global_position) < 0.8:
 		return false
 	brain.loco.move_to(p, 0.5, 0.5)
 	return true
@@ -350,6 +350,8 @@ func _back_off(z: Zombie, dist: float, urgency: float) -> void:
 		var got: float = _flat(p, me)
 		if got < dist * 0.45 or absf(p.y - me.y) > 1.2 or brain.in_danger(p):
 			continue
+		if not brain.walkable_from(me, p):
+			continue   # (the far side of a wall or a fence: see BotBrain.walkable_from)
 		var clear: float = 9.0
 		for e: Variant in brain.perception.known:
 			clear = minf(clear, _flat((e as Dictionary)["pos"], p))
@@ -360,7 +362,10 @@ func _back_off(z: Zombie, dist: float, urgency: float) -> void:
 		if a == 0.0 and got >= dist * 0.8 and clear > 2.0:
 			break   # straight back is open: take it
 	if best == Vector3.INF:
-		best = brain.snap(me + away * dist)
+		# nowhere to step back to (a corner, a fence behind): stand and shoot rather than walk at a wall
+		_back_p = Vector3.INF
+		brain.loco.stop()
+		return
 	_back_p = best
 	brain.loco.move_to(best, urgency, 0.4)
 
@@ -409,7 +414,7 @@ func _hold(delta: float) -> void:
 ## Kites to open ground away from the crowd (toward the squad when it can), shooting on the move.
 func _retreat(delta: float) -> void:
 	_retreat_t -= delta
-	if _retreat_t <= 0.0 or _retreat_p == Vector3.INF or brain.loco.arrived():
+	if _retreat_t <= 0.0 or _retreat_p == Vector3.INF or brain.loco.arrived() or brain.loco.no_way():
 		_retreat_t = 0.5
 		_retreat_p = retreat_point()
 	var per: BotPerception = brain.perception
@@ -464,7 +469,7 @@ func retreat_point() -> Vector3:
 	away = away.normalized() if away.length() > 0.05 else Vector3.FORWARD
 	var leader: Player = brain.squad.leader_for(brain)
 	var best: Vector3 = Vector3.INF
-	var best_s: float = -INF
+	var ranked: Array = []
 	var k_n: int = int(rc.get("samples", 12))
 	for k: int in k_n:
 		var a: float = float(k) / float(k_n) * TAU + randf() * 0.3
@@ -491,12 +496,18 @@ func retreat_point() -> Vector3:
 			var bq: Vector3 = brain.snap(beyond)
 			if bq.distance_to(beyond) > 1.2 or absf(bq.y - p.y) > 1.2:
 				s -= float(rc.get("dead_end_cost", 4.0))
-		if s > best_s:
-			best_s = s
-			best = p
+		ranked.append([s, p])
+	# bot AI pass 2026-11: the best-scoring spot the bot can actually step to. The emptiest spot of all is the one
+	# behind a wall or the yard fence (no zombie is ever there), and `snap` offered it gladly: the bot stood at the
+	# wall with no path, reloading, until it went down
+	ranked.sort_custom(func(a: Array, b: Array) -> bool: return float(a[0]) > float(b[0]))
+	for r: Array in ranked:
+		if brain.walkable_from(me, r[1]):
+			best = r[1]
+			break
 	if best == Vector3.INF:
-		var fb: Vector3 = brain.snap(me + away * 2.5)
-		return fb if fb.distance_to(me) > 0.8 else Vector3.INF
+		var fb: Vector3 = brain.step_spot(me + away * 2.5)
+		return fb if fb != Vector3.INF and fb.distance_to(me) > 0.8 else Vector3.INF
 	return best
 
 
@@ -508,8 +519,11 @@ func _reload(delta: float) -> void:
 	var mate: Player = brain.squad.nearest_standing(player, player.global_position)
 	if per.nearest != null and per.nearest_d < 7.0:
 		if mate != null and _flat(mate.global_position, player.global_position) < 10.0:
-			var behind: Vector3 = mate.global_position + (mate.global_position - per.pos_of(per.nearest)).normalized() * 1.8
-			brain.loco.move_to(brain.snap(behind), 0.5, 0.8)
+			var behind: Vector3 = brain.snap(mate.global_position + (mate.global_position - per.pos_of(per.nearest)).normalized() * 1.8)
+			if absf(behind.y - mate.global_position.y) < 1.2 and not BotLocomotion.walled(player, mate.global_position, behind):
+				brain.loco.move_to(behind, 0.5, 0.8)
+			else:
+				_back_off(per.nearest, 3.0, 0.5)   # (the spot behind the mate is through a wall: just step back)
 		else:
 			_back_off(per.nearest, 3.0, 0.5)
 	else:
@@ -631,7 +645,7 @@ func _cover(delta: float) -> void:
 	out = out.normalized() if out.length() > 0.01 else Vector3.FORWARD
 	# beside the downed one on the far side from the threat, at cover_ring_m, shooting past them; never in the swarm
 	var side: Vector3 = Vector3(-out.z, 0.0, out.x) * (1.2 if brain.index % 2 == 0 else -1.2)
-	var spot: Vector3 = brain.snap(t.global_position - out * float(cfg("revive").get("cover_ring_m", 3.5)) + side)
+	var spot: Vector3 = cover_spot(t.global_position, out, side)
 	brain.loco.set("exempt_choke", true)
 	var per: BotPerception = brain.perception
 	if per.nearest != null and per.nearest_d < 3.0 and not per.nearest.is_crawler:
@@ -645,6 +659,21 @@ func _cover(delta: float) -> void:
 			brain.aim.plant_dome()
 	if not brain.aim.update(delta, true):
 		brain.loco.look_at_dir(out)
+
+
+## The spot to cover a downed teammate from: on the far side from the threat at cover_ring_m, else nearer, else on
+## the other flank: on their floor with nothing a body can't pass between it and them (bot AI pass 2026-11: the
+## plain snap put it outside the wall they lay against, and the coverer stood with no path while they bled out).
+## Beside them when nothing else will do.
+func cover_spot(at: Vector3, out: Vector3, side: Vector3) -> Vector3:
+	var ring: float = float(cfg("revive").get("cover_ring_m", 3.5))
+	var base: Vector3 = brain.snap(at)
+	for r: float in [ring, ring * 0.6, 1.4]:
+		for sd: Vector3 in [side, -side]:
+			var p: Vector3 = brain.snap(at - out * r + sd)
+			if absf(p.y - base.y) < 1.0 and _flat(p, at) > 0.6 and not BotLocomotion.walled(player, base, p):
+				return p
+	return base
 
 
 func _powerup(delta: float) -> void:

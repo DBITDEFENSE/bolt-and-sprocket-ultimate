@@ -15,6 +15,14 @@ extends Node
 ##   train      one bot trains a horde round the taproom loop: laps it ahead of the train, keeps it tight, stays in
 ##              the ring, and turns back when zombies cut it off
 ##   stuck      a wall across the way (not in the navmesh): repath, nudge, then a teleport only once no human sees it
+##   fence      (bot AI pass 2026-11) a goal in the field beyond the Carters' Yard's fence, the gate shut: the bot
+##              doesn't lean on the fence or wriggle: it stands where the way ends, says no_way() and gave_up()
+##   pocket     a goal in a zombie spawn pocket beyond the boundary fence (the navmesh runs out through the gap, the
+##              EdgeGate collider keeps players in): the bot stops short of the gate, says no_way(), and is never
+##              teleported out there, watched or not
+##   storey     a goal on the floor above with the stairs door shut: standing under it is not arriving
+##   watched    the wall again with the human watching all along: the brain is told (gave_up) and after
+##              teleport_seen_s the bot is moved past it anyway, to a spot nobody is looking at
 ##   budget     the layer's average tick cost per bot
 ## Scenes: loco_lab.tscn (this; args below) and smoke_bot_loco.tscn (the same script, the smoke set).
 ## Usage: godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/loco_lab.tscn [-- --only=train[,stuck] --clip]
@@ -30,7 +38,7 @@ var _map: Node3D
 var _t: float = 0.0
 var _phase: String = "boot"
 var _phase_t: float = 0.0
-var _queue: Array[String] = ["routes", "follow", "moving", "yield", "hold", "mantle", "furniture", "marooned", "door", "train", "stuck", "budget"]
+var _queue: Array[String] = ["routes", "follow", "moving", "yield", "hold", "mantle", "furniture", "marooned", "door", "train", "stuck", "fence", "pocket", "storey", "watched", "budget"]
 var _fails: PackedStringArray = []
 var _passes: int = 0
 var _done: bool = false
@@ -622,6 +630,152 @@ func _ph_stuck(delta: float) -> void:
 		return   # one full ladder: a nudge made while still watched (at 8 s) counts as progress and restarts it
 	_check(tp >= 1, "stuck: teleported once nobody saw it (%.1f s after the human looked away)" % (_phase_t - 11.0))
 	_check(b.global_position.x > 16.5, "stuck: it ended up past the wall (x %.1f)" % b.global_position.x)
+	_next()
+
+
+# ================================================================== fence (bot AI pass 2026-11)
+
+func _setup_fence() -> void:
+	_root().director.kill_all(true)
+	_place(_bots[0], Vector3(12.0, 0, 44.0))
+	_place(_bots[1], Vector3(4.0, 0, 3.0))
+	_place(_bots[2], Vector3(5.0, 0, 3.0))
+	_place(_human, Vector3(10.0, 0, 8.0))
+	var nav: RID = _human.get_world_3d().navigation_map
+	_s["goal"] = NavigationServer3D.map_get_closest_point(nav, Vector3(12.0, 0.3, 53.0))
+	_s["nudge0"] = _locos[0].nudges
+	_s["tp0"] = _locos[0].teleports
+
+
+func _ph_fence(delta: float) -> void:
+	var goal: Vector3 = _s["goal"]
+	_locos[0].move_to(goal, 0.6, 0.6)
+	_locos[1].stop()
+	_locos[2].stop()
+	_tick_locos(delta)
+	var b: Player = _bots[0]
+	if _phase_t >= 6.0 and not _s.has("p6"):
+		_s["p6"] = b.global_position
+	if _phase_t < 9.0:
+		return
+	_check(goal.z > 48.6 and absf(goal.y - b.global_position.y) < 1.0, "fence: the goal is in the field beyond the yard's south fence (z %.1f)" % goal.z)
+	_check(b.global_position.z < 48.0, "fence: the bot is still in the yard (z %.1f)" % b.global_position.z)
+	_check(_locos[0].no_way(), "fence: the layer says there is no way (no_way)")
+	_check(_locos[0].gave_up(), "fence: and tells the brain to pick another spot (gave_up)")
+	_check(not _locos[0].arrived(), "fence: it does not call that arrived")
+	_check(_flat(b.global_position, _s["p6"]) < 0.3 and b.horizontal_speed() < 0.3, "fence: it stands still where the way ends (moved %.2f m in the last 3 s)" % _flat(b.global_position, _s["p6"]))
+	_check(_locos[0].nudges == int(_s["nudge0"]) and _locos[0].teleports == int(_s["tp0"]), "fence: no wriggling and no teleport (%d nudges, %d teleports)" % [
+		_locos[0].nudges - int(_s["nudge0"]), _locos[0].teleports - int(_s["tp0"])])
+	_next()
+
+
+# ================================================================== pocket (bot AI pass 2026-11)
+
+func _setup_pocket() -> void:
+	_root().director.kill_all(true)
+	var nav: RID = _human.get_world_3d().navigation_map
+	# a spawn pocket on the grounds' south edge: the furthest-south navmesh point round x 2.7 is inside it
+	var best: Vector3 = Vector3.INF
+	for x: float in [2.7, 23.7, 44.3]:
+		var q: Vector3 = NavigationServer3D.map_get_closest_point(nav, Vector3(x, 0.3, 69.0))
+		if _flat(q, Vector3(x, 0, 69.0)) < 1.0:
+			best = q
+			break
+	_s["goal"] = best
+	if best == Vector3.INF:
+		return
+	_place(_bots[0], Vector3(best.x, 0, best.z - 9.0))
+	_place(_bots[1], Vector3(4.0, 0, 3.0))
+	_place(_bots[2], Vector3(5.0, 0, 3.0))
+	_place(_human, Vector3(10.0, 0, 8.0), 0.0)   # in the taproom, looking north: nobody sees the bot (the old teleport's condition)
+	_s["tp0"] = _locos[0].teleports
+	_s["max_z"] = -INF
+
+
+func _ph_pocket(delta: float) -> void:
+	var goal: Vector3 = _s["goal"]
+	if goal == Vector3.INF:
+		_check(false, "pocket: no spawn pocket found on the south edge")
+		_next()
+		return
+	_locos[0].move_to(goal, 0.6, 0.6)
+	_locos[1].stop()
+	_locos[2].stop()
+	_tick_locos(delta)
+	var b: Player = _bots[0]
+	_s["max_z"] = maxf(float(_s["max_z"]), b.global_position.z)
+	if _phase_t < 14.0:
+		return
+	var space: PhysicsDirectSpaceState3D = b.get_world_3d().direct_space_state
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(b.global_position + Vector3.UP, goal + Vector3.UP, BotLocomotion.MASK_EDGE)
+	_check(not space.intersect_ray(q).is_empty(), "pocket: the goal (z %.1f) is beyond the map's edge from the bot (z %.1f)" % [goal.z, b.global_position.z])
+	_check(_locos[0].teleports == int(_s["tp0"]), "pocket: never teleported toward it in 14 s unseen (%d teleports)" % (_locos[0].teleports - int(_s["tp0"])))
+	_check(float(_s["max_z"]) < goal.z - 2.0, "pocket: the body never went out there (furthest z %.1f)" % float(_s["max_z"]))
+	_check(_locos[0].no_way() and _locos[0].gave_up(), "pocket: no way, and the brain is told")
+	_check(b.horizontal_speed() < 0.3, "pocket: it stands short of the gate, not leaning on it")
+	_next()
+
+
+# ================================================================== storey (bot AI pass 2026-11)
+
+func _setup_storey() -> void:
+	var nav: RID = _human.get_world_3d().navigation_map
+	# a spot on the inn's upper floor and the taproom floor under it
+	var up: Vector3 = Vector3.INF
+	for c: Vector3 in [Vector3(12.0, 4.2, 8.0), Vector3(16.0, 4.2, 6.0), Vector3(8.0, 4.2, 10.0), Vector3(18.0, 4.2, 10.0)]:
+		var q: Vector3 = NavigationServer3D.map_get_closest_point(nav, c)
+		var under: Vector3 = NavigationServer3D.map_get_closest_point(nav, Vector3(q.x, 0.3, q.z))
+		if q.y > 2.5 and _flat(q, c) < 1.5 and under.y < 1.0 and _flat(under, q) < 0.6:
+			up = q
+			break
+	_s["up"] = up
+	if up != Vector3.INF:
+		_place(_bots[0], Vector3(up.x + 2.5, 0, up.z))
+
+
+func _ph_storey(delta: float) -> void:
+	var up: Vector3 = _s["up"]
+	if up == Vector3.INF:
+		_check(false, "storey: no upper-floor spot over the taproom floor found")
+		_next()
+		return
+	_locos[0].move_to(up, 0.5, 1.0)
+	_locos[1].stop()
+	_locos[2].stop()
+	_tick_locos(delta)
+	if _phase_t < 6.0:
+		return
+	var b: Player = _bots[0]
+	_check(b.global_position.y < 1.5, "storey: the bot is on the taproom floor, the goal %.1f m over it (the stairs door is shut)" % (up.y - b.global_position.y))
+	_check(not _locos[0].arrived(), "storey: standing under the goal is not arriving")
+	_check(_locos[0].no_way() and _locos[0].gave_up(), "storey: no way, and the brain is told")
+	_check(_locos[0].path_length_to(up) == INF, "storey: the path length there is INF (an errand gives up on it)")
+	_next()
+
+
+# ================================================================== watched (bot AI pass 2026-11)
+
+func _setup_watched() -> void:
+	_setup_stuck()
+
+
+func _ph_watched(delta: float) -> void:
+	_locos[0].move_to(Vector3(20.0, 0, 8.0), 0.5, 0.6)
+	_locos[1].stop()
+	_locos[2].stop()
+	_tick_locos(delta)
+	var b: Player = _bots[0]
+	var to: Vector3 = b.global_position - _human.global_position
+	if b.global_position.x < 16.0:
+		_human.rotation.y = atan2(-to.x, -to.z)   # the human never looks away from the stuck bot
+	if _locos[0].gave_up() and not _s.has("gave_t"):
+		_s["gave_t"] = _phase_t
+	var tp: int = _locos[0].teleports - int(_s["tp0"])
+	if tp == 0 and _phase_t < 34.0:
+		return
+	_check(_s.has("gave_t") and float(_s["gave_t"]) <= 16.0, "watched: the brain was told after %.1f s (gave_up)" % float(_s.get("gave_t", -1.0)))
+	_check(tp >= 1 and _phase_t >= 19.0, "watched: moved past the wall after %.1f s in plain sight (teleport_seen_s 20, never before)" % _phase_t)
+	_check(b.global_position.x > 16.5, "watched: it ended up past the wall (x %.1f)" % b.global_position.x)
 	_next()
 
 

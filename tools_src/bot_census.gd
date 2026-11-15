@@ -470,6 +470,7 @@ func _close_round() -> void:
 		_shots0[pid] = shots
 		_hits0[pid] = hits
 	_rs.clear()
+	print("[census] round %d over after %.0f s (t %.1f min), %d stuck episodes so far" % [_round, secs, t / 60.0, episodes.size()])
 
 
 # ================================================================== the report
