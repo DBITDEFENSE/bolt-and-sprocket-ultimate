@@ -548,17 +548,17 @@
       "id": "asphalt_snow",
       "tile_m": 2.0,
       "tint": [
-        1.5,
-        1.55,
-        1.65
+        1.4,
+        1.44,
+        1.52
       ],
       "rough": [
         0.6,
         0.95
       ],
       "grime": 0.15,
-      "normal_strength": 0.8,
-      "frost": 0.5,
+      "normal_strength": 1.2,
+      "frost": 0.35,
       "frost_height": -1000.0,
       "frost_up": 0.5,
       "detile": 0.6,
@@ -1022,9 +1022,9 @@
       "id": "factory_brick",
       "tile_m": 1.5,
       "tint": [
-        0.62,
-        0.44,
-        0.38
+        0.9,
+        0.52,
+        0.44
       ],
       "rough": [
         0.75,

@@ -78,26 +78,26 @@
  "sky_dome": {
   "_doc": "U19 (T-252): the storm over the harbour: a low, nearly closed cloud deck driven in from the sea, the grade's green-grey on its underside (the colours the flat sky gradient had), the moon a glow behind it, a star or two in the rare breaks (NightSkyDome; the Environment's own sky still lights the map).",
   "zenith": [
+   0.002,
    0.004,
-   0.008,
-   0.008
+   0.0035
   ],
   "horizon": [
-   0.012,
-   0.022,
-   0.02
+   0.006,
+   0.011,
+   0.009
   ],
   "cloud_tint": [
-   0.016,
-   0.028,
-   0.026
+   0.006,
+   0.0118,
+   0.009
   ],
   "moon_color": [
    0.4,
    0.6,
    0.58
   ],
-  "cloud_cover": 0.86,
+  "cloud_cover": 0.8,
   "cloud_scale": 0.7,
   "wind": [
    0.011,
@@ -107,6 +107,6 @@
   "moon_gain": 0.8,
   "star_gain": 0.5,
   "exposure": 1.0,
-  "deck_light": 0.03
+  "deck_light": 0.02
  }
 }
