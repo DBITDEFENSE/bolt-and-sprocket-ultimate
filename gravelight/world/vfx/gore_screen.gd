@@ -12,17 +12,17 @@ uniform sampler2D noise_tex : repeat_enable, filter_linear;
 uniform float amount = 0.0;      // 1 fresh -> 0 gone
 uniform float seed = 0.0;
 uniform float clear_radius = 0.58;
-uniform vec3 tint : source_color = vec3(0.24, 0.01, 0.016);
+uniform vec3 tint : source_color = vec3(0.2, 0.008, 0.012);
 void fragment() {
 	vec2 p = UV * 2.0 - 1.0;
 	float r = length(p * vec2(0.82, 1.0));
 	float keep = smoothstep(clear_radius, clear_radius + 0.32, r);       // nothing near the middle
 	vec2 q = UV * vec2(1.9, 1.3) + vec2(seed, seed * 0.37);
 	q.y -= (1.0 - amount) * 0.035;                                       // the drops run down as they age
-	float big = smoothstep(0.71, 0.76, texture(noise_tex, q).r);
-	float fine = smoothstep(0.7, 0.74, texture(noise_tex, q * 3.3 + 0.31).r) * 0.7;
+	float big = smoothstep(0.78, 0.82, texture(noise_tex, q).r);
+	float fine = smoothstep(0.77, 0.8, texture(noise_tex, q * 3.3 + 0.31).r) * 0.6;
 	float a = max(big, fine) * keep * smoothstep(0.0, 0.55, amount);
-	COLOR = vec4(tint * (0.75 + 0.25 * big), a * 0.82);
+	COLOR = vec4(tint * (0.7 + 0.3 * big), a * 0.55);
 }
 """
 

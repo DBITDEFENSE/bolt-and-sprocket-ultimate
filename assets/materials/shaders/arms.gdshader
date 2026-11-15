@@ -71,10 +71,10 @@ void fragment() {
 	}
 	if (gl_hand_blood > 0.001) {
 		float bn = blood_noise(v_p * 34.0) * 0.65 + blood_noise(v_p * 90.0) * 0.35;
-		float edge = 1.0 - 0.72 * gl_hand_blood;
-		float bm = smoothstep(edge, edge + 0.12, bn);
-		col = mix(col, vec3(0.13, 0.006, 0.008), bm * 0.92);     // dark, wet
-		r = mix(r, 0.2, bm);
+		float edge = 1.0 - 0.5 * gl_hand_blood;                  // at most about half the surface
+		float bm = smoothstep(edge, edge + 0.1, bn);
+		col = mix(col, vec3(0.035, 0.002, 0.003), bm * 0.85);    // dark, not a red glove
+		r = mix(r, 0.3, bm);
 	}
 	ALBEDO = col;
 	ROUGHNESS = r;

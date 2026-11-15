@@ -32,7 +32,7 @@ enum { P_MIST, P_DROPS, P_CHUNKS, P_EXIT, P_REACH, P_SIZE_MIN, P_SIZE_MAX, P_FLO
 var cfg: Dictionary = {}
 var screen: GoreScreen
 ## Marks placed / reused / refused, rays cast (tests, the dev overlay).
-var stats: Dictionary = {"marks": 0, "evicted": 0, "rejected": 0, "rays": 0, "pools": 0, "spurts": 0, "prints": 0, "sprays": 0, "walls": 0}
+var stats: Dictionary = {"marks": 0, "evicted": 0, "rejected": 0, "rays": 0, "pools": 0, "spurts": 0, "prints": 0, "sprays": 0, "walls": 0, "snow": 0}
 
 var _mm: MultiMesh
 var _mmi: MultiMeshInstance3D
@@ -488,6 +488,8 @@ func _mark(kind: int, at: Vector3, n: Vector3, t: Vector3, sx: float, sy: float,
 	else:
 		stats["evicted"] = int(stats["evicted"]) + 1
 	stats["marks"] = int(stats["marks"]) + 1
+	if snow:
+		stats["snow"] = int(stats["snow"]) + 1
 	var i: int = _start[kind] + slot
 	# a hair further out for each newer mark, so two of a kind that overlap never fight
 	_mm.set_instance_transform(i, Transform3D(Basis(t * sx, b * sy, n), at + n * (LIFT[kind] + 0.000004 * float(slot))))

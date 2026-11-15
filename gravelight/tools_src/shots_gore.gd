@@ -209,9 +209,9 @@ func _run() -> void:
 	# The taproom: floor y = 0, the east wall's face x = 23.85, clear floor along z = 3, 7 and 13.
 	# ---- wall: a Ganger a metre in front of the east wall, shot from the west
 	if _wants("wall"):
-		var spot: Vector3 = Vector3(18.6, 0.0, 1.15)      # the north wall's face is z = 0.15
-		var from: Vector3 = Vector3(18.6, 1.5, 4.8)
-		_look(Vector3(16.2, 1.6, 3.1), Vector3(18.9, 1.2, 0.4), 62.0)
+		var spot: Vector3 = Vector3(22.85, 0.0, 1.5)
+		var from: Vector3 = Vector3(19.4, 1.5, 1.5)
+		_look(Vector3(20.6, 1.75, 4.0), Vector3(23.2, 1.3, 1.3), 58.0)
 		var zs: Array[Zombie] = await _stand([spot], from)
 		await _shot("wall_00")
 		for k: int in 3:
@@ -268,7 +268,7 @@ func _run() -> void:
 		await _clear()
 	# ---- snow: open ground north of the inn
 	if _wants("snow"):
-		var spot5: Vector3 = Vector3(15.0, 0.0, -8.0)
+		var spot5: Vector3 = Vector3(12.0, 0.0, -14.0)
 		var from5: Vector3 = spot5 + Vector3(-3.4, 1.5, 0.0)
 		_look(spot5 + Vector3(-1.0, 2.3, -2.9), spot5 + Vector3(0.9, 0.3, 0.0), 62.0)
 		var zs5: Array[Zombie] = await _stand([spot5], from5)
@@ -295,7 +295,8 @@ func _run() -> void:
 	if _wants("lens") and p != null and Effects.get("gore") != null:
 		_hide_ui = false
 		for cl: Node in get_tree().root.find_children("*", "CanvasLayer", true, false):
-			(cl as CanvasLayer).visible = true
+			if (cl as CanvasLayer).layer == 10:
+				(cl as CanvasLayer).visible = true
 		p.global_position = Vector3(19.0, 0.1, 9.5)
 		p.rotation.y = -PI * 0.5      # facing east
 		var pc: Array[Node] = p.find_children("*", "Camera3D", true, false)
@@ -303,7 +304,7 @@ func _run() -> void:
 			(pc[0] as Camera3D).make_current()
 		await _skip(0.6)
 		await _shot("lens_00")
-		(Effects.get("gore") as GoreFx).screen.add(1.0)
+		(Effects.get("gore") as GoreFx).screen.add(0.6)      # about three close shotgun pellets' worth
 		(Effects.get("gore") as GoreFx).hands(1.0)
 		await _frames(3)
 		await _shot("lens_01")
