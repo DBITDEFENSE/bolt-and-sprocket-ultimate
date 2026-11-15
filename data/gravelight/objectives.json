@@ -36,9 +36,41 @@
         },
         {
           "done": {
+            "any": [
+              {
+                "zone_open": "LAGERKELLER"
+              },
+              {
+                "power": true
+              }
+            ]
+          },
+          "text": "The lever is deeper: open the Lagering Vault (the door in the cellar's south wall, 750)",
+          "nodes": [
+            "Door_Lager"
+          ]
+        },
+        {
+          "done": {
+            "any": [
+              {
+                "zone_open": "MASCHINENRAUM"
+              },
+              {
+                "power": true
+              }
+            ]
+          },
+          "text": "Open the Dynamo Room (the door past the tuns, 1,000)",
+          "nodes": [
+            "Door_Dynamo"
+          ]
+        },
+        {
+          "done": {
             "power": true
           },
-          "text": "Turn on the power: throw the cellar lever",
+          "text": "Turn on the power: throw the cellar lever in the Dynamo Room",
           "nodes": [
             "Kellerschalter"
           ]

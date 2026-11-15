@@ -1,9 +1,12 @@
 extends GutTest
-## T-179: Skyhook Sekt and Magpie Mead on Map 0, in the Helvetia cellar's late-delivery bay (gen_map00 BAY_*). The two
-## machines are in the scene, in the bay, in zone CELLAR, need the cellar lever, keep their prices and the cap; no
-## machine's footprint blocks another, the stair spill or the arch; the baked navmesh (both bakes) covers both
-## machines' fronts and the arch; the bay's bulb is one of the lever's lights; the plates have Map 0 lore; the bots'
-## spending plan lists both. The live checks (the lever, the prompts, a purchase, paths) are smoke_map00_cellar_bay.
+## Map 0's Helvetia cellar past the vault.
+## T-179: the late-delivery bay (gen_map00 BAY_*): in zone CELLAR, the baked navmesh (both bakes) runs through its arch,
+## its bulb is one of the lever's lights, its oil lamp is always lit, Skyhook Sekt and Magpie Mead have Map 0 plates
+## and are on the bots' plan.
+## T-251 (UPDATE 19): the cellar grew by 75 %: the Lagering Vault and the Dynamo Room (LAG_* / DYN_*), each behind
+## its own door; the cellar lever and the Crucible stand in the Dynamo Room, three doors from the taproom; the vault's
+## old alcove holds the wash copper; the twelve machines no longer stand in rows down here (test_perk_layout).
+## The live checks (the doors, the lever's sweep, a purchase, paths) are smoke_map00_cellar_bay.
 
 const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 const GEN = preload("res://gravelight/tools_src/gen_map00.gd")
@@ -30,22 +33,6 @@ func _machines() -> Array[Node3D]:
 	return out
 
 
-## A machine's footprint on the floor as a Rect2 (x, z), turned by its yaw like PerkMachine's body.
-static func _footprint(m: Node3D) -> Rect2:
-	var fp: Vector3 = PerkMachine._shape_footprint(str((GLData.table("perks")["perks"][str(m.get("perk_id"))] as Dictionary).get("shape", "cabinet")))
-	var turned: bool = absf(absf(rad_to_deg(m.rotation.y)) - 90.0) < 1.0
-	var sx: float = fp.z if turned else fp.x
-	var sz: float = fp.x if turned else fp.z
-	return Rect2(m.position.x - sx * 0.5, m.position.z - sz * 0.5, sx, sz)
-
-
-## The floor point 1 m in front of a machine (its local -Z), like BotBrain._front_of.
-static func _front(m: Node3D, d: float = 1.0) -> Vector3:
-	var f: Vector3 = Basis(Vector3.UP, m.rotation.y) * Vector3(0, 0, -1)
-	var fp: Vector3 = PerkMachine._shape_footprint(str((GLData.table("perks")["perks"][str(m.get("perk_id"))] as Dictionary).get("shape", "cabinet")))
-	return m.position + f * (fp.z * 0.5 + d)
-
-
 ## True when (x, z) lies inside a navmesh polygon at about height y.
 static func _on_navmesh(nm: NavigationMesh, p: Vector3) -> bool:
 	var v: PackedVector3Array = nm.get_vertices()
@@ -63,18 +50,21 @@ static func _on_navmesh(nm: NavigationMesh, p: Vector3) -> bool:
 	return false
 
 
-func test_both_machines_stand_in_the_bay() -> void:
-	var bay: Rect2 = Rect2(GEN.BAY_X0, GEN.BAY_Z0, GEN.BAY_X1 - GEN.BAY_X0, GEN.BAY_Z1 - GEN.BAY_Z0)
-	for id: String in BAY_PERKS:
-		var m: Node3D = map.get_node_or_null("Gameplay/Perk_" + id) as Node3D
-		assert_not_null(m, "Map 0 has a %s machine" % id)
-		if m == null:
+func _zone_at(p: Vector3) -> String:
+	for c: Node in map.get_node("Gameplay").get_children():
+		var zv: ZoneVolume = c as ZoneVolume
+		if zv == null:
 			continue
-		assert_eq(str(m.get("perk_id")), id)
-		assert_true(bay.grow(-0.3).encloses(_footprint(m)), "%s stands inside the bay, clear of its walls" % id)
-		assert_almost_eq(m.position.y, CY, 0.01, "%s on the cellar floor" % id)
-		assert_true(m.get_script() == preload("res://gravelight/world/perk_machine.gd"), "%s is a PerkMachine" % id)
-	assert_eq(_machines().size(), 12, "the twelve cellar machines: the ten and the two Fernflug tonics")
+		var l: Vector3 = p - zv.position
+		if absf(l.x) <= zv.size.x * 0.5 and absf(l.z) <= zv.size.z * 0.5 and l.y >= -0.5 and l.y <= zv.size.y:
+			return String(zv.zone_id)
+	return ""
+
+
+func test_the_twelve_machines_are_on_the_map() -> void:
+	assert_eq(_machines().size(), 12, "the twelve machines: the ten and the two Fernflug tonics")
+	for m: Node3D in _machines():
+		assert_true(m.get_script() == preload("res://gravelight/world/perk_machine.gd"), "%s is a PerkMachine" % m.name)
 
 
 func test_power_prices_and_cap_are_unchanged() -> void:
@@ -87,45 +77,21 @@ func test_power_prices_and_cap_are_unchanged() -> void:
 
 
 func test_the_bay_is_zone_cellar() -> void:
-	var gp: Node3D = map.get_node("Gameplay") as Node3D
-	assert_eq(gp.position, Vector3.ZERO)
-	for id: String in BAY_PERKS:
-		var p: Vector3 = _front(map.get_node("Gameplay/Perk_" + id) as Node3D)
-		var inside: bool = false
-		for c: Node in gp.get_children():
-			if c is ZoneVolume and (c as ZoneVolume).zone_id == &"CELLAR":
-				var zv: ZoneVolume = c as ZoneVolume
-				var l: Vector3 = p + Vector3.UP * 0.3 - zv.position
-				inside = inside or (absf(l.x) <= zv.size.x * 0.5 and absf(l.z) <= zv.size.z * 0.5 and l.y >= -0.5 and l.y <= zv.size.y)
-		assert_true(inside, "the floor in front of %s is zone CELLAR" % id)
+	assert_eq((map.get_node("Gameplay") as Node3D).position, Vector3.ZERO)
+	for p: Vector3 in [Vector3(38.5, CY + 0.3, 26.0), Vector3(36.6, CY + 0.3, 23.2), Vector3(41.6, CY + 0.3, 29.0)]:
+		assert_eq(_zone_at(p), "CELLAR", "the bay's floor at %s is zone CELLAR" % str(p))
 
 
-func test_no_machine_blocks_another_the_stairs_or_the_arch() -> void:
-	var ms: Array[Node3D] = _machines()
-	var stair_spill: Rect2 = Rect2(24.3, 19.0, 3.55, 3.0)
-	var arch_lane: Rect2 = Rect2(33.4, GEN.BAY_ARCH.x, 5.0, GEN.BAY_ARCH.y - GEN.BAY_ARCH.x)   # the aisle, the arch and the apron behind it
+func test_the_navmesh_runs_through_the_arch() -> void:
 	assert_gt(GEN.BAY_ARCH.y - GEN.BAY_ARCH.x, 1.6, "the arch is at least a doorway wide")
-	for i: int in ms.size():
-		var a: Rect2 = _footprint(ms[i])
-		assert_false(a.intersects(stair_spill), "%s keeps the stair foot clear" % ms[i].name)
-		assert_false(a.intersects(arch_lane), "%s keeps the way to the bay clear" % ms[i].name)
-		for j: int in range(i + 1, ms.size()):
-			assert_false(a.grow(0.25).intersects(_footprint(ms[j])), "%s and %s stand apart" % [ms[i].name, ms[j].name])
-
-
-func test_the_navmesh_reaches_both_fronts_and_the_arch() -> void:
 	for rn: String in ["Navigation", "NavigationBreachOpen"]:
 		var r: NavigationRegion3D = map.get_node_or_null(rn) as NavigationRegion3D
 		assert_not_null(r, rn)
 		if r == null:
 			continue
-		var nm: NavigationMesh = r.navigation_mesh
-		for id: String in BAY_PERKS:
-			var f: Vector3 = _front(map.get_node("Gameplay/Perk_" + id) as Node3D, 0.9)
-			assert_true(_on_navmesh(nm, f), "%s: the navmesh covers %s's front (%.1f, %.1f)" % [rn, id, f.x, f.z])
 		var am: float = (GEN.BAY_ARCH.x + GEN.BAY_ARCH.y) * 0.5
-		for x: float in [35.0, 36.0, 37.0]:
-			assert_true(_on_navmesh(nm, Vector3(x, CY, am)), "%s: the navmesh runs through the arch (x %.1f)" % [rn, x])
+		for x: float in [35.0, 36.0, 37.0, 38.2]:
+			assert_true(_on_navmesh(r.navigation_mesh, Vector3(x, CY, am)), "%s: the navmesh runs through the arch (x %.1f)" % [rn, x])
 
 
 func test_the_bay_has_a_lever_light_and_a_lamp() -> void:
@@ -133,7 +99,7 @@ func test_the_bay_has_a_lever_light_and_a_lamp() -> void:
 	var lamp: bool = false
 	for c: Node in map.get_children():
 		var l: OmniLight3D = c as OmniLight3D
-		if l == null or l.position.x < GEN.BAY_X0 + 0.2 or l.position.x > GEN.BAY_X1 or l.position.y > -0.2:
+		if l == null or l.position.x < GEN.BAY_X0 + 0.2 or l.position.x > GEN.BAY_X1 or l.position.y > -0.2 or l.position.z > GEN.BAY_Z1:
 			continue
 		if l.is_in_group(&"power_lights") and str(l.get_meta("zone", "")) == "CELLAR" and not l.visible:
 			bulb = true
@@ -157,3 +123,160 @@ func test_the_plates_and_the_bots() -> void:
 	var avail: Dictionary = {"magpie_mead": 3000, "skyhook_sekt": 2500}
 	assert_eq(BotEconomy.perk_wanted(eco, plan, owned, avail, "smg", true, 2, 9000, 500), &"magpie_mead", "Magpie first")
 	assert_eq(BotEconomy.perk_wanted(eco, plan, owned + ["magpie_mead"], avail, "smg", true, 1, 9000, 500), &"skyhook_sekt", "then Skyhook")
+
+
+# ================================================================== T-251: the Lagering Vault and the Dynamo Room
+
+func test_the_cellar_grew_by_three_quarters() -> void:
+	var before: float = 12.0 * 12.0 + (GEN.BAY_X1 - GEN.BAY_X0) * (GEN.BAY_Z1 - GEN.BAY_Z0)
+	var lager: float = (GEN.LAG_X1 - GEN.LAG_X0) * (GEN.LAG_Z1 - GEN.LAG_Z0)
+	var dynamo: float = (GEN.DYN_X1 - GEN.DYN_X0) * (GEN.DYN_Z1 - GEN.DYN_Z0)
+	assert_almost_eq((lager + dynamo) / before, 0.75, 0.02, "the two new rooms add 75 %% (%.1f on %.1f m2)" % [lager + dynamo, before])
+	assert_gt(lager, 50.0)
+	assert_gt(dynamo, 50.0)
+
+
+func test_two_more_doors_in_a_chain() -> void:
+	var doors: Dictionary = {}
+	for c: Node in map.get_node("Gameplay").get_children():
+		if c.get_script() == preload("res://gravelight/world/door.gd"):
+			doors[str(c.get("door_id"))] = c
+	for row: Array in [["door_cellar", "CELLAR", 1500], ["door_lager", "LAGERKELLER", 750], ["door_dynamo", "MASCHINENRAUM", 1000]]:
+		assert_true(doors.has(row[0]), "%s is on the map" % row[0])
+		if not doors.has(row[0]):
+			continue
+		var d: Node3D = doors[row[0]]
+		assert_eq(str(d.get("opens_zone")), str(row[1]))
+		assert_eq(int(d.get("cost")), int(row[2]), "%s costs %d" % [row[0], row[2]])
+		assert_eq((d.get("also_opens") as PackedStringArray).size(), 0, "%s opens its own room only" % row[0])
+	var da: Node3D = doors.get("door_lager")
+	var db: Node3D = doors.get("door_dynamo")
+	if da == null or db == null:
+		return
+	assert_almost_eq(da.position.z, GEN.LAG_Z0, 0.01, "Door_Lager is in the vault's south wall")
+	assert_almost_eq(da.position.x, (GEN.LAG_DOOR.x + GEN.LAG_DOOR.y) * 0.5, 0.01)
+	assert_almost_eq(db.position.x, GEN.DYN_X0, 0.01, "Door_Dynamo is in the wall between the two rooms")
+	assert_almost_eq(db.position.z, (GEN.DYN_DOOR.x + GEN.DYN_DOOR.y) * 0.5, 0.01)
+	assert_almost_eq(da.position.y, CY, 0.01)
+	assert_almost_eq(db.position.y, CY, 0.01)
+	# the only ways in: the walls round the two rooms have no other opening (the navmesh proves it: the rooms' floors
+	# join the vault's only through the two doorways)
+	for rn: String in ["Navigation", "NavigationBreachOpen"]:
+		var nm: NavigationMesh = (map.get_node(rn) as NavigationRegion3D).navigation_mesh
+		assert_true(_on_navmesh(nm, Vector3(da.position.x, CY, GEN.LAG_Z0)), "%s: the navmesh runs through Door_Lager" % rn)
+		assert_true(_on_navmesh(nm, Vector3(GEN.DYN_X0, CY, db.position.z)), "%s: the navmesh runs through Door_Dynamo" % rn)
+		for x: float in [28.0, 30.0, 32.0, 33.2, 35.0]:
+			assert_false(_on_navmesh(nm, Vector3(x, CY, GEN.LAG_Z0)), "%s: the vault's south wall is shut at x %.1f" % [rn, x])
+		for z: float in [31.8, 33.0, 33.9, 36.8]:
+			assert_false(_on_navmesh(nm, Vector3(GEN.DYN_X0, CY, z)), "%s: the wall between the rooms is shut at z %.1f" % [rn, z])
+		assert_false(_on_navmesh(nm, Vector3(36.0, CY, 30.2)), "%s: no way from the bay's side" % rn)
+
+
+func test_the_rooms_have_floor_zones_and_a_loop() -> void:
+	for rn: String in ["Navigation", "NavigationBreachOpen"]:
+		var nm: NavigationMesh = (map.get_node(rn) as NavigationRegion3D).navigation_mesh
+		# the Lagering Vault: all the way round the tuns
+		var tz: float = (GEN.LAG_TUN_Z.x + GEN.LAG_TUN_Z.y) * 0.5
+		var t0: float = float(GEN.LAG_TUNS[0]) - GEN.LAG_TUN_R
+		var t1: float = float(GEN.LAG_TUNS[GEN.LAG_TUNS.size() - 1]) + GEN.LAG_TUN_R
+		for p: Vector3 in [Vector3(30.0, CY, 32.2), Vector3(30.0, CY, 35.8), Vector3(t0 - 0.9, CY, tz), Vector3(t1 + 0.9, CY, tz)]:
+			assert_true(_on_navmesh(nm, p), "%s: the Lagering Vault's loop at %s" % [rn, str(p)])
+		assert_false(_on_navmesh(nm, Vector3(30.05, CY, tz)), "%s: the tuns are solid" % rn)
+		# the Dynamo Room: all the way round the set
+		var c: Vector2 = GEN.DYN_SET.get_center()
+		for p2: Vector3 in [Vector3(c.x, CY, GEN.DYN_SET.position.y - 1.0), Vector3(c.x, CY, GEN.DYN_SET.end.y + 1.2), Vector3(GEN.DYN_SET.position.x - 1.2, CY, c.y),
+				Vector3(GEN.DYN_SET.end.x + 0.8, CY, c.y)]:
+			assert_true(_on_navmesh(nm, p2), "%s: the Dynamo Room's loop at %s" % [rn, str(p2)])
+		assert_false(_on_navmesh(nm, Vector3(c.x, CY, c.y)), "%s: the generator set is solid" % rn)
+	assert_eq(_zone_at(Vector3(30.0, CY + 0.3, 34.0)), "LAGERKELLER")
+	assert_eq(_zone_at(Vector3(24.4, CY + 0.3, 36.6)), "LAGERKELLER")
+	assert_eq(_zone_at(Vector3(39.0, CY + 0.3, 35.0)), "MASCHINENRAUM")
+	assert_eq(_zone_at(Vector3(43.6, CY + 0.3, 38.6)), "MASCHINENRAUM")
+	assert_false(_zone_at(Vector3(30.0, 0.3, 35.0)) in ["LAGERKELLER", "MASCHINENRAUM", "CELLAR"], "the yard over the Lagering Vault is not cellar")
+	assert_false(_zone_at(Vector3(40.0, 0.3, 35.0)) in ["LAGERKELLER", "MASCHINENRAUM", "CELLAR"], "the field over the Dynamo Room is not cellar")
+	var names: Dictionary = GLData.load_json("res://data/maps/bake_config.json")["maps"]["map00_crossroads"]["zone_names"]
+	assert_eq(str(names.get("LAGERKELLER", "")), "The Lagering Vault")
+	assert_eq(str(names.get("MASCHINENRAUM", "")), "The Dynamo Room")
+
+
+func test_the_lever_and_the_crucible_are_three_doors_deep() -> void:
+	var lever: Node3D = map.get_node_or_null("Gameplay/Kellerschalter") as Node3D
+	var cru: Node3D = map.get_node_or_null("Gameplay/Crucible") as Node3D
+	assert_not_null(lever, "the cellar lever keeps its name")
+	assert_not_null(cru, "the Crucible keeps its name")
+	if lever == null or cru == null:
+		return
+	assert_eq(_zone_at(lever.position), "MASCHINENRAUM", "the lever stands in the Dynamo Room")
+	assert_eq(_zone_at(cru.position + Vector3.UP * 0.3), "MASCHINENRAUM", "the Crucible stands in the Dynamo Room")
+	assert_true(bool(cru.get("needs_power")), "the Crucible still runs off the lever")
+	assert_eq(str(lever.get("config_table")), "map00")
+	var order: PackedStringArray = lever.get("zone_order")
+	assert_eq(Array(order), ["MASCHINENRAUM", "LAGERKELLER", "CELLAR", "OLD_CELLAR", "TAPROOM", "UPSTAIRS", "STABLE"], "the sweep starts at the lever and works up to the inn")
+	# the Crucible's own frame is what it was in the vault: the wall 0.8 m behind it, the lever 3 m to its left hand
+	assert_almost_eq(cru.position.z - (GEN.DYN_Z0 + 0.15), 0.8, 0.01)
+	assert_almost_eq(lever.position.x - cru.position.x, 3.0, 0.01)
+	assert_almost_eq(absf(angle_difference(cru.rotation.y, PI)), 0.0, 0.002, "it faces south into the room")
+	var blocks: Array = map.find_children("NavBlock_Crucible", "StaticBody3D", true, false)
+	assert_eq(blocks.size(), 1, "one Crucible footprint in the navmesh source")
+	if blocks.size() == 1:
+		assert_almost_eq((blocks[0] as Node3D).position.x, cru.position.x, 0.01, "under the Crucible")
+	for rn: String in ["Navigation", "NavigationBreachOpen"]:
+		var nm: NavigationMesh = (map.get_node(rn) as NavigationRegion3D).navigation_mesh
+		assert_true(_on_navmesh(nm, cru.position + Vector3(0, 0, 1.6)), "%s: floor in front of the Crucible" % rn)
+		assert_true(_on_navmesh(nm, Vector3(lever.position.x, CY, lever.position.z + 1.1)), "%s: floor in front of the lever" % rn)
+		assert_false(_on_navmesh(nm, cru.position), "%s: nothing walks through the Crucible" % rn)
+	assert_eq(str(CrucibleRoom.config_for("map00").get("zone", "")), "MASCHINENRAUM", "the Crucible's room lights sweep with the Dynamo Room")
+	# nothing of either is left in the vault
+	for c: Node in map.get_node("Gameplay").get_children():
+		if c is Node3D and (c.name == "Kellerschalter" or c.name == "Crucible"):
+			assert_gt((c as Node3D).position.z, GEN.DYN_Z0, "%s is past the vault" % c.name)
+	assert_eq(map.find_children("CellarCopperCol", "StaticBody3D", true, false).size(), 1, "the vault's old alcove holds the wash copper")
+
+
+func test_each_room_has_lights_a_lamp_a_spawn_and_a_burst_point() -> void:
+	var rooms: Dictionary = {
+		"LAGERKELLER": Rect2(GEN.LAG_X0, GEN.LAG_Z0, GEN.LAG_X1 - GEN.LAG_X0, GEN.LAG_Z1 - GEN.LAG_Z0),
+		"MASCHINENRAUM": Rect2(GEN.DYN_X0, GEN.DYN_Z0, GEN.DYN_X1 - GEN.DYN_X0, GEN.DYN_Z1 - GEN.DYN_Z0)}
+	for zone: String in rooms.keys():
+		var rect: Rect2 = rooms[zone]
+		var bulbs: int = 0
+		var lamps: int = 0
+		for c: Node in map.get_children():
+			var l: OmniLight3D = c as OmniLight3D
+			if l == null or l.position.y > -0.2 or not rect.has_point(Vector2(l.position.x, l.position.z)):
+				continue
+			if l.is_in_group(&"power_lights"):
+				assert_eq(str(l.get_meta("zone", "")), zone, "a bulb in %s sweeps with %s" % [zone, zone])
+				assert_false(l.visible, "dark before the lever")
+				bulbs += 1
+			elif l.visible and l.light_energy > 0.3:
+				lamps += 1
+		assert_gte(bulbs, 2, "%s has bulbs the lever turns on" % zone)
+		assert_gte(lamps, 1, "%s has a lamp that is always lit" % zone)
+		var spawns: int = 0
+		var bursts: int = 0
+		for g: Node in map.get_node("Gameplay").get_children():
+			var n3: Node3D = g as Node3D
+			if n3 == null or not rect.has_point(Vector2(n3.position.x, n3.position.z)) or n3.position.y > -0.2:
+				continue
+			if n3.get_script() == preload("res://gravelight/enemies/zombie_spawn.gd"):
+				assert_eq(str(n3.get("zone_id")), zone)
+				assert_eq(str(n3.get("kind")), "ground")
+				assert_lte(int(n3.get("min_round")), 6)
+				for rn: String in ["Navigation", "NavigationBreachOpen"]:
+					assert_true(_on_navmesh((map.get_node(rn) as NavigationRegion3D).navigation_mesh, n3.position), "%s: the %s spawn is on the navmesh" % [rn, zone])
+				spawns += 1
+			if n3.is_in_group(&"power_burst_points"):
+				bursts += 1
+		assert_gte(spawns, 1, "%s has a zombie entry of its own" % zone)
+		assert_gte(bursts, 1, "%s has a power-on burst point" % zone)
+
+
+func test_the_data_that_lists_the_zones_follows() -> void:
+	var m: Dictionary = GLData.load_json("res://data/gravelight/map00.json")
+	var shelter: Array = m["sherman_event"]["shelter_zones"]
+	for z: String in ["CELLAR", "OLD_CELLAR", "LAGERKELLER", "MASCHINENRAUM"]:
+		assert_true(shelter.has(z), "%s shelters from the bombs" % z)
+	var text: String = FileAccess.get_file_as_string("res://data/gravelight/vo_rooms.json")
+	for z2: String in ["LAGERKELLER", "MASCHINENRAUM"]:
+		assert_string_contains(text, '"%s": "cellar_stone"' % z2)

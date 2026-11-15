@@ -64,6 +64,7 @@
     "skip_ahead": 2,
     "_skip_doc": "T-071 pass 3: while the current step can't be done (unaffordable: the next skip_ahead steps that are cheaper may go first; affordable but waiting for its moment, e.g. a perk in the cellar mid-round: any of them). A step with firm: true is never jumped (AgentPlan.later_steps). A map's plan may set its own skip_ahead.",
     "map00": {
+      "_t251": "UPDATE 19: the cellar lever is three doors deep now (door_cellar, door_lager, door_dynamo: steps of their own, the plan only buys what its current step names) and the tonic machines are dealt onto perk spots all over the map each match: a perk step whose machine stands behind a closed door buys that door first (AgentPlan.errand_for through BotEconomy.door_toward).",
       "_why": "Crossroads Inn solo: the Garand off the taproom wall (one-shot heads to round 4), the cellar door for the power, Second Wind (the solo self-revive) and Ironhide (5 hits), then the stable and the yard: the Well Loop is the map's open ground (measured: 2-4 hits a training minute against 10-15 on the taproom's ring round its four windows) with the Thompson chalked on the stable wall beside it (wall ammo on a lap); Marathon (an endless sprint outruns the runners from round 8), then the Thompson into the Crucible.",
       "steps": [
         {
@@ -72,6 +73,12 @@
         },
         {
           "door": "door_cellar"
+        },
+        {
+          "door": "door_lager"
+        },
+        {
+          "door": "door_dynamo"
         },
         {
           "power": true

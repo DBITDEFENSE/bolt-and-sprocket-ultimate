@@ -475,6 +475,8 @@ func _refresh_loadout() -> void:
 		_loadout.add_child(MenuKit.label("   Melee: %s   ·   Lethal: %s × %d   ·   Tactical: %s" % [melee, lname, h.grenades, tac], 18))
 	_loadout.add_child(MenuKit.label("PERKS  (%d / %d slots)" % [PerkManager.capped_count(me), PerkManager.cap_for(me)], 20, MenuKit.VIOLET, true))
 	var md: MapData = MapData.for_map(GameState.map_id) if GameState.map_id != &"" and MapData.exists(GameState.map_id) else null
+	if MapState.current() != null and MapState.current().data != null:
+		md = MapState.current().data   # T-251: this match's rows (the machines stand where the deal put them)
 	for pk: Variant in (GLData.table("perks")["perks"] as Dictionary).keys():
 		_loadout.add_child(perk_row(me, StringName(str(pk)), md))
 	if not GameState.bot_ids.is_empty():

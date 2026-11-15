@@ -175,12 +175,24 @@ func _process(_delta: float) -> bool:
 		push_error("gen_map00: a wall-buy is blocked; the scene was NOT saved")
 		map_root.free()
 		return true
+	if OS.get_environment("GL_PERK_SURVEY") != "":   # T-251: where could a perk spot stand? (a design aid; nothing is saved)
+		_survey_perk_spots()
+		map_root.free()
+		return true
+	if _audit_perk_spots() > 0:   # T-251: never save a scene with a perk spot in a doorway, a wall or a walk
+		push_error("gen_map00: a perk spot is blocked; the scene was NOT saved")
+		map_root.free()
+		return true
 	var merged: int = merge_static_meshes()
 	print("merged %d static meshes into batches" % merged)
 	build_environment()
 	build_landscape()
 	build_gameplay()
 	build_reactive()
+	if map_root.get_script() == null:   # T-251: map_root.gd did not compile (a class the cache does not know yet: run the import first)
+		push_error("gen_map00: the map root has no script (MapRoot failed to load); the scene was NOT saved")
+		map_root.free()
+		return true
 	_own(map_root, map_root)
 	var packed: PackedScene = PackedScene.new()
 	var err: int = packed.pack(map_root)
@@ -391,9 +403,13 @@ func build_geometry() -> void:
 	# and holes over the Old Cellar under the taproom, its stair lean-to and its two light wells (T-051, OC_HOLES)
 	_slab_with_holes("Ground", -45.0, 24.0, -40.0, 75.0, OC_HOLES)
 	# (T-179: with a hole over the cellar's late-delivery bay, which has its own roof)
-	_slab_with_holes("GroundE", 36.0, 70.0, -40.0, 75.0, [Rect2(BAY_X0, BAY_Z0 - T * 0.5, BAY_X1 + T * 0.5 - BAY_X0, BAY_Z1 - BAY_Z0 + T)])
+	# (T-251: and holes over the Lagering Vault and the Dynamo Room south of the vault, which have their own roofs too)
+	var t2: float = T * 0.5
+	_slab_with_holes("GroundE", 36.0, 70.0, -40.0, 75.0, [Rect2(BAY_X0, BAY_Z0 - t2, BAY_X1 + t2 - BAY_X0, BAY_Z1 - BAY_Z0 + T),
+		Rect2(36.0, LAG_Z0 + t2, DYN_X1 + t2 - 36.0, DYN_Z1 - LAG_Z0)])
 	_slab_with_holes("GroundN", 24.0, 36.0, -40.0, 10.0, OC_HOLES)
-	box(geo, "GroundS", Vector3(24, -0.5, 31), Vector3(36, 0.0, 75), "snow")
+	_slab_with_holes("GroundS", 24.0, 36.0, LAG_Z0 + t2, 75.0, [Rect2(24.0, LAG_Z0 + t2, LAG_X1 - t2 - 24.0, LAG_Z1 - LAG_Z0),
+		Rect2(LAG_X1 - t2, LAG_Z0 + t2, 36.0 - (LAG_X1 - t2), DYN_Z1 - LAG_Z0)])
 	# T-080: the snow east of the cellar's stair hall (x 28..36, z 10..19) was a hole in the slab (nobody walked there);
 	# the grounds' ring and the Wreck Loop cross it
 	box(geo, "GroundAnnexN", Vector3(28.0, -0.5, 10.0), Vector3(36.0, 0.0, 19.0), "snow")
@@ -1292,22 +1308,56 @@ func _solid(name_: String, c: Vector3, sz: Vector3, yaw: float) -> void:
 ## vaulted cellar (x 24..36, z 19..31, floor CELLAR_Y). Its roof is the yard's ground surface.
 const CELLAR_Y: float = -3.2
 const CELLAR_TOP: float = -0.2
-## machines: [perk, pos, yaw]; front (local -Z) faces the middle of the vault
-const CELLAR_PERKS: Array = [
-	# west row starts 4 m from the foot of the stairs, so the ramp spills into open floor (playtest, T-028)
-	["ironhide_stout", Vector3(25.9, CELLAR_Y, 23.0), -90.0], ["second_wind", Vector3(25.9, CELLAR_Y, 25.8), -90.0],
-	["trigger_tonic", Vector3(25.9, CELLAR_Y, 28.6), -90.0],
-	["twin_barrel", Vector3(34.1, CELLAR_Y, 21.6), 90.0], ["marathon_malt", Vector3(34.1, CELLAR_Y, 24.6), 90.0],
-	["hawkeye_brandy", Vector3(34.1, CELLAR_Y, 27.6), 90.0],
-	# Ledger Lager (T-141): the east row's fourth, in the south-east corner (1.6 m below Hawkeye, 1.9 m from Blastproof)
-	["ledger_lager", Vector3(34.1, CELLAR_Y, 30.2), 90.0],
-	["packmule_porter", Vector3(28.6, CELLAR_Y, 29.4), 0.0], ["blastproof_bock", Vector3(31.4, CELLAR_Y, 29.4), 0.0],
-	# the ninth (M3): between the south pair, on the vault's axis, under its own bulb
-	["overclock_cordial", Vector3(30.15, CELLAR_Y, 29.4), 0.0],
-	# T-179: the late-delivery bay through the east wall (BAY_*): the two Fernflug tonics on its far wall, facing the
-	# arch, 1.75 m off the wall like the east row (the back panel walk), 2.35 m apart with the bay's sign between them
-	["skyhook_sekt", Vector3(40.3, CELLAR_Y, 24.4), 90.0], ["magpie_mead", Vector3(40.3, CELLAR_Y, 27.6), 90.0],
+## T-251 (UPDATE 19; the owner: "spread perks randomly around the map"): the twelve tonics no longer stand in the vault's
+## rows. PERK_SPOTS are the places a machine may stand, all over the map; each match the host deals the twelve onto
+## them from the match seed (PerkShuffle / PerkLayout, data/gravelight/perk_layout.json) and the spots left over show
+## their filler, a nailed delivery crate (PerkSpot). The scene is saved with the seed-0 deal, so a tool that loads it
+## without a match still finds every Perk_<id>.
+## [spot id, zone, floor position, yaw (local -Z = the front, faces the room), flags]. Flags: "outdoor" (under the
+## snow: only the shapes perk_layout.json calls outdoor-safe), "start" (the start room: only the cheap ones, never
+## Second Wind, which pours without the power solo), "near" (one bought door from the taproom: where Second Wind may
+## stand, so a solo player can always get to it). A machine stands PERK_BACK m clear of the wall behind it (the fine
+## print on its back is read from there, JINGLES.md section 0.3) with PERK_FRONT m of floor in front; _audit_perk_spots
+## checks every spot against everything built and drawn before the scene is saved.
+const PERK_SPOTS: Array = [
+	# the taproom's north-west corner, behind the back-bar: its back to the north wall, facing down the west walk
+	["taproom_nook", "TAPROOM", Vector3(2.25, 0, 2.0), 180.0, {"start": true}],
+	# the east guest room (the crate's room), against the wall it shares with the middle room, seen from its door
+	["guest_room", "UPSTAIRS", Vector3(18.0, UP_Y, 3.3), -90.0, {"near": true}],
+	# the upstairs hall's east end, against its south wall
+	["guest_hall", "UPSTAIRS", Vector3(18.6, UP_Y, 7.9), 0.0, {"near": true}],
+	# the attic, against the south wall east of the stair well
+	["attic", "UPSTAIRS", Vector3(16.0, ATT_Y, 8.0), 0.0, {"near": true}],
+	# the stable under the hayloft, the south wall between the window and the great doors
+	["stable", "STABLE", Vector3(14.25, 0, 32.0), 0.0, {"near": true}],
+	# the hayloft's south wall
+	["hayloft", "STABLE", Vector3(12.5, LOFT_TOP, 32.0), 0.0, {"near": true}],
+	# the yard's south-east corner, against the east fence south of the trough
+	["yard_east", "YARD", Vector3(32.0, 0, 46.5), 90.0, {"outdoor": true}],
+	# the yard's west fence, north of its gap
+	["yard_west", "YARD", Vector3(4.25, 0, 39.5), -90.0, {"outdoor": true}],
+	# out on the grounds: against the stable's east wall, facing the field and the wreck
+	["behind_stable", "GROUNDS", Vector3(27.5, 0, 32.5), -90.0, {"outdoor": true}],
+	# on the carters' road outside the yard, against its south fence west of the gate
+	["carters_road", "GROUNDS", Vector3(15.0, 0, 50.0), 180.0, {"outdoor": true}],
+	# the Helvetia vault: the east wall north of the bay's arch (where Twin Barrel stood), the south wall, and the
+	# late-delivery bay's far wall, facing its arch
+	["vault_east", "CELLAR", Vector3(34.0, CELLAR_Y, 21.4), 90.0, {"near": true}],
+	["vault_south", "CELLAR", Vector3(31.75, CELLAR_Y, 29.0), 0.0, {"near": true}],
+	["bay", "CELLAR", Vector3(40.25, CELLAR_Y, 25.95), 90.0, {"near": true}],
+	# the Old Cellar's barrel vault: its north wall west of the loop, its south wall west of the breach
+	["old_vault_north", "OLD_CELLAR", Vector3(15.0, CELLAR_Y, 2.0), 180.0, {"near": true}],
+	["old_vault_south", "OLD_CELLAR", Vector3(19.0, CELLAR_Y, 13.75), 0.0, {"near": true}],
+	# the Lagering Vault, against its south wall opposite Door_Lager; the Dynamo Room's south wall east of the set
+	["lager", "LAGERKELLER", Vector3(25.6, CELLAR_Y, 35.0), 0.0, {}],
+	["dynamo", "MASCHINENRAUM", Vector3(42.3, CELLAR_Y, 37.0), 0.0, {}],
 ]
+## The floor a spot keeps: the widest machine (the Packmule wagon, 1.7 m) by the deepest (the Ironhide barrel, 1.2 m).
+const PERK_SPOT_W: float = 1.7
+const PERK_SPOT_D: float = 1.2
+const PERK_BACK: float = 1.0
+const PERK_FRONT: float = 1.2
+const PerkShuffleScript: Script = preload("res://gravelight/world/perk_shuffle.gd")
 ## T-179 (the owner: "two perks that aren't in any of the maps ... expand the cellar area a little bit, add those
 ## perks"): the NACHLIEFERUNG bay, a 6.2 x 7 m vault east of the Helvetia cellar under the field (x 36..42.2,
 ## z 22.6..29.6; its roof is the snow, like the cellar's), reached through an arch in the cellar's east wall
@@ -1320,6 +1370,40 @@ const BAY_Z0: float = 22.6
 const BAY_Z1: float = 29.6
 const BAY_ARCH: Vector2 = Vector2(25.12, 26.78)
 const BAY_BULB: Vector3 = Vector3(38.9, CELLAR_Y + 2.55, 25.95)
+## T-251 (UPDATE 19; the owner: "expand the cellar in the first map by 75% make the crucible and power two addtional
+## doors down"): two more rooms beyond the Helvetia vault, in a chain, each behind its own bought door:
+##   the vault -> Door_Lager (750) in its south wall -> THE LAGERING VAULT (zone LAGERKELLER; LAG_*: x 24..34,
+##   z 31..37, 60 m2): the inn's own lager cellar, older than the fit-out, brick, three tuns on their cradles down
+##   its middle (the island of its loop)
+##   -> Door_Dynamo (1000) in its east wall -> THE DYNAMO ROOM (zone MASCHINENRAUM; DYN_*: x 34..44, z 31..39,
+##   80 m2): the installers' plant room, whitewashed: the generator set on its plinth in the middle (the island of
+##   its loop), the cellar lever (Kellerschalter) and the Crucible in its alcove on the north wall.
+## 140 m2 on the cellar's 187.4 (the vault 144 + the bay 43.4): +74.7 %. From the taproom the lever and the Crucible
+## are three doors deep (Door_Cellar 1500, Door_Lager 750, Door_Dynamo 1000). Their roofs are the yard's east edge
+## and the field's snow (build_geometry cuts the ground slabs over them). Each has a ground spawn (a drain, the sump).
+const LAG_X0: float = 24.0
+const LAG_X1: float = 34.0
+const LAG_Z0: float = 31.0   # (the vault's south wall)
+const LAG_Z1: float = 37.0
+const LAG_DOOR: Vector2 = Vector2(25.0, 27.0)   # Door_Lager's x span in the vault's south wall
+const LAG_TUNS: Array = [28.75, 30.05, 31.35]   # the three tuns' centres (x); they lie along z
+const LAG_TUN_R: float = 0.62
+const LAG_TUN_Z: Vector2 = Vector2(33.3, 34.7)
+const LAG_BULBS: Array = [Vector3(25.9, CELLAR_Y + 2.55, 33.2), Vector3(30.05, CELLAR_Y + 2.55, 32.2), Vector3(32.7, CELLAR_Y + 2.55, 35.7)]
+const DYN_X0: float = 34.0
+const DYN_X1: float = 44.0
+const DYN_Z0: float = 31.0
+const DYN_Z1: float = 39.0
+const DYN_DOOR: Vector2 = Vector2(34.4, 36.4)   # Door_Dynamo's z span in the wall between the two rooms (x 34)
+const DYN_SET: Rect2 = Rect2(37.8, 34.7, 2.4, 1.2)   # the generator set's plinth (x, z)
+## The Crucible and the lever keep the places they had on the vault's north wall, measured from the room's north-east
+## corner (6.5 m and 3.5 m west of it, the bench and the two crates in the corner itself), so the Crucible's own
+## room dressing (CrucibleRoom, crucible_rooms.json "map00", all in the Crucible's frame) fits as it did.
+const DYN_CRUCIBLE: Vector3 = Vector3(DYN_X1 - 6.5, CELLAR_Y, DYN_Z0 + 0.95)
+const DYN_LEVER: Vector3 = Vector3(DYN_X1 - 3.5, CELLAR_Y + 0.3, DYN_Z0 + 0.35)
+const DYN_BULBS: Array = [Vector3(35.9, CELLAR_Y + 2.55, 37.0), Vector3(41.6, CELLAR_Y + 2.55, 33.3), Vector3(40.6, CELLAR_Y + 2.55, 37.4)]
+var _lager_lit: Node3D    # the lit bulb glass of the two new rooms (shown with their first bulb light)
+var _dynamo_lit: Node3D
 ## Same as PerkMachine._shape_footprint (that script needs the autoloads, which a --script run doesn't have).
 ## Keep the two in step.
 const MACHINE_FOOTPRINTS: Dictionary = {
@@ -1391,19 +1475,21 @@ func build_bank_shed() -> void:
 
 
 func build_nav_blocks() -> void:
-	var pdata: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/perks.json"))["perks"]
-	for pk: Array in CELLAR_PERKS:
-		var fp: Vector3 = MACHINE_FOOTPRINTS.get(str((pdata[str(pk[0])] as Dictionary).get("shape", "cabinet")), Vector3(1.0, 2.0, 0.7))
-		if absf(float(pk[2])) == 90.0:
-			fp = Vector3(fp.z, fp.y, fp.x)
-		var c: Vector3 = pk[1]
-		box(geo, "NavBlock_" + str(pk[0]), c - Vector3(fp.x * 0.5, 0, fp.z * 0.5), c + Vector3(fp.x * 0.5, minf(fp.y, NAV_SOLID_H), fp.z * 0.5), "metal", true, false)
+	# T-251: every perk spot keeps the same floor out of the navmesh whichever machine (or its filler crate) the match
+	# deals onto it: the widest by the deepest footprint. Only for the bake ("bake_only": the machine's and the
+	# filler's own bodies are what stop you at runtime, so nothing invisible stands round a narrow cabinet).
+	for sp: Array in PERK_SPOTS:
+		var half: Vector3 = Vector3(PERK_SPOT_W * 0.5, 0, PERK_SPOT_D * 0.5)
+		if absf(absf(float(sp[3])) - 90.0) < 1.0:
+			half = Vector3(half.z, 0, half.x)
+		var c: Vector3 = sp[2]
+		box(geo, "NavBlock_PerkSpot_" + str(sp[0]), c - half, c + half + Vector3(0, NAV_SOLID_H, 0), "metal", true, false).add_to_group(&"bake_only", true)
 	for cr: Array in CRATES:
-		var half: Vector3 = Vector3(0.7, 0, 0.35) if absf(float(cr[2])) != 90.0 else Vector3(0.35, 0, 0.7)
+		var chalf: Vector3 = Vector3(0.7, 0, 0.35) if absf(float(cr[2])) != 90.0 else Vector3(0.35, 0, 0.7)
 		var p: Vector3 = cr[1]
 		# T-125: only for the bake: the crate's own blocker (MysteryCrate) is solid where the crate stands; an empty
 		# spot (the yard's well) must not keep an invisible box. MapRoot switches the "bake_only" group off.
-		box(geo, "NavBlock_Crate", p - half, p + half + Vector3(0, 0.75, 0), "metal", true, false).add_to_group(&"bake_only", true)
+		box(geo, "NavBlock_Crate", p - chalf, p + chalf + Vector3(0, 0.75, 0), "metal", true, false).add_to_group(&"bake_only", true)
 	for ab: Array in AMMO_BOXES:
 		var ah: Vector3 = Vector3(0.52, 0, 0.3) if absf(float(ab[2])) != 90.0 else Vector3(0.3, 0, 0.52)
 		var ap: Vector3 = ab[1]
@@ -1431,7 +1517,7 @@ func build_cellar() -> void:
 	box(geo, "CellarRoofSnow", Vector3(24.0 - T * 0.5, -0.04, 19.0), Vector3(36.0 + T * 0.5, 0.0, 31.0 + T * 0.5), "snow")
 	wall_z("CelW", 24.0, 19.0, 31.0, cy, CELLAR_TOP, [[19.45, 21.05, cy, cy + DOOR_H]], "cellar_stone")   # the breach to the Old Cellar (T-051)
 	wall_z("CelE", 36.0, 19.0, 31.0, cy, CELLAR_TOP, [[BAY_ARCH.x, BAY_ARCH.y, cy, cy + DOOR_H]], "cellar_stone")   # the arch to the bay (T-179)
-	wall_x("CelS", 31.0, 24.0 - T * 0.5, 36.0 + T * 0.5, cy, CELLAR_TOP, [], "cellar_stone")
+	wall_x("CelS", 31.0, 24.0 - T * 0.5, 36.0 + T * 0.5, cy, CELLAR_TOP, [[LAG_DOOR.x, LAG_DOOR.y, cy, cy + DOOR_H]], "cellar_stone")   # Door_Lager (T-251)
 	wall_x("CelN", 19.0, 28.0, 36.0 + T * 0.5, cy, CELLAR_TOP, [], "cellar_stone")
 	box(geo, "CelNLintel", Vector3(24.0, cy + 2.6, 19.0 - T * 0.5), Vector3(28.0, CELLAR_TOP, 19.0 + T * 0.5), "cellar_stone")
 	# vault pillars (cover, and something to run a loop around)
@@ -1439,7 +1525,10 @@ func build_cellar() -> void:
 		box(geo, "CellarPillar", Vector3(p.x - 0.35, cy, p.y - 0.35), Vector3(p.x + 0.35, CELLAR_TOP, p.y + 0.35), "cellar_stone")
 	# big dressing with collision (baked into the navmesh; all against walls, outside the loops and the stair spill):
 	# the workbench + Helvetia crates on the north wall, the barrels in the NE corner, the kegs on the landing corner
-	box(geo, "NavBlock_Crucible", Vector3(28.5, cy, 19.15), Vector3(30.5, cy + NAV_SOLID_H, 20.75), "metal", true, false)   # the Crucible's footprint (T-032)
+	# T-251: the Crucible moved two doors down (the Dynamo Room, build_deep_cellar). Its alcove on the north wall holds
+	# the inn's wash copper again, the brick-set boiler whose flue was there before the installers came (drawn by
+	# _dress_cellar; solid, under NAV_SOLID_H)
+	box(geo, "CellarCopperCol", Vector3(28.7, cy, 19.15), Vector3(30.3, cy + 1.05, 20.2), "metal", true, false).set_meta("no_mantle", true)
 	# T-238 (the owner: "the cellar ... is too cluttered"): the north wall carried the installers' crates between the
 	# Crucible and the lever and a 2.65 x 1.65 m heap of barrels, a sack and a crate in the north-east corner. Now the
 	# wall between the Crucible and the lever is bare (the lever's approach is 3 m wide) and the corner holds the bench
@@ -1448,7 +1537,41 @@ func build_cellar() -> void:
 	box(geo, "CellarBenchCol", Vector3(34.38, cy, 19.15), Vector3(35.95, cy + 0.9, 19.88), "metal", true, false)
 	box(geo, "LandingKegCol", Vector3(27.0, 0.0, 10.15), Vector3(28.0, 0.8, 11.1), "metal", true, false)
 	build_cellar_bay()
+	build_deep_cellar()
 	build_old_cellar()
+
+
+## T-251: the shells of the Lagering Vault and the Dynamo Room (see LAG_* / DYN_*). The vault's south wall is the
+## Lagering Vault's north wall (Door_Lager's opening is cut in build_cellar); the wall on x 34 between the two rooms
+## carries Door_Dynamo's. Solid things: the row of tuns (one box, under NAV_SOLID_H), the generator set on its plinth,
+## the Crucible's footprint, the bench and the crates in the Dynamo Room's north-east corner, two oil drums in its
+## north-west corner. Everything else in them is dressing against the walls.
+func build_deep_cellar() -> void:
+	var cy: float = CELLAR_Y
+	var top: float = CELLAR_TOP
+	var t2: float = T * 0.5
+	# ---- the Lagering Vault (brick)
+	box(geo, "LagerFloor", Vector3(LAG_X0 - t2, cy - 0.5, LAG_Z0), Vector3(LAG_X1, cy, LAG_Z1 + t2), "cellar_floor").set_meta("surface", "stone")
+	box(geo, "LagerRoof", Vector3(LAG_X0, top, LAG_Z0 + t2), Vector3(LAG_X1 - t2, -0.04, LAG_Z1 + t2), "brick_cellar")
+	box(geo, "LagerRoofSnow", Vector3(LAG_X0, -0.04, LAG_Z0 + t2), Vector3(LAG_X1 - t2, 0.0, LAG_Z1 + t2), "snow").set_meta("surface", "snow")
+	wall_z("LagW", LAG_X0, LAG_Z0 + t2, LAG_Z1 + t2, cy, top, [], "brick_cellar")
+	wall_x("LagS", LAG_Z1, LAG_X0 + t2, LAG_X1 - t2, cy, top, [], "brick_cellar")
+	box(geo, "LagerTuns", Vector3(float(LAG_TUNS[0]) - LAG_TUN_R, cy, LAG_TUN_Z.x), Vector3(float(LAG_TUNS[LAG_TUNS.size() - 1]) + LAG_TUN_R, cy + 1.52, LAG_TUN_Z.y),
+		"furniture", true, false).set_meta("no_mantle", true)
+	# ---- the Dynamo Room (whitewash)
+	box(geo, "DynFloor", Vector3(DYN_X0, cy - 0.5, DYN_Z0 + t2), Vector3(DYN_X1 + t2, cy, DYN_Z1 + t2), "cellar_floor").set_meta("surface", "stone")
+	box(geo, "DynRoof", Vector3(DYN_X0 - t2, top, DYN_Z0 + t2), Vector3(DYN_X1 + t2, -0.04, DYN_Z1 + t2), "brick_cellar")
+	box(geo, "DynRoofSnow", Vector3(DYN_X0 - t2, -0.04, DYN_Z0 + t2), Vector3(DYN_X1 + t2, 0.0, DYN_Z1 + t2), "snow").set_meta("surface", "snow")
+	wall_x("DynN", DYN_Z0, 36.0 + t2, DYN_X1 + t2, cy, top, [], "limewash")
+	wall_z("DynE", DYN_X1, DYN_Z0 + t2, DYN_Z1 - t2, cy, top, [], "limewash")
+	wall_x("DynS", DYN_Z1, DYN_X0 + t2, DYN_X1 + t2, cy, top, [], "limewash")
+	wall_z("DynW", DYN_X0, DYN_Z0 + t2, DYN_Z1 + t2, cy, top, [[DYN_DOOR.x, DYN_DOOR.y, cy, cy + DOOR_H]], "limewash")   # Door_Dynamo
+	var zf: float = DYN_Z0 + t2   # the north wall's face
+	box(geo, "NavBlock_Crucible", Vector3(DYN_CRUCIBLE.x - 1.0, cy, zf), Vector3(DYN_CRUCIBLE.x + 1.0, cy + NAV_SOLID_H, zf + 1.6), "metal", true, false)   # the Crucible's footprint (T-032)
+	box(geo, "DynCrateCol", Vector3(DYN_X1 - 2.38, cy, zf), Vector3(DYN_X1 - 1.7, cy + 1.1, zf + 0.7), "metal", true, false)
+	box(geo, "DynBenchCol", Vector3(DYN_X1 - 1.62, cy, zf), Vector3(DYN_X1 - 0.05, cy + 0.9, zf + 0.73), "metal", true, false)
+	box(geo, "DynamoSet", Vector3(DYN_SET.position.x, cy, DYN_SET.position.y), Vector3(DYN_SET.end.x, cy + 1.5, DYN_SET.end.y), "metal", true, false).set_meta("no_mantle", true)
+	box(geo, "DynDrumsCol", Vector3(DYN_X0 + t2, cy, zf), Vector3(DYN_X0 + t2 + 1.35, cy + 0.95, zf + 0.7), "metal", true, false).set_meta("no_mantle", true)
 
 
 ## T-179: the late-delivery bay's shell (see BAY_*): flagstones, coursed stone walls up to the vault's soffit height,
@@ -1955,16 +2078,16 @@ func _dress_cellar() -> void:
 	Props.block(g, Vector3(25.3, cy + 0.002, 29.6), Vector3(25.9, cy + 0.012, 30.2), "iron")
 	for i: int in 4:
 		Props.block(g, Vector3(25.36 + i * 0.14, cy + 0.012, 29.66), Vector3(25.42 + i * 0.14, cy + 0.016, 30.14), "char")
-	# ---- north wall: the Crucible's alcove (T-032) between the stair mouth and the lever, then the installers'
-	# crates under the fuse box, conduit to the lever and up to the bulbs
-	_crucible_setting(g)
+	# ---- north wall: the alcove between the stair mouth and the fuse box. T-251: the Crucible and the lever are in the
+	# Dynamo Room now (_dress_deep_cellar); the alcove holds the inn's wash copper under the old flue, and the fuse
+	# box is the vault's sub-board: its conduit runs up to the bulbs and on along the soffit to the door in the south wall
+	_wash_copper(g)
 	# (T-238: the installers' two crates stand at the bench's end in the north-east corner now, see below)
 	Props.fuse_box(g, Vector3(31.2, cy + 1.95, 19.15), 180.0, 0.5, 0.7)
 	# (T-247: the installers' name painted over the fuse box is gone; the owner: "remove or make it more subtle")
 	Props.pipe(g, Vector3(31.2, cy + 2.3, 19.25), Vector3(31.2, top - 0.08, 19.25), 0.02)
-	Props.pipe(g, Vector3(31.45, cy + 1.95, 19.25), Vector3(32.5, cy + 1.95, 19.25), 0.02)
-	Props.pipe(g, Vector3(32.5, cy + 1.95, 19.25), Vector3(32.5, cy + 2.15, 19.3), 0.02)
 	var cl: float = top - 0.08
+	Props.cable(g, Vector3(26.5, cl, 27.5), Vector3(26.0, cl, 30.85), 0.05, 0.015, 6)   # on to the Lagering Vault and the Dynamo Room
 	Props.cable(g, Vector3(31.2, cl, 19.3), Vector3(31.0, cl, 22.5), 0.05, 0.015, 6)
 	Props.cable(g, Vector3(31.0, cl, 22.5), Vector3(27.0, cl, 22.5), 0.06, 0.015, 8)
 	Props.cable(g, Vector3(31.0, cl, 22.5), Vector3(33.0, cl, 22.5), 0.04, 0.015, 5)
@@ -1974,6 +2097,7 @@ func _dress_cellar() -> void:
 	for bp: Vector3 in CELLAR_BULBS:
 		Props.pendant(g, bp, top - 0.02, _cellar_lit, "tin")
 	_dress_cellar_bay(g)
+	_dress_deep_cellar(g)
 	Props.bake(_cellar_lit)
 	for lit: Node in _cellar_lit.get_children():
 		lit.set_meta("keep", true)
@@ -1986,8 +2110,9 @@ func _dress_cellar() -> void:
 	# (T-247: the glass crates' maker's stencil, ZERBRECHLICH and the chalk tally over the bench are gone)
 	# (T-238: the three shelves of preserves that stood in the machines' back-panel walks are gone: the walls behind
 	# the west and east rows are bare stone, the walk is its full 1.1 m, and the inn's stores are in the Old Cellar)
-	# ---- south wall, west half: a wine rack (bottles lying with their necks out)
-	var wr: Node3D = Props.group(g, "WineRack", Vector3(25.85, cy, 30.85), 0.0)
+	# ---- west wall: a wine rack (bottles lying with their necks out). T-251: it stood on the south wall's west half,
+	# where Door_Lager is now
+	var wr: Node3D = Props.group(g, "WineRack", Vector3(24.15, cy, 26.9), -90.0)
 	Props.block(wr, Vector3(-1.45, 0, -0.34), Vector3(-1.4, 1.5, 0.0), "planks")
 	Props.block(wr, Vector3(1.4, 0, -0.34), Vector3(1.45, 1.5, 0.0), "planks")
 	var rrng: RandomNumberGenerator = RandomNumberGenerator.new()
@@ -2375,29 +2500,227 @@ func _dress_old_cellar() -> void:
 	Props.snow_drift(g, Vector3(25.9, wy, 2.6), Vector3(0.6, 0.35, 1.6))
 
 
-## The Crucible's alcove on the cellar's north wall (the Crucible itself is a gameplay node, build_cellar_gameplay):
-## brick facing between two iron columns under a riveted lintel, a soot halo on the soffit, the flue's chimney
-## stack up in the yard (the flue passes through the roof), a grate and a faint Nachtglas ring where you stand to
-## feed it, and the conduit from the fuse box.
-func _crucible_setting(g: Node3D) -> void:
+## The Crucible's alcove (the Crucible itself is a gameplay node, build_deep_cellar_gameplay): brick facing between two
+## iron columns under a riveted lintel, a soot halo on the soffit, a grate and a faint Nachtglas ring where you stand
+## to feed it, and the conduit from the fuse box. `cx` is the Crucible's x, `zf` the face of the wall behind it (the
+## room is on +z). T-251: it is on the Dynamo Room's north wall now, built to the measure it had in the vault, and its
+## flue runs along the soffit to the generator's exhaust instead of up through the roof (the chimney stack in the
+## snow north of the stable is the wash copper's, as it was before the installers came: _wash_copper).
+func _crucible_setting(g: Node3D, cx: float, zf: float) -> void:
+	var cy: float = CELLAR_Y
+	Props.block(g, Vector3(cx - 1.25, cy, zf), Vector3(cx + 1.25, cy + 2.85, zf + 0.05), "brick_cellar")
+	for sx: float in [-1.0, 1.0]:
+		Props.block(g, Vector3(cx + sx * 1.35 - 0.11, cy, zf), Vector3(cx + sx * 1.35 + 0.11, cy + 2.9, zf + 0.27), "iron")
+		Props.block(g, Vector3(cx + sx * 1.35 - 0.16, cy, zf), Vector3(cx + sx * 1.35 + 0.16, cy + 0.2, zf + 0.32), "iron")
+		Props.block(g, Vector3(cx + sx * 1.35 - 0.16, cy + 2.7, zf), Vector3(cx + sx * 1.35 + 0.16, cy + 2.9, zf + 0.32), "iron")
+	Props.block(g, Vector3(cx - 1.55, cy + 2.72, zf), Vector3(cx + 1.55, cy + 2.98, zf + 0.35), "iron")
+	for i: int in 7:
+		Props._noshadow(Props.ball(g, Vector3(cx - 1.2 + i * 0.4, cy + 2.85, zf + 0.35), Vector3(0.05, 0.05, 0.04), "steel"))
+	Props._noshadow(Props.cyl(g, Vector3(cx, CELLAR_TOP - 0.008, zf + 0.6), 0.75, 0.01, "char"))
+	Props._noshadow(Props.cyl(g, Vector3(cx, cy + 0.006, zf + 2.2), 0.85, 0.012, "steel_grate"))
+	Props._noshadow(Props.cyl(g, Vector3(cx, cy + 0.01, zf + 2.2), 0.62, 0.012, "nachtglas_dim"))
+	Props.pipe(g, Vector3(cx + 1.45, cy + 2.1, zf + 0.1), Vector3(cx + 1.0, cy + 2.1, zf + 0.1), 0.02)
+	Props.pipe(g, Vector3(cx + 1.0, cy + 2.1, zf + 0.1), Vector3(cx + 1.0, cy + 1.3, zf + 0.1), 0.02)
+
+
+## T-251: the vault's alcove on its north wall, where the Crucible stood until the installers moved it two rooms down:
+## the inn's wash copper is back under its flue. A brick-set boiler (the collider is build_cellar's CellarCopperCol):
+## the brick body with its iron fire door and ash pit, the copper's rim and its wooden lid, the stovepipe up the wall
+## into the old flue (its chimney stack still stands in the snow above, with its cap of snow), soot on the soffit, the
+## brick facing the installers left, a coal scuttle, the wash paddle against the wall, a zinc tub and the washboard.
+func _wash_copper(g: Node3D) -> void:
 	var cy: float = CELLAR_Y
 	var cx: float = 29.5
-	Props.block(g, Vector3(cx - 1.25, cy, 19.15), Vector3(cx + 1.25, cy + 2.85, 19.2), "brick_cellar")
-	for sx: float in [-1.0, 1.0]:
-		Props.block(g, Vector3(cx + sx * 1.35 - 0.11, cy, 19.15), Vector3(cx + sx * 1.35 + 0.11, cy + 2.9, 19.42), "iron")
-		Props.block(g, Vector3(cx + sx * 1.35 - 0.16, cy, 19.15), Vector3(cx + sx * 1.35 + 0.16, cy + 0.2, 19.47), "iron")
-		Props.block(g, Vector3(cx + sx * 1.35 - 0.16, cy + 2.7, 19.15), Vector3(cx + sx * 1.35 + 0.16, cy + 2.9, 19.47), "iron")
-	Props.block(g, Vector3(cx - 1.55, cy + 2.72, 19.15), Vector3(cx + 1.55, cy + 2.98, 19.5), "iron")
-	for i: int in 7:
-		Props._noshadow(Props.ball(g, Vector3(cx - 1.2 + i * 0.4, cy + 2.85, 19.5), Vector3(0.05, 0.05, 0.04), "steel"))
-	Props._noshadow(Props.cyl(g, Vector3(cx, CELLAR_TOP - 0.008, 19.75), 0.75, 0.01, "char"))
-	Props.block(g, Vector3(cx - 0.42, -0.25, 19.33), Vector3(cx + 0.42, 1.15, 20.17), "brick_cellar")
-	Props.block(g, Vector3(cx - 0.48, 1.15, 19.27), Vector3(cx + 0.48, 1.27, 20.23), "cellar_stone")
-	Props.block(g, Vector3(cx - 0.5, 1.27, 19.25), Vector3(cx + 0.5, 1.34, 20.25), "snow", false)
-	Props._noshadow(Props.cyl(g, Vector3(cx, cy + 0.006, 21.35), 0.85, 0.012, "steel_grate"))
-	Props._noshadow(Props.cyl(g, Vector3(cx, cy + 0.01, 21.35), 0.62, 0.012, "nachtglas_dim"))
-	Props.pipe(g, Vector3(30.95, cy + 2.1, 19.25), Vector3(cx + 1.0, cy + 2.1, 19.25), 0.02)
-	Props.pipe(g, Vector3(cx + 1.0, cy + 2.1, 19.25), Vector3(cx + 1.0, cy + 1.3, 19.25), 0.02)
+	var zf: float = 19.15
+	Props.block(g, Vector3(cx - 1.25, cy, zf), Vector3(cx + 1.25, cy + 2.85, zf + 0.05), "brick_cellar")   # the facing
+	# the brick body, a course proud at its foot and its top
+	Props.block(g, Vector3(cx - 0.8, cy, zf + 0.05), Vector3(cx + 0.8, cy + 0.92, zf + 1.05), "brick_cellar")
+	Props.block(g, Vector3(cx - 0.84, cy, zf + 0.05), Vector3(cx + 0.84, cy + 0.1, zf + 1.09), "cellar_stone")
+	Props.block(g, Vector3(cx - 0.84, cy + 0.92, zf + 0.05), Vector3(cx + 0.84, cy + 1.0, zf + 1.09), "cellar_stone")
+	# the copper: its rim standing out of the top course, the lid of boards with a batten handle
+	Props.cyl(g, Vector3(cx - 0.15, cy + 1.03, zf + 0.55), 0.4, 0.07, "copper")
+	Props.cyl(g, Vector3(cx - 0.15, cy + 1.08, zf + 0.55), 0.37, 0.04, "planks")
+	Props.block(g, Vector3(cx - 0.4, cy + 1.1, zf + 0.52), Vector3(cx + 0.1, cy + 1.14, zf + 0.58), "beam")
+	# the fire door and the ash pit under it, on the front
+	Props.block(g, Vector3(cx - 0.36, cy + 0.36, zf + 1.05), Vector3(cx + 0.06, cy + 0.68, zf + 1.08), "iron")
+	Props.block(g, Vector3(cx - 0.11, cy + 0.5, zf + 1.08), Vector3(cx - 0.05, cy + 0.54, zf + 1.12), "brass")
+	Props.block(g, Vector3(cx - 0.3, cy + 0.1, zf + 1.05), Vector3(cx + 0.0, cy + 0.24, zf + 1.075), "char")
+	Props._noshadow(Props.block(g, Vector3(cx - 0.5, cy + 0.002, zf + 1.09), Vector3(cx + 0.25, cy + 0.01, zf + 1.6), "soot"))
+	# the stovepipe: out of the body's back corner, up the facing, into the flue
+	Props.cyl(g, Vector3(cx + 0.52, cy + 1.75, zf + 0.3), 0.09, 1.5, "iron")
+	Props.cyl(g, Vector3(cx + 0.52, cy + 2.52, zf + 0.3), 0.105, 0.06, "iron")
+	Props._noshadow(Props.cyl(g, Vector3(cx + 0.3, CELLAR_TOP - 0.008, zf + 0.6), 0.75, 0.01, "char"))
+	# the chimney stack in the snow above (it was the Crucible's flue for a while)
+	Props.block(g, Vector3(cx - 0.42, -0.25, zf + 0.18), Vector3(cx + 0.42, 1.15, zf + 1.02), "brick_cellar")
+	Props.block(g, Vector3(cx - 0.48, 1.15, zf + 0.12), Vector3(cx + 0.48, 1.27, zf + 1.08), "cellar_stone")
+	Props.block(g, Vector3(cx - 0.5, 1.27, zf + 0.1), Vector3(cx + 0.5, 1.34, zf + 1.1), "snow", false)
+	# on the body: the zinc tub and the washboard leaning in it; beside it the scuttle and the paddle
+	Props.cyl(g, Vector3(cx + 0.38, cy + 1.13, zf + 0.72), 0.26, 0.26, "zinc")
+	Props.obox(g, Vector3(cx + 0.38, cy + 1.3, zf + 0.6), Vector3(0.3, 0.5, 0.03), "planks", Vector3(-18, 0, 0))
+	Props.cyl(g, Vector3(cx - 1.02, cy + 0.17, zf + 0.3), 0.15, 0.34, "iron")
+	Props.ball(g, Vector3(cx - 1.02, cy + 0.34, zf + 0.3), Vector3(0.26, 0.12, 0.26), "coal")
+	Props.obox(g, Vector3(cx + 1.02, cy + 0.72, zf + 0.12), Vector3(0.05, 1.45, 0.03), "beam", Vector3(8, 0, 4))
+	Props.obox(g, Vector3(cx + 1.04, cy + 1.42, zf + 0.2), Vector3(0.16, 0.2, 0.03), "beam", Vector3(8, 0, 4))
+
+
+## T-251: the Lagering Vault's and the Dynamo Room's dressing (their shells and solid things are build_deep_cellar's).
+## The Lagering Vault: the inn's own lager cellar, brick on every wall (a facing on the vault's and the Dynamo Room's
+## sides), two stone ribs across it, three tuns on their cradles (each a tipped Props.barrel over the LagerTuns box)
+## with a tap, a drip tray and the gutter to the floor drain, a rack of bungs and a mallet on the south wall, the
+## installers' cable on the soffit from Door_Lager to Door_Dynamo. The Dynamo Room: whitewashed, the generator set
+## on its plinth (engine, flywheel, belt, dynamo, the exhaust up to the soffit and out through the south wall), the
+## Crucible's alcove and the fuse board by the lever on the north wall, the bench and the two crates in the north-east
+## corner, two oil drums in the north-west one, the sump's grate in the south-west corner.
+func _dress_deep_cellar(parent: Node3D) -> void:
+	var cy: float = CELLAR_Y
+	var top: float = CELLAR_TOP
+	var t2: float = T * 0.5
+	var cream: Color = Color(0.92, 0.9, 0.82, 0.8)
+	var g: Node3D = Props.group(parent, "DeepCellar", Vector3.ZERO)
+	_lager_lit = Node3D.new()
+	_lager_lit.name = "LagerLit"
+	dress.add_child(_lager_lit)
+	_dynamo_lit = Node3D.new()
+	_dynamo_lit.name = "DynamoLit"
+	dress.add_child(_dynamo_lit)
+	var spring: float = cy + 2.05
+	var cl: float = top - 0.08
+	# ================= the Lagering Vault
+	var lx0: float = LAG_X0 + t2
+	var lx1: float = LAG_X1 - t2
+	var lz0: float = LAG_Z0 + t2
+	var lz1: float = LAG_Z1 - t2
+	# brick on the two walls it shares (the vault's stone south wall, the Dynamo Room's whitewashed west wall)
+	Props.block(g, Vector3(lx0, cy, lz0), Vector3(LAG_DOOR.x - 0.14, top, lz0 + 0.02), "brick_cellar")
+	Props.block(g, Vector3(LAG_DOOR.y + 0.14, cy, lz0), Vector3(lx1, top, lz0 + 0.02), "brick_cellar")
+	Props.block(g, Vector3(LAG_DOOR.x - 0.14, cy + DOOR_H + 0.18, lz0), Vector3(LAG_DOOR.y + 0.14, top, lz0 + 0.02), "brick_cellar")
+	Props.block(g, Vector3(lx1 - 0.02, cy, lz0), Vector3(lx1, top, DYN_DOOR.x - 0.14), "brick_cellar")
+	Props.block(g, Vector3(lx1 - 0.02, cy, DYN_DOOR.y + 0.14), Vector3(lx1, top, lz1), "brick_cellar")
+	Props.block(g, Vector3(lx1 - 0.02, cy + DOOR_H + 0.18, DYN_DOOR.x - 0.14), Vector3(lx1, top, DYN_DOOR.y + 0.14), "brick_cellar")
+	_door_frame(Vector3((LAG_DOOR.x + LAG_DOOR.y) * 0.5, cy, LAG_Z0), 0.0, LAG_DOOR.y - LAG_DOOR.x, DOOR_H)
+	_door_frame(Vector3(DYN_X0, cy, (DYN_DOOR.x + DYN_DOOR.y) * 0.5), 90.0, DYN_DOOR.y - DYN_DOOR.x, DOOR_H)
+	# the rooms' names over their doors, small (the side you come from)
+	Props.stencil(g, Vector3((LAG_DOOR.x + LAG_DOOR.y) * 0.5, cy + DOOR_H + 0.36, LAG_Z0 - t2), 0.0, "LAGERKELLER", 24, Color(cream, 0.55), 0.003)
+	Props.stencil(g, Vector3(lx1 - 0.02, cy + DOOR_H + 0.36, (DYN_DOOR.x + DYN_DOOR.y) * 0.5), 90.0, "MASCHINENRAUM", 24, Color(cream, 0.55), 0.003)
+	# the ribs (clear of the bulbs), the tuns
+	for rx: float in [27.5, 32.55]:
+		_arch(g, Vector3(rx, spring, lz0), Vector3(rx, spring, lz1), (top - 0.1) - spring)
+	var tz: float = (LAG_TUN_Z.x + LAG_TUN_Z.y) * 0.5
+	var ti: int = 0
+	for tx: float in LAG_TUNS:
+		for sz: float in [LAG_TUN_Z.x + 0.28, LAG_TUN_Z.y - 0.28]:   # the cradle: two sleepers with chocks
+			Props.block(g, Vector3(tx - 0.56, cy, sz - 0.08), Vector3(tx + 0.56, cy + 0.2, sz + 0.08), "beam")
+			for sx: float in [-1.0, 1.0]:
+				Props.obox(g, Vector3(tx + sx * 0.4, cy + 0.27, sz), Vector3(0.24, 0.16, 0.14), "beam", Vector3(0, 0, sx * -32.0))
+		Props.barrel(g, Vector3(tx, cy + 0.26, tz), 0.0, LAG_TUN_R, LAG_TUN_Z.y - LAG_TUN_Z.x - 0.06, true)
+		# the tap low on the north head, its drip tray; a chalked gauge board on the head
+		Props.cyl(g, Vector3(tx, cy + 0.5, LAG_TUN_Z.x - 0.03), 0.022, 0.12, "brass", Vector3(90, 0, 0))
+		Props.block(g, Vector3(tx - 0.012, cy + 0.5, LAG_TUN_Z.x - 0.1), Vector3(tx + 0.012, cy + 0.6, LAG_TUN_Z.x - 0.07), "brass")
+		Props.block(g, Vector3(tx - 0.16, cy, LAG_TUN_Z.x - 0.32), Vector3(tx + 0.16, cy + 0.07, LAG_TUN_Z.x - 0.04), "zinc")
+		Props._noshadow(Props.block(g, Vector3(tx - 0.13, cy + 1.02, LAG_TUN_Z.x + 0.012), Vector3(tx + 0.13, cy + 1.2, LAG_TUN_Z.x + 0.02), "board_wood"))
+		ti += 1
+	# the gutter along the tuns' north side to the floor drain in the north-east corner (the ground spawn), a puddle
+	Props._noshadow(Props.block(g, Vector3(float(LAG_TUNS[0]) - 0.5, cy + 0.002, LAG_TUN_Z.x - 0.5), Vector3(32.6, cy + 0.008, LAG_TUN_Z.x - 0.38), "char"))
+	Props._noshadow(Props.block(g, Vector3(32.6, cy + 0.002, 32.4), Vector3(32.72, cy + 0.008, LAG_TUN_Z.x - 0.38), "char"))
+	Props.block(g, Vector3(32.55, cy + 0.002, 31.75), Vector3(33.25, cy + 0.012, 32.45), "iron")
+	for i: int in 4:
+		Props.block(g, Vector3(32.62 + i * 0.16, cy + 0.012, 31.82), Vector3(32.68 + i * 0.16, cy + 0.016, 32.38), "char")
+	Props.puddle(g, Vector3(31.6, cy, 32.5), 1.2, 0.7, 15.0)
+	Props.puddle(g, Vector3(29.4, cy, 35.6), 0.9, 0.6, 70.0)
+	# the south wall: a rack of bungs and taps, the cooper's mallet hung beside it; a hose on its hook
+	Props.shelves(g, Vector3(30.0, cy + 1.0, lz1), 0.0, 1.8, 0.9, 0.22, 2, 251)
+	Props.obox(g, Vector3(31.35, cy + 1.3, lz1 - 0.04), Vector3(0.05, 0.6, 0.05), "beam", Vector3(0, 0, 12))
+	Props.obox(g, Vector3(31.42, cy + 1.6, lz1 - 0.05), Vector3(0.22, 0.14, 0.1), "beam", Vector3(0, 0, 12))
+	Props.cyl(g, Vector3(28.2, cy + 1.45, lz1 - 0.06), 0.24, 0.07, "rubber", Vector3(90, 0, 0))
+	Props.cyl(g, Vector3(28.2, cy + 1.45, lz1 - 0.04), 0.035, 0.08, "iron", Vector3(90, 0, 0))
+	# the installers' cable on the soffit: in over Door_Lager, across to the bulbs, out over Door_Dynamo
+	Props.cable(g, Vector3(26.0, cl, lz0), Vector3((LAG_BULBS[0] as Vector3).x, cl, (LAG_BULBS[0] as Vector3).z), 0.04, 0.015, 5)
+	Props.cable(g, Vector3((LAG_BULBS[0] as Vector3).x, cl, (LAG_BULBS[0] as Vector3).z), Vector3((LAG_BULBS[1] as Vector3).x, cl, (LAG_BULBS[1] as Vector3).z), 0.06, 0.015, 8)
+	Props.cable(g, Vector3((LAG_BULBS[1] as Vector3).x, cl, (LAG_BULBS[1] as Vector3).z), Vector3((LAG_BULBS[2] as Vector3).x, cl, (LAG_BULBS[2] as Vector3).z), 0.06, 0.015, 8)
+	Props.cable(g, Vector3((LAG_BULBS[2] as Vector3).x, cl, (LAG_BULBS[2] as Vector3).z), Vector3(lx1, cl, 35.4), 0.04, 0.015, 5)
+	for bp: Vector3 in LAG_BULBS:
+		Props.pendant(g, bp, top - 0.02, _lager_lit, "tin")
+	Props.lantern(g, Vector3(27.6, cy + 2.2, 31.75), top - 0.02)   # lit by LagerLamp (build_deep_cellar_gameplay)
+	Props.pipe(g, Vector3(lx0 + 0.07, cy + 2.7, lz0 + 0.05), Vector3(lx0 + 0.07, cy + 2.7, lz1 - 0.05), 0.035, "iron")
+	Props.cobweb(g, Vector3(lx0, top - 0.02, lz1), 90.0, 0.9)
+	Props.cobweb(g, Vector3(lx1, top - 0.02, lz0), -90.0, 0.8)
+	PropsStory.stain(g, Vector3(lx0 + 0.3, cy + 0.0125, lz0 + 0.1), Vector3(27.6, cy + 0.0135, 33.4), "floor_worn")
+	# ================= the Dynamo Room
+	var dx0: float = DYN_X0 + t2
+	var dx1: float = DYN_X1 - t2
+	var dz0: float = DYN_Z0 + t2
+	var dz1: float = DYN_Z1 - t2
+	Props.block(g, Vector3(dx0, cy, dz0), Vector3(36.0 + t2, top, dz0 + 0.02), "limewash")   # whitewash over the vault's stone
+	_crucible_setting(g, DYN_CRUCIBLE.x, dz0)
+	# the fuse board by the lever, its conduit to the lever and up to the soffit
+	var fx: float = DYN_LEVER.x - 1.3
+	Props.fuse_box(g, Vector3(fx, cy + 1.95, dz0), 180.0, 0.5, 0.7)
+	Props.pipe(g, Vector3(fx, cy + 2.3, dz0 + 0.1), Vector3(fx, top - 0.08, dz0 + 0.1), 0.02)
+	Props.pipe(g, Vector3(fx + 0.25, cy + 1.95, dz0 + 0.1), Vector3(DYN_LEVER.x, cy + 1.95, dz0 + 0.1), 0.02)
+	Props.pipe(g, Vector3(DYN_LEVER.x, cy + 1.95, dz0 + 0.1), Vector3(DYN_LEVER.x, cy + 2.15, dz0 + 0.15), 0.02)
+	# the bench and the two crates the machines' glass came in, in the north-east corner (as they stood in the vault)
+	Props.workbench(g, Vector3(DYN_X1 - 0.85, cy, dz0 + 0.35), 180.0, 1.5, 0.7)
+	Props.crate(g, Vector3(DYN_X1 - 2.04, cy, dz0 + 0.35), 0.6, 180.0)
+	Props.crate(g, Vector3(DYN_X1 - 2.02, cy + 0.6, dz0 + 0.35), 0.5, 174.0)
+	# the oil drums in the north-west corner, a funnel on one, the stain under them
+	Props.oil_drum(g, Vector3(dx0 + 0.36, cy, dz0 + 0.36), "rust")
+	Props.oil_drum(g, Vector3(dx0 + 1.0, cy, dz0 + 0.34), "olive_drab")
+	Props.cone(g, Vector3(dx0 + 1.0, cy + 0.98, dz0 + 0.34), 0.12, 0.16, "zinc", Vector3(180, 0, 0))
+	PropsStory.stain(g, Vector3(dx0 + 0.05, cy + 0.0125, dz0 + 0.05), Vector3(dx0 + 1.7, cy + 0.0135, dz0 + 1.1), "water_stain")
+	# ---- the generator set on its plinth: a two-cylinder engine, its flywheel, the belt to the dynamo, the exhaust
+	var px0: float = DYN_SET.position.x
+	var pz0: float = DYN_SET.position.y
+	var pzm: float = pz0 + DYN_SET.size.y * 0.5
+	Props.block(g, Vector3(px0, cy, pz0), Vector3(DYN_SET.end.x, cy + 0.22, DYN_SET.end.y), "concrete")
+	Props.block(g, Vector3(px0 + 0.2, cy + 0.22, pz0 + 0.22), Vector3(px0 + 1.15, cy + 0.78, pz0 + 0.98), "machine_green")   # the crankcase
+	for cxo: float in [0.42, 0.9]:
+		Props.cyl(g, Vector3(px0 + cxo, cy + 1.05, pzm), 0.17, 0.55, "machine_green")
+		Props.cyl(g, Vector3(px0 + cxo, cy + 1.35, pzm), 0.19, 0.07, "iron")
+		for fin: int in 4:
+			Props.cyl(g, Vector3(px0 + cxo, cy + 0.9 + fin * 0.1, pzm), 0.2, 0.02, "iron")
+	Props.cyl(g, Vector3(px0 + 1.26, cy + 0.66, pzm), 0.4, 0.1, "iron", Vector3(0, 0, 90))   # the flywheel
+	Props.cyl(g, Vector3(px0 + 1.26, cy + 0.66, pzm), 0.09, 0.2, "steel", Vector3(0, 0, 90))
+	Props.cyl(g, Vector3(px0 + 1.92, cy + 0.6, pzm), 0.3, 0.62, "machine_grey", Vector3(0, 0, 90))   # the dynamo
+	Props.cyl(g, Vector3(px0 + 1.57, cy + 0.6, pzm), 0.2, 0.08, "copper", Vector3(0, 0, 90))
+	Props.cyl(g, Vector3(px0 + 2.27, cy + 0.6, pzm), 0.16, 0.08, "iron", Vector3(0, 0, 90))
+	for fz: float in [pzm - 0.22, pzm + 0.22]:   # its feet
+		Props.block(g, Vector3(px0 + 1.66, cy + 0.22, fz - 0.05), Vector3(px0 + 2.18, cy + 0.34, fz + 0.05), "iron")
+	Props.block(g, Vector3(px0 + 1.74, cy + 0.9, pzm - 0.14), Vector3(px0 + 2.1, cy + 1.08, pzm + 0.14), "machine_grey")   # the terminal box
+	Props.cable(g, Vector3(px0 + 1.92, cy + 1.08, pzm), Vector3(px0 + 1.92, cl, pzm - 0.6), 0.02, 0.02, 4)
+	Props.cable(g, Vector3(px0 + 1.92, cl, pzm - 0.6), Vector3(fx, cl, dz0 + 0.12), 0.08, 0.02, 8)
+	Props.block(g, Vector3(px0 + 1.2, cy + 0.22, pz0 + 0.08), Vector3(px0 + 1.62, cy + 1.12, pz0 + 0.12), "steel_grate")   # the belt guard, both sides
+	Props.block(g, Vector3(px0 + 1.2, cy + 0.22, DYN_SET.end.y - 0.12), Vector3(px0 + 1.62, cy + 1.12, DYN_SET.end.y - 0.08), "steel_grate")
+	Props.cyl(g, Vector3(px0 + 0.12, cy + 0.62, pzm), 0.2, 0.3, "rust")   # the fuel tank on its bracket
+	# the exhaust: up from the head, along the soffit, out through the south wall
+	Props.pipe(g, Vector3(px0 + 0.66, cy + 1.3, pzm + 0.2), Vector3(px0 + 0.66, top - 0.16, pzm + 0.2), 0.05, "rust")
+	Props.pipe(g, Vector3(px0 + 0.66, top - 0.16, pzm + 0.2), Vector3(px0 + 0.66, top - 0.16, dz1), 0.05, "rust")
+	Props.cyl(g, Vector3(px0 + 0.66, top - 0.16, dz1 - 0.03), 0.09, 0.05, "iron", Vector3(90, 0, 0))
+	PropsStory.stain(g, Vector3(px0 - 0.5, cy + 0.0125, pz0 - 0.4), Vector3(px0 + 1.4, cy + 0.0135, DYN_SET.end.y + 0.5), "water_stain")
+	# the sump in the south-west corner (the ground spawn): its grate, the wet round it
+	Props.block(g, Vector3(34.75, cy + 0.002, 37.45), Vector3(35.65, cy + 0.014, 38.35), "iron")
+	for i2: int in 5:
+		Props.block(g, Vector3(34.83 + i2 * 0.17, cy + 0.014, 37.52), Vector3(34.89 + i2 * 0.17, cy + 0.018, 38.28), "char")
+	Props.puddle(g, Vector3(36.3, cy, 38.0), 1.1, 0.7, 10.0)
+	# the east wall: a tool board, a fire bucket on its hook; pipes along the walls' tops
+	Props.block(g, Vector3(dx1 - 0.03, cy + 1.1, 33.4), Vector3(dx1, cy + 1.9, 34.6), "board_wood")
+	for tk: int in 4:
+		Props.obox(g, Vector3(dx1 - 0.045, cy + 1.5, 33.6 + tk * 0.27), Vector3(0.02, 0.44 + (tk % 2) * 0.14, 0.05), "iron", Vector3(float(tk * 7 - 10), 0, 0))
+	Props.cyl(g, Vector3(dx1 - 0.16, cy + 1.2, 35.2), 0.13, 0.26, "red_paint")
+	Props.block(g, Vector3(dx1 - 0.03, cy + 1.36, 35.17), Vector3(dx1, cy + 1.42, 35.23), "iron")
+	Props.pipe(g, Vector3(dx0 + 0.05, cy + 2.7, dz1 - 0.07), Vector3(px0 + 0.5, cy + 2.7, dz1 - 0.07), 0.03, "iron")
+	Props.cable(g, Vector3(dx0, cl, 35.4), Vector3((DYN_BULBS[0] as Vector3).x, cl, (DYN_BULBS[0] as Vector3).z), 0.04, 0.015, 5)
+	Props.cable(g, Vector3((DYN_BULBS[0] as Vector3).x, cl, (DYN_BULBS[0] as Vector3).z), Vector3((DYN_BULBS[2] as Vector3).x, cl, (DYN_BULBS[2] as Vector3).z), 0.06, 0.015, 8)
+	Props.cable(g, Vector3((DYN_BULBS[2] as Vector3).x, cl, (DYN_BULBS[2] as Vector3).z), Vector3((DYN_BULBS[1] as Vector3).x, cl, (DYN_BULBS[1] as Vector3).z), 0.06, 0.015, 8)
+	Props.cable(g, Vector3((DYN_BULBS[1] as Vector3).x, cl, (DYN_BULBS[1] as Vector3).z), Vector3(fx, cl, dz0 + 0.12), 0.05, 0.015, 6)
+	for bp2: Vector3 in DYN_BULBS:
+		Props.pendant(g, bp2, top - 0.02, _dynamo_lit, "tin")
+	Props.lantern(g, Vector3(34.7, cy + 2.2, 33.6), top - 0.02)   # lit by DynamoLamp
+	Props.cobweb(g, Vector3(dx1, top - 0.02, dz1), 180.0, 0.9)
+	Props.cobweb(g, Vector3(dx0, top - 0.02, dz1), 90.0, 0.7)
+	for holder: Node3D in [_lager_lit, _dynamo_lit]:
+		Props.bake(holder)
+		for lit: Node in holder.get_children():
+			lit.set_meta("keep", true)
 
 
 ## A segmental stone arch from a to b (same height), rising `rise` at the crown, as a run of boxes.
@@ -4214,6 +4537,299 @@ func _audit_wall_buys() -> int:
 	return bad
 
 
+# ================================================================== the perk-spot audit (T-251)
+
+## Everything a perk spot must stay clear of, as boxes in a 2 m hash: the colliders (but the spots' own bake boxes),
+## every drawn mesh of the dressing, the library props. {cell (Vector2i) -> Array of [AABB, name]}.
+var _spot_grid: Dictionary = {}
+var _spot_keep: Array = []   # [label, position, radius, is a polyline (Array of points) or null]
+
+func _spot_grid_add(ab: AABB, n: String) -> void:
+	if ab.size.x > 30.0 and ab.size.z > 30.0:
+		return   # the ground slabs: a spot never reaches below its own floor
+	for gx: int in range(int(floor(ab.position.x / 2.0)), int(floor(ab.end.x / 2.0)) + 1):
+		for gz: int in range(int(floor(ab.position.z / 2.0)), int(floor(ab.end.z / 2.0)) + 1):
+			var k: Vector2i = Vector2i(gx, gz)
+			if not _spot_grid.has(k):
+				_spot_grid[k] = []
+			(_spot_grid[k] as Array).append([ab, n])
+
+
+func _spot_grid_build() -> void:
+	_spot_grid.clear()
+	for b: Node in geo.find_children("*", "StaticBody3D", true, false):
+		if String(b.name).begins_with("NavBlock_PerkSpot_"):
+			continue
+		for c: Node in b.get_children():
+			var cs: CollisionShape3D = c as CollisionShape3D
+			if cs == null or not (cs.shape is BoxShape3D):
+				continue
+			var sz: Vector3 = (cs.shape as BoxShape3D).size
+			_spot_grid_add((_xform_to_root(b as Node3D) * cs.transform) * AABB(-sz * 0.5, sz), "col:" + String(b.name))
+	for n: Node in dress.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		if mi.mesh == null or not mi.visible:
+			continue
+		_spot_grid_add(_xform_to_root(mi) * mi.get_aabb(), "mesh:%s(%s)" % [mi.name, mi.get_parent().name])
+	for lp: Array in _lib_props:
+		var o: Vector3 = (lp[1] as Transform3D).origin
+		_spot_grid_add(AABB(o + Vector3(-0.3, 0.0, -0.3), Vector3(0.6, 0.8, 0.6)), "lib:" + str(lp[0]))
+	# what a machine must keep away from: [label, position, radius]
+	_spot_keep.clear()
+	for d: Array in [["Door_Upstairs", Vector3(STAIR_X1, 0, 15.1)], ["Door_Stable", Vector3(20.0, 0, 16.0)], ["Door_Yard", Vector3(8.0, 0, 34.0)],
+			["Door_Front", Vector3(FRONT_DOOR_X, 0, 0)], ["Door_Gate", Vector3(18.0, 0, 48.0)], ["Door_Cellar", Vector3(24.0, 0, 11.5)],
+			["Door_OldCellar", Vector3(0.0, 0, 9.05)], ["Door_Lager", Vector3(26.0, CELLAR_Y, LAG_Z0)], ["Door_Dynamo", Vector3(DYN_X0, CELLAR_Y, 35.4)],
+			["StableNorthDoor", Vector3(20.0, 0, 22.0)], ["RoomDoor1", Vector3(5.75, UP_Y, HALL_Z0)], ["RoomDoor2", Vector3(11.75, UP_Y, HALL_Z0)],
+			["RoomDoor3", Vector3(20.25, UP_Y, HALL_Z0)], ["BayArch", Vector3(BAY_X0, CELLAR_Y, (BAY_ARCH.x + BAY_ARCH.y) * 0.5)],
+			["CellarBreach", Vector3(24.0, CELLAR_Y, 20.25)], ["CellarStairFoot", Vector3(26.1, CELLAR_Y, 19.0)], ["StairFoot", Vector3(1.9, 0, STAIR_Z0)],
+			["StairHead", Vector3(1.9, UP_Y, STAIR_Z1)], ["AtticStairFoot", Vector3(ASTAIR_X0, UP_Y, 8.8)], ["AtticStairHead", Vector3(ASTAIR_X1, ATT_Y, 8.8)],
+			["HayStairFoot", Vector3(24.35, 0, HSTAIR_Z0)], ["HayStairHead", Vector3(24.35, LOFT_TOP, HSTAIR_Z1)], ["BankDoor", Vector3(-4.5, 0, BANK_Z0)],
+			["OldCellarStairFoot", Vector3(-1.5, CELLAR_Y, 17.5)], ["IceCellarSeal", Vector3(5.0, CELLAR_Y, 6.7)], ["JakubCage", Vector3(OC_CAGE.end.x, CELLAR_Y, 4.9)]]:
+		_spot_keep.append([str(d[0]), d[1], 2.3])
+	for w: Array in WINDOWS:
+		_spot_keep.append([str(w[0]), w[2], 2.6])
+		if float((w[2] as Vector3).y) < 1.0:   # where its zombies rise (5 m out) and the way they walk to the boards
+			var outp: Vector3 = (w[2] as Vector3) - Basis(Vector3.UP, deg_to_rad(float(w[3]))) * Vector3(0, 0, 5.0)
+			_spot_keep.append(["the walk to " + str(w[0]), Vector3.ZERO, 2.0, [outp, w[2]]])
+	for w2: Array in [["W_CEL_COAL", Vector3(3.45, CELLAR_Y, 0.0)], ["W_CEL_VAULT", Vector3(24.0, CELLAR_Y, 1.8)]]:
+		_spot_keep.append([str(w2[0]), w2[1], 2.6])
+	for b2: Array in BUYS:
+		_spot_keep.append(["WallBuy_" + str(b2[0]), (b2[1] as Vector3) - Vector3(0, 1.5, 0), 2.0])
+	_spot_keep.append(["WallBuy_gewehr43", Vector3(11.05, CELLAR_Y, 6.6), 2.0])
+	for c2: Array in CRATES:
+		_spot_keep.append(["Crate_" + str(c2[0]), c2[1], 2.3])
+	for a: Array in AMMO_BOXES:
+		_spot_keep.append(["AmmoBox_" + str(a[0]), a[1], 1.7])
+	_spot_keep.append(["ArmorersBench", ARMORERS_BENCH[0], 2.2])
+	for ps: Vector3 in [Vector3(14.5, 0, 13.4), Vector3(16.6, 0, 14.3), Vector3(12.4, 0, 14.3), Vector3(14.5, 0, 15.1)]:
+		_spot_keep.append(["PlayerSpawn", ps, 2.0])
+	for gs: Array in [["Spawn_HayPile", Vector3(22.5, 0, 23.7)], ["Spawn_YardMound", Vector3(5.0, 0, 44.5)], ["Spawn_CoalChute", Vector3(34.2, CELLAR_Y, 29.6)],
+			["Spawn_LagerDrain", Vector3(32.9, CELLAR_Y, 32.1)], ["Spawn_DynamoSump", Vector3(35.2, CELLAR_Y, 37.9)], ["Kellerschalter", DYN_LEVER - Vector3(0, 0.3, 0)],
+			["Crucible", DYN_CRUCIBLE], ["FieldRadio", Vector3(SHELF_X1 - 0.2, 0, 4.9)], ["ZipPost", ZIP_POST], ["Tower", Vector3(TOWER_X, 0, TOWER_Z - 2.4)]]:
+		_spot_keep.append([str(gs[0]), gs[1], 2.2])
+	for gp: Vector3 in OUT_GROUND_SPAWNS:
+		_spot_keep.append(["Spawn_Snow", gp, 3.0])
+	# the data: the bots' routes (polylines), the ladders, the zip line, the horse, the story props, the people
+	var jr: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/ai/routes_map00.json"))
+	for r: Dictionary in (jr as Dictionary).get("routes", []):
+		var pts: Array = []
+		for q: Array in r.get("points", []):
+			pts.append(Vector3(float(q[0]), float(q[1]), float(q[2])))
+		if pts.size() > 1:
+			pts.append(pts[0])
+			_spot_keep.append(["route:" + str(r.get("id", "?")), Vector3.ZERO, 1.6, pts])
+	var jm: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/map00.json"))
+	for key: String in ["ladders", "ziplines", "horses", "climb_links"]:
+		for row: Dictionary in jm.get(key, []):
+			for f: String in ["pos", "to", "rail", "from"]:
+				if row.has(f):
+					var v: Array = row[f]
+					_spot_keep.append(["%s:%s" % [key, str(row.get("name", "?"))], Vector3(float(v[0]), float(v[1]), float(v[2])), 2.6])
+	var ex: Array = (jm.get("exfil", {}) as Dictionary).get("position", [])
+	if ex.size() == 3:
+		_spot_keep.append(["exfil", Vector3(float(ex[0]), float(ex[1]), float(ex[2])), 3.0])
+	var sh: Dictionary = jm.get("sherman_event", {})
+	var sroute: Array = []
+	for q2: Array in sh.get("route", []):
+		sroute.append(Vector3(float(q2[0]), float(q2[1]), float(q2[2])))
+	if sroute.size() > 1:
+		_spot_keep.append(["sherman_route", Vector3.ZERO, 6.0, sroute])
+	for q3: Array in sh.get("shelter_points", []):
+		_spot_keep.append(["sherman_shelter", Vector3(float(q3[0]), float(q3[1]), float(q3[2])), 1.6])
+	var js: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/story_props.json"))
+	for sp: Dictionary in js.get("props", []):
+		if str(sp.get("map", "")) == "0":
+			var v2: Array = sp["position"]
+			_spot_keep.append(["story:" + str(sp["id"]), Vector3(float(v2[0]), float(v2[1]), float(v2[2])), 1.3])
+	var jo: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/map00_opening.json"))
+	for pt: Dictionary in jo.get("patrons", []):
+		var line: Array = []
+		for f2: String in ["start"]:
+			line.append(pt[f2])
+		line.append_array(pt.get("route", []))
+		var pl: Array = []
+		for q4: Array in line:
+			pl.append(Vector3(float(q4[0]), float(q4[1]), float(q4[2])))
+		if pl.size() > 1:
+			_spot_keep.append(["opening_patron", Vector3.ZERO, 1.2, pl])
+	var jv: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/map00_survivors.json"))
+	for sv: Dictionary in jv.get("survivors", []):
+		for f3: String in ["hide", "post"]:
+			var v3: Array = sv[f3]
+			_spot_keep.append(["survivor_" + f3, Vector3(float(v3[0]), float(v3[1]), float(v3[2])), 1.5])
+	var jp: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/people_extra.json"))
+	for pk: String in (jp.get("people", {}) as Dictionary).keys():
+		var person: Dictionary = jp["people"][pk]
+		if not (person.get("maps", []) as Array).has("map00"):
+			continue
+		for bd: Dictionary in person.get("bodies", []):
+			var v4: Array = bd.get("at", [])
+			if v4.size() == 3:
+				_spot_keep.append(["person:" + pk, Vector3(float(v4[0]), float(v4[1]), float(v4[2])), 1.8])
+
+
+## The boxes a machine on a spot keeps (world AABBs; yaw is a multiple of 90): [the footprint to the tallest cabinet's
+## top, the walk in front and the walk behind to head height].
+func _spot_boxes(pos: Vector3, yaw: float) -> Array:
+	var b: Basis = Basis(Vector3.UP, deg_to_rad(yaw))
+	var out: Array = []
+	for r: Array in [[Vector3(-PERK_SPOT_W * 0.5, 0.08, -PERK_SPOT_D * 0.5), Vector3(PERK_SPOT_W * 0.5, 2.45, PERK_SPOT_D * 0.5)],
+			[Vector3(-PERK_SPOT_W * 0.5, 0.08, -PERK_SPOT_D * 0.5 - PERK_FRONT), Vector3(PERK_SPOT_W * 0.5, 2.0, -PERK_SPOT_D * 0.5)],
+			[Vector3(-PERK_SPOT_W * 0.5, 0.08, PERK_SPOT_D * 0.5), Vector3(PERK_SPOT_W * 0.5, 2.0, PERK_SPOT_D * 0.5 + PERK_BACK)],
+			[Vector3(-0.3, 0.5, PERK_SPOT_D * 0.5 + PERK_BACK), Vector3(0.3, 1.5, PERK_SPOT_D * 0.5 + PERK_BACK + 0.6)]]:   # the wall behind
+		var p0: Vector3 = pos + b * (r[0] as Vector3)
+		var p1: Vector3 = pos + b * (r[1] as Vector3)
+		out.append(AABB(p0.min(p1), (p1 - p0).abs()))
+	return out
+
+
+func _spot_hits(box_: AABB, colliders_only: bool = false) -> PackedStringArray:
+	var out: PackedStringArray = []
+	for gx: int in range(int(floor(box_.position.x / 2.0)), int(floor(box_.end.x / 2.0)) + 1):
+		for gz: int in range(int(floor(box_.position.z / 2.0)), int(floor(box_.end.z / 2.0)) + 1):
+			for e: Array in _spot_grid.get(Vector2i(gx, gz), []):
+				var ab: AABB = e[0]
+				if colliders_only and not str(e[1]).begins_with("col:"):
+					continue
+				if ab.intersects(box_) and ab.intersection(box_).get_volume() > 0.0005 and not out.has(str(e[1])):
+					out.append(str(e[1]))
+	return out
+
+
+## True when `p` is over the baked navmesh (a polygon within 0.6 m of its height).
+func _on_nav(p: Vector3) -> bool:
+	var nm: NavigationMesh = nav.navigation_mesh
+	var vs: PackedVector3Array = nm.get_vertices()
+	for i: int in nm.get_polygon_count():
+		var poly: PackedInt32Array = nm.get_polygon(i)
+		if absf(vs[poly[0]].y - p.y) > 0.6:
+			continue
+		var inside: bool = true
+		var sign_: float = 0.0
+		for k: int in poly.size():
+			var a: Vector3 = vs[poly[k]]
+			var b: Vector3 = vs[poly[(k + 1) % poly.size()]]
+			var cr: float = (b.x - a.x) * (p.z - a.z) - (b.z - a.z) * (p.x - a.x)
+			if absf(cr) < 1e-6:
+				continue
+			if sign_ == 0.0:
+				sign_ = signf(cr)
+			elif signf(cr) != sign_:
+				inside = false
+				break
+		if inside:
+			return true
+	return false
+
+
+static func _seg_dist(p: Vector3, a: Vector3, b: Vector3) -> float:
+	var ab: Vector2 = Vector2(b.x - a.x, b.z - a.z)
+	var ap: Vector2 = Vector2(p.x - a.x, p.z - a.z)
+	var t: float = clampf(ap.dot(ab) / maxf(ab.length_squared(), 1e-6), 0.0, 1.0)
+	return (ap - ab * t).length()
+
+
+## What is wrong with a machine at `pos` facing `yaw` ([] = nothing). `fast`: stop at the first problem (the survey).
+func _spot_problems(pos: Vector3, yaw: float, need_wall: bool, need_nav: bool, fast: bool = false) -> PackedStringArray:
+	var out: PackedStringArray = []
+	var boxes: Array = _spot_boxes(pos, yaw)
+	var names: Array = ["the machine", "the walk in front", "the walk behind"]
+	for i: int in 3:
+		var hits: PackedStringArray = _spot_hits(boxes[i])
+		if not hits.is_empty():
+			out.append("%s is in %s" % [names[i], ", ".join(hits)])
+			if fast:
+				return out
+	if need_wall and _spot_hits(boxes[3], true).is_empty():
+		out.append("no wall behind it")
+		if fast:
+			return out
+	for k: Array in _spot_keep:
+		var d: float = INF
+		if k.size() > 3:
+			var pts: Array = k[3]
+			if absf((pts[0] as Vector3).y - pos.y) > 2.0:
+				continue
+			for j: int in pts.size() - 1:
+				d = minf(d, _seg_dist(pos, pts[j], pts[j + 1]))
+		else:
+			var kp: Vector3 = k[1]
+			if absf(kp.y - pos.y) > 2.0:
+				continue
+			d = Vector2(kp.x - pos.x, kp.z - pos.z).length()
+		if d < float(k[2]):
+			out.append("%.1f m from %s (wants %.1f)" % [d, str(k[0]), float(k[2])])
+			if fast:
+				return out
+	if need_nav:
+		var front: Vector3 = pos + Basis(Vector3.UP, deg_to_rad(yaw)) * Vector3(0, 0, -(PERK_SPOT_D * 0.5 + 0.7))
+		if not _on_nav(front):
+			out.append("the floor in front of it is not on the navmesh")
+	return out
+
+
+## T-251: every perk spot against everything built and drawn (see PERK_SPOTS). One line per spot; returns how many are bad.
+## Also the table's own rules: unique ids, at most three spots in a zone, enough spots of each kind for the deal.
+func _audit_perk_spots() -> int:
+	_spot_grid_build()
+	var bad: int = 0
+	var per_zone: Dictionary = {}
+	var ids: Dictionary = {}
+	for sp: Array in PERK_SPOTS:
+		var flags: Dictionary = sp[4]
+		var probs: PackedStringArray = _spot_problems(sp[2], float(sp[3]), not bool(flags.get("free", false)), true)
+		if ids.has(str(sp[0])):
+			probs.append("its id is used twice")
+		ids[str(sp[0])] = true
+		per_zone[str(sp[1])] = int(per_zone.get(str(sp[1]), 0)) + 1
+		print("PERKSPOT_AUDIT %-14s %-13s %s%s" % [str(sp[0]), str(sp[1]), "clear" if probs.is_empty() else "BLOCKED: ", "; ".join(probs)])
+		if not probs.is_empty():
+			bad += 1
+	for z: String in per_zone.keys():
+		if int(per_zone[z]) > 3:
+			print("PERKSPOT_AUDIT zone %s has %d spots (at most 3)" % [z, int(per_zone[z])])
+			bad += 1
+	if PERK_SPOTS.size() < 14:
+		print("PERKSPOT_AUDIT only %d spots (at least 14)" % PERK_SPOTS.size())
+		bad += 1
+	return bad
+
+
+## T-251, a design aid (GL_PERK_SURVEY=1): every place a machine could stand against a wall, per region, as
+## "SURVEY <region> <x> <z> <yaw>" lines. GL_PERK_SURVEY=free also lists the ones with nothing behind them.
+func _survey_perk_spots() -> void:
+	_spot_grid_build()
+	var free_too: bool = OS.get_environment("GL_PERK_SURVEY") == "free"
+	var regions: Array = [
+		["TAPROOM", 0.0, Rect2(0.15, 0.15, 23.7, 15.7), 0.25], ["UPSTAIRS", UP_Y, Rect2(0.15, 0.15, 23.7, 9.7), 0.25], ["ATTIC", ATT_Y, Rect2(0.15, 0.15, 23.7, 9.7), 0.25],
+		["STABLE", 0.0, Rect2(STB_X0, STB_Z0, STB_X1 - STB_X0, STB_Z1 - STB_Z0), 0.25], ["LOFT", LOFT_TOP, Rect2(STB_X0, STB_Z0, STB_X1 - STB_X0, STB_Z1 - STB_Z0), 0.25],
+		["PASSAGE", 0.0, Rect2(0.0, 16.0, 24.0, 6.0), 0.25],
+		["YARD", 0.0, Rect2(2.0, 34.0, 32.0, 14.0), 0.25], ["GROUNDS_N", 0.0, Rect2(-8.0, -12.0, 44.0, 12.0), 0.5], ["GROUNDS_E", 0.0, Rect2(24.0, 0.0, 22.0, 34.0), 0.5],
+		["GROUNDS_W", 0.0, Rect2(-12.0, 0.0, 16.5, 34.0), 0.5], ["GROUNDS_S", 0.0, Rect2(-10.0, 48.0, 50.0, 14.0), 0.5],
+		["CELLAR", CELLAR_Y, Rect2(24.0, 19.0, 18.2, 12.0), 0.25], ["OLD_CELLAR", CELLAR_Y, Rect2(-3.0, 0.0, 27.0, 18.5), 0.25],
+		["LAGER", CELLAR_Y, Rect2(LAG_X0, LAG_Z0, LAG_X1 - LAG_X0, LAG_Z1 - LAG_Z0), 0.25], ["DYNAMO", CELLAR_Y, Rect2(DYN_X0, DYN_Z0, DYN_X1 - DYN_X0, DYN_Z1 - DYN_Z0), 0.25],
+	]
+	for r: Array in regions:
+		var rect: Rect2 = r[2]
+		var step: float = float(r[3])
+		var n: int = 0
+		var x: float = rect.position.x
+		while x <= rect.end.x:
+			var z: float = rect.position.y
+			while z <= rect.end.y:
+				for yaw: float in [0.0, 90.0, 180.0, -90.0]:
+					var pos: Vector3 = Vector3(x, float(r[1]), z)
+					if _spot_problems(pos, yaw, true, false, true).is_empty():
+						if _spot_problems(pos, yaw, true, true).is_empty():
+							print("SURVEY %s %.2f %.2f %d wall" % [str(r[0]), x, z, int(yaw)])
+							n += 1
+					elif free_too and _spot_problems(pos, yaw, false, false, true).is_empty() and _spot_problems(pos, yaw, false, true).is_empty():
+						print("SURVEY %s %.2f %.2f %d free" % [str(r[0]), x, z, int(yaw)])
+				z += step
+			x += step
+		print("SURVEY_COUNT %s %d" % [str(r[0]), n])
+
+
 # ================================================================== batching
 
 ## Merges every static primitive mesh (collision visuals + dressing) into one ArrayMesh per
@@ -4609,6 +5225,27 @@ func _scripted(type_node: Node3D, script_path: String, name_: String, props: Dic
 	return type_node
 
 
+## windows: [id, zone, floor position on the wall line, inward yaw (deg)]
+const WINDOWS: Array = [
+		["W_TAP_N1", &"TAPROOM", Vector3(7.0, 0, 0), 0.0],
+		["W_TAP_N2", &"TAPROOM", Vector3(17.0, 0, 0), 0.0],
+		["W_TAP_W", &"TAPROOM", Vector3(0, 0, 6.0), 90.0],
+		["W_TAP_E", &"TAPROOM", Vector3(24.0, 0, 8.0), -90.0],
+		["W_UP_R1", &"UPSTAIRS", Vector3(4.0, UP_Y, 0), 0.0],
+		["W_UP_R3", &"UPSTAIRS", Vector3(20.0, UP_Y, 0), 0.0],
+		["W_ATT_W", &"UPSTAIRS", Vector3(0, ATT_Y, ATT_WIN_Z), 90.0],    # the attic's gable windows (T-224): their zombies stand on the hoist ledges
+		["W_ATT_E", &"UPSTAIRS", Vector3(24.0, ATT_Y, ATT_WIN_Z), -90.0],
+		["W_STB_N1", &"STABLE", Vector3(9.0, 0, 22.0), 0.0],
+		["W_STB_N2", &"STABLE", Vector3(14.0, 0, 22.0), 0.0],
+		["W_STB_S", &"STABLE", Vector3(12.0, 0, 34.0), 180.0],
+		["W_STB_LOFT", &"STABLE", Vector3(22.0, LOFT_TOP, STB_Z1), 180.0],   # the loft door over the yard (T-084): its zombies stand on the hoist ledge
+		["W_YARD_W", &"YARD", Vector3(2.0, 0, 41.0), 90.0],
+		["W_YARD_E", &"YARD", Vector3(34.0, 0, 41.0), -90.0],
+		["W_YARD_S1", &"YARD", Vector3(9.0, 0, 48.0), 180.0],
+		["W_YARD_S2", &"YARD", Vector3(27.0, 0, 48.0), 180.0],
+]
+
+
 func build_gameplay() -> void:
 	map_root.set_script(load("res://gravelight/maps/map_root.gd"))
 	map_root.set("map_id", &"map00_crossroads")
@@ -4633,25 +5270,7 @@ func build_gameplay() -> void:
 		gameplay.add_child(ps)
 		i += 1
 
-	# windows: [id, zone, floor position on the wall line, inward yaw (deg)]
-	var windows: Array = [
-		["W_TAP_N1", &"TAPROOM", Vector3(7.0, 0, 0), 0.0],
-		["W_TAP_N2", &"TAPROOM", Vector3(17.0, 0, 0), 0.0],
-		["W_TAP_W", &"TAPROOM", Vector3(0, 0, 6.0), 90.0],
-		["W_TAP_E", &"TAPROOM", Vector3(24.0, 0, 8.0), -90.0],
-		["W_UP_R1", &"UPSTAIRS", Vector3(4.0, UP_Y, 0), 0.0],
-		["W_UP_R3", &"UPSTAIRS", Vector3(20.0, UP_Y, 0), 0.0],
-		["W_ATT_W", &"UPSTAIRS", Vector3(0, ATT_Y, ATT_WIN_Z), 90.0],    # the attic's gable windows (T-224): their zombies stand on the hoist ledges
-		["W_ATT_E", &"UPSTAIRS", Vector3(24.0, ATT_Y, ATT_WIN_Z), -90.0],
-		["W_STB_N1", &"STABLE", Vector3(9.0, 0, 22.0), 0.0],
-		["W_STB_N2", &"STABLE", Vector3(14.0, 0, 22.0), 0.0],
-		["W_STB_S", &"STABLE", Vector3(12.0, 0, 34.0), 180.0],
-		["W_STB_LOFT", &"STABLE", Vector3(22.0, LOFT_TOP, STB_Z1), 180.0],   # the loft door over the yard (T-084): its zombies stand on the hoist ledge
-		["W_YARD_W", &"YARD", Vector3(2.0, 0, 41.0), 90.0],
-		["W_YARD_E", &"YARD", Vector3(34.0, 0, 41.0), -90.0],
-		["W_YARD_S1", &"YARD", Vector3(9.0, 0, 48.0), 180.0],
-		["W_YARD_S2", &"YARD", Vector3(27.0, 0, 48.0), 180.0],
-	]
+	var windows: Array = WINDOWS
 	for w: Array in windows:
 		var bar: Node3D = _scripted(Node3D.new(), "res://gravelight/world/barricade.gd", str(w[0]), {
 			"window_id": StringName(str(w[0])), "zone_id": w[1], "width": 1.6, "sill_height": WIN_SILL, "top_height": WIN_TOP})
@@ -4839,9 +5458,9 @@ func build_grounds_gameplay() -> void:
 		_lamp("OutMoonFill", mf, Color(0.5, 0.6, 0.85), 0.25, 24.0, false, false)
 
 
-## Door 3 (1500) -> the Helvetia cellar: all 9 perk machines, the cellar lever (Map 0's power), a coal chute
-## that starts spawning at round 6, and the power-on burst points. Machines stand 1.1 m+ off the walls so the
-## fine-print panels on their backs can be read (JINGLES.md section 0.3). T&C M2, DECISIONS T-027.
+## Door 3 (1500) -> the Helvetia cellar, a coal chute that starts spawning at round 6. T&C M2, DECISIONS T-027.
+## T-251: the machines stand on PERK_SPOTS all over the map now (build_perk_gameplay), and the cellar lever (Map 0's
+## power), the Crucible and the power-on burst points are two more doors down (build_deep_cellar_gameplay).
 func build_cellar_gameplay() -> void:
 	var cy: float = CELLAR_Y
 	var d3: Node3D = _scripted(Node3D.new(), "res://gravelight/world/door.gd", "Door_Cellar", {
@@ -4854,23 +5473,8 @@ func build_cellar_gameplay() -> void:
 		var zv: Node3D = _scripted(Node3D.new(), "res://gravelight/world/zone_volume.gd", "Zone_CELLAR", {"zone_id": &"CELLAR", "size": z[1]})
 		zv.position = z[0]
 		gameplay.add_child(zv)
-	for pk: Array in CELLAR_PERKS:
-		var m: Node3D = _scripted(Node3D.new(), "res://gravelight/world/perk_machine.gd", "Perk_" + str(pk[0]), {"perk_id": StringName(str(pk[0]))})
-		m.position = pk[1]
-		m.rotation.y = deg_to_rad(float(pk[2]))
-		gameplay.add_child(m)
-	# THE CRUCIBLE (T-032, the user asked for weapon upgrades on Map 0): in the alcove on the north wall between the
-	# stair mouth and the lever, facing south into the vault. It runs off the cellar lever like the machines.
-	var cru: Node3D = _scripted(Node3D.new(), "res://gravelight/world/crucible.gd", "Crucible", {"needs_power": true})
-	cru.position = Vector3(29.5, cy, 19.95)
-	cru.rotation.y = deg_to_rad(180.0)
-	gameplay.add_child(cru)
-	var sw: Node3D = _scripted(Node3D.new(), "res://gravelight/world/power_switch.gd", "Kellerschalter", {
-		"config_table": "map00", "label": "the cellar lever", "zone_order": PackedStringArray(["CELLAR", "OLD_CELLAR", "TAPROOM", "UPSTAIRS", "STABLE"])})
-	sw.position = Vector3(32.5, cy + 0.3, 19.35)
-	sw.rotation.y = deg_to_rad(180)
-	gameplay.add_child(sw)
-	# lights: one oil lamp at the foot of the stairs always lit; the bulbs over the machines wait for the lever
+	build_deep_cellar_gameplay()
+	# lights: one oil lamp at the foot of the stairs always lit; the vault's bulbs wait for the lever
 	_lamp("CellarHallLamp", Vector3(26.0, 2.5, 10.8), Color(1.0, 0.72, 0.45), 1.0, 7.0, false, true)
 	_lamp("CellarStairLamp", Vector3(26.0, cy + 2.3, 19.6), Color(1.0, 0.7, 0.4), 1.0, 6.5, false, true)
 	# T-179: the late-delivery bay's oil lantern by the arch, always lit, so its two machines read before the lever
@@ -4901,13 +5505,117 @@ func build_cellar_gameplay() -> void:
 		"zone_id": &"CELLAR", "kind": &"ground", "min_round": 6}) as Marker3D
 	chute.position = Vector3(34.2, cy, 29.6)
 	gameplay.add_child(chute)
-	for bp: Vector3 in [Vector3(34.2, cy, 29.6), Vector3(25.6, cy, 29.9)]:
+	build_perk_gameplay()
+	build_old_cellar_gameplay()
+
+
+## T-251: the Lagering Vault's and the Dynamo Room's gameplay: Door_Lager (750) and Door_Dynamo (1000), their zones,
+## the Crucible in its alcove on the Dynamo Room's north wall (facing south into the room, running off the lever like
+## the machines), the cellar lever 3 m east of it (the sweep starts in its own room and works back up to the inn), a
+## ground spawn in each room from round 4 (a floor drain by the tuns, the generator's sump: with the lever three doors
+## deep the dead must not have one way in only), the power-on burst points, an oil lantern inside each door that is
+## always lit, and the bulbs that wait for the lever.
+func build_deep_cellar_gameplay() -> void:
+	var cy: float = CELLAR_Y
+	var da: Node3D = _scripted(Node3D.new(), "res://gravelight/world/door.gd", "Door_Lager", {
+		"door_id": &"door_lager", "opens_zone": &"LAGERKELLER", "cost": 750, "size": Vector3(LAG_DOOR.y - LAG_DOOR.x, DOOR_H, 0.25), "label": "Lagering Vault"})
+	da.position = Vector3((LAG_DOOR.x + LAG_DOOR.y) * 0.5, cy, LAG_Z0)
+	gameplay.add_child(da)
+	var db: Node3D = _scripted(Node3D.new(), "res://gravelight/world/door.gd", "Door_Dynamo", {
+		"door_id": &"door_dynamo", "opens_zone": &"MASCHINENRAUM", "cost": 1000, "size": Vector3(DYN_DOOR.y - DYN_DOOR.x, DOOR_H, 0.25), "label": "Dynamo Room"})
+	db.position = Vector3(DYN_X0, cy, (DYN_DOOR.x + DYN_DOOR.y) * 0.5)
+	db.rotation.y = deg_to_rad(90)
+	gameplay.add_child(db)
+	for z: Array in [[&"LAGERKELLER", Vector3((LAG_X0 + LAG_X1) * 0.5, cy, (LAG_Z0 + LAG_Z1) * 0.5), Vector3(LAG_X1 - LAG_X0, 2.7, LAG_Z1 - LAG_Z0)],   # tops under the ceiling: the yard above is not "cellar"
+			[&"MASCHINENRAUM", Vector3((DYN_X0 + DYN_X1) * 0.5, cy, (DYN_Z0 + DYN_Z1) * 0.5), Vector3(DYN_X1 - DYN_X0, 2.7, DYN_Z1 - DYN_Z0)]]:
+		var zv: Node3D = _scripted(Node3D.new(), "res://gravelight/world/zone_volume.gd", "Zone_%s" % z[0], {"zone_id": z[0], "size": z[2]})
+		zv.position = z[1]
+		gameplay.add_child(zv)
+	var cru: Node3D = _scripted(Node3D.new(), "res://gravelight/world/crucible.gd", "Crucible", {"needs_power": true})
+	cru.position = DYN_CRUCIBLE
+	cru.rotation.y = deg_to_rad(180.0)
+	gameplay.add_child(cru)
+	var sw: Node3D = _scripted(Node3D.new(), "res://gravelight/world/power_switch.gd", "Kellerschalter", {
+		"config_table": "map00", "label": "the cellar lever",
+		"zone_order": PackedStringArray(["MASCHINENRAUM", "LAGERKELLER", "CELLAR", "OLD_CELLAR", "TAPROOM", "UPSTAIRS", "STABLE"])})
+	sw.position = DYN_LEVER
+	sw.rotation.y = deg_to_rad(180)
+	gameplay.add_child(sw)
+	_lamp("LagerLamp", Vector3(27.6, cy + 2.05, 31.75), Color(1.0, 0.7, 0.4), 0.9, 6.0, false, true)
+	_lamp("DynamoLamp", Vector3(34.7, cy + 2.05, 33.6), Color(1.0, 0.7, 0.42), 0.9, 6.0, false, true)
+	for set_: Array in [[LAG_BULBS, &"LAGERKELLER", "LagerBulb", _lager_lit], [DYN_BULBS, &"MASCHINENRAUM", "DynamoBulb", _dynamo_lit]]:
+		var first: OmniLight3D = null
+		for lp: Vector3 in (set_[0] as Array):
+			var l: OmniLight3D = OmniLight3D.new()
+			l.name = str(set_[2])
+			l.position = lp - Vector3(0, 0.05, 0)
+			l.light_color = Color(1.0, 0.85, 0.6)
+			l.light_energy = 1.5
+			l.omni_range = 6.5
+			l.omni_attenuation = 1.4
+			l.visible = false
+			l.set_meta("zone", set_[1])
+			l.set_meta("energy", 1.5)
+			l.add_to_group(&"power_lights", true)
+			map_root.add_child(l)
+			if first == null:
+				first = l
+		var lit: Node3D = set_[3] as Node3D
+		if lit != null and first != null:   # the lit glass rides under the room's first bulb light (as the vault's)
+			lit.get_parent().remove_child(lit)
+			first.add_child(lit)
+			lit.position = -first.position
+	var spawns: Array = [["Spawn_LagerDrain", &"LAGERKELLER", Vector3(32.9, cy, 32.1)], ["Spawn_DynamoSump", &"MASCHINENRAUM", Vector3(35.2, cy, 37.9)]]
+	for s: Array in spawns:
+		var gs: Marker3D = _scripted(Marker3D.new(), "res://gravelight/enemies/zombie_spawn.gd", str(s[0]), {
+			"zone_id": s[1], "kind": &"ground", "min_round": 4}) as Marker3D
+		gs.position = s[2]
+		gameplay.add_child(gs)
 		var mk: Marker3D = Marker3D.new()
 		mk.name = "BurstPoint"
-		mk.position = bp
+		mk.position = s[2]
 		mk.add_to_group(&"power_burst_points", true)
 		gameplay.add_child(mk)
-	build_old_cellar_gameplay()
+	for dp: Vector3 in [Vector3(30.05, CELLAR_TOP - 0.02, 32.6), Vector3(36.1, CELLAR_TOP - 0.02, 38.0)]:
+		var drip: Node3D = _scripted(Node3D.new(), "res://gravelight/world/drip_point.gd", "Drip", {"height": CELLAR_TOP - 0.02 - cy})
+		drip.position = dp
+		gameplay.add_child(drip)
+
+
+## T-251: the perk spots (PerkSpot: its filler crate shows while no machine stands on it) and the twelve machines on
+## the seed-0 deal (PerkShuffle.assign with perk_layout.json's rules, the same call PerkLayout makes each match).
+func build_perk_gameplay() -> void:
+	var spots: Array = []
+	for sp: Array in PERK_SPOTS:
+		var flags: Dictionary = sp[4]
+		var ps: Node3D = _scripted(Node3D.new(), "res://gravelight/world/perk_spot.gd", "PerkSpot_" + str(sp[0]), {
+			"spot_id": StringName(str(sp[0])), "zone_id": StringName(str(sp[1])), "outdoor": bool(flags.get("outdoor", false)),
+			"start": bool(flags.get("start", false)), "near": bool(flags.get("near", false))})
+		ps.position = sp[2]
+		ps.rotation.y = deg_to_rad(float(sp[3]))
+		gameplay.add_child(ps)
+		spots.append({"id": str(sp[0]), "zone": str(sp[1]), "outdoor": bool(flags.get("outdoor", false)), "start": bool(flags.get("start", false)),
+			"near": bool(flags.get("near", false))})
+	var pdata: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/perks.json"))["perks"]
+	var rules: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/perk_layout.json"))
+	var perks: Array = []
+	for pid: String in (rules.get("maps", {}) as Dictionary).get("map00", {}).get("perks", []):
+		perks.append({"id": pid, "cost": int((pdata[pid] as Dictionary).get("cost", 0)), "shape": str((pdata[pid] as Dictionary).get("shape", "cabinet"))})
+	var deal: Dictionary = PerkShuffleScript.call("assign", 0, spots, perks, rules)
+	for pk: Dictionary in perks:
+		var sid: String = str(deal.get(pk["id"], ""))
+		var at: Array = []
+		for sp2: Array in PERK_SPOTS:
+			if str(sp2[0]) == sid:
+				at = sp2
+		if at.is_empty():
+			push_error("gen_map00: no spot dealt to %s" % pk["id"])
+			continue
+		var m: Node3D = _scripted(Node3D.new(), "res://gravelight/world/perk_machine.gd", "Perk_" + str(pk["id"]), {"perk_id": StringName(str(pk["id"]))})
+		m.position = at[2]
+		m.rotation.y = deg_to_rad(float(at[3]))
+		gameplay.add_child(m)
+	print("perk spots: %d, machines: %d (seed-0 deal: %s)" % [PERK_SPOTS.size(), perks.size(), str(deal)])
 
 
 ## The Old Cellar's gameplay (T-051): Door 5, the breach to the Helvetia cellar, the zone,

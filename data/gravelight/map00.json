@@ -248,7 +248,7 @@
     "route": [[56.0, 0.0, 74.3], [45.0, 0.0, 68.0], [32.0, 0.0, 60.5], [22.8, 0.0, 52.8]],
     "barrier": {"pos": [37.0, 0.0, 63.0], "half": [2.6, 0.4], "name": "Sawhorse"},
     "assault_zones": ["GROUNDS"],
-    "shelter_zones": ["TAPROOM", "UPSTAIRS", "CELLAR", "OLD_CELLAR"],
+    "shelter_zones": ["TAPROOM", "UPSTAIRS", "CELLAR", "OLD_CELLAR", "LAGERKELLER", "MASCHINENRAUM"],
     "inn_box": [[-0.2, -4.0, -0.2], [24.2, 10.5, 16.2]],
     "shelter_points": [[14.0, 0.0, 9.5], [21.0, 0.0, 12.5], [10.5, 0.0, 9.0]],
     "bomb_zones": ["YARD", "GROUNDS"],

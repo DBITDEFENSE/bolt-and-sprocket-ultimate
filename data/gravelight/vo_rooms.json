@@ -19,7 +19,7 @@
 		"suit_radio": {"_what": "the vacuum yard: no air, so the squad is heard through the suits (band-limited, no room)", "wet": 0.0, "eq": [-9.0, -6.0, 0.0, 1.5, 0.0, -6.0]}
 	},
 	"maps": {
-		"map00_crossroads": {"default": "outdoor", "zones": {"TAPROOM": "room_wood", "UPSTAIRS": "room_wood", "CELLAR": "cellar_stone", "OLD_CELLAR": "cellar_stone", "STABLE": "barn_wood", "YARD": "outdoor", "GROUNDS": "outdoor"}},
+		"map00_crossroads": {"default": "outdoor", "zones": {"TAPROOM": "room_wood", "UPSTAIRS": "room_wood", "CELLAR": "cellar_stone", "OLD_CELLAR": "cellar_stone", "LAGERKELLER": "cellar_stone", "MASCHINENRAUM": "cellar_stone", "STABLE": "barn_wood", "YARD": "outdoor", "GROUNDS": "outdoor"}},
 		"map01_kaltenbrunn": {"default": "outdoor", "zones": {"A_MINEHEAD": "outdoor", "B_RAILYARD": "outdoor", "C_ADMIN": "room_plaster", "D_BARRACKS": "room_wood", "E_LIFT": "mine_tunnel", "M_STAIRS": "mine_tunnel", "F_CHAPEL": "church_stone", "G_GENERATOR": "hall_large", "H_LAB": "bunker_concrete", "I_CORE": "mine_tunnel"}},
 		"map02_totenhafen": {"default": "outdoor", "zones": {"A_QUAY": "outdoor", "B_CANNERY": "hall_large", "C_WORKSHOP": "room_plaster", "D_PENHALL": "hall_large", "E_UBOAT": "sub_hull", "F_LOWERPENS": "bunker_concrete", "G_SIGNAL": "room_plaster"}},
 		"map04a_thalbach": {"default": "outdoor", "zones": {"A_SIEDLUNG": "outdoor", "B_BAHNHOF": "outdoor", "C_KANTINE": "room_wood", "D_KIRCHPLATZ": "outdoor", "E_MONTAGE": "hall_large", "F_WINDKANAL": "mine_tunnel", "G_PRUEFSTAND": "outdoor", "H_HALLE": "hall_large"}},

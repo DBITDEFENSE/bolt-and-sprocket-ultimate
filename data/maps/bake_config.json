@@ -122,6 +122,8 @@
         "YARD": "The Carters' Yard",
         "GROUNDS": "The Crossroads",
         "CELLAR": "Helvetia Cellar",
+        "LAGERKELLER": "The Lagering Vault",
+        "MASCHINENRAUM": "The Dynamo Room",
         "OLD_CELLAR": "The Old Cellar"
       }
     },
