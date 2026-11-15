@@ -1,0 +1,7 @@
+GoreFx's marks after each scene in order (wall, headshot, shotgun, pile, snow, lamp); empty on the build before the rework
+[shots_gore] scene done  marks: spatter 6, pools 2, drips 1, prints 0, smears 0  { "marks": 9, "evicted": 0, "rejected": 0, "rays": 26, "pools": 2, "spurts": 0, "prints": 0, "sprays": 4, "walls": 1, "snow": 3 }
+[shots_gore] scene done  marks: spatter 9, pools 3, drips 2, prints 0, smears 0  { "marks": 14, "evicted": 0, "rejected": 0, "rays": 40, "pools": 3, "spurts": 0, "prints": 0, "sprays": 5, "walls": 2, "snow": 3 }
+[shots_gore] scene done  marks: spatter 13, pools 4, drips 3, prints 0, smears 0  { "marks": 20, "evicted": 0, "rejected": 0, "rays": 58, "pools": 4, "spurts": 0, "prints": 0, "sprays": 13, "walls": 3, "snow": 3 }
+[shots_gore] scene done  marks: spatter 56, pools 14, drips 5, prints 0, smears 0  { "marks": 75, "evicted": 0, "rejected": 2, "rays": 182, "pools": 14, "spurts": 1, "prints": 0, "sprays": 54, "walls": 6, "snow": 3 }
+[shots_gore] scene done  marks: spatter 59, pools 15, drips 5, prints 0, smears 0  { "marks": 79, "evicted": 0, "rejected": 2, "rays": 195, "pools": 15, "spurts": 1, "prints": 0, "sprays": 57, "walls": 6, "snow": 7 }
+[shots_gore] scene done  marks: spatter 72, pools 16, drips 7, prints 0, smears 0  { "marks": 95, "evicted": 0, "rejected": 2, "rays": 236, "pools": 16, "spurts": 2, "prints": 0, "sprays": 68, "walls": 8, "snow": 7 }
