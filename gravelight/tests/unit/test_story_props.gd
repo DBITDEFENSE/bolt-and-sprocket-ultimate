@@ -20,6 +20,9 @@ const MAP4A_IDS: PackedStringArray = ["INT_M4A_WORKSPASS", "INT_M4A_RIVETLOG", "
 const MAP1_IDS: PackedStringArray = ["INT_MARKE_JAKUB", "INT_M1_FENSKE_LEDGER"]   # (T-141: Fenske's second ledger)
 
 
+const Mount: GDScript = preload("res://gravelight/tools_src/story_prop_mount.gd")
+
+
 func _intel() -> Array:
 	return GLData.load_json(StoryProp.INTEL_PATH).get("intel", [])
 
@@ -112,6 +115,36 @@ func test_text_is_subtitle_safe() -> void:
 		assert_false(t.contains("<br>"), "%s: <br> converted to newlines" % id)
 		assert_false(t.contains("[") or t.contains("]"), "%s: no BBCode-looking brackets" % id)
 		assert_false(t.contains("*"), "%s: no markdown emphasis" % id)
+
+
+## T-255 (the owner's screenshot: "Käthe's Drawing" hanging in the hall's air; T-241 had moved the guest rooms' wall a
+## metre north and the bed with it, and the placements are plain coordinates): every Map 0 item is still on its wall
+## or its table in the scene as generated (story_prop_mount.gd reads the scene's colliders).
+func test_map_0_items_are_on_their_surfaces() -> void:
+	var map: Node = (load("res://gravelight/maps/map00_crossroads/map00.tscn") as PackedScene).instantiate()
+	var rows: Array = Mount.survey(map, "0")
+	map.free()
+	assert_gt(rows.size(), 12, "the story items and the paper dressing were found (%d)" % rows.size())
+	var by_name: Dictionary = {}
+	for r: Dictionary in rows:
+		by_name[str(r["name"])] = r
+		assert_true(str(r["verdict"]) == "OK" or str(r["verdict"]) == "UNSURE", "%s (%s) at %s: %s %s" % [r["name"], r["kind"], str(r["pos"]), r["verdict"], r["why"]])
+	var drawing: Dictionary = by_name.get("story:INT_M0_11", {})
+	assert_false(drawing.is_empty(), "Käthe's drawing is placed")
+	if not drawing.is_empty():
+		assert_eq(str(drawing["verdict"]), "OK", "Käthe's drawing hangs on a wall")
+		assert_lt(float(drawing["gap"]), 0.04, "its back is on the wall's face")
+		var p: Vector3 = drawing["pos"]
+		assert_between(p.y - 3.8, 1.25, 1.6, "at a child's height over the hall floor, clear of the wainscot's rail (1.13 m)")
+		assert_gt(p.x, 1.0, "clear of the hall's north-west corner")
+	# the checker itself: a sheet in the air, a sheet inside a wall
+	var geo: Dictionary = {"polys": [], "boxes": [[Transform3D.IDENTITY.translated(Vector3(0, 1, 0.5)).affine_inverse(), Vector3(2, 1, 0.5), AABB(Vector3(-2, 0, 0), Vector3(4, 2, 1)), "Wall"]]}
+	assert_eq(str(Mount.check_one(geo, "on", Transform3D(Basis.IDENTITY, Vector3(0, 1, -0.01)), true)["verdict"]), "OK")
+	assert_eq(str(Mount.check_one(geo, "air", Transform3D(Basis.IDENTITY, Vector3(0, 1, -1.0)), true)["verdict"]), "OFF", "a metre off the wall")
+	assert_eq(str(Mount.check_one(geo, "in", Transform3D(Basis.IDENTITY, Vector3(0, 1, 0.3)), true)["verdict"]), "BURIED")
+	assert_eq(str(Mount.check_one(geo, "end", Transform3D(Basis.IDENTITY, Vector3(1.95, 1, -0.01)), true)["verdict"]), "OFF", "half past the wall's end")
+	assert_eq(str(Mount.check_one(geo, "top", Transform3D(Basis.IDENTITY, Vector3(0, 2.01, 0.5)), false)["verdict"]), "OK", "flat on the wall's top")
+	assert_eq(str(Mount.check_one(geo, "edge", Transform3D(Basis.IDENTITY, Vector3(0, 2.01, 0.98)), false)["verdict"]), "OFF", "half over the edge")
 
 
 func test_spawn_all_places_the_map_0_items() -> void:

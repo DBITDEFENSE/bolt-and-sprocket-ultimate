@@ -31,11 +31,11 @@
       "style": "drawing",
       "position": [
         1.5,
-        5.15,
-        6.15
+        5.22,
+        5.15
       ],
       "yaw": 180,
-      "where": "Upstairs hallway, north wall (z 6.15 face) straight ahead at the top of the stairs, a child's height"
+      "where": "Upstairs hallway, north wall (z 5.15 face: the guest rooms' wall stands at z 5 since T-241) straight ahead at the top of the stairs, a child's height (1.42 m over the hall floor, the sheet's foot clear of the wainscot's rail at 1.13)"
     },
     {
       "id": "INT_M0_12",
@@ -44,10 +44,10 @@
       "position": [
         22.3,
         4.28,
-        4.7
+        3.8
       ],
       "yaw": 90,
-      "where": "Upstairs Room 3, on the bed's blanket (top 4.275)"
+      "where": "Upstairs Room 3, on the bed's blanket (top 4.275; the bed stands at z 2.3..4.7 since T-241)"
     },
     {
       "id": "INT_M0_13",
