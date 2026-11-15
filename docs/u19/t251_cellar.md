@@ -216,3 +216,114 @@ the path to the switch (generic, `BotEconomy.door_toward`); the agent's plan nam
 - Smokes and tools: `smoke_map00_cellar_bay.gd` (rewritten), `smoke_map00.gd`, `smoke_map00_loop.gd`,
   `smoke_coop.gd`, `smoke_bots.gd`, `smoke_jakub.gd`, `smoke_marks.gd`, `play_ledger.gd`, `play_marks.gd`,
   `tools_src/shots_cellar.gd`.
+
+## Verification (headless, on the machine shared by four workers)
+
+- **check_scripts:** 941 scripts, 0 failed.
+- **Generator:** a clean run (21 to 32 s): navmesh 1268 polygons (breach open 1319), 634 collision boxes, WALLBUY_AUDIT
+  7 clear, PERKSPOT_AUDIT 17 clear, 8026 static meshes batched. The bake is deterministic: two regenerations gave the
+  same navmesh fingerprints (`test_map00_art`: Navigation `8b4164…`, NavigationBreachOpen `e70b4b…`).
+- **GUT, full suite:** first run on the new map 2344 tests, 2338 passing, 5 failing, 1 risky (the baseline's risky
+  "did not assert"). The five were expectations of the old layout (navmesh fingerprints, the bake-only count, "the
+  perk machines are in the cellar", the objectives' text, the loadout's "where") and were updated. Second full run
+  after every change: 2344 tests, 2342 passing, 1 failing, 1 risky; the one was `test_machine_lore` (my rebuild of
+  `machine_lore.json` from the markdown had dropped rows the markdown lacks; the JSON is now edited in place) and
+  passes on its own (4/4). New and rewritten files: `test_perk_layout` 9/9, `test_map00_cellar_bay` 12/12.
+- **Two seeds, two layouts; one seed, one layout:** `test_perk_layout` (40 seeds give more than 35 layouts; seed 4471
+  twice and with the spot and perk lists reversed gives the same deal; 400 seeds keep every rule; every spot is used
+  by some seed; Second Wind stands on more than four different spots) and `smoke_map00_cellar_bay` live (seed 251,
+  then 252: 10 of 12 machines elsewhere; 251 again: 12 of 12 back; the map's perk POIs follow, 12 of 12).
+- **Co-op:** `smoke_coop` (a host and a client process): the host deals from a pinned seed (4242) that is not the match
+  seed, deals again (5151, mirrored) once the match has begun, and at the end both peers report the same place for
+  every machine and the same crates. PASS.
+- **Smokes** (`tools/run_smokes.sh`, one at a time):
+
+| Smoke | Result |
+|---|---|
+| smoke_map00 | PASS (3 runs) |
+| smoke_map00_alive | PASS (2 runs) |
+| smoke_map00_cellar_bay (rewritten: 53 checks) | PASS (3 runs) |
+| smoke_map00_loop (the relief-squad guard of 369b2834 kept) | PASS (2 runs) |
+| smoke_sherman | PASS, PASS, then FAIL once ("the 75 mm fires on them (0 shells)", "nothing on the players"), PASS again: 3 of 4, the tank's gun inside its window under load, nothing of the cellar's |
+| smoke_companion_perks | PASS (2 runs) |
+| smoke_coop | PASS (2 runs) |
+| smoke_bots | FAIL once, then PASS twice. The failure: "P4 never refilled its upgraded gun at an ammo box": the dry bot stood in the taproom over the Old Cellar's ammo box (call 11); fixed, then green twice (the second in 438 s) |
+| smoke_bots_shop, smoke_bots_shop_m0, smoke_bots_u10 | PASS (2 runs each) |
+| smoke_jakub (pins a deal) | PASS (2 runs) |
+| smoke_horse, smoke_ladders | PASS |
+| smoke_marks | FAIL (1 of its checks): "an empty spot: collect, go". This is the failure the last morning report lists as there before this work (a part dropped at the player's feet under the click); the perk and door phases pass with the pinned deal |
+
+- **ai_soak, three bots alone (`--scenario=bots3 --seed=251 --max-round=14`):** reached round 15 in 24.7 game minutes,
+  650 kills, 0 downs, the radio egg completed. Doors bought: upstairs (round 1), stable (1), **door_cellar (round 2,
+  t 102 s), door_lager (round 3, t 152 s), door_dynamo (round 3, t 204 s)**, old cellar (3). **Power: round 3.**
+  **Crucible: 8 forges** (the first in round 5 at t 410 s; 52,500 Scrip). **Tonics at dealt machines: 7 tier brews**
+  from round 8 (Second Wind in the Old Cellar x3, Ironhide in the Old Cellar x2, Marathon in the upstairs hall x2).
+- **ai_soak, the agent (`--scenario=botmode`, solo):** before the cache fix of call 11 the lever was thrown in 1 run
+  of 5 (power_round 0, 0, 0, 0, 4). After them, three runs: door_cellar, door_lager, door_dynamo bought in rounds 2 to 4 in
+  all three; **power in round 4 in two** (the third wiped in round 5); Second Wind bought at its dealt machine in both
+  (in one of them the agent bought the Old Cellar's door first, on the way to it), Ironhide in one. The agent still
+  wipes between rounds 5 and 8, as its plan's notes say it did.
+- **Facing check** (`tools/tests/test_interactable_facing.gd -- --maps=map00 --report-only`): PASS, 0 failing. The two
+  new doors, the Crucible, the lever and the twelve machines on their seed-0 spots are OK (the one UNSURE row is the
+  guest-bed crate, as before).
+- **Minimap:** `data/maps/map00_crossroads` rebaked under WSL Xvfb (`tools/wsl_godot.sh --path .
+  res://tools_src/bake_minimap.tscn -- --map=map00_crossroads`): RESULT PASS, 4 floors, 9 zones, 41 POIs. The cellar
+  floor image shows both rooms; every perk spot is a small solid square on its floor (the bake draws the footprint
+  boxes, whichever machine a match stands there).
+
+## Renders (WSL Xvfb, software GL, looked at)
+
+`docs/captures/u19_cellar/` (capture set `u19_cellar` in `capture_cams.json`, deal pinned with `--perk-seed=251`):
+
+- `vault_before_vs_after/` (7 JPGs, before on the left): the same seven cameras of the existing `u05` set (the vault
+  from the north, north-east, south-west, south, east and west, and the bay) on the scene before T-251 and after it,
+  under the set's work light. Before: the three machine rows, the Crucible in the alcove and the lever on the north
+  wall. After: the wash copper in the alcove, the fuse box alone, Door_Lager in the south wall, Blastproof Bock on the
+  east-wall spot, Ledger Lager on the south-wall spot, the wine rack on the west wall, a shipping crate on the bay's
+  far wall. (The first pair, `cellar_vault_n`, has the match's title card over it: it is the first frame of each run.)
+- `after/` (48 JPGs): the Lagering Vault and the Dynamo Room unlit (their lanterns only), lit by the lever, and under
+  a work light; the lever and the Crucible in the Dynamo Room; the tuns; the generator set; the vault's alcove; and
+  every perk spot with what seed 251 stands on it: machines on vault_east, vault_south, lager, dynamo, old_vault_north,
+  old_vault_south, guest_room, attic, stable, hayloft, yard_east and carters_road, crates on bay, taproom_nook,
+  guest_hall, yard_west and behind_stable.
+- What they show, honestly: the shapes and the dressing read (the work-light frames); the real-light frames are much
+  darker than the game, because WSL renders with the Compatibility renderer (no SDFGI, 8 lights per mesh), so the
+  lever's bulbs barely light the walls there, in the old vault as much as in the new rooms. The bulbs are the vault's
+  own (energy 1.5, range 6.5 m, three per room). **The lit look on the real renderer is not verified** (no GPU
+  window on this PC without the owner's OK).
+
+## At merge
+
+- `gen_map00.gd` and `map00.tscn` are this branch's. If another branch's hunk lands in `build_environment` /
+  `build_landscape`, regenerate once (`godot --headless --path . --script res://gravelight/tools_src/gen_map00.gd`):
+  the navmesh fingerprints in `test_map00_art` must not move (the bake is deterministic), and the generator now
+  refuses to save when a perk spot is blocked or MapRoot did not load.
+- **Run the import before the generator** on a fresh checkout: three new `class_name`s (`PerkShuffle`, `PerkLayout`,
+  `PerkSpot`). Without the class cache `map_root.gd` does not compile and the scene would be saved without its root
+  script (it happened once here; the generator now stops instead).
+- `data/gravelight/crucible_rooms.json`: two lines in the `map00` row (`zone` MASCHINENRAUM, `note`). T-254 edits the
+  same row: keep its pieces, keep this zone.
+- `data/gravelight/capture_cams.json`: the `u19_cellar` set is inserted before `u18_text` (not at the end), to stay out
+  of the other workers' hunks.
+- `docs/gravelight/PERKS_LORE.md` is behind `machine_lore.json` (the JSON holds `chalk.bar`, `chalk.frag` and Map 1's
+  Skyhook, the markdown does not): do not rebuild the JSON with `tools/build_perk_lore.py` until the markdown has
+  them. Both were edited by hand here.
+- New data keys: `perk_layout.json` (new file); `economy.json` `self_led_at_hand_m`; NetMatch state key `pl`.
+- After the merge, if T-252 changes the minimap's look: the Map 0 floor images here were baked under WSL (software
+  GL). They match the stylised bake; a GPU rebake (`tools/bake_minimap.sh map00_crossroads`) is optional.
+
+## Open items
+
+1. The lit look of the two rooms on the Forward+ renderer (above).
+2. The agent (player-bot mode) on Map 0 is as weak as before (wipes in rounds 5 to 8); with the power three doors deep
+   and 3250 Scrip away it gets the lever in round 4 instead of 3. Its plan's order was kept; retuning it is its own job.
+3. `smoke_marks` "an empty spot" still fails as on master. `smoke_sherman` failed once in four runs under load.
+4. No bot training loop in the two new rooms (call 5). If the owner wants bots to hold them, the corridors want
+   widening to 3 m first.
+5. Other maps keep their fixed machines: a map joins the deal by getting `PerkSpot` nodes and a row in
+   `perk_layout.json`.
+6. The filler crate is procedural (about 60 boxes baked into a handful of meshes per free spot, 5 per match). If
+   T-253's model pass wants a modelled crate, `PerkSpot._build_filler` is the one place.
+7. The guest room's spot stands 1.5 m from that room's swing door (a leaf left ajar that swings when walked into); its
+   tip reaches the corner of the machine's approach. The audit does not see the swing doors (they are built at load).
+   Moving the spot 0.5 m north would clear it and costs a regeneration and new navmesh fingerprints.
