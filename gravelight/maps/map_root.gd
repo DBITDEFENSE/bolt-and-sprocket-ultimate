@@ -53,6 +53,7 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	GLSettings.activate()
 	Game.set_mode(Game.Mode.GRAVELIGHT)
+	LookMaterials.apply_library(self)   # UPDATE 19 (T-252): the baked library materials brought up to materials.json
 	LookGrade.attach(self)   # UPDATE 12 (T-207): the map's colour grade, data/look/<map_id>.json, on its Environment
 	get_tree().paused = false
 	_online = Net.is_online() and Net.in_match

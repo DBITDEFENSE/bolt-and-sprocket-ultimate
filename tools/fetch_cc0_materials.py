@@ -44,7 +44,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 
 LIST_PATH = os.path.join(ROOT, "data", "gravelight", "art", "cc0_assets.json")
 DL_ROOT = os.path.join(ROOT, "tools_src", "_downloads")
 OUT_ROOT = os.path.join(ROOT, "assets", "third_party")
-UA = "GRAVELIGHT-asset-fetch/1.0 (+https://github.com/; CC0 library build; contact in repo)"
+UA = "cc0-asset-fetch/1.0"   # generic: nothing about the project goes out with a download (T-252)
 CC0_URL = "https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt"
 CC0_FALLBACK = (
     "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication\n"
@@ -55,7 +55,7 @@ CC0_FALLBACK = (
     "all without asking permission.\n"
 )
 RES_PX = {"512": 512, "1k": 1024, "2k": 2048, "4k": 4096}
-WHO = "Claude Code (u05-pipeline builder, T-088)"
+WHO = "Claude Code (tools/fetch_cc0_materials.py)"
 
 Image.MAX_IMAGE_PIXELS = 64 * 1024 * 1024
 

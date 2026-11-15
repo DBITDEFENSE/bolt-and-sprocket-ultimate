@@ -693,6 +693,21 @@ static func clamp_albedo(c: Color, r: Dictionary = rules(), accent: bool = false
 	return Color.from_hsv(h, s, v, c.a)
 
 
+## UPDATE 19 (T-252): MaterialLibrary.apply_runtime on every material under `root` (MapRoot._ready, before the pass
+## below): a scene's baked library materials brought up to data/gravelight/materials.json. Returns [materials that
+## took the variation values, materials rewritten whole (a `live` key)]. It lives here, not in MaterialLibrary, so
+## that class stays free of the look's scripts (the map generators load it as plain SceneTree scripts).
+static func apply_library(root: Node) -> Array:
+	var out: Array = [0, 0]
+	if root == null:
+		return out
+	for e: Dictionary in collect(root):
+		var r: int = MaterialLibrary.apply_runtime(e["mat"] as Material)
+		if r > 0:
+			out[r - 1] = int(out[r - 1]) + 1
+	return out
+
+
 ## The pass over a whole map (LookGrade.attach): every world material fixed once. Returns {materials, changed,
 ## skipped, exempt, ms}.
 static func apply_tree(root: Node, r: Dictionary = rules()) -> Dictionary:

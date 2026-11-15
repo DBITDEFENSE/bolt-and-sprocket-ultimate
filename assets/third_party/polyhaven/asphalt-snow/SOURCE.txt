@@ -1,0 +1,12 @@
+Title: Asphalt Snow
+Authors: eye-candy.xyz
+Source: https://polyhaven.com/a/asphalt_snow
+File: https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/asphalt_snow/asphalt_snow_diff_2k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/asphalt_snow/asphalt_snow_nor_gl_2k.jpg; https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/asphalt_snow/asphalt_snow_arm_1k.jpg
+License: CC0 1.0 Universal (public domain dedication) — https://creativecommons.org/publicdomain/zero/1.0/
+Credit line: "Asphalt Snow" by eye-candy.xyz (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.
+Format: PNG texture set at 2k (albedo, normal OpenGL +Y, ORM at 1k)
+Tile size: 2.00 x 2.00 m
+Poly Haven id: asphalt_snow
+Library key: snow_trodden
+Downloaded: 2026-11-14 by Claude Code (u05-pipeline builder, T-088) (tools/fetch_cc0_materials.py)
+Files used: textures/asphalt_snow_albedo.png, textures/asphalt_snow_normal.png, textures/asphalt_snow_orm.png

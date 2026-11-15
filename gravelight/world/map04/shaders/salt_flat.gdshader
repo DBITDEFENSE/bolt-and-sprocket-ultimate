@@ -3,6 +3,10 @@
 // (the generator's batches carry no UVs), so it tiles seamlessly over every salt slab. `wear` darkens the crust
 // The black salt (T-148): two scorch slots (xz centre, radius, z squash) burn the crust soot-black round the wreck
 // and the impeller core's crater, ragged-edged, with the crack ridges still showing through the soot.
+// UPDATE 19 (T-252): at walking distance the 2 m polygons were smooth pillows with a soft 20 cm band between them.
+// Now the ridges are narrower and crumble at their edges (noise on the edge distance), every polygon carries a
+// second generation of hairline cracks (a 0.46 m Voronoi, within `near_m` of the camera) and the crust has a
+// grain the lamps catch (a fine noise in the albedo and in the normal). Far away nothing changes.
 shader_type spatial;
 render_mode diffuse_burley, specular_schlick_ggx;
 
@@ -11,6 +15,9 @@ uniform vec3 trough : source_color = vec3(0.66, 0.6, 0.52);
 uniform vec3 ridge : source_color = vec3(0.95, 0.94, 0.92);
 uniform float cell = 2.2;          // polygon size, metres
 uniform float ridge_w = 0.09;
+uniform float near_m = 30.0;       // the hairline cracks and the grain fade out by here (T-252)
+uniform float hairline = 0.6;
+uniform float grain = 0.3;
 uniform float grit = 0.14;
 uniform float tint_var = 0.08;
 uniform vec4 scorch_a = vec4(0.0, -22.0, 44.0, 0.75);   // the wreck: x, z, radius, z scale (north edge pulled in)
@@ -84,14 +91,27 @@ void vertex() {
 void fragment() {
 	vec2 p = wpos.xz / cell;
 	float e = edge(p);
-	float r = 1.0 - smoothstep(0.0, ridge_w, e);            // 1 on a ridge
-	float inner = smoothstep(ridge_w, ridge_w * 3.5, e);      // the polygon's flat
+	float cam_d = length(VERTEX);
+	float nd = 1.0 - smoothstep(near_m * 0.4, near_m, cam_d);  // 1 at the feet, 0 past near_m
+	float crumble = (vnoise(wpos.xz * 13.0) - 0.5) * 0.05 + (vnoise(wpos.xz * 41.0) - 0.5) * 0.022;
+	float en = max(e + crumble * nd, 0.0);
+	float rw = mix(ridge_w, ridge_w * 0.62, nd);                // a narrower, sharper ridge up close
+	float r = 1.0 - smoothstep(rw * 0.25, rw, en);              // 1 on a ridge
+	float inner = smoothstep(rw, rw * 3.5, en);                 // the polygon's flat
+	float hair = 0.0;
+	if (nd > 0.01) {
+		float e2 = edge(wpos.xz / (cell * 0.21) + 17.3) + (vnoise(wpos.xz * 29.0) - 0.5) * 0.04;
+		hair = (1.0 - smoothstep(0.012, 0.05, e2)) * nd * hairline * inner;
+	}
 	float big = vnoise(wpos.xz * 0.035);
 	float fine = vnoise(wpos.xz * 3.1) * 0.6 + vnoise(wpos.xz * 9.7) * 0.4;
 	vec3 c = mix(trough, crust, inner * 0.85 + 0.15);
 	c = mix(c, ridge, r);
 	c *= 1.0 - tint_var + tint_var * 2.0 * big;
 	c *= 1.0 - grit * (1.0 - fine);
+	float g1 = vnoise(wpos.xz * 27.0);
+	c *= 1.0 - grain * 0.2 * nd * (1.0 - g1);
+	c = mix(c, trough * 0.72, hair * 0.6);
 	// far away the cracks would alias: settle into the crust's average tone (still varied at the large scale)
 	float fd = smoothstep(45.0, 170.0, length(VERTEX));
 	c = mix(c, mix(trough, crust, 0.82) * (1.0 - tint_var + tint_var * 2.0 * big), fd);
@@ -106,6 +126,8 @@ void fragment() {
 	// the crack ridges stand up a little: tilt the normal across each ridge
 	float dx = edge(p + vec2(0.02, 0.0)) - e;
 	float dz = edge(p + vec2(0.0, 0.02)) - e;
-	vec3 nw = normalize(vec3(-dx * r * 6.0, 1.0, -dz * r * 6.0));
+	float gx = (vnoise((wpos.xz + vec2(0.012, 0.0)) * 27.0) - vnoise(wpos.xz * 27.0)) * grain * nd;
+	float gz = (vnoise((wpos.xz + vec2(0.0, 0.012)) * 27.0) - vnoise(wpos.xz * 27.0)) * grain * nd;
+	vec3 nw = normalize(vec3(-dx * r * 6.0 - gx * 1.1, 1.0, -dz * r * 6.0 - gz * 1.1));
 	NORMAL = normalize((VIEW_MATRIX * vec4(nw, 0.0)).xyz);
 }

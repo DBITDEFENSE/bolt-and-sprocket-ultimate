@@ -151,6 +151,10 @@
    "sat": 0.567,
    "val": 1.0
   },
+  "res://assets/third_party/polyhaven/brown-mud-dry/textures/brown_mud_dry_albedo.png|ebdbd6": {
+   "sat": 0.461,
+   "val": 1.0
+  },
   "res://assets/third_party/polyhaven/dark-paneled-wood/textures/dark_paneled_wood_albedo.png|c7a385": {
    "sat": 0.239,
    "val": 1.0
@@ -167,6 +171,10 @@
    "sat": 0.459,
    "val": 1.0
   },
+  "res://assets/third_party/polyhaven/factory-brick/textures/factory_brick_albedo.png|9e7061": {
+   "sat": 0.338,
+   "val": 1.0
+  },
   "res://assets/third_party/polyhaven/factory-brick/textures/factory_brick_albedo.png|dbbda8": {
    "sat": 0.438,
    "val": 1.0
@@ -177,6 +185,10 @@
   },
   "res://assets/third_party/polyhaven/green-metal-rust/textures/green_metal_rust_albedo.png|9ea88c": {
    "sat": 0.548,
+   "val": 1.0
+  },
+  "res://assets/third_party/polyhaven/grey-plaster-03/textures/grey_plaster_03_albedo.png|fff2e6": {
+   "sat": 0.76,
    "val": 1.0
   },
   "res://assets/third_party/polyhaven/hessian-230/textures/hessian_230_albedo.png|ccb894": {
@@ -288,6 +300,10 @@
    "sat": 0.291,
    "val": 1.0
   },
+  "res://assets/third_party/polyhaven/white-plaster-rough-01/textures/white_plaster_rough_01_albedo.png|ffffff": {
+   "sat": 0.74,
+   "val": 1.0
+  },
   "res://assets/third_party/polyhaven/wine-barrel-01/textures/wine_barrel_01_diff.png|ffffff": {
    "eff": "4f3824",
    "sat": 0.425,
@@ -331,9 +347,29 @@
    "sat": 0.073,
    "val": 1.0
   },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_2da5d|ffffff": {
+   "eff": "383b21",
+   "sat": 0.6,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_36n3l|ffffff": {
+   "eff": "4e442e",
+   "sat": 0.633,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_3lt7r|ffffff": {
+   "eff": "273449",
+   "sat": 0.48,
+   "val": 1.0
+  },
   "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_4vrgg|ffffff": {
    "eff": "1a1c2f",
    "sat": 0.475,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_60b0j|ffffff": {
+   "eff": "2d2f1d",
+   "sat": 0.677,
    "val": 1.0
   },
   "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_62xdt|ffffff": {
@@ -342,6 +378,16 @@
    "val": 1.0
   },
   "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_6gmp7|ffffff": {
+   "eff": "55412b",
+   "sat": 0.491,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_7oj18|ffffff": {
+   "eff": "561d10",
+   "sat": 0.204,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_8t5d6|ffffff": {
    "eff": "55412b",
    "sat": 0.491,
    "val": 1.0
@@ -361,6 +407,11 @@
    "sat": 0.296,
    "val": 1.0
   },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_d7emt|ffffff": {
+   "eff": "282c1d",
+   "sat": 0.784,
+   "val": 1.0
+  },
   "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_e1tak|ffffff": {
    "eff": "5f4a33",
    "sat": 0.532,
@@ -371,6 +422,21 @@
    "sat": 0.204,
    "val": 1.0
   },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_j2p3d|ffffff": {
+   "eff": "41190f",
+   "sat": 0.229,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_jaa2e|ffffff": {
+   "eff": "624528",
+   "sat": 0.387,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_lccyn|ffffff": {
+   "eff": "5d4c2e",
+   "sat": 0.483,
+   "val": 1.0
+  },
   "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_lfmbd|ffffff": {
    "eff": "4b1d10",
    "sat": 0.222,
@@ -379,6 +445,16 @@
   "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_lj36r|ffffff": {
    "eff": "553d23",
    "sat": 0.395,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_lwonp|ffffff": {
+   "eff": "6d451f",
+   "sat": 0.296,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_mbsgk|ffffff": {
+   "eff": "5f4a33",
+   "sat": 0.532,
    "val": 1.0
   },
   "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_nlot0|ffffff": {
@@ -392,8 +468,8 @@
    "val": 1.0
   },
   "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_ovuku|ffffff": {
-   "eff": "431f0e",
-   "sat": 0.235,
+   "eff": "553d23",
+   "sat": 0.395,
    "val": 1.0
   },
   "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_ppwje|ffffff": {
@@ -401,14 +477,39 @@
    "sat": 0.677,
    "val": 1.0
   },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_qjkb3|ffffff": {
+   "eff": "431f0e",
+   "sat": 0.235,
+   "val": 1.0
+  },
   "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_s1fy7|ffffff": {
    "eff": "24301e",
    "sat": 0.695,
    "val": 1.0
   },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_ucmuk|ffffff": {
+   "eff": "24301e",
+   "sat": 0.695,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_us38p|ffffff": {
+   "eff": "1a1c2f",
+   "sat": 0.475,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_w441x|ffffff": {
+   "eff": "4b1d10",
+   "sat": 0.222,
+   "val": 1.0
+  },
   "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_yqnfc|ffffff": {
    "eff": "5d4c2e",
    "sat": 0.483,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map00_crossroads/map00.tscn::NoiseTexture2D_ywnbl|ffffff": {
+   "eff": "4c120d",
+   "sat": 0.073,
    "val": 1.0
   },
   "res://gravelight/maps/map01_kaltenbrunn/map01.tscn::NoiseTexture2D_m16d794db1|ffffff": {
@@ -482,8 +583,8 @@
    "val": 1.0
   },
   "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_bjeym|ffffff": {
-   "eff": "553d23",
-   "sat": 0.395,
+   "eff": "282c1d",
+   "sat": 0.784,
    "val": 1.0
   },
   "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_c7wwj|ffffff": {
@@ -494,6 +595,41 @@
   "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_fcfq6|ffffff": {
    "eff": "431f0e",
    "sat": 0.235,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_ff56h|ffffff": {
+   "eff": "3f2319",
+   "sat": 0.351,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_g28t7|ffffff": {
+   "eff": "9d771c",
+   "sat": 0.273,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_hnx15|ffffff": {
+   "eff": "182110",
+   "sat": 0.507,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_juokx|ffffff": {
+   "eff": "1e2515",
+   "sat": 0.614,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_kvxco|ffffff": {
+   "eff": "431f0e",
+   "sat": 0.235,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_nyb1h|ffffff": {
+   "eff": "0e1611",
+   "sat": 0.756,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_onj4y|ffffff": {
+   "eff": "4e442e",
+   "sat": 0.633,
    "val": 1.0
   },
   "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_p2k4b|ffffff": {
@@ -514,6 +650,21 @@
   "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_twxae|ffffff": {
    "eff": "5d4c2e",
    "sat": 0.483,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_udrl5|ffffff": {
+   "eff": "553d23",
+   "sat": 0.395,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_unh1n|ffffff": {
+   "eff": "5d4c2e",
+   "sat": 0.483,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map02_totenhafen/map02.tscn::NoiseTexture2D_v6aac|ffffff": {
+   "eff": "24301e",
+   "sat": 0.695,
    "val": 1.0
   },
   "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_1fkdq|ffffff": {
@@ -546,9 +697,19 @@
    "sat": 0.677,
    "val": 1.0
   },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_7huan|ffffff": {
+   "eff": "431f0e",
+   "sat": 0.235,
+   "val": 1.0
+  },
   "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_8g810|ffffff": {
    "eff": "32190c",
    "sat": 0.253,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_djmce|ffffff": {
+   "eff": "41190f",
+   "sat": 0.229,
    "val": 1.0
   },
   "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_dypi8|ffffff": {
@@ -571,9 +732,29 @@
    "sat": 0.273,
    "val": 1.0
   },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_ken30|ffffff": {
+   "eff": "5f4a33",
+   "sat": 0.532,
+   "val": 1.0
+  },
   "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_nprt3|ffffff": {
    "eff": "24301e",
    "sat": 0.695,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_qa3wk|ffffff": {
+   "eff": "2d2f1d",
+   "sat": 0.677,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_qof7e|ffffff": {
+   "eff": "9d771c",
+   "sat": 0.273,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_qyj2f|ffffff": {
+   "eff": "122817",
+   "sat": 0.439,
    "val": 1.0
   },
   "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_rdxh7|ffffff": {
@@ -586,7 +767,22 @@
    "sat": 0.475,
    "val": 1.0
   },
+  "res://gravelight/maps/map04_fernflug/map04a.tscn::NoiseTexture2D_whvg4|ffffff": {
+   "eff": "32190c",
+   "sat": 0.253,
+   "val": 1.0
+  },
   "res://gravelight/maps/map04_fernflug/map04b.tscn::NoiseTexture2D_1j8au|ffffff": {
+   "eff": "1a1c2f",
+   "sat": 0.475,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04b.tscn::NoiseTexture2D_c5n80|ffffff": {
+   "eff": "282c1d",
+   "sat": 0.784,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04b.tscn::NoiseTexture2D_e6wm7|ffffff": {
    "eff": "1a1c2f",
    "sat": 0.475,
    "val": 1.0
@@ -601,6 +797,21 @@
    "sat": 0.296,
    "val": 1.0
   },
+  "res://gravelight/maps/map04_fernflug/map04b.tscn::NoiseTexture2D_nk8dl|ffffff": {
+   "eff": "122817",
+   "sat": 0.439,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04b.tscn::NoiseTexture2D_orhjq|ffffff": {
+   "eff": "2d2f1d",
+   "sat": 0.677,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04b.tscn::NoiseTexture2D_rnfpj|ffffff": {
+   "eff": "6d451f",
+   "sat": 0.296,
+   "val": 1.0
+  },
   "res://gravelight/maps/map04_fernflug/map04b.tscn::NoiseTexture2D_urjce|ffffff": {
    "eff": "383b21",
    "sat": 0.6,
@@ -609,6 +820,11 @@
   "res://gravelight/maps/map04_fernflug/map04b.tscn::NoiseTexture2D_wc1l8|ffffff": {
    "eff": "282c1d",
    "sat": 0.784,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04b.tscn::NoiseTexture2D_x7427|ffffff": {
+   "eff": "383b21",
+   "sat": 0.6,
    "val": 1.0
   },
   "res://gravelight/maps/map04_fernflug/map04b.tscn::NoiseTexture2D_xnhsj|ffffff": {
@@ -626,7 +842,17 @@
    "sat": 0.6,
    "val": 1.0
   },
+  "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_2vnjs|ffffff": {
+   "eff": "431f0e",
+   "sat": 0.235,
+   "val": 1.0
+  },
   "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_5b0tm|ffffff": {
+   "eff": "4e442e",
+   "sat": 0.633,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_5gyls|ffffff": {
    "eff": "4e442e",
    "sat": 0.633,
    "val": 1.0
@@ -651,9 +877,44 @@
    "sat": 0.273,
    "val": 1.0
   },
+  "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_awfd5|ffffff": {
+   "eff": "5f4a33",
+   "sat": 0.532,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_jefbt|ffffff": {
+   "eff": "5d4c2e",
+   "sat": 0.483,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_kx5wk|ffffff": {
+   "eff": "383b21",
+   "sat": 0.6,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_o52uk|ffffff": {
+   "eff": "2d2f1d",
+   "sat": 0.677,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_rbkin|ffffff": {
+   "eff": "9d771c",
+   "sat": 0.273,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_rn2i1|ffffff": {
+   "eff": "122817",
+   "sat": 0.439,
+   "val": 1.0
+  },
   "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_rton3|ffffff": {
    "eff": "2d2f1d",
    "sat": 0.677,
+   "val": 1.0
+  },
+  "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_sb42n|ffffff": {
+   "eff": "24301e",
+   "sat": 0.695,
    "val": 1.0
   },
   "res://gravelight/maps/map04_fernflug/map04c.tscn::NoiseTexture2D_y0tyx|ffffff": {

@@ -517,6 +517,21 @@
    ]
   },
   {
+   "folder": "assets/third_party/polyhaven/asphalt-snow",
+   "source": "polyhaven",
+   "id": "asphalt-snow",
+   "title": "Asphalt Snow",
+   "author": "eye-candy.xyz",
+   "url": "https://polyhaven.com/a/asphalt_snow",
+   "license": "CC0",
+   "credit": "\"Asphalt Snow\" by eye-candy.xyz (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/asphalt_snow_albedo.png",
+    "textures/asphalt_snow_normal.png",
+    "textures/asphalt_snow_orm.png"
+   ]
+  },
+  {
    "folder": "assets/third_party/polyhaven/barrel-03",
    "source": "polyhaven",
    "id": "barrel-03",
@@ -607,6 +622,21 @@
     "textures/brown_mud_03_albedo.png",
     "textures/brown_mud_03_normal.png",
     "textures/brown_mud_03_orm.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/polyhaven/brown-mud-dry",
+   "source": "polyhaven",
+   "id": "brown-mud-dry",
+   "title": "Brown Mud Dry",
+   "author": "Rob Tuytel",
+   "url": "https://polyhaven.com/a/brown_mud_dry",
+   "license": "CC0",
+   "credit": "\"Brown Mud Dry\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/brown_mud_dry_albedo.png",
+    "textures/brown_mud_dry_normal.png",
+    "textures/brown_mud_dry_orm.png"
    ]
   },
   {
@@ -787,6 +817,21 @@
     "textures/grey_plaster_albedo.png",
     "textures/grey_plaster_normal.png",
     "textures/grey_plaster_orm.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/polyhaven/grey-plaster-03",
+   "source": "polyhaven",
+   "id": "grey-plaster-03",
+   "title": "Grey Plaster 03",
+   "author": "Rob Tuytel",
+   "url": "https://polyhaven.com/a/grey_plaster_03",
+   "license": "CC0",
+   "credit": "\"Grey Plaster 03\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/grey_plaster_03_albedo.png",
+    "textures/grey_plaster_03_normal.png",
+    "textures/grey_plaster_03_orm.png"
    ]
   },
   {
@@ -1257,6 +1302,21 @@
    ]
   },
   {
+   "folder": "assets/third_party/polyhaven/rock-face-03",
+   "source": "polyhaven",
+   "id": "rock-face-03",
+   "title": "Rock Face 03",
+   "author": "Dario Barresi (Photography), Rico Cilliers (Processing)",
+   "url": "https://polyhaven.com/a/rock_face_03",
+   "license": "CC0",
+   "credit": "\"Rock Face 03\" by Dario Barresi (Photography), Rico Cilliers (Processing) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/rock_face_03_albedo.png",
+    "textures/rock_face_03_normal.png",
+    "textures/rock_face_03_orm.png"
+   ]
+  },
+  {
    "folder": "assets/third_party/polyhaven/round-wooden-table-01",
    "source": "polyhaven",
    "id": "round-wooden-table-01",
@@ -1463,6 +1523,21 @@
     "textures/weathered_brown_planks_height.png",
     "textures/weathered_brown_planks_normal.png",
     "textures/weathered_brown_planks_orm.png"
+   ]
+  },
+  {
+   "folder": "assets/third_party/polyhaven/white-plaster-rough-01",
+   "source": "polyhaven",
+   "id": "white-plaster-rough-01",
+   "title": "White Plaster Rough 01",
+   "author": "Rob Tuytel",
+   "url": "https://polyhaven.com/a/white_plaster_rough_01",
+   "license": "CC0",
+   "credit": "\"White Plaster Rough 01\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "files": [
+    "textures/white_plaster_rough_01_albedo.png",
+    "textures/white_plaster_rough_01_normal.png",
+    "textures/white_plaster_rough_01_orm.png"
    ]
   },
   {
@@ -1983,6 +2058,17 @@
    ]
   },
   {
+   "credit": "\"Asphalt Snow\" by eye-candy.xyz (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Asphalt Snow"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/asphalt-snow"
+   ]
+  },
+  {
    "credit": "\"Barrel 03\" by Serhii Khromov (Poly Haven), CC0. Modified: glTF packed to GLB, textures converted to PNG and resized.",
    "license": "CC0",
    "source": "polyhaven",
@@ -2046,6 +2132,17 @@
    ],
    "folders": [
     "assets/third_party/polyhaven/brown-mud-03"
+   ]
+  },
+  {
+   "credit": "\"Brown Mud Dry\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Brown Mud Dry"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/brown-mud-dry"
    ]
   },
   {
@@ -2178,6 +2275,17 @@
    ],
    "folders": [
     "assets/third_party/polyhaven/grey-plaster"
+   ]
+  },
+  {
+   "credit": "\"Grey Plaster 03\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Grey Plaster 03"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/grey-plaster-03"
    ]
   },
   {
@@ -2511,6 +2619,17 @@
    ]
   },
   {
+   "credit": "\"Rock Face 03\" by Dario Barresi (Photography), Rico Cilliers (Processing) (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "Rock Face 03"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/rock-face-03"
+   ]
+  },
+  {
    "credit": "\"Round Wooden Table 01\" by Ulan Cabanilla (Poly Haven), CC0. Modified: glTF packed to GLB, textures converted to PNG and resized.",
    "license": "CC0",
    "source": "polyhaven",
@@ -2651,6 +2770,17 @@
    ],
    "folders": [
     "assets/third_party/polyhaven/weathered-brown-planks"
+   ]
+  },
+  {
+   "credit": "\"White Plaster Rough 01\" by Rob Tuytel (Poly Haven), CC0. Modified: converted to 8-bit PNG, resized, AO/roughness/metal channel-packed.",
+   "license": "CC0",
+   "source": "polyhaven",
+   "titles": [
+    "White Plaster Rough 01"
+   ],
+   "folders": [
+    "assets/third_party/polyhaven/white-plaster-rough-01"
    ]
   },
   {

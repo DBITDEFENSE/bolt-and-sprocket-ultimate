@@ -60,11 +60,11 @@
       "source": "polyhaven",
       "id": "stone_wall",
       "kind": "texture",
-      "res": "1k",
+      "res": "2k",
       "orm_res": "1k",
       "height": true,
       "key": "fieldstone",
-      "note": "the yard wall, the hearth, the cellar's foundation (1K: 512 px/m on its 2 m tile already meets the bible)",
+      "note": "the yard wall, the hearth, the cellar's foundation (1K: 512 px/m on its 2 m tile already meets the bible) (U19 T-252: albedo and normal at 2K, ORM stays 1K)",
       "tile_m": 2.0
     },
     {
@@ -492,33 +492,33 @@
       "source": "polyhaven",
       "id": "concrete_wall_004",
       "kind": "texture",
-      "res": "1k",
+      "res": "2k",
       "orm_res": "1k",
       "height": false,
       "key": "m2_bunker",
-      "note": "Totenhafen: the bunker walls, the 3 m face, the pens (U09 s5, T-145)",
+      "note": "Totenhafen: the bunker walls, the 3 m face, the pens (U09 s5, T-145) (U19 T-252: albedo and normal at 2K, ORM stays 1K)",
       "tile_m": 2.5
     },
     {
       "source": "polyhaven",
       "id": "concrete_floor_worn_001",
       "kind": "texture",
-      "res": "1k",
+      "res": "2k",
       "orm_res": "1k",
       "height": false,
       "key": "m2_floor",
-      "note": "Totenhafen: worn concrete floors: the quay, the aprons, the workshop (T-145)",
+      "note": "Totenhafen: worn concrete floors: the quay, the aprons, the workshop (T-145) (U19 T-252: albedo and normal at 2K, ORM stays 1K)",
       "tile_m": 3.0
     },
     {
       "source": "polyhaven",
       "id": "dirty_concrete",
       "kind": "texture",
-      "res": "1k",
+      "res": "2k",
       "orm_res": "1k",
       "height": false,
       "key": "m2_pier",
-      "note": "Totenhafen: pier sides and kerbs, stained by the tide (T-145)",
+      "note": "Totenhafen: pier sides and kerbs, stained by the tide (T-145) (U19 T-252: albedo and normal at 2K, ORM stays 1K)",
       "tile_m": 2.0
     },
     {
@@ -790,6 +790,61 @@
       "key": "kranich_skin",
       "note": "painted, scuffed steel sheet: the Kranich's inner skin and frames (T-147; the rivet rows and panel seams are drawn on top by kranich_skin.gdshader)",
       "tile_m": 2.5
+    },
+    {
+      "source": "polyhaven",
+      "id": "asphalt_snow",
+      "kind": "texture",
+      "res": "2k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "snow_trodden",
+      "note": "U19 (T-252): thin trodden snow over hard ground: the yards' paths (replaces Snow015, whose green was grass)",
+      "tile_m": 2.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "brown_mud_dry",
+      "kind": "texture",
+      "res": "2k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "frozen_mud",
+      "note": "U19 (T-252): churned, frozen earth with stones: the roads' ruts under the frost, Thalbach's yards at walking distance",
+      "tile_m": 1.3
+    },
+    {
+      "source": "polyhaven",
+      "id": "grey_plaster_03",
+      "kind": "texture",
+      "res": "2k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "plaster",
+      "note": "U19 (T-252): old hand-trowelled plaster, uneven and stained: the inn's walls (beige_wall_001 read as a flat colour)",
+      "tile_m": 1.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "white_plaster_rough_01",
+      "kind": "texture",
+      "res": "2k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "m1_stucco",
+      "note": "U19 (T-252): Kaltenbrunn's weathered render (the minehead buildings)",
+      "tile_m": 1.0
+    },
+    {
+      "source": "polyhaven",
+      "id": "rock_face_03",
+      "kind": "texture",
+      "res": "2k",
+      "orm_res": "1k",
+      "height": false,
+      "key": "m1_rock",
+      "note": "U19 (T-252): Kaltenbrunn's country rock (the ramps, the Core)",
+      "tile_m": 2.7
     }
   ]
 }

@@ -6,6 +6,13 @@ render_mode cull_back, depth_draw_opaque, diffuse_burley, specular_schlick_ggx;
 // occluded corners), wetness (darker albedo, roughness toward 0.15) and a frost edge (a pale rim on up-facing
 // surfaces above frost_height). Triplanar (world space) for the generator's untextured boxes, plain UVs for props.
 // Vertex colour can mask the wear per vertex (R grime, G wetness, B frost) when use_vertex_mask is on.
+// UPDATE 19 (T-252), triplanar surfaces only (surface_variation.gdshaderinc): macro_var, a slow world-space brightness
+// drift on every big surface; detile, a second larger sample blended in patches and with distance (ground: snow,
+// yards, concrete floors; data/gravelight/materials.json turns it on per key); sparkle, snow glints that only a light
+// can set off. A scene baked before U19 has none of the three uniforms and takes the defaults below; the per-key
+// values reach it at load (MaterialLibrary.apply_runtime).
+
+#include "surface_variation.gdshaderinc"
 
 uniform sampler2D albedo_tex : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D normal_tex : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
@@ -39,6 +46,12 @@ uniform float frost_height = -1000.0;       // world y above which frost sits
 uniform float frost_softness : hint_range(0.05, 3.0) = 0.6;
 uniform float frost_up : hint_range(0.0, 1.0) = 0.45;      // how up-facing a surface must be
 uniform bool use_vertex_mask = false;
+
+// Variation (T-252).
+uniform float macro_var : hint_range(0.0, 1.0) = 0.18;
+uniform float macro_scale : hint_range(1.0, 40.0) = 7.0;   // metres
+uniform float detile : hint_range(0.0, 1.0) = 0.0;
+uniform float sparkle : hint_range(0.0, 1.0) = 0.0;
 
 varying vec3 tri_pos;
 varying vec3 tri_w;
@@ -107,7 +120,17 @@ void fragment() {
 		nrm = texture(normal_tex, UV).rgb;
 		orm = texture(orm_tex, UV).rgb;
 	}
+	float cam_dist = length(CAMERA_POSITION_WORLD - world_pos);
+	if (triplanar && detile > 0.001) {
+		float dk = sv_detile_k(world_pos, cam_dist, detile);
+		vec3 p2 = tri_pos * SV_DETILE_SCALE + SV_DETILE_OFFSET;
+		alb = mix(alb, tri_sample(albedo_tex, tri_w, p2), dk);
+		nrm = mix(nrm, tri_sample(normal_tex, tri_w, p2).rgb, dk);
+	}
 	vec3 albedo = alb.rgb * albedo_tint.rgb;
+	if (triplanar) {
+		albedo *= sv_macro(world_pos, macro_scale, macro_var);
+	}
 	albedo = mix(vec3(dot(albedo, vec3(0.299, 0.587, 0.114))), albedo, albedo_saturation);
 	float ao = mix(1.0, orm.r, ao_strength);
 	float rough = clamp(orm.g, rough_min, rough_max);
@@ -138,6 +161,16 @@ void fragment() {
 	nstr = mix(nstr, nstr * 0.4, f);
 	ao = mix(ao, 1.0, f * 0.6);
 
+	float spec = specular_amount;
+	if (triplanar && sparkle > 0.001) {
+		vec3 gl = sv_glint(world_pos, cam_dist, sparkle);
+		float gk = gl.z * (1.0 - g) * smoothstep(0.5, 0.85, world_nrm.y);
+		nrm = mix(nrm, vec3(0.5 + gl.xy * 0.13, 1.0), gk);
+		nstr = mix(nstr, 1.0, gk);
+		rough = mix(rough, 0.14, gk);
+		spec = mix(spec, 1.0, gk);
+	}
+
 	ALBEDO = albedo;
 	NORMAL_MAP = nrm;
 	NORMAL_MAP_DEPTH = nstr;
@@ -145,7 +178,7 @@ void fragment() {
 	METALLIC = metal;
 	AO = ao;
 	AO_LIGHT_AFFECT = 0.4;
-	SPECULAR = specular_amount;
+	SPECULAR = spec;
 	if (emission_energy > 0.0) {
 		EMISSION = emission_color.rgb * emission_energy;
 	}

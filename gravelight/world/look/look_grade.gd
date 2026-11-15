@@ -162,6 +162,9 @@ static func attach(map: Node) -> Dictionary:
 			if tree.node_added.is_connected(hook):
 				tree.node_added.disconnect(hook), CONNECT_ONE_SHOT)
 	apply_nodes(map, d.get("nodes", []))
+	var dome: Dictionary = d.get("sky_dome", {})   # UPDATE 19 (T-252): a night-sky dome for a map without a Landscape
+	if not dome.is_empty() and map.find_child("SkyDome", true, false) == null:
+		NightSkyDome.add_to(map, dome)
 	map.set_meta("gl_look", id)
 	if not hold_materials and not map.has_meta("gl_look_materials"):   # T-208: the material pass (roughness floor, palette, the wear layer)
 		var mp: Dictionary = LookMaterials.apply_tree(map, LookMaterials.rules_for(id))

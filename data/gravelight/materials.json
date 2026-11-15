@@ -1,5 +1,5 @@
 {
-  "_doc": "The CC0 material library (UPDATE_05 section 1, T-088; docs/ART_BIBLE.md section 3). MaterialLibrary.get_mat(key) builds one shared ShaderMaterial (assets/materials/shaders/surface_pbr.gdshader) per key from `library` and caches it. set = assets/third_party/<set>/textures/<id>_{albedo,normal,orm[,height]}.png; tile_m = metres one tile covers (uv_scale = 1 / tile_m, per axis when `tile_xyz` is given); tint multiplies the albedo; rough = [min, max] clamp on the ORM's roughness; grime / wetness / frost are the shared wear parameters (0..1); frost_height = world y the frost starts above (-1000 = everywhere); triplanar false = the mesh's own UVs (props). `generator` maps the procedural Mats keys (gravelight/world/materials.gd, what gen_map0N.gd and Props call) to library keys: Mats.get_mat() hands out the library material for a key in `enabled` while use_library is true, so the environment builder switches Map 0 over one key at a time by adding to `enabled` and re-running gen_map00. Note for consumers that cast Mats.get_mat() to StandardMaterial3D (landscape.gd reads the snow's albedo_texture): a library material is a ShaderMaterial; read MaterialLibrary.texture(key, 'albedo') instead.",
+  "_doc": "The CC0 material library (UPDATE_05 section 1, T-088; docs/ART_BIBLE.md section 3). MaterialLibrary.get_mat(key) builds one shared ShaderMaterial (assets/materials/shaders/surface_pbr.gdshader) per key from `library` and caches it. set = assets/third_party/<set>/textures/<id>_{albedo,normal,orm[,height]}.png; tile_m = metres one tile covers (uv_scale = 1 / tile_m, per axis when `tile_xyz` is given); tint multiplies the albedo; rough = [min, max] clamp on the ORM's roughness; grime / wetness / frost are the shared wear parameters (0..1); frost_height = world y the frost starts above (-1000 = everywhere); triplanar false = the mesh's own UVs (props). `generator` maps the procedural Mats keys (gravelight/world/materials.gd, what gen_map0N.gd and Props call) to library keys: Mats.get_mat() hands out the library material for a key in `enabled` while use_library is true, so the environment builder switches Map 0 over one key at a time by adding to `enabled` and re-running gen_map00. Note for consumers that cast Mats.get_mat() to StandardMaterial3D (landscape.gd reads the snow's albedo_texture): a library material is a ShaderMaterial; read MaterialLibrary.texture(key, 'albedo') instead. UPDATE 19 (T-252): macro_var / macro_scale (a slow world-space brightness drift, on every triplanar surface; default 0.18 over 7 m), detile (0..1: a second, 2.7x larger sample blended in patches and with distance, for unstructured ground and render; never on coursed stone, brick or boards) and sparkle (snow glints a light sets off) are surface_pbr's variation uniforms; MaterialLibrary.build writes them and LookMaterials.apply_library (MapRoot._ready) gives them to a scene baked before they existed (by the material's lib_<key> name, else `by_texture`). `live`: true on a key whose set or look changed after the scenes were baked: its whole entry, textures included, is written to the baked material at load, so the map needs no regeneration. A tint may exceed 1 (asphalt_snow is a grey photograph).",
   "shader": "res://assets/materials/shaders/surface_pbr.gdshader",
   "defaults": {
     "tint": [
@@ -57,13 +57,13 @@
       "note": "the stable's walls, fences, the woodshed, shutters (frost on their up faces)"
     },
     "plaster": {
-      "set": "polyhaven/beige-wall-001",
-      "id": "beige_wall_001",
-      "tile_m": 2.0,
+      "set": "polyhaven/grey-plaster-03",
+      "id": "grey_plaster_03",
+      "tile_m": 2.4,
       "tint": [
-        0.9,
-        0.84,
-        0.74
+        1.0,
+        0.95,
+        0.9
       ],
       "rough": [
         0.75,
@@ -71,7 +71,11 @@
       ],
       "grime": 0.45,
       "grime_height": 1.1,
-      "note": "the inn's walls inside and out; wear and water stains are the shader's grime"
+      "normal_strength": 1.3,
+      "detile": 0.25,
+      "macro_var": 0.22,
+      "live": true,
+      "note": "the inn's walls inside and out: old hand-trowelled plaster, uneven, stained (U19 T-252: grey_plaster_03 at 2K; beige_wall_001 read as a flat colour under the lamps); wear and water stains are still the shader's grime"
     },
     "plaster_worn": {
       "set": "polyhaven/plastered-stone-wall",
@@ -88,7 +92,8 @@
       ],
       "grime": 0.5,
       "grime_height": 1.1,
-      "note": "plaster fallen off old stone: the cellar's foundation, outside corners, the stable's footing"
+      "note": "plaster fallen off old stone: the cellar's foundation, outside corners, the stable's footing",
+      "detile": 0.3
     },
     "plaster_upper": {
       "set": "polyhaven/grey-plaster",
@@ -105,7 +110,8 @@
       ],
       "grime": 0.4,
       "grime_floor_y": 3.8,
-      "note": "the upper storey and the guest rooms"
+      "note": "the upper storey and the guest rooms",
+      "detile": 0.3
     },
     "fieldstone": {
       "set": "polyhaven/stone-wall",
@@ -241,7 +247,11 @@
       "grime": 0.08,
       "note": "the Grounds' snow: wind-packed, clean (snow_01 since T-093; snow_02's twig marks read as cracks)",
       "normal_strength": 0.5,
-      "ao_strength": 0.6
+      "ao_strength": 0.6,
+      "detile": 0.8,
+      "sparkle": 0.7,
+      "macro_var": 0.22,
+      "macro_scale": 9.0
     },
     "ice": {
       "set": "ambientcg/ice-003",
@@ -257,23 +267,31 @@
         0.25
       ],
       "grime": 0.1,
-      "note": "the stream, the trough, the ice cellar"
+      "note": "the stream, the trough, the ice cellar",
+      "macro_var": 0.25
     },
     "frozen_mud": {
-      "set": "ambientcg/snow-015",
-      "id": "Snow015",
+      "set": "polyhaven/brown-mud-dry",
+      "id": "brown_mud_dry",
       "tile_m": 2.0,
       "tint": [
-        0.84,
-        0.82,
-        0.78
+        0.9,
+        0.94,
+        1.05
       ],
       "rough": [
-        0.6,
+        0.65,
         0.95
       ],
       "grime": 0.3,
-      "note": "the roads' ruts, the yard track"
+      "frost": 0.6,
+      "frost_height": -1000.0,
+      "frost_up": 0.5,
+      "detile": 0.6,
+      "macro_var": 0.25,
+      "albedo_saturation": 0.6,
+      "live": true,
+      "note": "the roads' ruts, the yard track: churned earth frozen hard, snow in its hollows (U19 T-252: brown_mud_dry; Snow015's grass before)"
     },
     "dirt": {
       "set": "polyhaven/brown-mud-03",
@@ -290,7 +308,9 @@
       ],
       "grime": 0.35,
       "wetness": 0.15,
-      "note": "the stable floor, the cellar's earth"
+      "note": "the stable floor, the cellar's earth",
+      "detile": 0.5,
+      "macro_var": 0.25
     },
     "beam": {
       "set": "polyhaven/dark-wood",
@@ -431,7 +451,8 @@
       "grime": 0.55,
       "grime_floor_y": -3.2,
       "grime_height": 1.4,
-      "note": "limewashed rubble in the Helvetia stair hall (T-093)"
+      "note": "limewashed rubble in the Helvetia stair hall (T-093)",
+      "detile": 0.3
     },
     "bark": {
       "set": "polyhaven/pine-bark",
@@ -466,7 +487,9 @@
       "frost": 0.7,
       "frost_height": -10.0,
       "frost_up": 0.35,
-      "note": "boulders on the grounds and by the stream (T-093)"
+      "note": "boulders on the grounds and by the stream (T-093)",
+      "detile": 0.5,
+      "macro_var": 0.25
     },
     "hay": {
       "set": "polyhaven/reed-roof-04",
@@ -482,7 +505,8 @@
         1.0
       ],
       "grime": 0.25,
-      "note": "dry reed / straw: the hay bales, the pile, the rick (T-093)"
+      "note": "dry reed / straw: the hay bales, the pile, the rick (T-093)",
+      "detile": 0.4
     },
     "straw_floor": {
       "set": "polyhaven/reed-roof-04",
@@ -498,7 +522,8 @@
         1.0
       ],
       "grime": 0.4,
-      "note": "straw trodden into the stable floor and over the loft boards (T-093)"
+      "note": "straw trodden into the stable floor and over the loft boards (T-093)",
+      "detile": 0.4
     },
     "wreck": {
       "set": "polyhaven/green-metal-rust",
@@ -519,21 +544,28 @@
       "note": "olive paint over rust, scorched: GRAVELIGHT ONE and its wreckage (T-093)"
     },
     "snow_trodden": {
-      "set": "ambientcg/snow-015",
-      "id": "Snow015",
-      "tile_m": 1.6,
+      "set": "polyhaven/asphalt-snow",
+      "id": "asphalt_snow",
+      "tile_m": 2.0,
       "tint": [
-        0.98,
-        0.98,
-        1.0
+        1.5,
+        1.55,
+        1.65
       ],
       "rough": [
         0.6,
         0.95
       ],
       "grime": 0.15,
-      "note": "trodden snow over frozen dirt: the tracks round the ring, the yard paths, the well steps (T-093; snow_05's tyre tread read as a modern tractor)",
-      "normal_strength": 0.6
+      "normal_strength": 0.8,
+      "frost": 0.5,
+      "frost_height": -1000.0,
+      "frost_up": 0.5,
+      "detile": 0.6,
+      "sparkle": 0.3,
+      "macro_var": 0.26,
+      "live": true,
+      "note": "trodden snow: thin, grey, walked hard over the ground, clean snow lying in patches on it (the frost): the tracks round the ring, the yard paths, Kaltenbrunn's yard (U19 T-252: asphalt_snow; Snow015 was snow on green grass and read as a lawn)"
     },
     "m2_bunker": {
       "set": "polyhaven/concrete-wall-004",
@@ -551,7 +583,9 @@
       "grime": 0.6,
       "wetness": 0.15,
       "grime_height": 1.6,
-      "note": "Totenhafen: the bunker's cast concrete; the panel joints read as form-board lines; damp at the foot (U09 s5, T-145)"
+      "note": "Totenhafen: the bunker's cast concrete; the panel joints read as form-board lines; damp at the foot (U09 s5, T-145)",
+      "detile": 0.3,
+      "macro_var": 0.24
     },
     "m2_bunker_wet": {
       "set": "polyhaven/concrete-wall-004",
@@ -570,7 +604,9 @@
       "wetness": 0.55,
       "grime_height": 2.5,
       "grime_floor_y": -3.0,
-      "note": "Totenhafen: the pens' walls and the lower pens, streaming wet (T-145)"
+      "note": "Totenhafen: the pens' walls and the lower pens, streaming wet (T-145)",
+      "detile": 0.3,
+      "macro_var": 0.24
     },
     "m2_floor": {
       "set": "polyhaven/concrete-floor-worn-001",
@@ -588,7 +624,9 @@
       "grime": 0.45,
       "wetness": 0.3,
       "grime_height": 0.3,
-      "note": "Totenhafen: worn concrete floors: the workshop, the tower, the quay (T-145)"
+      "note": "Totenhafen: worn concrete floors: the workshop, the tower, the quay (T-145)",
+      "detile": 0.6,
+      "macro_var": 0.26
     },
     "m2_floor_wet": {
       "set": "polyhaven/dirty-concrete",
@@ -606,7 +644,9 @@
       "grime": 0.5,
       "wetness": 0.6,
       "grime_height": 0.2,
-      "note": "Totenhafen: the wet aprons and pier decks (T-145)"
+      "note": "Totenhafen: the wet aprons and pier decks (T-145)",
+      "detile": 0.6,
+      "macro_var": 0.26
     },
     "m2_pier": {
       "set": "polyhaven/dirty-concrete",
@@ -625,7 +665,9 @@
       "wetness": 0.45,
       "grime_floor_y": -6.0,
       "grime_height": 4.0,
-      "note": "Totenhafen: pier and dock sides, tide-stained (T-145)"
+      "note": "Totenhafen: pier and dock sides, tide-stained (T-145)",
+      "detile": 0.4,
+      "macro_var": 0.24
     },
     "m2_grate": {
       "set": "polyhaven/metal-grate-rusty",
@@ -825,7 +867,9 @@
       ],
       "grime": 0.5,
       "grime_height": 1.2,
-      "note": "U09 Act I, Werk Thalbach (T-146): board-formed concrete: the test stands, the bunker, the hangar walls, the blast wall"
+      "note": "U09 Act I, Werk Thalbach (T-146): board-formed concrete: the test stands, the bunker, the hangar walls, the blast wall",
+      "detile": 0.3,
+      "macro_var": 0.24
     },
     "fl_floor": {
       "set": "polyhaven/concrete-floor-worn-001",
@@ -842,7 +886,9 @@
       ],
       "grime": 0.3,
       "wetness": 0.1,
-      "note": "U09 Act I, Werk Thalbach (T-146): the works' worn concrete floors and aprons"
+      "note": "U09 Act I, Werk Thalbach (T-146): the works' worn concrete floors and aprons",
+      "detile": 0.6,
+      "macro_var": 0.26
     },
     "fl_grate": {
       "set": "polyhaven/metal-grate-rusty",
@@ -861,13 +907,13 @@
       "note": "U09 Act I, Werk Thalbach (T-146): catwalk grating and the ramp"
     },
     "fl_yard": {
-      "set": "polyhaven/dirt-aerial-02",
-      "id": "dirt_aerial_02",
-      "tile_m": 9.0,
+      "set": "polyhaven/brown-mud-dry",
+      "id": "brown_mud_dry",
+      "tile_m": 2.6,
       "tint": [
-        0.78,
-        0.76,
-        0.74
+        0.92,
+        0.86,
+        0.84
       ],
       "rough": [
         0.8,
@@ -876,7 +922,11 @@
       "grime": 0.2,
       "frost": 0.25,
       "frost_up": 0.7,
-      "note": "U09 Act I, Werk Thalbach (T-146): the Siedlung courtyard, the rail yard, the church square's beaten earth"
+      "detile": 0.75,
+      "macro_var": 0.34,
+      "macro_scale": 11.0,
+      "live": true,
+      "note": "U09 Act I, Werk Thalbach (T-146): the Siedlung courtyard, the rail yard, the church square's beaten earth (U19 T-252: brown_mud_dry at a 2.6 m tile with the second-sample blend; dirt_aerial_02 was an aerial photograph stretched over 9 m, a blur at walking distance)"
     },
     "fl_planks": {
       "set": "polyhaven/plank-flooring-02",
@@ -911,7 +961,8 @@
       "grime_height": 1.6,
       "frost": 0.1,
       "frost_up": 0.6,
-      "note": "U09 Act I, Werk Thalbach (T-146): the housing blocks' and the parish house's rendered facades"
+      "note": "U09 Act I, Werk Thalbach (T-146): the housing blocks' and the parish house's rendered facades",
+      "detile": 0.25
     },
     "kranich_skin": {
       "set": "polyhaven/blue-metal-plate",
@@ -944,6 +995,122 @@
       ],
       "grime": 0.35,
       "note": "worn diamond plate: the Kranich's floor plates in the engine room, the cockpit and the walkways (T-147)"
+    },
+    "m1_stucco": {
+      "set": "polyhaven/white-plaster-rough-01",
+      "id": "white_plaster_rough_01",
+      "tile_m": 2.2,
+      "tint": [
+        1.55,
+        1.5,
+        1.4
+      ],
+      "rough": [
+        0.8,
+        1.0
+      ],
+      "grime": 0.5,
+      "grime_height": 1.4,
+      "frost": 0.15,
+      "frost_up": 0.6,
+      "detile": 0.3,
+      "macro_var": 0.24,
+      "note": "U19 (T-252) Kaltenbrunn: the minehead buildings' weathered ochre render (Mats `stucco`, a noise blotch before)"
+    },
+    "m1_brick": {
+      "set": "polyhaven/factory-brick",
+      "id": "factory_brick",
+      "tile_m": 1.5,
+      "tint": [
+        0.62,
+        0.44,
+        0.38
+      ],
+      "rough": [
+        0.75,
+        1.0
+      ],
+      "grime": 0.5,
+      "grime_height": 1.4,
+      "frost": 0.12,
+      "frost_up": 0.6,
+      "note": "U19 (T-252) Kaltenbrunn: red-brown works brick with lime mortar (Mats `brick`, a flat procedural bond before): the Waschkaue, plinths, the gatehouse"
+    },
+    "m1_concrete": {
+      "set": "polyhaven/concrete-wall-004",
+      "id": "concrete_wall_004",
+      "tile_m": 2.2,
+      "tint": [
+        0.72,
+        0.74,
+        0.9
+      ],
+      "rough": [
+        0.75,
+        1.0
+      ],
+      "grime": 0.5,
+      "grime_height": 1.2,
+      "detile": 0.3,
+      "macro_var": 0.24,
+      "note": "U19 (T-252): cast concrete (Mats `concrete`, noise before): Kaltenbrunn's depths, stairs and lift, and every generator's concrete dressing"
+    },
+    "m1_floor": {
+      "set": "polyhaven/concrete-floor-worn-001",
+      "id": "concrete_floor_worn_001",
+      "tile_m": 3.0,
+      "tint": [
+        0.6,
+        0.6,
+        0.58
+      ],
+      "rough": [
+        0.55,
+        1.0
+      ],
+      "grime": 0.4,
+      "wetness": 0.15,
+      "detile": 0.6,
+      "macro_var": 0.26,
+      "note": "U19 (T-252): oil-stained machine-hall floor (Mats `concrete_floor`)"
+    },
+    "m1_rock": {
+      "set": "polyhaven/rock-face-03",
+      "id": "rock_face_03",
+      "tile_m": 2.7,
+      "tint": [
+        0.17,
+        0.17,
+        0.2
+      ],
+      "rough": [
+        0.7,
+        1.0
+      ],
+      "grime": 0.3,
+      "albedo_saturation": 0.25,
+      "normal_strength": 1.2,
+      "macro_var": 0.3,
+      "note": "U19 (T-252) Kaltenbrunn: the Core's and the ramps' dark country rock (Mats `rock_dark`)"
+    },
+    "m1_rock_floor": {
+      "set": "polyhaven/rock-face-03",
+      "id": "rock_face_03",
+      "tile_m": 2.2,
+      "tint": [
+        0.18,
+        0.175,
+        0.2
+      ],
+      "rough": [
+        0.75,
+        1.0
+      ],
+      "grime": 0.4,
+      "albedo_saturation": 0.25,
+      "detile": 0.4,
+      "macro_var": 0.3,
+      "note": "U19 (T-252) Kaltenbrunn: trodden rock floors (Mats `rock_floor`)"
     }
   },
   "generator": {
@@ -1004,7 +1171,13 @@
       "fl_grate",
       "fl_yard",
       "fl_planks",
-      "fl_plaster"
+      "fl_plaster",
+      "stucco",
+      "brick",
+      "concrete",
+      "concrete_floor",
+      "rock_dark",
+      "rock_floor"
     ],
     "keys": {
       "floorboards": "floorboards",
@@ -1063,7 +1236,21 @@
       "fl_grate": "fl_grate",
       "fl_yard": "fl_yard",
       "fl_planks": "fl_planks",
-      "fl_plaster": "fl_plaster"
+      "fl_plaster": "fl_plaster",
+      "stucco": "m1_stucco",
+      "brick": "m1_brick",
+      "concrete": "m1_concrete",
+      "concrete_floor": "m1_floor",
+      "rock_dark": "m1_rock",
+      "rock_floor": "m1_rock_floor"
+    }
+  },
+  "by_texture": {
+    "_doc": "T-252: the variation values (macro_var, macro_scale, detile, sparkle) for a surface_pbr material that is not named lib_<key> (a generator built it with MaterialLibrary.build and renamed it: Mondlicht's m4d_* regolith), found by its albedo file name. MaterialLibrary.apply_runtime.",
+    "moon_dusted_01_albedo.png": {
+      "detile": 0.6,
+      "macro_var": 0.3,
+      "macro_scale": 11.0
     }
   }
 }
