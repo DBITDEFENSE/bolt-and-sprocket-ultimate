@@ -5687,7 +5687,10 @@ func build_perk_gameplay() -> void:
 		m.rotation.y = deg_to_rad(float(at[3]))
 		if int((at[4] as Dictionary).get("flush", 0)) != 0:   # T-255: back on the wall (PerkSpot.stand_transform does the same each match)
 			var fpz: float = (MACHINE_FOOTPRINTS.get(str(pk["shape"]), Vector3(1.0, 2.0, 0.7)) as Vector3).z
-			m.position += Basis(Vector3.UP, m.rotation.y) * Vector3(0, 0, maxf(0.0, (PERK_SPOT_D - fpz) * 0.5))
+			var off: Vector3 = Basis(Vector3.UP, m.rotation.y) * Vector3(0, 0, maxf(0.0, (PERK_SPOT_D - fpz) * 0.5))
+			# (to the millimetre, so the saved number is the decimal's own float: the minimap bake's POI signature rounds
+			# to decimetres, and 0.85 - 0.3 a hair under 0.55 hashed differently from the 0.55 mapdata.json reads back)
+			m.position = Vector3(snappedf(m.position.x + off.x, 0.001), m.position.y, snappedf(m.position.z + off.z, 0.001))
 		gameplay.add_child(m)
 	print("perk spots: %d, machines: %d (seed-0 deal: %s)" % [PERK_SPOTS.size(), perks.size(), str(deal)])
 

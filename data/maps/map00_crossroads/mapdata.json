@@ -15,8 +15,8 @@
     944,
     1056
   ],
-  "baked_at": "2026-11-15T07:58:10",
-  "poi_signature": "a7f75efc9687e55a15ebd90ce560c462",
+  "baked_at": "2026-11-15T08:13:27",
+  "poi_signature": "0533d2304e4a5d3ceca9b43a090e0f62",
   "floors": [
     {
       "id": "cellar",
@@ -1554,7 +1554,7 @@
       "pos": [
         42.3,
         -3.2,
-        38.43
+        38.42
       ],
       "floor": 0,
       "label": "Magpie Mead",
@@ -1603,7 +1603,7 @@
       "id": "perk:Gameplay/Perk_packmule_porter",
       "type": "perk",
       "pos": [
-        23.32,
+        23.33,
         -3.2,
         12.5
       ],

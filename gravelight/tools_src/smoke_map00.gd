@@ -85,8 +85,9 @@ func _check_intel() -> void:
 	if at.size() < 3:
 		_fails.append("the match placed %d Intel pickups (3 to 5)" % at.size())
 	for i: int in at.size():
-		if NavigationServer3D.map_get_closest_point(rid, at[i]).distance_to(at[i]) > 0.3:
-			_fails.append("an Intel pickup at %s is not on the navmesh" % str(at[i]))
+		var on_nav: Vector3 = NavigationServer3D.map_get_closest_point(rid, at[i])   # (the navmesh floats 0.3 to 0.5 m over the floor the pickup lies on)
+		if Vector2(on_nav.x - at[i].x, on_nav.z - at[i].z).length() > 0.3 or on_nav.y - at[i].y > 0.8 or on_nav.y < at[i].y - 0.1:
+			_fails.append("an Intel pickup at %s is not on the navmesh's floor (nearest %s)" % [str(at[i]), str(on_nav)])
 		if Vector2(at[i].x, at[i].z).length() < 0.6 and absf(at[i].y) < 0.5:
 			_fails.append("an Intel pickup lies in the taproom's wall corner (the map's origin)")
 		for j: int in i:
