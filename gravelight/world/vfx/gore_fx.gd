@@ -535,7 +535,16 @@ func _tick_pending() -> void:
 		var body: Node3D = instance_from_id(_pend_id[i]) as Node3D
 		if body == null or not body.is_inside_tree() or not body.visible:
 			continue
-		pool_under(_rest_point(body), _pend_big[i])
+		# under the hips; a body slumped over a crate or a table has no floor there (props take no marks), so the
+		# blood finds the floor beside it: under the root, then a step to either side
+		if pool_under(_rest_point(body), _pend_big[i]):
+			continue
+		var root: Vector3 = body.global_position + Vector3.UP * 0.3
+		if pool_under(root, _pend_big[i]):
+			continue
+		var side: Vector3 = body.global_basis.x.normalized() * 0.55
+		if _rays_left >= 6 and not pool_under(root + side, _pend_big[i] * 0.8) and _rays_left >= 6:
+			pool_under(root - side, _pend_big[i] * 0.8)
 
 
 ## Where a body's blood comes out: its hips (the ragdoll may have carried them off the root).
