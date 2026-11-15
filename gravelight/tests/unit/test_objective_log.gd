@@ -173,7 +173,10 @@ func test_current_objective_kaltenbrunn() -> void:
 func test_current_objective_inn_and_unknown_map() -> void:
 	var rules: Array = data["maps"]["map00_crossroads"]["current"]
 	assert_string_contains(str(ObjectiveLog.current_objective({"zones": ["TAPROOM"]}, rules)["title"]), "cellar")
-	assert_string_contains(str(ObjectiveLog.current_objective({"zones": ["TAPROOM", "CELLAR"]}, rules)["title"]), "cellar lever")
+	# T-251: the lever is three doors deep: the cellar, the Lagering Vault, the Dynamo Room, then the lever
+	assert_string_contains(str(ObjectiveLog.current_objective({"zones": ["TAPROOM", "CELLAR"]}, rules)["title"]), "Lagering Vault")
+	assert_string_contains(str(ObjectiveLog.current_objective({"zones": ["TAPROOM", "CELLAR", "LAGERKELLER"]}, rules)["title"]), "Dynamo Room")
+	assert_string_contains(str(ObjectiveLog.current_objective({"zones": ["TAPROOM", "CELLAR", "LAGERKELLER", "MASCHINENRAUM"]}, rules)["title"]), "cellar lever")
 	assert_string_contains(str(ObjectiveLog.current_objective({"power": true, "round": 11}, rules)["title"]), "Survive.")
 	var log: Dictionary = ObjectiveLog.build({"map_id": "map_future"}, data, "hints")
 	assert_eq(str(log["current"]["title"]), "Survive.", "a map without data still builds")

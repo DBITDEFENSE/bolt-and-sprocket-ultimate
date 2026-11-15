@@ -25,7 +25,9 @@ var _body: StaticBody3D = null
 
 func _ready() -> void:
 	add_to_group(&"perk_spots")
-	_refresh()
+	# deferred: the map deals its machines in its own _ready (PerkLayout), after every spot's; only the spots the deal
+	# leaves free build a crate
+	_refresh.call_deferred()
 
 
 ## The row PerkShuffle.assign reads.

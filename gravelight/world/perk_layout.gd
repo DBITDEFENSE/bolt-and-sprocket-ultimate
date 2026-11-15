@@ -160,3 +160,62 @@ func describe() -> String:
 		var s: PerkSpot = _spots.get(str(deal[pid])) as PerkSpot
 		parts.append("%s@%s (%s)" % [pid, str(deal[pid]), String(s.zone_id) if s != null else "?"])
 	return ", ".join(parts)
+
+
+# ================================================================== tools (tests, smokes, captures)
+
+## The spot rows of a map scene read from its packed state, without loading it: [{id, zone, outdoor, start, near}].
+static func scene_spot_rows(scene_path: String) -> Array:
+	var out: Array = []
+	var ps: PackedScene = load(scene_path) as PackedScene
+	if ps == null:
+		return out
+	var st: SceneState = ps.get_state()
+	for i: int in st.get_node_count():
+		var props: Dictionary = {}
+		for j: int in st.get_node_property_count(i):
+			props[String(st.get_node_property_name(i, j))] = st.get_node_property_value(i, j)
+		if props.has("spot_id"):
+			out.append({"id": str(props["spot_id"]), "zone": str(props.get("zone_id", "")), "outdoor": bool(props.get("outdoor", false)),
+				"start": bool(props.get("start", false)), "near": bool(props.get("near", false))})
+	return out
+
+
+## The perk rows of a map key ("map00") from perk_layout.json and perks.json: [{id, cost, shape}].
+static func map_perk_rows(map_key: String) -> Array:
+	var out: Array = []
+	var table: Dictionary = GLData.table("perks")["perks"]
+	for id: String in ((rules().get("maps", {}) as Dictionary).get(map_key, {}) as Dictionary).get("perks", []):
+		var d: Dictionary = table.get(id, {})
+		out.append({"id": id, "cost": int(d.get("cost", 0)), "shape": str(d.get("shape", "cabinet"))})
+	return out
+
+
+## The first seed from `from` whose deal on `scene_path` suits `want` (a smoke that needs a machine where its story
+## has it pins that seed: PerkLayout.forced_seed = PerkLayout.seed_where(...)). `want` gets {perk id -> zone id} and
+## {perk id -> spot id}. -1 when none of `tries` seeds does.
+static func seed_where(scene_path: String, want: Callable, from: int = 0, tries: int = 3000) -> int:
+	var spots: Array = scene_spot_rows(scene_path)
+	var zone_of: Dictionary = {}
+	for s: Dictionary in spots:
+		zone_of[s["id"]] = s["zone"]
+	var perks: Array = map_perk_rows(scene_path.get_file().get_basename().get_slice("_", 0))
+	var r: Dictionary = rules()
+	for seed_now: int in range(from, from + tries):
+		var d: Dictionary = PerkShuffle.assign(seed_now, spots, perks, r)
+		var zones: Dictionary = {}
+		for pid: String in d.keys():
+			zones[pid] = str(zone_of.get(str(d[pid]), ""))
+		if bool(want.call(zones, d)):
+			return seed_now
+	return -1
+
+
+## Every zone that holds a machine this match (a smoke opens the doors to them).
+func machine_zones() -> Array:
+	var out: Array = []
+	for pid: String in deal.keys():
+		var s: PerkSpot = _spots.get(str(deal[pid])) as PerkSpot
+		if s != null and not out.has(String(s.zone_id)):
+			out.append(String(s.zone_id))
+	return out

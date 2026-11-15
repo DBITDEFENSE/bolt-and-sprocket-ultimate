@@ -34,6 +34,10 @@ func _ready() -> void:
 	GameState.bot_skill = str(GLSettings.values.get("bot_skill", "veteran"))
 	GameState.bot_ai_mode = "off"
 	Campaign.reset()
+	# T-251: the machines are dealt onto perk spots all over the map; this session pins a deal with the two it marks
+	# (Marathon Malt, Packmule Porter) in the Helvetia cellar, behind the door it opens
+	PerkLayout.forced_seed = PerkLayout.seed_where(MAP, func(zones: Dictionary, _deal: Dictionary) -> bool:
+		return str(zones.get("marathon_malt", "")) == "CELLAR" and str(zones.get("packmule_porter", "")) == "CELLAR")
 	if not GLBus.match_started.is_connected(_on_match_started):
 		GLBus.match_started.connect(_on_match_started, CONNECT_ONE_SHOT)
 	get_tree().change_scene_to_file.call_deferred(MAP)

@@ -55,6 +55,15 @@ func _ready() -> void:
 	GameState.bot_ai_mode = "off"
 	GameState.god_mode = true
 	var scene_path: String = MAP if _map_name == "map00" else NpcWallProbe.scene_for(_map_name)
+	if _map_name == "map00":
+		# T-251: the inn's machines are dealt onto perk spots all over the map; this smoke opens the cellar and the stable,
+		# so it pins a deal with Marathon Malt, a 3000-Scrip tonic and a third machine behind those two doors
+		PerkLayout.forced_seed = PerkLayout.seed_where(MAP, func(zones: Dictionary, _deal: Dictionary) -> bool:
+			var near: Array = []
+			for pid: String in zones.keys():
+				if str(zones[pid]) in ["CELLAR", "STABLE"]:
+					near.append(pid)
+			return near.size() >= 3 and near.has("marathon_malt") and (near.has("trigger_tonic") or near.has("magpie_mead") or near.has("ledger_lager")))
 	_map = (load(scene_path) as PackedScene).instantiate() as MapRoot
 	get_tree().root.add_child.call_deferred(_map)
 	get_tree().set_deferred("current_scene", _map)
@@ -114,12 +123,18 @@ func _node(path: String) -> Node:
 	return _map.get_node_or_null(NodePath(path))
 
 
-## A perk machine in the cellar none of `pids` has (and none takes as a bonus), priced at least `min_price`.
+## T-251: does the machine stand in a zone that is open (the bots can walk to it)?
+func _in_open_zone(pm: PerkMachine) -> bool:
+	return GameState.is_zone_open(ZoneVolume.zone_at(get_tree(), pm.global_position + Vector3.UP * 0.3))
+
+
+## A perk machine behind the doors this smoke opened that none of `pids` has (and none takes as a bonus), priced at
+## least `min_price`.
 func _free_perk(pids: Array, min_price: int) -> PerkMachine:
 	var best: PerkMachine = null
 	for n: Node in get_tree().get_nodes_in_group(&"perk_machines"):
 		var pm: PerkMachine = n as PerkMachine
-		if pm == null or pm.perk_id == _perk1 or PerkManager.price(pm.perk_id) < min_price:
+		if pm == null or pm.perk_id == _perk1 or PerkManager.price(pm.perk_id) < min_price or not _in_open_zone(pm):
 			continue
 		var free: bool = true
 		for pid: Variant in pids:
@@ -130,7 +145,7 @@ func _free_perk(pids: Array, min_price: int) -> PerkMachine:
 	if best == null:   # the bots' random kit perks took every pricey one: free the cheapest (setup, not under test)
 		for n2: Node in get_tree().get_nodes_in_group(&"perk_machines"):
 			var pm2: PerkMachine = n2 as PerkMachine
-			if pm2 != null and pm2.perk_id != _perk1 and PerkManager.price(pm2.perk_id) >= min_price and (best == null or PerkManager.price(pm2.perk_id) < PerkManager.price(best.perk_id)):
+			if pm2 != null and pm2.perk_id != _perk1 and _in_open_zone(pm2) and PerkManager.price(pm2.perk_id) >= min_price and (best == null or PerkManager.price(pm2.perk_id) < PerkManager.price(best.perk_id)):
 				best = pm2
 		if best != null:
 			for pid2: Variant in pids:

@@ -124,9 +124,20 @@ func test_pois_carry_what_the_runtime_needs() -> void:
 		assert_between(int(p["floor"]), 0, inn.floors.size() - 1)
 	for t: String in ["door", "perk", "wall_buy", "ammo_box", "crate_spot", "crucible", "power_switch"]:
 		assert_true(types.has(t), "the Inn has a %s POI" % t)
-	var perk: Dictionary = inn.pois_of_type("perk")[0]
-	assert_eq(int(perk["floor"]), 0, "the perk machines are in the cellar")
-	assert_gt(int(perk["price"]), 0)
+	# T-251: the baked rows hold the seed-0 deal of the machines onto the inn's perk spots (a match re-reads them where
+	# its own deal stands them, MapState.refresh_live_pois): every row on the floor its position is on, twelve of them
+	var perk_floors: Dictionary = {}
+	for perk: Dictionary in inn.pois_of_type("perk"):
+		assert_eq(int(perk["floor"]), inn.floor_at((perk["pos"] as Vector3) + Vector3.UP * 0.3), "%s is on the floor it stands on" % perk["id"])
+		assert_gt(int(perk["price"]), 0)
+		perk_floors[int(perk["floor"])] = true
+	assert_eq(inn.pois_of_type("perk").size(), 12, "the twelve machines")
+	assert_gt(perk_floors.size(), 1, "and they are not all on one floor any more")
+	var lever: Dictionary = inn.pois_of_type("power_switch")[0]
+	assert_eq(int(lever["floor"]), 0, "the cellar lever is in the cellar")
+	assert_eq(inn.zone_at(lever["pos"] as Vector3), "MASCHINENRAUM", "in the Dynamo Room")
+	assert_eq(inn.zone_label_at(Vector3(30, -3.0, 34)), "The Lagering Vault")
+	assert_eq(inn.zone_label_at((inn.pois_of_type("crucible")[0] as Dictionary)["pos"] as Vector3), "The Dynamo Room")
 	var kb: MapData = MapData.for_map(&"map01_kaltenbrunn")
 	assert_gt(kb.pois_of_type("trap").size(), 0, "Kaltenbrunn's traps")
 	assert_gt(kb.pois_of_type("workbench").size(), 0, "Kaltenbrunn's workbench")

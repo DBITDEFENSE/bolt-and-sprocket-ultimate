@@ -2663,7 +2663,7 @@ func _dress_deep_cellar(parent: Node3D) -> void:
 	Props.crate(g, Vector3(DYN_X1 - 2.04, cy, dz0 + 0.35), 0.6, 180.0)
 	Props.crate(g, Vector3(DYN_X1 - 2.02, cy + 0.6, dz0 + 0.35), 0.5, 174.0)
 	# the oil drums in the north-west corner, a funnel on one, the stain under them
-	Props.oil_drum(g, Vector3(dx0 + 0.36, cy, dz0 + 0.36), "rust")
+	Props.oil_drum(g, Vector3(dx0 + 0.36, cy, dz0 + 0.36), "machine_grey")
 	Props.oil_drum(g, Vector3(dx0 + 1.0, cy, dz0 + 0.34), "olive_drab")
 	Props.cone(g, Vector3(dx0 + 1.0, cy + 0.98, dz0 + 0.34), 0.12, 0.16, "zinc", Vector3(180, 0, 0))
 	PropsStory.stain(g, Vector3(dx0 + 0.05, cy + 0.0125, dz0 + 0.05), Vector3(dx0 + 1.7, cy + 0.0135, dz0 + 1.1), "water_stain")
@@ -2690,10 +2690,10 @@ func _dress_deep_cellar(parent: Node3D) -> void:
 	Props.cable(g, Vector3(px0 + 1.92, cl, pzm - 0.6), Vector3(fx, cl, dz0 + 0.12), 0.08, 0.02, 8)
 	Props.block(g, Vector3(px0 + 1.2, cy + 0.22, pz0 + 0.08), Vector3(px0 + 1.62, cy + 1.12, pz0 + 0.12), "steel_grate")   # the belt guard, both sides
 	Props.block(g, Vector3(px0 + 1.2, cy + 0.22, DYN_SET.end.y - 0.12), Vector3(px0 + 1.62, cy + 1.12, DYN_SET.end.y - 0.08), "steel_grate")
-	Props.cyl(g, Vector3(px0 + 0.12, cy + 0.62, pzm), 0.2, 0.3, "rust")   # the fuel tank on its bracket
+	Props.cyl(g, Vector3(px0 + 0.12, cy + 0.62, pzm), 0.2, 0.3, "machine_grey")   # the fuel tank on its bracket
 	# the exhaust: up from the head, along the soffit, out through the south wall
-	Props.pipe(g, Vector3(px0 + 0.66, cy + 1.3, pzm + 0.2), Vector3(px0 + 0.66, top - 0.16, pzm + 0.2), 0.05, "rust")
-	Props.pipe(g, Vector3(px0 + 0.66, top - 0.16, pzm + 0.2), Vector3(px0 + 0.66, top - 0.16, dz1), 0.05, "rust")
+	Props.pipe(g, Vector3(px0 + 0.66, cy + 1.3, pzm + 0.2), Vector3(px0 + 0.66, top - 0.16, pzm + 0.2), 0.05, "iron")
+	Props.pipe(g, Vector3(px0 + 0.66, top - 0.16, pzm + 0.2), Vector3(px0 + 0.66, top - 0.16, dz1), 0.05, "iron")
 	Props.cyl(g, Vector3(px0 + 0.66, top - 0.16, dz1 - 0.03), 0.09, 0.05, "iron", Vector3(90, 0, 0))
 	PropsStory.stain(g, Vector3(px0 - 0.5, cy + 0.0125, pz0 - 0.4), Vector3(px0 + 1.4, cy + 0.0135, DYN_SET.end.y + 0.5), "water_stain")
 	# the sump in the south-west corner (the ground spawn): its grate, the wet round it

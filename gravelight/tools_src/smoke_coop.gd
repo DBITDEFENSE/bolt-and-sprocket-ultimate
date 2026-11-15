@@ -10,6 +10,9 @@ extends Node
 ##   T-192 (UPDATE 11, Hard Truth, on by default): the bled-out client's body lies on the host as a dormant zombie in
 ##   Peg's risen body, the client's puppet of it lies still too (net sub state 1), it gets up at 4 s, the host puts it
 ##   down while clearing the round and the death crate (a NetMatch dynamic node) appears on the client.
+##   T-251 (UPDATE 19): the host deals the tonic machines from a pinned seed that is not the match seed and deals again
+##   once the match has begun (mirrored); at the end the client's layout (every machine's place, every crate) must be
+##   the host's.
 ## Each side checks what it sees and reports RESULT PASS/FAIL; the host prints both and exits 0 only if both
 ## passed. The child is killed on every exit path; both sides have hard timeouts.
 ## Usage: godot --headless --path . res://gravelight/tools_src/smoke_coop.tscn        (the host spawns the client itself)
@@ -18,6 +21,8 @@ extends Node
 const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 const HOST_TIMEOUT: float = 240.0
 const CLIENT_TIMEOUT: float = 220.0
+const PERK_SEED_PINNED: int = 4242
+const PERK_SEED_REDEAL: int = 5151
 
 var _role: String = "host"
 var _port: int = 0
@@ -47,6 +52,7 @@ var _ht_body_ok: bool = false      # T-192: host: the body lay there
 var _saw_body: bool = false        # T-192: client: a puppet in Peg's risen body
 var _saw_dormant: bool = false
 var _saw_crate: bool = false
+var _perk_seed_first: int = -1     # T-251: client: the deal it stood on when the match began
 
 
 func _ready() -> void:
@@ -133,6 +139,7 @@ func _host_tick(_delta: float) -> void:
 		"lobby":
 			if Net.roster.size() >= 2 and Net.all_ready():
 				_log("client joined as %s; starting the match" % Net.display_name(2))
+				PerkLayout.forced_seed = PERK_SEED_PINNED   # T-251: the host's deal is not the match seed's: the client must follow the host
 				Net.start_match(MAP)
 				_goto("loading")
 			elif _step_t > 60.0:
@@ -141,6 +148,14 @@ func _host_tick(_delta: float) -> void:
 		"loading":
 			if map != null and map.session != null and map.session.begun:
 				GameState.god_mode = true   # the host's own player stays up (the client's god mode is its own)
+				# T-251: the tonic machines' deal. The host dealt from a pinned seed (the client's own first deal was from
+				# the match seed: the state snapshot puts it right); now the host deals again and mirrors it
+				var pl: PerkLayout = PerkLayout.current(get_tree())
+				if pl == null or pl.seed_value != PERK_SEED_PINNED:
+					_fail("the host did not deal its perk machines from the pinned seed (%s)" % (str(pl.seed_value) if pl != null else "no layout"))
+				else:
+					_log("perk layout: pinned seed %d (the match seed is %d); re-dealing from %d" % [pl.seed_value, QuestManager.match_seed, PERK_SEED_REDEAL])
+					pl.reshuffle(PERK_SEED_REDEAL)
 				_goto("wait_client")
 			elif _step_t > 60.0:
 				_fail("the match never began on the host")
@@ -232,6 +247,15 @@ func _host_report(map: MapRoot) -> void:
 		_fail("Hard Truth: the body never rose / was put down with a crate (%s)" % (str(ht.stats) if ht != null else "no rule"))
 	else:
 		_log("Hard Truth on the host: %s" % str(ht.stats))
+	# T-251: both peers stand every tonic machine in the same place
+	var mine: String = perk_signature(get_tree())
+	var theirs: String = str(_client_result.get("perk_sig", ""))
+	if int(_client_result.get("perk_seed", -1)) != PERK_SEED_REDEAL or theirs != mine or mine == "":
+		_fail("perk layout: host and client disagree (host seed %d, client seed %s)
+  host   %s
+  client %s" % [PERK_SEED_REDEAL, str(_client_result.get("perk_seed", "?")), mine, theirs])
+	else:
+		_log("perk layout: host and client agree on seed %d (12 machines, the client's first deal was seed %s)" % [PERK_SEED_REDEAL, str(_client_result.get("perk_seed_first", "?"))])
 	var c_pass: bool = bool(_client_result.get("pass", false))
 	for f: Variant in _client_result.get("fails", []):
 		_fails.append("client: " + str(f))
@@ -277,6 +301,8 @@ func _client_tick(delta: float) -> void:
 		"lobby":
 			if map != null and map.session != null and map.session.begun and me != null:
 				GameState.god_mode = true   # survive until the scripted down
+				var pl0: PerkLayout = PerkLayout.current(get_tree())
+				_perk_seed_first = pl0.seed_value if pl0 != null else -1
 				_goto("buy")
 			elif _step_t > 90.0:
 				_fail("never got into the match")
@@ -450,7 +476,9 @@ func _hunt(map: MapRoot, me: Player, delta: float) -> void:
 
 
 func _client_finish() -> void:
-	_qa_send("result", {"pass": _fails.is_empty(), "fails": Array(_fails), "notes": Array(_notes)})
+	var plc: PerkLayout = PerkLayout.current(get_tree())
+	_qa_send("result", {"pass": _fails.is_empty(), "fails": Array(_fails), "notes": Array(_notes),
+		"perk_seed": plc.seed_value if plc != null else -1, "perk_seed_first": _perk_seed_first, "perk_sig": perk_signature(get_tree())})
 	_log("RESULT: %s" % ("PASS" if _fails.is_empty() else "FAIL"))
 	_done = true
 	# give the reliable message a moment, then leave
@@ -460,6 +488,21 @@ func _client_finish() -> void:
 
 
 # ================================================================== shared
+
+## T-251: where every tonic machine stands on this peer ("id:x,y,z,yaw" in id order), and which spots show a crate.
+static func perk_signature(tree: SceneTree) -> String:
+	var rows: PackedStringArray = []
+	for n: Node in tree.get_nodes_in_group(&"perk_machines"):
+		var pm: PerkMachine = n as PerkMachine
+		rows.append("%s:%.2f,%.2f,%.2f,%d" % [pm.perk_id, pm.global_position.x, pm.global_position.y, pm.global_position.z, int(round(rad_to_deg(pm.global_rotation.y)))])
+	rows.sort()
+	var free: PackedStringArray = []
+	for s: Node in tree.get_nodes_in_group(&"perk_spots"):
+		if (s as PerkSpot).is_free():
+			free.append(String((s as PerkSpot).spot_id))
+	free.sort()
+	return "; ".join(rows) + " | crates: " + ",".join(free)
+
 
 func _qa_send(what: String, data: Dictionary) -> void:
 	if Net.is_online():
