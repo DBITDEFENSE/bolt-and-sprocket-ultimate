@@ -250,3 +250,4 @@ func test_bots_and_tools_do_not_know_the_old_rows() -> void:
 	assert_lt(order.find("door_cellar"), order.find("door_lager"))
 	assert_lt(order.find("door_lager"), order.find("door_dynamo"))
 	assert_lt(order.find("door_dynamo"), order.find("power"), "the agent's plan opens the three doors before the lever")
+	assert_gt(float(BotAIData.table("economy").get("self_led_at_hand_m", 0.0)), 8.0, "a self-led bot standing at the lever throws it (the last door is 8 m from it)")
