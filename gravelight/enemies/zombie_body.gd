@@ -856,18 +856,87 @@ static func build_living(kit: String, build: String = "medium", female: bool = f
 ## cloth2, hair, leather...), living (the human_base GLB, the living skin, plain eyes, skin `tone`) or risen (the zombie
 ## base GLB, the kit's dead skin and the violet eyes). Same layout, rig and LODs as every body. Cached per argument set.
 static func build_dressed(kit: String, build: String, female: bool, tone: Color, palette: Dictionary, living: bool = true) -> ArrayMesh:
-	var pk: PackedStringArray = []
-	for k: Variant in palette.keys():
-		pk.append("%s=%s" % [str(k), (palette[k] as Color).to_html()])
-	pk.sort()
-	var key: String = "dressed:%s:%s:%s:%s" % [("living" if living else "risen"), _cache_key(kit, build, female), tone.to_html(), ",".join(pk)]
+	var key: String = _dressed_key(kit, build, female, tone, palette, living)
 	if _meshes.has(key):
 		return _meshes[key]
+	var ahead: ArrayMesh = _take_dressed(key)   # (merged by a worker: request_dressed)
+	if ahead != null:
+		_meshes[key] = ahead
+		return ahead
 	var base: Dictionary = base_parts(build, female, living)
 	if not base.has("Body"):
 		return build_living(kit, build, female, tone) if living else build_skinned(kit, build, female)
 	var mesh: ArrayMesh = _merge_glb(base, kit, female, living, Color(tone.r, tone.g, tone.b, 1.0) if living else Color(0, 0, 0, 0), palette)
 	_meshes[key] = mesh
+	return mesh
+
+
+static func _dressed_key(kit: String, build: String, female: bool, tone: Color, palette: Dictionary, living: bool) -> String:
+	var pk: PackedStringArray = []
+	for k: Variant in palette.keys():
+		pk.append("%s=%s" % [str(k), (palette[k] as Color).to_html()])
+	pk.sort()
+	return "dressed:%s:%s:%s:%s" % [("living" if living else "risen"), _cache_key(kit, build, female), tone.to_html(), ",".join(pk)]
+
+
+# ------------------------------------------------------------------ dressed bodies, merged ahead of time
+# A relief squad's soldiers are dressed per soldier (a rolled tone and palette), so their bodies cannot be built at
+# map load; each merge is 20 ms of script loops and LOD generation. A squad of three to six arriving merged all of
+# its bodies in one tick (60-120 ms), and every soldier that died merged its risen body in the tick it got up.
+# request_dressed has a worker thread do the merge; build_dressed takes the result when it is in and merges on the
+# spot when it is not (as before). The mesh is the same either way (_merge_glb). Off with piece_warm and in the
+# browser build.
+static var _dressed_lock: Mutex = Mutex.new()
+static var _dressed_done: Dictionary = {}    # key -> ArrayMesh, written by the worker under the lock
+static var _dressed_tasks: Dictionary = {}   # key -> WorkerThreadPool task id (until its mesh is taken)
+
+
+## Asks for build_dressed's mesh ahead of time. Everything the merge reads from shared tables is made on the calling
+## thread first (the body's parts, the two materials); the worker then only reads.
+static func request_dressed(kit: String, build: String, female: bool, tone: Color, palette: Dictionary, living: bool = true) -> void:
+	if not piece_warm or legacy_bodies or OS.has_feature("web"):
+		return
+	var key: String = _dressed_key(kit, build, female, tone, palette, living)
+	if _meshes.has(key) or _dressed_tasks.has(key):
+		return
+	var base: Dictionary = base_parts(build, female, living)
+	if not base.has("Body"):
+		return
+	char_cfg()
+	skin_material("living" if living else _skin_look(kit))
+	kit_material(not living)
+	_dressed_tasks[key] = WorkerThreadPool.add_task(_dressed_job.bind(key, base, kit, female, living, tone, palette.duplicate(true)), true, "dressed body")
+
+
+static func _dressed_job(key: String, base: Dictionary, kit: String, female: bool, living: bool, tone: Color, palette: Dictionary) -> void:
+	var mesh: ArrayMesh = _merge_glb(base, kit, female, living, Color(tone.r, tone.g, tone.b, 1.0) if living else Color(0, 0, 0, 0), palette)
+	_dressed_lock.lock()
+	_dressed_done[key] = mesh
+	_dressed_lock.unlock()
+
+
+## True when build_dressed would not merge on the calling thread now (cached, or a worker's merge is in).
+static func dressed_ready(kit: String, build: String, female: bool, tone: Color, palette: Dictionary, living: bool = true) -> bool:
+	var key: String = _dressed_key(kit, build, female, tone, palette, living)
+	if _meshes.has(key):
+		return true
+	return _dressed_tasks.has(key) and WorkerThreadPool.is_task_completed(int(_dressed_tasks[key]))
+
+
+## The mesh a worker merged for `key`, or null (none asked for, or not finished: the caller merges on the spot and
+## the worker's copy is dropped when it arrives).
+static func _take_dressed(key: String) -> ArrayMesh:
+	if not _dressed_tasks.has(key):
+		return null
+	var id: int = int(_dressed_tasks[key])
+	if not WorkerThreadPool.is_task_completed(id):
+		return null
+	WorkerThreadPool.wait_for_task_completion(id)
+	_dressed_tasks.erase(key)
+	_dressed_lock.lock()
+	var mesh: ArrayMesh = _dressed_done.get(key) as ArrayMesh
+	_dressed_done.erase(key)
+	_dressed_lock.unlock()
 	return mesh
 
 

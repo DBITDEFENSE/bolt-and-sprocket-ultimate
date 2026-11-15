@@ -25,6 +25,8 @@ extends Node
 ## script, and the worst ticks with what ran in them (which brain thought, its action, BotProf's sections).
 ## `--bots=N` (0-3), `--no-companions` (no Jakub, the map's companion left waiting), `--ai=off|squad|local` (the
 ## planner bot), `--secs=N` (the sampled window, 15 by default), `--live` (the round keeps running: kills, spawns).
+## `--round=N` sets the round (15 by default); the hitch report ends with the 1 % low, a census of what the round
+## left lying about (corpses, ragdoll bones, rigid bodies, decals) and the planner bot's ask counts.
 ## `--ab=no_piece_warm` leaves the zombies' severed pieces to be cut in the frame that first needs each (the
 ## before of ZombieBody.warm_pieces, docs/perf/movement_perf_2026-11.md). `--seed=N` seeds the global random
 ## number generator before the map loads (a `--live` round then starts from the same rolls; it still plays out
@@ -49,6 +51,7 @@ var _hitch: bool = "--hitch" in OS.get_cmdline_user_args()
 var _probe: bool = _hitch or "--probe" in OS.get_cmdline_user_args()
 var _live: bool = "--live" in OS.get_cmdline_user_args()
 var _companions: bool = not ("--no-companions" in OS.get_cmdline_user_args())
+var _round: int = 15   # `--round=N`: the round the scene is set to (what grows with the round)
 var _t_end: float = 24.0
 ## --hitch: wall microseconds per frame, the scripts' microseconds per physics tick, the worst ticks [us, text]
 var _wall: PackedInt32Array = []
@@ -103,6 +106,8 @@ func _ready() -> void:
 				_pos.append(float(v))
 		elif a == "--no-webprofile":
 			GLSettings.compat_override = 0
+		elif a.begins_with("--round="):
+			_round = maxi(1, int(a.substr(8)))
 		elif a.begins_with("--secs="):
 			_t_end = 9.0 + maxf(1.0, float(a.substr(7)))
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -161,7 +166,7 @@ func _process(delta: float) -> void:
 		0:
 			if _t > 3.0 and (_map.squad != null or GameState.bot_count == 0):
 				_phase = 1
-				RoundManager.debug_set_round(15)
+				RoundManager.debug_set_round(_round)
 				if _companions:
 					GLConsole.call("run", "jakub join")
 					if _hitch:   # T-237: the map's own companion too (the owner's squad: 3 bots + Jakub + one more)
@@ -543,6 +548,38 @@ func _report_hitch() -> void:
 		_map.director.active_zombies().size(), _wall.size()])
 	print("[hitch] frame wall ms: mean %.2f p50 %.2f p95 %.2f p99 %.2f worst %.2f | over 8 ms %d, over 16.7 ms %d, over 20 ms %d, over 33 ms %d" % [
 		w[0], w[1], w[2], w[3], w[4], over(_wall, 8.0), over(_wall, 16.7), over(_wall, 20.0), over(_wall, 33.0)])
+	# the slowest hundredth of the frames, as their mean (what a "1 % low" frame rate is made of), and the census
+	# of what a round leaves lying about
+	var ws: PackedInt32Array = _wall.duplicate()
+	ws.sort()
+	var ln: int = maxi(1, ws.size() / 100)
+	var lsum: float = 0.0
+	for i: int in ln:
+		lsum += float(ws[ws.size() - 1 - i])
+	var low_ms: float = lsum / float(ln) / 1000.0
+	print("[hitch] 1%% low: the slowest %d frames average %.2f ms (%.0f a second, no renderer); worst %.2f ms; round %d at the end" % [
+		ln, low_ms, 1000.0 / maxf(0.001, low_ms), w[4], RoundManager.current_round])
+	var rag: int = 0
+	var rigid: int = 0
+	var decals: int = 0
+	var dead: int = 0
+	for n: Node in _all_nodes():
+		if n is PhysicalBone3D:
+			rag += 1
+		elif n is RigidBody3D:
+			rigid += 1
+		elif n is Decal:
+			decals += 1
+		elif n is Zombie and (n as Zombie).state == Zombie.State.DEAD:
+			dead += 1
+	print("[hitch] census at the end: nodes %d, corpses %d, ragdoll bones %d, rigid bodies %d, decals %d, soldiers %d, physics objects %d, islands %d" % [
+		int(Performance.get_monitor(Performance.OBJECT_NODE_COUNT)), dead, rag, rigid, decals, get_tree().get_nodes_in_group(&"soldiers").size(),
+		int(Performance.get_monitor(Performance.PHYSICS_3D_ACTIVE_OBJECTS)), int(Performance.get_monitor(Performance.PHYSICS_3D_ISLAND_COUNT))])
+	if _map.squad != null and _map.squad.has_method("planner_status"):
+		print("[hitch] " + str(_map.squad.call("planner_status")))
+	for pl: Node in _all_nodes():
+		if pl is BotPlanner:
+			print("[hitch] " + (pl as BotPlanner).status_line())
 	var t: Array = dist(_tick_tot)
 	print("[hitch] scripts per physics tick ms: mean %.2f p50 %.2f p95 %.2f p99 %.2f worst %.2f | over 4 ms %d, over 8 ms %d, over 16.7 ms %d" % [
 		t[0], t[1], t[2], t[3], t[4], over(_tick_tot, 4.0), over(_tick_tot, 8.0), over(_tick_tot, 16.7)])
