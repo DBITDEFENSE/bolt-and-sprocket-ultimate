@@ -35,6 +35,7 @@ enum Mode { STOP, MOVE, FOLLOW, HOLD, TRAIN }
 const MASK_WORLD: int = 1 | (1 << 8)             # world | doors
 const MASK_BLOCK: int = 1 | (1 << 2) | (1 << 8)  # + zombie bodies (the "cut off" ray)
 const EYE_Y: float = 1.5
+const MASK_EDGE: int = 1 << 10                   # the map's edge (T-084): bodies collide with it, the navmesh may run through it
 
 static var _cfg_cache: Dictionary = {}
 static var force_mode: String = ""
@@ -103,6 +104,21 @@ var _rebase: bool = false
 var _win_t: float = 0.0
 var _win_pos: Vector3 = Vector3.ZERO
 var _stuck_at: Vector3 = Vector3.INF   # where this ladder's first nudge started (window progress must escape it)
+# bot AI pass 2026-11: what the last plan found (PLAN_OK / PLAN_NONE: no path at all / PLAN_PARTIAL: the path ends
+# short of the goal, at the nearest point the navmesh reaches: the goal is behind a fence, on a floor with no way
+# up, in a pocket), how long the goal has had no way, how long the body has been off the navmesh, and whether the
+# ladder has run out of steps on this goal (the brain should pick another: gave_up())
+const PLAN_OK: int = 0
+const PLAN_NONE: int = 1
+const PLAN_PARTIAL: int = 2
+var _plan_state: int = PLAN_OK
+var _no_way_t: float = 0.0
+var _off_mesh_t: float = 0.0
+var _gave_up: bool = false
+var _stuck_goal_d: float = INF        # how far the goal was at that first nudge
+var _ladder_t: float = 0.0            # seconds since this ladder's first nudge without leaving the stuck spot (escape_m) or arriving
+var _cutoff_try_t: float = 0.0
+var snaps: int = 0                    # hops back onto the navmesh from beside it (off-mesh recovery)
 # yielding to humans
 var _aside_t: float = 0.0
 var _no_aside_t: float = 0.0   # u09: no step-aside for a while after one pressed into a wall
@@ -205,6 +221,7 @@ func hold(pos: Vector3, facing: Vector3) -> void:
 func stop() -> void:
 	_set_mode(Mode.STOP)
 	_goal = Vector3.INF
+	_plan_state = PLAN_OK
 	_clear_path()
 
 
@@ -223,6 +240,7 @@ func steer_path(pts: PackedVector3Array, urgency: float = 0.5) -> void:
 	_path_goal = _goal
 	_need_plan = false
 	_repath_t = 0.5
+	_plan_state = PLAN_OK
 
 
 func train(route: TrainingRoute) -> void:
@@ -259,6 +277,38 @@ func arrived() -> bool:
 
 func is_stuck() -> bool:
 	return _no_prog_t >= float(_g("stuck", "repath_s", 2.0))
+
+
+## The goal can't be walked to as things stand: the last plan found no path, or one that ends short of it (behind
+## a fence or a shut door, on a floor with no way up, on a ledge). The body waits at the nearest point it can reach
+## instead of leaning on what is in the way; the brain should pick another spot (retreat, cover, an errand).
+func no_way() -> bool:
+	return _goal != Vector3.INF and _plan_state != PLAN_OK and not _arrived
+
+
+## Seconds the current goal has had no way (0 while there is one).
+func no_way_s() -> float:
+	return _no_way_t if no_way() else 0.0
+
+
+## The stuck ladder ran out of steps on this goal (re-plan, sidestep, a hop back onto the navmesh, the unseen
+## teleport) and the body still isn't getting there: the brain should drop the errand / pick another spot.
+func gave_up() -> bool:
+	return _gave_up
+
+
+## Pure: a path that ends this far from where it was asked to go did not get there (flat or a storey apart).
+static func path_reaches(path: PackedVector3Array, goal: Vector3, flat_m: float = 1.2, dy_m: float = 1.5) -> bool:
+	if path.is_empty():
+		return false
+	var e: Vector3 = path[path.size() - 1]
+	return _flat(e, goal) <= flat_m and absf(e.y - goal.y) <= dy_m
+
+
+## Pure: is the body at the goal? Within stop_m on the flat AND on its storey (a goal straight above or below, a
+## machine on another floor, is not reached by standing under it).
+static func at_goal(me: Vector3, goal: Vector3, stop_m: float, dy_m: float = 1.8) -> bool:
+	return _flat(goal, me) <= stop_m and absf(goal.y - me.y) <= dy_m
 
 
 func current_target() -> Vector3:
@@ -305,7 +355,7 @@ func path_length_to(pos: Vector3) -> float:
 	if not _take_plan_budget():
 		return _flat(pos, player.global_position) * 1.3 if hit == null else float((hit as Array)[1])
 	var p: PackedVector3Array = _raw_path(player.global_position, pos)
-	var l: float = INF if p.is_empty() or _flat(p[p.size() - 1], pos) > 1.5 else _poly_len(p)
+	var l: float = _poly_len(p) if path_reaches(p, pos, 1.5, 1.8) else INF   # (a path that ends under the goal, a floor below it, is no way there)
 	_plen_cache[key] = [_time, l]
 	if _plen_cache.size() > 64:
 		_plen_cache.clear()
@@ -364,7 +414,7 @@ func tick(delta: float) -> void:
 	# 3. the path
 	if goal != Vector3.INF:
 		if _path_goal == Vector3.INF or _path_goal.distance_to(goal) > float(_g("path", "goal_moved_m", 0.75)) or _need_plan \
-				or (_repath_t <= 0.0 and (_path.is_empty() or (mode != Mode.MOVE and mode != Mode.HOLD))):
+				or (_repath_t <= 0.0 and (_path.is_empty() or _plan_state != PLAN_OK or (mode != Mode.MOVE and mode != Mode.HOLD))):
 			if _take_plan_budget():
 				pt = BotProf.t()
 				_plan(goal)
@@ -372,15 +422,17 @@ func tick(delta: float) -> void:
 	# 4. steering
 	var wish: Vector3 = Vector3.ZERO
 	var remaining: float = 0.0
-	_arrived = goal == Vector3.INF or _flat(goal, me) <= _stop_dist
+	_arrived = goal == Vector3.INF or at_goal(me, goal, _stop_dist)
 	if not _arrived and not _path.is_empty():
 		var reach: float = float(_g("path", "waypoint_m", 0.45))
-		while _path_i < _path.size() and _flat(_path[_path_i], me) < reach:
+		while _path_i < _path.size() and _flat(_path[_path_i], me) < reach and absf(_path[_path_i].y - me.y) < 1.8:
 			_path_i += 1
 		if _path_i >= _path.size():
-			_arrived = _flat(goal, me) <= maxf(_stop_dist, 1.2)
-			if not _arrived:
+			_arrived = at_goal(me, goal, maxf(_stop_dist, 1.2))
+			if not _arrived and _plan_state == PLAN_OK:
 				_need_plan = true
+			# (a partial path's end: as near as the navmesh gets. It waits here, re-planning every repath_s, and
+			# doesn't lean on the fence or stand "arrived" under a goal on another floor)
 		else:
 			var to: Vector3 = _path[_path_i] - me
 			to.y = 0.0
@@ -391,7 +443,7 @@ func tick(delta: float) -> void:
 			var slow: float = float(_g("speed", "arrive_slow_m", 1.2))
 			if remaining < slow:
 				wish *= clampf(remaining / slow, 0.4, 1.0)
-	elif not _arrived and _path.is_empty() and goal != Vector3.INF and _flat(goal, me) < 2.0:
+	elif not _arrived and _path.is_empty() and goal != Vector3.INF and _flat(goal, me) < 2.0 and absf(goal.y - me.y) < 1.2 and _plan_state != PLAN_PARTIAL:
 		var to2: Vector3 = goal - me
 		to2.y = 0.0
 		wish = to2.normalized() * 0.6   # the last steps with no path (a point just off the mesh)
@@ -437,11 +489,17 @@ func _set_mode(m: Mode) -> void:
 		_best_rem = INF
 		_prog_pos = Vector3.INF
 		_stage_done = 0
+		_ladder_over()
+		_no_way_t = 0.0
 
 
 func _set_goal(pos: Vector3) -> void:
 	if _goal != Vector3.INF and _goal.distance_to(pos) < 0.05:
 		return
+	if _goal == Vector3.INF or _goal.distance_to(pos) > 1.5:
+		_ladder_over()   # another place to go: the ladder's verdict was about the old one
+		_no_way_t = 0.0
+		_plan_state = PLAN_OK
 	_goal = pos
 
 
@@ -481,14 +539,65 @@ static func walled(who: Node3D, a: Vector3, b: Vector3) -> bool:
 	return not space.intersect_ray(q).is_empty()
 
 
-## A navmesh path that never crosses a closed BuyDoor (doors are baked open on some maps); empty if it would.
+## bot AI pass 2026-11: something a body can't walk through between two standing spots: `walled` at waist height,
+## or a knee-high ray stopped (a sill, a low fence rail, a crate, a trough). A cheap first test for "can I step
+## straight there"; what it stops may still be walked round (the brain then asks the navmesh).
+static func blocked_between(who: Node3D, a: Vector3, b: Vector3) -> bool:
+	if walled(who, a, b):
+		return true
+	var space: PhysicsDirectSpaceState3D = who.get_world_3d().direct_space_state
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(a + Vector3.UP * 0.45, b + Vector3.UP * 0.45, 1 | (1 << 5) | (1 << 8) | (1 << 10))
+	return not space.intersect_ray(q).is_empty()
+
+
+## Bot AI pass 2026-11: `path` cut short where it runs through the map's edge (physics layer 11). Map 0's zombies
+## walk in from spawn pockets beyond the boundary fence: the navmesh runs out through a gap in the baked edge wall
+## into each pocket, and the gap is closed for players by a collider that is not in the bake (EdgeGates, T-084). A
+## path into a pocket (a retreat spot, a formation slot or a tonic machine's stand point snapped out there, the
+## last zombie of a round standing in one) therefore looked walkable: the bot leaned on the gate, and the stuck
+## ladder's teleport then put it INSIDE the pocket, beyond the fence, where every way back crosses the gate again.
+## Returns the path up to cut_back_m short of the first crossing (a waist-high ray per segment against the edge
+## layer only); the whole path when it crosses none.
+static func cut_at_edge(who: Node3D, path: PackedVector3Array, cut_back_m: float = 0.7) -> PackedVector3Array:
+	if path.size() < 2 or who == null or not who.is_inside_tree():
+		return path
+	var space: PhysicsDirectSpaceState3D = who.get_world_3d().direct_space_state
+	for i: int in range(1, path.size()):
+		var a: Vector3 = path[i - 1]
+		var b: Vector3 = path[i]
+		if a.distance_squared_to(b) < 0.0025:
+			continue
+		var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(a + Vector3.UP * 1.0, b + Vector3.UP * 1.0, MASK_EDGE)
+		var hit: Dictionary = space.intersect_ray(q)
+		if hit.is_empty():
+			continue
+		var out: PackedVector3Array = path.slice(0, i)
+		var at: Vector3 = (hit["position"] as Vector3) - Vector3.UP * 1.0
+		var end: Vector3 = edge_stop(a, at, cut_back_m)
+		if end.distance_to(a) > 0.05:
+			out.append(end)
+		return out
+	return path
+
+
+## Pure: where a path stops before the edge it would cross at `hit`, coming from `from`: back_m short of it (at
+## `from` itself when the crossing is nearer than that).
+static func edge_stop(from: Vector3, hit: Vector3, back_m: float = 0.7) -> Vector3:
+	var d: float = from.distance_to(hit)
+	if d <= back_m:
+		return from
+	return from.lerp(hit, (d - back_m) / d)
+
+
+## A navmesh path that never crosses a closed BuyDoor (doors are baked open on some maps); empty if it would. It
+## ends short of the map's edge when the navmesh runs on through it (cut_at_edge).
 func _raw_path(from: Vector3, to: Vector3) -> PackedVector3Array:
 	var path: PackedVector3Array = BotProf.nav_path(_nav(), from, to, true, squad.nav_mask() if squad != null else 0x7FFFFFFF)
 	for n: Node in player.get_tree().get_nodes_in_group(&"doors"):
 		var d: BuyDoor = n as BuyDoor
 		if d != null and not d.is_open and path_crosses_door(path, d.global_position, d.global_basis.z, d.global_basis.x, d.size.x * 0.5 + 0.3):
 			return PackedVector3Array()
-	return path
+	return cut_at_edge(player, path)
 
 
 ## True when a wall (physics layer 1) is within ~0.8 m of the bot's middle along `dir` (T-143; u09: a knee- and a
@@ -526,7 +635,10 @@ func _plan(goal: Vector3) -> void:
 	if base.is_empty():
 		_path = PackedVector3Array()
 		_path_i = 0
+		_plan_state = PLAN_NONE
 		return
+	# the navmesh hands back the way to the nearest point it reaches when the goal itself can't be reached
+	_plan_state = PLAN_OK if path_reaches(base, goal) else PLAN_PARTIAL
 	var dz: Array = _danger_list()
 	var worst: Vector3 = Vector3.INF
 	var cost: Dictionary = _path_cost(base, dz)
@@ -557,7 +669,10 @@ func _plan(goal: Vector3) -> void:
 			if best != base:
 				break
 	_path = best
-	_path_i = 1 if best.size() > 1 else 0
+	# a body beside the navmesh (pushed into a corner, landed off it) walks to where the path starts first: the
+	# path's first point is the nearest navmesh point, and skipping it sent the body at the second one through
+	# whatever stands between (a fence post, a wall's end)
+	_path_i = 1 if best.size() > 1 and _flat(best[0], me) <= float(_g("stuck", "off_mesh_m", 0.55)) else 0
 
 
 ## {cost, danger, worst}: path length plus the danger sampled along it.
@@ -870,6 +985,7 @@ func _tick_train(delta: float) -> void:
 		_path_goal = _goal
 		_need_plan = false
 		_repath_t = float(_g("path", "repath_s", 0.8))
+		_plan_state = PLAN_OK
 
 
 func _train_think(r: TrainingRoute, me: Vector3, off_line: float) -> void:
@@ -1315,6 +1431,9 @@ func _tick_stuck(delta: float, me_before: Vector3, goal: Vector3, wants_move: bo
 			BotMetrics.note(player.player_id, &"stuck")
 		elif detour != 1 and _press_t >= float(_g("stuck", "wall_nudge_s", 2.4)) and _press_stage < 2:
 			_press_stage = 2
+			if _stuck_at == Vector3.INF:
+				_stuck_at = now
+				_stuck_goal_d = _flat(_goal, now)
 			_start_nudge(now)
 			BotMetrics.note(player.player_id, &"stuck")
 	else:
@@ -1338,8 +1457,27 @@ func _tick_stuck(delta: float, me_before: Vector3, goal: Vector3, wants_move: bo
 				return
 		else:
 			_marooned_t = 0.0
+		# bot AI pass 2026-11: beside the navmesh (shoved into the strip along a fence or a wall, landed off it after a
+		# jump, a knock-back, a revive): the path now starts at the nearest navmesh point (_plan), so it walks back on;
+		# if it is still off after off_mesh_snap_s without getting anywhere, it steps onto that point (a hop of under
+		# off_mesh_reach_m, logged as a snap, never a teleport)
+		if off_mesh(now, nav_here, float(_g("stuck", "off_mesh_m", 0.55))):
+			_off_mesh_t += delta
+			if _off_mesh_t >= float(_g("stuck", "off_mesh_snap_s", 3.0)) and moved < 0.01 * (delta * 60.0) \
+					and _flat(nav_here, now) <= float(_g("stuck", "off_mesh_reach_m", 2.5)) and absf(nav_here.y - now.y) <= 1.2:
+				player.global_position = nav_here + Vector3.UP * 0.05
+				player.velocity = Vector3.ZERO
+				_off_mesh_t = 0.0
+				_need_plan = true
+				_path_goal = Vector3.INF
+				snaps += 1
+				BotMetrics.note(player.player_id, &"stuck", 1.0, "snap")
+				return
+		else:
+			_off_mesh_t = 0.0
 	else:
 		_marooned_t = 0.0
+		_off_mesh_t = 0.0
 	if detour == 1:
 		return   # stepping aside for a human on purpose
 	if detour == 0 and (goal == Vector3.INF or _arrived):
@@ -1347,9 +1485,52 @@ func _tick_stuck(delta: float, me_before: Vector3, goal: Vector3, wants_move: bo
 		_best_rem = INF
 		_prog_pos = Vector3.INF
 		_stage_done = 0
+		_no_way_t = 0.0
+		_ladder_over()
 		return
+	# bot AI pass 2026-11: no way to the goal (no path, or one that ends short of it: behind a fence, a shut door, on
+	# another floor). Once the body stands where the path ends it waits there: no wriggling against the fence, and the
+	# brain is told (no_way(), then gave_up() after giveup_no_way_s) so it picks another spot or drops the errand. A
+	# follower cut off from its leader like this catches up the old way (teleport_near: only unseen) when the two
+	# are truly on separate pieces of the navmesh.
+	if detour == 0 and _plan_state != PLAN_OK:
+		_no_way_t += delta
+		if not wants_move:
+			if _no_way_t >= float(_g("stuck", "giveup_no_way_s", 2.5)):
+				_gave_up = true
+			_tick_cut_off(delta)
+			_no_prog_t = 0.0
+			_stage_done = 0
+			return
+	else:
+		_no_way_t = 0.0
 	if detour == 0 and not wants_move and _path.is_empty() and not _need_plan:
 		return   # no way there (a shut door): the brain's problem, not a stuck body
+	# bot AI pass 2026-11: the ladder used to end at the unseen teleport, so a bot somebody was looking at wriggled
+	# against the same fence for good (every nudge that landed a little nearer restarted the count). From the first
+	# nudge on, the time spent without leaving the stuck spot (escape_m) or arriving is counted on its own: after
+	# giveup_after_nudge_s the brain is told (gave_up(): another spot, another errand); after
+	# teleport_seen_after_nudge_s the "nobody sees the bot" half of the teleport rule is waived (it still appears
+	# only where nobody is looking), after teleport_any_after_nudge_s both halves: a bot stuck for most of a minute
+	# in plain sight is the worse sight.
+	if _stuck_at != Vector3.INF:
+		if ladder_escaped(_flat(now, _stuck_at), _stuck_goal_d - _flat(_goal, now), float(_g("stuck", "escape_m", 4.0))):
+			_ladder_over()
+		else:
+			_ladder_t += delta
+			var stg: int = long_stuck_stage(_ladder_t, float(_g("stuck", "giveup_after_nudge_s", 6.0)), float(_g("stuck", "teleport_seen_after_nudge_s", 16.0)),
+				float(_g("stuck", "teleport_any_after_nudge_s", 36.0)))
+			if stg >= 1:
+				_gave_up = true
+			if stg >= 2 and _tp_try_t <= 0.0:
+				_tp_try_t = 1.0
+				if _teleport_safe(_goal, stg - 1) or (mode == Mode.FOLLOW and teleport_near(_leader, stg - 1)):
+					_no_prog_t = 0.0
+					_best_rem = INF
+					_prog_pos = Vector3.INF
+					_stage_done = 0
+					_ladder_over()
+					return
 	# progress is only ever measured toward the real goal (a nudge's own little walk doesn't count)
 	var rem: float = remaining if remaining > 0.0 and detour == 0 else _flat(_goal, now)
 	if detour == 0 and _rebase and remaining > 0.0:
@@ -1390,7 +1571,9 @@ func _tick_stuck(delta: float, me_before: Vector3, goal: Vector3, wants_move: bo
 		BotMetrics.note(player.player_id, &"stuck")
 	elif stage >= 2 and _stage_done < 2:
 		_stage_done = 2
-		_stuck_at = now
+		if _stuck_at == Vector3.INF:
+			_stuck_at = now
+			_stuck_goal_d = _flat(_goal, now)
 		_start_nudge(now)
 		BotMetrics.note(player.player_id, &"stuck")
 	elif stage >= 3 and _tp_try_t <= 0.0:
@@ -1400,8 +1583,63 @@ func _tick_stuck(delta: float, me_before: Vector3, goal: Vector3, wants_move: bo
 			_best_rem = INF
 			_prog_pos = Vector3.INF
 			_stage_done = 0
+			_ladder_over()
 		else:
 			_start_nudge(now)   # someone is watching: keep wriggling, try again in a second
+
+
+## Pure: the long-stuck steps after the first nudge: 0 none, 1 tell the brain (gave_up), 2 teleport even though the
+## bot is in view (the spot still isn't), 3 teleport whoever looks.
+static func long_stuck_stage(since_nudge_s: float, giveup_s: float = 6.0, seen_s: float = 16.0, any_s: float = 36.0) -> int:
+	if since_nudge_s >= any_s:
+		return 3
+	if since_nudge_s >= seen_s:
+		return 2
+	if since_nudge_s >= giveup_s:
+		return 1
+	return 0
+
+
+## Pure: the long-stuck count ends when the body got escape_m nearer its goal than it was at the first nudge, or
+## twice escape_m away from the stuck spot (the nudges' own wandering stays under that; a bot that walked 8 m is
+## walking).
+static func ladder_escaped(from_stuck_m: float, gained_m: float, escape_m: float = 4.0) -> bool:
+	return gained_m >= escape_m or from_stuck_m >= escape_m * 2.0
+
+
+func _ladder_over() -> void:
+	_stuck_at = Vector3.INF
+	_ladder_t = 0.0
+	_gave_up = false
+
+
+## Pure: the body stands beside the navmesh (more than off_m from its nearest point on the flat, on its level).
+static func off_mesh(feet: Vector3, nav_point: Vector3, off_m: float = 0.55) -> bool:
+	return Vector2(feet.x - nav_point.x, feet.z - nav_point.z).length() > off_m and absf(feet.y - nav_point.y) <= 1.2
+
+
+## Pure: a follower with no way to its leader for `no_way_s` is cut off for good (teleport_near may run) when it has
+## waited cutoff_s, the leader is cutoff_m away (or a storey apart), and not even the climb links join the two (a
+## leader up a ladder is somewhere a bot waits under, not somewhere it appears).
+static func cut_off_for_good(no_way_s: float, leader_flat_m: float, leader_dy_m: float, joined_by_climbs: bool, cutoff_s: float = 8.0, cutoff_m: float = 10.0) -> bool:
+	return no_way_s >= cutoff_s and (leader_flat_m > cutoff_m or absf(leader_dy_m) > 2.5) and not joined_by_climbs
+
+
+func _tick_cut_off(delta: float) -> void:
+	if mode != Mode.FOLLOW or _leader == null or not is_instance_valid(_leader) or _leader.downed or _leader.spectating:
+		return
+	_cutoff_try_t -= delta
+	if _cutoff_try_t > 0.0 or _no_way_t < float(_g("stuck", "cutoff_s", 8.0)):
+		return
+	_cutoff_try_t = 2.0
+	var me: Vector3 = player.global_position
+	var lp: Vector3 = _leader.global_position
+	var all: PackedVector3Array = cut_at_edge(player, BotProf.nav_path(_nav(), me, lp, true, 0x7FFFFFFF))
+	if not cut_off_for_good(_no_way_t, _flat(lp, me), lp.y - me.y, path_reaches(all, lp, 1.5, 1.8), float(_g("stuck", "cutoff_s", 8.0)), float(_g("stuck", "cutoff_m", 10.0))):
+		return
+	if teleport_near(_leader, 1 if _no_way_t >= float(_g("stuck", "teleport_seen_s", 20.0)) else 0):
+		_no_way_t = 0.0
+		_gave_up = false
 
 
 func _start_nudge(now: Vector3) -> void:
@@ -1422,7 +1660,9 @@ func _start_nudge(now: Vector3) -> void:
 ## Teleports past what holds the bot: to the goal when it is within 8 m along the path, else to the furthest
 ## path point 3-8 m on (a safe navmesh spot: no choke, trap or zombie), only when no human can see the bot or the
 ## spot. Logged (BotMetrics teleport). True when it happened.
-func _teleport_safe(goal: Vector3) -> bool:
+## `waive` (bot AI pass 2026-11): 0 the rule as it was; 1 the bot itself may be in view (stuck for teleport_seen_s);
+## 2 the spot may be too (teleport_any_s).
+func _teleport_safe(goal: Vector3, waive: int = 0) -> bool:
 	var me: Vector3 = player.global_position
 	var cands: Array[Vector3] = []
 	var p0: PackedVector3Array = _raw_path(me, goal) if goal != Vector3.INF else PackedVector3Array()
@@ -1436,7 +1676,7 @@ func _teleport_safe(goal: Vector3) -> bool:
 		if acc >= 3.0:
 			cands.push_front(p0[i])   # the furthest first
 	for c: Vector3 in cands:
-		if _bad_stand(c) or not _unseen(me) or not _unseen(c):
+		if _bad_stand(c) or (waive < 1 and not _unseen(me)) or (waive < 2 and not _unseen(c)):
 			continue
 		var clear: bool = true
 		for z: Zombie in zombies():
@@ -1492,21 +1732,21 @@ func _fell_out(delta: float) -> bool:
 	return true
 
 
-func teleport_near(leader: Player) -> bool:
+func teleport_near(leader: Player, waive: int = 0) -> bool:
 	if leader == null or not is_instance_valid(leader):
 		return false
-	if not _unseen(player.global_position):
+	if waive < 1 and not _unseen(player.global_position):
 		return false
 	var back: Vector3 = leader.global_basis.z
 	for k: int in 8:
 		var a: float = float(k) * 0.8 - 2.8
 		var want: Vector3 = leader.global_position + back.rotated(Vector3.UP, a) * 4.0
 		var p: Vector3 = _snap(want)
-		if _flat(p, want) > 1.2 or absf(p.y - leader.global_position.y) > 1.0 or _bad_stand(p) or not _unseen(p):
+		if _flat(p, want) > 1.2 or absf(p.y - leader.global_position.y) > 1.0 or _bad_stand(p) or (waive < 2 and not _unseen(p)):
 			continue
-		var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(leader.global_position + Vector3.UP * 0.9, p + Vector3.UP * 0.9, MASK_WORLD)
+		var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(leader.global_position + Vector3.UP * 0.9, p + Vector3.UP * 0.9, MASK_WORLD | MASK_EDGE)
 		if not player.get_world_3d().direct_space_state.intersect_ray(q).is_empty():
-			continue   # (behind a wall from the leader: they'd be cut off again)
+			continue   # (behind a wall or the map's edge from the leader: they'd be cut off again)
 		player.global_position = p + Vector3.UP * 0.05
 		player.velocity = Vector3.ZERO
 		_clear_path()

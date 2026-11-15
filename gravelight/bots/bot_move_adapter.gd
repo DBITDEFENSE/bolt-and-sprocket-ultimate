@@ -165,6 +165,19 @@ func is_stuck() -> bool:
 
 
 ## Path length to `pos` on the navmesh, INF when it can't get there (only through a closed door).
+## The v2 layer's "no way to the goal" queries (bot AI pass 2026-11): the v1 code never reports one.
+func no_way() -> bool:
+	return false
+
+
+func no_way_s() -> float:
+	return 0.0
+
+
+func gave_up() -> bool:
+	return false
+
+
 func path_length_to(pos: Vector3) -> float:
 	var dest: Vector3 = _snap(pos)
 	if dest.distance_to(pos) > 2.5:

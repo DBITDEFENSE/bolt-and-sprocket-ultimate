@@ -83,6 +83,11 @@ var _stuck_t: float = 0.0
 var _last_pos: Vector3 = Vector3.ZERO
 ## Harness safeguard count: times the scripted player was put back on its loop after 15 s pinned.
 var unstuck: int = 0
+## Bot census (2026-11, ai_soak --tour): instead of the fixed loop, a tour of TOUR_POINTS random navmesh points all
+## over the walkable map (every open zone, redrawn each round), at a run when the way ahead is straight: the squad
+## then follows a person through every yard, gate, stair and door of the map, which is where bots get stuck.
+var tour: bool = false
+const TOUR_POINTS: int = 28
 
 
 func setup(p: Player, m: MapRoot, seed_value: int, kit_mode: String = "baseline") -> void:
@@ -133,6 +138,8 @@ func _on_round_started(_r: int, _special: bool) -> void:
 		return
 	for w: WeaponInstance in player.weapons.slots:
 		w.reserve = w.reserve_max()
+	if tour and not player.downed and not player.spectating:
+		_build_route()   # a new tour every round (doors opened since reach further)
 
 
 func _nav() -> RID:
@@ -148,7 +155,19 @@ func _mask() -> int:
 func _build_route() -> void:
 	var pts: Array[Vector3] = []
 	_stable_open = false
-	if map.map_id == &"map00_crossroads":
+	if tour:
+		var here: Vector3 = NavigationServer3D.map_get_closest_point(_nav(), player.global_position)
+		for k0: int in TOUR_POINTS * 4:
+			if pts.size() >= TOUR_POINTS:
+				break
+			var q: Vector3 = NavigationServer3D.map_get_random_point(_nav(), _mask(), true)
+			var way: PackedVector3Array = NavigationServer3D.map_get_path(_nav(), here, q, true, _mask())
+			# (not a point in a spawn pocket beyond the map's edge: the navmesh runs out there, a player can't)
+			way = BotLocomotion.cut_at_edge(player, way)
+			if way.size() >= 2 and _flat(way[way.size() - 1], q) < 0.6 and absf(way[way.size() - 1].y - q.y) < 0.8:
+				pts.append(q)
+		route_name = "tour (%d points)" % pts.size()
+	elif map.map_id == &"map00_crossroads":
 		_stable_open = _door_open(&"door_stable")
 		for k: int in MAP00_TAPROOM.size():
 			pts.append(MAP00_TAPROOM[k])
@@ -225,7 +244,7 @@ func tick(delta: float) -> void:
 		_was_down = false
 		_was_out = false
 		_path = PackedVector3Array()
-	if map.map_id == &"map00_crossroads" and _door_open(&"door_stable") != _stable_open:
+	if not tour and map.map_id == &"map00_crossroads" and _door_open(&"door_stable") != _stable_open:
 		_build_route()
 	_rev_cd -= delta
 	_repath_t -= delta
@@ -508,6 +527,8 @@ func _walk(delta: float, zs: Array[Zombie], aiming: bool) -> void:
 	var local: Vector3 = player.global_basis.inverse() * flat.normalized()
 	var fwd: float = -local.z
 	var right: float = local.x
+	if tour and not aiming and fwd > 0.9 and _path_i < _path.size() and _flat(_path[_path.size() - 1], me) > 6.0:
+		Input.action_press(&"sprint")
 	if fwd > 0.05:
 		Input.action_press(&"move_forward", clampf(fwd, 0.0, 1.0))
 	elif fwd < -0.05:
