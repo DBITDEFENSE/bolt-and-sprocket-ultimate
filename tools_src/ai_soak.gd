@@ -100,6 +100,12 @@ var start_round: int = 0
 ## --homage=0 (tuning only): the Homage Bosses off (no Cousins round at 10 on Map 0); the default (as in every
 ## Update 03 measurement) is on.
 var homage: bool = true
+## Bot census (2026-11): --census adds a BotCensus (tools_src/bot_census.gd: stuck episodes clustered into hot spots,
+## a row per bot per round) and writes logs/ai_runs/<run>_stuck.jsonl / _hotspots.md / _rounds.csv / _storey<n>.png.
+## --tour: the scripted player tours random navmesh points all over the map instead of its loop (soak_dummy.tour).
+var census_on: bool = false
+var tour: bool = false
+var _census: BotCensus = null
 var local_ai: String = ""   # --local-ai=builtin|small|small_cpu|large|auto (T-217): the planner bot on that brain; "" = off (no Ollama)
 var _batch_ai: String = ""
 var egg_mode: String = "off"   # --egg-mode=off|sparse|none (T-181 Easter Egg Mode; the saved setting never leaks in)
@@ -236,6 +242,10 @@ func _ready() -> void:
 			BotTrainer.force_loop = a.substr(7)   # (tuning only, T-071 pass 2) the agent trains on this loop only
 		elif a.begins_with("--loco="):
 			BotLocomotion.force_mode = a.substr(7)   # U03 section 3: v1 / v2 against bots.json locomotion
+		elif a == "--census":
+			census_on = true
+		elif a == "--tour":
+			tour = true
 		elif a.begins_with("--local-ai="):
 			local_ai = a.substr(11)
 	if not ["player3", "bots3", "cousins", "kaltenbrunn", "totenhafen", "ee_full", "botmode", "fernflug"].has(scenario):
@@ -485,17 +495,25 @@ func _try_go_live() -> void:
 				_bench_the_human()
 			else:
 				_dummy = Dummy.new()
+				_dummy.set("tour", tour)
 				_dummy.call("setup", _map.player, _map, seed_base + _run + _ff_arrivals, player_kit)
 			print("[soak] ACT %d (%s) live at round %d, %s" % [_act_index(), _map.map_id, RoundManager.current_round, "bots alone" if bots_alone else "the scripted player (%s)" % player_kit])
 		"botmode":
 			pass   # the agent plays the local Player (PlayerBot, switched on above)
 		"cousins":
 			_dummy = Dummy.new()
+			_dummy.set("tour", tour)
 			_dummy.call("setup", _map.player, _map, seed_base + _run, player_kit)
 			_force_cousins()
 		_:
 			_dummy = Dummy.new()
+			_dummy.set("tour", tour)
 			_dummy.call("setup", _map.player, _map, seed_base + _run, player_kit)
+	if census_on:
+		_census = BotCensus.new()
+		_census.name = "BotCensus"
+		add_child(_census)
+		_census.setup(_map, BotMetrics.log_dir().path_join(rid))
 	_ee_committed_t = -1.0
 	_ee_events = PackedStringArray()
 	if ee_mode != "" and _map.squad != null and _map.squad.ee != null:
@@ -571,11 +589,11 @@ func _pd_tick() -> void:
 func _apply_tuning() -> void:
 	if open_doors != "":
 		for n: Node in _map.find_children("*", "", true, false):
-			if n is BuyDoor and (open_doors == "all" or open_doors.split(",").has(String((n as BuyDoor).door_id))):
+			if is_instance_valid(n) and n is BuyDoor and (open_doors == "all" or open_doors.split(",").has(String((n as BuyDoor).door_id))):
 				(n as BuyDoor).open(1)
 	if power_on:
 		for n2: Node in _map.find_children("*", "", true, false):
-			if n2.has_method("run_sequence") and n2.get_script() != null and str((n2.get_script() as Script).resource_path).ends_with("power_switch.gd"):
+			if is_instance_valid(n2) and n2.has_method("run_sequence") and n2.get_script() != null and str((n2.get_script() as Script).resource_path).ends_with("power_switch.gd"):
 				n2.call("run_sequence", 1)
 	if give != "" and _map.player != null:
 		for g: String in give.split(","):
@@ -784,6 +802,18 @@ func _end_run(why: String) -> void:
 	if _pd_f != null:
 		_pd_f.close()
 		_pd_f = null
+	if _census != null and is_instance_valid(_census):
+		var cs2: Dictionary = _census.finish()
+		_metrics.extra["census_bot_hours"] = snappedf(float(cs2["bot_hours"]), 0.001)
+		_metrics.extra["census_episodes"] = int(cs2["episodes"])
+		_metrics.extra["census_episodes_per_hour"] = snappedf(float(cs2["episodes_per_hour"]), 0.1)
+		_metrics.extra["census_stuck_s_per_hour"] = snappedf(float(cs2["stuck_s_per_hour"]), 0.1)
+		_metrics.extra["census_by_kind"] = str(cs2["by_kind"]).replace(",", ";")
+		if _map.squad != null:
+			for dl: String in _map.squad.down_log:
+				print("[census] DOWN ", dl)
+		_census.queue_free()
+		_census = null
 	var sm: Dictionary = _metrics.finish(why)
 	print(_metrics.summary_line())
 	var dir: String = BotMetrics.log_dir()
