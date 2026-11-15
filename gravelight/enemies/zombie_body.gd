@@ -775,12 +775,21 @@ static func _linear_mean(t: Texture2D) -> float:
 
 ## Builds the kits a map uses up front (avoids a hitch on first spawn).
 static func warm_up(kits: PackedStringArray = KITS) -> void:
+	var kit_rows: Dictionary = GLData.table("anim")["kits"]
 	for k: String in kits:
 		for b: String in BUILDS:
 			build_skinned(k, b, false)
 			warm_pieces(k, b, false)
 		build_skinned(k, "thin", true)
 		warm_pieces(k, "thin", true)
+		# a kit that spawns women spawns them in every build of its row (Zombie._apply_variant): the villager's,
+		# the lab staff's and the dock worker's medium and heavy women were first built in the tick that spawned
+		# one (20 ms each in the middle of a round; two in one spawn tick made a 42 ms frame)
+		var row: Dictionary = kit_rows.get(k, {})
+		if float(row.get("female", 0.0)) > 0.0:
+			for fb: Variant in row.get("builds", []):
+				build_skinned(k, str(fb), true)
+				warm_pieces(k, str(fb), true)
 	skin_material("base")
 	skin_material("glass")
 	kit_material()

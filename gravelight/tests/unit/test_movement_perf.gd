@@ -362,3 +362,22 @@ func test_a_piece_asked_for_before_its_cut_is_cut_on_the_spot() -> void:
 	var m: ArrayMesh = ZombieBody.piece_mesh(kit, "thin", false, "LeftLowerArm")
 	assert_gt(m.get_surface_count(), 0, "the piece is there at once")
 	ZombieBody.piece_warm = true
+
+
+func test_warm_up_builds_every_body_a_kit_can_spawn() -> void:
+	var kits: Dictionary = GLData.table("anim")["kits"]
+	var checked: int = 0
+	for k: String in ["villager", "labstaff", "dockworker"]:
+		var row: Dictionary = kits[k]
+		assert_gt(float(row.get("female", 0.0)), 0.0, "%s spawns women" % k)
+		for b: Variant in row["builds"]:
+			ZombieBody._meshes.erase("skinned:" + ZombieBody._cache_key(k, str(b), true))
+		ZombieBody.warm_up(PackedStringArray([k]))
+		for b: Variant in row["builds"]:
+			for female: bool in [false, true]:
+				assert_true(ZombieBody._meshes.has("skinned:" + ZombieBody._cache_key(k, str(b), female)),
+					"%s %s %s is built at load, not in the tick that first spawns one" % [k, str(b), "woman" if female else "man"])
+				checked += 1
+	assert_gt(checked, 10)
+	while ZombieBody.pieces_warming():
+		await wait_frames(1)
