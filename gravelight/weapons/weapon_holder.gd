@@ -9,6 +9,7 @@ extends Node3D
 ## (give_weapon, refill..., remove_current) also go to the owner's real holder (D-065). Shots made by the
 ## local player are reported to the session for remote muzzle flashes and host-validated hits.
 
+const TickSpring: GDScript = preload("res://gravelight/player/tick_spring.gd")   # springs stepped at 60 Hz at any frame rate
 const MASK_SHOT: int = 1 | (1 << 3) | (1 << 8) | DecorHit.LAYER   # world | zombie_hitbox | door | decor (T-053)
 const SHOT_RANGE: float = 220.0
 const RECOIL: Dictionary = {&"pistol": 1.3, &"rifle": 2.4, &"bolt": 3.4, &"smg": 0.55, &"assault": 0.75,
@@ -119,6 +120,7 @@ var _recoil_id: StringName = &""
 var _vel_prev: Vector3 = Vector3.ZERO  # weapon inertia: the player's velocity last frame
 var _inertia: Vector3 = Vector3.ZERO   # weapon inertia offset (camera space, m) and its velocity
 var _inertia_v: Vector3 = Vector3.ZERO
+var _inertia_acc: float = 0.0          # (TickSpring: the time past the spring's last 60 Hz step; _sway_acc, _vk_*_acc too)
 var _reload_queued: bool = false   # a reload asked for while sprinting starts once the sprint ends
 ## Co-op puppet inventory (see the class doc). Set before setup().
 var mirror: bool = false
@@ -827,7 +829,8 @@ func tick(delta: float, intent: Dictionary) -> void:
 				PerkManager.overclock_reload(player, 1.0)
 	if not (bool(intent.get("fire_held", false)) and w != null and w.fire_mode == "auto") and not _fired_this_frame:
 		_fire_cd = maxf(_fire_cd, 0.0)
-	_look_in += intent.get("look_delta", Vector2.ZERO) as Vector2
+	if not _per_frame():
+		_look_in += intent.get("look_delta", Vector2.ZERO) as Vector2   # (per frame: _process takes the frame's own look)
 	if animate_per_frame:
 		_anim_sprinting = sprinting   # T-133: the viewmodel animates in _process, every rendered frame
 	else:
@@ -840,8 +843,16 @@ var _anim_sprinting: bool = false
 
 
 func _process(delta: float) -> void:
-	if animate_per_frame and player != null and player.is_local and not player.bot_driven and not mirror:
+	if _per_frame():
+		# the look sway reads this frame's own turn: fed per tick it saw a 60 Hz turn as one frame at four times
+		# the rate and three at none on a 240 Hz screen, and the sway's cap cut it to a third
+		_look_in += player.take_frame_look()
 		_animate(delta, _anim_sprinting)
+
+
+## True when this viewmodel animates in _process (the local human's, with smooth motion).
+func _per_frame() -> bool:
+	return animate_per_frame and player != null and player.is_local and not player.bot_driven and not mirror
 
 
 func _select(index: int) -> void:
@@ -1605,10 +1616,15 @@ var _idle_t: float = 0.0
 var _tilt_s: float = 0.0
 var _sway: Vector2 = Vector2.ZERO           # look-lag (yaw, pitch) radians
 var _sway_v: Vector2 = Vector2.ZERO
+var _sway_acc: float = 0.0
+var _sway_show: Vector2 = Vector2.ZERO      # what this frame draws (the spring between two of its 60 Hz steps)
 var _vk_p: Vector3 = Vector3.ZERO           # shot kick / landing spring: position offset and velocity
 var _vk_pv: Vector3 = Vector3.ZERO
 var _vk_r: Vector3 = Vector3.ZERO           # ... and rotation offset (pitch, yaw, roll)
 var _vk_rv: Vector3 = Vector3.ZERO
+var _vk_p_acc: float = 0.0
+var _vk_p_show: Vector3 = Vector3.ZERO
+var _vk_r_acc: float = 0.0
 var _forearm_r: MeshInstance3D
 var _forearm_l: MeshInstance3D
 var _grip_r: Transform3D = Transform3D.IDENTITY   # firing-hand fist in model space
@@ -2235,18 +2251,26 @@ func _animate(delta: float, sprinting: bool) -> void:
 	var walk8: Vector2 = Vector2(sin(ph), sin(ph * 2.0) * 0.5) * 0.028 * _bob_amt
 	var s8: Vector2 = (idle8 + walk8) * ads_sway * ads_e * float(_feel.get("ads_sway_mult", 1.0))
 	var target: Vector2 = (rate * 0.000045 * sway_k).limit_length(0.075)
-	var spr: Array = _spring2(_sway, _sway_v, target, 13.0, 0.55, delta)
+	var spr: Array = TickSpring.advance(_sway, _sway_v, target, 13.0, 0.55, _sway_acc, delta)
 	_sway = spr[0]
 	_sway_v = spr[1]
+	_sway_acc = spr[2]
+	var sway: Vector2 = spr[3]
+	_sway_show = sway
 	# ---- shot kick + landing dip: spring-damper offsets (position and rotation)
 	var kw: float = float(_feel.get("vm_spring", 20.0))
 	var kz: float = float(_feel.get("vm_damp", 0.55))
-	var r1: Array = _spring3(_vk_p, _vk_pv, kw, kz, delta)
+	var r1: Array = TickSpring.advance(_vk_p, _vk_pv, Vector3.ZERO, kw, kz, _vk_p_acc, delta)
 	_vk_p = r1[0]
 	_vk_pv = r1[1]
-	var r2: Array = _spring3(_vk_r, _vk_rv, kw * 0.9, kz, delta)
+	_vk_p_acc = r1[2]
+	var vk_p: Vector3 = r1[3]
+	_vk_p_show = vk_p
+	var r2: Array = TickSpring.advance(_vk_r, _vk_rv, Vector3.ZERO, kw * 0.9, kz, _vk_r_acc, delta)
 	_vk_r = r2[0]
 	_vk_rv = r2[1]
+	_vk_r_acc = r2[2]
+	var vk_r: Vector3 = r2[3]
 	# ---- base pose: hip <-> ADS, sprint, crouch
 	var pos: Vector3 = _hip.lerp(_ads, ads_e)
 	var rot: Vector3 = _hip_rot.lerp(_ads_rot, ads_e)
@@ -2301,8 +2325,8 @@ func _animate(delta: float, sprinting: bool) -> void:
 	pos += Vector3(-0.01 * hip_k, -0.025 * hip_k, 0.06 * lerpf(1.0, 0.35, ads_e)) * wall_k
 	rot += Vector3(0.22, 0.12, 0.08) * wall_k * hip_k * float(_feel.get("wall_rot", 1.0))   # launchers: less, so the shield stays out of view
 	_rig.visible = not scoped()
-	_vm.position = pos + bob_pos + breathe_pos + _vk_p + Vector3(-_sway.x * 0.045, _sway.y * 0.04, 0.0)
-	_vm.rotation = rot + bob_rot + breathe_rot + _vk_r + Vector3(_sway.y * 0.8, _sway.x * 0.8, _sway.x * 0.6)
+	_vm.position = pos + bob_pos + breathe_pos + vk_p + Vector3(-sway.x * 0.045, sway.y * 0.04, 0.0)
+	_vm.rotation = rot + bob_rot + breathe_rot + vk_r + Vector3(sway.y * 0.8, sway.x * 0.8, sway.x * 0.6)
 	_vm.rotation += Vector3(s8.y, s8.x, 0.0)                     # ADS figure-8 (pitch, yaw)
 	if steady:   # check tools (ads_check): the bare pose, no sway / bob / breathing / kick
 		_vm.position = pos
@@ -2526,26 +2550,6 @@ func _tick_wall_pull(delta: float) -> float:
 	return smoothstep(0.0, 1.0, _wall_b)
 
 
-## Damped spring toward `target` (2D), angular frequency w, damping ratio z. Returns [x, v].
-static func _spring2(x: Vector2, v: Vector2, target: Vector2, w: float, z: float, dt: float) -> Array:
-	var n: int = 1 if dt <= 1.0 / 55.0 else ceili(dt * 60.0)
-	var h: float = dt / float(n)
-	for i: int in mini(n, 6):
-		v += ((target - x) * w * w - v * 2.0 * z * w) * h
-		x += v * h
-	return [x, v]
-
-
-## Damped spring back to zero (3D). Returns [x, v].
-static func _spring3(x: Vector3, v: Vector3, w: float, z: float, dt: float) -> Array:
-	var n: int = 1 if dt <= 1.0 / 55.0 else ceili(dt * 60.0)
-	var h: float = dt / float(n)
-	for i: int in mini(n, 6):
-		v += (-x * w * w - v * 2.0 * z * w) * h
-		x += v * h
-	return [x, v]
-
-
 ## Everything a shot does to the player's view: camera kick (pitch + random yaw, part of it recovering on a
 ## spring), viewmodel kick-back / climb / roll on its own spring, shake and FOV punch, flash, smoke, brass.
 func _shot_feedback(w: WeaponInstance) -> void:
@@ -2655,11 +2659,13 @@ func _feel_rig(delta: float) -> void:
 	var local_dv: Vector3 = global_basis.inverse() * dv          # camera space: x right, y up, z back
 	var push: Vector3 = Vector3(-local_dv.x, -local_dv.y * 0.6, -local_dv.z * 0.5) * float(C.get("inertia", 0.0042))
 	_inertia_v += push * 40.0
-	var r: Array = _spring3(_inertia, _inertia_v, 11.0, 0.7, delta)
+	var r: Array = TickSpring.advance(_inertia, _inertia_v, Vector3.ZERO, 11.0, 0.7, _inertia_acc, delta)
 	_inertia = (r[0] as Vector3).limit_length(float(C.get("inertia_max", 0.03)))
 	_inertia_v = r[1]
+	_inertia_acc = r[2]
+	var inertia: Vector3 = (r[3] as Vector3).limit_length(float(C.get("inertia_max", 0.03)))
 	var mk: float = player.mantle_k() if player.has_method("mantle_k") else 0.0
-	var off: Vector3 = (_inertia + Vector3(0.015, -0.07, 0.03) * mk) * hip_k
+	var off: Vector3 = (inertia + Vector3(0.015, -0.07, 0.03) * mk) * hip_k
 	_rig.position += off * _vm_compress
 	_rig.rotation = Vector3(-0.35 * mk, 0.0, 0.25 * mk) * hip_k
 
