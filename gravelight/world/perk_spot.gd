@@ -14,6 +14,15 @@ extends Node3D
 @export var start: bool = false
 ## One bought door from the start room: where Second Wind may stand.
 @export var near: bool = false
+## T-255 (UPDATE 19 fixes; the owner on the taproom's spot: "this perk location is a bad spot", a crate standing well
+## out from the wall): 0 = the machine stands a walk clear of the wall behind it and its fine print is read from
+## there (T-251's spots; Map 0's yard-west spot still). 1 / -1 = flush: the spot's back edge is on the wall, whatever stands here is moved back
+## to that line (stand_transform) and the machine's fine print hangs on its local +X / -X side, where the generator
+## keeps a walk clear.
+@export var flush: int = 0
+
+## The spot's own depth: the deepest machine's (gen_map00.gd PERK_SPOT_D), the floor the generator keeps for it.
+const DEPTH: float = 1.2
 
 const CRATE: Vector3 = Vector3(0.95, 1.85, 0.7)
 const Hay: Script = preload("res://gravelight/world/props_hay.gd")
@@ -28,6 +37,16 @@ func _ready() -> void:
 	# deferred: the map deals its machines in its own _ready (PerkLayout), after every spot's; only the spots the deal
 	# leaves free build a crate
 	_refresh.call_deferred()
+
+
+## Where something `depth` m deep stands on this spot, in the spot's frame: on its origin, or, on a flush spot,
+## moved back (local +Z) so its back is where the deepest machine's would be: on the wall.
+func stand_offset(depth: float) -> Vector3:
+	return Vector3(0, 0, maxf(0.0, (DEPTH - depth) * 0.5)) if flush != 0 else Vector3.ZERO
+
+
+func stand_transform(depth: float) -> Transform3D:
+	return global_transform.translated_local(stand_offset(depth))
 
 
 ## The row PerkShuffle.assign reads.
@@ -61,6 +80,8 @@ func _build_filler() -> void:
 	_filler = Node3D.new()
 	_filler.name = "Filler"
 	add_child(_filler)
+	if flush != 0:   # T-255: the crate stands back against the wall like a cabinet would
+		_filler.position = stand_offset(CRATE.z)
 	var w: float = CRATE.x
 	var h: float = CRATE.y
 	var d: float = CRATE.z
@@ -122,6 +143,6 @@ func _build_filler() -> void:
 	var box: BoxShape3D = BoxShape3D.new()
 	box.size = CRATE
 	cs.shape = box
-	cs.position = Vector3(0, CRATE.y * 0.5, 0)
+	cs.position = Vector3(0, CRATE.y * 0.5, _filler.position.z)
 	_body.add_child(cs)
 	add_child(_body)

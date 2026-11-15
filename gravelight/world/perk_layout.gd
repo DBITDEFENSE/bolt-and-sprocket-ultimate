@@ -118,7 +118,8 @@ func apply(seed_now: int) -> void:
 		var s: PerkSpot = _spots.get(str(deal[pid])) as PerkSpot
 		if m == null or s == null or not is_instance_valid(m):
 			continue
-		m.global_transform = s.global_transform
+		m.global_transform = s.stand_transform(m.depth())   # (T-255: a flush spot stands it back on its wall)
+		m.set_panel_side(s.flush)
 		m.reset_physics_interpolation()
 		s.set_machine(m)
 	var ms: MapState = MapState.current()
