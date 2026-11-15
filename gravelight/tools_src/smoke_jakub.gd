@@ -177,6 +177,11 @@ func _door(id: StringName) -> BuyDoor:
 ## Kills the horde: everything except Jakub's breakout zombie, Homage bosses and (fight mode) zombies younger
 ## than `grace` seconds within `near` m of Jakub, so he gets to fight.
 func _cull(grace: float = 0.0, near: float = 0.0) -> void:
+	# no relief squad in this check: a patrol on the map shoots Jakub's breakout zombie and the round's horde before
+	# he reaches them (the shovel kill and the song line then never come; the failures of 2026-11-15 each had one)
+	var rs: ReliefSquad = ReliefSquad.instance(get_tree())
+	if rs != null:
+		rs.last_round = RoundManager.current_round
 	var jc: JakubCompanion = _jc()
 	var jp: Player = _jakub()
 	for z: Zombie in _root().director.active_zombies():

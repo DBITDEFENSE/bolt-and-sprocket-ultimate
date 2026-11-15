@@ -287,7 +287,7 @@ func test_a_reel_plays_to_its_end_and_a_skip_ends_it_at_once() -> void:
 	assert_true(r.done, "23 s at x30")
 	assert_signal_emitted_with_parameters(r, "cut_ended", [0, "epilogue_1953", false])
 	assert_eq(r.missing.size(), 0, "no missing stage or node: %s" % ", ".join(r.missing))
-	await wait_seconds(1.6)
+	await _settle(1.6)
 	var r2: CinemaReel = CinemaReel.play(self, ["staub", "epilogue_1953"], {"speed": 1.0})
 	watch_signals(r2)
 	await wait_frames(3)
@@ -296,4 +296,11 @@ func test_a_reel_plays_to_its_end_and_a_skip_ends_it_at_once() -> void:
 	r2.skip_current()
 	assert_true(r2.done, "the last skip ends the reel")
 	assert_signal_emitted(r2, "finished")
-	await wait_seconds(1.6)
+	await _settle(1.6)
+
+## Waits by the wall clock, one frame at a time. GUT's wait_seconds counts scaled game time, and twice a full
+## suite run sat in it for the rest of its hour after a reel ended; frames always come.
+func _settle(seconds: float) -> void:
+	var until: int = Time.get_ticks_msec() + int(seconds * 1000.0)
+	while Time.get_ticks_msec() < until:
+		await wait_frames(1)

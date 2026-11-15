@@ -434,7 +434,8 @@ func _hand_out_prey() -> void:
 			var best: Zombie = null
 			var bd: float = r
 			for z2: Zombie in zombie_cache:
-				if z2.prey != null or BotPerception.is_boss(z2) or z2.is_crawler:
+				# a zombie sent at one player on purpose (Jakub's breakout) is not a soldier's prey
+				if z2.prey != null or z2.forced_target != null or BotPerception.is_boss(z2) or z2.is_crawler:
 					continue
 				if z2.state != Zombie.State.CHASE and z2.state != Zombie.State.TO_WINDOW:
 					continue
