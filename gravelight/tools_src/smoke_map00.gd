@@ -75,10 +75,16 @@ func _physics_process(delta: float) -> void:
 ## T-032: Map 0 has a Crucible, in the Helvetia cellar (below ground, south of the stair hall).
 func _check_crucible() -> void:
 	var cru: Node3D = get_tree().get_first_node_in_group(&"crucible") as Node3D
-	var ok: bool = cru != null and cru.global_position.y < -2.0 and cru.global_position.z > 19.0
-	print("[smoke] crucible in the Helvetia cellar                   %s" % ("ok" if ok else "MISSING"))
+	# T-251: two doors past the Helvetia vault, in the Dynamo Room, with the cellar lever beside it
+	var ok: bool = cru != null and cru.global_position.y < -2.0 and ZoneVolume.zone_at(get_tree(), cru.global_position + Vector3.UP * 0.3) == &"MASCHINENRAUM"
+	print("[smoke] crucible in the Dynamo Room                       %s" % ("ok" if ok else "MISSING"))
 	if not ok:
-		_fails.append("no Crucible in the cellar")
+		_fails.append("no Crucible in the Dynamo Room")
+	var sw: Node3D = get_tree().get_first_node_in_group(&"power_switch") as Node3D
+	var sw_ok: bool = sw != null and ZoneVolume.zone_at(get_tree(), sw.global_position) == &"MASCHINENRAUM"
+	print("[smoke] the cellar lever in the Dynamo Room               %s" % ("ok" if sw_ok else "MISSING"))
+	if not sw_ok:
+		_fails.append("no cellar lever in the Dynamo Room")
 
 
 func _check_paths() -> void:
@@ -112,6 +118,11 @@ func _check_paths() -> void:
 		["field -> the vault's light well", Vector3(25, 0, -6), Vector3(25.0, -1.3, 1.8), true],
 		["coal well -> coal room (must NOT connect)", Vector3(3.45, -1.3, -1.0), Vector3(3.45, -3.2, 2.0), false],
 		["vault well -> vault (must NOT connect)", Vector3(25, -1.3, 1.8), Vector3(22, -3.2, 1.8), false],
+		# T-251: the Lagering Vault and the Dynamo Room past the Helvetia vault (the paths run through their shut doors)
+		["taproom -> the Lagering Vault, round the tuns", Vector3(14, 0, 8), Vector3(30.0, -3.2, 35.8), true],
+		["taproom -> the cellar lever in the Dynamo Room", Vector3(14, 0, 8), Vector3(40.5, -3.2, 32.6), true],
+		["the Dynamo Room -> round the generator set", Vector3(36.0, -3.2, 33.6), Vector3(41.2, -3.2, 35.3), true],
+		["the Dynamo Room -> the bay (back through both doors)", Vector3(39.0, -3.2, 37.4), Vector3(38.2, -3.2, 25.95), true],
 	]
 	_check_loop(map_rid)
 	_check_breach(map_rid)

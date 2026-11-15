@@ -774,6 +774,12 @@ func door_toward(goal_pos: Vector3) -> BuyDoor:
 		if dd < best_d and brain.reachable(BotBrain._door_side(d, me)):
 			best_d = dd
 			best = d
+	if best == null:
+		# T-251: the path crossed no bought door, yet the goal's zone is shut (Map 0's Old Cellar: the navmesh gets in
+		# through the bolted hatch's climb link): the door to buy is the one that opens that zone
+		var zd: BuyDoor = brain.shut_door_of(goal)
+		if zd != null and brain.reachable(BotBrain._door_side(zd, me)):
+			best = zd
 	return best
 
 
