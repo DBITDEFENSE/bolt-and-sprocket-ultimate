@@ -148,6 +148,7 @@ func _ready() -> void:
 	CrucibleRoom.attach(self)   # T-175: the Crucible's room (props, lights, hum, forge fx) from data/gravelight/crucible_rooms.json
 	(func() -> void: LampGlow.attach(self)).call_deferred()   # lamp glass dims with its light (T-057)
 	ShadowProxies.build(self)   # the static batches' shadows drawn from a few merged depth meshes (T-070)
+	ShadowBudget.attach(self)   # T-258: only the lamps nearest the camera draw shadows, within the Shadows setting's budget
 	print("[DetailRange] %s: %d cut-offs x%.2f (gfx_lod %s)" % [map_id, DetailRange.apply(self, DetailRange.factor(str(GLSettings.gfx("gfx_lod")))),
 		DetailRange.factor(str(GLSettings.gfx("gfx_lod"))), str(GLSettings.gfx("gfx_lod"))])   # T-223: no ring of missing detail
 	var sb: Node = get_node_or_null("StaticBatches")
