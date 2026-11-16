@@ -143,6 +143,12 @@ func load_settings() -> void:
 	_had_preset = cfg.has_section_key("settings", "graphics_preset")
 	for key: String in values.keys():
 		values[key] = cfg.get_value("settings", key, values[key])
+	# T-258: the individual graphics settings (gfx_shadows, gfx_ao, ...) live outside the defaults (gfx() falls back
+	# to the preset), so the loop above never read them back: every launch played the whole preset again, whatever
+	# the player had turned down in the last session.
+	for k: Variant in (PRESETS["high"] as Dictionary).keys():
+		if cfg.has_section_key("settings", str(k)):
+			values[str(k)] = cfg.get_value("settings", str(k))
 	overrides = cfg.get_value("bindings", "overrides", {})
 	if not cfg.has_section_key("settings", "bot_ee_help_rev"):
 		values["bot_ee_help"] = "full"   # T-086: the default became Full Partner; an older file took "ask" as the default
@@ -554,6 +560,8 @@ func apply_visuals() -> void:
 	vp.mesh_lod_threshold = float(LOD_Q.get(str(gfx("gfx_lod")), 1.0))
 	if is_inside_tree():
 		DetailRange.refresh(get_tree(), str(gfx("gfx_lod")))   # T-223: the draw distance of small detail follows the setting
+	if is_inside_tree():
+		ShadowBudget.refresh(get_tree(), str(gfx("gfx_shadows")))   # T-258: how many lamps draw shadows follows the setting
 	var sq: Array = SHADOW_Q.get(str(gfx("gfx_shadows")), SHADOW_Q["high"])
 	vp.positional_shadow_atlas_size = int(sq[1])
 	RenderingServer.directional_shadow_atlas_set_size(int(sq[0]), true)

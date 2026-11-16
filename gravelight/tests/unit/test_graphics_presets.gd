@@ -7,6 +7,8 @@ var _saved: Dictionary
 
 func before_each() -> void:
 	_saved = GLSettings.values.duplicate(true)
+	for k: Variant in (GLSettings.PRESETS["high"] as Dictionary).keys():
+		GLSettings.values.erase(str(k))   # T-258: the machine's saved individual settings now load; these tests drive the presets alone
 
 
 func after_each() -> void:
