@@ -9,9 +9,18 @@ var tank: ShermanTank = null
 var holders: int = 0   # zombies sent here (the event spreads them over the points)
 
 
-## The prey hook: true while the tank can be hit (not before the assault, not once it is a wreck or it holds).
+## The prey hook: true while the tank can be hit (the assault, or a player driving it; not a wreck).
 func is_catchable() -> bool:
 	return tank != null and is_instance_valid(tank) and tank.can_be_attacked()
+
+
+## How many of the dead are on this point now (T-261: the ones that come for a driver are spread over the points).
+func holders_now(dir: ZombieDirector) -> int:
+	var n: int = 0
+	for z: Zombie in dir.active_zombies():
+		if z.prey == self and z.is_active():
+			n += 1
+	return n
 
 
 ## The prey hook: a swipe landed.

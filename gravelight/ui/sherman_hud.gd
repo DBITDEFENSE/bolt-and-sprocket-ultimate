@@ -14,6 +14,8 @@ var title: Label
 var small: Label
 var count: Label
 var status: Label
+var drive: Label                       # T-261: the driver's line (the 75 mm loaded or loading), bottom centre
+var drive_bar: ProgressBar
 var _box: VBoxContainer
 var _pulse: float = 0.0
 
@@ -57,6 +59,34 @@ func _ready() -> void:
 		_box.add_child(l)
 	MenuKit.outline(counter, "hud")
 	_box.hide()
+	drive = MenuKit.label("", 22, PAPER, true)
+	drive.anchor_left = 0.5
+	drive.anchor_right = 0.5
+	drive.anchor_top = 1.0
+	drive.anchor_bottom = 1.0
+	drive.offset_left = -220
+	drive.offset_right = 220
+	drive.offset_top = -168
+	drive.offset_bottom = -140
+	drive.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	MenuKit.outline(drive, "hud")
+	drive.hide()
+	root.add_child(drive)
+	drive_bar = ProgressBar.new()
+	drive_bar.anchor_left = 0.5
+	drive_bar.anchor_right = 0.5
+	drive_bar.anchor_top = 1.0
+	drive_bar.anchor_bottom = 1.0
+	drive_bar.offset_left = -110
+	drive_bar.offset_right = 110
+	drive_bar.offset_top = -138
+	drive_bar.offset_bottom = -132
+	drive_bar.min_value = 0.0
+	drive_bar.max_value = 1.0
+	drive_bar.show_percentage = false
+	drive_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	drive_bar.hide()
+	root.add_child(drive_bar)
 
 
 func set_counter(text: String) -> void:
@@ -72,6 +102,18 @@ func set_warning(t_title: String, t_small: String, t_count: String, t_status: St
 	status.text = t_status
 	status.add_theme_color_override("font_color", SAFE if safe else RED)
 	_box.visible = t_title != "" or t_status != ""
+
+
+## The driver's line: the gun's state and how far the reload is ("" = not driving).
+func set_drive(text: String, loaded: float = 1.0) -> void:
+	if drive == null:
+		return
+	if drive.text != text:
+		drive.text = text
+	drive.visible = text != ""
+	drive.add_theme_color_override("font_color", SAFE if loaded >= 1.0 else PAPER)
+	drive_bar.visible = text != "" and loaded < 1.0
+	drive_bar.value = loaded
 
 
 func clear_warning() -> void:

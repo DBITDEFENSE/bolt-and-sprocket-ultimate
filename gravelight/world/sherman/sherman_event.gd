@@ -55,6 +55,7 @@ var stuka_hit_at: Vector3 = Vector3.INF
 var _sched: Array = []
 var _pack_t: float = 0.0
 var _ring: Array[Vector3] = []
+var _ring_at: Vector3 = Vector3.INF     # T-261: where the hull stood when the ring was laid (a driven tank moves)
 var _reserved_alive: int = 0
 var _boss_hud: BossHud = null
 var _own_boss_hud: bool = false
@@ -155,7 +156,7 @@ func _ready() -> void:
 		GLBus.round_ended.connect(_on_round_ended)
 		RoundManager.reserve_round(arrive_round)
 		RoundManager.reserve_round(stuka_round)
-	GLConsole.register("sherman", _cmd, "sherman 30|assist|40|raid|hold|kill|status: the Sherman event on the Inn (T-249)")
+	GLConsole.register("sherman", _cmd, "sherman 30|assist|40|raid|hold|kill|drive|out|status: the Sherman event on the Inn (T-249, T-261)")
 
 
 func _exit_tree() -> void:
@@ -273,11 +274,13 @@ func park_yaw() -> float:
 func _spawn_tank(pos: Vector3, yaw_rad: float) -> ShermanTank:
 	var players: int = maxi(1, RoundManager.players)
 	tank = ShermanTank.new()
-	tank.setup(cfg.get("tank", {}), cfg.get("assist", {}), tank_hp(players, cfg.get("tank", {})))
+	tank.setup(cfg.get("tank", {}), cfg.get("assist", {}), tank_hp(players, cfg.get("tank", {})), cfg.get("drive", {}), map_cfg)
 	tank.puppet = puppet
+	tank.hud = hud
 	add_child(tank)
 	tank.park_at(pos, yaw_rad)
 	tank.wrecked.connect(_on_tank_wrecked)
+	tank.bailed.connect(_on_tank_bailed)
 	if Net.replicating():
 		Net.mirror(self, &"net_tank", [pos, yaw_rad, tank.max_hp])
 	return tank
@@ -289,10 +292,30 @@ func net_tank(pos: Vector3, yaw_rad: float, hp_max: float) -> void:
 	if tank != null and is_instance_valid(tank):
 		tank.queue_free()
 	tank = ShermanTank.new()
-	tank.setup(cfg.get("tank", {}), cfg.get("assist", {}), hp_max)
+	tank.setup(cfg.get("tank", {}), cfg.get("assist", {}), hp_max, cfg.get("drive", {}), map_cfg)
 	tank.puppet = true
+	tank.hud = hud
 	add_child(tank)
 	tank.park_at(pos, yaw_rad)
+
+
+## T-261: a player may climb in from now (parked), or no longer (the dive bomber is coming).
+func net_drivable(on: bool) -> void:
+	if tank != null and is_instance_valid(tank):
+		tank.drivable = on
+
+
+func _set_drivable(on: bool) -> void:
+	net_drivable(on)
+	if Net.replicating():
+		Net.mirror(self, &"net_drivable", [on])
+
+
+## The dead on the hull drove the driver out (outside the assault): the crew repairs, the hatch stays shut a while.
+func _on_tank_bailed() -> void:
+	var d: Dictionary = cfg.get("drive", {})
+	_banner(str(d.get("bail_banner", "THE DEAD ARE ALL OVER THE SHERMAN")), str(d.get("bail_small", "ITS CREW IS MAKING REPAIRS")))
+	print("[sherman] the dead drove the driver out of the Sherman (%d s of repairs)" % int(tank.lock_t))
 
 
 func net_tank_gone() -> void:
@@ -320,7 +343,7 @@ func _process(delta: float) -> void:
 		_tick_barrier()
 		_net_t -= delta
 		if Net.replicating() and _net_t <= 0.0:
-			_net_t = 0.16 if tank.mode == ShermanTank.Mode.DRIVE else 0.5
+			_net_t = 0.16 if tank.mode == ShermanTank.Mode.DRIVE else (0.1 if tank.is_driven() else 0.5)
 			Net.mirror(tank, &"net_state", tank.net_state_args())
 	_danger_t -= delta
 	if _danger_t <= 0.0:
@@ -338,6 +361,7 @@ func _tick_arriving() -> void:
 	var a: Dictionary = cfg.get("arrival", {})
 	_banner(str(a.get("parked_banner", "THE SHERMAN IS HERE")))
 	tank.aim_world(tank.global_transform * Vector3(0, 1.5, 12.0))
+	_set_drivable(true)
 	at(float(a.get("assault_after_park", 7.0)), begin_assault)
 	tank.set_meta(&"parked_t", t)
 
@@ -412,8 +436,10 @@ func begin_assault() -> void:
 	attackers.clear()
 	_pack_t = 0.0
 	tank.attackable = true
+	tank.defending = true   # T-261: it fights for itself while the dead are on it
 	tank.hp = tank.max_hp
 	_ring = _ring_points()
+	_ring_at = tank.global_position
 	_banner(str(a.get("banner", "")), str(a.get("banner_small", "")))
 	_bar_on(true)
 	if Net.replicating():
@@ -470,6 +496,12 @@ func _tick_assault(delta: float) -> void:
 			attackers.erase(z)
 	if tank == null or not is_instance_valid(tank) or tank.is_wreck():
 		return
+	# T-261: a driven tank moves: the dead rise round where it is now (the old ring is kept if the new place has none)
+	if ShermanRules.flat(_ring_at, tank.global_position) > float(a.get("ring_relay_m", 3.0)):
+		_ring_at = tank.global_position
+		var again: Array[Vector3] = _ring_points()
+		if not again.is_empty():
+			_ring = again
 	_pack_t -= delta
 	if assault_spawned < assault_total and _pack_t <= 0.0:
 		var room: int = int(a.get("max_at_once", 12)) - attackers.size()
@@ -553,13 +585,15 @@ func assault_held() -> void:
 	phase = Phase.ASSIST
 	outcome = "held"
 	tank.attackable = false
+	tank.defending = false
 	tank.assisting = true
 	_counter("")
 	_bar_on(false)
 	if Net.replicating():
 		Net.mirror(self, &"net_bar", [false])
 	_banner(str(a.get("held_banner", "THE SHERMAN HOLDS")), str(a.get("held_small", "")))
-	PowerupManager.spawn(&"resupply", tank.global_transform * Vector3(0, 0.3, -5.0))
+	# (T-261: thrown where it always was, before the gate, wherever the tank has been driven to)
+	PowerupManager.spawn(&"resupply", Transform3D(Basis(Vector3.UP, park_yaw()), park_point()) * Vector3(0, 0.3, -5.0))
 	print("[sherman] it holds (%d health left of %d, %d swipes, %d of the dead): it covers the yard until round %d" % [int(tank.hp), int(tank.max_hp), tank.swipes_taken, assault_total, assist_until])
 
 
@@ -633,6 +667,13 @@ func begin_stuka() -> void:
 	_sched.clear()
 	var target: Vector3 = park_point() + Vector3.UP * 1.0
 	if tank != null and is_instance_valid(tank):
+		# T-261: nobody drives it from here on: the driver is put out beside it now (the bomb is some eleven seconds
+		# away), and it stays where it stands for the dive
+		if not tank.is_wreck():
+			if tank.is_driven():
+				tank.put_out()
+				_banner(str((cfg.get("drive", {}) as Dictionary).get("stuka_banner", "GET CLEAR OF THE SHERMAN")))
+			_set_drivable(false)
 		target = tank.global_position + Vector3.UP * 1.2
 	var sf: Array = map_cfg.get("stuka_from", [-260.0, 0.0, -320.0])
 	var from_dir: Vector3 = (Vector3(float(sf[0]), 0, float(sf[2])) - Vector3(target.x, 0, target.z)).normalized()
@@ -715,6 +756,10 @@ func _post_dangers() -> void:
 	if tank != null and is_instance_valid(tank):
 		for i: int in 3:
 			bb.call("add_danger", tank.global_transform * Vector3(0, 0, -2.0 + 2.0 * float(i)), 2.0, 2.0, now + 0.6, "sherman_hull:%d" % i)
+		# T-261: and the ground it is about to roll onto while a player drives it
+		if tank.is_driven() and absf(tank.speed) > 0.3:
+			var dd: Dictionary = cfg.get("drive", {})
+			bb.call("add_danger", tank.global_transform * Vector3(0, 0, -signf(tank.speed) * float(dd.get("bot_clear_ahead_m", 5.0))), float(dd.get("bot_clear_r", 3.0)), float(dd.get("bot_clear_cost", 6.0)), now + 0.6, "sherman_path")
 	if raid != null:
 		var k: int = 0
 		for p: Vector3 in raid.pending_points():
@@ -764,6 +809,18 @@ func _cmd(a: PackedStringArray) -> String:
 			if tank != null and is_instance_valid(tank):
 				tank.wreck(true)
 			return "The Sherman brews up."
+		"drive":
+			if tank == null or not is_instance_valid(tank) or tank.is_wreck():
+				force_assist()
+			var me: Player = _map().get("player") as Player
+			if me != null and tank.can_use(me):
+				tank.on_use(me)
+				return "You are in the Sherman."
+			return "The Sherman cannot be driven now."
+		"out":
+			if tank != null and is_instance_valid(tank):
+				tank.put_out()
+			return "Out of the Sherman."
 	return status()
 
 
@@ -771,17 +828,23 @@ func _cmd(a: PackedStringArray) -> String:
 func force_assist() -> void:
 	if tank == null or not is_instance_valid(tank) or tank.is_wreck():
 		_spawn_tank(park_point(), park_yaw())
+	tank.put_out()
 	tank.park_at(park_point(), park_yaw())
 	tank.attackable = false
+	tank.defending = false
 	tank.assisting = true
+	_set_drivable(true)
 	phase = Phase.ASSIST
 	outcome = "held"
 
 
 func status() -> String:
+	var tk: String = ""
+	if tank != null and is_instance_valid(tank):
+		tk = "; 75 mm %d (%d the driver's, %d held), mg %d, kills %d, driven %d times, crushed %d, driver %s" % [tank.shots_main, tank.driver_shells, tank.shots_held, tank.shots_mg, tank.kills, tank.drives, tank.crushed, str(tank.driver.player_id) if tank.is_driven() else "none"]
 	return "Sherman: phase %s, round %d, tank %s (hp %d/%d), assault %d/%d (%d burning) %d up, outcome '%s', retry %d, raid %s (%d bombs)" % [
 		Phase.keys()[phase], RoundManager.current_round,
 		"none" if tank == null or not is_instance_valid(tank) else ShermanTank.Mode.keys()[tank.mode],
 		int(tank.hp) if tank != null and is_instance_valid(tank) else 0, int(tank.max_hp) if tank != null and is_instance_valid(tank) else 0,
 		assault_spawned, assault_total, assault_fire_spawned, attackers.size(), outcome, retry_round,
-		AirRaid.Phase.keys()[raid.phase] if raid != null else "-", raid.bombs_landed if raid != null else 0]
+		AirRaid.Phase.keys()[raid.phase] if raid != null else "-", raid.bombs_landed if raid != null else 0] + tk
