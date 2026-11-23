@@ -13,6 +13,9 @@ extends Node
 ##   T-251 (UPDATE 19): the host deals the tonic machines from a pinned seed that is not the match seed and deals again
 ##   once the match has begun (mirrored); at the end the client's layout (every machine's place, every crate) must be
 ##   the host's.
+##   T-263: between the revive and the second down the client locks its Kar98k away in the arms locker (the host runs
+##   the hold with the client's puppet: the gun leaves the client's hands, the rent is paid, the contents are mirrored);
+##   after the bleed-out and the respawn with the starting pistol the client takes it back out of the locker.
 ## Each side checks what it sees and reports RESULT PASS/FAIL; the host prints both and exits 0 only if both
 ## passed. The child is killed on every exit path; both sides have hard timeouts.
 ## Usage: godot --headless --path . res://gravelight/tools_src/smoke_coop.tscn        (the host spawns the client itself)
@@ -53,6 +56,8 @@ var _saw_body: bool = false        # T-192: client: a puppet in Peg's risen body
 var _saw_dormant: bool = false
 var _saw_crate: bool = false
 var _perk_seed_first: int = -1     # T-251: client: the deal it stood on when the match began
+var _locker_state: int = 0         # T-263: client: the take after the respawn (0 walking up, 1 asked, 2 done)
+var _locker_t: float = 0.0
 
 
 func _ready() -> void:
@@ -188,6 +193,7 @@ func _host_tick(_delta: float) -> void:
 				_fail("revive didn't bring player 2 back on the host")
 			if Economy.get_scrip(1) < _scrip_before + 100:
 				_fail("no revive bonus (host Scrip %d -> %d)" % [_scrip_before, Economy.get_scrip(1)])
+			Economy.grant_raw(2, 1000)   # T-263: the arms locker's rent for the client's next step
 			_qa_send("revived", {})
 			_goto("wait_bleed")
 		"wait_bleed":
@@ -362,7 +368,41 @@ func _client_tick(delta: float) -> void:
 					_fail("no player_revived(2, by 1) relayed")
 				if rv or _step_t > 1.0:
 					_notes.append("revived after %.2f s" % _step_t)
-					_goto("down2")
+					GameState.god_mode = true   # (nothing downs the client at the locker before the scripted second down)
+					_goto("locker")
+		"locker":
+			# T-263: lock the Kar98k away: walk up (teleport), let the host's puppet catch up, hold the rifle, use it
+			var lk: WeaponLocker = get_tree().get_first_node_in_group(&"weapon_lockers") as WeaponLocker
+			if lk == null:
+				_fail("no arms locker on Map 0")
+				GameState.god_mode = false
+				_goto("down2")
+				return
+			me.global_position = lk.stand_point(0.6)
+			if _step_t < 1.0:
+				return
+			var kar: WeaponInstance = me.weapons.find_weapon_base(&"kar98k")
+			if kar != null and me.weapons.current() != kar:
+				me.weapons.call("_select", me.weapons.slots.find(kar))
+			if lk.can_interact(me) and Economy.get_scrip(Net.local_player_id()) >= int(WeaponLocker.cfg().get("store_cost", 0)):
+				_scrip_before = Economy.get_scrip(Net.local_player_id())
+				me.use_interactable(lk)
+				_goto("locker_wait")
+			elif _step_t > 8.0:
+				_fail("the arms locker refuses the client (prompt \"%s\", Scrip %d)" % [lk.get_prompt(me), Economy.get_scrip(Net.local_player_id())])
+				GameState.god_mode = false
+				_goto("down2")
+		"locker_wait":
+			var mine: int = Net.local_player_id()
+			if me.weapons.find_weapon_base(&"kar98k") == null and WeaponLocker.has_stored(mine) 					and Economy.get_scrip(mine) == _scrip_before - int(WeaponLocker.cfg().get("store_cost", 0)):
+				_notes.append("arms locker: the Kar98k locked away by the host in %.2f s, the rent paid, the contents mirrored" % _step_t)
+				GameState.god_mode = false
+				_goto("down2")
+			elif _step_t > 8.0:
+				_fail("the arms locker never took the client's Kar98k (in hands %s, mirrored %s, Scrip %d -> %d)" % [str(me.weapons.find_weapon_base(&"kar98k") != null),
+					str(WeaponLocker.has_stored(mine)), _scrip_before, Economy.get_scrip(mine)])
+				GameState.god_mode = false
+				_goto("down2")
 		"down2":
 			if _step_t < 1.0:
 				return
@@ -394,12 +434,14 @@ func _client_tick(delta: float) -> void:
 						_fail("respawn loadout wrong (%s)" % (str(w.id) if w != null else "empty hands"))
 					else:
 						_notes.append("respawned at round 2 with the starting loadout")
+				if _respawn_checked and _locker_state < 2:
+					_locker_take(me, delta)
 				var n: int = 0
 				for z: Zombie in map.director.active_zombies():
 					if z.puppet and z.interp != null and not z.interp.is_empty():
 						n += 1
 				_horde_seen = maxi(_horde_seen, n)
-				if _horde_seen >= 20 or _step_t > 60.0:
+				if (_horde_seen >= 20 and _locker_state == 2) or _step_t > 60.0:
 					_notes.append("round 2 reached the client (rounds seen %s); up to %d zombie puppets at once" % [str(_rounds_seen), _horde_seen])
 					if not (_saw_body and _saw_dormant):
 						_fail("Hard Truth: the client never saw Peg's body lying (body %s, dormant %s)" % [str(_saw_body), str(_saw_dormant)])
@@ -407,10 +449,38 @@ func _client_tick(delta: float) -> void:
 						_fail("Hard Truth: the death crate never reached the client")
 					if _horde_seen < 20:
 						_fail("the 24-zombie horde didn't show up on the client (saw %d)" % _horde_seen)
+					if _locker_state != 2:
+						_fail("the arms locker's take never finished (state %d)" % _locker_state)
 					_client_finish()
 			elif _step_t > 100.0:
 				_fail("round 2 never reached the client (rounds seen %s, mirrored %d)" % [str(_rounds_seen), RoundManager.current_round])
 				_client_finish()
+
+
+## T-263: back from the dead with the starting pistol, the client takes its Kar98k out of the arms locker.
+func _locker_take(me: Player, delta: float) -> void:
+	var lk: WeaponLocker = get_tree().get_first_node_in_group(&"weapon_lockers") as WeaponLocker
+	var mine: int = Net.local_player_id()
+	_locker_t += delta
+	if lk == null or not WeaponLocker.has_stored(mine) and _locker_state == 0:
+		_fail("arms locker: nothing of the client's inside after the bleed-out and the respawn")
+		_locker_state = 2
+		return
+	if _locker_state == 0:
+		me.global_position = lk.stand_point(0.6)
+		if _locker_t > 1.0 and lk.can_interact(me):
+			me.use_interactable(lk)
+			_locker_state = 1
+			_locker_t = 0.0
+		elif _locker_t > 8.0:
+			_fail("arms locker: the respawned client can't take its gun (prompt \"%s\")" % lk.get_prompt(me))
+			_locker_state = 2
+	elif me.weapons.find_weapon_base(&"kar98k") != null and not WeaponLocker.has_stored(mine):
+		_notes.append("arms locker: the Kar98k survived the bleed-out and came back to the respawned client in %.2f s" % _locker_t)
+		_locker_state = 2
+	elif _locker_t > 8.0:
+		_fail("arms locker: the Kar98k never came back (in hands %s, still mirrored %s)" % [str(me.weapons.find_weapon_base(&"kar98k") != null), str(WeaponLocker.has_stored(mine))])
+		_locker_state = 2
 
 
 func wb_price(map: MapRoot) -> int:
