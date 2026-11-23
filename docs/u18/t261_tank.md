@@ -256,5 +256,3 @@ everywhere (one per shell every 11 s plus the machine gun); it is 14 now (12.6 b
 - A zombie already in its swing at the driver when they climb in can still land it (the hatch is about 2 m from
   the ground beside the hull, close to a zombie's reach): not measured.
 - A boss can still hit the driver in the hatch (a charge, a stomp): untested.
-- Three `.uid` files that the import writes for scripts already on `master` (`test_bot_census.gd.uid`,
-  `test_bot_stuck_2026_11.gd.uid`, `trench_water.gdshader.uid`) are not part of this work and are left uncommitted.
