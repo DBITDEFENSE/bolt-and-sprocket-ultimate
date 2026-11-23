@@ -1,0 +1,28 @@
+{
+  "_doc": "T-263: the arms locker (WeaponLocker, gravelight/world/weapon_locker.gd). Hold [interact] at it: the gun in your hands goes into your own compartment as it is (Crucible tier, attachments, finish, magazine, reserve, fire mode) for store_cost Scrip; a later hold takes it back for withdraw_cost. With a gun inside and your weapon slots full the hold swaps (the held gun in, the stored one out: store_cost + withdraw_cost). One compartment per player, for this match only: it survives going down, bleeding out and the respawn with the starting pistol; a campaign hop carries it to the next map's locker; a new match starts empty. Nothing goes into the profile, so it is open in Classic Rules, Easter Egg Mode and online. keep_on_you = the guns you must still carry after storing (you never lock away your last). no_store = weapon ids or weapon classes the locker refuses (none). sounds = audio.json keys (open, then store or take), db their volume. lamp = the small shadowless lamp over the locker (energy 0 = none). lockers: per map (a map id prefix) {at = the floor point on the wall's face under the locker's middle [x, y, z], yaw = where the doors face (deg: 0 = +z, 90 = +x, 180 = -z, 270 = -x), where = a note for people}. The locker is 0.92 m wide, 1.9 m high and 0.45 m deep, flush on its wall inside the strip the navmesh's agent radius keeps clear (no navmesh change); gravelight/tools_src/locker_spot_probe.gd checks a row (and finds free wall for a new one).",
+  "enabled": true,
+  "store_cost": 500,
+  "withdraw_cost": 0,
+  "keep_on_you": 1,
+  "no_store": [],
+  "sounds": {"open": "door_creak", "store": "crate_close", "take": "reload_end", "db": -4.0},
+  "text": {
+    "stencil": "ARMS LOCKER",
+    "card_empty": "EMPTY",
+    "store": "Hold [%s] to lock away %s%s",
+    "take": "Hold [%s] to take %s from the locker%s",
+    "swap": "Hold [%s] to lock away %s and take %s%s",
+    "empty": "Arms locker: empty",
+    "last_gun": "Arms locker: empty (keep one gun on you)",
+    "refused": "Arms locker: %s does not go in",
+    "duplicate": "Arms locker: %s inside (you carry one already)"
+  },
+  "lamp": {"energy": 0.9, "range": 3.2},
+  "lockers": {
+    "map00": {
+      "at": [24.25, 0.0, 22.15],
+      "yaw": 0.0,
+      "where": "The stable's north-east corner: on the north wall between the bale stack and the east wall, north of the hayloft stair's foot, doors facing south. Behind Door_Stable from the taproom, 4 m left of the stable's north door."
+    }
+  }
+}

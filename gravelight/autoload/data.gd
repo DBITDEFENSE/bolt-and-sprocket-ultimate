@@ -11,6 +11,7 @@ const TABLES: PackedStringArray = [
 	"bosses/map01", "bosses/map02", "bosses/map03",   # UPDATE 10 C5: PAUL (map01), THE SLENDER + der Kielholer (map02), the Morgenrot hook (map03)
 	"bosses/map04",   # Map 4 "Fernflug" bosses (UPDATE 07): the Kranführer, the Bordwart, the Test Pilot, the Account Manager
 	"bank",   # T-136: the savings bank (BankAccount)
+	"weapon_locker",   # T-263: the arms locker (WeaponLocker)
 	"online",   # T-138: online lobbies (LobbyService), WebRTC ICE servers, rejoin grace, timeouts
 	"companions",   # T-135: one more companion per map (MapCompanion)
 	"pilot",   # T-126: GRAVELIGHT ONE's trapped pilot (TrappedPilot), Map 0's wreck
