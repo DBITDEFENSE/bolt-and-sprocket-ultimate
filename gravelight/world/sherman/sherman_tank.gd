@@ -6,22 +6,51 @@ extends Node3D
 ## co-op client it is a puppet that follows the host's mirrored state (net_*).
 ## Its hull collider is on the map-edge layer (bit 11): players and bots are stopped by it, zombies, shots and blasts
 ## pass, so nothing baked or any zombie's path changes (the horse rail's rule, T-240).
+##
+## T-261 (the owner, 2026-11-22: "make the tank on round 30 smarter and make it use its cannon. I want the player to
+## be able to drive the tank around if needed"; docs/u18/t261_tank.md):
+##   the gunner   fights in the assault too (`defending`), not only once it holds; picks by ShermanRules: the 75 mm on
+##                a pack, a burning one still far from everyone, the boss; the machine gun on what is nearest, hurt,
+##                burning or closing on a player, only once the turret is laid on it; never at or near a player or
+##                across one; with nothing to shoot the turret watches the side the dead are thickest on.
+##   the driver   a player climbs in at the hull (Use), drives with the move keys (tank steering), lays the turret
+##                with the view, fires the 75 mm (fire) and the machine gun (aim), climbs out with Use or jump. One at
+##                a time; the gunner stands down while a player has the guns. The host decides who is in and what a
+##                shell does; the driver's own machine moves the hull (the horse's pattern, T-240) and tells the host.
 
 signal wrecked
+signal bailed                          # the dead drove the driver out (outside the assault): the crew repairs
 
 enum Mode { DRIVE, PARKED, WRECK }
+enum Seat { NONE, IN, SEATED, OUT }
 
 const LAYER_EDGE: int = 1 << 10
 const MASK_LOS: int = 1
+const MASK_HULL: int = 1 | (1 << 1) | (1 << 5) | (1 << 8) | (1 << 10)   # world, players, barricades, doors, the map's edge
+const CUPOLA: Vector3 = Vector3(0.40, 0.81, 0.32)   # the commander's hatch, turret frame (ShermanMesh)
 
 var cfg: Dictionary = {}               # sherman.json "tank"
 var acfg: Dictionary = {}              # sherman.json "assist"
+var dcfg: Dictionary = {}              # sherman.json "drive"
+var ground: Dictionary = {}            # the map's "sherman_event" block: drive_zones, drive_boxes, drive_no_go
 var puppet: bool = false
 var mode: Mode = Mode.PARKED
 var max_hp: float = 8000.0
 var hp: float = 8000.0
 var attackable: bool = false           # the round-30 assault is on
 var assisting: bool = false            # rounds 31..39 (and the rest of round 30 once it holds)
+var defending: bool = false            # T-261: the assault: it fights for itself
+var drivable: bool = false             # T-261: parked and running: a player may climb in
+var driver: Player = null
+var seat: Seat = Seat.NONE
+var lock_t: float = 0.0                # seconds the hatch stays shut after the dead drove the driver out
+var use: ShermanUse = null
+var hud: ShermanHud = null
+var input_override: Variant = null     # smokes: Vector3(steer, throttle, 0) instead of the driver's keys
+var aim_override: Variant = null       # smokes: the world point the driver looks at
+var fire_wanted: bool = false          # smokes: the driver's trigger (the 75 mm)
+var mg_wanted: bool = false            # smokes: the driver's machine gun held
+var dismount_wanted: bool = false      # smokes: climb out now
 var speed: float = 0.0
 var route: PackedVector3Array = PackedVector3Array()
 var route_i: int = 0
@@ -31,6 +60,15 @@ var shots_main: int = 0
 var shots_mg: int = 0
 var mg_hits: int = 0
 var kills: int = 0
+var seen_now: int = 0                  # how many of the dead the gunner could shoot at its last look
+var last_burst: Vector3 = Vector3.INF   # where the last shell burst
+var shots_held: int = 0                # shells the gunner did not fire because a player had come too near
+var drives: int = 0
+var driver_shells: int = 0
+var crushed: int = 0
+var refusals: int = 0
+var forced_off: int = 0
+var bails: int = 0
 
 var body: Node3D
 var turret: Node3D
@@ -42,7 +80,10 @@ var _links: Array[MultiMesh] = []
 var _path: PackedVector2Array
 var _path_cum: PackedFloat32Array
 var _path_len: float = 1.0
-var _track_s: float = 0.0
+var _track_s: float = 0.0             # the left track's run along its loop
+var _track_sr: float = 0.0            # T-261: the right track's (a pivot turn runs them against each other)
+var _yaw_prev: float = 0.0
+var _yaw_seen: bool = false
 var _n_links: int = 0
 var _collider: AnimatableBody3D
 var points: Array[ShermanAttackPoint] = []
@@ -69,6 +110,21 @@ var _net_lerp: float = 1.0
 var _wreck_light: OmniLight3D
 var _flick_t: float = 0.0
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var _dead: Array = []                  # what the gunner knows of the dead (ShermanRules' dictionaries, plus "z")
+var _watch_clock: float = 0.0
+var _seat_t: float = 0.0
+var _from: Vector3 = Vector3.ZERO      # the driver's place when the climb in / out began
+var _to: Vector3 = Vector3.ZERO        # where the climb out sets them down
+var _use_released: bool = false
+var _hold_t: float = 0.0
+var _mg_on: bool = false               # host: the driver holds the machine gun
+var _mg_sent: bool = false             # the driver's machine: what the host was last told
+var _crush_cd: float = 0.0
+var _mob_t: float = 0.0
+var _send_t: float = 0.0
+var _last_state_ms: int = 0
+var _bump_t: float = 0.0
+var _has_zones: bool = false
 
 
 func _init() -> void:
@@ -80,6 +136,22 @@ func _ready() -> void:
 	add_to_group(&"sherman")
 	if body == null:
 		build()
+	_has_zones = not get_tree().get_nodes_in_group(&"zone_volumes").is_empty()
+
+
+func _exit_tree() -> void:
+	# towed off or replaced with a player still in it: they are set down where they are, free to move
+	if driver != null and is_instance_valid(driver):
+		var p: Player = driver
+		driver = null
+		seat = Seat.NONE
+		if p.is_local and p.carry == self:
+			p.prompt_text = ""
+			p.end_carry(self)
+			if p.weapons != null:
+				p.weapons.set_hands(&"")
+		if hud != null and is_instance_valid(hud):
+			hud.set_drive("")
 
 
 # ================================================================== the model
@@ -174,6 +246,13 @@ func build() -> void:
 		ap.position = sp
 		add_child(ap)
 		points.append(ap)
+	# (T-261) the Use point: the hull itself (a player climbs in from anywhere against it)
+	use = ShermanUse.new()
+	use.name = "Use"
+	use.tank = self
+	use.interact_size = Vector3(2.82, 2.6, 6.2)
+	use.interact_offset = Vector3(0, 1.3, 0.04)
+	add_child(use)
 	# the engine and the tracks, the exhaust
 	_engine = AudioDirector.make_loop_3d("sherman_engine", body, -2.0)
 	if _engine != null:
@@ -225,30 +304,36 @@ func _spun(part_name: String, at: Vector3, radius: float, side: float) -> void:
 func _lay_links() -> void:
 	if _links.is_empty() or _n_links <= 0:
 		return
-	var j: int = 0
-	for i: int in _n_links:
-		var s: float = fposmod(float(i) * ShermanMesh.LINK_PITCH + _track_s, _path_len)
-		while j > 0 and _path_cum[j] > s:
-			j -= 1
-		while j < _path.size() - 1 and _path_cum[j + 1] <= s:
-			j += 1
-		var a: Vector2 = _path[j]
-		var b: Vector2 = _path[(j + 1) % _path.size()]
-		var seg: float = maxf(1e-5, a.distance_to(b))
-		var p: Vector2 = a.lerp(b, (s - _path_cum[j]) / seg)
-		var t2: Vector2 = (b - a) / seg
-		var t3: Vector3 = Vector3(0, t2.y, t2.x)
-		var n3: Vector3 = Vector3(0, -t2.x, t2.y)
-		var xf: Transform3D = Transform3D(Basis(n3.cross(t3), n3, t3), Vector3(0, p.y, p.x))
-		for mm: MultiMesh in _links:
-			mm.set_instance_transform(i, xf)
+	# (_links: left near, left far, right near, right far)
+	for side: int in 2:
+		var off: float = _track_s if side == 0 else _track_sr
+		var j: int = 0
+		for i: int in _n_links:
+			var s: float = fposmod(float(i) * ShermanMesh.LINK_PITCH + off, _path_len)
+			while j > 0 and _path_cum[j] > s:
+				j -= 1
+			while j < _path.size() - 1 and _path_cum[j + 1] <= s:
+				j += 1
+			var a: Vector2 = _path[j]
+			var b: Vector2 = _path[(j + 1) % _path.size()]
+			var seg: float = maxf(1e-5, a.distance_to(b))
+			var p: Vector2 = a.lerp(b, (s - _path_cum[j]) / seg)
+			var t2: Vector2 = (b - a) / seg
+			var t3: Vector3 = Vector3(0, t2.y, t2.x)
+			var n3: Vector3 = Vector3(0, -t2.x, t2.y)
+			var xf: Transform3D = Transform3D(Basis(n3.cross(t3), n3, t3), Vector3(0, p.y, p.x))
+			for k: int in 2:
+				if side * 2 + k < _links.size():
+					_links[side * 2 + k].set_instance_transform(i, xf)
 
 
 # ================================================================== state
 
-func setup(tank_cfg: Dictionary, assist_cfg: Dictionary, health: float) -> void:
+func setup(tank_cfg: Dictionary, assist_cfg: Dictionary, health: float, drive_cfg: Dictionary = {}, ground_cfg: Dictionary = {}) -> void:
 	cfg = tank_cfg
 	acfg = assist_cfg
+	dcfg = drive_cfg
+	ground = ground_cfg
 	max_hp = maxf(1.0, health)
 	hp = max_hp
 
@@ -257,8 +342,9 @@ func hp_fraction() -> float:
 	return clampf(hp / max_hp, 0.0, 1.0)
 
 
+## The dead can beat on it in the assault, and whenever a player drives it (they go for the hull, not the hatch).
 func can_be_attacked() -> bool:
-	return attackable and mode != Mode.WRECK and hp > 0.0
+	return (attackable or driver != null) and mode != Mode.WRECK and hp > 0.0
 
 
 func is_wreck() -> bool:
@@ -325,12 +411,21 @@ func _physics_process(delta: float) -> void:
 	if mode == Mode.WRECK:
 		_flicker(delta)
 		return
-	if puppet:
+	_gun_t = maxf(0.0, _gun_t - delta)   # the 75 mm's reload, the gunner's and the driver's alike
+	lock_t = maxf(0.0, lock_t - delta)
+	if not puppet:
+		_upkeep(delta)
+	if driver != null:
+		_driver_step(delta)
+	if not simulates():
 		_puppet_step(delta)
 	elif mode == Mode.DRIVE:
 		_drive_step(delta)
-	if assisting and not puppet and mode == Mode.PARKED:
-		_assist_step(delta)
+	if not puppet and mode == Mode.PARKED:
+		if driver != null:
+			_driver_host_step(delta)
+		elif assisting or defending:
+			_assist_step(delta)
 	_aim_step(delta)
 	_running_gear(delta)
 
@@ -371,17 +466,29 @@ func _drive_step(delta: float) -> void:
 
 
 func _running_gear(delta: float) -> void:
-	var v: float = speed
-	if absf(v) > 0.01:
-		_track_s += v * delta
+	# each track's own speed: the hull's, and the turn it is making (a pivot runs one forward and one back); read
+	# from the hull's own motion, so the route, a driver and a puppet all look alike
+	var w: float = wrapf(rotation.y - _yaw_prev, -PI, PI) / maxf(delta, 0.0001) if _yaw_seen else 0.0
+	_yaw_prev = rotation.y
+	_yaw_seen = true
+	if absf(w) > 2.0:
+		w = 0.0   # (placed, not turned)
+	var vl: float = speed - w * ShermanMesh.TRACK_X
+	var vr: float = speed + w * ShermanMesh.TRACK_X
+	var v: float = maxf(absf(speed), maxf(absf(vl), absf(vr)))
+	if v > 0.01:
+		_track_s += vl * delta
+		_track_sr += vr * delta
 		_lay_links()
 		for e: Array in _spin:
 			var mi: Node3D = e[0]
-			mi.rotation.x -= v * delta / float(e[1]) * float(e[2])
+			mi.rotation.x -= (vl if float(e[2]) < 0.0 else vr) * delta / float(e[1]) * float(e[2])
 		if Engine.get_physics_frames() % 15 == 0:
 			for s: float in [-1.0, 1.0]:
 				Effects.dust_puff(global_transform * Vector3(s * ShermanMesh.TRACK_X, 0.1, 2.7), "snow", 8)
 	if _tracks_snd != null:
+		if absf(v) > 0.05 and not _tracks_snd.playing:
+			_tracks_snd.play()   # (a parked tank that a player drives off: the arrival started them, a dev park did not)
 		_tracks_snd.volume_db = lerpf(-40.0, -3.0, clampf(absf(v) / 2.5, 0.0, 1.0))
 	if _engine != null:
 		_engine.pitch_scale = 1.0 + 0.25 * clampf(absf(v) / 3.0, 0.0, 1.0)
@@ -425,6 +532,26 @@ func aimed_at(p: Vector3, tol_deg: float) -> bool:
 	return rad_to_deg(fwd.angle_to(d)) <= tol_deg
 
 
+## The 75 mm's lay: on `p` within `tol_deg`, or, for what stands too close to be reached at the gun's lowest lay,
+## the turret on it and the gun down on its stop.
+func gun_laid(p: Vector3, tol_deg: float) -> bool:
+	if aimed_at(p, tol_deg):
+		return true
+	return laid_on(p, tol_deg) and _gun_pitch_target <= deg_to_rad(-9.9) and gun.rotation.x <= deg_to_rad(-9.5)
+
+
+## True when the turret points within `tol_deg` of `p` on the flat (the machine gun's lay: it is swung by hand
+## inside the mantlet, so what stands close under the gun's lowest lay can still be hit).
+func laid_on(p: Vector3, tol_deg: float) -> bool:
+	var f: Vector3 = -gun.global_transform.basis.z
+	var d: Vector3 = p - gun.global_position
+	var a: Vector2 = Vector2(f.x, f.z)
+	var b: Vector2 = Vector2(d.x, d.z)
+	if a.length() < 0.001 or b.length() < 0.001:
+		return true
+	return rad_to_deg(absf(a.angle_to(b))) <= tol_deg
+
+
 func muzzle() -> Vector3:
 	return gun.global_transform * Vector3(0, 0, -ShermanMesh.GUN_LEN - 0.05)
 
@@ -449,49 +576,88 @@ func take_swipe(by: Node, at: Vector3) -> void:
 	take_damage(dmg)
 
 
+## In the assault its health is the boss bar and it burns at 0. Driven outside the assault the dead cannot wreck
+## it (rounds 31..39 need it, and round 40's bomber): its health stops at 1, the driver is put out and the hatch
+## stays shut while the crew makes it good (ShermanRules.driven_out).
 func take_damage(amount: float) -> void:
 	if puppet or mode == Mode.WRECK or amount <= 0.0:
 		return
-	hp = maxf(0.0, hp - amount)
 	damage_taken += amount
-	if hp <= 0.0:
-		wreck(true)
+	hp = maxf(0.0 if attackable else 1.0, hp - amount)
+	if attackable:
+		if hp <= 0.0:
+			wreck(true)
+	elif driver != null and ShermanRules.driven_out(hp, false):
+		_bail()
 
 
-# ================================================================== the assist (host)
+func _bail() -> void:
+	bails += 1
+	lock_t = float(dcfg.get("lockout_s", 30.0))
+	put_out()
+	Net.mirror(self, &"net_lock", [lock_t])
+	bailed.emit()
 
-## Rounds 31..39: the machine gun on the nearest of the dead it can see, the 75 mm on a pack of them or one far off.
-## Damage is a fraction of the round's zombie health; it never fires at or near a player and pays no Scrip.
+
+func net_lock(seconds: float) -> void:
+	lock_t = seconds
+
+
+## Host: outside the assault, with nobody driving, the crew repairs what the dead did.
+func _upkeep(delta: float) -> void:
+	if not attackable and driver == null and hp < max_hp:
+		hp = minf(max_hp, hp + max_hp / maxf(1.0, float(dcfg.get("repair_s", 60.0))) * delta)
+
+
+# ================================================================== the gunner (host)
+
+## The assault and rounds 31..39: the machine gun and the 75 mm on the dead it can see, by ShermanRules (what is worth
+## a shell, what the machine gun takes first, where to watch). Damage is a fraction of the round's zombie health
+## (less in the assault: the team still has to hold it); it never fires at, near or across a player, pays no Scrip.
 func _assist_step(delta: float) -> void:
 	var dir: ZombieDirector = get_tree().get_first_node_in_group(&"director") as ZombieDirector
 	if dir == null:
 		return
 	_scan_t -= delta
-	_gun_t -= delta
 	_mg_t -= delta
-	var rh: float = float(RoundManager.current_health())
+	_watch_clock += delta
+	var rh: float = float(RoundManager.current_health()) * (float(acfg.get("assault_damage_mult", 1.0)) if defending else 1.0)
 	if _scan_t <= 0.0:
-		_scan_t = 0.35
+		_scan_t = float(acfg.get("scan_s", 0.3))
 		_choose_targets(dir)
-	# the machine gun: a burst, then a gap
-	if _mg_left > 0:
-		_mg_shot_t -= delta
-		if _mg_shot_t <= 0.0:
-			_mg_shot_t = 1.0 / maxf(1.0, float(acfg.get("mg_rate", 9.0)))
-			_mg_left -= 1
-			_mg_shot(rh)
-	elif _mg_t <= 0.0 and _mg_target != null and is_instance_valid(_mg_target) and _mg_target.is_active():
-		_mg_left = int(acfg.get("mg_burst", 7))
-		_mg_t = float(acfg.get("mg_gap", 2.2)) + float(_mg_left) / maxf(1.0, float(acfg.get("mg_rate", 9.0)))
-	# the main gun
+	var mg_ok: bool = _mg_target != null and is_instance_valid(_mg_target) and _mg_target.is_active()
+	# the turret: the 75 mm's target once it is nearly loaded, else the machine gun's, else the watch
 	if _gun_target != Vector3.INF:
 		aim_world(_gun_target)
-		if _gun_t <= 0.0 and aimed_at(_gun_target, float(acfg.get("aim_tolerance_deg", 3.0))):
-			_gun_t = float(acfg.get("gun_interval", 11.0))
-			fire_main(_gun_target, rh)
-			_gun_target = Vector3.INF
-	elif _mg_target != null and is_instance_valid(_mg_target):
+		if _gun_t <= 0.0 and gun_laid(_gun_target, float(acfg.get("aim_tolerance_deg", 3.0))):
+			# the last look before the lanyard: where the shell will really burst, and who is near that now
+			var burst: Vector3 = burst_point(muzzle(), _gun_target)
+			if not ShermanRules.shell_allowed(burst, _dead, _player_points(), global_transform, muzzle(), acfg):
+				shots_held += 1
+				_gun_t = float(acfg.get("gun_hold_s", 1.0))
+				_gun_target = Vector3.INF
+			elif ShermanRules.shell_has_target(burst, _dead, acfg):   # (a pack still rising: it waits, laid on them)
+				_gun_t = float(acfg.get("gun_reload_s", acfg.get("gun_interval", 6.5)))
+				fire_main(_gun_target, rh)
+				_gun_target = Vector3.INF
+	elif mg_ok:
 		aim_world(_mg_target.global_position + Vector3.UP * 1.0)
+	else:
+		var wy: float = ShermanRules.watch_yaw(_dead, global_transform, acfg)
+		_turret_yaw_target = wy if not is_nan(wy) else ShermanRules.scan_yaw(_watch_clock, acfg)
+		_gun_pitch_target = 0.0
+	# the machine gun: a burst, then a gap; only with the turret laid on its target (no rounds thrown wide of it)
+	var laid: bool = mg_ok and laid_on(_mg_target.global_position, float(acfg.get("mg_aim_tolerance_deg", 5.0)))
+	if _mg_left > 0:
+		if laid:   # (a target lost mid-burst: the rest of the burst is for the next one, not thrown away with a new gap)
+			_mg_shot_t -= delta
+			if _mg_shot_t <= 0.0:
+				_mg_shot_t = 1.0 / maxf(1.0, float(acfg.get("mg_rate", 9.0)))
+				_mg_left -= 1
+				_mg_shot(rh)
+	elif _mg_t <= 0.0 and laid:
+		_mg_left = int(acfg.get("mg_burst", 7))
+		_mg_t = float(acfg.get("mg_gap", 2.2)) + float(_mg_left) / maxf(1.0, float(acfg.get("mg_rate", 9.0)))
 
 
 func _visible(from: Vector3, to: Vector3) -> bool:
@@ -499,55 +665,68 @@ func _visible(from: Vector3, to: Vector3) -> bool:
 	return get_world_3d().direct_space_state.intersect_ray(q).is_empty()
 
 
-func _near_player(p: Vector3, m: float) -> bool:
+## Where every player stands (the downed too: nothing bursts by a man on the ground). Not the driver: the guns are
+## theirs.
+func _player_points() -> Array:
+	var out: Array = []
 	for n: Node in get_tree().get_nodes_in_group(&"players"):
 		var pl: Player = n as Player
-		if pl != null and pl.is_alive() and pl.global_position.distance_to(p) < m:
-			return true
-	return false
+		if pl != null and pl != driver and not pl.spectating:
+			out.append(pl.global_position)
+	return out
 
 
+static func is_boss(z: Node) -> bool:
+	return z is HomageBoss or z is Foreman or z is Screamer
+
+
+## The gunner's picture of the dead (every scan_s): the ones it may shoot (in range, in sight, up out of the ground,
+## not under the guns) and the ones it only knows of (rising, behind a wall, out to watch_m), then its two targets.
 func _choose_targets(dir: ZombieDirector) -> void:
 	var rng_m: float = float(acfg.get("range", 45.0))
-	var eye: Vector3 = global_transform * Vector3(0, 2.4, -0.3)
-	var seen: Array[Zombie] = []
+	var know_m: float = maxf(rng_m, float(acfg.get("watch_m", 60.0)))
+	var under_m: float = float(acfg.get("mg_min_m", 3.5)) - 1.3   # (hugging the hull: under the guns)
+	var xf: Transform3D = global_transform
+	var eye: Vector3 = xf * Vector3(0, 2.4, -0.3)
+	var was: Zombie = _mg_target
+	var cur: int = -1
+	_dead.clear()
+	seen_now = 0
 	for z: Zombie in dir.active_zombies():
-		if not z.is_active() or z.state == Zombie.State.EMERGE or z.state == Zombie.State.DEAD:
+		if not z.is_active() or z.state == Zombie.State.DEAD:
 			continue
-		var d: float = z.global_position.distance_to(global_position)
-		if d > rng_m or near_hull(z.global_position, float(acfg.get("mg_min_m", 3.5)) - 1.3):   # (hugging the hull: under the guns)
+		var pos: Vector3 = z.global_position
+		var d: float = ShermanRules.flat(pos, xf.origin)
+		if d > know_m:
 			continue
-		if not _visible(eye, z.global_position + Vector3.UP * 1.1):
-			continue
-		seen.append(z)
-	_mg_target = null
-	var best: float = INF
-	for z2: Zombie in seen:
-		var d2: float = z2.global_position.distance_to(global_position)
-		if d2 < best:
-			best = d2
-			_mg_target = z2
-	if _gun_target != Vector3.INF or _gun_t > 1.5:
+		var under: bool = ShermanRules.hull_dist(xf, pos) < under_m
+		var lay: bool = d <= rng_m and not under and _visible(eye, pos + Vector3.UP * 1.1)
+		var ok: bool = lay and z.state != Zombie.State.EMERGE
+		if z == was:
+			cur = _dead.size()
+		if ok:
+			seen_now += 1
+		_dead.append({"pos": pos, "z": z, "ok": ok, "lay": lay, "under": under, "fire": FireZombie.is_fire(z), "boss": is_boss(z),
+			"on_hull": z.prey is ShermanAttackPoint, "hp": z.hp / maxf(1.0, z.max_hp)})
+	var players: Array = _player_points()
+	var i: int = ShermanRules.pick_mg(_dead, players, xf, coax(), acfg, cur)
+	_mg_target = (_dead[i] as Dictionary)["z"] if i >= 0 else null
+	# the 75 mm: chosen while the last seconds of the reload run (the machine gun has the turret until then); a
+	# target once taken is followed (the pack moves), and dropped when it is no longer worth a shell or safe
+	if _gun_t > float(acfg.get("gun_lay_lead_s", 2.5)):
+		_gun_target = Vector3.INF
 		return
-	# the 75 mm: a pack (gun_cluster within gun_cluster_m) or one far off, never within gun_player_clear_m of a player
-	var cm: float = float(acfg.get("gun_cluster_m", 4.0))
-	var best_n: int = 0
-	var pick: Vector3 = Vector3.INF
-	for z3: Zombie in seen:
-		var c: int = 0
-		for z4: Zombie in seen:
-			if z4.global_position.distance_to(z3.global_position) <= cm:
-				c += 1
-		var far: bool = z3.global_position.distance_to(global_position) >= float(acfg.get("gun_lone_m", 18.0))
-		if (c >= int(acfg.get("gun_cluster", 2)) or far) and c > best_n and not _near_player(z3.global_position, float(acfg.get("gun_player_clear_m", 5.0))):
-			best_n = c
-			pick = z3.global_position + Vector3.UP * 0.6
-	_gun_target = pick
+	var pick: Dictionary = {}
+	if _gun_target != Vector3.INF:
+		pick = ShermanRules.pick_shell(_dead, players, xf, muzzle(), acfg, _gun_target, float(acfg.get("gun_follow_m", 5.0)))
+	if pick.is_empty():
+		pick = ShermanRules.pick_shell(_dead, players, xf, muzzle(), acfg)
+	_gun_target = (pick["at"] as Vector3) + Vector3.UP * 0.6 if not pick.is_empty() else Vector3.INF
+
 
 
 func _mg_shot(round_health: float) -> void:
 	if _mg_target == null or not is_instance_valid(_mg_target) or not _mg_target.is_active():
-		_mg_left = 0
 		return
 	var from: Vector3 = coax()
 	var aim: Vector3 = _mg_target.global_position + Vector3.UP * _rng.randf_range(0.8, 1.5)
@@ -578,12 +757,8 @@ func fire_mg_fx(from: Vector3, to: Vector3, hit: bool) -> void:
 func fire_main(at: Vector3, round_health: float) -> void:
 	shots_main += 1
 	var from: Vector3 = muzzle()
-	var to: Vector3 = at
-	# the shell bursts where it first meets the world or the target
-	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, at + (at - from).normalized() * 3.0, MASK_LOS)
-	var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(q)
-	if not hit.is_empty() and (hit["position"] as Vector3).distance_to(from) < from.distance_to(at):
-		to = hit["position"]
+	var to: Vector3 = burst_point(from, at)
+	last_burst = to
 	fire_main_fx(from, to)
 	if Net.replicating():
 		Net.mirror(self, &"fire_main_fx", [from, to])
@@ -602,6 +777,15 @@ func fire_main(at: Vector3, round_health: float) -> void:
 		var dmg: float = round_health * lerpf(float(acfg.get("gun_damage_edge_frac", 0.15)), float(acfg.get("gun_damage_frac", 0.7)), k)
 		if z.take_damage(dmg, &"torso", &"sherman_75", 0, &"explosive"):
 			kills += 1
+
+
+## Where a shell laid on `at` bursts: where it first meets the world, or the target.
+func burst_point(from: Vector3, at: Vector3) -> Vector3:
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, at + (at - from).normalized() * 3.0, MASK_LOS)
+	var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(q)
+	if not hit.is_empty() and (hit["position"] as Vector3).distance_to(from) < from.distance_to(at):
+		return hit["position"]
+	return at
 
 
 func fire_main_fx(from: Vector3, to: Vector3) -> void:
@@ -632,9 +816,18 @@ func fire_main_fx(from: Vector3, to: Vector3) -> void:
 func wreck(explode: bool) -> void:
 	if mode == Mode.WRECK:
 		return
+	# whoever drives is out and clear before it goes up (the host says where; a puppet that has not heard yet puts
+	# its own driver down too)
+	if not puppet:
+		put_out()
+	elif driver != null:
+		_leave(exit_spot(), true)
 	mode = Mode.WRECK
 	attackable = false
 	assisting = false
+	defending = false
+	drivable = false
+	_mg_on = false
 	speed = 0.0
 	hp = 0.0
 	if _engine != null:
@@ -711,13 +904,21 @@ func net_state_args() -> Array:
 func net_state(pos: Vector3, yaw_rad: float, tyaw: float, gpitch: float, frac: float, m: int, spd: float) -> void:
 	if not puppet:
 		return
-	_net_from = global_transform
-	_net_to = Transform3D(Basis(Vector3.UP, yaw_rad), pos)
-	_net_lerp = 0.0
-	_turret_yaw_target = tyaw
-	_gun_pitch_target = gpitch
 	hp = frac * max_hp
-	speed = spd
+	if is_driven() and driver.is_local:
+		# this machine drives it: the hull, the turret and the speed are its own; the host's place is taken only
+		# when the two have come apart (the host refused a move)
+		if ShermanRules.flat(pos, global_position) > float(dcfg.get("net_snap_m", 4.0)):
+			global_position = pos
+			rotation.y = yaw_rad
+			speed = 0.0
+	else:
+		_net_from = global_transform
+		_net_to = Transform3D(Basis(Vector3.UP, yaw_rad), pos)
+		_net_lerp = 0.0
+		_turret_yaw_target = tyaw
+		_gun_pitch_target = gpitch
+		speed = spd
 	if m == int(Mode.WRECK) and mode != Mode.WRECK:
 		wreck(true)
 	elif m != int(Mode.WRECK):
@@ -729,3 +930,602 @@ func _puppet_step(delta: float) -> void:
 		return
 	_net_lerp = minf(1.0, _net_lerp + delta / 0.2)
 	global_transform = _net_from.interpolate_with(_net_to, _net_lerp)
+
+
+# ================================================================== the driver (T-261)
+# A player in the commander's hatch: the hull by the move keys, the turret by the view, the 75 mm and the machine gun
+# by fire and aim. The host decides who is in (ShermanUse.interact runs there) and what the guns do; the driver's own
+# machine moves the hull and tells the host (net_by_drive_state), which mirrors it on (net_state).
+
+func prompt_for(p: Player) -> String:
+	if p == null or driver != null or is_wreck() or not drivable or mode != Mode.PARKED:
+		return ""
+	if lock_t > 0.0:
+		return "The crew is making repairs: %d s" % int(ceil(lock_t))
+	return "Hold [%s] to climb into the Sherman" % Interactable.prompt_key(&"interact")
+
+
+func can_use(p: Player) -> bool:
+	if p == null:
+		return false
+	if driver == p:
+		return seat == Seat.SEATED
+	return ShermanRules.may_mount(drivable and mode == Mode.PARKED, is_wreck(), driver != null, lock_t > 0.0,
+		p.is_alive(), p.downed, p.is_bot or p.bot_driven or p.is_companion, p.carry != null)
+
+
+## The host's (or solo's) decision: in, or the driver climbs out. Mirrored to every client.
+func on_use(p: Player) -> void:
+	if not can_use(p):
+		return
+	if driver == null:
+		_board(p)
+		Net.mirror(self, &"net_board", [p.player_id])
+	else:
+		var to: Vector3 = exit_spot()
+		Net.mirror(self, &"net_leave", [to, false])
+		_leave(to, false)
+
+
+## Client: the host let player `pid` in.
+func net_board(pid: int) -> void:
+	var p: Player = _player(pid)
+	if p != null:
+		_board(p)
+
+
+## Client: the driver climbs out (or is put out: `forced`) at `to`.
+func net_leave(to: Vector3, forced: bool) -> void:
+	_leave(to, forced)
+
+
+func _player(pid: int) -> Player:
+	for n: Node in get_tree().get_nodes_in_group(&"players"):
+		if n is Player and (n as Player).player_id == pid:
+			return n as Player
+	return null
+
+
+## True when this machine moves the hull: its driver is this machine's human, or nobody drives and it is the host's.
+func simulates() -> bool:
+	if driver != null and is_instance_valid(driver):
+		return driver.is_local
+	return not puppet
+
+
+func is_driven() -> bool:
+	return driver != null and is_instance_valid(driver)
+
+
+func _board(p: Player) -> void:
+	driver = p
+	seat = Seat.IN
+	_seat_t = 0.0
+	_from = p.global_position
+	_use_released = false
+	_hold_t = 0.0
+	dismount_wanted = false
+	fire_wanted = false
+	mg_wanted = false
+	_mg_on = false
+	_mg_sent = false
+	_mg_left = 0
+	_gun_target = Vector3.INF
+	speed = 0.0
+	drives += 1
+	_collider.add_collision_exception_with(p)
+	p.add_collision_exception_with(_collider)
+	if p.is_local:
+		p.begin_carry(self)
+		p.carry_fire = false
+		if p.weapons != null:
+			# their own gun is put away: both hands on the hatch's rim, below the view
+			p.weapons.set_hands(&"climb")
+			p.weapons.hands_shoulder = 0.0
+			p.weapons.hand_r = Transform3D(Horse.HAND_R_BASIS, LadderClimb.HANDS_DOWN_R + Vector3.DOWN * 0.6)
+			p.weapons.hand_l = Transform3D(Horse.HAND_L_BASIS, LadderClimb.HANDS_DOWN_L + Vector3.DOWN * 0.6)
+	AudioDirector.play_3d("sherman_clang", global_transform * Vector3(0.4, 2.7, 0.0), -8.0)
+
+
+func _leave(to: Vector3, forced: bool) -> void:
+	if driver == null or not is_instance_valid(driver):
+		driver = null
+		seat = Seat.NONE
+		return
+	_to = to
+	speed = 0.0
+	_mg_on = false
+	if forced:
+		forced_off += 1
+		_finish_exit()
+	elif seat != Seat.OUT:
+		seat = Seat.OUT
+		_seat_t = 0.0
+		_from = driver.global_position
+
+
+func _finish_exit() -> void:
+	var p: Player = driver
+	driver = null
+	seat = Seat.NONE
+	speed = 0.0
+	_mg_on = false
+	if p == null or not is_instance_valid(p):
+		return
+	if p.is_local:
+		if hud != null and is_instance_valid(hud):
+			hud.set_drive("")
+		if p.carry == self:
+			p.prompt_text = ""
+			p.global_position = _to
+			p.velocity = Vector3.ZERO
+			p.end_carry(self)
+			if p.weapons != null:
+				p.weapons.set_hands(&"")
+			if p.is_alive():
+				p.land_dip(2.0)
+	if is_inside_tree():
+		get_tree().create_timer(0.6).timeout.connect(_solid_again.bind(p.get_instance_id()))
+
+
+func _solid_again(player_iid: int) -> void:
+	var p: Player = instance_from_id(player_iid) as Player
+	if p != null and is_instance_valid(p) and driver != p and _collider != null:
+		_collider.remove_collision_exception_with(p)
+		p.remove_collision_exception_with(_collider)
+
+
+## Host: the driver is out now, set down beside the hull: the wreck, the dive bomber, the dead on the hull, the
+## driver down in the hatch.
+func put_out() -> void:
+	if driver == null or not is_instance_valid(driver):
+		driver = null
+		seat = Seat.NONE
+		return
+	var to: Vector3 = exit_spot()
+	Net.mirror(self, &"net_leave", [to, true])
+	_leave(to, true)
+
+
+## Where the driver's feet are in the hatch (the commander's cupola, the eye a little over its rim).
+func seat_feet() -> Vector3:
+	return turret.global_transform * (CUPOLA + Vector3(0, float(dcfg.get("eye_over_hatch", 0.5)), 0)) - Vector3.UP * Player.EYE_STAND
+
+
+## The first free place beside the hull: floor under it at the hull's height, room for a body (the hull itself
+## counts as in the way), a clear line from the hull's side, in a zone that is open, on ground a player can walk
+## away from (the navmesh within a metre). Beside the hatch first, then round the hull, then a ring farther out.
+func exit_spot() -> Vector3:
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	var ex: Array[RID] = []
+	if driver != null and is_instance_valid(driver):
+		ex.append(driver.get_rid())
+	var offs: Array[Vector3] = [Vector3(2.15, 0, 0.3), Vector3(-2.15, 0, 0.3), Vector3(2.15, 0, -1.7), Vector3(-2.15, 0, -1.7),
+		Vector3(2.15, 0, 2.2), Vector3(-2.15, 0, 2.2), Vector3(0, 0, 4.0), Vector3(0, 0, -3.9)]
+	for k: int in 12:
+		var a: float = TAU * float(k) / 12.0
+		offs.append(Vector3(cos(a) * 5.0, 0, sin(a) * 5.5))
+	var cap: CapsuleShape3D = CapsuleShape3D.new()
+	cap.radius = 0.34
+	cap.height = 1.6
+	var nav: RID = get_world_3d().navigation_map
+	for off: Vector3 in offs:
+		var w: Vector3 = global_transform * off
+		var rq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(w + Vector3.UP * 1.4, w + Vector3.DOWN * 1.0, 1, ex)
+		var hit: Dictionary = space.intersect_ray(rq)
+		if hit.is_empty() or absf((hit["position"] as Vector3).y - global_position.y) > 0.6:
+			continue
+		var spot: Vector3 = hit["position"]
+		var sq: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
+		sq.shape = cap
+		sq.transform = Transform3D(Basis.IDENTITY, spot + Vector3.UP * 0.92)
+		sq.collision_mask = MASK_HULL
+		sq.exclude = ex
+		if not space.intersect_shape(sq, 1).is_empty():
+			continue
+		var side: Vector3 = global_transform * Vector3(clampf(off.x, -1.0, 1.0), 0, clampf(off.z, -2.5, 2.5))
+		var clear: bool = true
+		for h: float in [0.35, 1.1]:
+			var lq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(side + Vector3.UP * h, spot + Vector3.UP * h, 1 | (1 << 5) | (1 << 8), ex)
+			if not space.intersect_ray(lq).is_empty():
+				clear = false
+		if not clear:
+			continue
+		if _has_zones:
+			var z: StringName = ZoneVolume.zone_at(get_tree(), spot + Vector3.UP * 0.6)
+			if z == &"" or not GameState.is_zone_open(z):
+				continue
+		var np: Vector3 = NavigationServer3D.map_get_closest_point(nav, spot)
+		if np != Vector3.ZERO and np.distance_to(spot) > 1.0:
+			continue
+		return spot
+	# nothing free round it (it should not happen on open ground): the nearest walkable ground to its side
+	var side_w: Vector3 = global_transform * Vector3(2.4, 0, 0)
+	var np2: Vector3 = NavigationServer3D.map_get_closest_point(nav, side_w)
+	return np2 if np2 != Vector3.ZERO else side_w
+
+
+func _driver_step(delta: float) -> void:
+	var p: Player = driver
+	if p == null or not is_instance_valid(p) or not p.is_inside_tree():
+		driver = null
+		seat = Seat.NONE
+		speed = 0.0
+		_mg_on = false
+		return
+	_seat_t += delta
+	_bump_t = maxf(0.0, _bump_t - delta)
+	if not puppet and (p.downed or p.spectating):
+		put_out()   # down in the hatch (a burst, a bomb): out beside the hull, where a teammate can reach them
+		return
+	if p.is_local and p.carry != self:
+		# something else took the body (a respawn): the hatch is free again
+		if puppet and Net.session != null:
+			Net.session.request_interact(use)
+			_leave(exit_spot(), true)
+		else:
+			put_out()
+		return
+	match seat:
+		Seat.IN:
+			var k: float = clampf(_seat_t / maxf(0.05, float(dcfg.get("mount_s", 0.9))), 0.0, 1.0)
+			if p.is_local:
+				var a: float = smoothstep(0.0, 1.0, k)
+				p.global_position = _from.lerp(seat_feet(), a) + Vector3.UP * (0.45 * sin(a * PI))
+				p.velocity = Vector3.ZERO
+				p.carry_roll = 0.08 * sin(a * PI)
+			if k >= 1.0:
+				seat = Seat.SEATED
+				_seat_t = 0.0
+				if p.is_local:
+					p.carry_roll = 0.0
+		Seat.SEATED:
+			if p.is_local:
+				_drive_local(p, delta)
+		Seat.OUT:
+			var k2: float = clampf(_seat_t / maxf(0.05, float(dcfg.get("dismount_s", 0.6))), 0.0, 1.0)
+			if p.is_local and p.carry == self:
+				var a2: float = smoothstep(0.0, 1.0, k2)
+				p.global_position = _from.lerp(_to, a2) + Vector3.UP * (0.35 * sin(a2 * PI))
+				p.velocity = Vector3.ZERO
+				p.carry_roll = -0.08 * sin(a2 * PI)
+			if k2 >= 1.0:
+				_finish_exit()
+
+
+## The driver's own machine, seated: the keys (or a smoke's override) drive the hull, the view lays the turret, fire
+## asks for a shell, aim holds the machine gun; Use held again or jump climbs out.
+func _drive_local(p: Player, delta: float) -> void:
+	var throttle: float = 0.0
+	var st: float = 0.0
+	var want_fire: bool = fire_wanted
+	var want_mg: bool = mg_wanted
+	var want_off: bool = dismount_wanted
+	if input_override is Vector3:
+		st = (input_override as Vector3).x
+		throttle = (input_override as Vector3).y
+	elif GameState.phase == GameState.Phase.PLAYING and not GameState.input_blocked and not p.bot_driven:
+		var v: Vector2 = Input.get_vector(&"move_left", &"move_right", &"move_forward", &"move_back", 0.2)
+		st = v.x
+		throttle = -v.y
+		want_fire = want_fire or Input.is_action_pressed(&"fire")
+		want_mg = want_mg or Input.is_action_pressed(&"ads")
+		# Use held again (after the press that climbed in is let go), or jump: out
+		if not Input.is_action_pressed(&"interact"):
+			_use_released = true
+			_hold_t = 0.0
+		elif _use_released:
+			_hold_t += delta
+			if _hold_t >= float(dcfg.get("hold_s", 0.4)):
+				want_off = true
+		if Input.is_action_just_pressed(&"jump"):
+			want_off = true
+	_step_drive(throttle, st, delta)
+	aim_world(aim_override if aim_override is Vector3 else _view_point(p))
+	p.global_position = seat_feet()
+	p.velocity = Vector3.ZERO
+	p.carry_pitch = body.rotation.x * 0.6   # the hull's rock when it starts, stops and fires
+	var reload: float = float(acfg.get("gun_reload_s", acfg.get("gun_interval", 6.5)))
+	if want_fire and _gun_t <= 0.0:
+		fire_wanted = false
+		var at: Vector3 = gun_line_point()
+		if puppet and Net.session != null:
+			_gun_t = reload   # (its own clock, for the HUD; the host's decides)
+			Net.session.request_call(self, &"net_by_fire_main", [at])
+		else:
+			_driver_fire(at)
+	if want_mg != _mg_sent:
+		_mg_sent = want_mg
+		if puppet and Net.session != null:
+			Net.session.request_call(self, &"net_by_mg", [want_mg])
+		else:
+			_mg_on = want_mg
+	if puppet and Net.session != null:
+		_send_t -= delta
+		if _send_t <= 0.0:
+			_send_t = float(dcfg.get("net_send_s", 0.1))
+			Net.session.request_call(self, &"net_by_drive_state", [global_position, rotation.y, _turret_yaw_target, _gun_pitch_target, speed])
+	# what the keys do is said for the first seconds of the first few drives; the gun's state all the time
+	p.prompt_text = "[%s] drive   [%s] 75 mm   [%s] machine gun   hold [%s] or [%s] to climb out" % [
+		"move", Interactable.prompt_key(&"fire"), Interactable.prompt_key(&"ads"), Interactable.prompt_key(&"interact"),
+		Interactable.prompt_key(&"jump")] if _seat_t < float(dcfg.get("help_s", 8.0)) and drives <= 3 else ""
+	if hud != null and is_instance_valid(hud):
+		hud.set_drive("75 MM READY" if _gun_t <= 0.0 else "75 MM LOADING %.1f" % _gun_t, ShermanRules.reload_frac(_gun_t, reload))
+	if want_off:
+		dismount_wanted = false
+		_use_released = false   # one request: a client waits a round trip for the host's answer
+		_hold_t = 0.0
+		p.use_interactable(use)   # the host decides (and mirrors it); solo runs it here
+
+
+## The point the driver looks at: where the view first meets the world, out to gun_range.
+func _view_point(p: Player) -> Vector3:
+	var from: Vector3 = p.camera.global_position
+	var to: Vector3 = from - p.camera.global_basis.z * float(dcfg.get("gun_range", 60.0))
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, to, MASK_LOS)
+	var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(q)
+	return hit["position"] if not hit.is_empty() else to
+
+
+## Where the barrel points: the first thing on its line, the world or one of the dead, out to gun_range (the
+## driver's shell goes where the gun is laid, not where the view is: a turret still swinging fires wide).
+func gun_line_point() -> Vector3:
+	var from: Vector3 = muzzle()
+	var dirv: Vector3 = -gun.global_transform.basis.z.normalized()
+	var reach: float = float(dcfg.get("gun_range", 60.0))
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, from + dirv * reach, MASK_LOS)
+	var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(q)
+	if not hit.is_empty():
+		reach = from.distance_to(hit["position"])
+	var dir: ZombieDirector = get_tree().get_first_node_in_group(&"director") as ZombieDirector
+	if dir != null:
+		reach = float(_first_on_line(dir, from, dirv, reach, float(dcfg.get("shell_hit_m", 0.7)))[1])
+	return from + dirv * reach
+
+
+## The first of the dead within `wide` of the line from `from` along `dirv`, no farther than `reach`:
+## [zombie or null, metres along the line].
+func _first_on_line(dir: ZombieDirector, from: Vector3, dirv: Vector3, reach: float, wide: float) -> Array:
+	var best: Zombie = null
+	var best_t: float = reach
+	for z: Zombie in dir.active_zombies():
+		if not z.is_active() or z.state == Zombie.State.EMERGE or z.state == Zombie.State.DEAD:
+			continue
+		var t: float = (z.global_position + Vector3.UP * 1.0 - from).dot(dirv)
+		if t < 0.5 or t > best_t:
+			continue
+		var on_line: Vector3 = from + dirv * t
+		if ShermanRules.flat(on_line, z.global_position) <= wide and on_line.y >= z.global_position.y - 0.1 and on_line.y <= z.global_position.y + 1.9:
+			best = z
+			best_t = t
+	return [best, best_t]
+
+
+## One step of the tracks under the driver: ShermanRules.drive_step, then the place it would stand is tried: the
+## whole move, the turn alone, the run alone; what it cannot do it does not (it stops with a clank).
+func _step_drive(throttle: float, st: float, delta: float) -> void:
+	var before: float = speed
+	var r: Dictionary = ShermanRules.drive_step(speed, throttle, st, delta, dcfg)
+	var v: float = r["speed"]
+	var yr: float = r["yaw_rate"]
+	if absf(v) > 0.001 or absf(yr) > 0.0001:
+		var yaw: float = rotation.y + yr * delta
+		var pos: Vector3 = global_position + Vector3(-sin(yaw), 0, -cos(yaw)) * v * delta
+		var straight: Vector3 = global_position + Vector3(-sin(rotation.y), 0, -cos(rotation.y)) * v * delta
+		if may_be_at(pos, yaw):
+			global_position = pos
+			rotation.y = yaw
+		elif absf(v) > 0.001 and absf(yr) > 0.0001 and may_be_at(straight, rotation.y):
+			global_position = straight
+		elif absf(yr) > 0.0001 and may_be_at(global_position, yaw):
+			rotation.y = yaw
+			_refuse(before)
+			v = 0.0
+		else:
+			_refuse(before)
+			v = 0.0
+	speed = v
+	_rock_v += (before - speed) * 0.4
+
+
+func _refuse(was: float) -> void:
+	if absf(was) > 0.5 and _bump_t <= 0.0:
+		refusals += 1
+		_bump_t = 1.0
+		AudioDirector.play_3d("sherman_clang", global_transform * Vector3(0, 1.0, -2.6 if was > 0.0 else 2.8), -6.0)
+
+
+## May the hull be at `pos`, heading `yaw`? The ground rule (ShermanRules.may_stand: the driving zones and boxes,
+## the kept-clear discs), nothing solid in the hull's way (the world, a door, a barricade, the map's edge, a player
+## or a bot: it stops for them), flat ground under all of it.
+func may_be_at(pos: Vector3, yaw: float) -> bool:
+	var xf: Transform3D = Transform3D(Basis(Vector3.UP, yaw), pos)
+	return _may_stand(xf) and _hull_free(xf) and _ground_ok(xf)
+
+
+func _may_stand(xf: Transform3D) -> bool:
+	var zones: Array = []
+	if _has_zones and not (ground.get("drive_zones", []) as Array).is_empty():
+		for pt: Vector3 in ShermanRules.footprint(xf):
+			zones.append(ZoneVolume.zone_at(get_tree(), pt + Vector3.UP * 0.6))
+	return ShermanRules.may_stand(xf, zones, ground)
+
+
+func _hull_free(xf: Transform3D) -> bool:
+	var bx: BoxShape3D = BoxShape3D.new()
+	bx.size = Vector3(2.62 + 0.16, 1.3, 5.9 + 0.16)
+	var sq: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
+	sq.shape = bx
+	sq.transform = xf * Transform3D(Basis.IDENTITY, Vector3(0, 0.6 + 0.65, -0.05))   # from 0.6 m up: it rolls over what is lower
+	sq.collision_mask = MASK_HULL
+	var ex: Array[RID] = [_collider.get_rid()]
+	if driver != null and is_instance_valid(driver):
+		ex.append(driver.get_rid())
+	sq.exclude = ex
+	return get_world_3d().direct_space_state.intersect_shape(sq, 1).is_empty()
+
+
+func _ground_ok(xf: Transform3D) -> bool:
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	var tol: float = float(dcfg.get("ground_tol_m", 0.45))
+	var ex: Array[RID] = [_collider.get_rid()]
+	for l: Vector3 in [Vector3(0, 0, 0), Vector3(1.1, 0, -2.6), Vector3(-1.1, 0, -2.6), Vector3(1.1, 0, 2.7), Vector3(-1.1, 0, 2.7)]:
+		var w: Vector3 = xf * l
+		var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(w + Vector3.UP * 0.55, w + Vector3.DOWN * 1.5, 1, ex)
+		var hit: Dictionary = space.intersect_ray(q)
+		if hit.is_empty() or absf((hit["position"] as Vector3).y - xf.origin.y) > tol:
+			return false
+	return true
+
+
+## Host: a shell for the driver, along the barrel. The round's own health scale; the dead only; no Scrip.
+func _driver_fire(at: Vector3) -> void:
+	_gun_t = float(acfg.get("gun_reload_s", acfg.get("gun_interval", 6.5)))
+	driver_shells += 1
+	fire_main(at, float(RoundManager.current_health()))
+
+
+## Client driver -> host (NetMatch.on_quest_request passes who asked): a shell, if it is their tank and it is loaded.
+func net_by_fire_main(pid: int, at: Vector3) -> void:
+	if puppet or driver == null or not is_instance_valid(driver) or driver.player_id != pid or seat != Seat.SEATED:
+		return
+	if _gun_t > float(dcfg.get("net_reload_slack_s", 0.4)) or at.distance_to(muzzle()) > float(dcfg.get("gun_range", 60.0)) + 10.0:
+		return
+	_driver_fire(at)
+
+
+func net_by_mg(pid: int, on: bool) -> void:
+	if not puppet and driver != null and is_instance_valid(driver) and driver.player_id == pid:
+		_mg_on = on
+
+
+## Client driver -> host: where the hull and the guns are. Taken when it is their tank, the step is one the tracks
+## could have made (ShermanRules.plausible_move) and the place is one it may stand in; else the host's stands and
+## the driver's machine is pulled back to it (net_state).
+func net_by_drive_state(pid: int, pos: Vector3, yaw_rad: float, tyaw: float, gpitch: float, spd: float) -> void:
+	if puppet or driver == null or not is_instance_valid(driver) or driver.player_id != pid or driver.is_local:
+		return
+	var now: int = Time.get_ticks_msec()
+	var dt: float = clampf(float(now - _last_state_ms) / 1000.0, 0.05, 1.0) if _last_state_ms > 0 else 0.1
+	_last_state_ms = now
+	_turret_yaw_target = wrapf(tyaw, -PI, PI)
+	_gun_pitch_target = clampf(gpitch, deg_to_rad(-10.0), deg_to_rad(25.0))
+	var xf: Transform3D = Transform3D(Basis(Vector3.UP, yaw_rad), Vector3(pos.x, global_position.y, pos.z))
+	if not ShermanRules.plausible_move(global_position, xf.origin, dt, dcfg) or not _may_stand(xf):
+		speed = 0.0
+		return
+	_net_from = global_transform
+	_net_to = xf
+	_net_lerp = 0.0
+	speed = clampf(spd, -float(dcfg.get("reverse_speed", 1.6)), float(dcfg.get("speed", 3.2)))
+
+
+## What a client may ask of the host on this node (NetMatch.on_quest_request "call").
+func net_callable() -> Array:
+	return ["net_by_fire_main", "net_by_mg", "net_by_drive_state"]
+
+
+## Host, while a player drives: their machine gun, the dead under the tracks, the dead that come for the driver.
+func _driver_host_step(delta: float) -> void:
+	var dir: ZombieDirector = get_tree().get_first_node_in_group(&"director") as ZombieDirector
+	if dir == null:
+		return
+	var rh: float = float(RoundManager.current_health())
+	if _mg_on and seat == Seat.SEATED:
+		_mg_shot_t -= delta
+		if _mg_shot_t <= 0.0:
+			_mg_shot_t = 1.0 / maxf(1.0, float(acfg.get("mg_rate", 9.0)))
+			_mg_line_shot(dir, rh)
+	_crush_step(dir, rh, delta)
+	_mob_t -= delta
+	if _mob_t <= 0.0:
+		_mob_t = float(dcfg.get("mob_scan_s", 0.5))
+		_mob_step(dir)
+
+
+## One round from the coax along the barrel: the first of the dead on its line (within mg_hit_m of it) before the
+## world is hit.
+func _mg_line_shot(dir: ZombieDirector, round_health: float) -> void:
+	var from: Vector3 = coax()
+	var dirv: Vector3 = -gun.global_transform.basis.z.normalized()
+	var reach: float = float(acfg.get("range", 45.0))
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, from + dirv * reach, MASK_LOS)
+	var wall: Dictionary = get_world_3d().direct_space_state.intersect_ray(q)
+	if not wall.is_empty():
+		reach = from.distance_to(wall["position"])
+	var first: Array = _first_on_line(dir, from, dirv, reach, float(dcfg.get("mg_hit_m", 0.5)))
+	var best: Zombie = first[0]
+	var best_t: float = first[1]
+	var to: Vector3 = from + dirv * best_t
+	shots_mg += 1
+	fire_mg_fx(from, to, best != null)
+	if Net.replicating():
+		Net.mirror(self, &"fire_mg_fx", [from, to, best != null])
+	if best != null:
+		mg_hits += 1
+		if best.take_damage(round_health * float(acfg.get("mg_damage_frac", 0.03)), &"torso", &"sherman_mg", 0, &"bullet"):
+			kills += 1
+
+
+## The dead under the tracks (ShermanRules.crush / under_tracks): one at a time, each costs the hull speed. The
+## bosses are not run down (they are not stopped by it either: nothing of theirs changes). No Scrip.
+func _crush_step(dir: ZombieDirector, round_health: float, delta: float) -> void:
+	_crush_cd = maxf(0.0, _crush_cd - delta)
+	var hit: Dictionary = ShermanRules.crush(speed, _crush_cd, dcfg)
+	if hit.is_empty():
+		return
+	var inv: Transform3D = global_transform.affine_inverse()
+	for z: Zombie in dir.active_zombies():
+		if not z.is_active() or is_boss(z) or z.state == Zombie.State.EMERGE or z.state == Zombie.State.DEAD:
+			continue
+		if not ShermanRules.under_tracks(inv * z.global_position, speed, dcfg):
+			continue
+		crushed += 1
+		_crush_cd = float(dcfg.get("crush_cooldown", 0.35))
+		speed *= 1.0 - float(hit["slow"])
+		_rock_v += 0.5
+		AudioDirector.play_3d("impact_flesh", z.global_position + Vector3.UP * 0.4, 2.0)
+		if z.take_damage(round_health * float(hit["damage_frac"]), &"torso", &"sherman_tracks", 0, &"world"):
+			kills += 1
+		return
+
+
+## The dead that come for the driver cannot reach the hatch: within mob_m of the hull they go for the hull instead
+## (an attack point as their prey, the assault's own hook), and the hull pays (take_swipe). When the driver is out
+## the points stop being catchable and they turn on the players again by themselves.
+func _mob_step(dir: ZombieDirector) -> void:
+	var reach: float = float(dcfg.get("mob_m", 6.0))
+	for z: Zombie in dir.active_zombies():
+		if z.prey != null or not z.is_active() or is_boss(z) or z.state == Zombie.State.EMERGE or z.state == Zombie.State.DEAD:
+			continue
+		if ShermanRules.hull_dist(global_transform, z.global_position) > reach or z.call(&"_nearest_player") != driver:
+			continue
+		var best: ShermanAttackPoint = null
+		var best_s: float = INF
+		for ap: ShermanAttackPoint in points:
+			var s: float = float(ap.holders_now(dir)) * 100.0 + ap.global_position.distance_to(z.global_position)
+			if s < best_s:
+				best_s = s
+				best = ap
+		z.prey = best
+
+
+## The Use point on the hull (the Player's interaction ray finds its area; a co-op client's use runs on the host).
+class ShermanUse extends Interactable:
+	var tank: ShermanTank = null
+
+	func build_greybox() -> void:
+		pass
+
+	func get_prompt(player: Player) -> String:
+		return tank.prompt_for(player) if tank != null else ""
+
+	func can_interact(player: Player) -> bool:
+		return tank != null and tank.can_use(player)
+
+	func hold_time(_player: Player) -> float:
+		return float(tank.dcfg.get("hold_s", 0.4)) if tank != null else 0.4
+
+	func interact(player: Player) -> void:
+		if tank != null:
+			tank.on_use(player)

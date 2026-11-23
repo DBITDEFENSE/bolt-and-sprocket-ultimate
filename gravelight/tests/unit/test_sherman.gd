@@ -7,6 +7,10 @@ extends GutTest
 ## the raid's shelter rule (inside the inn zones or its box), its damage by distance (a full-health player survives
 ## one bomb that is not on top of them; nobody inside is touched), the route on the map (it parks outside the yard's
 ## gate, never in it), the dive bomber's pass (it releases on the dive's line above the target), the model's parts.
+## T-261: the gunner's judgement (ShermanRules: what is worth a shell, what the machine gun takes, never at, near or
+## across a player, the burning ones dropped far out and left alone close in, the watch, the reload), the driver's
+## rules (the tracks' step, where the hull may stand on the Inn, who may climb in, the dead under the tracks, the
+## dead on a driven hull), and the rig driven on a floor against a wall, its puppet and its host-side checks.
 
 
 func _cfg() -> Dictionary:
@@ -103,8 +107,9 @@ func test_assist_damage() -> void:
 	var per_burst: float = float(s["mg_burst"]) * float(s["mg_hit_chance"]) * float(s["mg_damage_frac"])
 	assert_true(per_burst > 0.1 and per_burst < 0.25, "a burst takes a sixth of one of the dead (%.2f)" % per_burst)
 	var cycle: float = float(s["mg_gap"]) + float(s["mg_burst"]) / float(s["mg_rate"])
-	var kills_per_min: float = 60.0 / cycle * per_burst + 60.0 / float(s["gun_interval"]) * 1.0
-	assert_lt(kills_per_min, 12.0, "at most about ten a minute with targets everywhere (%.1f): it helps, it does not win the round" % kills_per_min)
+	var kills_per_min: float = 60.0 / cycle * per_burst + 60.0 / float(s["gun_reload_s"]) * 1.0
+	# (T-261: the 75 mm every 6.5 s, not every 11 s: the bound went from 12 to 14 with it)
+	assert_lt(kills_per_min, 14.0, "at most about a dozen a minute with targets everywhere (%.1f): it helps, it does not win the round" % kills_per_min)
 	assert_eq(int(_cfg()["assist"]["rounds"]), 9, "rounds 31..39")
 	assert_gt(float(s["gun_damage_frac"]), 0.5, "the 75 mm kills what is at its feet")
 	assert_gte(float(s["gun_player_clear_m"]), 4.0, "never near a player")
@@ -219,3 +224,275 @@ func test_tank_rig() -> void:
 	assert_false(tk.points[0].is_catchable(), "a wreck is not hit")
 	var body: AnimatableBody3D = tk.get_node("HullBody")
 	assert_eq(body.collision_layer, 1 << 10, "its collider is on the map-edge layer only (zombies and shots pass)")
+
+
+# ================================================================== T-261: the gunner's judgement, the driver
+
+func _e(x: float, z: float, more: Dictionary = {}) -> Dictionary:
+	var e: Dictionary = {"pos": Vector3(x, 0, z), "ok": true, "lay": true, "under": false, "fire": false, "boss": false, "on_hull": false, "hp": 1.0}
+	e.merge(more, true)
+	return e
+
+
+func test_gunner_shell_choice() -> void:
+	var a: Dictionary = _cfg()["assist"]
+	var hull: Transform3D = Transform3D.IDENTITY   # the bow to -z
+	var muzzle: Vector3 = Vector3(0, 2.3, -4.0)
+	var none: Array = []
+	# a pack before a single: three together at 20 m beat one alone at 25 m
+	var dead: Array = [_e(0, -25), _e(12, -16), _e(13, -17), _e(12.5, -18)]
+	var pick: Dictionary = ShermanRules.pick_shell(dead, none, hull, muzzle, a)
+	assert_false(pick.is_empty(), "a pack is worth a shell")
+	assert_lt((pick["at"] as Vector3).distance_to(Vector3(12.5, 0, -17)), 2.0, "the shell goes into the pack, not at the single")
+	# one of the dead alone and close is the machine gun's: no shell
+	assert_true(ShermanRules.pick_shell([_e(0, -10)], none, hull, muzzle, a).is_empty(), "one alone at 10 m: no shell wasted")
+	assert_false(ShermanRules.pick_shell([_e(0, -20)], none, hull, muzzle, a).is_empty(), "one alone far off (past gun_lone_m): a shell")
+	# a burning one still far from everyone is worth a shell alone; the boss too
+	assert_false(ShermanRules.pick_shell([_e(0, -10, {"fire": true})], none, hull, muzzle, a).is_empty(), "a burning one at 10 m, nobody near: a shell")
+	assert_false(ShermanRules.pick_shell([_e(0, -10, {"boss": true})], none, hull, muzzle, a).is_empty(), "the boss: a shell")
+	assert_gt(ShermanRules.shell_weight(_e(0, 0, {"fire": true}), a), ShermanRules.shell_weight(_e(0, 0), a) * 2.0)
+	# never near a player, never across one
+	var pack: Array = [_e(10, -20), _e(11, -21), _e(10, -22)]
+	assert_false(ShermanRules.pick_shell(pack, none, hull, muzzle, a).is_empty())
+	assert_true(ShermanRules.pick_shell(pack, [Vector3(13, 0, -21)], hull, muzzle, a).is_empty(), "a player 3 m from the pack: hold fire")
+	assert_false(ShermanRules.pick_shell(pack, [Vector3(10, 0, -32)], hull, muzzle, a).is_empty(), "a player 10 m beyond it: fire")
+	assert_true(ShermanRules.pick_shell(pack, [Vector3(5, 0, -12)], hull, muzzle, a).is_empty(), "a player on the line of fire: hold fire")
+	assert_gte(float(a["gun_player_clear_m"]), 4.0, "never near a player")
+	# never on its own hull, never past its range
+	assert_true(ShermanRules.pick_shell([_e(2, -3), _e(3, -3), _e(2, -4)], none, hull, muzzle, a).is_empty(), "the ones on the hull are under the guns")
+	assert_true(ShermanRules.pick_shell([_e(0, -80), _e(1, -80)], none, hull, muzzle, a).is_empty(), "out of range")
+	# a burning one that would burst on a player or on the hull is left alone, and so is a pack it stands in
+	var with_fire: Array = [_e(10, -20), _e(11, -21), _e(14, -22, {"fire": true})]
+	assert_true(ShermanRules.pick_shell(with_fire, [Vector3(17, 0, -25)], hull, muzzle, a).is_empty(), "a burning one in the blast 4 m from a player: hold fire")
+	assert_false(ShermanRules.pick_shell(with_fire, [Vector3(30, 0, -40)], hull, muzzle, a).is_empty())
+	# what it cannot see is no target; a pack still rising is laid on, and fired at once one is up
+	var rising: Array = [_e(10, -20, {"ok": false}), _e(11, -21, {"ok": false})]
+	var lay: Dictionary = ShermanRules.pick_shell(rising, none, hull, muzzle, a)
+	assert_false(lay.is_empty(), "a pack coming up out of the ground is laid on")
+	assert_false(ShermanRules.shell_has_target(lay["at"], rising, a), "but not fired at while none is up")
+	rising[0]["ok"] = true
+	assert_true(ShermanRules.shell_has_target(lay["at"], rising, a))
+	assert_true(ShermanRules.pick_shell([_e(10, -20, {"ok": false, "lay": false}), _e(11, -21, {"ok": false, "lay": false})], none, hull, muzzle, a).is_empty(), "behind a wall: nothing")
+	# a target taken is followed, not swapped for one across the field
+	var two: Array = [_e(10, -20), _e(11, -21), _e(-20, -20), _e(-21, -21), _e(-20, -22)]
+	var kept: Dictionary = ShermanRules.pick_shell(two, none, hull, muzzle, a, Vector3(10, 0, -20), float(a["gun_follow_m"]))
+	assert_lt((kept["at"] as Vector3).x, 12.0)
+	assert_gt((kept["at"] as Vector3).x, 9.0, "the pack already laid on is kept")
+
+
+func test_gunner_machine_gun_choice() -> void:
+	var a: Dictionary = _cfg()["assist"]
+	var hull: Transform3D = Transform3D.IDENTITY
+	var coax: Vector3 = Vector3(0.2, 2.3, -1.5)
+	var none: Array = []
+	assert_eq(ShermanRules.pick_mg([_e(0, -30), _e(0, -12)], none, hull, coax, a), 1, "the nearer one")
+	assert_eq(ShermanRules.pick_mg([_e(0, -12), _e(0, -30, {"fire": true})], none, hull, coax, a), 1, "a burning one far off first: drop it out there")
+	assert_eq(ShermanRules.pick_mg([_e(0, -12), _e(0, -14, {"hp": 0.2})], none, hull, coax, a), 1, "the one already hurt is finished")
+	assert_eq(ShermanRules.pick_mg([_e(0, -12), _e(3, -13, {"on_hull": true})], none, hull, coax, a), 1, "the one going for the hull")
+	assert_eq(ShermanRules.pick_mg([_e(0, -12), _e(0.5, -13)], none, hull, coax, a, 1), 1, "it stays on the one it is on")
+	# never at or near a player, never across one
+	assert_eq(ShermanRules.pick_mg([_e(0, -12)], [Vector3(0.8, 0, -12)], hull, coax, a), -1, "one of the dead at a player's elbow: not the tank's to shoot")
+	assert_eq(ShermanRules.pick_mg([_e(0, -20)], [Vector3(0.1, 0, -10)], hull, coax, a), -1, "a player in the line of fire")
+	assert_eq(ShermanRules.pick_mg([_e(0, -20)], [Vector3(6, 0, -10)], hull, coax, a), 0)
+	# a burning one beside a player or against the hull is not shot (it would burst there)
+	assert_eq(ShermanRules.pick_mg([_e(0, -12, {"fire": true})], [Vector3(3, 0, -12)], hull, coax, a), -1, "a burning one 3 m from a player: left alone")
+	assert_eq(ShermanRules.mg_score(_e(3.0, 0, {"fire": true}), none, hull, a), -INF, "a burning one against the hull: left alone")
+	assert_eq(ShermanRules.mg_score(_e(0, -12, {"ok": false}), none, hull, a), -INF, "what it cannot see")
+	assert_eq(ShermanRules.mg_score(_e(0, -4, {"under": true}), none, hull, a), -INF, "what is under the guns")
+	assert_gt(float(a["fire_clear_m"]), float(_cfg()["fire_zombie"]["blast_radius"]), "clear of a burst's whole radius")
+
+
+func test_gunner_watch_and_reload() -> void:
+	var a: Dictionary = _cfg()["assist"]
+	var hull: Transform3D = Transform3D(Basis(Vector3.UP, 0.7), Vector3(22, 0, 52))
+	assert_true(is_nan(ShermanRules.watch_yaw([], hull, a)), "nobody about: no bearing (it scans)")
+	# three of the dead off the right side, one behind: it watches the right side
+	var dead: Array = []
+	for l: Vector3 in [Vector3(14, 0, 1), Vector3(15, 0, -1), Vector3(13, 0, 0), Vector3(0, 0, 30)]:
+		dead.append({"pos": hull * l})
+	var yaw: float = ShermanRules.watch_yaw(dead, hull, a)
+	assert_almost_eq(wrapf(yaw, -PI, PI), -PI * 0.5, 0.2, "the turret onto the side they are thickest on (%.0f deg)" % rad_to_deg(yaw))
+	# a burning one counts double; what is nearer counts more
+	var d2: Array = [{"pos": hull * Vector3(0, 0, -20)}, {"pos": hull * Vector3(0, 0, 20), "fire": true}]
+	assert_almost_eq(absf(wrapf(ShermanRules.watch_yaw(d2, hull, a), -PI, PI)), PI, 0.2, "the burning one's side")
+	assert_eq(ShermanRules.scan_yaw(0.0, a), 0.0, "the scan starts over the bow")
+	assert_almost_eq(ShermanRules.scan_yaw(float(a["watch_dwell_s"]) + 0.1, a), PI, 0.01, "then the road behind")
+	# the reload: believable for a 75 mm with a crew, and no faster than the round can bear
+	var reload: float = float(a["gun_reload_s"])
+	assert_true(reload >= 4.0 and reload <= 9.0, "a shell every %.1f s at most" % reload)
+	assert_eq(ShermanRules.reload_frac(reload, reload), 0.0)
+	assert_eq(ShermanRules.reload_frac(0.0, reload), 1.0)
+	assert_almost_eq(ShermanRules.reload_frac(reload * 0.5, reload), 0.5, 0.001)
+	assert_lt(float(a["gun_lay_lead_s"]), reload, "the machine gun has the turret for part of every reload")
+	assert_true(float(a["assault_damage_mult"]) > 0.3 and float(a["assault_damage_mult"]) <= 1.0, "in the assault it fights at part strength")
+	assert_gte(float(a["assault_damage_mult"]) * float(a["gun_damage_frac"]), float(_cfg()["fire_zombie"]["health_mult"]), "a shell on a burning one in the assault kills it (out there, not on the hull)")
+
+
+func test_drive_rules() -> void:
+	var d: Dictionary = _cfg()["drive"]
+	# the throttle: it gathers speed, tops out, brakes harder than it pulls
+	var v: float = 0.0
+	for i: int in 600:
+		v = ShermanRules.drive_step(v, 1.0, 0.0, 1.0 / 60.0, d)["speed"]
+	assert_almost_eq(v, float(d["speed"]), 0.01, "full ahead: its top speed")
+	var one: float = ShermanRules.drive_step(0.0, 1.0, 0.0, 1.0, d)["speed"]
+	assert_almost_eq(one, float(d["accel"]), 0.01, "a second from rest: accel")
+	assert_lt(ShermanRules.drive_step(v, 0.0, 0.0, 0.5, d)["speed"], v - 1.0, "the keys let go: it brakes")
+	var back: float = 0.0
+	for i2: int in 600:
+		back = ShermanRules.drive_step(back, -1.0, 0.0, 1.0 / 60.0, d)["speed"]
+	assert_almost_eq(back, -float(d["reverse_speed"]), 0.01, "slower backwards")
+	assert_lte(float(d["speed"]), float(_cfg()["tank"]["drive_speed"]), "no faster than it came up the road")
+	# the steer: on the spot it pivots; right is clockwise (rotation.y falls); at speed it turns wider and slower
+	var pivot: Dictionary = ShermanRules.drive_step(0.0, 0.0, 1.0, 0.1, d)
+	assert_eq(float(pivot["speed"]), 0.0)
+	assert_almost_eq(float(pivot["yaw_rate"]), -deg_to_rad(float(d["pivot_rate_deg"])), 0.001, "a pivot turn to the right")
+	assert_gt(float(ShermanRules.drive_step(0.0, 0.0, -1.0, 0.1, d)["yaw_rate"]), 0.0, "left is the other way")
+	var fast: Dictionary = ShermanRules.drive_step(v, 1.0, 1.0, 0.1, d)
+	assert_lt(absf(float(fast["yaw_rate"])), absf(float(pivot["yaw_rate"])), "at speed it turns less sharply")
+	assert_lt(float(fast["speed"]), v, "and a turn costs speed")
+	# the tracks: only a moving hull runs the dead down, one per cooldown, the leading end only
+	assert_true(ShermanRules.crush(0.5, 0.0, d).is_empty(), "creeping: nobody is run down")
+	assert_true(ShermanRules.crush(3.0, 0.2, d).is_empty(), "not again within the cooldown")
+	var c: Dictionary = ShermanRules.crush(3.0, 0.0, d)
+	assert_gte(float(c["damage_frac"]), 1.0, "what goes under the tracks dies")
+	assert_gt(float(c["slow"]), 0.1, "and costs the hull speed")
+	assert_true(ShermanRules.crush(-1.5, 0.0, d).has("slow"), "backing over them too")
+	assert_true(ShermanRules.under_tracks(Vector3(0.5, 0, -2.5), 3.0, d), "under the bow, going forward")
+	assert_false(ShermanRules.under_tracks(Vector3(0.5, 0, 2.5), 3.0, d), "at the stern, going forward: not run down")
+	assert_true(ShermanRules.under_tracks(Vector3(0.5, 0, 2.5), -1.5, d), "at the stern, backing")
+	assert_false(ShermanRules.under_tracks(Vector3(2.0, 0, -1.0), 3.0, d), "beside the hull")
+	# the dead on a driven hull: outside the assault they put the driver out, they do not wreck it
+	assert_true(ShermanRules.driven_out(1.0, false))
+	assert_false(ShermanRules.driven_out(2000.0, false))
+	assert_false(ShermanRules.driven_out(0.0, true), "in the assault it burns (the boss bar's rule)")
+	# a client driver's reports
+	assert_true(ShermanRules.plausible_move(Vector3.ZERO, Vector3(0.6, 0, 0), 0.1, d), "a step the tracks could make")
+	assert_false(ShermanRules.plausible_move(Vector3.ZERO, Vector3(12, 0, 0), 0.1, d), "not a jump across the field")
+
+
+func test_drive_ground_on_the_inn() -> void:
+	var b: Dictionary = _blk()
+	assert_eq(b["drive_zones"], ["GROUNDS"], "the grounds only")
+	var r: Array = b["route"]
+	var park: Vector3 = Vector3(float(r[r.size() - 1][0]), 0, float(r[r.size() - 1][2]))
+	var yaw: float = ShermanEvent._leg_yaw(PackedVector3Array([Vector3(float(r[r.size() - 2][0]), 0, float(r[r.size() - 2][2])), park]), 0)
+	var at_park: Transform3D = Transform3D(Basis(Vector3.UP, yaw), park)
+	assert_true(ShermanRules.may_stand(at_park, [], b), "where it parks is ground it may stand on")
+	# (a zone list in footprint order: all GROUNDS passes, one YARD point fails)
+	var zs: Array = []
+	for i: int in 9:
+		zs.append(&"GROUNDS")
+	assert_true(ShermanRules.may_stand(at_park, zs, b))
+	zs[4] = &"YARD"
+	assert_false(ShermanRules.may_stand(at_park, zs, b), "a point of the hull in the yard: no")
+	var ahead: Transform3D = Transform3D(Basis(Vector3.UP, yaw), park + Vector3(-sin(yaw), 0, -cos(yaw)) * 2.0)
+	assert_false(ShermanRules.may_stand(ahead, [], b), "2 m on towards the gate: the gate's mouth is kept clear")
+	for p: Vector3 in [Vector3(18, 0, 42), Vector3(15, 0, 28), Vector3(12, 0, 8), Vector3(18, 0, 49.5), Vector3(30, 0, 70), Vector3(64, 0, 55), Vector3(-14, 0, 55), Vector3(45, 0, 16)]:
+		assert_false(ShermanRules.may_stand(Transform3D(Basis.IDENTITY, p), [], b), "never at %s (the yard, the stable, the inn, the gate, beyond the edge)" % str(p))
+	for p2: Vector3 in [Vector3(30, 0, 57), Vector3(5, 0, 57), Vector3(48, 0, 40), Vector3(-5, 0, 40), Vector3(48, 0, 58)]:
+		assert_true(ShermanRules.may_stand(Transform3D(Basis.IDENTITY, p2), [], b), "the road, the meadow, the fields: %s" % str(p2))
+	# the horseshoe is wide enough that a hull (6 m) left across it closes nothing
+	for bx: Variant in b["drive_boxes"]:
+		var v: Array = bx
+		assert_gte(minf(float(v[2]) - float(v[0]), float(v[3]) - float(v[1])), 11.0, "a driving box at least 11 m across")
+	var inn: Array = b["inn_box"]
+	for bx2: Variant in b["drive_boxes"]:
+		var v2: Array = bx2
+		assert_true(float(v2[1]) > float(inn[1][2]) + 3.0, "every driving box is clear of the inn")
+	assert_true(ShermanRules.in_no_go(Vector3(18, 0, 48.6), b["drive_no_go"]))
+	assert_eq(ShermanRules.footprint(Transform3D.IDENTITY).size(), 9)
+
+
+func test_mount_rules() -> void:
+	# (drivable, wreck, has_driver, locked, alive, downed, is_bot, carried)
+	assert_true(ShermanRules.may_mount(true, false, false, false, true, false, false, false), "parked, free: a living human climbs in")
+	assert_false(ShermanRules.may_mount(false, false, false, false, true, false, false, false), "not while it is still coming up the road, nor once the bomber is on its way")
+	assert_false(ShermanRules.may_mount(true, true, false, false, true, false, false, false), "not a wreck")
+	assert_false(ShermanRules.may_mount(true, false, true, false, true, false, false, false), "one driver at a time")
+	assert_false(ShermanRules.may_mount(true, false, false, true, true, false, false, false), "not while the crew repairs")
+	assert_false(ShermanRules.may_mount(true, false, false, false, true, true, false, false), "not downed")
+	assert_false(ShermanRules.may_mount(true, false, false, false, true, false, true, false), "not a bot")
+	assert_false(ShermanRules.may_mount(true, false, false, false, true, false, false, true), "not from a ladder or a saddle")
+	var d: Dictionary = _cfg()["drive"]
+	assert_gt(float(d["lockout_s"]), 10.0)
+	assert_gte(float(d["repair_s"]), float(d["lockout_s"]))
+	for k: String in ["bail_banner", "bail_small", "stuka_banner"]:
+		assert_ne(str(d[k]), "")
+
+
+func test_tank_driver_rig() -> void:
+	var tk: ShermanTank = ShermanTank.new()
+	tk.setup(_cfg()["tank"], _cfg()["assist"], 8000.0, _cfg()["drive"], {})
+	add_child_autofree(tk)
+	var floor_body: StaticBody3D = StaticBody3D.new()
+	var cs: CollisionShape3D = CollisionShape3D.new()
+	var bx: BoxShape3D = BoxShape3D.new()
+	bx.size = Vector3(60, 1, 60)
+	cs.shape = bx
+	floor_body.add_child(cs)
+	floor_body.position = Vector3(0, -0.5, 0)
+	add_child_autofree(floor_body)
+	var wall: StaticBody3D = StaticBody3D.new()
+	var ws: CollisionShape3D = CollisionShape3D.new()
+	var wb: BoxShape3D = BoxShape3D.new()
+	wb.size = Vector3(20, 3, 1)
+	ws.shape = wb
+	wall.add_child(ws)
+	wall.position = Vector3(0, 1.5, -12.0)
+	add_child_autofree(wall)
+	await wait_physics_frames(3)
+	assert_not_null(tk.use, "the hull is a Use point")
+	assert_eq(tk.prompt_for(null), "")
+	assert_false(tk.drivable, "not drivable until the event says it is parked")
+	assert_has(tk.net_callable(), "net_by_drive_state", "a client driver's calls are whitelisted")
+	assert_true(tk.simulates(), "nobody driving: the host moves it")
+	# it drives over open ground and stops at a wall
+	assert_true(tk.may_be_at(Vector3(0, 0, -3), 0.0), "open ground ahead")
+	assert_false(tk.may_be_at(Vector3(0, 0, -9.5), 0.0), "the bow in a wall")
+	assert_false(tk.may_be_at(Vector3(40, 0, 0), 0.0), "no ground under it")
+	for i: int in 240:
+		tk._step_drive(1.0, 0.0, 1.0 / 60.0)
+	assert_lt(tk.global_position.z, -4.0, "full ahead for 4 s: it has moved (z %.1f)" % tk.global_position.z)
+	for i2: int in 600:
+		tk._step_drive(1.0, 0.0, 1.0 / 60.0)
+	assert_gt(tk.global_position.z, -12.0 + 0.5 + 2.97, "it stopped short of the wall (z %.1f)" % tk.global_position.z)
+	assert_eq(tk.speed, 0.0)
+	assert_gt(tk.refusals, 0, "a refusal was counted")
+	for i5: int in 180:
+		tk._step_drive(-1.0, 0.0, 1.0 / 60.0)
+	assert_gt(tk.global_position.z, -7.0, "it backs off the wall (z %.1f)" % tk.global_position.z)
+	for i6: int in 60:
+		tk._step_drive(0.0, 0.0, 1.0 / 60.0)
+	var yaw0: float = tk.rotation.y
+	for i3: int in 60:
+		tk._step_drive(0.0, 1.0, 1.0 / 60.0)
+	assert_lt(tk.rotation.y, yaw0 - 0.3, "it pivots to the right on the spot")
+	# the dead on a driven hull outside the assault cannot wreck it; in the assault it burns
+	tk.take_damage(20000.0)
+	assert_false(tk.is_wreck(), "outside the assault: not wrecked")
+	assert_almost_eq(tk.hp, 1.0, 0.01, "its health stops at 1")
+	tk._upkeep(30.0)
+	assert_almost_eq(tk.hp, 4000.0, 20.0, "the crew repairs: half of it back in half of repair_s")
+	tk.attackable = true
+	tk.take_damage(20000.0)
+	assert_true(tk.is_wreck(), "in the assault it brews up at 0")
+	assert_false(tk.can_use(null))
+	assert_eq(tk.prompt_for(null), "")
+	# a puppet takes the host's place for the hull
+	var pk: ShermanTank = ShermanTank.new()
+	pk.setup(_cfg()["tank"], _cfg()["assist"], 8000.0, _cfg()["drive"], {})
+	pk.puppet = true
+	add_child_autofree(pk)
+	pk.net_state(Vector3(5, 0, 5), 1.0, 0.3, 0.0, 0.5, int(ShermanTank.Mode.PARKED), 2.0)
+	assert_false(pk.simulates())
+	for i4: int in 20:
+		pk._puppet_step(1.0 / 60.0)
+	assert_almost_eq(pk.global_position.x, 5.0, 0.01, "the puppet follows the host")
+	assert_almost_eq(pk.hp, 4000.0, 0.1)
+	# the host does not take a drive report from somebody who is not the driver
+	pk.puppet = false
+	pk.net_by_drive_state(7, Vector3(9, 0, 9), 0.0, 0.0, 0.0, 1.0)
+	pk.net_by_fire_main(7, Vector3(0, 0, -20))
+	assert_almost_eq(pk.global_position.x, 5.0, 0.01, "nobody drives: a stranger's report moves nothing")
+	assert_eq(pk.shots_main, 0, "and fires nothing")
