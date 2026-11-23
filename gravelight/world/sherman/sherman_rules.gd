@@ -9,6 +9,8 @@ extends RefCounted
 ## One of the dead, as the gunner sees it, is a Dictionary:
 ##   pos (Vector3)   where it stands
 ##   ok (bool)       it can be shot now: in range, in sight, not still rising
+##   lay (bool)      the gun may be laid on it: as ok, or still rising in sight (a pack coming up out of the ground
+##                   is laid on while it rises; the shell waits until one of them is up)
 ##   under (bool)    hugging the hull, under the guns
 ##   fire (bool)     a burning one (it bursts where it dies)
 ##   boss (bool)     the round's boss
@@ -59,11 +61,11 @@ static func shell_weight(e: Dictionary, a: Dictionary) -> float:
 	return 1.0
 
 
-## The shell's worth at `at`: every one of the dead within its radius, whole within the inner ring, a quarter at the
-## edge.
+## The shell's worth at `at`: every one of the dead within its radius, whole within gun_cluster_m (a pack), a quarter
+## at the edge.
 static func shell_score(at: Vector3, dead: Array, a: Dictionary) -> float:
 	var r: float = float(a.get("gun_radius", 6.0))
-	var inner: float = float(a.get("gun_inner_m", 2.0))
+	var inner: float = float(a.get("gun_cluster_m", 4.0))
 	var s: float = 0.0
 	for e: Dictionary in dead:
 		var d: float = (e["pos"] as Vector3).distance_to(at)
@@ -105,7 +107,7 @@ static func pick_shell(dead: Array, players: Array, hull: Transform3D, muzzle: V
 	var need: float = float(a.get("gun_min_score", 2.0))
 	var rng_m: float = float(a.get("range", 45.0))
 	for e: Dictionary in dead:
-		if not bool(e.get("ok", false)) or bool(e.get("under", false)):
+		if not bool(e.get("lay", e.get("ok", false))) or bool(e.get("under", false)):
 			continue
 		var at: Vector3 = e["pos"]
 		if near != Vector3.INF and flat(at, near) > near_m:
@@ -121,6 +123,16 @@ static func pick_shell(dead: Array, players: Array, hull: Transform3D, muzzle: V
 			best_s = s
 			best = {"at": at, "score": s}
 	return best
+
+
+## Is one of the dead that can be shot now (`ok`) within the shell's radius of `at`? (A shell laid on a rising pack
+## is not fired into empty snow.)
+static func shell_has_target(at: Vector3, dead: Array, a: Dictionary) -> bool:
+	var r: float = float(a.get("gun_radius", 6.0))
+	for e: Dictionary in dead:
+		if bool(e.get("ok", false)) and (e["pos"] as Vector3).distance_to(at) <= r:
+			return true
+	return false
 
 
 ## Seconds until the gun is loaded again, as a 0..1 share done.

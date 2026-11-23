@@ -60,6 +60,8 @@ var shots_main: int = 0
 var shots_mg: int = 0
 var mg_hits: int = 0
 var kills: int = 0
+var seen_now: int = 0                  # how many of the dead the gunner could shoot at its last look
+var last_burst: Vector3 = Vector3.INF   # where the last shell burst
 var shots_held: int = 0                # shells the gunner did not fire because a player had come too near
 var drives: int = 0
 var driver_shells: int = 0
@@ -513,6 +515,14 @@ func aimed_at(p: Vector3, tol_deg: float) -> bool:
 	return rad_to_deg(fwd.angle_to(d)) <= tol_deg
 
 
+## The 75 mm's lay: on `p` within `tol_deg`, or, for what stands too close to be reached at the gun's lowest lay,
+## the turret on it and the gun down on its stop.
+func gun_laid(p: Vector3, tol_deg: float) -> bool:
+	if aimed_at(p, tol_deg):
+		return true
+	return laid_on(p, tol_deg) and _gun_pitch_target <= deg_to_rad(-9.9) and gun.rotation.x <= deg_to_rad(-9.5)
+
+
 ## True when the turret points within `tol_deg` of `p` on the flat (the machine gun's lay: it is swung by hand
 ## inside the mantlet, so what stands close under the gun's lowest lay can still be hit).
 func laid_on(p: Vector3, tol_deg: float) -> bool:
@@ -602,16 +612,17 @@ func _assist_step(delta: float) -> void:
 	# the turret: the 75 mm's target once it is nearly loaded, else the machine gun's, else the watch
 	if _gun_target != Vector3.INF:
 		aim_world(_gun_target)
-		if _gun_t <= 0.0 and aimed_at(_gun_target, float(acfg.get("aim_tolerance_deg", 3.0))):
+		if _gun_t <= 0.0 and gun_laid(_gun_target, float(acfg.get("aim_tolerance_deg", 3.0))):
 			# the last look before the lanyard: where the shell will really burst, and who is near that now
 			var burst: Vector3 = burst_point(muzzle(), _gun_target)
-			if ShermanRules.shell_allowed(burst, _dead, _player_points(), global_transform, muzzle(), acfg):
-				_gun_t = float(acfg.get("gun_reload_s", acfg.get("gun_interval", 6.5)))
-				fire_main(_gun_target, rh)
-			else:
+			if not ShermanRules.shell_allowed(burst, _dead, _player_points(), global_transform, muzzle(), acfg):
 				shots_held += 1
 				_gun_t = float(acfg.get("gun_hold_s", 1.0))
-			_gun_target = Vector3.INF
+				_gun_target = Vector3.INF
+			elif ShermanRules.shell_has_target(burst, _dead, acfg):   # (a pack still rising: it waits, laid on them)
+				_gun_t = float(acfg.get("gun_reload_s", acfg.get("gun_interval", 6.5)))
+				fire_main(_gun_target, rh)
+				_gun_target = Vector3.INF
 	elif mg_ok:
 		aim_world(_mg_target.global_position + Vector3.UP * 1.0)
 	else:
@@ -665,6 +676,7 @@ func _choose_targets(dir: ZombieDirector) -> void:
 	var was: Zombie = _mg_target
 	var cur: int = -1
 	_dead.clear()
+	seen_now = 0
 	for z: Zombie in dir.active_zombies():
 		if not z.is_active() or z.state == Zombie.State.DEAD:
 			continue
@@ -673,10 +685,13 @@ func _choose_targets(dir: ZombieDirector) -> void:
 		if d > know_m:
 			continue
 		var under: bool = ShermanRules.hull_dist(xf, pos) < under_m
-		var ok: bool = z.state != Zombie.State.EMERGE and d <= rng_m and not under and _visible(eye, pos + Vector3.UP * 1.1)
+		var lay: bool = d <= rng_m and not under and _visible(eye, pos + Vector3.UP * 1.1)
+		var ok: bool = lay and z.state != Zombie.State.EMERGE
 		if z == was:
 			cur = _dead.size()
-		_dead.append({"pos": pos, "z": z, "ok": ok, "under": under, "fire": FireZombie.is_fire(z), "boss": is_boss(z),
+		if ok:
+			seen_now += 1
+		_dead.append({"pos": pos, "z": z, "ok": ok, "lay": lay, "under": under, "fire": FireZombie.is_fire(z), "boss": is_boss(z),
 			"on_hull": z.prey is ShermanAttackPoint, "hp": z.hp / maxf(1.0, z.max_hp)})
 	var players: Array = _player_points()
 	var i: int = ShermanRules.pick_mg(_dead, players, xf, coax(), acfg, cur)
@@ -692,6 +707,7 @@ func _choose_targets(dir: ZombieDirector) -> void:
 	if pick.is_empty():
 		pick = ShermanRules.pick_shell(_dead, players, xf, muzzle(), acfg)
 	_gun_target = (pick["at"] as Vector3) + Vector3.UP * 0.6 if not pick.is_empty() else Vector3.INF
+
 
 
 func _mg_shot(round_health: float) -> void:
@@ -728,6 +744,7 @@ func fire_main(at: Vector3, round_health: float) -> void:
 	shots_main += 1
 	var from: Vector3 = muzzle()
 	var to: Vector3 = burst_point(from, at)
+	last_burst = to
 	fire_main_fx(from, to)
 	if Net.replicating():
 		Net.mirror(self, &"fire_main_fx", [from, to])
@@ -1236,14 +1253,38 @@ func _view_point(p: Player) -> Vector3:
 	return hit["position"] if not hit.is_empty() else to
 
 
-## Where the barrel points: the first thing on its line, out to gun_range (the driver's shell goes where the gun is
-## laid, not where the view is: a turret still swinging fires wide).
+## Where the barrel points: the first thing on its line, the world or one of the dead, out to gun_range (the
+## driver's shell goes where the gun is laid, not where the view is: a turret still swinging fires wide).
 func gun_line_point() -> Vector3:
 	var from: Vector3 = muzzle()
-	var to: Vector3 = from - gun.global_transform.basis.z.normalized() * float(dcfg.get("gun_range", 60.0))
-	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, to, MASK_LOS)
+	var dirv: Vector3 = -gun.global_transform.basis.z.normalized()
+	var reach: float = float(dcfg.get("gun_range", 60.0))
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, from + dirv * reach, MASK_LOS)
 	var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(q)
-	return hit["position"] if not hit.is_empty() else to
+	if not hit.is_empty():
+		reach = from.distance_to(hit["position"])
+	var dir: ZombieDirector = get_tree().get_first_node_in_group(&"director") as ZombieDirector
+	if dir != null:
+		reach = float(_first_on_line(dir, from, dirv, reach, float(dcfg.get("shell_hit_m", 0.7)))[1])
+	return from + dirv * reach
+
+
+## The first of the dead within `wide` of the line from `from` along `dirv`, no farther than `reach`:
+## [zombie or null, metres along the line].
+func _first_on_line(dir: ZombieDirector, from: Vector3, dirv: Vector3, reach: float, wide: float) -> Array:
+	var best: Zombie = null
+	var best_t: float = reach
+	for z: Zombie in dir.active_zombies():
+		if not z.is_active() or z.state == Zombie.State.EMERGE or z.state == Zombie.State.DEAD:
+			continue
+		var t: float = (z.global_position + Vector3.UP * 1.0 - from).dot(dirv)
+		if t < 0.5 or t > best_t:
+			continue
+		var on_line: Vector3 = from + dirv * t
+		if ShermanRules.flat(on_line, z.global_position) <= wide and on_line.y >= z.global_position.y - 0.1 and on_line.y <= z.global_position.y + 1.9:
+			best = z
+			best_t = t
+	return [best, best_t]
 
 
 ## One step of the tracks under the driver: ShermanRules.drive_step, then the place it would stand is tried: the
@@ -1398,19 +1439,9 @@ func _mg_line_shot(dir: ZombieDirector, round_health: float) -> void:
 	var wall: Dictionary = get_world_3d().direct_space_state.intersect_ray(q)
 	if not wall.is_empty():
 		reach = from.distance_to(wall["position"])
-	var best: Zombie = null
-	var best_t: float = reach
-	var wide: float = float(dcfg.get("mg_hit_m", 0.5))
-	for z: Zombie in dir.active_zombies():
-		if not z.is_active() or z.state == Zombie.State.EMERGE or z.state == Zombie.State.DEAD:
-			continue
-		var t: float = (z.global_position + Vector3.UP * 1.0 - from).dot(dirv)
-		if t < 0.5 or t > best_t:
-			continue
-		var on_line: Vector3 = from + dirv * t
-		if ShermanRules.flat(on_line, z.global_position) <= wide and on_line.y >= z.global_position.y - 0.1 and on_line.y <= z.global_position.y + 1.9:
-			best = z
-			best_t = t
+	var first: Array = _first_on_line(dir, from, dirv, reach, float(dcfg.get("mg_hit_m", 0.5)))
+	var best: Zombie = first[0]
+	var best_t: float = first[1]
 	var to: Vector3 = from + dirv * best_t
 	shots_mg += 1
 	fire_mg_fx(from, to, best != null)

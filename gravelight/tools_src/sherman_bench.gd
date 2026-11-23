@@ -138,7 +138,7 @@ func _assist(which: String) -> void:
 		seen_max[0] = maxi(seen_max[0], n)
 		if _t - t0 >= next_log[0]:
 			next_log[0] += 15.0
-			print("[bench] t %3.0f s: 75 mm %d, mg %d (%d hits), kills %d, the dead within 45 m %d" % [_t - t0, tk.shots_main, tk.shots_mg, tk.mg_hits, tk.kills, n]))
+			print("[bench] t %3.0f s: 75 mm %d, mg %d (%d hits), kills %d, the dead within 45 m %d, in its sight %s" % [_t - t0, tk.shots_main, tk.shots_mg, tk.mg_hits, tk.kills, n, str(tk.get("seen_now"))]))
 	var secs: float = maxf(1.0, _t - t0)
-	print("[bench] RESULT: %s: %.0f s of round 31; 75 mm shells %d (%.1f a minute), machine-gun rounds %d (%d hits), kills %d, most of the dead within 45 m at once %d" % [
-		which, secs, tk.shots_main, float(tk.shots_main) * 60.0 / secs, tk.shots_mg, tk.mg_hits, tk.kills, seen_max[0]])
+	print("[bench] RESULT: %s: %.0f s of round 31; 75 mm shells %d (%.1f a minute), machine-gun rounds %d (%d hits), kills %d, most of the dead within 45 m at once %d, shells held for a player %s" % [
+		which, secs, tk.shots_main, float(tk.shots_main) * 60.0 / secs, tk.shots_mg, tk.mg_hits, tk.kills, seen_max[0], str(tk.get("shots_held"))])
