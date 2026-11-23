@@ -277,7 +277,9 @@ func _assist(ev: ShermanEvent) -> void:
 	# (the 75 mm is held empty for this check, so what dies here dies by the machine gun)
 	var made1: int = _dir().spawn_burst([Vector3(40.0, 0.0, 57.0), Vector3(41.5, 0.0, 58.0), Vector3(40.5, 0.0, 59.0)], 3)
 	var hits0: int = tk.mg_hits
-	var shot: bool = await _until(func() -> bool: return tk.shots_mg > mg0 + 6 and tk.mg_hits > hits0, 25.0, func() -> void:
+	# (three rounds and a hit: with all three down after four hits the gun has nothing left to fire at, and the old
+	# "more than six rounds" then failed about every second run)
+	var shot: bool = await _until(func() -> bool: return tk.shots_mg > mg0 + 2 and tk.mg_hits > hits0, 25.0, func() -> void:
 		tk._gun_t = 10.0)
 	tk._gun_t = 0.0
 	_check(made1 > 0 and shot and tk.shots_main == sh0, "the machine gun on the dead in its sight (%d rounds, %d hits)" % [tk.shots_mg - mg0, tk.mg_hits - hits0])
