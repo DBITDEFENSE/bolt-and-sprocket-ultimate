@@ -4,6 +4,9 @@
 // in Compatibility.
 shader_type spatial;
 render_mode unshaded, blend_mix, depth_draw_never, cull_disabled, shadows_disabled, fog_disabled;
+// DayCycle (T-259): by day the deck takes the day sky's colour (0 = the authored night).
+global uniform float gl_daylight;
+global uniform vec4 gl_day_sky : source_color;
 
 uniform vec4 cloud_color : source_color = vec4(0.09, 0.1, 0.13, 0.85);
 uniform vec4 lit_color : source_color = vec4(0.62, 0.68, 0.8, 1.0);
@@ -54,6 +57,7 @@ void fragment() {
 	float dist = length(off);
 	float east = max(0.0, dot(normalize(off), normalize(dawn_dir.xz)));
 	col += dawn_color.rgb * pow(east, 3.0) * smoothstep(radius * 0.25, radius, dist) * (0.4 + 0.6 * c);
+	col = mix(col, gl_day_sky.rgb * (0.5 + 0.55 * c), gl_daylight);
 	ALBEDO = col;
 	ALPHA = cloud_color.a * (0.35 + 0.65 * c) * (1.0 - smoothstep(radius * 0.7, radius, dist));
 }

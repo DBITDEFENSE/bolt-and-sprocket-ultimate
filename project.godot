@@ -84,3 +84,14 @@ enabled=PackedStringArray("res://addons/gl_web_export/plugin.cfg")
 [debug]
 
 file_logging/max_log_files=30
+
+[shader_globals]
+
+gl_daylight={
+"type": "float",
+"value": 0.0
+}
+gl_day_sky={
+"type": "color",
+"value": Color(0.5, 0.56, 0.64, 1)
+}

@@ -145,6 +145,7 @@ func _ready() -> void:
 	AudioDirector.start_ambient()
 	ZoneAmbience.attach(self)   # T-145: per-zone beds + one-shots when data/gravelight/ambience/<map>.json exists
 	_attach_map_ambience()   # UPDATE 10 (contract C1): the living world from data/gravelight/<map>_ambience.json
+	DayCycle.attach(self)   # T-259: one day every 24 rounds (data/gravelight/day_cycle.json); presentation only
 	CrucibleRoom.attach(self)   # T-175: the Crucible's room (props, lights, hum, forge fx) from data/gravelight/crucible_rooms.json
 	(func() -> void: LampGlow.attach(self)).call_deferred()   # lamp glass dims with its light (T-057)
 	ShadowProxies.build(self)   # the static batches' shadows drawn from a few merged depth meshes (T-070)

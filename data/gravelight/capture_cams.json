@@ -14500,6 +14500,968 @@
           "note": "the retention hall"
         }
       ]
+    },
+    "day_m00": {
+      "_doc": "T-259: the day (DayCycle.hold_hour): the same views at midnight (the authored night), first light, sunrise, morning, noon and sunset. Shot through tools/wsl_godot.sh only.",
+      "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {
+          "name": "yard_h00",
+          "pos": [
+            9.0,
+            0.1,
+            35.5
+          ],
+          "yaw": 150.0,
+          "pitch": 4.0,
+          "note": "yard at 00:00",
+          "do": [
+            "callv:DayCycle:hold_hour:0:1"
+          ]
+        },
+        {
+          "name": "front_h00",
+          "pos": [
+            20.0,
+            0.0,
+            -15.0
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "front at 00:00"
+        },
+        {
+          "name": "crossroads_h00",
+          "pos": [
+            -4.0,
+            0.0,
+            -2.0
+          ],
+          "yaw": -45.0,
+          "pitch": 0.0,
+          "note": "crossroads at 00:00"
+        },
+        {
+          "name": "bar_h00",
+          "pos": [
+            12.0,
+            0.0,
+            9.1
+          ],
+          "yaw": 90.0,
+          "pitch": -6.0,
+          "note": "bar at 00:00"
+        },
+        {
+          "name": "vault_h00",
+          "pos": [
+            28.6,
+            -3.2,
+            20.2
+          ],
+          "yaw": 180.0,
+          "pitch": -4.0,
+          "note": "vault at 00:00"
+        },
+        {
+          "name": "yard_h06",
+          "pos": [
+            9.0,
+            0.1,
+            35.5
+          ],
+          "yaw": 150.0,
+          "pitch": 4.0,
+          "note": "yard at 06:00",
+          "do": [
+            "callv:DayCycle:hold_hour:6:1"
+          ]
+        },
+        {
+          "name": "front_h06",
+          "pos": [
+            20.0,
+            0.0,
+            -15.0
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "front at 06:00"
+        },
+        {
+          "name": "crossroads_h06",
+          "pos": [
+            -4.0,
+            0.0,
+            -2.0
+          ],
+          "yaw": -45.0,
+          "pitch": 0.0,
+          "note": "crossroads at 06:00"
+        },
+        {
+          "name": "bar_h06",
+          "pos": [
+            12.0,
+            0.0,
+            9.1
+          ],
+          "yaw": 90.0,
+          "pitch": -6.0,
+          "note": "bar at 06:00"
+        },
+        {
+          "name": "vault_h06",
+          "pos": [
+            28.6,
+            -3.2,
+            20.2
+          ],
+          "yaw": 180.0,
+          "pitch": -4.0,
+          "note": "vault at 06:00"
+        },
+        {
+          "name": "yard_h07",
+          "pos": [
+            9.0,
+            0.1,
+            35.5
+          ],
+          "yaw": 150.0,
+          "pitch": 4.0,
+          "note": "yard at 07:00",
+          "do": [
+            "callv:DayCycle:hold_hour:7:1"
+          ]
+        },
+        {
+          "name": "front_h07",
+          "pos": [
+            20.0,
+            0.0,
+            -15.0
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "front at 07:00"
+        },
+        {
+          "name": "crossroads_h07",
+          "pos": [
+            -4.0,
+            0.0,
+            -2.0
+          ],
+          "yaw": -45.0,
+          "pitch": 0.0,
+          "note": "crossroads at 07:00"
+        },
+        {
+          "name": "bar_h07",
+          "pos": [
+            12.0,
+            0.0,
+            9.1
+          ],
+          "yaw": 90.0,
+          "pitch": -6.0,
+          "note": "bar at 07:00"
+        },
+        {
+          "name": "vault_h07",
+          "pos": [
+            28.6,
+            -3.2,
+            20.2
+          ],
+          "yaw": 180.0,
+          "pitch": -4.0,
+          "note": "vault at 07:00"
+        },
+        {
+          "name": "yard_h09",
+          "pos": [
+            9.0,
+            0.1,
+            35.5
+          ],
+          "yaw": 150.0,
+          "pitch": 4.0,
+          "note": "yard at 09:00",
+          "do": [
+            "callv:DayCycle:hold_hour:9:1"
+          ]
+        },
+        {
+          "name": "front_h09",
+          "pos": [
+            20.0,
+            0.0,
+            -15.0
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "front at 09:00"
+        },
+        {
+          "name": "crossroads_h09",
+          "pos": [
+            -4.0,
+            0.0,
+            -2.0
+          ],
+          "yaw": -45.0,
+          "pitch": 0.0,
+          "note": "crossroads at 09:00"
+        },
+        {
+          "name": "bar_h09",
+          "pos": [
+            12.0,
+            0.0,
+            9.1
+          ],
+          "yaw": 90.0,
+          "pitch": -6.0,
+          "note": "bar at 09:00"
+        },
+        {
+          "name": "vault_h09",
+          "pos": [
+            28.6,
+            -3.2,
+            20.2
+          ],
+          "yaw": 180.0,
+          "pitch": -4.0,
+          "note": "vault at 09:00"
+        },
+        {
+          "name": "yard_h12",
+          "pos": [
+            9.0,
+            0.1,
+            35.5
+          ],
+          "yaw": 150.0,
+          "pitch": 4.0,
+          "note": "yard at 12:00",
+          "do": [
+            "callv:DayCycle:hold_hour:12:1"
+          ]
+        },
+        {
+          "name": "front_h12",
+          "pos": [
+            20.0,
+            0.0,
+            -15.0
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "front at 12:00"
+        },
+        {
+          "name": "crossroads_h12",
+          "pos": [
+            -4.0,
+            0.0,
+            -2.0
+          ],
+          "yaw": -45.0,
+          "pitch": 0.0,
+          "note": "crossroads at 12:00"
+        },
+        {
+          "name": "bar_h12",
+          "pos": [
+            12.0,
+            0.0,
+            9.1
+          ],
+          "yaw": 90.0,
+          "pitch": -6.0,
+          "note": "bar at 12:00"
+        },
+        {
+          "name": "vault_h12",
+          "pos": [
+            28.6,
+            -3.2,
+            20.2
+          ],
+          "yaw": 180.0,
+          "pitch": -4.0,
+          "note": "vault at 12:00"
+        },
+        {
+          "name": "yard_h18",
+          "pos": [
+            9.0,
+            0.1,
+            35.5
+          ],
+          "yaw": 150.0,
+          "pitch": 4.0,
+          "note": "yard at 18:00",
+          "do": [
+            "callv:DayCycle:hold_hour:18:1"
+          ]
+        },
+        {
+          "name": "front_h18",
+          "pos": [
+            20.0,
+            0.0,
+            -15.0
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "front at 18:00"
+        },
+        {
+          "name": "crossroads_h18",
+          "pos": [
+            -4.0,
+            0.0,
+            -2.0
+          ],
+          "yaw": -45.0,
+          "pitch": 0.0,
+          "note": "crossroads at 18:00"
+        },
+        {
+          "name": "bar_h18",
+          "pos": [
+            12.0,
+            0.0,
+            9.1
+          ],
+          "yaw": 90.0,
+          "pitch": -6.0,
+          "note": "bar at 18:00"
+        },
+        {
+          "name": "vault_h18",
+          "pos": [
+            28.6,
+            -3.2,
+            20.2
+          ],
+          "yaw": 180.0,
+          "pitch": -4.0,
+          "note": "vault at 18:00"
+        }
+      ]
+    },
+    "day_m01": {
+      "_doc": "T-259: the day (DayCycle.hold_hour): the same views at midnight (the authored night), first light, sunrise, morning, noon and sunset. Shot through tools/wsl_godot.sh only.",
+      "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {
+          "name": "kaue_h00",
+          "pos": [
+            10.0,
+            0.0,
+            20.5
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "kaue at 00:00",
+          "do": [
+            "callv:DayCycle:hold_hour:0:1"
+          ]
+        },
+        {
+          "name": "ridges_h00",
+          "pos": [
+            6.0,
+            0.0,
+            26.0
+          ],
+          "yaw": -20.0,
+          "pitch": 9.0,
+          "note": "ridges at 00:00"
+        },
+        {
+          "name": "kaue_h06",
+          "pos": [
+            10.0,
+            0.0,
+            20.5
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "kaue at 06:00",
+          "do": [
+            "callv:DayCycle:hold_hour:6:1"
+          ]
+        },
+        {
+          "name": "ridges_h06",
+          "pos": [
+            6.0,
+            0.0,
+            26.0
+          ],
+          "yaw": -20.0,
+          "pitch": 9.0,
+          "note": "ridges at 06:00"
+        },
+        {
+          "name": "kaue_h07",
+          "pos": [
+            10.0,
+            0.0,
+            20.5
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "kaue at 07:00",
+          "do": [
+            "callv:DayCycle:hold_hour:7:1"
+          ]
+        },
+        {
+          "name": "ridges_h07",
+          "pos": [
+            6.0,
+            0.0,
+            26.0
+          ],
+          "yaw": -20.0,
+          "pitch": 9.0,
+          "note": "ridges at 07:00"
+        },
+        {
+          "name": "kaue_h09",
+          "pos": [
+            10.0,
+            0.0,
+            20.5
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "kaue at 09:00",
+          "do": [
+            "callv:DayCycle:hold_hour:9:1"
+          ]
+        },
+        {
+          "name": "ridges_h09",
+          "pos": [
+            6.0,
+            0.0,
+            26.0
+          ],
+          "yaw": -20.0,
+          "pitch": 9.0,
+          "note": "ridges at 09:00"
+        },
+        {
+          "name": "kaue_h12",
+          "pos": [
+            10.0,
+            0.0,
+            20.5
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "kaue at 12:00",
+          "do": [
+            "callv:DayCycle:hold_hour:12:1"
+          ]
+        },
+        {
+          "name": "ridges_h12",
+          "pos": [
+            6.0,
+            0.0,
+            26.0
+          ],
+          "yaw": -20.0,
+          "pitch": 9.0,
+          "note": "ridges at 12:00"
+        },
+        {
+          "name": "kaue_h18",
+          "pos": [
+            10.0,
+            0.0,
+            20.5
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "note": "kaue at 18:00",
+          "do": [
+            "callv:DayCycle:hold_hour:18:1"
+          ]
+        },
+        {
+          "name": "ridges_h18",
+          "pos": [
+            6.0,
+            0.0,
+            26.0
+          ],
+          "yaw": -20.0,
+          "pitch": 9.0,
+          "note": "ridges at 18:00"
+        }
+      ]
+    },
+    "day_m02": {
+      "_doc": "T-259: the day (DayCycle.hold_hour): the same views at midnight (the authored night), first light, sunrise, morning, noon and sunset. Shot through tools/wsl_godot.sh only.",
+      "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {
+          "name": "quay_h00",
+          "pos": [
+            18.5,
+            0.0,
+            5.0
+          ],
+          "yaw": -90.0,
+          "pitch": -6.0,
+          "note": "quay at 00:00",
+          "do": [
+            "callv:DayCycle:hold_hour:0:1"
+          ]
+        },
+        {
+          "name": "wide_h00",
+          "pos": [
+            2.0,
+            0.0,
+            15.0
+          ],
+          "yaw": -67.8,
+          "pitch": -0.3,
+          "note": "wide at 00:00"
+        },
+        {
+          "name": "yard_h00",
+          "pos": [
+            -10.0,
+            0.0,
+            35.0
+          ],
+          "yaw": -147.8,
+          "pitch": 0.7,
+          "note": "yard at 00:00"
+        },
+        {
+          "name": "quay_h06",
+          "pos": [
+            18.5,
+            0.0,
+            5.0
+          ],
+          "yaw": -90.0,
+          "pitch": -6.0,
+          "note": "quay at 06:00",
+          "do": [
+            "callv:DayCycle:hold_hour:6:1"
+          ]
+        },
+        {
+          "name": "wide_h06",
+          "pos": [
+            2.0,
+            0.0,
+            15.0
+          ],
+          "yaw": -67.8,
+          "pitch": -0.3,
+          "note": "wide at 06:00"
+        },
+        {
+          "name": "yard_h06",
+          "pos": [
+            -10.0,
+            0.0,
+            35.0
+          ],
+          "yaw": -147.8,
+          "pitch": 0.7,
+          "note": "yard at 06:00"
+        },
+        {
+          "name": "quay_h07",
+          "pos": [
+            18.5,
+            0.0,
+            5.0
+          ],
+          "yaw": -90.0,
+          "pitch": -6.0,
+          "note": "quay at 07:00",
+          "do": [
+            "callv:DayCycle:hold_hour:7:1"
+          ]
+        },
+        {
+          "name": "wide_h07",
+          "pos": [
+            2.0,
+            0.0,
+            15.0
+          ],
+          "yaw": -67.8,
+          "pitch": -0.3,
+          "note": "wide at 07:00"
+        },
+        {
+          "name": "yard_h07",
+          "pos": [
+            -10.0,
+            0.0,
+            35.0
+          ],
+          "yaw": -147.8,
+          "pitch": 0.7,
+          "note": "yard at 07:00"
+        },
+        {
+          "name": "quay_h09",
+          "pos": [
+            18.5,
+            0.0,
+            5.0
+          ],
+          "yaw": -90.0,
+          "pitch": -6.0,
+          "note": "quay at 09:00",
+          "do": [
+            "callv:DayCycle:hold_hour:9:1"
+          ]
+        },
+        {
+          "name": "wide_h09",
+          "pos": [
+            2.0,
+            0.0,
+            15.0
+          ],
+          "yaw": -67.8,
+          "pitch": -0.3,
+          "note": "wide at 09:00"
+        },
+        {
+          "name": "yard_h09",
+          "pos": [
+            -10.0,
+            0.0,
+            35.0
+          ],
+          "yaw": -147.8,
+          "pitch": 0.7,
+          "note": "yard at 09:00"
+        },
+        {
+          "name": "quay_h12",
+          "pos": [
+            18.5,
+            0.0,
+            5.0
+          ],
+          "yaw": -90.0,
+          "pitch": -6.0,
+          "note": "quay at 12:00",
+          "do": [
+            "callv:DayCycle:hold_hour:12:1"
+          ]
+        },
+        {
+          "name": "wide_h12",
+          "pos": [
+            2.0,
+            0.0,
+            15.0
+          ],
+          "yaw": -67.8,
+          "pitch": -0.3,
+          "note": "wide at 12:00"
+        },
+        {
+          "name": "yard_h12",
+          "pos": [
+            -10.0,
+            0.0,
+            35.0
+          ],
+          "yaw": -147.8,
+          "pitch": 0.7,
+          "note": "yard at 12:00"
+        },
+        {
+          "name": "quay_h18",
+          "pos": [
+            18.5,
+            0.0,
+            5.0
+          ],
+          "yaw": -90.0,
+          "pitch": -6.0,
+          "note": "quay at 18:00",
+          "do": [
+            "callv:DayCycle:hold_hour:18:1"
+          ]
+        },
+        {
+          "name": "wide_h18",
+          "pos": [
+            2.0,
+            0.0,
+            15.0
+          ],
+          "yaw": -67.8,
+          "pitch": -0.3,
+          "note": "wide at 18:00"
+        },
+        {
+          "name": "yard_h18",
+          "pos": [
+            -10.0,
+            0.0,
+            35.0
+          ],
+          "yaw": -147.8,
+          "pitch": 0.7,
+          "note": "yard at 18:00"
+        }
+      ]
+    },
+    "day_m04a": {
+      "_doc": "T-259: the day (DayCycle.hold_hour): the same views at midnight (the authored night), first light, sunrise, morning, noon and sunset. Shot through tools/wsl_godot.sh only.",
+      "map": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {
+          "name": "wide_h00",
+          "pos": [
+            20.0,
+            0.0,
+            29.0
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "note": "wide at 00:00",
+          "do": [
+            "callv:DayCycle:hold_hour:0:1"
+          ]
+        },
+        {
+          "name": "lookout_h00",
+          "pos": [
+            38.6,
+            12.0,
+            86.0
+          ],
+          "yaw": 145.0,
+          "pitch": -3.0,
+          "note": "lookout at 00:00"
+        },
+        {
+          "name": "tower_h00",
+          "pos": [
+            20.0,
+            0.0,
+            61.0
+          ],
+          "yaw": 180.0,
+          "pitch": 9.8,
+          "note": "tower at 00:00"
+        },
+        {
+          "name": "wide_h06",
+          "pos": [
+            20.0,
+            0.0,
+            29.0
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "note": "wide at 06:00",
+          "do": [
+            "callv:DayCycle:hold_hour:6:1"
+          ]
+        },
+        {
+          "name": "lookout_h06",
+          "pos": [
+            38.6,
+            12.0,
+            86.0
+          ],
+          "yaw": 145.0,
+          "pitch": -3.0,
+          "note": "lookout at 06:00"
+        },
+        {
+          "name": "tower_h06",
+          "pos": [
+            20.0,
+            0.0,
+            61.0
+          ],
+          "yaw": 180.0,
+          "pitch": 9.8,
+          "note": "tower at 06:00"
+        },
+        {
+          "name": "wide_h07",
+          "pos": [
+            20.0,
+            0.0,
+            29.0
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "note": "wide at 07:00",
+          "do": [
+            "callv:DayCycle:hold_hour:7:1"
+          ]
+        },
+        {
+          "name": "lookout_h07",
+          "pos": [
+            38.6,
+            12.0,
+            86.0
+          ],
+          "yaw": 145.0,
+          "pitch": -3.0,
+          "note": "lookout at 07:00"
+        },
+        {
+          "name": "tower_h07",
+          "pos": [
+            20.0,
+            0.0,
+            61.0
+          ],
+          "yaw": 180.0,
+          "pitch": 9.8,
+          "note": "tower at 07:00"
+        },
+        {
+          "name": "wide_h09",
+          "pos": [
+            20.0,
+            0.0,
+            29.0
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "note": "wide at 09:00",
+          "do": [
+            "callv:DayCycle:hold_hour:9:1"
+          ]
+        },
+        {
+          "name": "lookout_h09",
+          "pos": [
+            38.6,
+            12.0,
+            86.0
+          ],
+          "yaw": 145.0,
+          "pitch": -3.0,
+          "note": "lookout at 09:00"
+        },
+        {
+          "name": "tower_h09",
+          "pos": [
+            20.0,
+            0.0,
+            61.0
+          ],
+          "yaw": 180.0,
+          "pitch": 9.8,
+          "note": "tower at 09:00"
+        },
+        {
+          "name": "wide_h12",
+          "pos": [
+            20.0,
+            0.0,
+            29.0
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "note": "wide at 12:00",
+          "do": [
+            "callv:DayCycle:hold_hour:12:1"
+          ]
+        },
+        {
+          "name": "lookout_h12",
+          "pos": [
+            38.6,
+            12.0,
+            86.0
+          ],
+          "yaw": 145.0,
+          "pitch": -3.0,
+          "note": "lookout at 12:00"
+        },
+        {
+          "name": "tower_h12",
+          "pos": [
+            20.0,
+            0.0,
+            61.0
+          ],
+          "yaw": 180.0,
+          "pitch": 9.8,
+          "note": "tower at 12:00"
+        },
+        {
+          "name": "wide_h18",
+          "pos": [
+            20.0,
+            0.0,
+            29.0
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "note": "wide at 18:00",
+          "do": [
+            "callv:DayCycle:hold_hour:18:1"
+          ]
+        },
+        {
+          "name": "lookout_h18",
+          "pos": [
+            38.6,
+            12.0,
+            86.0
+          ],
+          "yaw": 145.0,
+          "pitch": -3.0,
+          "note": "lookout at 18:00"
+        },
+        {
+          "name": "tower_h18",
+          "pos": [
+            20.0,
+            0.0,
+            61.0
+          ],
+          "yaw": 180.0,
+          "pitch": 9.8,
+          "note": "tower at 18:00"
+        }
+      ]
     }
   }
 }

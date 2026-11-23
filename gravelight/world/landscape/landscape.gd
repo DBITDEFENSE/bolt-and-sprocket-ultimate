@@ -130,22 +130,40 @@ func _sync_env(force: bool) -> void:
 	if we == null or we.environment == null:
 		return
 	var env: Environment = we.environment
-	var fog: Color = env.fog_light_color * env.fog_light_energy * HAZE_GAIN
+	var fog_now: Color = env.fog_light_color
+	var dc: DayCycle = DayCycle.of(get_parent())
+	if dc != null and dc.env == env:   # T-259: the haze out of doors, not the copy dimmed for a camera under a roof
+		fog_now = dc.outdoor_fog(dc.night_value("fog_light_color") as Color)
+	var fog: Color = fog_now * env.fog_light_energy * HAZE_GAIN
 	var fogv: Vector3 = Vector3(fog.r, fog.g, fog.b)
-	if not force and fog.is_equal_approx(_last_fog) and env.background_color.is_equal_approx(_last_bg):
+	var bg_now: Color = env.background_color
+	if dc != null and dc.env == env:   # the dome's night colours come from the night's background; the day is laid over them below
+		bg_now = dc.night_value("background_color") as Color
+	var day_key: Color = Color(fog.r + bg_now.r, fog.g, fog.b, float(dc.now["day"]) + float(dc.now["twilight"]) * 0.37 if dc != null else 0.0)
+	if not force and day_key.is_equal_approx(_last_fog) and env.background_color.is_equal_approx(_last_bg):
 		return
-	_last_fog = fog
+	_last_fog = day_key
 	_last_bg = env.background_color
 	for m: ShaderMaterial in far_mats:
 		m.set_shader_parameter("fog_color", fogv)
 	for mm: ShaderMaterial in mist_mats:
 		mm.set_shader_parameter("color", fogv * 1.15)
 	if sky_mat != null:
-		var bg: Color = env.background_color
-		var hz: Color = bg.lerp(fog, 0.8) * 0.95
-		sky_mat.set_shader_parameter("zenith", Vector3(bg.r, bg.g, bg.b) * 0.4)
-		sky_mat.set_shader_parameter("horizon", Vector3(hz.r, hz.g, hz.b))
-		sky_mat.set_shader_parameter("cloud_tint", Vector3(hz.r, hz.g, hz.b) * 0.8)
+		var bg: Color = bg_now
+		var nfog: Color = fog
+		if dc != null and dc.env == env:
+			nfog = (dc.night_value("fog_light_color") as Color) * env.fog_light_energy * HAZE_GAIN
+		var hz: Color = bg.lerp(nfog, 0.8) * 0.95
+		var zen: Vector3 = Vector3(bg.r, bg.g, bg.b) * 0.4
+		var hzv: Vector3 = Vector3(hz.r, hz.g, hz.b)
+		var ct: Vector3 = hzv * 0.8
+		if dc != null and dc.env == env:   # T-259: the day sky over the night's
+			zen = dc.dome_color("zenith", zen)
+			hzv = dc.dome_color("horizon", hzv)
+			ct = dc.dome_color("cloud_tint", ct)
+		sky_mat.set_shader_parameter("zenith", zen)
+		sky_mat.set_shader_parameter("horizon", hzv)
+		sky_mat.set_shader_parameter("cloud_tint", ct)
 
 
 func _world_env() -> WorldEnvironment:

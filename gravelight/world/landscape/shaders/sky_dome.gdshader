@@ -17,6 +17,8 @@
 //     under about 0.08 to black, so there the sky is black but for the moon and its corona, as it was before;
 //   - a half-bit of screen noise breaks the banding of the near-black gradient.
 shader_type spatial;
+// DayCycle (T-259): 0 = the authored night, 1 = full day (the stars and the town's glow fade with it).
+global uniform float gl_daylight;
 render_mode unshaded, fog_disabled, cull_front, shadows_disabled;
 
 uniform vec3 zenith : source_color = vec3(0.004, 0.006, 0.013);
@@ -36,6 +38,7 @@ uniform float moon_gain = 1.9;
 uniform float star_gain = 1.0;
 uniform float deck_light = 0.05;       // the moon on the whole deck from above (what makes the overcast read at all)
 uniform float high_veil = 0.4;         // the thin high layer in the breaks (0 = none)
+uniform float sun_k = 0.0;           // DayCycle (T-259): 1 = the disc is the sun (full, no maria)
 uniform vec4 flashes[8];
 uniform vec4 flash_cols[8];
 uniform vec4 beams[4];
@@ -151,7 +154,7 @@ void fragment() {
 		vec2 s2 = star_grid(dir, 260.0, 0.012);    // the faint field
 		vec3 warm = vec3(1.0, 0.86, 0.72);
 		vec3 cold = vec3(0.72, 0.8, 1.0);
-		col += (mix(cold, warm, s1.y * s1.y) * s1.x + mix(cold, warm, s2.y * s2.y) * s2.x * 0.6) * 0.9 * star_gain * sky_clear;
+		col += (mix(cold, warm, s1.y * s1.y) * s1.x + mix(cold, warm, s2.y * s2.y) * s2.x * 0.6) * 0.9 * star_gain * sky_clear * (1.0 - gl_daylight) * (1.0 - gl_daylight);
 	}
 	// the moon: a disc with maria where the sky is open, a corona that spreads where cloud covers it
 	float ang = acos(clamp(dot(dir, mdir), -1.0, 1.0));
@@ -162,12 +165,14 @@ void fragment() {
 	float lit_side = smoothstep(-0.08, 0.08, q.x * 0.9 + 0.62 * sqrt(max(0.0, 1.0 - q.y * q.y)));   // waning gibbous
 	float maria = 0.72 + 0.28 * smoothstep(0.35, 0.7, fbm3(q * 1.3 + 11.0));
 	float limb = 0.75 + 0.25 * sqrt(max(0.0, 1.0 - dot(q, q)));
+	lit_side = mix(lit_side, 1.0, sun_k);
+	maria = mix(maria, 1.0, sun_k);
 	float open = (1.0 - c * 0.93) * (1.0 - veil * 0.5);
 	col = mix(col, lit, c * 0.85);
 	col += moon_color * disc * lit_side * maria * limb * moon_gain * open;
 	float corona = exp(-ang * ang / (moon_size * moon_size * 9.0)) * 0.55 + exp(-ang / (moon_size * 7.0)) * 0.1;
 	col += moon_color * corona * (0.18 + 0.5 * c * (1.0 - c * 0.6) + 0.35 * veil) * (1.0 - disc * open);
-	col += town * (0.45 + 1.3 * c);
+	col += town * (0.45 + 1.3 * c) * (1.0 - 0.9 * gl_daylight);
 	col += war * (0.35 + 0.9 * c);
 	col += vec3(0.75, 0.78, 0.85) * spots * (0.25 + 0.75 * c);
 	col += (hash(FRAGCOORD.xy + fract(TIME) * 61.0) - 0.5) * 0.0009;   // half a display bit: no banding in the near-black
