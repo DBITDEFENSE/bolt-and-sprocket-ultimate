@@ -252,9 +252,11 @@ func _assist(ev: ShermanEvent) -> void:
 		return
 	# (the checks below are T-249's, laid out for the tank at its parking place: it is put back there)
 	tk.park_at(ev.park_point(), ev.park_yaw())
-	_place(_p(), Vector3(4.0, 0.05, 37.0))   # (in the yard's far corner: the dead cross its sight to get to them)
+	# (the players down the road to the west, the dead risen in the meadow to the east: they cross its sight to get
+	# to them. T-249 had them rise beside the human; the gunner no longer shoots at the dead at a player's elbow.)
+	_place(_p(), Vector3(-4.0, 0.05, 56.0))
 	if _bot() != null:
-		_place(_bot(), Vector3(5.0, 0.05, 39.0))
+		_place(_bot(), Vector3(-5.0, 0.05, 58.0))
 	_hurt.clear()
 	var hr: HorseRound = _map.get_node_or_null("HorseRound_30") as HorseRound
 	if hr != null:
@@ -264,17 +266,28 @@ func _assist(ev: ShermanEvent) -> void:
 	# the dead in its sight on the road. (T-261: one alone and close is the machine gun's, no shell; a pack is the 75 mm's)
 	var mg0: int = tk.shots_mg
 	var sh0: int = tk.shots_main
-	var made1: int = _dir().spawn_burst([Vector3(10.0, 0.0, 56.0)], 1)   # (on the road west of the gate, 13 m off)
-	var shot: bool = await _until(func() -> bool: return tk.shots_mg > mg0 + 6 and (tk.mg_hits > 0 or tk.kills > 0), 25.0)
-	_check(made1 > 0 and shot, "the machine gun on one of the dead in its sight (%d rounds, %d hits, %d kills)" % [tk.shots_mg - mg0, tk.mg_hits, tk.kills])
-	var pts: Array = []
-	for i: int in 4:
-		pts.append(tk.global_transform * Vector3(-4.0 + 2.6 * float(i), 0, -16.0))
+	# (T-261: every shell's burst is measured against where the players stand at that moment. The old check summed
+	# the players' damage over the window, which the dead that reach the bot fail by themselves.)
+	var seen: Array = [tk.shots_main, INF]
+	var watch: Callable = func() -> void:
+		if tk.shots_main > int(seen[0]):
+			seen[0] = tk.shots_main
+			for n: Node in get_tree().get_nodes_in_group(&"players"):
+				seen[1] = minf(float(seen[1]), (n as Player).global_position.distance_to(tk.last_burst))
+	# (the 75 mm is held empty for this check, so what dies here dies by the machine gun)
+	var made1: int = _dir().spawn_burst([Vector3(40.0, 0.0, 57.0), Vector3(41.5, 0.0, 58.0), Vector3(40.5, 0.0, 59.0)], 3)
+	var hits0: int = tk.mg_hits
+	var shot: bool = await _until(func() -> bool: return tk.shots_mg > mg0 + 6 and tk.mg_hits > hits0, 25.0, func() -> void:
+		tk._gun_t = 10.0)
+	tk._gun_t = 0.0
+	_check(made1 > 0 and shot and tk.shots_main == sh0, "the machine gun on the dead in its sight (%d rounds, %d hits)" % [tk.shots_mg - mg0, tk.mg_hits - hits0])
+	var pts: Array = [Vector3(40.0, 0.0, 57.0), Vector3(41.5, 0.0, 58.0), Vector3(40.5, 0.0, 59.0), Vector3(39.0, 0.0, 58.5)]
 	var sh1: int = tk.shots_main
 	var made: int = _dir().spawn_burst(pts, 4)
-	var main: bool = await _until(func() -> bool: return tk.shots_main > sh1, 25.0)
-	_check(made > 0 and main, "the 75 mm fires on a pack of them (%d shells, %d kills; %d shells on the one alone)" % [tk.shots_main - sh1, tk.kills, sh1 - sh0])
-	_check(float(_hurt.get(1, 0.0)) == 0.0 and (_bot() == null or float(_hurt.get(_bot().player_id, 0.0)) == 0.0), "nothing on the players")
+	var main: bool = await _until(func() -> bool: return tk.shots_main > sh1, 25.0, watch)
+	watch.call()
+	_check(made > 0 and main, "the 75 mm fires on a pack of them (%d shells, %d kills so far)" % [tk.shots_main - sh1, tk.kills])
+	_check(float(_hurt.get(1, 0.0)) == 0.0 and float(seen[1]) >= float(ev.cfg["assist"]["gun_player_clear_m"]) - 0.5, "nothing on the players: no shell burst within %.0f m of one (the nearest %.1f m)" % [float(ev.cfg["assist"]["gun_player_clear_m"]), float(seen[1])])
 	# the round ends; it helps on round 31 too
 	var t: float = 0.0
 	while t < 40.0 and RoundManager.state != RoundManager.State.BREAK:
@@ -295,6 +308,10 @@ func _assist(ev: ShermanEvent) -> void:
 func _round40(ev: ShermanEvent) -> void:
 	var tk: ShermanTank = ev.tank
 	_dir().kill_all(true)
+	# (the bot is not in god mode: if the rounds so far put it down, it is stood up for the raid's checks)
+	if _bot() != null and _bot().downed:
+		_bot().revive(1)
+		print("[sherman] note: the bot was down before round 40 and was revived for the raid's checks")
 	await _stuka_puts_out(ev, tk)
 	var off0: int = tk.forced_off
 	RoundManager.debug_set_round(40)

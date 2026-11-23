@@ -80,7 +80,10 @@ var _links: Array[MultiMesh] = []
 var _path: PackedVector2Array
 var _path_cum: PackedFloat32Array
 var _path_len: float = 1.0
-var _track_s: float = 0.0
+var _track_s: float = 0.0             # the left track's run along its loop
+var _track_sr: float = 0.0            # T-261: the right track's (a pivot turn runs them against each other)
+var _yaw_prev: float = 0.0
+var _yaw_seen: bool = false
 var _n_links: int = 0
 var _collider: AnimatableBody3D
 var points: Array[ShermanAttackPoint] = []
@@ -301,23 +304,27 @@ func _spun(part_name: String, at: Vector3, radius: float, side: float) -> void:
 func _lay_links() -> void:
 	if _links.is_empty() or _n_links <= 0:
 		return
-	var j: int = 0
-	for i: int in _n_links:
-		var s: float = fposmod(float(i) * ShermanMesh.LINK_PITCH + _track_s, _path_len)
-		while j > 0 and _path_cum[j] > s:
-			j -= 1
-		while j < _path.size() - 1 and _path_cum[j + 1] <= s:
-			j += 1
-		var a: Vector2 = _path[j]
-		var b: Vector2 = _path[(j + 1) % _path.size()]
-		var seg: float = maxf(1e-5, a.distance_to(b))
-		var p: Vector2 = a.lerp(b, (s - _path_cum[j]) / seg)
-		var t2: Vector2 = (b - a) / seg
-		var t3: Vector3 = Vector3(0, t2.y, t2.x)
-		var n3: Vector3 = Vector3(0, -t2.x, t2.y)
-		var xf: Transform3D = Transform3D(Basis(n3.cross(t3), n3, t3), Vector3(0, p.y, p.x))
-		for mm: MultiMesh in _links:
-			mm.set_instance_transform(i, xf)
+	# (_links: left near, left far, right near, right far)
+	for side: int in 2:
+		var off: float = _track_s if side == 0 else _track_sr
+		var j: int = 0
+		for i: int in _n_links:
+			var s: float = fposmod(float(i) * ShermanMesh.LINK_PITCH + off, _path_len)
+			while j > 0 and _path_cum[j] > s:
+				j -= 1
+			while j < _path.size() - 1 and _path_cum[j + 1] <= s:
+				j += 1
+			var a: Vector2 = _path[j]
+			var b: Vector2 = _path[(j + 1) % _path.size()]
+			var seg: float = maxf(1e-5, a.distance_to(b))
+			var p: Vector2 = a.lerp(b, (s - _path_cum[j]) / seg)
+			var t2: Vector2 = (b - a) / seg
+			var t3: Vector3 = Vector3(0, t2.y, t2.x)
+			var n3: Vector3 = Vector3(0, -t2.x, t2.y)
+			var xf: Transform3D = Transform3D(Basis(n3.cross(t3), n3, t3), Vector3(0, p.y, p.x))
+			for k: int in 2:
+				if side * 2 + k < _links.size():
+					_links[side * 2 + k].set_instance_transform(i, xf)
 
 
 # ================================================================== state
@@ -459,13 +466,23 @@ func _drive_step(delta: float) -> void:
 
 
 func _running_gear(delta: float) -> void:
-	var v: float = speed
-	if absf(v) > 0.01:
-		_track_s += v * delta
+	# each track's own speed: the hull's, and the turn it is making (a pivot runs one forward and one back); read
+	# from the hull's own motion, so the route, a driver and a puppet all look alike
+	var w: float = wrapf(rotation.y - _yaw_prev, -PI, PI) / maxf(delta, 0.0001) if _yaw_seen else 0.0
+	_yaw_prev = rotation.y
+	_yaw_seen = true
+	if absf(w) > 2.0:
+		w = 0.0   # (placed, not turned)
+	var vl: float = speed - w * ShermanMesh.TRACK_X
+	var vr: float = speed + w * ShermanMesh.TRACK_X
+	var v: float = maxf(absf(speed), maxf(absf(vl), absf(vr)))
+	if v > 0.01:
+		_track_s += vl * delta
+		_track_sr += vr * delta
 		_lay_links()
 		for e: Array in _spin:
 			var mi: Node3D = e[0]
-			mi.rotation.x -= v * delta / float(e[1]) * float(e[2])
+			mi.rotation.x -= (vl if float(e[2]) < 0.0 else vr) * delta / float(e[1]) * float(e[2])
 		if Engine.get_physics_frames() % 15 == 0:
 			for s: float in [-1.0, 1.0]:
 				Effects.dust_puff(global_transform * Vector3(s * ShermanMesh.TRACK_X, 0.1, 2.7), "snow", 8)
@@ -632,9 +649,7 @@ func _assist_step(delta: float) -> void:
 	# the machine gun: a burst, then a gap; only with the turret laid on its target (no rounds thrown wide of it)
 	var laid: bool = mg_ok and laid_on(_mg_target.global_position, float(acfg.get("mg_aim_tolerance_deg", 5.0)))
 	if _mg_left > 0:
-		if not mg_ok:
-			_mg_left = 0
-		elif laid:
+		if laid:   # (a target lost mid-burst: the rest of the burst is for the next one, not thrown away with a new gap)
 			_mg_shot_t -= delta
 			if _mg_shot_t <= 0.0:
 				_mg_shot_t = 1.0 / maxf(1.0, float(acfg.get("mg_rate", 9.0)))
@@ -712,7 +727,6 @@ func _choose_targets(dir: ZombieDirector) -> void:
 
 func _mg_shot(round_health: float) -> void:
 	if _mg_target == null or not is_instance_valid(_mg_target) or not _mg_target.is_active():
-		_mg_left = 0
 		return
 	var from: Vector3 = coax()
 	var aim: Vector3 = _mg_target.global_position + Vector3.UP * _rng.randf_range(0.8, 1.5)
@@ -891,7 +905,7 @@ func net_state(pos: Vector3, yaw_rad: float, tyaw: float, gpitch: float, frac: f
 	if not puppet:
 		return
 	hp = frac * max_hp
-	if driver != null and driver.is_local:
+	if is_driven() and driver.is_local:
 		# this machine drives it: the hull, the turret and the speed are its own; the host's place is taken only
 		# when the two have come apart (the host refused a move)
 		if ShermanRules.flat(pos, global_position) > float(dcfg.get("net_snap_m", 4.0)):
