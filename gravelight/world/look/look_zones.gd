@@ -73,6 +73,12 @@ func zone_at(p: Vector3) -> String:
 
 ## The Environment values the zone keys touch, as they are now.
 func read_env() -> Dictionary:
+	# T-259: with a DayCycle on the map these three hold the night's value plus the hour's daylight; the zones work
+	# on the night's value and the day is blended over what they write.
+	var dc: DayCycle = DayCycle.of(map)
+	if dc != null and dc.env == env:
+		return {"fog_density": env.fog_density, "vol_density": env.volumetric_fog_density, "fog_color": dc.night_value("fog_light_color"),
+			"ambient": dc.night_value("ambient_light_energy"), "exposure": dc.night_value("tonemap_exposure")}
 	return {"fog_density": env.fog_density, "vol_density": env.volumetric_fog_density, "fog_color": env.fog_light_color,
 		"ambient": env.ambient_light_energy, "exposure": env.tonemap_exposure}
 

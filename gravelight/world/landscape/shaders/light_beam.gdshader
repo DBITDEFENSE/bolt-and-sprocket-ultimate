@@ -4,6 +4,8 @@
 // its local Y, the source at -Y (instance uniform beam_len = the mesh's length).
 shader_type spatial;
 render_mode unshaded, blend_add, depth_draw_never, cull_disabled, fog_disabled, shadows_disabled;
+// DayCycle (T-259): a shaft of light does not read against a daylit sky.
+global uniform float gl_daylight;
 
 uniform vec3 color : source_color = vec3(0.8, 0.85, 0.95);
 uniform float intensity = 0.25;
@@ -35,5 +37,5 @@ void fragment() {
 	if (flow > 0.0) {
 		dust = 0.65 + 0.7 * vnoise(vec2(UV.x * 9.0, along * 14.0 - TIME * flow));
 	}
-	ALBEDO = clamp(color * intensity * a * edge * nf * dust, vec3(0.0), vec3(4.0));
+	ALBEDO = clamp(color * intensity * a * edge * nf * dust, vec3(0.0), vec3(4.0)) * (1.0 - 0.92 * gl_daylight);
 }
