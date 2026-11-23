@@ -4,15 +4,20 @@ extends CharacterBody3D
 ## in the Inn's yard. Hold Use at it to mount (the body is carried up into the saddle: Player.begin_carry); mounted,
 ## forward urges it on through walk, trot and gallop, back reins it in and stops it (held at a stand it backs up),
 ## left / right turn it (it answers like an animal: the turn lags, a gallop turns wide and slows in a hard turn);
-## hold Use again, or jump, to get down on a free spot beside it. The rider shoots from the saddle at a walk or a trot
-## (the gait is the sway) and not at a gallop (both hands are on the reins).
+## hold Use again, or jump, to get down on a free spot beside it. The rider shoots from the saddle at every gait (the
+## gait is the sway). T-262 (the owner: "allow player to shot gun while gallobing with horse, add horse upgrade"): at a
+## gallop too, with more sway and a wider cone; there the hands rest on the reins until the weapon is wanted (fire,
+## aim, reload, swap: the gun comes up, the knotted reins lie on the neck) and go back a moment after. And the tack:
+## three pieces sold for Scrip at the tack chest by its rail (HorseTack) to a player on foot while it stands tied,
+## kept for the match, worn on the model, every rider's (HorseRules.upgraded: the table it rides by).
 ## In a zombie game: zombies ignore it and cannot hurt it (its body is on the map-edge layer: players and bots are
 ## stopped by it, zombies and shots pass); it shies and slows when they crowd it, will not go near a homage boss, and
 ## flings aside a zombie it gallops through (damage on landing, a cooldown, its own speed lost); a rider can be hit
 ## and is put down beside it when downed (or knocked down by a boss). Left alone it walks back to its rail. It only
 ## stands on open ground in its zones (never through a house door, onto the tower or off the map): a step outside is
 ## refused.
-## Co-op: one rider. The host decides who mounts (HorseUse.interact runs there) and mirrors it; the rider's own
+## Co-op: one rider. The host decides who mounts (HorseUse.interact runs there) and mirrors it (the tack the same:
+## HorseTack.interact runs on the host, which takes the buyer's Scrip and mirrors net_upgrades); the rider's own
 ## machine moves the horse (as a ladder or a zip line moves its user), every other peer puts it under the rider's
 ## replicated body. Bots never ride (may_mount), and nothing in their brains looks for it.
 ## Data: <map>.json "horses" rows (spawn_all, called by MapRoot beside the ladders and zip lines) and
@@ -40,6 +45,9 @@ var steer: float = 0.0                 # the turn the body is making (-1..1, rig
 var rig: HorseRig = null
 var use: HorseUse = null
 var input_override: Variant = null     # smokes: Vector3(steer, throttle, sprint) instead of the rider's keys
+var weapon_override: Variant = null    # smokes: true / false = the rider wants the weapon now, instead of the keys
+var upgrades: Array = []               # T-262: the tack it wears (ids of horse.json "upgrades", in their order)
+var tack: HorseTack = null             # the tack chest at its rail (none without a rail)
 var dismount_wanted: bool = false      # smokes: get down now
 
 # counters the smokes read
@@ -50,7 +58,11 @@ var tramples: int = 0
 var shies: int = 0
 var homed: int = 0
 var forced_off: int = 0
+var bought: int = 0
 
+var _tab: Dictionary = {}              # the table it rides by: horse.json with its tack applied (HorseRules.upgraded)
+var _since_weapon: float = 99.0        # seconds since the rider last wanted the weapon (the reins at a gallop)
+var _tack_nodes: Array[Node] = []      # what the tack looks like on the model
 var _r: Dictionary = {}
 var _t: float = 0.0                    # seconds in the current mode
 var _from: Vector3 = Vector3.ZERO      # the rider's place when a mount / dismount began
@@ -91,9 +103,10 @@ func _init() -> void:
 
 
 func _ready() -> void:
-	_r = HorseRules.block("ride")
+	_tab = HorseRules.upgraded(upgrades)
+	_r = _blk("ride")
 	add_to_group(&"horses")
-	var bd: Dictionary = HorseRules.block("body")
+	var bd: Dictionary = _blk("body")
 	var cs: CollisionShape3D = CollisionShape3D.new()
 	var cap: CapsuleShape3D = CapsuleShape3D.new()
 	cap.radius = float(bd.get("radius", 0.55))
@@ -118,6 +131,12 @@ func _ready() -> void:
 	_puppet_yaw = rotation.y
 	_has_zones = not get_tree().get_nodes_in_group(&"zone_volumes").is_empty()
 	_build_rope()
+	_show_tack()
+
+
+## A block of the table this horse rides by (its tack applied).
+func _blk(key: String) -> Dictionary:
+	return _tab.get(key, {})
 
 
 # ================================================================== use (HorseUse forwards here)
@@ -191,6 +210,102 @@ func seated() -> bool:
 	return mode == Mode.RIDDEN
 
 
+# ================================================================== the tack (T-262; HorseTack forwards here)
+
+func tack_prompt(p: Player) -> String:
+	if p == null or p.is_bot or p.bot_driven or p.is_companion:
+		return ""
+	var id: String = HorseRules.next_upgrade(upgrades)
+	if id == "":
+		return "The horse wears all its tack (%s)" % HorseRules.tack_names(upgrades)
+	var row: Dictionary = HorseRules.upgrade(id)
+	if mode != Mode.TIED:
+		return "%s: the horse must stand tied at its rail" % str(row.get("name", id))
+	return "Hold [%s] to fit %s [%s]\n%s" % [Interactable.prompt_key(&"interact"), str(row.get("name", id)),
+		tack.price_str(p, int(row.get("cost", 0))) if tack != null else str(int(row.get("cost", 0))), str(row.get("desc", ""))]
+
+
+func can_buy(p: Player) -> bool:
+	return p != null and HorseRules.may_buy(upgrades, HorseRules.next_upgrade(upgrades), p.is_alive(), p.downed,
+		p.is_bot or p.bot_driven or p.is_companion, p.carry != null or rider == p, mode == Mode.TIED)
+
+
+## The host's (or solo's) sale: the next piece, for the buyer's Scrip. Mirrored to every client.
+func on_buy(p: Player) -> void:
+	if tack == null or not can_buy(p):
+		return
+	var id: String = HorseRules.next_upgrade(upgrades)
+	if not tack.try_purchase(p, StringName("horse_" + id), HorseRules.upgrade_cost(id)):
+		return
+	bought += 1
+	net_upgrades(upgrades + [id])
+	Net.mirror(self, &"net_upgrades", [upgrades])
+
+
+## The tack it wears from now on (the host's word on a client; the dev console and the smokes call it too).
+func net_upgrades(owned: Array) -> void:
+	var was: int = upgrades.size()
+	upgrades = HorseRules.clean_owned(owned)
+	_tab = HorseRules.upgraded(upgrades)
+	_r = _blk("ride")
+	_show_tack()
+	if upgrades.size() > was and is_inside_tree():
+		_sound("tack", -2.0)
+		if rig != null:
+			rig.alert = 0.6
+
+
+## The tack on the model: iron under the hooves, saddlebags and a rolled blanket behind the cantle, a padded breast
+## piece. Each rides its bone (HorseRig.attach); children are placed in the model's own axes.
+func _show_tack() -> void:
+	for n: Node in _tack_nodes:
+		if is_instance_valid(n):
+			n.queue_free()
+	_tack_nodes.clear()
+	if rig == null or rig.skel == null:
+		return
+	if upgrades.has("shoes"):
+		for leg: int in 4:
+			var j: Array = HorseMesh.leg_joints(leg)
+			var foot: Vector3 = j[5]
+			var g: Node3D = Node3D.new()
+			g.name = "Shoe_" + HorseGait.LEG_NAMES[leg]
+			Props.cyl(g, Vector3(0, 0.009, 0.0), 0.082, 0.018, "steel")
+			for sx: float in [-0.05, 0.05]:   # the studs at the heels
+				Props.cyl(g, Vector3(sx, 0.0, 0.05), 0.012, 0.022, "iron")
+			_tack_nodes.append(rig.attach("%s_D" % HorseGait.LEG_NAMES[leg], g, foot))
+	if upgrades.has("saddle"):
+		var sg: Node3D = _model_group("SaddleKit")
+		for sx: float in [-1.0, 1.0]:
+			Props.block(sg, Vector3(sx * 0.37, 1.10, 0.16), Vector3(sx * 0.5, 1.42, 0.46), "leather", false)       # a saddlebag
+			Props.block(sg, Vector3(sx * 0.365, 1.38, 0.15), Vector3(sx * 0.51, 1.44, 0.47), "leather", false)      # its flap
+			Props.block(sg, Vector3(sx * 0.505, 1.24, 0.29), Vector3(sx * 0.515, 1.4, 0.33), "brass", false)        # the buckle strap
+			Props.block(sg, Vector3(sx * 0.33, 1.42, -0.5), Vector3(sx * 0.43, 1.56, -0.36), "leather", false)      # a knee roll
+		Props.block(sg, Vector3(-0.4, 1.555, 0.27), Vector3(0.4, 1.575, 0.35), "leather", false)                  # the strap over the back
+		Props.cyl(sg, Vector3(0.0, 1.645, 0.2), 0.075, 0.64, "cloth_green", Vector3(0, 0, 90))                    # the rolled blanket
+		for sx2: float in [-0.2, 0.2]:
+			Props.cyl(sg, Vector3(sx2, 1.645, 0.2), 0.079, 0.03, "leather", Vector3(0, 0, 90))
+		_tack_nodes.append(rig.attach("Body", sg, Vector3.ZERO))
+	if upgrades.has("barding"):
+		var bg: Node3D = _model_group("Barding")
+		Props.block(bg, Vector3(-0.2, 1.0, -0.94), Vector3(0.2, 1.42, -0.86), "leather", false)                   # the breast pad
+		for row: int in 3:
+			for sx3: float in [-0.12, 0.0, 0.12]:
+				Props.cyl(bg, Vector3(sx3, 1.1 + 0.12 * float(row), -0.945), 0.016, 0.012, "iron", Vector3(90, 0, 0))   # its rivets
+		for sx4: float in [-1.0, 1.0]:
+			Props.block(bg, Vector3(sx4 * 0.2, 0.98, -0.9), Vector3(sx4 * 0.33, 1.44, -0.76), "leather", false)       # round the shoulder
+			Props.block(bg, Vector3(sx4 * 0.3, 1.02, -0.8), Vector3(sx4 * 0.39, 1.46, -0.56), "leather", false)
+		Props.block(bg, Vector3(-0.31, 1.59, -0.68), Vector3(0.31, 1.615, -0.6), "leather", false)                # the strap over the withers
+		_tack_nodes.append(rig.attach("Body", bg, Vector3.ZERO))
+
+
+## A holder whose children are placed in the model's rest axes (attach it to a bone with rest_point ZERO).
+func _model_group(n: String) -> Node3D:
+	var g: Node3D = Node3D.new()
+	g.name = n
+	return g
+
+
 # ================================================================== mount / dismount
 
 func _begin_mount(p: Player) -> void:
@@ -202,6 +317,7 @@ func _begin_mount(p: Player) -> void:
 	_hold_t = 0.0
 	_use_released = false
 	dismount_wanted = false
+	_since_weapon = 99.0
 	pace = 0.0
 	speed = 0.0
 	steer = 0.0
@@ -231,6 +347,7 @@ func _begin_dismount() -> void:
 	dismounts += 1
 	if rider.is_local:
 		rider.carry_fire = false
+		rider.carry_spread = 0.0
 		_set_hands(true)
 	_sound("tack", -6.0)
 
@@ -346,7 +463,7 @@ func _physics_process(delta: float) -> void:
 			_stand(delta)
 			_idle += delta
 			_home_wait = maxf(0.0, _home_wait - delta)
-			if _home_wait <= 0.0 and HorseRules.home_due(_idle, _flat(global_position, home_pos), rider != null, HorseRules.block("home")):
+			if _home_wait <= 0.0 and HorseRules.home_due(_idle, _flat(global_position, home_pos), rider != null, _blk("home")):
 				_start_home()
 		Mode.HOMING:
 			_tick_home(delta)
@@ -390,8 +507,8 @@ func _sense(delta: float) -> void:
 	if _crowd_t > 0.0:
 		return
 	_crowd_t = 0.2
-	var c: Dictionary = HorseRules.block("crowd")
-	var bf: Dictionary = HorseRules.block("boss_fear")
+	var c: Dictionary = _blk("crowd")
+	var bf: Dictionary = _blk("boss_fear")
 	var rad: float = float(c.get("radius", 4.5))
 	var n: int = 0
 	_boss_d = INF
@@ -420,7 +537,7 @@ func _sense(delta: float) -> void:
 
 
 func pace_cap() -> float:
-	return HorseRules.pace_cap(_crowd, _boss_d, HorseRules.block("crowd"), HorseRules.block("boss_fear"))
+	return HorseRules.pace_cap(_crowd, _boss_d, _blk("crowd"), _blk("boss_fear"))
 
 
 ## Standing: it keeps its feet, gravity holds it down.
@@ -493,13 +610,13 @@ func _may_stand(at: Vector3) -> bool:
 	if not _has_zones or zones.is_empty():
 		return true
 	var z: StringName = ZoneVolume.zone_at(get_tree(), at + Vector3.UP * 0.6)
-	return HorseRules.may_stand(z, GameState.is_zone_open(z), at.y, home_pos.y, zones, HorseRules.block("bounds"))
+	return HorseRules.may_stand(z, GameState.is_zone_open(z), at.y, home_pos.y, zones, _blk("bounds"))
 
 
 ## Galloping through the dead: the first within reach of its chest is flung aside (hurt where it lands), the horse
 ## loses speed, and it does not happen again for a moment. Bosses are not shoved.
 func _trample() -> void:
-	var tc: Dictionary = HorseRules.block("trample")
+	var tc: Dictionary = _blk("trample")
 	var hit: Dictionary = HorseRules.trample(speed, _trample_cd, tc)
 	if hit.is_empty() or not Net.is_authority():
 		return
@@ -641,7 +758,7 @@ func _tick_ridden(delta: float) -> void:
 	var d: float = wrapf(p.rotation.y - rotation.y, -PI, PI)
 	if absf(d) > free:
 		p.rotation.y = rotation.y + clampf(d, -free, free)
-	_seat_rider(p)
+	_seat_rider(p, delta)
 	if want_off:
 		dismount_wanted = false
 		_use_released = false     # one request: a client waits a round trip for the host's answer, and a request
@@ -650,24 +767,56 @@ func _tick_ridden(delta: float) -> void:
 
 
 ## The rider in the saddle: the body under the seat, the view riding the gait, the hands on the gun or the reins.
-func _seat_rider(p: Player) -> void:
+func _seat_rider(p: Player, delta: float) -> void:
 	p.global_position = seat_feet()
 	p.velocity = Vector3.ZERO
 	var g: int = rig.gait
-	var fc: Dictionary = HorseRules.block("fire")
+	var fc: Dictionary = _blk("fire")
 	var sway: float = HorseRules.fire_sway(g, fc)
+	var rock: float = HorseRules.view_rock(p.weapons.ads_t if p.weapons != null and p.carry_fire else 0.0, fc)
 	var sm: Vector3 = HorseGait.saddle_motion(g, rig.phase)
-	p.carry_pitch = sm.y * 0.6 + 0.01 * sway * sin(TAU * 2.0 * rig.phase)
-	p.carry_roll = -sm.z * 0.8 - steer * 0.03 * clampf(absf(speed) / 5.0, 0.0, 1.0) + 0.008 * sway * sin(TAU * rig.phase)
+	p.carry_pitch = sm.y * 0.6 * rock + 0.01 * sway * sin(TAU * 2.0 * rig.phase)
+	p.carry_roll = -sm.z * 0.8 * rock - steer * 0.03 * clampf(absf(speed) / 5.0, 0.0, 1.0) + 0.008 * sway * sin(TAU * rig.phase)
 	p.carry_head = Vector3(0.012 * sway * sin(TAU * rig.phase), 0.0, 0.0)
 	p.carry_fov = 6.0 * clampf((absf(speed) - 5.0) / 4.5, 0.0, 1.0)
 	# the way down is said once, for the first seconds in the saddle (the Player shows no prompt while carried)
 	p.prompt_text = "Hold [%s] or press [%s] to get down" % [Interactable.prompt_key(&"interact"), Interactable.prompt_key(&"jump")] if _t < 5.0 and rides <= 3 else ""
-	var fire: bool = HorseRules.can_fire(g, mode == Mode.RIDDEN, fc)
-	p.carry_fire = fire
-	_set_hands(not fire)
-	if not fire:
+	# T-262: the gun is up at every gait; at a gallop the hands rest on the reins until the weapon is wanted
+	var busy: bool = _weapon_wanted(p)
+	_since_weapon = 0.0 if busy else _since_weapon + delta
+	var reins: bool = not HorseRules.can_fire(g, mode == Mode.RIDDEN, fc) or HorseRules.on_reins(g, busy, _since_weapon, fc)
+	p.carry_fire = not reins
+	p.carry_spread = 0.0 if reins or p.weapons == null else HorseRules.fire_spread(g, p.weapons.ads_t, fc)
+	if _hands_on and not reins and p.weapons != null and _keys_live(p) and Input.is_action_pressed(&"fire"):
+		p.weapons.keep_fire_press()   # the trigger pulled from the reins: the shot goes when the gun is up
+	_set_hands(reins)
+	if reins:
 		_place_hands(1.0)
+
+
+## True while the rider wants the weapon: the trigger, the sights, a reload, a swap, a grenade, the knife.
+func _weapon_wanted(p: Player) -> bool:
+	if weapon_override is bool:
+		return weapon_override
+	var w: WeaponHolder = p.weapons
+	if w == null:
+		return false
+	if w.is_reloading() or w.is_busy() or w.cook_left() >= 0.0:
+		return true
+	if not _keys_live(p):
+		return false
+	for a: StringName in [&"fire", &"ads", &"lethal"]:
+		if Input.is_action_pressed(a):
+			return true
+	for a: StringName in [&"reload", &"melee", &"swap_weapon", &"tactical", &"weapon_1", &"weapon_2", &"weapon_3"]:
+		if InputMap.has_action(a) and Input.is_action_just_pressed(a):
+			return true
+	return false
+
+
+## True while the rider's own keys count (the match is on, no menu has them, no brain drives the body).
+func _keys_live(p: Player) -> bool:
+	return GameState.phase == GameState.Phase.PLAYING and not GameState.input_blocked and not p.bot_driven
 
 
 func _set_hands(on: bool) -> void:
@@ -777,7 +926,7 @@ func _start_home() -> void:
 
 
 func _tick_home(delta: float) -> void:
-	var h: Dictionary = HorseRules.block("home")
+	var h: Dictionary = _blk("home")
 	var arrive: float = float(h.get("arrive_m", 0.5))
 	while _path_i < _path.size() - 1 and _flat(global_position, _path[_path_i]) < 0.8:
 		_path_i += 1
@@ -825,7 +974,7 @@ func _tick_home(delta: float) -> void:
 # ================================================================== sound, the rail, the rope
 
 func _sound(key: String, db: float = 0.0) -> void:
-	var id: String = str(HorseRules.block("sounds").get(key, ""))
+	var id: String = str(_blk("sounds").get(key, ""))
 	if id != "" and AudioDirector.has_sound(id):
 		AudioDirector.play_3d(id, global_position + Vector3.UP * 1.6 - global_basis.z * 1.2, db)
 
@@ -838,7 +987,7 @@ func _on_hoof(leg: int, at: Vector3, gait: int) -> void:
 		return
 	_hoof_ms = now
 	var surface: String = hoof_surface(self, at)
-	var key: String = str(HorseRules.block("sounds").get("hoof", "horse_hoof_")) + surface
+	var key: String = str(_blk("sounds").get("hoof", "horse_hoof_")) + surface
 	if not AudioDirector.has_sound(key):
 		key = "footstep_" + surface
 	AudioDirector.play_3d(key, at, [-30.0, -9.0, -5.0, -1.0][clampi(gait, 0, 3)], 0.07)
@@ -960,6 +1109,8 @@ static func spawn_all(root: Node3D, map_id: StringName) -> Array[Horse]:
 			h.rail_pos = ClimbLink._v3(row["rail"])
 			h.rail_yaw = float(row.get("rail_yaw", 0.0))
 			build_rail(holder, h.rail_pos, h.rail_yaw)
+			if not HorseRules.upgrade_rows().is_empty():
+				h.tack = HorseTack.at_rail(holder, h)
 		h.position = h.home_pos
 		h.rotation.y = h.home_yaw
 		holder.add_child(h)
@@ -984,3 +1135,43 @@ class HorseUse extends Interactable:
 	func interact(player: Player) -> void:
 		if horse != null:
 			horse.on_use(player)
+
+
+## T-262: the tack chest by the hitching rail: hold Use on foot to fit the horse's next piece of tack for Scrip. The
+## host runs the sale (not net_local); it draws no collider, like the rail's bucket (nothing baked changes).
+class HorseTack extends Interactable:
+	var horse: Horse = null
+
+	static func at_rail(holder: Node3D, h: Horse) -> HorseTack:
+		var tc: Dictionary = HorseRules.block("tack")
+		var t: HorseTack = HorseTack.new()
+		t.name = String(h.name) + "_Tack"
+		t.horse = h
+		var us: Array = tc.get("use_size", [0.8, 1.7, 0.8])
+		t.interact_size = Vector3(float(us[0]), float(us[1]), float(us[2]))
+		t.interact_offset = Vector3(0, float(us[1]) * 0.5, 0)
+		t.position = h.rail_pos + Basis(Vector3.UP, deg_to_rad(h.rail_yaw)) * ClimbLink._v3(tc.get("offset", [1.62, 0, 0]))
+		t.rotation.y = deg_to_rad(h.rail_yaw)
+		holder.add_child(t)
+		return t
+
+	func build_greybox() -> void:
+		# a carter's chest with its lid back: a breast strap, shoes on a wire, a tin of nails
+		Props.block(self, Vector3(-0.3, 0.0, -0.21), Vector3(0.3, 0.36, 0.21), "furniture")
+		Props.block(self, Vector3(-0.31, 0.3, -0.22), Vector3(0.31, 0.33, 0.22), "iron", false)
+		Props.block(self, Vector3(-0.3, 0.36, 0.19), Vector3(0.3, 0.74, 0.23), "furniture")                 # the lid, standing open
+		Props.block(self, Vector3(-0.27, 0.36, -0.18), Vector3(0.27, 0.4, 0.18), "leather", false)             # folded tack
+		Props.cyl(self, Vector3(-0.12, 0.44, 0.0), 0.07, 0.014, "steel", Vector3(0, 0, 0))                    # horseshoes
+		Props.cyl(self, Vector3(-0.1, 0.455, 0.03), 0.07, 0.014, "steel", Vector3(0, 0, 0))
+		Props.cyl(self, Vector3(0.15, 0.44, -0.06), 0.045, 0.08, "tin")                                        # the nails
+		Props.block(self, Vector3(-0.05, 0.4, 0.1), Vector3(0.24, 0.47, 0.17), "cloth_green", false)           # a rolled blanket
+
+	func get_prompt(player: Player) -> String:
+		return horse.tack_prompt(player) if horse != null and is_instance_valid(horse) else ""
+
+	func can_interact(player: Player) -> bool:
+		return horse != null and is_instance_valid(horse) and horse.can_buy(player)
+
+	func interact(player: Player) -> void:
+		if horse != null and is_instance_valid(horse):
+			horse.on_buy(player)

@@ -160,6 +160,7 @@ var carry_pitch: float = 0.0              # radians added to the view pitch (loo
 var carry_roll: float = 0.0               # radians of camera roll (the reach, the swing)
 var carry_fov: float = 0.0                # degrees added to the FOV (the rush of the line)
 var carry_fire: bool = false             # T-240: the carrier lets the rider shoot (a horse at a walk or a trot); off with every begin_carry / end_carry
+var carry_spread: float = 0.0             # T-262: degrees the carrier adds to the weapon cone (a horse by its gait); 0 with every begin_carry / end_carry
 var mantles: int = 0                     # mantles / vaults started this match (tools)
 var _mv: Dictionary = {}
 var _sprint_toggled: bool = false        # Toggle sprint mode: on until cancelled / you stop moving forward
@@ -1169,6 +1170,7 @@ func begin_carry(by: Node) -> void:
 	_view_off = Vector3.ZERO   # T-236: no eased step offset under a carried body
 	_lunge_t = 0.0             # a lunge or a knockback in flight ends here (its clock only runs in _update_movement)
 	carry_fire = false
+	carry_spread = 0.0
 	velocity = Vector3.ZERO
 	sprinting = false
 	sliding = false
@@ -1193,6 +1195,7 @@ func end_carry(by: Node) -> void:
 	if not has_status(&"knockdown"):
 		_lunge_t = 0.0   # a push taken in the saddle is not served on the way down (a knockdown's throw still is)
 	carry_fire = false
+	carry_spread = 0.0
 	carry_head = Vector3.ZERO
 	carry_pitch = 0.0
 	carry_roll = 0.0

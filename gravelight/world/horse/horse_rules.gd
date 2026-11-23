@@ -3,6 +3,8 @@ extends RefCounted
 ## The rideable horse's rules as pure functions (T-240; data/gravelight/horse.json, tested by test_horse_gait.gd):
 ## how the pace answers the rider, how fast it may turn, when the rider may shoot, what a crowd of zombies does to
 ## it, what it does to a zombie it gallops through, where it may stand, where a rider may get down, who may mount.
+## T-262: the rider shoots at a gallop too (more sway, a wider cone, the hands on the reins until the gun is wanted),
+## and the horse's tack (the "upgrades" rows: what each costs, what it changes, who may buy it and when).
 
 const PATH: String = "res://data/gravelight/horse.json"
 
@@ -72,9 +74,10 @@ static func steer_step(cur: float, steer: float, dt: float, r: Dictionary) -> fl
 	return lerpf(cur, clampf(steer, -1.0, 1.0), 1.0 - exp(-dt / maxf(0.01, float(r.get("turn_lag_s", 0.28)))))
 
 
-## True when a rider may shoot from the saddle: seated (not getting up or down) and at a trot or slower.
+## True when a rider may shoot from the saddle: seated (not getting up or down) and at max_gait or slower (T-262:
+## the gallop too).
 static func can_fire(gait: int, seated: bool, f: Dictionary) -> bool:
-	return seated and gait <= int(f.get("max_gait", HorseGait.Gait.TROT))
+	return seated and gait <= int(f.get("max_gait", HorseGait.Gait.GALLOP))
 
 
 ## How much of the gait's motion reaches the rider's aim.
@@ -84,7 +87,38 @@ static func fire_sway(gait: int, f: Dictionary) -> float:
 			return float(f.get("sway_walk", 0.6))
 		HorseGait.Gait.TROT:
 			return float(f.get("sway_trot", 1.0))
+		HorseGait.Gait.GALLOP:
+			return float(f.get("sway_gallop", 1.6))
 	return 0.25
+
+
+## T-262: degrees the gait adds to the weapon's cone (WeaponHolder.spread_deg through Player.carry_spread); aiming
+## down the sights takes spread_ads_mult of it.
+static func fire_spread(gait: int, ads_t: float, f: Dictionary) -> float:
+	var deg: float = 0.0
+	match gait:
+		HorseGait.Gait.WALK:
+			deg = float(f.get("spread_walk_deg", 0.0))
+		HorseGait.Gait.TROT:
+			deg = float(f.get("spread_trot_deg", 0.0))
+		HorseGait.Gait.GALLOP:
+			deg = float(f.get("spread_gallop_deg", 2.4))
+	return maxf(0.0, deg) * lerpf(1.0, clampf(float(f.get("spread_ads_mult", 0.5)), 0.0, 1.0), clampf(ads_t, 0.0, 1.0))
+
+
+## T-262: how much of the saddle's own pitch and roll reaches the view: view_rock, and rock_ads_mult of that with the
+## sights up (the rider stands in the stirrups to aim, and takes the stride in the knees).
+static func view_rock(ads_t: float, f: Dictionary) -> float:
+	return float(f.get("view_rock", 1.0)) * lerpf(1.0, clampf(float(f.get("rock_ads_mult", 0.5)), 0.0, 1.0), clampf(ads_t, 0.0, 1.0))
+
+
+## T-262: true when the rider's hands are on the reins (the gun away): at reins_gait or faster (the gallop), unless
+## the weapon is wanted now (fire, aim, a reload, a swap) or was within the last reins_after_s. Getting up or down
+## is the horse's own business (both hands on the pommel).
+static func on_reins(gait: int, weapon_busy: bool, since_weapon_s: float, f: Dictionary) -> bool:
+	if gait < int(f.get("reins_gait", HorseGait.Gait.GALLOP)):
+		return false
+	return not weapon_busy and since_weapon_s >= float(f.get("reins_after_s", 1.6))
 
 
 ## The fastest pace it will give with `zombies` crowding it and a horse boss `boss_dist` metres off.
@@ -147,3 +181,87 @@ static func puppet_yaw(yaw: float, vel: Vector3, dt: float) -> float:
 	if flat.length() < 0.6:
 		return yaw
 	return lerp_angle(yaw, atan2(-vel.x, -vel.z), 1.0 - exp(-dt * 6.0))
+
+
+# ================================================================== the tack (T-262: the horse's upgrades)
+
+## The rows a horse can be fitted with, in the order they are sold: {id, name, cost, desc, mul, add}.
+static func upgrade_rows(tab: Dictionary = {}) -> Array:
+	return (tab if not tab.is_empty() else table()).get("upgrades", [])
+
+
+static func upgrade(id: String, tab: Dictionary = {}) -> Dictionary:
+	for row: Variant in upgrade_rows(tab):
+		if row is Dictionary and str((row as Dictionary).get("id", "")) == id:
+			return row
+	return {}
+
+
+static func upgrade_cost(id: String, tab: Dictionary = {}) -> int:
+	return int(upgrade(id, tab).get("cost", 0))
+
+
+## `owned` as the ids that exist, once each, in the rows' order (what a peer is sent, what a horse keeps).
+static func clean_owned(owned: Array, tab: Dictionary = {}) -> Array:
+	var out: Array = []
+	for row: Variant in upgrade_rows(tab):
+		var id: String = str((row as Dictionary).get("id", ""))
+		for o: Variant in owned:
+			if str(o) == id and not out.has(id):
+				out.append(id)
+	return out
+
+
+## The next piece on sale ("" when it has them all): the first row not owned.
+static func next_upgrade(owned: Array, tab: Dictionary = {}) -> String:
+	for row: Variant in upgrade_rows(tab):
+		var id: String = str((row as Dictionary).get("id", ""))
+		if id != "" and not owned.has(id):
+			return id
+	return ""
+
+
+## Who may buy piece `id` now: a live human on their feet (not carried by a horse, a ladder, a line), the horse
+## standing tied at its rail, and `id` the next piece on sale. Bots never. (The Scrip is Economy.spend's to judge.)
+static func may_buy(owned: Array, id: String, alive: bool, downed: bool, is_bot: bool, carried: bool, tied: bool, tab: Dictionary = {}) -> bool:
+	return id != "" and id == next_upgrade(owned, tab) and alive and not downed and not is_bot and not carried and tied
+
+
+## The table a horse with `owned` rides by: every owned row's "mul" ({"block.key": factor}; a list is scaled
+## entry by entry) and "add" ({"block.key": amount}) applied to a copy. No piece: the table itself.
+static func upgraded(owned: Array, tab: Dictionary = {}) -> Dictionary:
+	var base: Dictionary = tab if not tab.is_empty() else table()
+	if owned.is_empty():
+		return base
+	var out: Dictionary = base.duplicate(true)
+	for row: Variant in upgrade_rows(base):
+		var r: Dictionary = row
+		if not owned.has(str(r.get("id", ""))):
+			continue
+		for op: String in ["mul", "add"]:
+			var changes: Dictionary = r.get(op, {})
+			for path: Variant in changes.keys():
+				var parts: PackedStringArray = str(path).split(".")
+				if parts.size() != 2 or not (out.get(parts[0]) is Dictionary):
+					continue
+				var blk: Dictionary = out[parts[0]]
+				if not blk.has(parts[1]):
+					continue
+				var v: Variant = blk[parts[1]]
+				var k: float = float(changes[path])
+				if v is Array:
+					var arr: Array = []
+					for e: Variant in v:
+						arr.append(float(e) * k if op == "mul" else float(e) + k)
+					blk[parts[1]] = arr
+				else:
+					blk[parts[1]] = float(v) * k if op == "mul" else float(v) + k
+	return out
+
+
+## What the pieces a horse wears are called, in one line ("" for none).
+static func tack_names(owned: Array, tab: Dictionary = {}) -> String:
+	var names: PackedStringArray = []
+	for id: Variant in clean_owned(owned, tab):
+		names.append(str(upgrade(str(id), tab).get("name", id)))
+	return ", ".join(names)
