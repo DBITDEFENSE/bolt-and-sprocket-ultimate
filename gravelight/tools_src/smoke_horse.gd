@@ -1,7 +1,9 @@
 extends Node
 ## The rideable horse (T-240) on the Inn (map00): it stands tied at its rail in the Carters' Yard; a player mounts (the
-## body is carried into the saddle), rides a loop of the yard through walk, trot and gallop (shooting allowed at a walk
-## and a trot, not at a gallop), never leaves the yard through a house door or over a fence, shies from a crowd and
+## body is carried into the saddle), rides a loop of the yard through walk, trot and gallop (shooting allowed at every
+## gait; T-262: at a gallop the hands are on the reins until the trigger is pulled, the press is kept and fires when the
+## gun is up, the cone and the swing of the aim are wider than at a trot and smaller down the sights), buys the three
+## pieces of tack at the chest by the rail (T-262: who may buy, the prices, what each changes, the model), never leaves the yard through a house door or over a fence, shies from a crowd and
 ## flings a zombie it gallops through, is pulled off when downed, gets down on a free spot, and the horse walks back to
 ## its rail. A bot never rides it, zombies pass it, and a peer that does not move it (a remote rider) keeps it under the
 ## rider's body. Headless, silent.
@@ -48,6 +50,15 @@ func _place_horse(h: Horse, at: Vector3, yaw_deg: float) -> void:
 	h.steer = 0.0
 	h.set("_last_ok", at)
 	h.set("_prev_pos", at)
+
+
+## Sets the horse galloping east down the yard's long side from x (from x 5: about 2 s of room; west of 5 the
+## quarters are at the yard's edge and it refuses).
+func _gallop_from(h: Horse, x: float) -> void:
+	_place_horse(h, Vector3(x, 0, 39.0), -90.0)
+	h.pace = 3.0
+	h.speed = 9.0
+	h.input_override = Vector3(0, 1, 1)
 
 
 ## Rides with a fixed input for `seconds`, checking every frame that the horse stays in the yard. Returns
@@ -155,13 +166,21 @@ func _run() -> void:
 	await _secs(1.4)
 	_check(h.rig.gait == HorseGait.Gait.TROT, "held forward it goes on to a trot (gait %s, %.1f m/s)" % [HorseGait.gait_name(h.rig.gait), h.speed])
 	_check(_p.carry_fire and _p.weapons.hands_mode == &"", "at a trot the rider may shoot (carry_fire %s)" % str(_p.carry_fire))
+	var trot_spread: float = _p.weapons.spread_deg()
+	_check(_p.carry_spread == 0.0, "the trot adds nothing to the cone (carry_spread %.2f, cone %.2f deg, on_floor %s)" % [_p.carry_spread, trot_spread, str(_p.is_on_floor())])
+	h.pace = 2.0                      # (it holds the trot while it is measured)
+	h.input_override = Vector3.ZERO
+	await _frames(20)
 	var bob0: float = _p.global_position.y
 	var bob_lo: float = bob0
 	var bob_hi: float = bob0
+	var trot_swing: Vector2 = Vector2(INF, -INF)
 	for i: int in 40:
 		await get_tree().physics_frame
 		bob_lo = minf(bob_lo, _p.global_position.y)
 		bob_hi = maxf(bob_hi, _p.global_position.y)
+		trot_swing = Vector2(minf(trot_swing.x, _p.carry_pitch), maxf(trot_swing.y, _p.carry_pitch))
+	_check(h.rig.gait == HorseGait.Gait.TROT, "(still at a trot: %s)" % HorseGait.gait_name(h.rig.gait))
 	_check(bob_hi - bob_lo > 0.03, "the view rides the trot's bounce (%.3f m)" % (bob_hi - bob_lo))
 	_place_horse(h, Vector3(5.0, 0, 39.0), -90.0)
 	h.pace = 2.0
@@ -169,8 +188,66 @@ func _run() -> void:
 	h.input_override = Vector3(0, 1, 1)
 	await _secs(2.0)
 	_check(h.rig.gait == HorseGait.Gait.GALLOP and h.speed > 7.0, "urged on it gallops (gait %s, %.1f m/s)" % [HorseGait.gait_name(h.rig.gait), h.speed])
-	_check(not _p.carry_fire and _p.weapons.hands_mode == &"climb", "at a gallop both hands are on the reins: no fire (carry_fire %s, hands \"%s\")" % [str(_p.carry_fire), _p.weapons.hands_mode])
+	_check(not _p.carry_fire and _p.weapons.hands_mode == &"climb", "at a gallop, the gun idle, both hands are on the reins (carry_fire %s, hands \"%s\")" % [str(_p.carry_fire), _p.weapons.hands_mode])
 	_check(_p.carry_fov > 2.0, "the view opens with the speed (+%.1f deg)" % _p.carry_fov)
+
+	# ---- T-262: shooting at a gallop. The weapon is wanted: the gun comes up, the cone opens, the view swings wider
+	# than at a trot, a shot leaves the gun; left alone the hands go back to the reins
+	var fc: Dictionary = HorseRules.block("fire")
+	# the player's own trigger, from the reins: the press is kept while the gun comes up, and the shot goes
+	_gallop_from(h, 5.0)
+	var wk: WeaponInstance = _p.weapons.current()
+	var mag_k: int = wk.mag
+	var playing: bool = GameState.phase == GameState.Phase.PLAYING and not GameState.input_blocked
+	Input.action_press(&"fire")
+	await _frames(2)
+	Input.action_release(&"fire")
+	_check(playing and wk.mag == mag_k, "the trigger pressed from the reins: no shot yet (match playing %s, mag %d)" % [str(playing), wk.mag])
+	await _secs(0.6)
+	_check(wk.mag == mag_k - 1 and _p.carry_fire and _p.weapons.hands_mode == &"" and h.rig.gait == HorseGait.Gait.GALLOP, "the gun comes up and the kept press fires, once (mag %d -> %d, hands \"%s\", carry_fire %s, gait %s, x %.1f)" % [mag_k, wk.mag, _p.weapons.hands_mode, str(_p.carry_fire), HorseGait.gait_name(h.rig.gait), h.global_position.x])
+	_gallop_from(h, 5.0)
+	await _secs(float(fc["reins_after_s"]))
+	_check(h.rig.gait == HorseGait.Gait.GALLOP and _p.weapons.hands_mode == &"climb", "and the hands are back on the reins %.1f s later (gait %s)" % [float(fc["reins_after_s"]), HorseGait.gait_name(h.rig.gait)])
+	_gallop_from(h, 5.0)
+	h.weapon_override = true
+	await _frames(3)
+	_check(_p.carry_fire and _p.weapons.hands_mode == &"", "the weapon wanted at a gallop: the gun comes up (carry_fire %s, hands \"%s\")" % [str(_p.carry_fire), _p.weapons.hands_mode])
+	_check(_p.weapons.is_busy(), "it rises as after a swap (no shot for a moment)")
+	var w: WeaponInstance = _p.weapons.current()
+	var mag0: int = w.mag
+	_p.weapons.tick(1.0 / 60.0, {"fire_pressed": true, "fire_held": true, "sprinting": false, "fire_block": false})
+	_check(w.mag == mag0, "no shot while the gun is still coming up")
+	await _secs(0.5)
+	_check(h.rig.gait == HorseGait.Gait.GALLOP and h.speed > 7.0, "still at a gallop (%.1f m/s)" % h.speed)
+	var gallop_spread: float = _p.weapons.spread_deg()
+	_check(absf(_p.carry_spread - float(fc["spread_gallop_deg"])) < 0.01 and gallop_spread > trot_spread + 1.0, "the gallop opens the cone (%.2f deg, a trot %.2f)" % [gallop_spread, trot_spread])
+	var gallop_swing: Vector2 = Vector2(INF, -INF)
+	var shots: int = 0
+	for i: int in 40:
+		await get_tree().physics_frame
+		gallop_swing = Vector2(minf(gallop_swing.x, _p.carry_pitch), maxf(gallop_swing.y, _p.carry_pitch))
+		if i % 8 == 0:
+			var before: int = w.mag
+			_p.weapons.tick(1.0 / 60.0, {"fire_pressed": true, "fire_held": true, "sprinting": false, "fire_block": not _p.carry_fire})
+			if w.mag < before:
+				shots += 1
+	_check(shots >= 2 and h.rig.gait == HorseGait.Gait.GALLOP, "shots leave the gun at a gallop (%d, mag %d -> %d)" % [shots, mag0, w.mag])
+	_check(gallop_swing.y - gallop_swing.x > (trot_swing.y - trot_swing.x) * 1.5 + 0.01, "the aim swings more than at a trot (%.1f deg against %.1f)" % [rad_to_deg(gallop_swing.y - gallop_swing.x), rad_to_deg(trot_swing.y - trot_swing.x)])
+	var ads_swing: Vector2 = Vector2(INF, -INF)
+	for i: int in 30:
+		_p.weapons.ads_t = 1.0
+		await get_tree().physics_frame
+		ads_swing = Vector2(minf(ads_swing.x, _p.carry_pitch), maxf(ads_swing.y, _p.carry_pitch))
+	_check(_p.carry_spread < float(fc["spread_gallop_deg"]) * 0.75, "aimed down the sights the gallop's cone is smaller (%.2f deg)" % _p.carry_spread)
+	_check(ads_swing.y - ads_swing.x < (gallop_swing.y - gallop_swing.x) * 0.8, "and the aim swings less (%.1f deg against %.1f from the hip)" % [rad_to_deg(ads_swing.y - ads_swing.x), rad_to_deg(gallop_swing.y - gallop_swing.x)])
+	_gallop_from(h, 5.0)
+	h.weapon_override = false
+	await _secs(0.6)
+	_check(_p.carry_fire and _p.weapons.hands_mode == &"", "between shots the gun stays up (%.1f s after)" % 0.6)
+	_gallop_from(h, 5.0)              # (the yard is 30 m long: a fresh run for the rest of the wait)
+	await _secs(float(fc["reins_after_s"]) - 0.6 + 0.2)
+	_check(h.rig.gait == HorseGait.Gait.GALLOP and not _p.carry_fire and _p.weapons.hands_mode == &"climb" and _p.carry_spread == 0.0, "left alone the hands go back to the reins (gait %s, hands \"%s\")" % [HorseGait.gait_name(h.rig.gait), _p.weapons.hands_mode])
+	h.weapon_override = null
 	h.input_override = Vector3(0, -1, 0)
 	await _secs(2.2)
 	_check(absf(h.speed) < 1.2, "back reins it in to a stand (%.2f m/s)" % h.speed)
@@ -305,6 +382,9 @@ func _run() -> void:
 	_check(Vector2(h.global_position.x - h.home_pos.x, h.global_position.z - h.home_pos.z).length() < 0.7 and absf(wrapf(h.rotation.y - h.home_yaw, -PI, PI)) < 0.1,
 		"it stands as it was tied (%.2f m off, %.0f deg off)" % [Vector2(h.global_position.x - h.home_pos.x, h.global_position.z - h.home_pos.z).length(), rad_to_deg(absf(wrapf(h.rotation.y - h.home_yaw, -PI, PI)))])
 
+	# ---- T-262: the tack. Bought on foot at the chest by the rail, one piece at a time, for Scrip, the horse tied
+	await _tack(h, bot)
+
 	# ---- a rider can be hit, and is pulled off when downed (last: the squad's bleed-out starts)
 	_p.global_position = h.global_transform * Vector3(-1.3, 0.05, 0.2)
 	_p.velocity = Vector3.ZERO
@@ -312,6 +392,9 @@ func _run() -> void:
 	_p.use_interactable(h.use)
 	await _secs(float(r.get("mount_s", 1.0)) + 0.4)
 	_check(h.rider == _p and h.seated(), "mounted again")
+	await _tack_ridden(h, dir)
+	_place_horse(h, h.home_pos, rad_to_deg(h.home_yaw))
+	await _frames(4)
 	GameState.god_mode = false
 	var hp1: float = _p.hp
 	_p.take_hit(20.0, null)
@@ -323,6 +406,147 @@ func _run() -> void:
 	_check(_p.global_position.y < 0.6, "the body is left on the ground beside the horse (y %.2f)" % _p.global_position.y)
 	GameState.god_mode = true
 	_finish()
+
+
+## The tack chest: where it is, who may buy, what each piece costs and changes on the horse.
+func _tack(h: Horse, bot: Player) -> void:
+	var pid: int = _p.player_id
+	var rows: Array = HorseRules.upgrade_rows()
+	var t: Horse.HorseTack = h.tack
+	_check(t != null and t.is_inside_tree() and rows.size() == 3, "the tack chest stands by the rail (%d pieces on sale)" % rows.size())
+	if t == null:
+		return
+	var space: PhysicsDirectSpaceState3D = _p.get_world_3d().direct_space_state
+	var down: Dictionary = space.intersect_ray(PhysicsRayQueryParameters3D.create(t.global_position + Vector3.UP * 3.0, t.global_position + Vector3.DOWN, 1))
+	_check(not down.is_empty() and absf((down["position"] as Vector3).y) < 0.15, "it stands on the yard's ground, under nothing (%s)" % str(down.get("position", "no floor")))
+	_check(t.global_position.distance_to(h.rail_pos) < 2.2 and absf(t.global_position.x - h.global_position.x) > 1.2, "at the rail's end, clear of the horse's own Use box (%.2f m along)" % (t.global_position.x - h.rail_pos.x))
+	_check(ZoneVolume.zone_at(get_tree(), t.global_position + Vector3.UP) == &"YARD", "in the Carters' Yard")
+	_check(t.get_child_count() > 4 and t.find_children("*", "CollisionObject3D", true, false).size() == 1, "it is drawn, and its only body is the Use area (nothing for a zombie's path)")
+	# the player walks up to it: the Use ray finds it, the prompt names the piece and its price
+	_p.global_position = t.global_position + Vector3(0.0, 0.05, 1.15)
+	_p.rotation.y = 0.0
+	_p.velocity = Vector3.ZERO
+	_p.set("_pitch", -0.15)
+	await _frames(8)
+	var stood: Vector3 = _p.global_position
+	_check(stood.distance_to(t.global_position + Vector3(0, 0, 1.15)) < 0.25 and _on_nav(stood), "a player can stand in front of it (%s)" % str(stood.snapped(Vector3.ONE * 0.01)))
+	_check(_p.call("_probe_interactable") == t, "looking at it, the Use ray finds the chest (%s)" % str(_p.call("_probe_interactable")))
+	var first: Dictionary = rows[0]
+	var prompt: String = t.get_prompt(_p)
+	_check(prompt.contains(str(first["name"])) and prompt.contains(str(int(first["cost"]))) and prompt.contains(str(first["desc"])), "the prompt: \"%s\"" % prompt.replace("\n", " / "))
+	if bot != null:
+		_check(t.get_prompt(bot) == "" and not t.can_interact(bot), "a bot is offered nothing and may not buy")
+		var bot_scrip: int = Economy.get_scrip(bot.player_id)
+		t.interact(bot)
+		_check(h.upgrades.is_empty() and Economy.get_scrip(bot.player_id) == bot_scrip, "a bot's use buys nothing")
+	# no Scrip: denied, nothing changes
+	Economy.grant_raw(pid, -Economy.get_scrip(pid))
+	_p.use_interactable(t)
+	_check(h.upgrades.is_empty() and Economy.get_scrip(pid) == 0, "with no Scrip nothing is sold")
+	# the horse away from its rail: not for sale
+	Economy.grant_raw(pid, 10000)
+	h.mode = Horse.Mode.LOOSE
+	_check(not t.can_interact(_p) and t.get_prompt(_p).contains("rail"), "the horse away from its rail: not for sale (\"%s\")" % t.get_prompt(_p))
+	_p.use_interactable(t)
+	_check(h.upgrades.is_empty() and Economy.get_scrip(pid) == 10000, "and a use then costs nothing")
+	h.mode = Horse.Mode.TIED
+	# each piece in turn
+	var r0: Dictionary = HorseRules.block("ride")
+	var spent: int = 0
+	var names: Array = []
+	for i: int in rows.size():
+		var row: Dictionary = rows[i]
+		var before: int = Economy.get_scrip(pid)
+		_check(t.can_interact(_p) and t.get_prompt(_p).contains(str(row["name"])), "on sale: %s [%d]" % [row["name"], int(row["cost"])])
+		_p.use_interactable(t)
+		await _frames(3)
+		spent += int(row["cost"])
+		names.append(str(row["id"]))
+		_check(h.upgrades == names and before - Economy.get_scrip(pid) == int(row["cost"]) and h.bought == i + 1, "bought: %s for %d Scrip (the horse wears %s)" % [row["name"], before - Economy.get_scrip(pid), str(h.upgrades)])
+	_check(spent == 6000 and Economy.get_scrip(pid) == 10000 - spent, "the whole set cost %d" % spent)
+	_check(not t.can_interact(_p) and t.get_prompt(_p).contains("all its tack"), "then nothing is left to buy (\"%s\")" % t.get_prompt(_p))
+	_p.use_interactable(t)
+	_check(Economy.get_scrip(pid) == 10000 - spent and h.upgrades.size() == 3, "and a use costs nothing")
+	# what it changed on this horse
+	var r1: Dictionary = h.get("_r")
+	_check(float(r1["gallop_speed"]) > float(r0["gallop_speed"]) + 0.5 and float((r1["turn_rate"] as Array)[3]) > float((r0["turn_rate"] as Array)[3]), "shod: gallop %.2f m/s (was %.2f), turn at a gallop %.2f rad/s (was %.2f)" % [float(r1["gallop_speed"]), float(r0["gallop_speed"]), float((r1["turn_rate"] as Array)[3]), float((r0["turn_rate"] as Array)[3])])
+	_check(float(HorseRules.block("ride")["gallop_speed"]) == float(r0["gallop_speed"]), "the table itself is as it was (another horse, the next match)")
+	var shown: Array = h.get("_tack_nodes")
+	var on_model: int = 0
+	for n: Variant in shown:
+		if n is BoneAttachment3D and (n as Node).get_parent() == h.rig.skel and (n as Node).get_child_count() == 1 and ((n as Node).get_child(0) as Node).get_child_count() > 0:
+			on_model += 1
+	_check(shown.size() == 6 and on_model == 6, "the tack is on the model: four shoes, the saddle kit, the barding (%d bone attachments)" % on_model)
+	_check(h.find_children("*", "CollisionObject3D", true, false).size() == 1, "none of it is a body (the horse's Use area only)")
+	# a client is told the same list (net_upgrades): cleaned, applied, drawn
+	h.net_upgrades(["barding", "junk", "shoes"])
+	_check(h.upgrades == ["shoes", "barding"] and (h.get("_tack_nodes") as Array).size() == 5 and float((h.get("_tab") as Dictionary)["fire"]["sway_gallop"]) == float(HorseRules.block("fire")["sway_gallop"]), "the host's list on a client: %s" % str(h.upgrades))
+	h.net_upgrades(["shoes", "saddle", "barding"])
+	await _frames(2)
+	_check(h.upgrades.size() == 3 and (h.get("_tack_nodes") as Array).size() == 6, "all three again")
+	_p.set("_pitch", 0.0)
+
+
+## The tack felt from the saddle: a faster gallop, a steadier aim, a harder trample that costs less speed.
+func _tack_ridden(h: Horse, dir: ZombieDirector) -> void:
+	var base: Dictionary = HorseRules.table()
+	_gallop_from(h, 5.0)
+	h.weapon_override = true
+	var top: float = 0.0
+	var cone: float = -1.0
+	for i: int in 110:
+		await get_tree().physics_frame
+		top = maxf(top, h.speed)
+		if i == 50 and h.rig.gait == HorseGait.Gait.GALLOP and _p.carry_fire:
+			cone = _p.carry_spread
+	_check(top > float(base["ride"]["gallop_speed"]) + 0.5, "shod it gallops faster (%.2f m/s, unshod %.2f)" % [top, float(base["ride"]["gallop_speed"])])
+	_check(absf(cone - float(base["fire"]["spread_gallop_deg"]) * 0.5) < 0.01, "the trooper's saddle halves the gallop's cone (%.2f deg)" % cone)
+	h.weapon_override = null
+	h.input_override = Vector3.ZERO
+	# the trample, barded
+	RoundManager.state = RoundManager.State.ROUND
+	_place_horse(h, Vector3(8.0, 0, 44.0), -90.0)
+	dir.spawn_burst([Vector3(20.0, 0, 44.0)], 1)
+	await _secs(4.0)
+	var victim: Zombie = null
+	for z: Zombie in dir.active_zombies():
+		if victim == null or z.global_position.distance_to(Vector3(20.0, 0, 44.0)) < victim.global_position.distance_to(Vector3(20.0, 0, 44.0)):
+			victim = z
+	_check(victim != null, "one of the dead stands in the barded horse's path")
+	if victim != null:
+		var waited: float = 0.0
+		while victim.state == Zombie.State.EMERGE and waited < 8.0:
+			await _secs(0.25)
+			waited += 0.25
+		if victim.state != Zombie.State.CHASE:
+			victim.call("_enter", Zombie.State.CHASE)
+		victim.max_hp = 5000.0
+		victim.hp = 5000.0
+		victim.global_position = Vector3(20.0, 0.0, 44.0)
+		var n0: int = h.tramples
+		h.pace = 3.0
+		h.speed = 9.0
+		h.input_override = Vector3(0, 1, 1)
+		var before: float = 0.0
+		var after: float = 0.0
+		for i: int in 150:
+			var sp: float = h.speed
+			await get_tree().physics_frame
+			if h.tramples == n0:
+				victim.global_position = Vector3(20.0, victim.global_position.y, 44.0)
+				victim.velocity = Vector3.ZERO
+				before = sp
+			elif after == 0.0:
+				after = h.speed
+		h.input_override = Vector3.ZERO
+		var slow: float = float((h.get("_tab") as Dictionary)["trample"]["slow"])
+		_check(h.tramples == n0 + 1 and after > before * (1.0 - slow) - 0.4 and after > before * 0.75, "barded it rides one down and keeps its speed (%.1f -> %.1f m/s; unbarded it would keep %.0f%%)" % [before, after, 100.0 * (1.0 - float(base["trample"]["slow"]))])
+		await _secs(1.2)
+		var took: float = 5000.0 - victim.hp
+		_check(absf(took - float(base["trample"]["damage"]) * 2.5) < 1.0 or not victim.is_active(), "and it is hurt harder where it lands (%.0f, unbarded %.0f)" % [took, float(base["trample"]["damage"])])
+	dir.kill_all(true)
+	RoundManager.stop()
+	await _secs(0.3)
 
 
 func _finish() -> void:

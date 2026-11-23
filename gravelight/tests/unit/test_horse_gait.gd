@@ -3,7 +3,8 @@ extends GutTest
 ## logic: the walk is four-beat with never fewer than two feet down, the trot two-beat on diagonal pairs with a
 ## suspension, the gallop four-beat with all four feet off the ground once a stride; a hoof on the ground travels back
 ## at the body's speed (no sliding); the pace answers forward / back / nothing; the turn is an animal's (it lags, a
-## gallop turns wide and slows in a hard turn); the rider shoots at a trot and not at a gallop; a crowd and a boss cap
+## gallop turns wide and slows in a hard turn); the rider shoots at every gait (T-262: the gallop sways and spreads the most, the hands on the reins until the gun is
+## wanted); the tack (T-262: three pieces, their prices and order, who may buy and when, what each changes); a crowd and a boss cap
 ## the pace; a trample needs speed and has a cooldown; the horse stands only in its zones; bots never mount; the map's
 ## "horses" rows are well formed; and the model builds with every bone weighted.
 
@@ -152,9 +153,155 @@ func test_fire_from_the_saddle() -> void:
 	assert_true(HorseRules.can_fire(G.STAND, true, f), "seated at a stand")
 	assert_true(HorseRules.can_fire(G.WALK, true, f), "at a walk")
 	assert_true(HorseRules.can_fire(G.TROT, true, f), "at a trot")
-	assert_false(HorseRules.can_fire(G.GALLOP, true, f), "not at a gallop")
+	assert_true(HorseRules.can_fire(G.GALLOP, true, f), "T-262: at a gallop too")
+	assert_false(HorseRules.can_fire(G.GALLOP, true, {"max_gait": 2}), "a table may still keep the gallop for the reins")
 	assert_false(HorseRules.can_fire(G.WALK, false, f), "not while getting up or down")
+	assert_false(HorseRules.can_fire(G.GALLOP, false, f), "nor at a gallop")
 	assert_gt(HorseRules.fire_sway(G.TROT, f), HorseRules.fire_sway(G.WALK, f), "a trot sways the aim more than a walk")
+	# T-262: the gallop is the hardest gait to shoot from, not a free pass
+	assert_gt(HorseRules.fire_sway(G.GALLOP, f), HorseRules.fire_sway(G.TROT, f) * 1.3, "a gallop sways it well over a trot (%.2f vs %.2f)" % [HorseRules.fire_sway(G.GALLOP, f), HorseRules.fire_sway(G.TROT, f)])
+	assert_gt(HorseRules.fire_spread(G.GALLOP, 0.0, f), HorseRules.fire_spread(G.TROT, 0.0, f) + 1.0, "and opens the cone (%.1f deg from the hip)" % HorseRules.fire_spread(G.GALLOP, 0.0, f))
+	assert_eq(HorseRules.fire_spread(G.STAND, 0.0, f), 0.0, "a standing horse adds nothing")
+	assert_eq(HorseRules.fire_spread(G.TROT, 0.0, f), 0.0, "the trot's cone is as it was (T-240)")
+	assert_between(HorseRules.fire_spread(G.GALLOP, 0.0, f), 1.5, 4.0, "the gallop's cone is a handicap, not a wall (a sprinting-fire penalty is 4)")
+	assert_lt(HorseRules.fire_spread(G.GALLOP, 1.0, f), HorseRules.fire_spread(G.GALLOP, 0.0, f), "aiming down the sights takes some of it back")
+	assert_gt(HorseRules.fire_spread(G.GALLOP, 1.0, f), 0.0, "not all of it")
+	assert_almost_eq(HorseRules.fire_spread(G.GALLOP, 0.5, f), (HorseRules.fire_spread(G.GALLOP, 0.0, f) + HorseRules.fire_spread(G.GALLOP, 1.0, f)) * 0.5, 0.0001, "and comes in with the aim")
+	assert_eq(HorseRules.view_rock(0.0, f), float(f["view_rock"]), "from the hip the saddle's rock reaches the view whole")
+	assert_lt(HorseRules.view_rock(1.0, f), HorseRules.view_rock(0.0, f) * 0.8, "aiming, the rider takes some of the stride in the knees")
+	assert_gt(HorseRules.view_rock(1.0, f), 0.2, "not all of it")
+	# the reins: at a gallop the hands are on them until the weapon is wanted, and go back a moment after
+	var after: float = float(f["reins_after_s"])
+	assert_true(HorseRules.on_reins(G.GALLOP, false, 99.0, f), "galloping with the gun idle: hands on the reins")
+	assert_false(HorseRules.on_reins(G.GALLOP, true, 99.0, f), "the trigger, the sights or a reload brings the gun up")
+	assert_false(HorseRules.on_reins(G.GALLOP, false, after * 0.5, f), "it stays up between shots")
+	assert_true(HorseRules.on_reins(G.GALLOP, false, after + 0.01, f), "and goes back after %.1f s" % after)
+	assert_between(after, 0.8, 4.0, "long enough to keep shooting, short enough to see the reins again")
+	for g: int in [G.STAND, G.WALK, G.TROT]:
+		assert_false(HorseRules.on_reins(g, false, 99.0, f), "below a gallop the gun is always up (%s)" % HorseGait.gait_name(g))
+
+
+func test_tack_rows_prices_and_order() -> void:
+	var rows: Array = HorseRules.upgrade_rows()
+	assert_eq(rows.size(), 3, "three pieces of tack")
+	var ids: Array = []
+	var last: int = 0
+	var total: int = 0
+	for row: Dictionary in rows:
+		for k: String in ["id", "name", "cost", "desc"]:
+			assert_true(row.has(k) and str(row[k]) != "", "%s has %s" % [str(row.get("id", "?")), k])
+		ids.append(str(row["id"]))
+		assert_gt(int(row["cost"]), last, "each piece costs more than the one before (%s %d)" % [row["id"], int(row["cost"])])
+		last = int(row["cost"])
+		total += last
+		assert_between(int(row["cost"]), 1000, 4000, "priced like a perk bottle (%s)" % row["id"])
+		assert_eq(HorseRules.upgrade_cost(str(row["id"])), int(row["cost"]))
+		assert_false((row.get("mul", {}) as Dictionary).is_empty() and (row.get("add", {}) as Dictionary).is_empty(), "%s changes something" % row["id"])
+		# every key it changes exists in the table (a typo would change nothing)
+		for op: String in ["mul", "add"]:
+			for path: String in (row.get(op, {}) as Dictionary).keys():
+				var parts: PackedStringArray = path.split(".")
+				assert_true(parts.size() == 2 and HorseRules.block(parts[0]).has(parts[1]), "%s: %s is a key of the table" % [row["id"], path])
+	assert_eq(ids, ["shoes", "saddle", "barding"], "sold in this order")
+	assert_between(total, 4000, 8000, "the whole set costs about two perks (%d)" % total)
+	assert_eq(HorseRules.upgrade_cost("no_such"), 0)
+	assert_true(HorseRules.upgrade("no_such").is_empty())
+	assert_true(HorseRules.block("tack").has("offset"), "the tack chest has its place at the rail")
+
+
+func test_tack_who_may_buy_and_when() -> void:
+	assert_eq(HorseRules.next_upgrade([]), "shoes", "the first piece on sale")
+	assert_eq(HorseRules.next_upgrade(["shoes"]), "saddle")
+	assert_eq(HorseRules.next_upgrade(["shoes", "saddle"]), "barding")
+	assert_eq(HorseRules.next_upgrade(["shoes", "saddle", "barding"]), "", "then nothing is left")
+	#                              owned  id       alive downed bot   carried tied
+	assert_true(HorseRules.may_buy([], "shoes", true, false, false, false, true), "a live human on foot, the horse tied")
+	assert_false(HorseRules.may_buy([], "shoes", true, false, true, false, true), "never a bot")
+	assert_false(HorseRules.may_buy([], "shoes", true, true, false, false, true), "not downed")
+	assert_false(HorseRules.may_buy([], "shoes", false, false, false, false, true), "not dead")
+	assert_false(HorseRules.may_buy([], "shoes", true, false, false, true, true), "not from the saddle, a ladder or a line")
+	assert_false(HorseRules.may_buy([], "shoes", true, false, false, false, false), "not while the horse is away from its rail")
+	assert_false(HorseRules.may_buy([], "barding", true, false, false, false, true), "one piece at a time, in order")
+	assert_false(HorseRules.may_buy(["shoes"], "shoes", true, false, false, false, true), "never the same piece twice")
+	assert_true(HorseRules.may_buy(["shoes"], "saddle", true, false, false, false, true))
+	assert_false(HorseRules.may_buy(["shoes", "saddle", "barding"], "", true, false, false, false, true), "nothing left to buy")
+	assert_false(HorseRules.may_buy([], "no_such", true, false, false, false, true))
+	# what a peer is sent is cleaned: known ids, once each, in the rows' order
+	assert_eq(HorseRules.clean_owned(["barding", "junk", "shoes", "shoes", 7]), ["shoes", "barding"])
+	assert_eq(HorseRules.clean_owned([]), [])
+	assert_eq(HorseRules.tack_names([]), "")
+	assert_eq(HorseRules.tack_names(["saddle", "shoes"]), "Studded Shoes, Trooper's Saddle")
+
+
+func test_tack_effects() -> void:
+	var base: Dictionary = HorseRules.table()
+	assert_true(is_same(HorseRules.upgraded([]), base), "no tack: the table itself")
+	var r0: Dictionary = base["ride"]
+	var f0: Dictionary = base["fire"]
+	var t0: Dictionary = base["trample"]
+	var c0: Dictionary = base["crowd"]
+	var bf: Dictionary = base["boss_fear"]
+	# ---- shoes: faster, tighter
+	var shod: Dictionary = HorseRules.upgraded(["shoes"])
+	var r1: Dictionary = shod["ride"]
+	assert_between(float(r1["gallop_speed"]), float(r0["gallop_speed"]) * 1.05, float(r0["gallop_speed"]) * 1.25, "shod: a faster gallop (%.2f from %.2f m/s)" % [float(r1["gallop_speed"]), float(r0["gallop_speed"])])
+	assert_eq(float(r1["trot_speed"]), float(r0["trot_speed"]), "the trot and the walk are as they were")
+	assert_eq(float(r1["walk_speed"]), float(r0["walk_speed"]))
+	for i: int in 4:
+		assert_gt(float((r1["turn_rate"] as Array)[i]), float((r0["turn_rate"] as Array)[i]), "it turns faster at every gait (%d)" % i)
+	assert_gt(HorseRules.turn_rate(float(r1["gallop_speed"]), r1), HorseRules.turn_rate(float(r0["gallop_speed"]), r0))
+	var circle0: float = HorseRules.turn_speed_cap(1.0, r0) / HorseRules.turn_rate(HorseRules.turn_speed_cap(1.0, r0), r0)
+	var circle1: float = HorseRules.turn_speed_cap(1.0, r1) / HorseRules.turn_rate(HorseRules.turn_speed_cap(1.0, r1), r1)
+	assert_lte(circle1, circle0, "and its hard turn at a gallop is no wider, so it still fits the yard (radius %.2f from %.2f m)" % [circle1, circle0])
+	assert_gt(HorseRules.pace_speed(3.0, r1), HorseRules.pace_speed(3.0, r0))
+	assert_eq(HorseRules.pace_speed(2.0, r1), HorseRules.pace_speed(2.0, r0))
+	assert_eq(float((shod["fire"] as Dictionary)["sway_gallop"]), float(f0["sway_gallop"]), "shoes do nothing for the aim")
+	assert_eq(float((shod["trample"] as Dictionary)["damage"]), float(t0["damage"]), "nor for the trample")
+	# the table itself is never written to
+	assert_eq(float(HorseRules.block("ride")["gallop_speed"]), float(r0["gallop_speed"]))
+	assert_eq(float(GLData.load_json(HorseRules.PATH)["ride"]["gallop_speed"]), float(r0["gallop_speed"]), "the base table is untouched")
+	# ---- saddle: steadier
+	var f1: Dictionary = HorseRules.upgraded(["shoes", "saddle"])["fire"]
+	for g: int in [G.WALK, G.TROT, G.GALLOP]:
+		assert_lt(HorseRules.fire_sway(g, f1), HorseRules.fire_sway(g, f0), "the saddle steadies the %s" % HorseGait.gait_name(g))
+	assert_lt(HorseRules.fire_spread(G.GALLOP, 0.0, f1), HorseRules.fire_spread(G.GALLOP, 0.0, f0), "and closes the gallop's cone (%.1f from %.1f deg)" % [HorseRules.fire_spread(G.GALLOP, 0.0, f1), HorseRules.fire_spread(G.GALLOP, 0.0, f0)])
+	assert_gt(HorseRules.fire_spread(G.GALLOP, 0.0, f1), 0.5, "a gallop is still a gallop")
+	assert_gt(HorseRules.fire_sway(G.GALLOP, f1), HorseRules.fire_sway(G.TROT, f1), "and still sways more than a trot")
+	assert_lt(float(f1["view_rock"]), float(f0["view_rock"]), "the view rocks less")
+	assert_eq(int(f1["max_gait"]), int(f0["max_gait"]))
+	assert_eq(int(f1["reins_gait"]), int(f0["reins_gait"]))
+	# ---- barding: a harder trample, a steadier horse in a crowd
+	var all: Dictionary = HorseRules.upgraded(["shoes", "saddle", "barding"])
+	var t1: Dictionary = all["trample"]
+	var c1: Dictionary = all["crowd"]
+	var hit0: Dictionary = HorseRules.trample(9.5, 0.0, t0)
+	var hit1: Dictionary = HorseRules.trample(9.5, 0.0, t1)
+	assert_gt(float(hit1["damage"]), float(hit0["damage"]) * 1.5, "barded: a harder trample (%d from %d)" % [int(hit1["damage"]), int(hit0["damage"])])
+	assert_lt(float(hit1["slow"]), float(hit0["slow"]), "that costs the horse less of its speed")
+	assert_lt(float(t1["cooldown"]), float(t0["cooldown"]))
+	assert_gt(float(t1["cooldown"]), 0.3, "still one at a time")
+	assert_eq(float(t1["speed_min"]), float(t0["speed_min"]), "and still only at a gallop")
+	var z20: int = RoundManager.zombie_health(20, GLData.table("rounds"))
+	assert_lt(float(hit1["damage"]), float(z20) * 0.1, "still not a win button: under a tenth of a round-20 zombie's health (%d of %d)" % [int(hit1["damage"]), z20])
+	assert_eq(HorseRules.pace_cap(3, INF, c1, bf), 3.0, "three of the dead no longer cost it its gallop")
+	assert_lt(HorseRules.pace_cap(3, INF, c0, bf), 3.0)
+	assert_lt(HorseRules.pace_cap(8, INF, c1, bf), 3.0, "a real crowd still does")
+	assert_gt(HorseRules.pace_cap(20, INF, c1, bf), HorseRules.pace_cap(20, INF, c0, bf), "and it pushes through one faster")
+	assert_lt(HorseRules.shy_level(3, INF, c1, bf), 1.0, "it no longer shies at three")
+	assert_eq(HorseRules.shy_level(3, INF, c0, bf), 1.0)
+	assert_eq(HorseRules.shy_level(int(c1["shy_at"]), INF, c1, bf), 1.0, "it still shies, later")
+	assert_lte(HorseRules.pace_cap(0, 5.0, c1, bf), 1.0, "a boss still frightens it to a walk")
+	assert_eq(float((all["boss_fear"] as Dictionary)["radius"]), float(bf["radius"]))
+	# all three stack: each block has its own piece's change
+	assert_eq(float((all["ride"] as Dictionary)["gallop_speed"]), float(r1["gallop_speed"]))
+	assert_eq(float((all["fire"] as Dictionary)["sway_gallop"]), float(f1["sway_gallop"]))
+	# an unknown id or key changes nothing
+	assert_eq(float(HorseRules.upgraded(["no_such"])["ride"]["gallop_speed"]), float(r0["gallop_speed"]))
+	var odd: Dictionary = {"ride": {"gallop_speed": 9.5}, "upgrades": [{"id": "x", "mul": {"ride.nope": 2.0, "nope.gallop_speed": 2.0, "ride": 2.0}, "add": {"ride.gallop_speed": 1.0}}]}
+	var odd_out: Dictionary = HorseRules.upgraded(["x"], odd)
+	assert_eq((odd_out["ride"] as Dictionary).size(), 1, "a key the table lacks is not made up")
+	assert_eq(float(odd_out["ride"]["gallop_speed"]), 10.5, "add adds")
+	assert_eq(float(odd["ride"]["gallop_speed"]), 9.5, "the table handed in is not written to")
 
 
 func test_crowd_boss_and_trample() -> void:

@@ -273,6 +273,14 @@ func set_hands(mode: StringName) -> void:
 		_swap_t = maxf(_swap_t, SWAP_TIME * 0.7)
 
 
+## T-262: a fire press made while the hands were elsewhere (a galloping horse's reins) is kept as one made during a
+## sprint-out or a mantle is, and fires when the gun is up. The Player's own tick keeps it when it runs before the
+## carrier's; the carrier calls this for the frame where it ran first.
+func keep_fire_press() -> void:
+	if current() != null and _melee_t <= 0.0:
+		_move_fire_buffer = MOVE_FIRE_BUFFER
+
+
 func enforce_slot_limit() -> void:
 	while slots.size() > max_slots():
 		slots.pop_back()
@@ -323,7 +331,8 @@ func spread_deg() -> float:
 	# walking fire: allowed, with a cone penalty that grows with speed (up to walk_spread_deg at walk speed)
 	var walk: float = float(GLData.table("player")["walk_speed"])
 	var move_pen: float = clampf(player.horizontal_speed() / walk, 0.0, 1.3) * float(mv.get("walk_spread_deg", 2.2)) * (1.0 - ads_t)
-	return base + bloom * (1.0 - 0.7 * ads_t) + move_pen + (0.0 if player.is_on_floor() else 4.0)
+	# T-262: a carrier adds its own (a horse by its gait)
+	return base + bloom * (1.0 - 0.7 * ads_t) + move_pen + (0.0 if player.is_on_floor() else 4.0) + player.carry_spread
 
 
 func fov_mult() -> float:

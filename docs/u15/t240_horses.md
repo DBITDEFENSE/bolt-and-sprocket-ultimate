@@ -68,6 +68,9 @@ gallop's rock and a wider FOV); the rider turns with the horse and may look 2.2 
 again, or press Jump, to get down (0.7 s) onto the first free spot of nine round the horse (floor under it, room for a
 body, a clear line, inside the horse's ground). A prompt says so for the first seconds of the first three rides.
 
+(T-262, 2026-11-22: the rider now shoots at a gallop too, and the horse can be fitted with tack; see
+`docs/u20/t262_horse.md`. The paragraph below is how T-240 left it.)
+
 **Shooting from the saddle: yes at a stand, a walk and a trot; no at a gallop.** `Player.carry_fire` (new, see
 section 8) lets the carrier allow fire and ADS; the gait's own motion is the sway. At a gallop both hands go to the
 reins at the pommel (`WeaponHolder.set_hands(&"climb")`, the existing two-hand mode) and fire is blocked. A true
