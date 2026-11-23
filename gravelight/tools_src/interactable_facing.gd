@@ -37,6 +37,8 @@ const RULES: Dictionary = {
 	"ammo_box.gd": {"kind": "faced", "f": 0.3, "b": 0.3, "w": 0.5, "wall": true, "isize": Vector3(1.25, 1.0, 0.95), "ioff": Vector3(0, 0.5, -0.12)},
 	"mystery_crate.gd": {"kind": "faced", "f": 0.4, "b": 0.4, "w": 0.75, "wall": true, "isize": Vector3(1.6, 1.1, 0.3), "ioff": Vector3(0, 0.55, -0.45)},
 	"crucible.gd": {"kind": "faced", "f": 0.8, "b": 0.8, "w": 1.0, "wall": false, "lock": true, "isize": Vector3(2.2, 2.0, 0.3), "ioff": Vector3(0, 1.0, -0.95)},
+	# T-263: the arms locker stands with its back (the origin) on the wall, the doors 0.45 m out at -Z
+	"weapon_locker.gd": {"kind": "faced", "f": 0.45, "b": 0.0, "w": 0.46, "wall": true, "isize": Vector3(1.22, 1.8, 0.3), "ioff": Vector3(0, 1.0, -0.55)},
 	"armorers_bench.gd": {"kind": "faced", "f": 0.72, "b": 0.0, "w": 0.75, "wall": true, "isize": Vector3(1.6, 1.3, 0.9), "ioff": Vector3(0, 1.0, -0.4)},
 	"power_switch.gd": {"kind": "faced", "f": 0.3, "b": 0.05, "w": 0.6, "wall": true, "isize": Vector3(1.8, 1.8, 0.9), "ioff": Vector3(0, 1.0, -0.3)},
 	"aux_bus.gd": {"kind": "faced", "f": 0.3, "b": 0.05, "w": 0.6, "wall": true, "isize": Vector3(1.8, 1.8, 0.9), "ioff": Vector3(0, 1.0, -0.3)},
@@ -472,6 +474,14 @@ static func survey(map: Node, map_key: String = "") -> Array:
 			br["script"] = "bank.json branch"
 			br["navblock"] = "NavBlock_Bank"
 			items.append({"name": "BankCounter", "path": "(bank.json branches.%s)" % map_key, "xf": bxf, "rule": br})
+	# T-263: the arms locker (MapRoot builds it from data/gravelight/weapon_locker.json "lockers": at, yaw = where the doors face)
+	var lk: Dictionary = locker_row(map_key)
+	if (lk.get("at", []) as Array).size() == 3:
+		var la: Array = lk["at"]
+		var lr: Dictionary = (RULES["weapon_locker.gd"] as Dictionary).duplicate()
+		lr["script"] = "weapon_locker.gd"
+		items.append({"name": "WeaponLocker", "path": "(weapon_locker.json lockers.%s)" % map_key, "rule": lr,
+			"xf": Transform3D(Basis(Vector3.UP, deg_to_rad(float(lk.get("yaw", 0.0)) + 180.0)), Vector3(float(la[0]), float(la[1]), float(la[2])))})
 	# the campaign exfil beacon (MapRoot spawns it from data/gravelight/<map>.json "exfil": position, yaw)
 	var ex: Dictionary = exfil_row(map_key)
 	if not ex.is_empty() and (ex.get("position", []) as Array).size() == 3:
@@ -532,6 +542,18 @@ static func exfil_row(map_key: String) -> Dictionary:
 	if not (d is Dictionary) or not ((d as Dictionary).get("exfil") is Dictionary):
 		return {}
 	return (d as Dictionary)["exfil"]
+
+
+static func locker_row(map_key: String) -> Dictionary:
+	if map_key == "" or not FileAccess.file_exists("res://data/gravelight/weapon_locker.json"):
+		return {}
+	var d: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/weapon_locker.json"))
+	if not (d is Dictionary) or not ((d as Dictionary).get("lockers") is Dictionary):
+		return {}
+	for k: Variant in ((d as Dictionary)["lockers"] as Dictionary).keys():
+		if map_key.begins_with(str(k)):
+			return ((d as Dictionary)["lockers"] as Dictionary)[k]
+	return {}
 
 
 static func bank_row(map_key: String) -> Dictionary:

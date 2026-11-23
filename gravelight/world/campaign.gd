@@ -252,6 +252,7 @@ static func snapshot(map: MapRoot, target: StringName, cutscene_id: String) -> D
 		"companion": JakubCompanion.snapshot_of(map),   # Jakub (U02 section 6.2): {} unless he is with the squad
 		"quests": QuestManager.carry_snapshot(target),   # UPDATE 07 (T-114): Map 4's egg spans the acts
 		"flags": carried_flags(GameState.flags, cfg().get("carry_flags", [])),
+		"locker": WeaponLocker.carry_snapshot(),   # T-263: what each player locked away comes along to the next map's locker
 	}
 
 

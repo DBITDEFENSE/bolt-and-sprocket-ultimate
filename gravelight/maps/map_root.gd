@@ -122,6 +122,7 @@ func _ready() -> void:
 	PerkLayout.attach(self)   # T-251: the tonic machines dealt onto the map's perk spots from the match seed (every peer the same)
 	Campaign.restore_flags(self)   # UPDATE 07 (T-114): the acts' carried flags (london_seen, bomb_*, ...)
 	BankBranch.attach(self)   # T-136: the savings bank's interest on every map, a branch on Map 0 and Kaltenbrunn
+	WeaponLocker.attach(self)   # T-263: the arms locker (data/gravelight/weapon_locker.json "lockers"); a new match empties it
 	MapCompanion.attach(self)   # T-135: one more companion per map (after the flags: Jette follows you between acts)
 	ReliefSquad.attach(self)   # T-142: relief squads from the map edge (host / offline; clients get puppets)
 	ExtraPeople.attach(self)   # T-143: the extra people (miners, a medic, a switchboard operator, a deserter, a widow, a courier)
