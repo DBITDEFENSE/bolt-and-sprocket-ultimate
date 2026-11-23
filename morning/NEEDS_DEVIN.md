@@ -1,5 +1,15 @@
 # NEEDS DEVIN
 
+## 2026-11-22: voices, the day, the tank, the horse, the locker. All merged; these want your eyes or a decision.
+- [ ] **Play a match past round 7 on the Inn** and look at the day on your GPU (sunrise round 7, noon round 13). It was only seen in software renders; the exposure and the sun in the fog may need a pass. The numbers are in `data/gravelight/day_cycle.json`.
+- [ ] **Decide:** should der Kranich, Groom Lake and Mondlicht get the day too? They are off because each has a story time of day.
+- [ ] **Decide:** the Inn's round-9 "midnight" bell now tolls in the morning, and Thalbach's "dawn that never comes" now comes. Keep, or change the lines?
+- [ ] **Drive the Sherman on round 30** (dev console `sherman 30`) and say how the speed, the reload and the allowed ground feel. Co-op driving was not run on two machines.
+- [ ] **Ride at a gallop and shoot**, buy the three pieces of tack at the chest by the rail, and say whether the swing is too much.
+- [ ] **Use the arms locker** in the stable. Decide: 500 Scrip to store / free to take / one gun, and whether the other maps get one (spots in `docs/u20/t263_weapon_locker.md`).
+- [ ] **Six voice lines have no words** (`REI_HEART_END`, `LSL_REC_DRUMMER_01`, `CSN_HUM_01`, `CSN_WHISPER_01`, `CSN_DARK_01`, `HAM_CATCH_01`): a sound effect, or a recording?
+- [ ] **Listen** to some of the new Fine Print and Bolt & Sprocket takes.
+
 Short, phone-readable. Nothing here blocks the build.
 
 ## UPDATE 15 (2026-11-12): movement, bot lag, maps 1-2, horses, bosses. Look, then merge.
