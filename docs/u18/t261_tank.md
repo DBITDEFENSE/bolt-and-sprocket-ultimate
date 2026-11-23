@@ -10,15 +10,15 @@ still holds unless this note says otherwise. Nothing here has been seen rendered
 
 `gravelight/tools_src/sherman_bench.tscn` (new, headless, `--fixed-fps 60`) plays the round-30 assault and 150 s of
 round 31 on the Inn with one human standing still in god mode and no bots, and counts what the tank fires. On the
-T-249 code:
+T-249 code, three runs a case (the unopposed assault once: it cannot vary, the guns are off):
 
 | Case | 75 mm shells | Machine-gun rounds | Tank's kills | Outcome |
 |---|---|---|---|---|
 | Round-30 assault, nobody helps | **0** | **0** | 0 | lost after 46 s |
-| Round-30 assault, a "team" (one of the wave killed every 2.5 s) | **0** | **0** | 0 | held, 2,060 of 8,000 health left |
-| Round 31, the human in the yard | 9 (3.6 a minute) | 343 | 28 | |
-| Round 31, the human on the road 12 m in front of it | 8 (3.2 a minute) | 344 | 4 | |
-| Round 31, the human in the taproom | 2 (0.8 a minute) | 42 | 0 | |
+| Round-30 assault, a "team" (one of the wave killed every 2.5 s) | **0, 0, 0** | **0** | 0 | held with 1,580 to 2,060 of 8,000 health |
+| Round 31, the human in the yard | 9, 1, 3 | 343 to 348 | 28, 2, 5 | |
+| Round 31, the human on the road 12 m in front of it | 8, 6, 8 | 341 to 348 | 4, 5, 5 | |
+| Round 31, the human in the taproom | 2, 2, 2 | 35 to 45 | 0 | |
 
 Why:
 
@@ -31,8 +31,9 @@ Why:
   hide most of the dead on their way to the windows (the taproom case: 0 in its sight for most of the 150 s). That is
   the usual state of a real round, and it is the owner's "rarely or never fired".
 - The machine gun fired from the coax at whatever was nearest whichever way the turret pointed (tracers leaving the
-  mantlet sideways), including the dead at a player's elbow; the 75 mm's "5 m from a player" was inside its own 6 m
-  blast (harmless to players by code, but not "never near a player").
+  mantlet sideways), including the dead at a player's elbow. The 75 mm's only safety rule was 5 m between the
+  target and a player: nothing looked at a player standing on the shell's line, at where the shell would really
+  burst, or at a burning zombie in the blast that would then burst beside someone.
 
 ## 2. What it does now
 
@@ -63,26 +64,29 @@ Why:
 - Unchanged: damage is a share of the round's zombie health, to the dead only; no Scrip; the dead hugging the hull are
   under its guns; it cannot be hurt in rounds 31..39 (unless a player drives it into the dead, section 3).
 
-### Measured after (same bench, one run each; the runs vary by a few shells)
+### Measured after (same bench, three runs a case)
 
 | Case | 75 mm shells | Machine-gun rounds | Tank's kills | Outcome |
 |---|---|---|---|---|
-| Round-30 assault, nobody helps | **BENCH_A_SHELLS** | BENCH_A_MG | BENCH_A_KILLS | BENCH_A_OUT |
-| Round-30 assault, the "team" | **BENCH_T_SHELLS** | BENCH_T_MG | BENCH_T_KILLS | BENCH_T_OUT |
-| Round 31, the human in the yard | BENCH_Y | | | |
-| Round 31, the human on the road | BENCH_R | | | |
-| Round 31, the human in the taproom | BENCH_I | | | |
+| Round-30 assault, nobody helps | **1, 1, 6** | 68 to 77 | 0 to 2 | still lost, after 42 to 48 s |
+| Round-30 assault, the "team" | **3, 4, 5** | 42 to 56 | 2 to 4 | held with 3,440 to 3,890 of 8,000 health |
+| Round 31, the human in the yard | 11, 11, 11 | 308 to 315 | 19 to 22 | |
+| Round 31, the human on the road | 13, 16, 16 | 314 to 323 | 20 to 27 | |
+| Round 31, the human in the taproom | 2, 3, 4 | 21 to 63 | 0 to 3 | |
 
 Honest reading:
 
-- In the assault the cannon is now part of the fight (a shell roughly every 10 to 15 s, the machine gun between), but
-  it is not a wave-clearer and is not meant to be: the dead rise 10..16 m out at scattered points and are on the hull,
-  under the guns, two or three seconds later. The tank alone still loses.
-- With the dead in the open in front of it the 75 mm fires about five times a minute, up from about three.
-- With the squad indoors it is still mostly blind from its parking place. No rule fixes that from where it stands;
-  the answer is the third part of the request: drive it to where it can see.
-- In the yard case the old code killed more (28 against about 10): those were the dead standing on the idle human,
-  which the new rules will not shoot at.
+- **In the assault the guns are on now, but the 75 mm is still a small part of it**: one to six shells in the 45 s
+  the wave lasts (it was none), with 40 to 80 machine-gun rounds. The dead rise 10..16 m out at scattered points and
+  are on the hull, under the guns, two or three seconds later; the turret (40 degrees a second) is often still
+  swinging. The tank alone still loses; with the same help as before it holds with about twice the health left.
+  Making the 75 mm count for more here would mean changing how the wave rises (real packs at one place) or letting
+  it shell its own hull; neither was done.
+- **With the dead in the open the 75 mm is regular**: 11 to 16 shells in 150 s (4.4 to 6.4 a minute) where the old
+  code fired 1 to 9, and they land on packs: 19 to 27 kills against 2 to 28.
+- **With the squad indoors it is still mostly blind from its parking place** (2 to 4 shells in 150 s, as before). No
+  rule fixes that from where it stands; the answer is the third part of the request: drive it to where it can see.
+- The numbers come from a bench with an idle, invulnerable human, not from play.
 
 ## 3. Driving it
 
@@ -192,7 +196,39 @@ everywhere (one per shell every 11 s plus the machine gun); it is 14 now (12.6 b
 
 ## 7. Verification (2026-11-22, headless on the owner's PC)
 
-VERIFY_BLOCK
+- `check_scripts.gd`: 966 scripts, 0 failed.
+- GUT `test_sherman`: 17 of 17, 270 asserts (10 were T-249's; 7 new: the shell's choice, the machine gun's choice,
+  the watch and the reload, the driving rules, the driving ground on the Inn, who may climb in, the rig driven on a
+  floor against a wall with its puppet and its host-side checks).
+- GUT, the whole suite: **2,430 tests, 2,429 passing, 0 failing, 1 risky** (`test_neural_lines_are_loudness_normalised`
+  did not assert: the known one), 85,340 asserts, 570 s. (2,423 on `master` plus the 7 new.) Two earlier full runs
+  in this worktree failed 49 and then 22 tests for reasons of the worktree, not the change: it had no `.import`
+  sidecars (git-ignored) and no UID cache, so every test that loads a sound or a model reported it missing. The
+  sidecars were copied from the main checkout (read only) and `--import` run once; the count above is the run after.
+- Smokes through `tools/run_smokes.sh .smoke_logs/tank <filter>`: `smoke_sherman` **PASS, 74 checks** (41 were
+  T-249's), 162 s, 0 script errors; `smoke_horse` PASS (67 checks), `smoke_horse_boss` PASS (79 checks).
+  The new checks: the prompt at the hull and the player's Use ray on it; a bot cannot climb in; the player in the
+  hatch; one driver; 5.6 m backwards in 4 s; driven at the gate it stops with its bow 3.0 m from the gate's mouth;
+  a pivot of 67 degrees in 2 s; the turret laid by the driver and the 75 mm fired on the dead in the meadow (3 of 3
+  hurt), nothing on the players; "75 MM LOADING 6.5", no second shell before the reload is over, the next one when it
+  is; the machine gun while aim is held (11 rounds in 1.2 s) and silent when let go; one of the dead run down; one
+  that came for the driver turned onto the hull and its swipe taken from the hull; out beside the hull (0.8 m from
+  it) on walkable ground in an open zone, and the dead turn back on the players; driven to its last health outside
+  the assault: the driver put out, the hatch shut, not wrecked, repaired at 180 a second; the tank 3.9 m from where it
+  parked; a bot set against the moved hull walks clear; **the assault begun on the moved tank** (the ring laid round
+  it where it stands, every point 10..16 m from the hull) and then T-249's whole fight as before (the dead on the
+  hull, the fire zombie's burst, the hold, the Resupply); round 40: a player in the tank is put out as the bomber
+  comes and nobody climbs in after; a second Sherman brewed up with the player in it: out beside it, alive, 100
+  health.
+- Three of T-249's smoke checks were rewritten because the gunner's new rules made the old arrangement meaningless,
+  not to make them pass: (1) "the dead reach the hull" now counts swipes from the assault's start (the drive before
+  it leaves swipes on the counter); (2) the machine-gun and 75 mm checks had the dead rise beside the human, where
+  the gunner no longer shoots: they now rise in the meadow with the players down the road, the machine gun is
+  checked with the 75 mm held empty, the 75 mm on a pack; (3) "nothing on the players" summed the players' damage
+  over the window, which the dead themselves fail when they reach the bot: it now measures every shell's burst
+  against where each player stands at that moment (5 m or more). The smoke also stands the bot up before round 40
+  if the earlier rounds put it down (it is not in god mode; one of the trial runs needed it, the final run did not).
+- The bench (section 1 and 2): `.smoke_logs/tank/bench_before_*.log`, `bench_final_*.log` (not committed).
 
 ## 8. Not verified, and open
 
@@ -217,7 +253,8 @@ VERIFY_BLOCK
   outline. A place inside the boxes where the hull fits but a player beside it does not would only cost the exit a
   farther spot.
 - **Balance of the assault with the tank fighting back** rests on the bench's two cases, not on play.
-- The bench is one run a case; a second and third run move the shell counts by a few either way.
+- A zombie already in its swing at the driver when they climb in can still land it (the hatch is about 2 m from
+  the ground beside the hull, close to a zombie's reach): not measured.
 - A boss can still hit the driver in the hatch (a charge, a stomp): untested.
 - Three `.uid` files that the import writes for scripts already on `master` (`test_bot_census.gd.uid`,
   `test_bot_stuck_2026_11.gd.uid`, `trench_water.gdshader.uid`) are not part of this work and are left uncommitted.
