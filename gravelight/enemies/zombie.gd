@@ -2839,11 +2839,18 @@ func _apply_variant(variant: String) -> void:
 		variant = "soldier"
 	var kit: Dictionary = kits[variant]
 	_variant = variant
+	# T-269: in a co-op session the body's own rolls (build, sex, height, gear, tint, dirt, rime) come from the seed
+	# every peer has (the net id and the spawn health), so a client sees the host's zombie, not a cousin of it. Alone
+	# they are the global generator's, as before.
+	_look_rng = null
+	if Net.session != null and net_id >= 0:
+		_look_rng = RandomNumberGenerator.new()
+		_look_rng.seed = ZombieWardrobe.look_seed(net_id, max_hp) + 977
 	var builds: Array = kit.get("builds", ["medium"])
-	_build = str(_pick(builds))
-	_female = randf() < float(kit.get("female", 0.0)) if _force_female < 0 else _force_female == 1
+	_build = str(_pick(builds)) if _look_rng == null else str(builds[_look_rng.randi() % builds.size()])
+	_female = _vr() < float(kit.get("female", 0.0)) if _force_female < 0 else _force_female == 1
 	var heights: Array = _anim["builds"].get("heights", [0.95, 1.04])
-	_height = randf_range(float(heights[0]), float(heights[1]))
+	_height = _vrr(float(heights[0]), float(heights[1]))
 	_body.mesh = ZombieBody.build_skinned(_variant, _build, _female)
 	_body.set_surface_override_material(0, null)
 	_pivot.scale = Vector3.ONE * _height
@@ -2856,18 +2863,18 @@ func _apply_variant(variant: String) -> void:
 	var gear: Dictionary = kit.get("gear", {})
 	var pieces: Array = []
 	for piece0: String in gear.keys():
-		if randf() < float(gear[piece0]):
+		if _vr() < float(gear[piece0]):
 			pieces.append(piece0)
 	# T-192: "gear_one_of": at most one of these (a head wears one hat), rolled in order
 	var one_of: Dictionary = kit.get("gear_one_of", {})
-	var roll: float = randf()
+	var roll: float = _vr()
 	for piece1: String in one_of.keys():
 		roll -= float(one_of[piece1])
 		if roll < 0.0:
 			pieces.append(piece1)
 			break
 	for piece: String in pieces:
-		var spec: Array = ZombieBody.gear_mesh(piece, _female)
+		var spec: Array = ZombieBody.zombie_gear_mesh(piece, _female)   # T-269: one surface on the kit material
 		var at: BoneAttachment3D = bone_attachment(str(spec[0]))
 		if at == null:
 			continue
@@ -2888,17 +2895,66 @@ func _apply_variant(variant: String) -> void:
 	# per-instance look: tint, dirt, frost (anim.json variation)
 	var va: Dictionary = _anim["variation"]
 	var t: float = float(va.get("tint", 0.08))
-	_set_inst("inst_tint", Color(1.0 + randf_range(-t, t), 1.0 + randf_range(-t, t), 1.0 + randf_range(-t, t), 1.0))
+	_set_inst("inst_tint", Color(1.0 + _vrr(-t, t), 1.0 + _vrr(-t, t), 1.0 + _vrr(-t, t), 1.0))
 	var dirt: Array = va.get("dirt", [0.1, 0.8])
-	_set_inst("inst_dirt", randf_range(float(dirt[0]), float(dirt[1])))
+	_set_inst("inst_dirt", _vrr(float(dirt[0]), float(dirt[1])))
 	var fbm: Dictionary = va.get("frost_by_map", {})
 	var fr: Array = kit.get("frost", fbm.get(String(GameState.map_id), fbm.get("default", [0.0, 0.2])))   # T-192: a kit's own (the Returned's ice)
-	_frost_base = randf_range(float(fr[0]), float(fr[1]))
+	_frost_base = _vrr(float(fr[0]), float(fr[1]))
 	_set_inst("inst_frost", _frost_base)
 	_set_inst("inst_fuel", 0.0)
+	_apply_look()
 	# posture trait, locomotion clip and the cadence
 	_roll_posture()
 	_pick_locomotion()
+
+
+## T-269: the outfit's colours and the dead skin (ZombieWardrobe), as instance parameters of the two shared
+## materials. From the net id and the spawn health, both on every peer: a co-op puppet is dressed like the host's
+## zombie and nothing is sent. Only plain Gangers are dressed; a special keeps its kit's own look.
+func _apply_look() -> void:
+	var params: Dictionary = {}
+	_outfit = ""
+	if enemy_id == &"ganger":
+		var id: int = net_id if net_id >= 0 else int(get_instance_id() % 1000003)
+		var look: int = ZombieWardrobe.look_seed(id, max_hp)
+		params = ZombieWardrobe.look_params(String(GameState.map_id), _variant, look)
+		if not params.is_empty():
+			_outfit = ZombieWardrobe.outfit_name(String(GameState.map_id), _variant, look)
+			# the map's rime was tuned on pale cloth; on a colour it reads as white mould (wear.frost_scale)
+			_frost_base *= ZombieWardrobe.frost_scale()
+			_set_inst("inst_frost", _frost_base)
+	if params.is_empty():
+		params = ZombieWardrobe.neutral_params()
+	for key: String in params.keys():
+		_set_inst(key, params[key])
+	# a gear piece made for this activation has none of the values _set_inst found unchanged
+	for g: MeshInstance3D in _gear:
+		if g.visible:
+			for key: String in _inst.keys():
+				g.set_instance_shader_parameter(key, _inst[key])
+
+
+var _outfit: String = ""
+var _look_rng: RandomNumberGenerator = null
+
+
+func _vr() -> float:
+	return _look_rng.randf() if _look_rng != null else randf()
+
+
+func _vrr(a: float, b: float) -> float:
+	return _look_rng.randf_range(a, b) if _look_rng != null else randf_range(a, b)
+
+
+## The wardrobe outfit this body wears ("" = its kit's own colours).
+func outfit_name() -> String:
+	return _outfit
+
+
+## The per-instance shader parameters of this body (a severed piece carries the same ones: ZombieGore).
+func instance_look() -> Dictionary:
+	return _inst
 
 
 func _roll_posture() -> void:
