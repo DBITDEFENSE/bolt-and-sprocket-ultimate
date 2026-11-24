@@ -264,7 +264,7 @@ func _select(e: Dictionary, emit: bool) -> void:
 	if bool(e.get("bot_candidate", false)) and can_assign.is_valid() and bool(can_assign.call(e)):
 		_d_buttons.add_child(_action_button("Assign to bot", func() -> void: assign_requested.emit(e)))
 	if str(e.get("intel_id", "")) != "":
-		_d_buttons.add_child(_action_button("Open in Archive", func() -> void: archive_requested.emit(e)))
+		_d_buttons.add_child(_action_button("Open in Collection", func() -> void: archive_requested.emit(e)))
 	if emit:
 		entry_selected.emit(e)
 

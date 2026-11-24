@@ -119,11 +119,18 @@ static func card(kicker: String, title: String, date: String, preview_tex: Textu
 	pic.texture = preview_tex
 	pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	pic.custom_minimum_size = Vector2(PREVIEW_W, PREVIEW_W * 9.0 / 16.0)
 	pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if locked:
 		pic.modulate = Color(0.32, 0.32, 0.36)
-	v.add_child(pic)
+	# T-267: the preview sits in a clipped frame, so it can lean in while the card has the focus (MenuMotion.zoom)
+	var frame: Control = Control.new()
+	frame.name = "PreviewFrame"
+	frame.clip_contents = true
+	frame.custom_minimum_size = Vector2(PREVIEW_W, PREVIEW_W * 9.0 / 16.0)
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	v.add_child(frame)
+	frame.add_child(pic)
+	pic.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var k: Label = MenuKit.label(kicker, 16, MenuKit.VIOLET.lightened(0.2))
 	k.add_theme_font_override("font", MenuKit.spaced(MenuKit.type_font(), 4))
 	v.add_child(k)
@@ -157,9 +164,12 @@ static func card(kicker: String, title: String, date: String, preview_tex: Textu
 			l.add_theme_font_override("font", MenuKit.spaced(MenuKit.mono_font(), 1))
 			h.add_child(l)
 	b.disabled = locked
+	MenuMotion.feedback(b, MenuKit.VIOLET.lightened(0.2), false)   # T-267: the underline, the press flash
 	b.focus_entered.connect(func() -> void:
+		MenuMotion.zoom(pic, true)
 		if not MenuKit.is_quiet():
 			AudioDirector.play_2d("ui_tick", 0.0, 0.06))
+	b.focus_exited.connect(func() -> void: MenuMotion.zoom(pic, false))
 	b.mouse_entered.connect(func() -> void:
 		if not b.disabled:
 			b.grab_focus())
@@ -175,7 +185,7 @@ static func map_card(map_id: String, cb: Callable) -> Button:
 	var open: bool = ProfileSave.is_map_unlocked(StringName(map_id))
 	var best: int = ProfileSave.best_round(StringName(map_id))
 	var egg: String = egg_status(map_id)
-	var prog: Array = [["BEST  " + (str(best) if best > 0 else "—"), MenuKit.GOLD if best > 0 else MenuKit.DIM]]
+	var prog: Array = [["BEST ROUND  " + (str(best) if best > 0 else "—"), MenuKit.GOLD if best > 0 else MenuKit.DIM]]
 	match egg:
 		"done":
 			prog.append(["EGG  DONE", MenuKit.VIOLET.lightened(0.25)])

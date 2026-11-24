@@ -8,7 +8,7 @@
  ],
  "max_slots": 3,
  "pistols": [
-  {"id": "m1911", "unlock": [{"rank": 1}], "desc": "The service .45. Eight rounds, honest weight, and the Armorer's Bench knows it best (its finishes and Loadout Pick are M1911 only)."},
+  {"id": "m1911", "unlock": [{"rank": 1}], "desc": "The service .45. Eight rounds, honest weight, and the Armorer's Bench knows it best (only the M1911 takes a finish and a fitted attachment)."},
   {"id": "walther_p38", "unlock": [{"rank": 4}], "desc": "A picked-up P38. A shade less punch than the .45, quicker to fire again, quicker to reload, steadier from the hip."},
   {"id": "webley", "unlock": [{"rank": 8}, {"dossier": 4}], "desc": "A Webley Mk VI .455 revolver. Six heavy rounds that hit nearly twice as hard, a slow break-open reload, no brass on the floor."},
   {"id": "luger_p08", "unlock": [{"rank": 14}, {"challenges": 4}], "desc": "A Luger P08 off a dead officer. Flat-shooting and quick to the eye, it carries its punch further than any sidearm. The toggle is slow to reload."}

@@ -159,7 +159,7 @@ static func unlock_text(row: Dictionary) -> String:
 		elif r.has("challenges"):
 			parts.append("%d challenges done" % int(r["challenges"]))
 		elif r.has("dossier"):
-			parts.append("dossier level %d" % int(r["dossier"]))
+			parts.append("character level %d" % int(r["dossier"]))
 	var s: String = " or ".join(parts)
 	return s.substr(0, 1).to_upper() + s.substr(1) if s != "" else "Always open"
 
@@ -171,14 +171,14 @@ static func unlocks_at_rank(rank_n: int) -> PackedStringArray:
 	for r: Dictionary in pistol_rows():
 		for u: Dictionary in r.get("unlock", []):
 			if int(u.get("rank", -1)) == rank_n and rank_n > 1:
-				out.append("Sidearm: %s" % pistol_name(str(r["id"])))
+				out.append("Pistol: %s" % pistol_name(str(r["id"])))
 	for h: Dictionary in habit_rows():
 		for u2: Dictionary in h.get("unlock", []):
 			if int(u2.get("rank", -1)) == rank_n and rank_n > 1:
-				out.append("Field Habit: %s" % str(h.get("name", h["id"])))
+				out.append("Starting perk: %s" % str(h.get("name", h["id"])))
 	for s: Dictionary in cfg().get("slots", []):
 		if int(s["rank"]) == rank_n and rank_n > 1:
-			out.append("Field Habit slot %d" % int(s["slots"]))
+			out.append("Starting perk slot %d" % int(s["slots"]))
 	return out
 
 
@@ -245,7 +245,7 @@ static func summary(kit: Dictionary) -> String:
 	var names: PackedStringArray = []
 	for h: Variant in kit.get("habits", []):
 		names.append(habit_name(str(h)))
-	return "%s  ·  %s" % [pistol_name(str(kit.get("pistol", default_pistol()))), ", ".join(names) if not names.is_empty() else "no Field Habits"]
+	return "%s  ·  %s" % [pistol_name(str(kit.get("pistol", default_pistol()))), ", ".join(names) if not names.is_empty() else "no starting perks"]
 
 
 ## The next few things rank opens, nearest first: [{rank, text}] (sidearms, habits, habit slots, then the cosmetic
@@ -255,14 +255,14 @@ static func upcoming(rank_n: int, count: int = 4) -> Array:
 	for r: Dictionary in pistol_rows():
 		for u: Dictionary in r.get("unlock", []):
 			if int(u.get("rank", 0)) > rank_n:
-				rows.append({"rank": int(u["rank"]), "text": "Sidearm: " + pistol_name(str(r["id"]))})
+				rows.append({"rank": int(u["rank"]), "text": "Pistol: " + pistol_name(str(r["id"]))})
 	for h: Dictionary in habit_rows():
 		for u2: Dictionary in h.get("unlock", []):
 			if int(u2.get("rank", 0)) > rank_n:
-				rows.append({"rank": int(u2["rank"]), "text": "Field Habit: " + str(h.get("name", h["id"]))})
+				rows.append({"rank": int(u2["rank"]), "text": "Starting perk: " + str(h.get("name", h["id"]))})
 	for s: Dictionary in cfg().get("slots", []):
 		if int(s["rank"]) > rank_n:
-			rows.append({"rank": int(s["rank"]), "text": "Field Habit slot %d" % int(s["slots"])})
+			rows.append({"rank": int(s["rank"]), "text": "Starting perk slot %d" % int(s["slots"])})
 	for c: Dictionary in ProfileSave.unlock_rows():
 		if c.has("rank") and int(c["rank"]) > rank_n:
 			rows.append({"rank": int(c["rank"]), "text": str(c.get("name", c["id"])) + " (%s)" % str(c.get("kind", "")).replace("_", " ")})

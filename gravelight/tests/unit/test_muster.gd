@@ -139,13 +139,13 @@ func test_a_commendation_keeps_every_unlock_and_slot() -> void:
 
 
 func test_rank_ups_list_what_they_open() -> void:
-	assert_true(Array(Muster.unlocks_at_rank(10)).has("Field Habit slot 2"))
-	assert_true(Array(Muster.unlocks_at_rank(4)).has("Sidearm: Walther P38"))
+	assert_true(Array(Muster.unlocks_at_rank(10)).has("Starting perk slot 2"))
+	assert_true(Array(Muster.unlocks_at_rank(4)).has("Pistol: Walther P38"))
 	ProfileSave.profile = ProfileSave.new_profile()
 	ProfileSave.cur_match = {"active": true, "unlocks": [], "xp": 0, "challenges": []}
 	ProfileSave._apply_xp(ProfileSave.total_for_rank(5, ProfileSave.curve()))
-	assert_true((ProfileSave.cur_match["unlocks"] as Array).has("Sidearm: Walther P38"), "shown on the game-over screen")
-	assert_true((ProfileSave.cur_match["unlocks"] as Array).has("Field Habit: Grenade in the Boot"))
+	assert_true((ProfileSave.cur_match["unlocks"] as Array).has("Pistol: Walther P38"), "shown on the game-over screen")
+	assert_true((ProfileSave.cur_match["unlocks"] as Array).has("Starting perk: Grenade in the Boot"))
 	ProfileSave.cur_match = {}
 
 

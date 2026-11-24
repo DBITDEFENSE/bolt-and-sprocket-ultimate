@@ -11,7 +11,8 @@ var gallery: bool = false
 
 
 func _init() -> void:
-	super._init("Intel Archive")
+	super._init("Collection")
+	subtitle = "Intel: the documents, recordings and photographs you have found in matches. Plus every cutscene."
 
 
 func build() -> void:
@@ -28,7 +29,7 @@ func build() -> void:
 	for r: Dictionary in rows:
 		if ProfileSave.has_intel(str(r["id"])):
 			found += 1
-	content.add_child(MenuKit.label("%d / %d recovered" % [found, rows.size()], 22, MenuKit.GOLD))
+	content.add_child(MenuKit.label("Intel found: %d / %d" % [found, rows.size()], 22, MenuKit.GOLD))
 	var split: HBoxContainer = HBoxContainer.new()
 	split.add_theme_constant_override("separation", 24)
 	content.add_child(split)
@@ -46,7 +47,7 @@ func build() -> void:
 			last_map = m
 			list.add_child(MenuKit.label(str(MAP_NAMES.get(m, m)), 24, MenuKit.VIOLET, true))
 		var have: bool = ProfileSave.has_intel(str(r["id"]))
-		var title: String = ("%s  (%s)" % [r["title"], TYPE_NAMES.get(str(r["type"]), r["type"])]) if have else "???  (not yet recovered)"
+		var title: String = ("%s  (%s)" % [r["title"], TYPE_NAMES.get(str(r["type"]), r["type"])]) if have else "???  (not found yet)"
 		var b: Button = MenuKit.button(title, _show.bind(r, have), 18)
 		b.custom_minimum_size = Vector2(0, 36)
 		b.focus_entered.connect(_show.bind(r, have))
@@ -104,7 +105,7 @@ func _show(r: Dictionary, have: bool) -> void:
 	if have:
 		_reader.text = "%s\n%s\n\n%s" % [r["title"], TYPE_NAMES.get(str(r["type"]), r["type"]), r["text"]]
 	else:
-		_reader.text = "Not yet recovered.\n\n" + ("Somebody in the Crossroads Inn's cellar is waiting to be let out." if str(r.get("placement", "")) == "companion" \
+		_reader.text = "Not found yet.\n\n" + ("Somebody in the Crossroads Inn's cellar is waiting to be let out." if str(r.get("placement", "")) == "companion" \
 			else _unfound_text(r))
 
 

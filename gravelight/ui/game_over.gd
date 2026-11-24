@@ -64,7 +64,7 @@ func show_stats(stats: Dictionary, map_name: String, seconds: float) -> void:
 	box.modulate.a = 0.0
 	center.add_child(box)
 	var title: Label = Label.new()
-	title.text = "THE LEDGER IS CLOSED"
+	title.text = "GAME OVER"
 	title.add_theme_font_override("font", stamp)
 	title.add_theme_font_size_override("font_size", MenuKit.size("display"))
 	title.add_theme_color_override("font_color", Color(0.65, 0.1, 0.09))
@@ -94,7 +94,7 @@ func show_stats(stats: Dictionary, map_name: String, seconds: float) -> void:
 	var head_font: Font = MenuKit.spaced(font, 3)
 	for i: int in grid.columns:
 		var h: Label = Label.new()
-		h.text = "SURVIVOR" if i == 0 else str(LEDGER_COLS[i - 1][0])
+		h.text = "PLAYER" if i == 0 else str(LEDGER_COLS[i - 1][0])
 		h.add_theme_font_override("font", head_font)
 		h.add_theme_font_size_override("font_size", 20)
 		h.add_theme_color_override("font_color", Color(0.45, 0.12, 0.1))
@@ -219,7 +219,7 @@ func _add_progression(box: VBoxContainer, font: Font) -> void:
 		bar_tw.tween_callback(func() -> void: AudioDirector.play_2d("ui_challenge", 0.0, 0.0))
 	var extra: PackedStringArray = []
 	if int(sm.get("dossier_after", 0)) > int(sm.get("dossier_before", 0)):
-		extra.append("%s's dossier reached level %d" % [str(sm.get("character", "")).capitalize(), int(sm["dossier_after"])])
+		extra.append("%s reached character level %d" % [str(sm.get("character", "")).capitalize(), int(sm["dossier_after"])])
 	for c: Variant in sm.get("challenges", []):
 		extra.append("Challenge complete: " + str(c))
 	for u: Variant in sm.get("unlocks", []):
