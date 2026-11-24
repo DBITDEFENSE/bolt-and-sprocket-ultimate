@@ -950,6 +950,12 @@ func _start(group: StringName, item: Dictionary) -> void:
 
 func _next_part(group: StringName) -> void:
 	var item: Dictionary = _current[group]
+	if item.has("load_wait"):
+		# T-265: this part's file was asked of a loader thread: nothing else is worked out again until it is there
+		if not stream_ready(str(item["load_wait"])):
+			item["end"] = _now
+			return
+		item.erase("load_wait")
 	item["part"] = int(item["part"]) + 1
 	var parts: Array = item["parts"]
 	if int(item["part"]) >= parts.size():
@@ -964,13 +970,11 @@ func _next_part(group: StringName) -> void:
 	if not stream_ready(path):
 		# T-265: its file is on its way from a loader thread: this part starts when it is there (advance() asks
 		# again next frame; the item stays the channel's current one meanwhile)
-		if not item.has("load_wait"):
-			item["load_wait"] = true
-			late_starts += 1
+		item["load_wait"] = path
+		late_starts += 1
 		item["part"] = int(item["part"]) - 1
 		item["end"] = _now
 		return
-	item.erase("load_wait")
 	var stream: AudioStream = load_stream(path)
 	warm_speaker(speaker)   # T-237: the rest of this speaker's lines load in the background from here on
 	if voice_test:
