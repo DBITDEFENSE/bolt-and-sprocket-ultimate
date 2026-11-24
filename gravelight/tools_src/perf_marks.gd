@@ -135,6 +135,7 @@ var _ab_t266: bool = false   # `--t266-ab[=a+b:c]`: the views with T-266's passe
 var _ab_steps: Array = []    # the features switched on at each step after "before"
 var _states: Array = []      # [{tag, off: PackedStringArray, rows}]: every view is counted in each of them
 var _state_i: int = 0
+var _view_settle: int = 9
 
 
 func _ready() -> void:
@@ -1083,7 +1084,10 @@ func _minimap_bench() -> void:
 func _views_step() -> void:
 	for z: Zombie in _map.director.active_zombies():
 		z.hp = maxf(z.hp, 1.0e9)
-	var settle: int = 3 if _quick else 30   # (a software-rendered frame takes 10 s and more: three to settle, one counted)
+	# A software-rendered frame takes 10 s and more, but the game's clock moves at most 4 physics steps (67 ms) a
+	# frame: a new view gets 9 frames (0.6 s: ShadowBudget's 0.2 s re-rank, Kaltenbrunn's moon switch 0.25 s, DayCycle's
+	# roof check), another state of the same view 3 (RenderTune.set_off applies at once), then one frame is counted.
+	var settle: int = (_view_settle if _quick else 30)
 	var counted: int = 1 if _quick else 2
 	if _states.is_empty():
 		_build_states()
@@ -1091,9 +1095,11 @@ func _views_step() -> void:
 		if _view_i >= 0:
 			_view_done()
 			_state_i += 1
+		_view_settle = 3
 		if _view_i < 0 or _state_i >= _states.size():   # the next view (each view is counted in every state before moving on,
 			_view_i += 1                                 # so a pair is seconds apart and the living map has not moved on)
 			_state_i = 0
+			_view_settle = 9
 		_view_f = 0
 		_view_acc = {}
 		if _view_i >= _views.size():
