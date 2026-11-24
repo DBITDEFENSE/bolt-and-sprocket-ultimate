@@ -292,6 +292,12 @@ static func in_no_go(p: Vector3, discs: Array) -> bool:
 ## player) is the tank's own check.
 static func may_stand(hull: Transform3D, zones: Array, g: Dictionary) -> bool:
 	var pts: PackedVector3Array = footprint(hull)
+	# drive_no_go_hull [[x, z, r]]: nothing of the hull's rectangle within r (the sample points are about 3 m apart
+	# along the hull, so a small drive_no_go disc fits between them; merge review 2026-11-24, Kaltenbrunn's exfil beacon)
+	for d: Variant in g.get("drive_no_go_hull", []):
+		var a: Array = d
+		if hull_dist(hull, Vector3(float(a[0]), 0.0, float(a[1]))) < float(a[2]):
+			return false
 	var allowed: Array = g.get("drive_zones", [])
 	for i: int in pts.size():
 		if not in_boxes(pts[i], g.get("drive_boxes", [])) or in_no_go(pts[i], g.get("drive_no_go", [])):

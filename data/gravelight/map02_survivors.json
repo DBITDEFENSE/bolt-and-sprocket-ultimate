@@ -20,13 +20,13 @@
       "lines": {"reveal": ["KAH_SURV_REVEAL_01"], "scared": ["KAH_SURV_SCARED_01", "KAH_SURV_SCARED_02"], "flinch": ["KAH_SURV_FLINCH_01"],
         "armed": ["KAH_SURV_ARMED_01"], "fight": ["KAH_SURV_FIGHT_01"], "hurt": ["KAH_SURV_HURT_01"], "downed": ["KAH_SURV_DOWNED_01"],
         "death": ["KAH_SURV_DEATH_01"]}},
-    {"id": "pietsch", "name": "Jonas Pietsch", "display": "PIETSCH", "speaker": "PIE", "person": "ogpohl",
+    {"id": "pietsch", "name": "Jonas Pietsch", "display": "PIETSCH", "speaker": "JPT", "person": "ogpohl",
       "role": "a Matrosengefreiter (19) from Stralsund, U-1047's youngest hand, a signal rating on his first patrol; he has not slept since the tide came in and the singing started in the pens",
       "look": {"jacket": [0.12, 0.13, 0.2], "trousers": [0.13, 0.13, 0.17], "skin": [0.86, 0.72, 0.63], "head": [0.62, 0.5, 0.3], "headgear": "none", "build": 0.92,
         "skirt": false, "apron": false, "scarf": [0.85, 0.84, 0.8]},
       "hide": [55.8, 0.0, 17.3], "hide_yaw": 126.0, "post": [50.5, 0.0, 22.0], "post_yaw": 90.0, "female": false, "rise_variant": "sailor",
-      "lines": {"reveal": ["PIE_SURV_REVEAL_01"], "scared": ["PIE_SURV_SCARED_01", "PIE_SURV_SCARED_02"], "flinch": ["PIE_SURV_FLINCH_01"],
-        "armed": ["PIE_SURV_ARMED_01"], "fight": ["PIE_SURV_FIGHT_01"], "hurt": ["PIE_SURV_HURT_01"], "downed": ["PIE_SURV_DOWNED_01"],
-        "death": ["PIE_SURV_DEATH_01"]}}
+      "lines": {"reveal": ["JPT_SURV_REVEAL_01"], "scared": ["JPT_SURV_SCARED_01", "JPT_SURV_SCARED_02"], "flinch": ["JPT_SURV_FLINCH_01"],
+        "armed": ["JPT_SURV_ARMED_01"], "fight": ["JPT_SURV_FIGHT_01"], "hurt": ["JPT_SURV_HURT_01"], "downed": ["JPT_SURV_DOWNED_01"],
+        "death": ["JPT_SURV_DEATH_01"]}}
   ]
 }

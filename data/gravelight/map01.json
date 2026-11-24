@@ -298,7 +298,8 @@
         1.0
       ]
     ],
-    "_doc_drive": "T-272 where a player may drive it here: the forecourt in front of the hoist house only (x 15.2..24.8, the hoist house's own width, so a hull left anywhere in it, or its wreck after round 40, never stands in the 3 m lanes past the gatehouse and the winding house; z 0.4..9.7, between the north wall and the hoist house). Room to turn on the spot (a 6.5 m circle) and lay the gun on the yard; never the yard's lanes, the Kaue or the rail yard. The disc keeps the campaign's exfil beacon by the gate clear.",
+    "drive_no_go_hull": [[24.4, 2.4, 1.0]],
+    "_doc_drive": "T-272 where a player may drive it here: the forecourt in front of the hoist house only (x 15.2..24.8, the hoist house's own width, so a hull left anywhere in it, or its wreck after round 40, never stands in the 3 m lanes past the gatehouse and the winding house; z 0.4..9.7, between the north wall and the hoist house). Room to turn on the spot (a 6.5 m circle) and lay the gun on the yard; never the yard's lanes, the Kaue or the rail yard. The disc keeps the campaign's exfil beacon by the gate clear, and drive_no_go_hull keeps the hull's whole rectangle 1 m off it: the disc alone is tested on the footprint's sample points, about 3 m apart along the hull, and the merge review found a hull centred at (23.5, 3.4) covering the beacon; a larger disc (2.9 m) stopped the parked tank pivoting on the spot.",
     "stuka_target": [
       52.5,
       3.0,
@@ -309,6 +310,10 @@
       0.0,
       -200.0
     ],
+    "stuka": {
+      "banner_small_no_tank": "A DIVE BOMBER IS COMING DOWN ON THE RAIL YARD",
+      "_doc": "when both Shermans were lost the dive bomber goes for stuka_target (the locomotive in the Rail Yard), not a tank"
+    },
     "shelter_roof": true,
     "shelter_zones": [
       "C_ADMIN",

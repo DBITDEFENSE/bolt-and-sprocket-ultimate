@@ -42,7 +42,9 @@ func want_open() -> bool:
 		if tk == null or not is_instance_valid(tk) or tk.is_wreck():
 			continue
 		var d: float = Vector2(tk.global_position.x - global_position.x, tk.global_position.z - global_position.z).length()
-		if d < gateway_m or (tk.mode == ShermanTank.Mode.DRIVE and d < open_m):
+		# only on its scripted drive in (Mode.DRIVE): a tank a player parks by the north wall (the forecourt lets the hull
+		# come within about 3.4 m) must not swing the gate open onto a road nobody can walk (merge review, 2026-11-24)
+		if tk.mode == ShermanTank.Mode.DRIVE and (d < gateway_m or d < open_m):
 			return true
 	return false
 

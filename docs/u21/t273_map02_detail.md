@@ -206,13 +206,13 @@ triangles, one hidden unshadowed light.
 ## 6. Added after the merge: the sailors in the torpedo store
 
 `data/gravelight/map02_survivors.json` and an `InnSurvivors` node under Gameplay (gen_map02); no script changed.
-Two of U-1047's crew, Obermaschinist Hinrich Kahlke (`KAH`) and Matrosengefreiter Jonas Pietsch (`PIE`), shut
+Two of U-1047's crew, Obermaschinist Hinrich Kahlke (`KAH`) and Matrosengefreiter Jonas Pietsch (`JPT`; it was `PIE` until the merge, where Kaltenbrunn had taken that code), shut
 themselves into the warhead cage in the Torpedo Workshop's south-east corner when the boat's crew turned. Hidden until
 the workshop's door (`door_workshop`, 1000, off the quay) opens; then crouched in the cage: hide spots `[53.5, 0, 17.4]`
 and `[55.8, 0, 17.3]` (clear of the Warheads crate spot and the lead coffins). Arming one costs 1000 (a Kar98k); they
 walk out of the cage's gap to posts `[50.5, 0, 19.0]` (facing the cradles and the north window) and `[50.5, 0, 22.0]`
 (facing the workshop's door). Map 0's ally numbers. They rise as the `sailor` kind. Nine text lines each
-(`KAH_SURV_*`, `PIE_SURV_*`) and the squad's warning in a category of this map's (`M2_SURV_TURN`: Map 0's says
+(`KAH_SURV_*`, `JPT_SURV_*`) and the squad's warning in a category of this map's (`M2_SURV_TURN`: Map 0's says
 "upstairs"), 22 lines in all, every one listed as not baked in `audio_manifest.json` (a subtitle with a timed
 silence); both cast in `voice_cast.json` (German accent, for a later bake). Their bodies are the project's modelled people
 (`person` in each row, reused the way `people_extra.json` reuses them: Kahlke wears Ammer's, Pietsch the

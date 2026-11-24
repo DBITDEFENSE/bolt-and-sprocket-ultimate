@@ -79,7 +79,7 @@
           "voice": "am_onyx:0.5,bm_george:0.3,am_michael:0.2", "lexicon": "gb", "speed": 0.92, "accent": "german",
           "native_polish": false, "native_german": true, "emotion_scale": 0.85, "hp_hz": 80,
           "eq": [[120, 280, 1.5], [2500, 4500, -1.0]], "warmth": 1.2, "lufs_offset": 0.0},
-  "PIE": {"who": "Jonas Pietsch, a Matrosengefreiter (19) from Stralsund, U-1047's youngest hand, survivor in Totenhafen's torpedo store: young, frightened, sleepless, a light voice that cracks; English as a careful second language, a German accent (T-273)",
+  "JPT": {"who": "Jonas Pietsch, a Matrosengefreiter (19) from Stralsund, U-1047's youngest hand, survivor in Totenhafen's torpedo store: young, frightened, sleepless, a light voice that cracks; English as a careful second language, a German accent (T-273)",
           "voice": "bm_daniel:0.5,am_adam:0.3,bm_lewis:0.2", "lexicon": "gb", "speed": 1.02, "accent": "german",
           "native_polish": false, "native_german": true, "emotion_scale": 1.0, "hp_hz": 90,
           "eq": [[120, 280, 0.5], [2500, 4500, 0.5]], "warmth": 1.0, "lufs_offset": 0.0},

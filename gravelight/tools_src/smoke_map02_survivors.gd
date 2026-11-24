@@ -96,7 +96,7 @@ func _physics_process(delta: float) -> void:
 				_lines.clear()
 				_go("scared")
 		"scared":
-			if _said_any(["KAH", "PIE", "KAHLKE", "PIETSCH"]):
+			if _said_any(["KAH", "JPT", "KAHLKE", "PIETSCH"]):
 				print("[m2surv] heard: %s" % str(_lines))
 				var k: InnSurvivor = _ss.survivors["pietsch"]
 				GLBus.weapon_fired.emit(1, &"m1911", false, k.global_position + Vector3(2, 1.4, 3), Vector3.FORWARD)

@@ -590,7 +590,12 @@ func _step_patron(id: String, delta: float) -> void:
 		"reach":
 			var bt2: Dictionary = row["bitten"]
 			_follow(pb, s, 2.4, delta)
-			_face_point(pb, Vector3(pb.global_position.x + 0.6, 0, -2.0))
+			# Map 0: toward the north door, a little to its side; with front_door.face_door (a door in another wall) the door
+			# itself, as the to_door / unbar / hold stages do (merge review, 2026-11-24)
+			if door != null and bool((cfg.get("front_door", {}) as Dictionary).get("face_door", false)):
+				_face_point(pb, _door_face(pb))
+			else:
+				_face_point(pb, Vector3(pb.global_position.x + 0.6, 0, -2.0))
 			if t >= float(bt2.get("at", 10.5)):
 				pb.struck(null)
 				AudioDirector.play_3d("player_hurt", pb.global_position + Vector3.UP * 1.5, 0.0)

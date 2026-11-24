@@ -117,6 +117,25 @@ func test_where_it_parks() -> void:
 	assert_gt(ShermanRules.hull_dist(hull, ex), 2.0, "and of the parked hull")
 	var disc: Array = (b["drive_no_go"] as Array)[0]
 	assert_lt(Vector2(float(disc[0]) - ex.x, float(disc[1]) - ex.z).length(), 0.01, "a driver cannot run it down")
+	# merge review: may_stand tests the footprint's sample points, about 3 m apart along the hull; a small disc fits
+	# between them. No hull a driver may leave in the forecourt covers the beacon, at any spot or heading.
+	var covered: int = 0
+	for xi: int in range(152, 249, 4):
+		for zi: int in range(4, 98, 4):
+			for ydeg: int in range(0, 180, 15):
+				var h: Transform3D = Transform3D(Basis(Vector3.UP, deg_to_rad(ydeg)), Vector3(xi * 0.1, 0, zi * 0.1))
+				if ShermanRules.may_stand(h, [], b) and ShermanRules.hull_dist(h, ex) < 0.5:
+					covered += 1
+	assert_eq(covered, 0, "no standing hull within 0.5 m of the exfil beacon")
+
+
+func test_the_dive_bomber_never_names_a_lost_tank() -> void:
+	# merge review: with both Shermans lost the dive bomber goes for the locomotive; its banner names the Rail Yard
+	var b: Dictionary = _json()["sherman_event"]
+	assert_true(b.has("stuka_target"), "a landmark for the dive bomber")
+	var small: String = str((b.get("stuka", {}) as Dictionary).get("banner_small_no_tank", ""))
+	assert_ne(small, "", "a banner for the dive with no tank left")
+	assert_false(small.contains("SHERMAN"), "and it names no tank: %s" % small)
 
 
 func test_the_map_rows_lie_over_the_table() -> void:

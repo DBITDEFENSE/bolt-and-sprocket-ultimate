@@ -731,8 +731,12 @@ func begin_stuka() -> void:
 		net_stuka(target, from_dir)
 		if Net.replicating():
 			Net.mirror(self, &"net_stuka", [target, from_dir]))
+	# with no tank left to aim at (both lost), a map with a landmark names it (banner_small_no_tank); Map 0 sets none
+	var small: String = str(s.get("banner_small", ""))
+	if (tank == null or not is_instance_valid(tank)) and s.has("banner_small_no_tank"):
+		small = str(s["banner_small_no_tank"])
 	at(float(s.get("banner_at", 3.0)), func() -> void:
-		_banner(str(s.get("banner", "AIRCRAFT!")), str(s.get("banner_small", ""))))
+		_banner(str(s.get("banner", "AIRCRAFT!")), small))
 	print("[sherman] round %d: the dive bomber (the Sherman is %s)" % [RoundManager.current_round, "there" if tank != null and is_instance_valid(tank) and not tank.is_wreck() else "gone"])
 
 
