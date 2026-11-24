@@ -93,7 +93,7 @@ static func proxy_for(mi: MeshInstance3D) -> ArrayMesh:
 
 static func _make(mi: MeshInstance3D) -> ArrayMesh:
 	var mesh: Mesh = mi.mesh
-	var by_cull: Dictionary = {}   # cull mode -> SurfaceTool
+	var by_cull: Dictionary = {}   # cull mode -> [[Mesh, surface, Transform3D], ...]
 	var casting: int = 0
 	for si: int in mesh.get_surface_count():
 		if mesh is ArrayMesh and (mesh as ArrayMesh).surface_get_primitive_type(si) != Mesh.PRIMITIVE_TRIANGLES:
@@ -106,25 +106,19 @@ static func _make(mi: MeshInstance3D) -> ArrayMesh:
 		if mi.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_DOUBLE_SIDED:
 			cull = BaseMaterial3D.CULL_DISABLED
 		if not by_cull.has(cull):
-			var st: SurfaceTool = SurfaceTool.new()
-			st.begin(Mesh.PRIMITIVE_TRIANGLES)
-			by_cull[cull] = st
-		(by_cull[cull] as SurfaceTool).append_from(mesh, si, Transform3D.IDENTITY)
+			by_cull[cull] = []
+		(by_cull[cull] as Array).append([mesh, si, Transform3D.IDENTITY])
 		casting += 1
 	if casting < 2:
 		return null
 	var out: ArrayMesh = ArrayMesh.new()
 	for cull: int in by_cull:
-		var full: Array = (by_cull[cull] as SurfaceTool).commit_to_arrays()
-		var arrays: Array = []
-		arrays.resize(Mesh.ARRAY_MAX)
-		arrays[Mesh.ARRAY_VERTEX] = full[Mesh.ARRAY_VERTEX]
-		arrays[Mesh.ARRAY_NORMAL] = full[Mesh.ARRAY_NORMAL]
-		var ind: Variant = full[Mesh.ARRAY_INDEX]
-		arrays[Mesh.ARRAY_INDEX] = ind if ind is PackedInt32Array and not (ind as PackedInt32Array).is_empty() else null
+		var arrays: Array = ShadowProxies.depth_arrays(by_cull[cull] as Array)   # (by hand: SurfaceTool drops unindexed surfaces appended after indexed ones)
+		if arrays.is_empty():
+			continue
 		out.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 		out.surface_set_material(out.get_surface_count() - 1, ShadowProxies._material(cull))
-	return out
+	return out if out.get_surface_count() > 0 else null
 
 
 ## How a surface with material `m` is drawn into a shadow map: its cull mode (BaseMaterial3D.CULL_*) when the depth

@@ -140,3 +140,30 @@ func test_render_tune_switches() -> void:
 		assert_false(RenderTune.on(f), f)
 	RenderTune.enabled = true
 	assert_true(RenderTune.off.is_empty())
+
+
+func test_a_prop_mixing_indexed_and_unindexed_surfaces_keeps_every_triangle() -> void:
+	var root: Node3D = Node3D.new()
+	add_child_autofree(root)
+	var am: ArrayMesh = ArrayMesh.new()
+	var bm: BoxMesh = BoxMesh.new()
+	var arr: Array = bm.get_mesh_arrays()
+	am.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)   # indexed
+	var v: PackedVector3Array = PackedVector3Array()
+	var n: PackedVector3Array = PackedVector3Array()
+	for k: int in arr[Mesh.ARRAY_INDEX] as PackedInt32Array:
+		v.append((arr[Mesh.ARRAY_VERTEX] as PackedVector3Array)[k] + Vector3(2, 0, 0))
+		n.append((arr[Mesh.ARRAY_NORMAL] as PackedVector3Array)[k])
+	var plain: Array = []
+	plain.resize(Mesh.ARRAY_MAX)
+	plain[Mesh.ARRAY_VERTEX] = v
+	plain[Mesh.ARRAY_NORMAL] = n
+	am.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, plain)   # a plain triangle list
+	am.surface_set_material(0, StandardMaterial3D.new())
+	am.surface_set_material(1, StandardMaterial3D.new())
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.mesh = am
+	root.add_child(mi)
+	PropShadows.build(root)
+	var p: MeshInstance3D = mi.get_node("ShadowProp") as MeshInstance3D
+	assert_eq(p.mesh.get_faces().size() / 3, 24, "both surfaces' 12 triangles")

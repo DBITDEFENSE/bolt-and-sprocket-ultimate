@@ -38,6 +38,9 @@ const RANGED_MIN_M: float = 35.0
 static func build_all(map_root: Node) -> Dictionary:
 	var out: Dictionary = {"batches": 0, "proxies": 0, "kept": 0}
 	var names: PackedStringArray = HOLDERS if RenderTune.on("proxies") else PackedStringArray(["StaticBatches"])
+	for arg: String in OS.get_cmdline_user_args():   # a tool's bisection: only these containers (`-- --t266-holders=StaticBatches`)
+		if arg.begins_with("--t266-holders="):
+			names = arg.substr(15).split(",", false)
 	for h: String in names:
 		var holder: Node = map_root.get_node_or_null(NodePath(h))
 		if holder == null:
@@ -91,26 +94,16 @@ static func build(map_root: Node, batch_root_name: String = "StaticBatches") -> 
 		victims.append(mi)
 	for key: String in groups:
 		var g: Dictionary = groups[key]
-		var st: SurfaceTool = SurfaceTool.new()
-		st.begin(Mesh.PRIMITIVE_TRIANGLES)
-		var any: bool = false
+		var pieces: Array = []
 		for part: Array in g["parts"]:
 			var m: Mesh = part[0]
 			for si: int in m.get_surface_count():
-				if m.surface_get_primitive_type(si) == Mesh.PRIMITIVE_TRIANGLES:
-					st.append_from(m, si, part[1] as Transform3D)
-					any = true
-		if not any:
-			continue
+				pieces.append([m, si, part[1]])
 		# positions, normals (the shadow pass pushes vertices along them: the lights' normal bias) and indices; a
 		# depth pass reads nothing else
-		var full: Array = st.commit_to_arrays()
-		var arrays: Array = []
-		arrays.resize(Mesh.ARRAY_MAX)
-		arrays[Mesh.ARRAY_VERTEX] = full[Mesh.ARRAY_VERTEX]
-		arrays[Mesh.ARRAY_NORMAL] = full[Mesh.ARRAY_NORMAL]
-		var ind: Variant = full[Mesh.ARRAY_INDEX]
-		arrays[Mesh.ARRAY_INDEX] = ind if ind is PackedInt32Array and not (ind as PackedInt32Array).is_empty() else null
+		var arrays: Array = depth_arrays(pieces)
+		if arrays.is_empty():
+			continue
 		var mesh: ArrayMesh = ArrayMesh.new()
 		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 		mesh.surface_set_material(0, _material(int(g["cull"])))
@@ -207,6 +200,48 @@ static func _depth_cull(mi: MeshInstance3D) -> int:
 	if mi.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_DOUBLE_SIDED:
 		cull = BaseMaterial3D.CULL_DISABLED
 	return cull
+
+
+## The depth-only surface arrays (positions, normals, indices) of `pieces` ([[Mesh, surface, Transform3D], ...])
+## merged into one triangle list; [] when they hold no triangle. Written out by hand: SurfaceTool.append_from keeps
+## one index array for everything, so appending an unindexed surface after an indexed one (Groom Lake's baked
+## dressing mixes both) silently dropped the unindexed triangles from the result, and with them a shadow (T-266:
+## the wreck's hull lost part of its shadow in the first captures; perf_marks --proxy-check counts both sides).
+static func depth_arrays(pieces: Array) -> Array:
+	var verts: PackedVector3Array = PackedVector3Array()
+	var norms: PackedVector3Array = PackedVector3Array()
+	var index: PackedInt32Array = PackedInt32Array()
+	for piece: Array in pieces:
+		var m: Mesh = piece[0]
+		var si: int = int(piece[1])
+		if m is ArrayMesh and (m as ArrayMesh).surface_get_primitive_type(si) != Mesh.PRIMITIVE_TRIANGLES:
+			continue
+		var a: Array = m.surface_get_arrays(si)
+		if a.is_empty() or a[Mesh.ARRAY_VERTEX] == null:
+			continue
+		var v: PackedVector3Array = a[Mesh.ARRAY_VERTEX]
+		var n: Variant = a[Mesh.ARRAY_NORMAL]
+		var xf: Transform3D = piece[2]
+		var nb: Basis = xf.basis.inverse().transposed()
+		var base: int = verts.size()
+		for i: int in v.size():
+			verts.append(xf * v[i])
+			norms.append((nb * (n as PackedVector3Array)[i]).normalized() if n is PackedVector3Array and i < (n as PackedVector3Array).size() else Vector3.UP)
+		var ind: Variant = a[Mesh.ARRAY_INDEX]
+		if ind is PackedInt32Array and not (ind as PackedInt32Array).is_empty():
+			for k: int in ind as PackedInt32Array:
+				index.append(base + k)
+		else:
+			for i: int in v.size() - v.size() % 3:
+				index.append(base + i)
+	if index.is_empty():
+		return []
+	var arrays: Array = []
+	arrays.resize(Mesh.ARRAY_MAX)
+	arrays[Mesh.ARRAY_VERTEX] = verts
+	arrays[Mesh.ARRAY_NORMAL] = norms
+	arrays[Mesh.ARRAY_INDEX] = index
+	return arrays
 
 
 static var _mats: Dictionary = {}

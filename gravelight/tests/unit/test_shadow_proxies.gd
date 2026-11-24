@@ -189,3 +189,64 @@ func test_undo_gives_the_batches_their_shadows_back() -> void:
 	ShadowProxies.build(m[0])
 	ShadowProxies.undo(m[0])
 	assert_eq(a.cast_shadow, GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
+
+
+func _mesh_inst(parent: Node, pos: Vector3, indexed: bool) -> MeshInstance3D:
+	var bm: BoxMesh = BoxMesh.new()
+	bm.size = Vector3(1, 1, 1)
+	var arr: Array = bm.get_mesh_arrays()
+	if not indexed:   # the same box as a plain triangle list (no index array)
+		var v: PackedVector3Array = PackedVector3Array()
+		var n: PackedVector3Array = PackedVector3Array()
+		for k: int in arr[Mesh.ARRAY_INDEX] as PackedInt32Array:
+			v.append((arr[Mesh.ARRAY_VERTEX] as PackedVector3Array)[k])
+			n.append((arr[Mesh.ARRAY_NORMAL] as PackedVector3Array)[k])
+		arr = []
+		arr.resize(Mesh.ARRAY_MAX)
+		arr[Mesh.ARRAY_VERTEX] = v
+		arr[Mesh.ARRAY_NORMAL] = n
+	var am: ArrayMesh = ArrayMesh.new()
+	am.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	mi.mesh = am
+	mi.material_override = StandardMaterial3D.new()
+	mi.position = pos
+	parent.add_child(mi)
+	return mi
+
+
+func test_indexed_and_unindexed_batches_both_reach_the_proxy() -> void:
+	# Groom Lake's baked dressing mixes both; SurfaceTool.append_from dropped the unindexed ones (the wreck's shadow)
+	var m: Array = _map()
+	_mesh_inst(m[1], Vector3(1, 1, 1), true)
+	_mesh_inst(m[1], Vector3(3, 1, 1), false)
+	_mesh_inst(m[1], Vector3(5, 1, 1), true)
+	var r: Dictionary = ShadowProxies.build(m[0])
+	assert_eq(int(r["batches"]), 3)
+	assert_eq(int(r["proxies"]), 1)
+	var p: MeshInstance3D = _proxies(m[1])[0]
+	assert_eq(p.mesh.get_faces().size() / 3, 36, "all three boxes' triangles")
+	var box: AABB = p.mesh.get_aabb()
+	assert_almost_eq(box.position.x, 0.5, 0.001)
+	assert_almost_eq(box.end.x, 5.5, 0.001, "the proxy spans all three (in the container's space)")
+
+
+func test_depth_arrays_transform_and_offsets() -> void:
+	var a: MeshInstance3D = _mesh_inst(self, Vector3.ZERO, false)
+	var b: MeshInstance3D = _mesh_inst(self, Vector3.ZERO, true)
+	var arrays: Array = ShadowProxies.depth_arrays([[a.mesh, 0, Transform3D(Basis.IDENTITY, Vector3(10, 0, 0))], [b.mesh, 0, Transform3D(Basis.IDENTITY.scaled(Vector3(2, 2, 2)), Vector3.ZERO)]])
+	var idx: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+	var v: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	assert_eq(idx.size(), 72, "two boxes, 12 triangles each")
+	assert_eq(v.size(), 36 + 24)
+	assert_eq((arrays[Mesh.ARRAY_NORMAL] as PackedVector3Array).size(), v.size())
+	var max_i: int = 0
+	for k: int in idx:
+		max_i = maxi(max_i, k)
+	assert_eq(max_i, v.size() - 1, "the second mesh's indices are offset past the first's vertices")
+	assert_almost_eq(v[0].x, 10.0, 0.51, "moved by its transform")
+	assert_almost_eq(absf(v[36].x), 1.0, 0.001, "scaled by its transform")
+	assert_almost_eq((arrays[Mesh.ARRAY_NORMAL] as PackedVector3Array)[36].length(), 1.0, 0.001, "normals stay unit length under a scale")
+	a.free()
+	b.free()
+	assert_eq(ShadowProxies.depth_arrays([]), [])
