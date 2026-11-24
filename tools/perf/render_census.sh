@@ -7,7 +7,7 @@
 #   From Windows:  wsl.exe --cd <worktree> -e bash tools/perf/render_census.sh <label> [maps] [presets] [views per map] [extra flags]
 #   -> .smoke_logs/t266/<label>/<map>_<preset>.log ; then  python -I tools/perf/census_table.py .smoke_logs/t266/<label>
 # One software-rendered job at a time, and only with 8 GB free: a High map takes 11 GB there, and several at once
-# took the whole WSL VM down (2026-11-23). A map takes 20 to 50 minutes.
+# took the whole WSL VM down (2026-11-23). A map takes 20 to 50 minutes. Env: T266_NOON=0 counts at night only.
 set -u
 LABEL="${1:-now}"
 MAPS="${2:-map00_crossroads,map01_kaltenbrunn,map02_totenhafen,map04a_thalbach,map04b_kranich,map04c_groomlake,map04d_mondlicht}"
@@ -34,6 +34,7 @@ for m in ${MAPS//,/ }; do
 		esac
 		# what a pass changes is apart by counter (proxies / props / sun: shadow draws; occlusion: colour draws; lights:
 		# lamps in view), so Low needs no step of its own for each of the last three; on High only the first two act
+		[ "${T266_NOON:-1}" = "1" ] || h=""   # T266_NOON=0: at night only
 		if [ "$p" = "high" ] || [ "$p" = "ultra" ]; then steps="proxies:props+occlusion+sun+lights"; else steps="proxies:props:occlusion+sun+lights"; fi
 		[ -s "$OUT/${m}_$p.log" ] && grep -q "active zombies" "$OUT/${m}_$p.log" && { echo "[render_census] $m $p: done before"; continue; }
 		until [ "$(free -m | awk '/^Mem:/ {print $7}')" -gt 8000 ]; do sleep 20; done
