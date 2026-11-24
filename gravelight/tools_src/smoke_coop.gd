@@ -221,6 +221,11 @@ func _host_tick(_delta: float) -> void:
 				var climbers: Array[Zombie] = map.director.debug_ladder("Climb_Tower", 2, 2.5)   # T-268: two on the watchtower's ladder, for the client to see
 				if climbers.size() != 2:
 					_fail("T-268: the host could not put two zombies on the tower's ladder (%d)" % climbers.size())
+				var rl: RocketLaunch = map.find_child("RocketLaunch", true, false) as RocketLaunch   # T-276: the V2's sequence, for the client to see
+				if rl == null:
+					_fail("T-276: no RocketLaunch on the host's map")
+				else:
+					rl.begin_launch()
 				map.director.debug_spawn(24)   # a full horde for the client to see (snapshot load check)
 				_zbytes0 = int(map.session.sent_bytes["zombies"])
 				_goto("wait_result")
@@ -445,7 +450,13 @@ func _client_tick(delta: float) -> void:
 						n += 1
 				_horde_seen = maxi(_horde_seen, n)
 				_watch_climb(map)
-				if (_horde_seen >= 20 and _locker_state == 2 and _climb_seen and _climb_top) or _step_t > 60.0:
+				var rlc: RocketLaunch = map.find_child("RocketLaunch", true, false) as RocketLaunch
+				_rocket_seen = _rocket_seen or (rlc != null and rlc.puppet and rlc.phase == RocketLaunch.Phase.SEQUENCE)
+				if (_horde_seen >= 20 and _locker_state == 2 and _climb_seen and _climb_top and _rocket_seen) or _step_t > 60.0:
+					if not _rocket_seen:
+						_fail("T-276: the client never saw the host's V2 launch sequence begin")
+					else:
+						_notes.append("T-276: the client's RocketLaunch began the host's launch sequence (mirrored net_begin)")
 					if not (_climb_seen and _climb_top):
 						_fail("T-268: the client never saw a zombie climb the tower's ladder (on the rungs %s, rising %.1f m, over the edge onto the landing %s)" % [str(_climb_seen), _climb_rise, str(_climb_top)])
 					else:
@@ -556,6 +567,7 @@ func _hunt(map: MapRoot, me: Player, delta: float) -> void:
 ## T-268 (client): a zombie puppet in the climb state on the watchtower's lower ladder, on the ladder's line, rising,
 ## and then over the edge at the ladder's head on the landing: the climb looks on the client as it does on the host.
 var _climb_seen: bool = false
+var _rocket_seen: bool = false   # T-276
 var _climb_top: bool = false
 var _climb_rise: float = 0.0
 var _climb_y: Dictionary = {}   # puppet -> [lowest y seen on the rungs, highest]
