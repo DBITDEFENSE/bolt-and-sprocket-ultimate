@@ -131,7 +131,7 @@ func test_pois_carry_what_the_runtime_needs() -> void:
 		assert_eq(int(perk["floor"]), inn.floor_at((perk["pos"] as Vector3) + Vector3.UP * 0.3), "%s is on the floor it stands on" % perk["id"])
 		assert_gt(int(perk["price"]), 0)
 		perk_floors[int(perk["floor"])] = true
-	assert_eq(inn.pois_of_type("perk").size(), 12, "the twelve machines")
+	assert_eq(inn.pois_of_type("perk").size(), 13, "the thirteen machines (T-276: Rocket Man)")
 	assert_gt(perk_floors.size(), 1, "and they are not all on one floor any more")
 	var lever: Dictionary = inn.pois_of_type("power_switch")[0]
 	assert_eq(int(lever["floor"]), 0, "the cellar lever is in the cellar")

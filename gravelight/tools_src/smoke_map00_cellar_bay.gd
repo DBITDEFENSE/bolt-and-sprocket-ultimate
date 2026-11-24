@@ -13,6 +13,8 @@ extends Node
 
 const CY: float = -3.2
 const SEED: int = 251
+## T-276: the twelve dealt machines and Rocket Man (pinned at the V2 site; it pours without the power)
+const MACHINES: int = 13
 
 var _map: Node3D
 var _p: Player
@@ -117,8 +119,8 @@ func _run() -> void:
 	print("[cellar] deal %d: %s" % [pl.seed_value, pl.describe()])
 	var spots: Array[Node] = tree.get_nodes_in_group(&"perk_spots")
 	var machines: Array[Node] = tree.get_nodes_in_group(&"perk_machines")
-	_check(spots.size() >= 14 and machines.size() == 12, "%d perk spots, %d machines" % [spots.size(), machines.size()])
-	_check(pl.deal.size() == 12 and PerkShuffle.valid(pl.deal, pl.spot_rows(), pl.perk_rows(), PerkLayout.rules()), "the deal keeps perk_layout.json's rules")
+	_check(spots.size() >= 14 and machines.size() == MACHINES, "%d perk spots, %d machines" % [spots.size(), machines.size()])
+	_check(pl.deal.size() == MACHINES and PerkShuffle.valid(pl.deal, pl.spot_rows(), pl.perk_rows(), PerkLayout.rules()), "the deal keeps perk_layout.json's rules")
 	var on_spot: int = 0
 	var zone_ok: int = 0
 	var zones_used: Dictionary = {}
@@ -130,8 +132,8 @@ func _run() -> void:
 		if sp != null and ZoneVolume.zone_at(tree, BotBrain._front_of(pm) + Vector3.UP * 0.5) == sp.zone_id:
 			zone_ok += 1
 			zones_used[String(sp.zone_id)] = true
-	_check(on_spot == 12, "every machine stands on the spot it was dealt (%d / 12)" % on_spot)
-	_check(zone_ok == 12, "the floor in front of each is its spot's zone (%d / 12)" % zone_ok)
+	_check(on_spot == MACHINES, "every machine stands on the spot it was dealt (%d / %d)" % [on_spot, MACHINES])
+	_check(zone_ok == MACHINES, "the floor in front of each is its spot's zone (%d / %d)" % [zone_ok, MACHINES])
 	_check(zones_used.size() >= 6, "the machines are spread over %d zones (%s)" % [zones_used.size(), ", ".join(PackedStringArray(zones_used.keys()))])
 	var free_n: int = 0
 	var crates_ok: int = 0
@@ -147,7 +149,7 @@ func _run() -> void:
 		var body: StaticBody3D = ps.get_node_or_null("FillerBody") as StaticBody3D
 		if filler != null and filler.visible and body != null and body.collision_layer == 1:
 			crates_ok += 1
-	_check(free_n == spots.size() - 12 and crates_ok == free_n, "the %d spots left over show a solid crate (%d)" % [free_n, crates_ok])
+	_check(free_n == spots.size() - MACHINES and crates_ok == free_n, "the %d spots left over show a solid crate (%d)" % [free_n, crates_ok])
 	var blocks_off: int = 0
 	var blocks: Array = _map.find_children("NavBlock_PerkSpot_*", "StaticBody3D", true, false)
 	for b: Node in blocks:
@@ -164,7 +166,7 @@ func _run() -> void:
 	for k: String in at_seed.keys():
 		if (at_seed[k] as Vector3).distance_to(other[k] as Vector3) > 0.5:
 			moved += 1
-	_check(moved >= 6, "seed %d is another layout (%d of 12 machines stand elsewhere)" % [SEED + 1, moved])
+	_check(moved >= 6, "seed %d is another layout (%d of %d machines stand elsewhere)" % [SEED + 1, moved, MACHINES])
 	var ms: MapState = MapState.current()
 	var poi_ok: int = 0
 	if ms != null:
@@ -172,7 +174,7 @@ func _run() -> void:
 			var pid: String = str((poi.get("data", {}) as Dictionary).get("perk_id", ""))
 			if other.has(pid) and (poi["pos"] as Vector3).distance_to(other[pid] as Vector3) < 0.05 and int(poi["floor"]) == ms.data.floor_at((other[pid] as Vector3) + Vector3.UP * 0.3):
 				poi_ok += 1
-	_check(ms != null and poi_ok == 12, "the map's perk POIs stand where the machines do, on their floors (%d / 12)" % poi_ok)
+	_check(ms != null and poi_ok == MACHINES, "the map's perk POIs stand where the machines do, on their floors (%d / %d)" % [poi_ok, MACHINES])
 	pl.apply(SEED)
 	await _frames(2)
 	var again: Dictionary = _where()
@@ -180,7 +182,7 @@ func _run() -> void:
 	for k2: String in at_seed.keys():
 		if (at_seed[k2] as Vector3).distance_to(again[k2] as Vector3) < 0.001:
 			same += 1
-	_check(same == 12, "seed %d again is the same layout (%d / 12)" % [SEED, same])
+	_check(same == MACHINES, "seed %d again is the same layout (%d / %d)" % [SEED, same, MACHINES])
 	_check(MapData.for_map(&"map00_crossroads") != ms.data if ms != null else false, "the baked map data keeps its own rows (the match reads a copy)")
 
 	# ---- the navmesh reaches every spot's front from the taproom (paths run through shut doors)
@@ -226,7 +228,7 @@ func _run() -> void:
 			refuse += 1
 		elif not PerkManager.needs_power(pm2.perk_id):
 			refuse += 1   # (Second Wind pours without the power solo)
-	_check(refuse == 12, "every machine waits for the cellar lever (%d / 12)" % refuse)
+	_check(refuse == MACHINES, "every machine waits for the cellar lever (%d / %d)" % [refuse, MACHINES])
 	_check(not cru.is_powered(), "the Crucible waits for it too")
 
 	# ---- buy the three doors (each from the side you reach it), walk through the two new ones
@@ -303,7 +305,7 @@ func _run() -> void:
 	for n4: Node in machines:
 		if (n4 as PerkMachine).is_powered():
 			powered += 1
-	_check(powered == 12 and cru.is_powered(), "every machine and the Crucible are powered (%d / 12)" % powered)
+	_check(powered == MACHINES and cru.is_powered(), "every machine and the Crucible are powered (%d / %d)" % [powered, MACHINES])
 
 	# ---- drink at two dealt machines: the one deepest in the cellar and one above ground
 	var picks: Array[PerkMachine] = []

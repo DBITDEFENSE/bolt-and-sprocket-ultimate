@@ -7,16 +7,16 @@
   "world_rect": [
     -39.0,
     -49.0,
-    118.0,
+    184.0,
     132.0
   ],
   "px_per_m": 8.0,
   "image_size": [
-    944,
+    1472,
     1056
   ],
-  "baked_at": "2026-11-23T21:18:23",
-  "poi_signature": "0533d2304e4a5d3ceca9b43a090e0f62",
+  "baked_at": "2026-11-24T17:58:35",
+  "poi_signature": "ff18fdef25a67c155a1abc2244767412",
   "floors": [
     {
       "id": "cellar",
@@ -1147,6 +1147,224 @@
           3.0
         ]
       ]
+    },
+    {
+      "id": "FORSTWEG",
+      "name": "The Forest Track",
+      "y_min": -0.5,
+      "y_max": 3.0,
+      "polys": [
+        [
+          [
+            60.0,
+            36.5
+          ],
+          [
+            84.0,
+            36.5
+          ],
+          [
+            84.0,
+            43.5
+          ],
+          [
+            60.0,
+            43.5
+          ]
+        ],
+        [
+          [
+            70.5,
+            29.5
+          ],
+          [
+            73.5,
+            29.5
+          ],
+          [
+            73.5,
+            36.5
+          ],
+          [
+            70.5,
+            36.5
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -0.5,
+          3.0
+        ],
+        [
+          -0.5,
+          3.0
+        ]
+      ]
+    },
+    {
+      "id": "STELLUNG",
+      "name": "The Launch Site",
+      "y_min": -0.5,
+      "y_max": 3.40000009536743,
+      "polys": [
+        [
+          [
+            84.0,
+            18.0
+          ],
+          [
+            126.0,
+            18.0
+          ],
+          [
+            126.0,
+            62.0
+          ],
+          [
+            84.0,
+            62.0
+          ]
+        ],
+        [
+          [
+            95.5,
+            11.0
+          ],
+          [
+            98.5,
+            11.0
+          ],
+          [
+            98.5,
+            18.0
+          ],
+          [
+            95.5,
+            18.0
+          ]
+        ],
+        [
+          [
+            113.5,
+            11.0
+          ],
+          [
+            116.5,
+            11.0
+          ],
+          [
+            116.5,
+            18.0
+          ],
+          [
+            113.5,
+            18.0
+          ]
+        ],
+        [
+          [
+            126.0,
+            29.5
+          ],
+          [
+            133.0,
+            29.5
+          ],
+          [
+            133.0,
+            32.5
+          ],
+          [
+            126.0,
+            32.5
+          ]
+        ],
+        [
+          [
+            126.0,
+            49.5
+          ],
+          [
+            133.0,
+            49.5
+          ],
+          [
+            133.0,
+            52.5
+          ],
+          [
+            126.0,
+            52.5
+          ]
+        ],
+        [
+          [
+            102.5,
+            62.0
+          ],
+          [
+            105.5,
+            62.0
+          ],
+          [
+            105.5,
+            69.0
+          ],
+          [
+            102.5,
+            69.0
+          ]
+        ],
+        [
+          [
+            77.0,
+            52.5
+          ],
+          [
+            84.0,
+            52.5
+          ],
+          [
+            84.0,
+            55.5
+          ],
+          [
+            77.0,
+            55.5
+          ]
+        ]
+      ],
+      "ys": [
+        [
+          -0.5,
+          3.4
+        ],
+        [
+          -0.5,
+          3.0
+        ],
+        [
+          -0.5,
+          3.0
+        ],
+        [
+          -0.5,
+          3.0
+        ],
+        [
+          -0.5,
+          3.0
+        ],
+        [
+          -0.5,
+          3.0
+        ],
+        [
+          -0.5,
+          3.0
+        ]
+      ]
     }
   ],
   "pois": [
@@ -1177,6 +1395,20 @@
       "price": 250,
       "node_path": "Gameplay/AmmoBox_Grounds",
       "key": "Gameplay/AmmoBox_Grounds"
+    },
+    {
+      "id": "ammo_box:Gameplay/AmmoBox_Rocket",
+      "type": "ammo_box",
+      "pos": [
+        112.2,
+        0.0,
+        21.95
+      ],
+      "floor": 1,
+      "label": "Ammo box",
+      "price": 250,
+      "node_path": "Gameplay/AmmoBox_Rocket",
+      "key": "Gameplay/AmmoBox_Rocket"
     },
     {
       "id": "ammo_box:Gameplay/AmmoBox_Stable",
@@ -1424,6 +1656,25 @@
       }
     },
     {
+      "id": "door:Gameplay/Door_Rocket",
+      "type": "door",
+      "pos": [
+        60.0,
+        0.0,
+        40.0
+      ],
+      "floor": 1,
+      "label": "The Forest Track",
+      "price": 1500,
+      "node_path": "Gameplay/Door_Rocket",
+      "key": "Gameplay/Door_Rocket",
+      "data": {
+        "door_id": "door_rocket",
+        "opens_zone": "FORSTWEG",
+        "requires_power": false
+      }
+    },
+    {
       "id": "door:Gameplay/Door_Stable",
       "type": "door",
       "pos": [
@@ -1617,6 +1868,23 @@
       }
     },
     {
+      "id": "perk:Gameplay/Perk_rocket_man",
+      "type": "perk",
+      "pos": [
+        119.2,
+        0.0,
+        26.2
+      ],
+      "floor": 1,
+      "label": "Rocket Man",
+      "price": 2500,
+      "node_path": "Gameplay/Perk_rocket_man",
+      "key": "Gameplay/Perk_rocket_man",
+      "data": {
+        "perk_id": "rocket_man"
+      }
+    },
+    {
       "id": "perk:Gameplay/Perk_second_wind",
       "type": "perk",
       "pos": [
@@ -1798,6 +2066,23 @@
       "key": "Gameplay/WallBuy_mp40",
       "data": {
         "weapon_id": "mp40"
+      }
+    },
+    {
+      "id": "wall_buy:Gameplay/WallBuy_stg44",
+      "type": "wall_buy",
+      "pos": [
+        90.46,
+        1.5,
+        28.3
+      ],
+      "floor": 1,
+      "label": "STG-44",
+      "price": 1200,
+      "node_path": "Gameplay/WallBuy_stg44",
+      "key": "Gameplay/WallBuy_stg44",
+      "data": {
+        "weapon_id": "stg44"
       }
     },
     {

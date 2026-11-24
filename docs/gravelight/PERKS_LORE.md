@@ -309,6 +309,16 @@ HELVETIA AUTOMATEN AG · BASEL. Formula: R. Fenske. Replacement unit 3 of 8, hel
 
 Nobody came to read it. The drum has been turning since the day it was bolted down, one digit for every sum somebody earned under this roof, and it is the only thing at the Kreuzweg that is exactly on time. Fenske made the lager at Kaltenbrunn; this is the unit the Provider sent south to be ready for a payday that never reached the crossroads.
 
+### perk.rocket_man
+**Plate:** Firing site, not named · the fitter's own unit · Wolff recipe · runs on the site's generator
+**Archive:** Maker's Plate: Rocket Man (the forest clearing)
+
+A rocket the size of a man stood on its fins in the firing-control dugout, painted in the trials' black and white quarters, its sign lit off the generator outside.
+
+HELVETIA AUTOMATEN AG · BASEL. Formula: I. Wolff. One unit, delivered by handcart, December 1944. No service label; a card tucked behind the hatch in a fitter's capitals: "IT SHOULD NOT KILL THE MEN BESIDE IT."
+
+The battery that used this clearing was gone before the squad came, and left its last rocket on the table and its generator running. The machine was found where the fitter left it, against the dugout's east wall, facing the door, so that the first thing anyone coming in from the snow would see was its light.
+
 ### perk.skyhook_sekt
 **Plate:** Nachlieferung · Consignment W.T. · Cabinet 1 of 2 · ELEVATION · J. Maurer
 **Archive:** Maker's Plate: Skyhook Sekt (the late delivery)
@@ -367,6 +377,9 @@ The Helvetia installers fitted the clamps when they brought the cabinets in Octo
 **Plate:** The road patrol's: they clamped it properly, then ran
 
 ---
+
+### chalk.stg44
+**Plate:** The launch site's guard rifle, left in its clamps on the hut wall when the battery pulled out
 
 ## 5. Map 1: Kaltenbrunn (`map01_kaltenbrunn`)
 

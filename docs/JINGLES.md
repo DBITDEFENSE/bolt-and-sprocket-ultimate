@@ -1203,3 +1203,44 @@ The English is the singable adaptation; the German is canon. (*Dran sein* is "to
 >
 > *He over-posted every tally by a fifth for two years and nobody noticed. I have been in this business for six and they notice everything. I would like to have been a bookkeeper.*
 > *— V.*
+
+---
+
+## 17. Rocket Man (`rocket_man`), 2500 (NEW, T-276, Map 0's V2 site)
+
+| | |
+|---|---|
+| **Plan** | **ESCAPE VELOCITY** · `DMS-VP-ESC-13` |
+| **Availability** | Map 0 only: the firing-control dugout of the V2 site in the forest clearing east of the Crossroads (behind the forest track's gate, 1500). Pinned there, not dealt with the other twelve (`perk_layout.json` "fixed"). Runs on the site's own generator, so it pours without the cellar lever. Counts toward the perk cap (6). Effects and numbers in `data/gravelight/perks.json` (`rocket_man`). |
+| **Cost** | 2500 · tier II "Range Safety" 3500 · tier III "Burn-Through" 7000 · tier IV "Brennschluss" 13000 (permanent, like every tier IV) |
+| **Colour** | gunmetal enamel `#5c6670`, the trials' black-and-white quarters painted over it, a flame-orange neon `#ff9a3c`. Cap: the rocket climbing, leaning right, a copper flame under it. |
+
+**Machine.** A rocket in miniature stood on its four fins, 2.1 m, short enough for the dugout's ceiling: a drum in gunmetal enamel with black quarters that swap halfway up (the trial paint of the real thing, no marking of any kind), a cream nose of stacked rings, a scorched ring round its foot where a nozzle would be. The bottle comes out of a hatch in the flat front panel; the lamp globe hangs off a bracket at the shoulder because there was no room over the tip.
+- **Idle:** the generator outside, a faint hiss as if something were venting, a relay ticking now and then.
+- **Signature sound:** three ticks of a countdown, a thump, a cornet climbing.
+- **Bottle cap:** gunmetal with a cream rocket.
+
+**The human: Ignaz Wolff.** A propellant fitter from the Leuna works, forty-one, sent east with a firing battery in the autumn of 1944 because he knew how to fill a tank with liquid oxygen without losing his hands (he had lost two fingernails learning). His war was the forty minutes before a launch: the trailers backed up, the hoses coupled, the vapour pouring off the tank like breath in the cold, then everyone running for the dugout. He had seen where the rockets came from, a mountain in the Harz where men in striped jackets built them underground and died at it, and he never spoke of it except to say that the thing should at least not kill the men standing next to it as well. Asked to make the ESCAPE VELOCITY substrate drinkable, he made it so that what you light cannot hurt you, and so that it throws you clear instead. He left the battery in December with a handcart and a box of the fine print; the dugout at the Kreuzweg clearing is where the box was found.
+
+**Music direction.** A short march in C at 132 BPM: a woodblock counts three, a thump, a cornet climbs the C major chord twice over a timpani roll while a band of noise rises under it like an engine leaving the table; it ends on one last tick.
+
+**Fine-print panel**
+
+`panel.rocket_man`
+> **HELVETIA AUTOMATEN AG · BASEL · CONDITIONS OF USE: ROCKET MAN**
+> **(PLAN ESCAPE VELOCITY · ISSUED 1944 · A FIRING SITE, NOT NAMED)**
+>
+> **§1. Benefit.** **What the Holder lights goes further and hits harder, and does not turn on the Holder.** A charge set off at the Holder's feet lifts the Holder clear of it instead. The Provider calls this "operator retention". The fitter called it "the least it could do".
+>
+> **§2. Range safety.** At the second tier, whatever the Holder's blast leaves standing is left reeling.
+>
+> **§3. Burn-through.** At the third tier, it is also left burning.
+>
+> **§4. Engine cut-off.** At the fourth tier the Plan is permanent, the blasts are half again as heavy, and the launch itself no longer reaches the Holder. The undersigned notes that this is the only clause in the catalogue that protects anyone from the Provider's own equipment.
+>
+> **§5. Side effects.** Holders may count backwards from ten without meaning to and look up when a door slams.
+>
+> **§6. Cancellation.** The battery moved on. The Plan stays where it was poured.
+>
+> *He brought me the box himself, on a handcart, through the snow. He said the men who built the things had no Plan at all. I have not found a clause for that.*
+> *— V.*

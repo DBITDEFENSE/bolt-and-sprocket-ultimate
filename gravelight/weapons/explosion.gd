@@ -8,8 +8,9 @@ const MASK_LOS: int = 1 | (1 << 8)
 ## cfg keys: damage, edge_mult, radius, stagger_radius, self_damage_near, self_near_m, self_damage_far
 static func detonate(ctx: Node3D, pos: Vector3, cfg: Dictionary, by_player: int, weapon_id: StringName = &"frag") -> void:
 	var tree: SceneTree = ctx.get_tree()
-	var radius: float = float(cfg["radius"])
-	var dmg: float = float(cfg["damage"])
+	var mults: Vector2 = PerkManager.explosive_mults(by_player)   # Rocket Man (T-276): the owner's blast, harder and wider
+	var radius: float = float(cfg["radius"]) * mults.y
+	var dmg: float = float(cfg["damage"]) * mults.x
 	var edge: float = float(cfg.get("edge_mult", 0.2))
 	var space: PhysicsDirectSpaceState3D = ctx.get_world_3d().direct_space_state
 	var dir: ZombieDirector = tree.get_first_node_in_group(&"director") as ZombieDirector
@@ -24,6 +25,7 @@ static func detonate(ctx: Node3D, pos: Vector3, cfg: Dictionary, by_player: int,
 				continue
 			var amount: float = dmg * lerpf(1.0, edge, d / radius)
 			z.take_damage(amount, &"torso", weapon_id, by_player, &"explosive")
+			PerkManager.explosive_after(by_player, z)   # Rocket Man II / III
 	if GameState.map_id == &"map01_kaltenbrunn":
 		QuestBell.splash(tree, space, pos, radius, weapon_id, by_player)   # T-181: a blast rings a bell near it
 	# Self damage (Blastproof Bock: immune). In co-op each peer only hurts its own player: explosions happen on
@@ -34,6 +36,7 @@ static func detonate(ctx: Node3D, pos: Vector3, cfg: Dictionary, by_player: int,
 			continue
 		if p.has_explosive_immunity():
 			PerkManager.blast_heal(p, pos, radius)   # Blastproof II: the blast heals instead (T-075)
+			PerkManager.blast_jump(p, pos, by_player)   # Rocket Man: your own blast at your feet throws you clear (T-276)
 			continue
 		var pd: float = pos.distance_to(p.global_position + Vector3.UP)
 		if pd <= float(cfg.get("self_near_m", 3.0)):

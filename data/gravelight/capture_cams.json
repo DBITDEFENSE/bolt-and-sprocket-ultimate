@@ -17420,6 +17420,364 @@
           "note": "the sacking curtains at the bunk room's south window"
         }
       ]
+    },
+
+    "t276": {
+      "_doc": "T-276: Map 0's V2 site east of the grounds (MapRocketGen, RocketLaunch, Rocket Man) at night and at noon (DayCycle.hold_hour), and the launch at several moments. Shot through tools/wsl_godot.sh only; saved under docs/captures/t276/.",
+      "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {
+          "name": "gate_night",
+          "pos": [
+            50.0,
+            0,
+            40.0
+          ],
+          "yaw": -90.0,
+          "pitch": -1.3,
+          "settle_s": 4.0,
+          "note": "T-276: the bought gate in the grounds' east fence, shut, its price, the SPERRGEBIET board, the track beyond",
+          "do": [
+            "callv:DayCycle:hold_hour:0:1"
+          ]
+        },
+        {
+          "name": "track_night",
+          "pos": [
+            61.5,
+            0,
+            40.0
+          ],
+          "yaw": -90.0,
+          "pitch": 1.0,
+          "settle_s": 4.0,
+          "note": "down the forest track from the open gate into the clearing: the ruts, the cable stakes, the lamp, the trees both sides",
+          "do": [
+            "open:Door_Rocket"
+          ]
+        },
+        {
+          "name": "mouth_night",
+          "pos": [
+            88.0,
+            0,
+            41.5
+          ],
+          "yaw": -85.7,
+          "pitch": 16.3,
+          "settle_s": 4.0,
+          "note": "the clearing from its mouth: the V2 on its table, the erector, the nets, the floodlight mast"
+        },
+        {
+          "name": "rocket_night",
+          "pos": [
+            101.0,
+            0,
+            46.5
+          ],
+          "yaw": -47.1,
+          "pitch": 31.6,
+          "settle_s": 4.0,
+          "note": "the rocket close: the test paint, the fins on the table's ring, the erector arm and its clamps, the trailer"
+        },
+        {
+          "name": "trailers_night",
+          "pos": [
+            91.0,
+            0,
+            40.5
+          ],
+          "yaw": -28.4,
+          "pitch": 1.6,
+          "settle_s": 4.0,
+          "note": "the oxidiser trailer under its camouflage net, the guard hut, the hose to the table"
+        },
+        {
+          "name": "bunker_night",
+          "pos": [
+            111.0,
+            0,
+            26.0
+          ],
+          "yaw": -91.9,
+          "pitch": -2.1,
+          "settle_s": 4.0,
+          "note": "the firing-control dugout's doorway, the machine's light inside, the sandbags, the log roof"
+        },
+        {
+          "name": "perk_night",
+          "pos": [
+            116.2,
+            0,
+            26.2
+          ],
+          "yaw": -90.0,
+          "pitch": -8.5,
+          "settle_s": 4.0,
+          "note": "inside the dugout: the Rocket Man machine on the east wall, the desk under the slit, the periscope"
+        },
+        {
+          "name": "overview_night",
+          "pos": [
+            124.0,
+            0,
+            60.0
+          ],
+          "yaw": 43.5,
+          "pitch": 4.9,
+          "settle_s": 4.0,
+          "note": "the site from its south-east corner: the table, the trailers, the dugout, the hut, the forest round"
+        },
+        {
+          "name": "from_grounds_night",
+          "pos": [
+            40.0,
+            0,
+            30.0
+          ],
+          "yaw": -99.5,
+          "pitch": 9.7,
+          "settle_s": 4.0,
+          "note": "from the grounds by the wreck: the rocket's nose over the tree line to the east"
+        },
+        {
+          "name": "gate_noon",
+          "pos": [
+            50.0,
+            0,
+            40.0
+          ],
+          "yaw": -90.0,
+          "pitch": -1.3,
+          "settle_s": 4.0,
+          "note": "T-276: the bought gate in the grounds' east fence, shut, its price, the SPERRGEBIET board, the track beyond",
+          "do": [
+            "callv:DayCycle:hold_hour:12:1"
+          ]
+        },
+        {
+          "name": "track_noon",
+          "pos": [
+            61.5,
+            0,
+            40.0
+          ],
+          "yaw": -90.0,
+          "pitch": 1.0,
+          "settle_s": 4.0,
+          "note": "down the forest track from the open gate into the clearing: the ruts, the cable stakes, the lamp, the trees both sides",
+          "do": [
+            "open:Door_Rocket"
+          ]
+        },
+        {
+          "name": "mouth_noon",
+          "pos": [
+            88.0,
+            0,
+            41.5
+          ],
+          "yaw": -85.7,
+          "pitch": 16.3,
+          "settle_s": 4.0,
+          "note": "the clearing from its mouth: the V2 on its table, the erector, the nets, the floodlight mast"
+        },
+        {
+          "name": "rocket_noon",
+          "pos": [
+            101.0,
+            0,
+            46.5
+          ],
+          "yaw": -47.1,
+          "pitch": 31.6,
+          "settle_s": 4.0,
+          "note": "the rocket close: the test paint, the fins on the table's ring, the erector arm and its clamps, the trailer"
+        },
+        {
+          "name": "trailers_noon",
+          "pos": [
+            91.0,
+            0,
+            40.5
+          ],
+          "yaw": -28.4,
+          "pitch": 1.6,
+          "settle_s": 4.0,
+          "note": "the oxidiser trailer under its camouflage net, the guard hut, the hose to the table"
+        },
+        {
+          "name": "bunker_noon",
+          "pos": [
+            111.0,
+            0,
+            26.0
+          ],
+          "yaw": -91.9,
+          "pitch": -2.1,
+          "settle_s": 4.0,
+          "note": "the firing-control dugout's doorway, the machine's light inside, the sandbags, the log roof"
+        },
+        {
+          "name": "perk_noon",
+          "pos": [
+            116.2,
+            0,
+            26.2
+          ],
+          "yaw": -90.0,
+          "pitch": -8.5,
+          "settle_s": 4.0,
+          "note": "inside the dugout: the Rocket Man machine on the east wall, the desk under the slit, the periscope"
+        },
+        {
+          "name": "overview_noon",
+          "pos": [
+            124.0,
+            0,
+            60.0
+          ],
+          "yaw": 43.5,
+          "pitch": 4.9,
+          "settle_s": 4.0,
+          "note": "the site from its south-east corner: the table, the trailers, the dugout, the hut, the forest round"
+        },
+        {
+          "name": "from_grounds_noon",
+          "pos": [
+            40.0,
+            0,
+            30.0
+          ],
+          "yaw": -99.5,
+          "pitch": 9.7,
+          "settle_s": 4.0,
+          "note": "from the grounds by the wreck: the rocket's nose over the tree line to the east"
+        },
+        {
+          "name": "launch_1_fuel",
+          "pos": [
+            121.0,
+            0,
+            49.5
+          ],
+          "yaw": 53.8,
+          "pitch": 20.1,
+          "settle_s": 0.2,
+          "note": "the launch, 9 s in: vapour off the rocket and the oxidiser trailer, the arm lowering",
+          "do": [
+            "callv:DayCycle:hold_hour:0:1",
+            "call:RocketLaunch:begin_launch:9"
+          ]
+        },
+        {
+          "name": "launch_2_count",
+          "pos": [
+            121.0,
+            0,
+            49.5
+          ],
+          "yaw": 53.8,
+          "pitch": 20.1,
+          "settle_s": 0.2,
+          "note": "24 s in: the count, the arm down on its trailer",
+          "do": [
+            "wait:15"
+          ]
+        },
+        {
+          "name": "launch_3_ignite",
+          "pos": [
+            121.0,
+            0,
+            49.5
+          ],
+          "yaw": 53.8,
+          "pitch": 11.9,
+          "settle_s": 0.2,
+          "note": "33 s in: the preliminary stage under the table",
+          "do": [
+            "wait:8.8"
+          ]
+        },
+        {
+          "name": "launch_4_main",
+          "pos": [
+            121.0,
+            0,
+            49.5
+          ],
+          "yaw": 53.8,
+          "pitch": 11.9,
+          "settle_s": 0.2,
+          "note": "35 s in: the main stage, the smoke and snow thrown out from the table",
+          "do": [
+            "wait:1.6"
+          ]
+        },
+        {
+          "name": "launch_5_lift",
+          "pos": [
+            121.0,
+            0,
+            49.5
+          ],
+          "yaw": 53.8,
+          "pitch": 24.6,
+          "settle_s": 0.2,
+          "note": "38 s in: off the table, rising on its jet",
+          "do": [
+            "wait:2.6"
+          ]
+        },
+        {
+          "name": "launch_6_climb",
+          "pos": [
+            121.0,
+            0,
+            49.5
+          ],
+          "yaw": 53.4,
+          "pitch": 68.5,
+          "settle_s": 0.2,
+          "note": "41 s in: climbing, the trail under it",
+          "do": [
+            "wait:3.0"
+          ]
+        },
+        {
+          "name": "launch_7_high",
+          "pos": [
+            121.0,
+            0,
+            49.5
+          ],
+          "yaw": 36.4,
+          "pitch": 85.2,
+          "settle_s": 0.2,
+          "note": "45 s in: high and pitching east",
+          "do": [
+            "wait:4.0"
+          ]
+        },
+        {
+          "name": "launch_8_after",
+          "pos": [
+            121.0,
+            0,
+            49.5
+          ],
+          "yaw": 53.8,
+          "pitch": -2.2,
+          "settle_s": 0.2,
+          "note": "48 s in: the table empty and burning, the smoke hanging",
+          "do": [
+            "wait:3.0"
+          ]
+        }
+      ]
     }
   }
 }

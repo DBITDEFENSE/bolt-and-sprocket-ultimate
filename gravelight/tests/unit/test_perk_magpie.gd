@@ -108,6 +108,6 @@ func test_salvage_mult() -> void:
 
 func test_cap_of_six_still_holds_with_twelve_tonics() -> void:
 	var perks: Dictionary = GLData.table("perks")["perks"]
-	assert_eq(perks.size(), 12)
+	assert_eq(perks.size(), 13)   # (T-276: Rocket Man the thirteenth)
 	assert_eq(PerkManager.data_cap(false), 6)
 	assert_eq(PerkCap.GLYPHS.size(), perks.size(), "every tonic draws a glyph")

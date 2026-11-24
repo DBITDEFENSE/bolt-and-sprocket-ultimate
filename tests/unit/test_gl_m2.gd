@@ -5,7 +5,7 @@ extends GutTest
 const MAP00: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 const PERKS: PackedStringArray = ["ironhide_stout", "second_wind", "trigger_tonic", "twin_barrel",
 	"marathon_malt", "hawkeye_brandy", "packmule_porter", "blastproof_bock", "overclock_cordial", "ledger_lager",
-	"skyhook_sekt", "magpie_mead"]   # nine since T-034, ten with Ledger Lager (T-141), twelve with the late-delivery bay (T-179)
+	"skyhook_sekt", "magpie_mead", "rocket_man"]   # nine since T-034, ten with Ledger Lager (T-141), twelve with the late-delivery bay (T-179), thirteen with Rocket Man (T-276)
 
 var _saved_path: String = ""
 
@@ -116,7 +116,7 @@ func test_map00_has_the_cellar() -> void:
 	perks.sort()
 	var want: Array = Array(PERKS)
 	want.sort()
-	assert_eq(perks, want, "all 12 machines in the cellar (the eight, Overclock, Ledger Lager, the bay's Skyhook and Magpie)")
+	assert_eq(perks, want, "all 13 machines on the map (the eight, Overclock, Ledger Lager, the bay's Skyhook and Magpie, Rocket Man at the V2 site)")
 	assert_not_null(door, "Door 3: the cellar")
 	if door != null:
 		assert_eq(int(door.get("cost")), 1500)

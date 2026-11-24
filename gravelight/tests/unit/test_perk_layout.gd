@@ -111,7 +111,7 @@ func test_every_spot_keeps_its_floor_out_of_the_navmesh_and_its_front_on_it() ->
 
 func test_the_scene_holds_the_seed_zero_deal() -> void:
 	var deal: Dictionary = PerkShuffle.assign(0, spots, perks, rules)
-	assert_eq(deal.size(), 12, "every tonic is dealt")
+	assert_eq(deal.size(), 13, "every tonic is dealt")
 	for pk: Dictionary in perks:
 		var m: Node3D = map.get_node_or_null("Gameplay/Perk_" + str(pk["id"])) as Node3D
 		var s: Node3D = map.get_node_or_null("Gameplay/PerkSpot_" + str(deal.get(pk["id"], "?"))) as Node3D
@@ -139,7 +139,7 @@ func test_the_same_seed_deals_the_same_and_seeds_differ() -> void:
 	assert_gt(distinct.size(), 35, "forty seeds give (nearly) forty layouts: %d" % distinct.size())
 	assert_ne(PerkShuffle.assign(1, spots, perks, rules), PerkShuffle.assign(2, spots, perks, rules), "seeds 1 and 2 differ")
 	# a seed as big as randi() gives (no overflow in the mix)
-	assert_eq(PerkShuffle.assign(4294967295, spots, perks, rules).size(), 12)
+	assert_eq(PerkShuffle.assign(4294967295, spots, perks, rules).size(), 13)
 
 
 func test_the_rules_hold_over_many_seeds() -> void:
@@ -152,7 +152,7 @@ func test_the_rules_hold_over_many_seeds() -> void:
 	var bad: PackedStringArray = []
 	for seed_v: int in 400:
 		var deal: Dictionary = PerkShuffle.assign(seed_v * 7919 + 13, spots, perks, rules)
-		if deal.size() != 12 or not PerkShuffle.valid(deal, spots, perks, rules):
+		if deal.size() != 13 or not PerkShuffle.valid(deal, spots, perks, rules):
 			bad.append("seed %d: not a valid deal" % seed_v)
 			continue
 		var zone_n: Dictionary = {}
@@ -190,13 +190,13 @@ func test_the_rules_data() -> void:
 	for id2: String in rules["maps"]["map00"]["perks"]:
 		assert_true(table.has(id2), "%s is a tonic" % id2)
 		assert_not_null(map.get_node_or_null("Gameplay/Perk_" + id2), "%s has its machine on Map 0" % id2)
-	assert_eq((rules["maps"]["map00"]["perks"] as Array).size(), 12)
+	assert_eq((rules["maps"]["map00"]["perks"] as Array).size(), 13)
 	assert_true(bool(table["second_wind"].get("solo_no_power", false)), "Second Wind pours without the power solo: why it never stands in the start room")
 	# an impossible rule set still deals every machine (the rules are dropped rather than a tonic left out)
 	var tight: Dictionary = rules.duplicate(true)
 	tight["max_per_zone"] = 1
 	tight["outdoor_shapes"] = []
-	assert_eq(PerkShuffle.assign(5, spots, perks, tight).size(), 12, "max_per_zone 1 and nothing outdoors: still twelve")
+	assert_eq(PerkShuffle.assign(5, spots, perks, tight).size(), 13, "max_per_zone 1 and nothing outdoors: still thirteen")
 
 
 func test_the_layout_moves_the_machines_and_shows_the_fillers() -> void:

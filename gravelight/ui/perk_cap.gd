@@ -38,7 +38,7 @@ const COPPER: Color = Color(0.86, 0.52, 0.22)
 const GOLD: Color = Color(1.0, 0.82, 0.3)
 const BRASS: Color = Color(0.78, 0.62, 0.26)
 const GLYPHS: PackedStringArray = ["ironhide_stout", "second_wind", "trigger_tonic", "twin_barrel", "marathon_malt",
-	"hawkeye_brandy", "packmule_porter", "blastproof_bock", "overclock_cordial", "skyhook_sekt", "magpie_mead", "ledger_lager"]
+	"hawkeye_brandy", "packmule_porter", "blastproof_bock", "overclock_cordial", "skyhook_sekt", "magpie_mead", "ledger_lager", "rocket_man"]
 ## T-183: the cap's enamel and the glyph's tone per tonic ("cream", "ink" or "red": the silhouette's colour; the other
 ## tone is the second colour of the two-tone glyphs). A tonic missing here uses perks.json "color" and picks its tone
 ## by luminance.
@@ -55,6 +55,7 @@ const ENAMEL: Dictionary = {
 	"skyhook_sekt": ["#dc8ba3", "ink"],
 	"magpie_mead": ["#262833", "cream"],
 	"ledger_lager": ["#ece2c4", "red"],
+	"rocket_man": ["#5c6670", "cream"],   # T-276: a gunmetal grey, the rocket in cream with its black quarters
 }
 
 static var _fallback_font: SystemFont = null
@@ -289,6 +290,8 @@ static func _glyph(ci: CanvasItem, c: Vector2, g: float, perk: StringName, ink: 
 			_magpie(ci, c, g, ink, ink2, face, gold, detail)
 		&"ledger_lager":
 			_tally_marks(ci, c, g, ink, ink2, detail)
+		&"rocket_man":
+			_rocket(ci, c, g, ink, face, copper, detail)
 
 
 static func _pts(c: Vector2, g: float, unit: Array) -> PackedVector2Array:
@@ -512,6 +515,31 @@ static func _magpie(ci: CanvasItem, c: Vector2, g: float, ink: Color, ink2: Colo
 		var w: float = maxf(1.0, g * 0.07)
 		ci.draw_line(c + Vector2(0.04, 0.36) * g, c + Vector2(0.1, 0.66) * g, ink, w)
 		ci.draw_line(c + Vector2(-0.3, 0.66) * g, c + Vector2(0.5, 0.66) * g, ink, w)
+
+
+## Rocket Man (T-276): the V2 climbing, leaning a little to the right: a cream body with an ogive nose, two fins, the
+## trials' black quarters on it (cut in the cap colour), and the copper flame under it. Convex pieces only.
+static func _rocket(ci: CanvasItem, c: Vector2, g: float, ink: Color, face: Color, copper: Color, detail: bool) -> void:
+	var rot: float = deg_to_rad(18.0)
+	var tf: Callable = func(p: Vector2) -> Vector2: return c + p.rotated(rot) * g
+	var poly: Callable = func(pts: Array, col: Color) -> void:
+		var out: PackedVector2Array = []
+		for p: Vector2 in pts:
+			out.append(tf.call(p))
+		ci.draw_colored_polygon(out, col)
+	# the flame (two tongues) under the tail
+	poly.call([Vector2(-0.16, 0.5), Vector2(0.16, 0.5), Vector2(0.0, 0.98)], copper)
+	poly.call([Vector2(-0.09, 0.5), Vector2(0.09, 0.5), Vector2(0.0, 0.8)], copper.lightened(0.45))
+	# the fins
+	poly.call([Vector2(-0.2, 0.14), Vector2(-0.2, 0.52), Vector2(-0.44, 0.6), Vector2(-0.44, 0.38)], ink)
+	poly.call([Vector2(0.2, 0.14), Vector2(0.2, 0.52), Vector2(0.44, 0.6), Vector2(0.44, 0.38)], ink)
+	# the body and the nose
+	poly.call([Vector2(-0.2, -0.36), Vector2(0.2, -0.36), Vector2(0.2, 0.52), Vector2(-0.2, 0.52)], ink)
+	poly.call([Vector2(-0.2, -0.36), Vector2(-0.16, -0.62), Vector2(-0.07, -0.8), Vector2(0.0, -0.86), Vector2(0.07, -0.8), Vector2(0.16, -0.62), Vector2(0.2, -0.36)], ink)
+	if detail:
+		# the quarters: the left half dark on the lower band, the right half on the upper
+		poly.call([Vector2(-0.2, 0.08), Vector2(0.0, 0.08), Vector2(0.0, 0.5), Vector2(-0.2, 0.5)], face)
+		poly.call([Vector2(0.0, -0.34), Vector2(0.2, -0.34), Vector2(0.2, 0.08), Vector2(0.0, 0.08)], face)
 
 
 ## Ledger Lager (T-141): the tally mark, four strokes and a fifth across, over the register's ruled line.

@@ -22,6 +22,11 @@ static var crest_fn: Callable = Callable()
 ## The collision slab (gen_map00 build_geometry "Ground*"): the terrain starts at its edges at height 0.
 const SLAB_MIN: Vector2 = Vector2(-45.0, -40.0)
 const SLAB_MAX: Vector2 = Vector2(70.0, 75.0)
+## T-276: more flat ground beside the slab (Map 0's rocket site east of the grounds, MapRocketGen.ANNEX): the terrain
+## has a hole there too and starts at height 0 round its edges. On the 5 m lattice. Cleared by use_profile (another
+## map's landscape keeps its own ground), put back by reset_profile.
+const DEFAULT_ANNEX: Array[Rect2] = [Rect2(70.0, 10.0, 65.0, 60.0)]
+static var ANNEX: Array[Rect2] = DEFAULT_ANNEX
 const CELL: float = 5.0
 ## Lattice origin, aligned so the slab edges fall on grid lines.
 const GRID_MIN: Vector2 = Vector2(-290.0, -280.0)
@@ -54,12 +59,14 @@ static func use_profile(center: Vector2, h: Callable, crest: Callable) -> void:
 	CENTER = center
 	height_fn = h
 	crest_fn = crest
+	ANNEX = []
 
 
 static func reset_profile() -> void:
 	CENTER = DEFAULT_CENTER
 	height_fn = Callable()
 	crest_fn = Callable()
+	ANNEX = DEFAULT_ANNEX
 
 
 static func _noises() -> void:
@@ -95,7 +102,22 @@ static func _u(n: FastNoiseLite, x: float, z: float) -> float:
 static func slab_distance(x: float, z: float) -> float:
 	var dx: float = maxf(maxf(SLAB_MIN.x - x, 0.0), x - SLAB_MAX.x)
 	var dz: float = maxf(maxf(SLAB_MIN.y - z, 0.0), z - SLAB_MAX.y)
-	return sqrt(dx * dx + dz * dz)
+	var best: float = sqrt(dx * dx + dz * dz)
+	for r: Rect2 in ANNEX:
+		var ax: float = maxf(maxf(r.position.x - x, 0.0), x - r.end.x)
+		var az: float = maxf(maxf(r.position.y - z, 0.0), z - r.end.y)
+		best = minf(best, sqrt(ax * ax + az * az))
+	return best
+
+
+## True when (x, z) is on the slab or an annex (the terrain grid drops its quads there).
+static func on_flat(x: float, z: float) -> bool:
+	if x > SLAB_MIN.x and x < SLAB_MAX.x and z > SLAB_MIN.y and z < SLAB_MAX.y:
+		return true
+	for r: Rect2 in ANNEX:
+		if x > r.position.x and x < r.end.x and z > r.position.y and z < r.end.y:
+			return true
+	return false
 
 
 static func radius(x: float, z: float) -> float:
@@ -253,7 +275,7 @@ static func build_grid() -> ArrayMesh:
 				var a: Vector3 = pos[j * n + i]
 				var c: Vector3 = pos[(j + 1) * n + i + 1]
 				var mid: Vector3 = (a + c) * 0.5
-				if mid.x > SLAB_MIN.x and mid.x < SLAB_MAX.x and mid.z > SLAB_MIN.y and mid.z < SLAB_MAX.y:
+				if on_flat(mid.x, mid.z):
 					continue
 				var r: float = radius(mid.x, mid.z)
 				if r > GRID_R:

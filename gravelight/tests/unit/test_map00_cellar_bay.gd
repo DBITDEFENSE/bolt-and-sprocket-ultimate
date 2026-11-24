@@ -63,7 +63,7 @@ func _zone_at(p: Vector3) -> String:
 
 
 func test_the_twelve_machines_are_on_the_map() -> void:
-	assert_eq(_machines().size(), 12, "the twelve machines: the ten and the two Fernflug tonics")
+	assert_eq(_machines().size(), 13, "the thirteen machines: the ten, the two Fernflug tonics and Rocket Man (T-276)")
 	for m: Node3D in _machines():
 		assert_true(m.get_script() == preload("res://gravelight/world/perk_machine.gd"), "%s is a PerkMachine" % m.name)
 

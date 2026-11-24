@@ -6,10 +6,12 @@
   "not_in_start": ["second_wind"],
   "near_start": ["second_wind"],
   "fixed_seed": null,
+  "fixed": {"rocket_man": "launch_bunker"},
+  "_fixed_doc": "T-276: a tonic pinned to its own spot (PerkShuffle.assign): Rocket Man always stands in the V2 site's firing-control dugout on Map 0. The rest are dealt as without it, so every seed's deal of the other twelve is what it was.",
   "maps": {
     "map00": {
       "perks": ["ironhide_stout", "second_wind", "trigger_tonic", "twin_barrel", "marathon_malt", "hawkeye_brandy", "ledger_lager", "packmule_porter",
-        "blastproof_bock", "overclock_cordial", "skyhook_sekt", "magpie_mead"]
+        "blastproof_bock", "overclock_cordial", "skyhook_sekt", "magpie_mead", "rocket_man"]
     },
     "map02": {
       "_doc": "T-273: Totenhafen's seven on its twelve spots (gen_map02 PERK_SPOTS): three in the cannery, three in the workshop, two in the signal tower, three in the pen hall, one on the quay",

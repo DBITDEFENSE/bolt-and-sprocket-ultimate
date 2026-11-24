@@ -12,6 +12,10 @@ extends RefCounted
 ##   start_max_cost    a spot in the start room takes only tonics up to this price
 ##   not_in_start      tonics that never stand in the start room (Second Wind pours without the power solo)
 ##   near_start        tonics that only stand on a spot one bought door from the start (so a solo player gets to it)
+##   fixed             {perk id: spot id}: a tonic that always stands on its own spot (T-276: Rocket Man in the V2
+##                     site's dugout). Placed first and taken out of the deal with its spot, so the others are dealt
+##                     exactly as they were without it (the same seed gives the same places). Ignored when the spot
+##                     or the perk is not in this map's lists.
 
 const RULES_PATH: String = "res://data/gravelight/perk_layout.json"
 
@@ -52,6 +56,27 @@ static func _shuffled(a: Array, rng: RandomNumberGenerator) -> Array:
 ## tonics are placed first, each on a random spot it may take, backing up when a later one is left without); when
 ## they cannot, max_per_zone is dropped, and then the other rules, rather than leave a machine out of the map.
 static func assign(seed_value: int, spots: Array, perks: Array, rules: Dictionary) -> Dictionary:
+	var fixed: Dictionary = rules.get("fixed", {}) if rules.get("fixed", {}) is Dictionary else {}
+	if fixed.is_empty():
+		return _assign_free(seed_value, spots, perks, rules)
+	var spot_ids: Dictionary = {}
+	for s: Dictionary in spots:
+		spot_ids[str(s["id"])] = true
+	var pre: Dictionary = {}
+	for p: Dictionary in perks:
+		var want: String = str(fixed.get(str(p["id"]), ""))
+		if want != "" and spot_ids.has(want) and not pre.values().has(want):
+			pre[str(p["id"])] = want
+	var rest_spots: Array = spots.filter(func(s: Dictionary) -> bool: return not pre.values().has(str(s["id"])))
+	var rest_perks: Array = perks.filter(func(p: Dictionary) -> bool: return not pre.has(str(p["id"])))
+	var out: Dictionary = _assign_free(seed_value, rest_spots, rest_perks, rules)
+	if out.is_empty() and not rest_perks.is_empty():
+		return {}
+	out.merge(pre)
+	return out
+
+
+static func _assign_free(seed_value: int, spots: Array, perks: Array, rules: Dictionary) -> Dictionary:
 	var sp: Array = spots.duplicate()
 	sp.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return str(a["id"]) < str(b["id"]))
 	var pk: Array = perks.duplicate()

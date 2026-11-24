@@ -34,6 +34,9 @@ extends Node
 ##   shot_mult(pid, aimed), round_saved(pid, w), on_bullet_kill(pid, w, head), reload_finished(pid),
 ##   ammo_price_mult(pid), grenade_bonus(pid), blast_heal(player, pos, radius), slide_shock_damage(pid, base),
 ##   slide_hit(player, zombie, dmg). stat(pid, "move_speed_mult") includes the revive / dodge speed boosts.
+## ROCKET MAN (T-276, the V2 site's tonic): explosive_mults(pid) -> Vector2(damage, radius) for a player's own blast,
+##   explosive_after(pid, zombie) (II stagger / III ignite what the blast leaves standing), blast_jump(player, pos,
+##   by_player) -> bool (their own blast at their feet throws them clear), v2_immune(pid). Pure: blast_jump_velocity.
 
 ## Emitted when the solo Second Wind machine has used its last self-revive and should leave.
 signal second_wind_retired
@@ -1145,6 +1148,59 @@ func blast_heal(p: Player, pos: Vector3, radius: float) -> void:
 		return
 	p.hp = minf(p.max_hp, p.hp + heal)
 	_proc(p.player_id, &"blastproof_bock", &"blast_heal")
+
+
+## Rocket Man (T-276): the multipliers on a player's own blast: Vector2(damage, radius); (1, 1) for anyone else and for
+## a blast nobody owns (by_player <= 0).
+func explosive_mults(pid: int) -> Vector2:
+	if pid <= 0:
+		return Vector2.ONE
+	return Vector2(maxf(0.0, float(stat(pid, "explosive_damage_mult", 1.0))), maxf(0.1, float(stat(pid, "explosive_radius_mult", 1.0))))
+
+
+## Rocket Man II / III: a zombie the owner's blast hit and left standing reels (II) and burns (III). Not bosses.
+func explosive_after(pid: int, z: Zombie) -> void:
+	if pid <= 0 or z == null or not is_instance_valid(z) or not z.is_active() or OVERCLOCK_BOSSES.has(String(z.enemy_id)):
+		return
+	if bool(stat(pid, "explosive_stagger", false)):
+		z.force_stagger()
+	var frac: float = float(stat(pid, "explosive_ignite_frac", 0.0))
+	if frac > 0.0:
+		z.ignite(frac * float(RoundManager.current_health()), 3.0, pid)
+
+
+## The velocity a blast at `pos` gives a body standing at `feet` (Rocket Man's blast jump): `push` m/s away from it
+## along the ground (straight `fallback` when the blast is under them), `up` m/s up. Zero past `reach` m.
+static func blast_jump_velocity(pos: Vector3, feet: Vector3, push: float, up: float, reach: float, fallback: Vector3) -> Vector3:
+	if pos.distance_to(feet + Vector3.UP) > reach:
+		return Vector3.ZERO
+	var off: Vector3 = feet - pos
+	off.y = 0.0
+	var dir: Vector3 = off.normalized() if off.length() > 0.25 else Vector3(fallback.x, 0.0, fallback.z).normalized()
+	return dir * push + Vector3.UP * up
+
+
+## Rocket Man: the player's OWN blast within blast_jump_m of them, while they stand on the ground, throws them clear
+## (the horizontal part through the knockback lunge, the vertical straight into their velocity). True when it did.
+func blast_jump(p: Player, pos: Vector3, by_player: int) -> bool:
+	if p == null or by_player != p.player_id or p.downed or not p.is_on_floor():
+		return false
+	var push: float = float(stat(p.player_id, "blast_jump", 0.0))
+	if push <= 0.0:
+		return false
+	var v: Vector3 = blast_jump_velocity(pos, p.global_position, push, float(stat(p.player_id, "blast_jump_up", 5.5)),
+		float(stat(p.player_id, "blast_jump_m", 3.5)), -p.global_transform.basis.z)
+	if v == Vector3.ZERO:
+		return false
+	p.apply_knockback(Vector3(v.x, 0.0, v.z))
+	p.velocity.y = maxf(p.velocity.y, v.y)
+	_proc(p.player_id, &"rocket_man", &"blast_jump")
+	return true
+
+
+## Rocket Man IV: the V2's launch cannot hurt this player.
+func v2_immune(pid: int) -> bool:
+	return bool(stat(pid, "v2_immune", false))
 
 
 ## Blastproof III: the slide shockwave's damage grows with the round (at least slide_shockwave_round_mult x a

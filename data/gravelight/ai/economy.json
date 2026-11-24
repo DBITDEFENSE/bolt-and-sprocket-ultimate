@@ -11,7 +11,8 @@
     "overclock_cordial",
     "packmule_porter",
     "magpie_mead",
-    "skyhook_sekt"
+    "skyhook_sekt",
+    "rocket_man"
   ],
   "weapon_perk": {
     "trigger_tonic": [
@@ -49,7 +50,8 @@
       "blastproof_bock",
       "packmule_porter",
       "magpie_mead",
-      "skyhook_sekt"
+      "skyhook_sekt",
+      "rocket_man"
     ]
   },
   "reserve": {
