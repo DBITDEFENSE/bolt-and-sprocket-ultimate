@@ -31,6 +31,15 @@ extends Node
 ## before of ZombieBody.warm_pieces, docs/perf/movement_perf_2026-11.md). `--seed=N` seeds the global random
 ## number generator before the map loads (a `--live` round then starts from the same rolls; it still plays out
 ## differently run to run, the loader threads' timing is not seeded).
+## T-265 (the scripts' cost per tick): `--tank` parks the round-30 Sherman and lets it cover the yard (ShermanEvent
+## .force_assist: the machine gun and the 75 mm on the dead it can see; a map without the event ignores it; with
+## `--live --round=30` the round's own arrival and assault run instead and the flag is not needed), `--hour=H`
+## holds the day at that hour (DayCycle.hold_hour: 12 is noon), `--boss` makes the set round a Foreman round (with
+## `--live`), `--corpses` kills and respawns four of the kept 24 every second (bodies, ragdolls, gore and the
+## director's refill all the time: what a late round's killing costs, at a fixed rate). `--probe-all` takes the
+## probe's walk from the tree's root, not the map (the autoloads and the HUD layers outside the map count too), and
+## the hitch report then splits the frame's time outside the scripts into the gap after the physics scripts (the
+## physics and navigation servers' step) and the gap after the process scripts (animation, skeletons, audio, draw).
 
 const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 const SPIKE_MS: float = 40.0
@@ -53,6 +62,17 @@ var _live: bool = "--live" in OS.get_cmdline_user_args()
 var _companions: bool = not ("--no-companions" in OS.get_cmdline_user_args())
 var _round: int = 15   # `--round=N`: the round the scene is set to (what grows with the round)
 var _t_end: float = 24.0
+var _hour: float = -1.0   # `--hour=H` (T-265): the day held there
+var _kill_t: float = 0.0  # `--corpses`: the time to the next four kills
+var _probe_all: bool = "--probe-all" in OS.get_cmdline_user_args()
+## --probe-all: the end of the last physics / process script pass, and the gaps to the next pass (microseconds)
+var _phys_end: int = 0
+var _proc_end: int = 0
+var _gap_phys: PackedInt32Array = []
+var _gap_proc: PackedInt32Array = []
+var _gap_worst: Array = []   # [us, text]: the longest gaps after the physics scripts, with what the servers did
+var _nav_iter: int = -1      # the navigation map's iteration (it counts the map's rebuilds)
+var _nav_syncs: int = 0
 ## --hitch: wall microseconds per frame, the scripts' microseconds per physics tick, the worst ticks [us, text]
 var _wall: PackedInt32Array = []
 var _wall_prev: int = 0
@@ -110,6 +130,8 @@ func _ready() -> void:
 			_round = maxi(1, int(a.substr(8)))
 		elif a.begins_with("--secs="):
 			_t_end = 9.0 + maxf(1.0, float(a.substr(7)))
+		elif a.begins_with("--hour="):
+			_hour = float(a.substr(7))
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	BotProf.on = _hitch
 	BotProf.reset()
@@ -167,6 +189,10 @@ func _process(delta: float) -> void:
 			if _t > 3.0 and (_map.squad != null or GameState.bot_count == 0):
 				_phase = 1
 				RoundManager.debug_set_round(_round)
+				if "--boss" in OS.get_cmdline_user_args():
+					RoundManager.next_boss = _round
+				if _hour >= 0.0 and DayCycle.of(_map) != null:
+					DayCycle.of(_map).hold_hour(_hour)
 				if _companions:
 					GLConsole.call("run", "jakub join")
 					if _hitch:   # T-237: the map's own companion too (the owner's squad: 3 bots + Jakub + one more)
@@ -179,6 +205,8 @@ func _process(delta: float) -> void:
 				if not _live:
 					RoundManager.stop()
 					(_map.get_node("ZombieDirector") as ZombieDirector).debug_spawn(24)
+				if "--tank" in OS.get_cmdline_user_args() and _map.get_node_or_null(^"ShermanEvent") is ShermanEvent:
+					(_map.get_node(^"ShermanEvent") as ShermanEvent).force_assist()
 				if _pos.size() >= 3:
 					var fs: Node = get_tree().get_first_node_in_group(&"flight_sky")
 					if fs != null and fs.has_method("calm"):
@@ -205,6 +233,16 @@ func _process(delta: float) -> void:
 				if _hitch:   # T-237: the squad stays up too (24 zombies nobody can kill put every bot down in 15 s)
 					for bp: Node in get_tree().get_nodes_in_group(&"bots"):
 						(bp as Player).bot_damage_mult = 0.0
+				if "--corpses" in OS.get_cmdline_user_args() and _t > 9.0:
+					_kill_t -= delta
+					if _kill_t <= 0.0:
+						_kill_t = 1.0
+						var live_z: Array = _map.director.active_zombies()
+						for ki: int in mini(4, live_z.size()):
+							var kz: Zombie = live_z[ki]
+							kz.hp = 1.0
+							kz.take_damage(50.0, [&"head", &"torso", &"arms", &"legs"][ki], &"", _map.player.player_id, &"explosive" if ki == 1 else &"bullet")
+						(_map.get_node("ZombieDirector") as ZombieDirector).debug_spawn(mini(4, live_z.size()))
 			if _probe:
 				_probe_scan_t -= delta
 				if _probe_scan_t <= 0.0:
@@ -380,13 +418,13 @@ func _report_breakdown() -> void:
 # ================================================================== --probe: per-script cost
 
 func _probe_scan() -> void:
-	var stack: Array[Node] = [_map]
+	var stack: Array[Node] = [get_tree().root if _probe_all else _map]
 	while not stack.is_empty():
 		var n: Node = stack.pop_back()
 		for c: Node in n.get_children():
 			stack.append(c)
 		var s: Script = n.get_script() as Script
-		if s == null:
+		if s == null or n == self or n.get_parent() == self:
 			continue
 		var has_p: bool = n.has_method(&"_process") and n.is_processing()
 		var has_pp: bool = n.has_method(&"_physics_process") and n.is_physics_processing()
@@ -419,6 +457,19 @@ func probe_tick(physics: bool, delta: float) -> void:
 	var tick_us: int = 0
 	var tick_parts: Dictionary = {}
 	var keep: bool = _hitch and counting
+	if keep and _probe_all:
+		var g0: int = Time.get_ticks_usec()
+		if physics and _proc_end != 0:
+			_gap_proc.append(g0 - _proc_end)
+		elif not physics and _phys_end != 0:
+			_gap_phys.append(g0 - _phys_end)
+			var it: int = NavigationServer3D.map_get_iteration_id(get_viewport().world_3d.navigation_map)
+			var synced: bool = _nav_iter >= 0 and it != _nav_iter
+			if synced:
+				_nav_syncs += 1
+			_nav_iter = it
+			if g0 - _phys_end > 4000 and _gap_worst.size() < 400:
+				_gap_worst.append([g0 - _phys_end, "t=%.2f %.2f ms%s" % [_t, (g0 - _phys_end) / 1000.0, " (the navigation map was rebuilt)" if synced else ""]])
 	var b_us: PackedFloat64Array = []
 	var b_th: PackedInt32Array = []
 	if keep and physics:
@@ -461,6 +512,10 @@ func probe_tick(physics: bool, delta: float) -> void:
 				tick_parts[key] = el
 	if not keep:
 		return
+	if physics:
+		_phys_end = Time.get_ticks_usec()
+	else:
+		_proc_end = Time.get_ticks_usec()
 	if not physics:
 		_proc_tot.append(tick_us)
 		return
@@ -587,6 +642,19 @@ func _report_hitch() -> void:
 	print("[hitch] noise floor (a fixed ~0.1 ms loop per tick) ms: mean %.3f p50 %.3f p95 %.3f p99 %.3f worst %.3f | over 1 ms %d of %d" % [cd[0], cd[1], cd[2], cd[3], cd[4], over(_calib, 1.0), _calib.size()])
 	var pd: Array = dist(_proc_tot)
 	print("[hitch] scripts per process frame ms: mean %.2f p50 %.2f p95 %.2f p99 %.2f worst %.2f" % [pd[0], pd[1], pd[2], pd[3], pd[4]])
+	if _probe_all:
+		var gp: Array = dist(_gap_phys)
+		var gq: Array = dist(_gap_proc)
+		print("[hitch] outside the scripts ms: after the physics scripts (physics, navigation servers) mean %.2f p50 %.2f p99 %.2f worst %.2f | after the process scripts (animation, skeletons, audio, draw, the tool) mean %.2f p50 %.2f p99 %.2f worst %.2f" % [
+			gp[0], gp[1], gp[3], gp[4], gq[0], gq[1], gq[3], gq[4]])
+		var with_sync: int = 0
+		for e: Array in _gap_worst:
+			if str(e[1]).ends_with(")"):
+				with_sync += 1
+		print("[hitch] navigation map rebuilds in the window: %d; gaps after the physics scripts over 4 ms: %d, of them with a rebuild %d" % [_nav_syncs, _gap_worst.size(), with_sync])
+		_gap_worst.sort_custom(func(a: Array, b: Array) -> bool: return int(a[0]) > int(b[0]))
+		for e: Array in _gap_worst.slice(0, 8):
+			print("[hitch]   gap " + str(e[1]))
 	var rows: Array = []
 	for key: String in _groups:
 		var g: Dictionary = _groups[key]
