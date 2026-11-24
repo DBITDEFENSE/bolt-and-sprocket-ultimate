@@ -251,3 +251,20 @@ func _mats(n: Node) -> PackedStringArray:
 			if mi.material_override == Mats.get_mat(k):
 				out.append(k)
 	return out
+
+
+func test_mondlichts_supply_capsule_follows_the_shower() -> void:
+	var cc: Dictionary = (_json("map04d").get("meteor_shower", {}) as Dictionary).get("capsule", {})
+	assert_false(cc.is_empty(), "the shower's row has a capsule")
+	assert_false(cc.has("round") or cc.has("first_round"), "keyed to the shower's end, never to a round number")
+	var ms: MeteorShower = MeteorShower.new()
+	add_child_autofree(ms)
+	await get_tree().process_frame
+	ms.capsule_incoming()
+	await get_tree().create_timer(float(cc.get("tele_s", 2.4)) + 0.4).timeout
+	assert_eq(ms.capsules, 1, "it came down")
+	var tins: Array[Node] = ms.find_children("CapsuleAmmo_1_*", "", true, false)
+	assert_eq(tins.size(), int(cc.get("ammo_out", 3)), "its tins")
+	for t: Node in tins:
+		assert_true(t is AmmoDrop, "%s is an AmmoDrop (walk over it)" % t.name)
+	assert_not_null(ms.find_child("SupplyCapsule_1", true, false), "the capsule lies in its crater")

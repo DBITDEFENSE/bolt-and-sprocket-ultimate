@@ -21,6 +21,8 @@ var _n: int = 0
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _pending: Array = []             # [time left, pos] (host)
 var _marks: Array = []               # [MeshInstance3D, seconds left]
+## T-274: supply capsules that came down after a shower (the smoke and the tests read it)
+var capsules: int = 0
 
 
 ## True when match round `r` is a shower round.
@@ -48,7 +50,7 @@ func _ready() -> void:
 	GLBus.round_started.connect(_on_round_started)
 	var con: Node = get_node_or_null("/root/GLConsole")
 	if con != null and con.has_method("register"):
-		con.call("register", "meteors", _cmd, "meteors now|status: Mondlicht's meteor shower (T-158)")
+		con.call("register", "meteors", _cmd, "meteors now|capsule|status: Mondlicht's meteor shower (T-158), its supply capsule (T-274)")
 
 
 func _on_round_started(r: int, special: bool) -> void:
@@ -92,6 +94,97 @@ func _end() -> void:
 	GameState.set_flag(&"meteor_shower", false)
 	GLVO.play(StringName(str(cfg.get("vo_end", "OPR_M4D_METEOR_END_01"))))
 	print("[m4d] meteor shower ends: %d impacts, %d kills" % [impacts, kills])
+	if Net.is_authority() and cfg.has("capsule"):   # T-274: the shower's tail brings a supply capsule down
+		get_tree().create_timer(float((cfg["capsule"] as Dictionary).get("after_s", 4.0))).timeout.connect(capsule_incoming)
+
+
+# ---------------------------------------------------------------- T-274: the supply capsule
+
+## Host: a supply capsule comes down on the yard's open ground (`capsule.land_box`): the ring and the streak like a
+## strike's (`capsule.tele_s`), then it lands: the dead under it die (nobody living is hurt), the capsule lies in its
+## crater with a beacon blinking, and `capsule.ammo_out` ammunition tins (AmmoDrop, walk over: the gun in your hands
+## refilled) lie round it. Keyed to the shower's end, so it follows the shower's own schedule.
+func capsule_incoming() -> void:
+	var cc: Dictionary = cfg.get("capsule", {})
+	var box: Array = cc.get("land_box", cfg.get("yard_box", [-39.0, 61.0, 39.0, 109.0]))
+	var pos: Vector3 = point_in(box, _rng.randf(), _rng.randf())
+	for _try: int in 16:   # open ground: nothing solid within 2.4 m (a rock, the rover), so every tin can be walked to
+		if _clear_at(pos, 2.4):
+			break
+		pos = point_in(box, _rng.randf(), _rng.randf())
+	var tele: float = float(cc.get("tele_s", 2.4))
+	_ring(pos, tele)
+	Net.mirror(self, &"_ring", [pos, tele])
+	_mark_danger(pos, tele)
+	get_tree().create_timer(tele).timeout.connect(func() -> void: _capsule_land_host(pos))
+
+
+func _clear_at(pos: Vector3, r: float) -> bool:
+	if not is_inside_tree():
+		return true
+	var sh: SphereShape3D = SphereShape3D.new()
+	sh.radius = r
+	var q: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
+	q.shape = sh
+	q.transform = Transform3D(Basis.IDENTITY, pos + Vector3.UP * (r + 0.15))
+	q.collision_mask = 1
+	return get_world_3d().direct_space_state.intersect_shape(q, 1).is_empty()
+
+
+func _capsule_land_host(pos: Vector3) -> void:
+	var r: float = float(cfg.get("radius_m", 2.6))
+	var dir: Node = get_tree().get_first_node_in_group(&"director")
+	if dir != null and dir.has_method("active_zombies"):
+		for z: Zombie in dir.call("active_zombies"):
+			if not (z is HomageBoss) and Vector2(z.global_position.x - pos.x, z.global_position.z - pos.z).length() <= r:
+				z.take_damage(z.hp + 1.0, &"torso", &"meteor", 0, &"explosive", true)
+				kills += 1
+	_capsule_land(pos)
+	Net.mirror(self, &"_capsule_land", [pos])
+
+
+## Every peer: the capsule in its crater, its beacon, the banner, the tins (named alike on every peer: AmmoDrop's
+## pickup is host-decided and mirrored by name).
+func _capsule_land(pos: Vector3) -> void:
+	capsules += 1
+	var cc: Dictionary = cfg.get("capsule", {})
+	_impact(pos)
+	var pod: Node3D = Node3D.new()
+	pod.name = "SupplyCapsule_%d" % capsules
+	add_child(pod)
+	pod.global_position = pos
+	pod.rotation = Vector3(0.0, _rng.randf() * TAU if Net.is_authority() else float(capsules) * 2.1, 0.0)
+	var body: Node3D = Props.group(pod, "Body", Vector3(0, 0.55, 0))
+	body.rotation_degrees = Vector3(0, 0, 24)   # nose down in the regolith
+	Props.cyl(body, Vector3.ZERO, 0.55, 1.5, "chrome_worn", Vector3(0, 0, 90))
+	Props.cone(body, Vector3(-0.95, 0, 0), 0.55, 0.45, "grey_paint").rotation_degrees = Vector3(0, 0, 90)
+	Props.cyl(body, Vector3(0.8, 0, 0), 0.6, 0.12, "black_paint", Vector3(0, 0, 90))   # the heat shield's lip
+	for k: int in 3:
+		Props.block(body, Vector3(-0.5 + 0.45 * k, 0.5, -0.03), Vector3(-0.38 + 0.45 * k, 0.6, 0.03), "yellow_paint", false)
+	var beacon: MeshInstance3D = Props.ball(body, Vector3(0.2, 0.62, 0), Vector3(0.12, 0.1, 0.12), "lamp_red_lit")
+	beacon.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var l: OmniLight3D = OmniLight3D.new()
+	l.light_color = Color(1.0, 0.25, 0.15)
+	l.omni_range = 6.0
+	l.shadow_enabled = false
+	l.position = Vector3(0, 1.4, 0)
+	pod.add_child(l)
+	var tw: Tween = l.create_tween().set_loops(int(float(cc.get("beacon_s", 60.0)) / 1.2))
+	tw.tween_property(l, "light_energy", 1.4, 0.1)
+	tw.tween_property(l, "light_energy", 0.0, 1.1)
+	tw.finished.connect(func() -> void:
+		if is_instance_valid(l):
+			l.queue_free())
+	for i: int in int(cc.get("ammo_out", 2)):
+		var d: AmmoDrop = AmmoDrop.new()
+		d.name = "CapsuleAmmo_%d_%d" % [capsules, i]
+		add_child(d)
+		var a: float = TAU * float(i) / maxf(1.0, float(cc.get("ammo_out", 2))) + 0.6
+		d.global_position = pos + Vector3(cos(a) * 1.6, 0.0, sin(a) * 1.6)
+	var map: MapRoot = get_tree().current_scene as MapRoot
+	if map != null and map.hud != null and str(cc.get("banner", "")) != "":
+		map.hud.show_banner(str(cc.get("banner", "")), 3.0)
+	print("[m4d] supply capsule %d down at %s" % [capsules, str(pos.snapped(Vector3.ONE * 0.1))])
 
 
 func _process(delta: float) -> void:
@@ -277,6 +370,11 @@ func _impact(pos: Vector3) -> void:
 
 
 func _cmd(a: PackedStringArray) -> String:
+	if a.size() > 0 and a[0] == "capsule":   # T-274
+		if not Net.is_authority():
+			return "the host runs the shower"
+		capsule_incoming()
+		return "a supply capsule is coming down in the yard"
 	if a.size() > 0 and a[0] == "now":
 		if not Net.is_authority():
 			return "the host runs the shower"

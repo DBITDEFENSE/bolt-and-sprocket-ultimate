@@ -105,4 +105,22 @@ func _body() -> void:
 	_check(bool(ctl.get("smile_seen")), "the smile gets its minimap note on first sight (by the camera: %s)" % str(seen))
 	for spk: String in ["dut", "peg", "dea", "wrn"]:
 		_check(FileAccess.file_exists("res://gravelight/audio/vo/%s/%s_M4D_SMILE_01.ogg" % [spk, spk.to_upper()]), "the smile's line is recorded (%s)" % spk.to_upper())
+	# T-274: the supply capsule on the meteor shower's tail (map04d.json meteor_shower.capsule)
+	var ms: MeteorShower = _first(&"meteor_shower") as MeteorShower
+	_check(ms != null and ms.cfg.has("capsule"), "the shower brings a supply capsule (its row)")
+	if ms != null and ms.cfg.has("capsule"):
+		var c0: int = ms.capsules
+		ms.capsule_incoming()
+		await _until(func() -> bool: return ms.capsules > c0, 6.0)
+		_check(ms.capsules == c0 + 1, "a capsule comes down in the yard")
+		var tins: Array[Node] = ms.find_children("CapsuleAmmo_%d_*" % ms.capsules, "", true, false)
+		_check(tins.size() == int((ms.cfg["capsule"] as Dictionary).get("ammo_out", 3)), "its ammunition tins lie round it (%d)" % tins.size())
+		var box: Array = (ms.cfg["capsule"] as Dictionary)["land_box"]
+		var inside: bool = true
+		for t: Node in tins:
+			var tp: Vector3 = (t as Node3D).global_position
+			inside = inside and tp.x > float(box[0]) - 2.0 and tp.x < float(box[2]) + 2.0 and tp.z > float(box[1]) - 2.0 and tp.z < float(box[3]) + 2.0
+			var nav_p: Vector3 = NavigationServer3D.map_get_closest_point(_p.get_world_3d().navigation_map, tp)
+			inside = inside and Vector2(nav_p.x - tp.x, nav_p.z - tp.z).length() < 0.8
+		_check(inside, "on the yard's open ground, each by the navmesh (walk over it)")
 	await _tp(Vector3(0, 0, 8))
