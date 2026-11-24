@@ -2,8 +2,9 @@ class_name MenuCharacter
 extends MenuScreen
 ## Play > Solo and Play > Campaign: step 1 pick a character (traits + character level), step 2 pick a map
 ## (respecting unlocks), which starts the match.
-## T-144: the maps are cards (MapCards: a 16:9 preview, the date line, the best round, the egg status). A map loads
-## through the loading screen (LoadingScreen.go).
+## T-144: the maps were cards (MapCards). T-270: Solo's step 2 is one drawn war map (WorldMap) with the seven maps as
+## places on one route and the place under the focus beside it; the Campaign page keeps its card. A map loads through
+## the loading screen (LoadingScreen.go).
 ## T-267 (the owner: "cutscenes are for the campaign"): SOLO shows the maps only. Until now the campaign's card was
 ## the first, pre-focused card of the Solo page too, so "Solo, a character, accept" started the campaign with its
 ## prologue and cutscenes; the campaign is now reached only through Play > Campaign (`campaign_only`), which shows
@@ -36,6 +37,8 @@ var _who: Label = null
 var _who_role: Label = null
 var _who_trait: Label = null
 var _step: Label = null
+## T-270: the war map of step 2 (Solo); null on the Campaign page and in step 1.
+var world: WorldMap = null
 
 
 func _init() -> void:
@@ -61,7 +64,7 @@ func build_header() -> void:
 static func step_text(picked_name: String, campaign: bool) -> String:
 	if picked_name == "":
 		return "STEP 1 OF 2   ·   CHOOSE YOUR CHARACTER"
-	return "STEP 2 OF 2   ·   %s   ·   %s" % [picked_name.to_upper(), "START THE CAMPAIGN" if campaign else "CHOOSE A MAP TO START"]
+	return "STEP 2 OF 2   ·   %s   ·   %s" % [picked_name.to_upper(), "START THE CAMPAIGN" if campaign else "PICK A PLACE ON THE MAP TO START"]
 
 
 func build_side() -> Control:
@@ -101,6 +104,7 @@ func build() -> void:
 		_step.text = step_text(str(Net.DISPLAY.get(_picked, _picked.capitalize())) if _picked != "" else "", campaign_only)
 	if side != null:
 		side.visible = _picked == ""   # the map cards take the whole width; a hidden view draws nothing
+	world = null
 	if _picked == "":
 		_build_characters()
 	else:
@@ -152,40 +156,69 @@ func _pick(id: String) -> void:
 
 
 func _build_maps() -> void:
-	_build_muster()   # T-144: the character, the loadout and the bots share one row, so both rows of cards fit at 1080p
+	_build_muster()   # T-144: the character, the loadout and the bots share one row
 	_build_squad()
-	# T-144: one card per map (MapCards). T-267: the campaign's card only on the Campaign page (T-033: the inn, then
-	# exfil at round 10 to Kaltenbrunn and at round 30 onward, kit and all)
-	var grid: GridContainer = GridContainer.new()
-	grid.name = "MapCards"
-	grid.columns = 4
-	grid.add_theme_constant_override("h_separation", 16)
-	grid.add_theme_constant_override("v_separation", 16)
-	content.add_child(grid)
 	if campaign_only:
+		# T-267: the campaign's card only on the Campaign page (T-033: the inn, then exfil at round 10 to Kaltenbrunn
+		# and at round 30 onward, kit and all)
+		var grid: GridContainer = GridContainer.new()
+		grid.name = "MapCards"
+		grid.columns = 4
+		grid.add_theme_constant_override("h_separation", 16)
+		grid.add_theme_constant_override("v_separation", 16)
+		content.add_child(grid)
 		var first: String = String(Campaign.first_map())
 		var camp: Button = MapCards.card("CAMPAIGN", "The Road North", "Crossroads Inn  >  Kaltenbrunn  >  Totenhafen",
 			MapCards.preview(first), [["LEAVE AT ROUND 10, THEN 30", MenuKit.GOLD]], _start.bind(Campaign.scene_for(Campaign.first_map()), true))
 		camp.name = "Card_Campaign"
 		grid.add_child(camp)
 		content.add_child(MenuKit.para("Hold the inn to round 10, then take the exfil beacon (your way out) with everything you carry. Round 30 at Kaltenbrunn opens the road north. The story's cutscenes play here, and only here.", 18, MenuKit.DIM))
-	else:
-		for m: Array in MAPS:
-			var id: String = str(m[0])
-			var c: Button = MapCards.map_card(id, _start.bind(str(m[2])))
-			if str(m[2]) == "":
-				c.disabled = true
-			grid.add_child(c)
+		focus_target = camp
+		var bottom_c: HBoxContainer = HBoxContainer.new()
+		bottom_c.name = "BottomRow"
+		bottom_c.add_theme_constant_override("separation", 14)
+		content.add_child(bottom_c)
+		_build_egg_mode(bottom_c)
+		return
+	# T-270 (the owner: "make it feel like all the maps are just one"): one drawn sheet with the seven maps as seven
+	# places on one route (WorldMap), and beside it the place under the focus. Pressing a place starts the match
+	# there, exactly as its card did.
+	var row: HBoxContainer = HBoxContainer.new()
+	row.name = "WorldRow"
+	row.add_theme_constant_override("separation", 16)
+	content.add_child(row)
+	world = WorldMap.new()
+	row.add_child(world)
+	var panel: PanelContainer = WorldMap.make_panel()
+	row.add_child(panel)
+	world.place_focused.connect(func(id: String) -> void: WorldMap.fill_panel(panel, world.state_of(id)))
+	world.build(_start_place)
+	for b: Button in world.buttons:
+		if scene_of(str(b.get_meta("map_id", ""))) == "":
+			b.disabled = true
 	var bottom: HBoxContainer = HBoxContainer.new()
 	bottom.name = "BottomRow"
 	bottom.add_theme_constant_override("separation", 14)
 	content.add_child(bottom)
 	_build_egg_mode(bottom)
-	# the first open card has the focus: a map and accept starts the match
-	for card: Node in grid.get_children():
-		if not (card as Button).disabled:
-			focus_target = card as Button
-			break
+	var note: Node = content.get_node_or_null("BotsNote")   # the bots' paragraph goes under the sheet, so the sheet stays in view
+	if note != null:
+		content.move_child(note, content.get_child_count() - 1)
+	# the first open place has the focus: a place and accept starts the match
+	focus_target = world.first_button()
+	world.link_rows.call_deferred(content.get_node("TopRow/CharacterButton") as Control, bottom.get_node("EggModeButton") as Control)
+
+
+## The scene of a map of the MAPS table ("" = not built).
+static func scene_of(map_id: String) -> String:
+	for m: Array in MAPS:
+		if str(m[0]) == map_id:
+			return str(m[2])
+	return ""
+
+
+func _start_place(map_id: String) -> void:
+	_start(scene_of(map_id))
 
 
 ## T-181 Easter Egg Mode (EggMode): a practice match for the egg, few or no zombies, no profile progress.
@@ -274,11 +307,13 @@ func _build_squad() -> void:
 		var who: PackedStringArray = []
 		for ch: StringName in others:
 			who.append(str(Net.DISPLAY.get(String(ch), String(ch))))
-		content.add_child(MenuKit.para("%s fight alongside you: they follow, shoot, rebuild boards, buy their own guns, open doors with their own money, and revive you (and you them). They spawn with a Thompson, Ironhide Stout and Second Wind. With Bot AI on, %s plans its own objectives (power, perks, guns, doors, boards): Built-in works on any PC; the model brains need Ollama and fall back to Built-in without it. Zombies scale as for %d players." % [
+		var note: Label = MenuKit.para("%s fight alongside you: they follow, shoot, rebuild boards, buy their own guns, open doors with their own money, and revive you (and you them). They spawn with a Thompson, Ironhide Stout and Second Wind. With Bot AI on, %s plans its own objectives (power, perks, guns, doors, boards): Built-in works on any PC; the model brains need Ollama and fall back to Built-in without it. Zombies scale as for %d players." % [
 
 			" and ".join(who) if who.size() <= 2 else ", ".join(who.slice(0, who.size() - 1)) + " and " + who[who.size() - 1],
 			who[clampi(int((c.get("local_ai", {}) as Dictionary).get("bot_index", 0)), 0, who.size() - 1)] if not who.is_empty() else "one bot",
-			BotConfig.scaled_player_count(1, bots, c)], 16, MenuKit.DIM))
+			BotConfig.scaled_player_count(1, bots, c)], 16, MenuKit.DIM)
+		note.name = "BotsNote"
+		content.add_child(note)
 
 
 func _start(scene: String, campaign: bool = false) -> void:
