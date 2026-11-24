@@ -219,4 +219,31 @@ free radius, a tank hull swept along a route, a rider swept under a zip cable, t
   Map 0 (see the header of the script). `-- --only=map01` runs one map.
 - `smoke_weapon_locker` already walks every map with a row: now seven.
 
-RESULTS_PLACEHOLDER
+## Results (headless, this PC, 2026-11-24)
+
+- `check_scripts`: 992 scripts, 0 failed.
+- Full GUT: 2547 tests, 2546 passing, 0 failing, 1 risky (the known `test_neural_lines_are_loudness_normalised`).
+  Master had 2533; +14 are `test_map_detail`. Two older tests asserted the old state and were changed to the new
+  one: `test_sherman.test_on_the_inn_only` (Kaltenbrunn and Totenhafen now have a block, without a tank) and
+  `test_horse_gait.test_map_rows` (Kaltenbrunn now has a horse).
+- Smokes, all PASS with 0 script errors: `smoke_map_detail` (151 checks), `smoke_sherman` (74), `smoke_horse`
+  (116), `smoke_horse_boss` (81), `smoke_weapon_locker` (seven maps), `smoke_ladders`, `smoke_coop`, the four
+  `smoke_map00*`, the three `smoke_map01*`, the three `smoke_map02*`, the eleven `smoke_map04*`.
+- One smoke fault found and fixed on the way: `smoke_map_detail` first took any random open navmesh point on
+  Totenhafen's quay as "the open"; one run drew a point on a navmesh island no path leaves. It now takes open
+  ground the spawn can walk to (3 of 3 runs PASS after). The island itself is the map's, older than this task.
+- Not run: the bot smokes, the campaign smoke, the other set-piece smokes.
+
+## For DECISIONS.md (the main session writes it at the merge)
+
+**T-271: the base of the map detail pass.** Branch `claude/map-detail-base`, notes
+`docs/u21/t271_map_detail_base.md`. Data rows and four small script changes, no generator and no scene touched.
+An arms locker on all seven maps. A rideable horse with rail and tack chest on Kaltenbrunn (the Minehead yard's
+east wall), Thalbach (the Siedlung's south wall) and Groom Lake (the lakebed behind its door); none on the
+harbour, the aircraft or the Moon. A raid-only mode of the Sherman event (`"tank": false`; `shelter_roof`; a
+map's own banners): Kaltenbrunn round 40 with a dive bomber on the locomotive, Totenhafen round 30 with the siren
+only (40 is its exfil). No tank on Kaltenbrunn: its walls have no way in that data can open. Three of Map 0's
+sky-war kinds on Thalbach. The opening and the survivors read `<map prefix>_opening.json` / `_survivors.json`;
+none authored. Left off: Groom Lake's day (its start hour would put the authored light out in round 1), zip lines
+(the cable and posts are generator dressing), round-numbered events on the Map 4 acts. Seen by nobody: all checks
+are headless.
