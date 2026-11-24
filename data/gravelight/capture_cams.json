@@ -15463,6 +15463,218 @@
         }
       ]
     },
+    "t275": {
+      "_doc": "T-275: the tower's ladders re-placed (the lower ladder through an opening in the landing's parapet, the upper inside the tower up through a hatch in the top's floor). Before/after pairs with t268 (same cameras) and views of both ladder heads and the hatch from the landing and the top. Shot through tools/wsl_capture.sh only; saved under docs/captures/t275/.",
+      "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {
+          "name": "near_noon",
+          "pos": [
+            13.5,
+            0.0,
+            38.5
+          ],
+          "yaw": 128.7,
+          "pitch": 29.5,
+          "settle_s": 4.0,
+          "note": "T-275 before/after with t268/12: the tower from the well; the lower ladder now arrives in an opening in the landing's parapet",
+          "do": [
+            "callv:DayCycle:hold_hour:12:1",
+            "open:Door_Gate"
+          ]
+        },
+        {
+          "name": "head1_from_ground",
+          "pos": [
+            6.5,
+            0.0,
+            35.0
+          ],
+          "yaw": 171.8,
+          "pitch": 30.0,
+          "settle_s": 2.0,
+          "note": "T-275: the lower ladder from the yard, north of the tower: its stiles carried on through the landing's opening as hand holds, bent over onto the deck"
+        },
+        {
+          "name": "landing_deck_noon",
+          "pos": [
+            4.2,
+            6.2,
+            46.3
+          ],
+          "yaw": -72.1,
+          "pitch": -3.5,
+          "settle_s": 4.0,
+          "note": "T-275 before/after with t268/16: on the landing; the upper ladder now stands inside the tower"
+        },
+        {
+          "name": "head1_from_landing",
+          "pos": [
+            5.4,
+            6.2,
+            45.2
+          ],
+          "yaw": 0.0,
+          "pitch": -12.0,
+          "settle_s": 2.0,
+          "note": "T-275: on the landing looking north at the lower ladder's head: the opening in the parapet, its two posts, the hand holds"
+        },
+        {
+          "name": "head1_down_from_landing",
+          "pos": [
+            5.4,
+            6.2,
+            43.45
+          ],
+          "yaw": 0.0,
+          "pitch": -42.0,
+          "settle_s": 2.0,
+          "note": "T-275: standing at the lower ladder's head looking down it through the opening"
+        },
+        {
+          "name": "upper_ladder_landing",
+          "pos": [
+            4.2,
+            6.2,
+            43.6
+          ],
+          "yaw": -126.9,
+          "pitch": 11.5,
+          "settle_s": 2.0,
+          "note": "T-275: on the landing: the upper ladder standing on the landing's floor against the east side, rising to the hatch"
+        },
+        {
+          "name": "hatch_up_from_landing",
+          "pos": [
+            6.875,
+            6.2,
+            44.0
+          ],
+          "yaw": 180.0,
+          "pitch": 58.0,
+          "settle_s": 2.0,
+          "note": "T-275: at the upper ladder's foot looking up it through the hatch in the top platform's floor (the trimmers, the cleats, the sky through the hatch)"
+        },
+        {
+          "name": "top_deck_noon",
+          "pos": [
+            4.0,
+            12.0,
+            46.6
+          ],
+          "yaw": -43.3,
+          "pitch": -7.6,
+          "settle_s": 4.0,
+          "note": "T-275 before/after with t268/17: on the top platform; the hatch is in the floor against the east parapet"
+        },
+        {
+          "name": "hatch_from_top",
+          "pos": [
+            4.2,
+            12.0,
+            46.3
+          ],
+          "yaw": -65.8,
+          "pitch": -24.0,
+          "settle_s": 2.0,
+          "note": "T-275: the hatch from the top platform's west side: the guard rail on its north and west sides, the ladder's hand holds on its open south side"
+        },
+        {
+          "name": "hatch_down_from_top",
+          "pos": [
+            6.6,
+            12.0,
+            46.6
+          ],
+          "yaw": -10.4,
+          "pitch": -46.7,
+          "settle_s": 2.0,
+          "note": "T-275: at the upper ladder's head looking down through the hatch onto the landing"
+        },
+        {
+          "name": "climbers_noon",
+          "pos": [
+            10.5,
+            0.0,
+            38.6
+          ],
+          "yaw": 126.0,
+          "pitch": 22.3,
+          "settle_s": 0.2,
+          "note": "T-275 before/after with t268/24: the dead on the lower ladder",
+          "do": [
+            "callv:ZombieDirector:kill_all:true:0.5",
+            "callv:ZombieDirector:debug_ladder:Climb_Tower,3:0.4"
+          ]
+        },
+        {
+          "name": "climbers_upper_noon",
+          "pos": [
+            12.5,
+            0.0,
+            50.5
+          ],
+          "yaw": 42.4,
+          "pitch": 49.8,
+          "settle_s": 0.2,
+          "note": "T-275 before/after with t268/25: the dead on the upper ladder, now inside the tower (seen through the bracing)",
+          "do": [
+            "callv:ZombieDirector:kill_all:true:0.5",
+            "callv:ZombieDirector:debug_ladder:Climb_TowerUpper,2:0.6"
+          ]
+        },
+        {
+          "name": "climbers_upper_landing",
+          "pos": [
+            4.2,
+            6.2,
+            43.6
+          ],
+          "yaw": -126.9,
+          "pitch": 26.0,
+          "settle_s": 0.5,
+          "note": "T-275: the dead going up the upper ladder from the landing toward the hatch",
+          "do": [
+            "callv:ZombieDirector:kill_all:true:0.5",
+            "callv:ZombieDirector:debug_ladder:Climb_TowerUpper,2:1.6"
+          ]
+        },
+        {
+          "name": "climbers_hatch_top",
+          "pos": [
+            4.4,
+            12.0,
+            46.4
+          ],
+          "yaw": -70.0,
+          "pitch": -28.0,
+          "settle_s": 0.3,
+          "note": "T-275: a climber coming up through the hatch, seen from the top platform",
+          "do": [
+            "callv:ZombieDirector:kill_all:true:0.5",
+            "callv:ZombieDirector:debug_ladder:Climb_TowerUpper,1:3.6"
+          ]
+        },
+        {
+          "name": "near_night",
+          "pos": [
+            13.5,
+            0.0,
+            38.5
+          ],
+          "yaw": 128.7,
+          "pitch": 29.5,
+          "settle_s": 4.0,
+          "note": "T-275 before/after with t268/00: the tower from the well at night",
+          "do": [
+            "callv:ZombieDirector:kill_all:true:0.5",
+            "callv:DayCycle:hold_hour:0:1"
+          ]
+        }
+      ]
+    },
     "t268": {
       "_doc": "T-268: the two-stage watchtower, its three zip lines and the dead on its ladders, at night and at noon (DayCycle.hold_hour). Shot through tools/wsl_godot.sh only; saved under docs/captures/t268/.",
       "map": "res://gravelight/maps/map00_crossroads/map00.tscn",

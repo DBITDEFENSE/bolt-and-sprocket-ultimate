@@ -180,6 +180,14 @@ func _hips_y(z: Zombie) -> float:
 	return (sk.global_transform * sk.get_bone_global_pose(sk.find_bone("Hips"))).origin.y
 
 
+## T-275: where the body's hips are (a ragdoll's bones fall away from the body's origin).
+func _hips_pos(z: Zombie) -> Vector3:
+	var sk: Skeleton3D = z.get("_skel")
+	if sk == null or sk.find_bone("Hips") < 0:
+		return z.global_position
+	return (sk.global_transform * sk.get_bone_global_pose(sk.find_bone("Hips"))).origin
+
+
 ## T-268: the dead and the watchtower. They climb both ladders to a player on the top platform and hit them; with
 ## the player gone they drop back down; they follow a player up a ladder; a queue goes up one after another with room
 ## between; a climber killed on the rungs falls; a crawler does not climb and does not wait at the foot for good.
@@ -294,6 +302,42 @@ func _zombies_and_the_tower(top: Vector3, landing: Vector3) -> void:
 		_check(low < 1.3, "fall: killed %.1f m up, the body fell off the ladder (now %.2f)" % [y_dead, low])
 	dir.kill_all(true)
 	await _secs(0.5)
+	# ---- T-275: the upper ladder stands inside the tower: a climber shot on it falls onto the landing (low on the
+	# rungs and just under the hatch), not off the tower and not through a floor
+	var lnd: Rect2 = Rect2(5.4 - 2.35, 45.0 - 2.35, 4.7, 4.7)   # the landing inside its parapet
+	for kill_up: float in [2.5, 5.0]:
+		var hung2: Array[Zombie] = dir.debug_ladder("Climb_TowerUpper", 1)
+		if hung2.size() != 1:
+			_check(false, "fall upper: a zombie is put on the upper ladder")
+			continue
+		var zu: Zombie = hung2[0]
+		t = 0.0
+		while t < 8.0 and zu.global_position.y < landing.y + kill_up:
+			await _frames(3)
+			t += 0.05
+		var at_kill: Vector3 = zu.global_position
+		zu.take_damage(zu.hp + 1.0, &"torso", &"none", 1, &"bullet")
+		await _secs(2.5)
+		var hp: Vector3 = _hips_pos(zu)
+		_check(zu.state == Zombie.State.DEAD and hp.y > landing.y - 0.3 and hp.y < landing.y + 1.3 and lnd.has_point(Vector2(hp.x, hp.z)),
+			"fall upper: shot %.1f m up the upper ladder (at %s), the body lies on the landing (hips now %s, origin %s)" % [at_kill.y - landing.y, str(at_kill.snapped(Vector3(0.01, 0.01, 0.01))), str(hp.snapped(Vector3(0.01, 0.01, 0.01))), str(zu.global_position.snapped(Vector3(0.01, 0.01, 0.01)))])
+		dir.kill_all(true)
+		await _secs(0.5)
+	# ---- T-275: nobody walks off the landing through the ladder's opening, nor into the top platform's hatch
+	for walk: Array in [["the landing's opening, straight", Vector3(5.4, landing.y, 43.5), 0.0], ["the landing's opening, at its west post", Vector3(5.0, landing.y, 43.5), 0.0],
+			["the landing's opening, at its east post", Vector3(5.8, landing.y, 43.5), 0.0], ["the hatch, over the ladder's head", Vector3(6.875, top.y, 46.5), 0.0],
+			["the hatch, from the west", Vector3(5.6, top.y, 45.1), -90.0], ["the hatch, from the north", Vector3(6.875, top.y, 43.6), 180.0],
+			["the hatch, past the ladder's west stile", Vector3(6.5, top.y, 46.5), 0.0], ["the hatch, past the ladder's east stile", Vector3(6.95, top.y, 46.5), 0.0]]:
+		var from_w: Vector3 = walk[1]
+		await _stand(from_w)
+		_p.rotation.y = deg_to_rad(float(walk[2]))
+		Input.action_press(&"move_forward")
+		Input.action_press(&"sprint")
+		await _secs(2.0)
+		Input.action_release(&"move_forward")
+		Input.action_release(&"sprint")
+		await _frames(10)
+		_check(absf(_p.global_position.y - from_w.y) < 0.2 and _p.is_on_floor(), "walk: into %s, the player is stopped on the floor (at %s)" % [walk[0], str(_p.global_position.snapped(Vector3(0.01, 0.01, 0.01)))])
 	# ---- a crawler does not climb, and does not wait at the foot for good
 	var zc: Zombie = _raise(foot + Vector3(0.6, 0, -1.6))
 	if zc != null:
