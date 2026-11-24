@@ -1,7 +1,9 @@
 {
-  "_doc": "T-273 Totenhafen's survivors in the torpedo store (gravelight/world/inn_opening/inn_survivors.gd + inn_survivor.gd, the same rules as Map 0's map00_survivors.json, whose _doc explains them). Two of U-1047's crew shut themselves into the warhead cage in the Torpedo Workshop's south-east corner (x 52..62, z 16..24, its gap in the west wall at z 19..21) when the boat's crew turned in the pens. Hidden (not in the world) until a player opens `reveal_door` (the Torpedo Workshop's door off the quay); then they are in the cage, crouched behind the warhead cases, trembling and pleading, flinching at gunfire. A player holds interact on one to pay `arm.cost` Scrip and hand them a Kar98k from the workshop's rack: they stand, walk out of the cage to their post by its gap and hold it, shooting zombies they can see (no Scrip for their kills). The dead in the workshop go for them; armed ones are downed at 0 hp and can be helped up; hidden ones and the ones who bleed out die and rise as sailors `rise_after` seconds later, after their last line and a squad line (M2_SURV_TURN). Their bodies are PatronBody's own (no built person GLB for them yet). Positions: map space, the hide spots inside the cage clear of the Warheads crate spot (58.6, 0, 19) and the lead coffins, the posts in the workshop west of the cage (north of the trolley's track at z 27, south of the cradles), all on the baked navmesh (smoke_map02_survivors).",
+  "_doc": "T-273 Totenhafen's survivors in the torpedo store (gravelight/world/inn_opening/inn_survivors.gd + inn_survivor.gd, the same rules as Map 0's map00_survivors.json, whose _doc explains them). Two of U-1047's crew shut themselves into the warhead cage in the Torpedo Workshop's south-east corner (x 52..62, z 16..24, its gap in the west wall at z 19..21) when the boat's crew turned in the pens. Hidden (not in the world) until a player opens `reveal_door` (the Torpedo Workshop's door off the quay); then they are in the cage, crouched behind the warhead cases, trembling and pleading, flinching at gunfire. A player holds interact on one to pay `arm.cost` Scrip and hand them a Kar98k from the workshop's rack: they stand, walk out of the cage to their post by its gap and hold it, shooting zombies they can see (no Scrip for their kills). The dead in the workshop go for them; armed ones are downed at 0 hp and can be helped up; hidden ones and the ones who bleed out die and rise as sailors `rise_after` seconds later, after their last line and a squad line (M2_SURV_TURN). Their bodies are modelled people (person, see _doc_bodies). Positions: map space, the hide spots inside the cage clear of the Warheads crate spot (58.6, 0, 19) and the lead coffins, the posts in the workshop west of the cage (north of the trolley's track at z 27, south of the cradles), all on the baked navmesh (smoke_map02_survivors).",
   "map": "map02_totenhafen",
   "reveal_door": "door_workshop",
+  "nav_layers": 4,
+  "_doc_bodies": "person: the people.json body each wears (the project's modelled people, reused the way people_extra.json reuses them; none of these two is anyone else on Totenhafen): Kahlke wears Ammer's (heavy, in uniform), Pietsch the Obergefreiter's (thin, in uniform). nav_layers: the walk from the cage to the post asks the workshop's navigation layer (C_WORKSHOP, bit 3 = 4; Map 0 has one layer, 1).",
   "arm": {"cost": 1000, "weapon": "kar98k", "weapon_name": "Kar98k", "hold_seconds": 1.0},
   "ally": {"hp": 220, "hidden_hp": 135, "swipe_damage": 45, "range": 20.0, "fire_interval": 1.5, "first_shot_delay": 0.6, "hit_chance": 0.8,
     "head_chance": 0.3, "damage_mult": 1.0, "head_mult": 2.0, "lure_radius": 8.0, "lure_radius_hidden": 4.5, "lure_floor_dy": 1.6, "max_lured": 2,
@@ -10,7 +12,7 @@
     "fight_line_cooldown": 12.0, "flinch_line_cooldown": 6.0},
   "squad_turn_line": {"category": "M2_SURV_TURN", "delay": 1.2},
   "survivors": [
-    {"id": "kahlke", "name": "Hinrich Kahlke", "display": "KAHLKE", "speaker": "KAH",
+    {"id": "kahlke", "name": "Hinrich Kahlke", "display": "KAHLKE", "speaker": "KAH", "person": "ammer",
       "role": "U-1047's Obermaschinist (40s), the chief of her diesels, from Bremerhaven; twenty years in engine rooms, a gunner on a minesweeper before that; he got the boy into the torpedo store and the cage door shut behind them",
       "look": {"jacket": [0.1, 0.11, 0.16], "trousers": [0.12, 0.12, 0.15], "skin": [0.78, 0.62, 0.52], "head": [0.24, 0.22, 0.2], "headgear": "cap", "build": 1.1,
         "skirt": false, "apron": false, "scarf": [0.3, 0.3, 0.28]},
@@ -18,7 +20,7 @@
       "lines": {"reveal": ["KAH_SURV_REVEAL_01"], "scared": ["KAH_SURV_SCARED_01", "KAH_SURV_SCARED_02"], "flinch": ["KAH_SURV_FLINCH_01"],
         "armed": ["KAH_SURV_ARMED_01"], "fight": ["KAH_SURV_FIGHT_01"], "hurt": ["KAH_SURV_HURT_01"], "downed": ["KAH_SURV_DOWNED_01"],
         "death": ["KAH_SURV_DEATH_01"]}},
-    {"id": "pietsch", "name": "Jonas Pietsch", "display": "PIETSCH", "speaker": "PIE",
+    {"id": "pietsch", "name": "Jonas Pietsch", "display": "PIETSCH", "speaker": "PIE", "person": "ogpohl",
       "role": "a Matrosengefreiter (19) from Stralsund, U-1047's youngest hand, a signal rating on his first patrol; he has not slept since the tide came in and the singing started in the pens",
       "look": {"jacket": [0.12, 0.13, 0.2], "trousers": [0.13, 0.13, 0.17], "skin": [0.86, 0.72, 0.63], "head": [0.62, 0.5, 0.3], "headgear": "none", "build": 0.92,
         "skirt": false, "apron": false, "scarf": [0.85, 0.84, 0.8]},

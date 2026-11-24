@@ -186,7 +186,9 @@ func _follow(delta: float) -> bool:
 
 func start_walk(post: Vector3) -> void:
 	var map_rid: RID = get_world_3d().navigation_map
-	var path: PackedVector3Array = NavigationServer3D.map_get_path(map_rid, global_position, post, true)
+	# T-273: the navigation layers of the walk (the survivors file's "nav_layers"; Map 0 has one layer for everything: 1)
+	var layers: int = int(manager.get("cfg").get("nav_layers", 1)) if manager != null else 1
+	var path: PackedVector3Array = NavigationServer3D.map_get_path(map_rid, global_position, post, true, layers)
 	if path.is_empty() or path[path.size() - 1].distance_to(post) > 1.0:
 		path = PackedVector3Array([post])   # no path (a test map): walk straight there
 	else:

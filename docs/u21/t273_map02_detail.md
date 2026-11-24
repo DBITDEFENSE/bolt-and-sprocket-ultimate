@@ -214,8 +214,10 @@ walk out of the cage's gap to posts `[50.5, 0, 19.0]` (facing the cradles and th
 (facing the workshop's door). Map 0's ally numbers. They rise as the `sailor` kind. Nine text lines each
 (`KAH_SURV_*`, `PIE_SURV_*`) and the squad's warning in a category of this map's (`M2_SURV_TURN`: Map 0's says
 "upstairs"), 22 lines in all, every one listed as not baked in `audio_manifest.json` (a subtitle with a timed
-silence); both cast in `voice_cast.json` (German accent, for a later bake). Their bodies are PatronBody's
-procedural ones (no person GLB built for them).
+silence); both cast in `voice_cast.json` (German accent, for a later bake). Their bodies are the project's modelled people
+(`person` in each row, reused the way `people_extra.json` reuses them: Kahlke wears Ammer's, Pietsch the
+Obergefreiter's; neither is anyone else on Totenhafen); the walk from the cage asks the workshop's navigation layer
+(`nav_layers` 4).
 
 Verified: `smoke_map02_survivors` (new, Map 0's survivor smoke on this map) PASS: hidden before the door, spots and
 posts on the navmesh, nothing solid on them; the door reveals them cowering with the arm prompt; Pietsch's reveal
@@ -269,8 +271,10 @@ touched (round 1 is before its `min_round` 3).
   see the report.
 - Not seen in motion: a capture holds the rounds, so the opening's run was not rendered (`19_side_door_night` shows
   the shut door, its frame and sign). The sailors cowering in the cage were (`18_survivors_night`).
-- The patrons and the sailors are PatronBody's procedural bodies (no person GLB built for them); the risers get the
-  `dockworker` / `sailor` kits.
+- The patrons and the sailors wear the project's modelled people (`person`: Boldt Rother's, Rahn Sobotta's, Tews
+  Agnes Pohl's, Kahlke Ammer's, Pietsch the Obergefreiter's; none of them is anyone else on Totenhafen), and when
+  they rise the same body rises. Rendered and looked at: `18_survivors_night` (the two crouched in the cage),
+  `20_night_shift_night` (the three by the conveyor before round 1).
 - The opening's patrons duck through the surf steps' chain at the parapet's west end (they have no colliders and the
   chain is dressing); not seen.
 
@@ -284,5 +288,20 @@ cannery's night shift running out of a new side door onto the quay (`map02_openi
 caught and risen on the quay, one away down the sea stairs. The side door's doorway is filled for good with an
 invisible collider: only the patrons (no colliders) pass, so the cannery's 1000 door is never skipped; the leaf is
 never barred again. One shared change, data-driven with Map 0's default kept: `inn_opening.gd`
-`front_door.face_door`. 30 new text lines (not baked) and five cast rows. Verified by two new smokes and Map 0's
+`front_door.face_door`. 30 new text lines (not baked) and five cast rows. Every survivor and patron wears one of the project's modelled people
+(`person`; the risen too). Shared changes (all data-driven, Map 0's defaults kept): `inn_opening.gd`
+`front_door.face_door` and `person` for the risen, `inn_survivors.gd` `person`, `inn_survivor.gd` `nav_layers`;
+`probe_npc_walls.gd` reads each map's own survivors file. Verified by two new smokes and Map 0's
 opening and survivor smokes.
+
+### Follow-up in the addition (the coordinator: real person models; a full GUT run)
+
+Shared changes, all data-driven with Map 0's behaviour unchanged (Map 0's files set none of the keys):
+- `inn_opening.gd`, `inn_survivors.gd`: a row's `person` (a people.json id) is the body the risen wear too
+  (`warm_risen` / `dress_risen`); without it, the row's id, as before. PatronBody already read `person` for the living.
+- `inn_survivor.gd`: the walk to the post asks the survivors file's `nav_layers` (default 1, Map 0's single layer);
+  Totenhafen's zones are on their own layers, so the cage-to-post path needs the workshop's.
+- `probe_npc_walls.gd` (the tool behind `test_npc_navmesh`): reads the running map's own survivors file (it read Map
+  0's on every map) and walks with its `nav_layers`.
+- `test_map_detail.test_opening_and_survivors_read_their_file_by_map` no longer lists Totenhafen among the maps
+  without the files.

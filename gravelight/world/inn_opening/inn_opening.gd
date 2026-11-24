@@ -217,7 +217,7 @@ func _ready() -> void:
 		pb.enable_life()   # T-246: the patrons look up at the squad, start at a shot; outside, their breath shows
 		patrons[str(row["id"])] = pb
 		if str(row.get("fate", "")) in ["caught", "bitten"] and str(row.get("rise_variant", "")) != "":
-			PeopleBodies.warm_risen(str(row["id"]), str(row["rise_variant"]), bool(row.get("female", false)))   # (not in the tick they rise)
+			PeopleBodies.warm_risen(str(row.get("person", row["id"])), str(row["rise_variant"]), bool(row.get("female", false)))   # (not in the tick they rise; T-273: a row's "person", the people.json body it wears, else its id)
 		_st[str(row["id"])] = {"row": row, "stage": "idle", "pts": [], "i": 0, "exit": float(exits.get(str(row["id"]), 0.0)), "t0": 0.0}
 	GLBus.round_started.connect(_on_round_started)
 	if card_wanted(Campaign.active, cfg.get("title_card", {})):
@@ -685,7 +685,7 @@ func _rise(id: String, s: Dictionary, pb: PatronBody) -> void:
 			return
 		z.global_position = pb.global_position
 		z.rotation.y = pb.rotation.y
-		PeopleBodies.dress_risen(z, id)   # T-092: the same person gets up
+		PeopleBodies.dress_risen(z, str(row.get("person", id)))   # T-092: the same person gets up (T-273: in the body the row names)
 		z.rise_from_floor(float(cfg.get("rise_getup_seconds", 2.4)), _barricade(str(row.get("rise_window", ""))))
 		risen[id] = z
 	pb.catchable = false
