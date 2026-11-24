@@ -1,0 +1,1270 @@
+{
+	"scenes": {
+		"gallery": {
+			"pages": [
+				[
+					{
+						"female": false,
+						"kit": "villager",
+						"outfit": "farmhand_ochre",
+						"skin": "pallid"
+					},
+					{
+						"female": true,
+						"kit": "villager",
+						"outfit": "farmhand_blue",
+						"skin": "pallid"
+					},
+					{
+						"female": true,
+						"kit": "villager",
+						"outfit": "farmhand_check",
+						"skin": "grey_green"
+					},
+					{
+						"female": true,
+						"kit": "villager",
+						"outfit": "cook",
+						"skin": "grey_green"
+					},
+					{
+						"female": true,
+						"kit": "villager",
+						"outfit": "barmaid",
+						"skin": "bruised"
+					},
+					{
+						"female": false,
+						"kit": "villager",
+						"outfit": "postman",
+						"skin": "grey_green"
+					},
+					{
+						"female": false,
+						"kit": "villager",
+						"outfit": "priest",
+						"skin": "pallid"
+					},
+					{
+						"female": true,
+						"kit": "villager",
+						"outfit": "railway",
+						"skin": "grey_green"
+					}
+				],
+				[
+					{
+						"female": false,
+						"kit": "villager",
+						"outfit": "hunter",
+						"skin": "pallid"
+					},
+					{
+						"female": true,
+						"kit": "villager",
+						"outfit": "sunday_plum",
+						"skin": "grey_green"
+					},
+					{
+						"female": true,
+						"kit": "villager",
+						"outfit": "sunday_green",
+						"skin": "bruised"
+					},
+					{
+						"female": true,
+						"kit": "villager",
+						"outfit": "sunday_dress",
+						"skin": "pallid"
+					},
+					{
+						"female": true,
+						"kit": "villager",
+						"outfit": "nightshirt",
+						"skin": "grey_green"
+					},
+					{
+						"female": true,
+						"kit": "villager",
+						"outfit": "striped_shirt",
+						"skin": "pallid"
+					},
+					{
+						"female": false,
+						"kit": "villager",
+						"outfit": "mustard_jacket",
+						"skin": "pallid"
+					},
+					{
+						"female": false,
+						"kit": "soldier",
+						"outfit": "field_uniform",
+						"skin": "grey_green"
+					}
+				],
+				[
+					{
+						"female": false,
+						"kit": "soldier",
+						"outfit": "field_faded",
+						"skin": "grey_green"
+					},
+					{
+						"female": false,
+						"kit": "soldier",
+						"outfit": "field_greatcoat",
+						"skin": "bruised"
+					},
+					{
+						"female": false,
+						"kit": "soldier",
+						"outfit": "field_shirtsleeves",
+						"skin": "pallid"
+					},
+					{
+						"female": false,
+						"kit": "miner",
+						"outfit": "miner_ochre",
+						"skin": "pallid"
+					},
+					{
+						"female": false,
+						"kit": "miner",
+						"outfit": "miner_rust",
+						"skin": "grey_green"
+					},
+					{
+						"female": false,
+						"kit": "miner",
+						"outfit": "miner_blue",
+						"skin": "grey_green"
+					},
+					{
+						"female": false,
+						"kit": "miner",
+						"outfit": "miner_mustard",
+						"skin": "pallid"
+					},
+					{
+						"female": false,
+						"kit": "miner",
+						"outfit": "overseer",
+						"skin": "pallid"
+					}
+				],
+				[
+					{
+						"female": true,
+						"kit": "labstaff",
+						"outfit": "labcoat_white",
+						"skin": "grey_green"
+					},
+					{
+						"female": true,
+						"kit": "labstaff",
+						"outfit": "labcoat_green",
+						"skin": "grey_green"
+					},
+					{
+						"female": false,
+						"kit": "labstaff",
+						"outfit": "labcoat_stained",
+						"skin": "grey_green"
+					},
+					{
+						"female": false,
+						"kit": "labstaff",
+						"outfit": "labcoat_blue",
+						"skin": "pallid"
+					},
+					{
+						"female": false,
+						"kit": "technician",
+						"outfit": "coverall_blue",
+						"skin": "pallid"
+					},
+					{
+						"female": true,
+						"kit": "technician",
+						"outfit": "coverall_rust",
+						"skin": "grey_green"
+					},
+					{
+						"female": false,
+						"kit": "technician",
+						"outfit": "coverall_olive",
+						"skin": "grey_green"
+					},
+					{
+						"female": false,
+						"kit": "technician",
+						"outfit": "coverall_mustard",
+						"skin": "pallid"
+					}
+				],
+				[
+					{
+						"female": false,
+						"kit": "technician",
+						"outfit": "flight_leather",
+						"skin": "grey_green"
+					},
+					{
+						"female": true,
+						"kit": "technician",
+						"outfit": "flight_blue",
+						"skin": "pallid"
+					},
+					{
+						"female": true,
+						"kit": "technician",
+						"outfit": "pressure_suit_pale",
+						"skin": "grey_green"
+					},
+					{
+						"female": false,
+						"kit": "technician",
+						"outfit": "pressure_suit_dark",
+						"skin": "pallid"
+					},
+					{
+						"female": false,
+						"kit": "technician",
+						"outfit": "pressure_suit_tan",
+						"skin": "grey_green"
+					},
+					{
+						"female": false,
+						"kit": "sailor",
+						"outfit": "sailor_navy",
+						"skin": "pallid"
+					},
+					{
+						"female": false,
+						"kit": "sailor",
+						"outfit": "sailor_oilskin_yellow",
+						"skin": "grey_green"
+					},
+					{
+						"female": false,
+						"kit": "sailor",
+						"outfit": "sailor_oilskin_orange",
+						"skin": "grey_green"
+					}
+				],
+				[
+					{
+						"female": false,
+						"kit": "sailor",
+						"outfit": "sailor_striped",
+						"skin": "pallid"
+					},
+					{
+						"female": false,
+						"kit": "sailor",
+						"outfit": "sailor_whites",
+						"skin": "pallid"
+					},
+					{
+						"female": false,
+						"kit": "dockworker",
+						"outfit": "docker_madder",
+						"skin": "pallid"
+					},
+					{
+						"female": false,
+						"kit": "dockworker",
+						"outfit": "docker_green",
+						"skin": "grey_green"
+					},
+					{
+						"female": true,
+						"kit": "dockworker",
+						"outfit": "docker_indigo",
+						"skin": "grey_green"
+					},
+					{
+						"female": false,
+						"kit": "dockworker",
+						"outfit": "fisherman_cream",
+						"skin": "grey_green"
+					},
+					{
+						"female": false,
+						"kit": "dockworker",
+						"outfit": "fisherman_mustard",
+						"skin": "bruised"
+					},
+					{
+						"female": false,
+						"kit": "dockworker",
+						"outfit": "docker_rust",
+						"skin": "pallid"
+					}
+				],
+				[
+					{
+						"female": true,
+						"kit": "nurse",
+						"outfit": "nurse_blue",
+						"skin": "pallid"
+					}
+				]
+			]
+		},
+		"gore": {
+			"zombies": [
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.7859688583473",
+					"inst_tint": "(0.9383, 0.9303, 0.9476, 1.0)",
+					"kit": "villager",
+					"materials": 9,
+					"mesh_instances": 6,
+					"surfaces": 13
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.6847138080123",
+					"inst_tint": "(1.0089, 1.0456, 1.0411, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.34984578097144",
+					"inst_tint": "(1.0784, 0.9546, 0.9806, 1.0)",
+					"kit": "soldier",
+					"materials": 4,
+					"mesh_instances": 3,
+					"surfaces": 4
+				}
+			]
+		},
+		"noon": {
+			"count": 24,
+			"draw_calls_crowd": 1527,
+			"draw_calls_empty": 1264,
+			"draw_calls_per_zombie": 10.9583333333333,
+			"zombies": [
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.20486344839954",
+					"inst_tint": "(0.9705, 1.0505, 1.013, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 4,
+					"surfaces": 6
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.78350881464592",
+					"inst_tint": "(0.9925, 0.9907, 1.0085, 1.0)",
+					"kit": "soldier",
+					"materials": 7,
+					"mesh_instances": 5,
+					"surfaces": 8
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.15233698241482",
+					"inst_tint": "(1.0165, 0.9752, 1.0419, 1.0)",
+					"kit": "soldier",
+					"materials": 7,
+					"mesh_instances": 5,
+					"surfaces": 8
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.10765662622898",
+					"inst_tint": "(0.9414, 0.9687, 1.0593, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.61802974119473",
+					"inst_tint": "(0.9906, 1.0754, 0.9652, 1.0)",
+					"kit": "soldier",
+					"materials": 7,
+					"mesh_instances": 4,
+					"surfaces": 7
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.34546016212489",
+					"inst_tint": "(1.006, 0.9726, 1.0127, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.22888559042739",
+					"inst_tint": "(1.0371, 1.0033, 0.9789, 1.0)",
+					"kit": "soldier",
+					"materials": 7,
+					"mesh_instances": 4,
+					"surfaces": 7
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.29725781693853",
+					"inst_tint": "(1.0544, 1.0788, 0.9635, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 4,
+					"surfaces": 6
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": true,
+					"inst_dirt": "0.54158716432742",
+					"inst_tint": "(1.0555, 0.9418, 0.934, 1.0)",
+					"kit": "labstaff",
+					"materials": 8,
+					"mesh_instances": 4,
+					"surfaces": 8
+				},
+				{
+					"build": "thin",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.32770020593973",
+					"inst_tint": "(0.9799, 1.0621, 1.0697, 1.0)",
+					"kit": "villager",
+					"materials": 6,
+					"mesh_instances": 5,
+					"surfaces": 6
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.59374165305427",
+					"inst_tint": "(0.9726, 0.9805, 1.0084, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.42883643230491",
+					"inst_tint": "(1.0393, 0.9927, 0.9395, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.37815644639779",
+					"inst_tint": "(0.9455, 1.0647, 1.0412, 1.0)",
+					"kit": "miner",
+					"materials": 7,
+					"mesh_instances": 4,
+					"surfaces": 7
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.49841119776033",
+					"inst_tint": "(0.9366, 1.0532, 1.0674, 1.0)",
+					"kit": "labstaff",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "thin",
+					"enemy": "ganger",
+					"female": true,
+					"inst_dirt": "0.22148880690633",
+					"inst_tint": "(1.0765, 0.9685, 0.9581, 1.0)",
+					"kit": "villager",
+					"materials": 4,
+					"mesh_instances": 3,
+					"surfaces": 4
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.39906226438612",
+					"inst_tint": "(0.9299, 1.0401, 0.951, 1.0)",
+					"kit": "soldier",
+					"materials": 7,
+					"mesh_instances": 5,
+					"surfaces": 8
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.17994970981574",
+					"inst_tint": "(1.0796, 1.0706, 0.9437, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.33966293103582",
+					"inst_tint": "(0.9787, 1.0665, 1.0211, 1.0)",
+					"kit": "soldier",
+					"materials": 7,
+					"mesh_instances": 5,
+					"surfaces": 8
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.58902927842413",
+					"inst_tint": "(0.9553, 0.9389, 1.0401, 1.0)",
+					"kit": "soldier",
+					"materials": 4,
+					"mesh_instances": 3,
+					"surfaces": 4
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.6613239949098",
+					"inst_tint": "(0.9502, 1.0265, 1.0575, 1.0)",
+					"kit": "miner",
+					"materials": 7,
+					"mesh_instances": 4,
+					"surfaces": 7
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.5314039604642",
+					"inst_tint": "(0.9518, 1.0234, 1.0709, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.33390305533389",
+					"inst_tint": "(0.9845, 1.0424, 1.0581, 1.0)",
+					"kit": "miner",
+					"materials": 7,
+					"mesh_instances": 4,
+					"surfaces": 7
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.56759285926312",
+					"inst_tint": "(0.9391, 0.9846, 1.0776, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.46238755207615",
+					"inst_tint": "(1.0705, 1.0582, 1.0494, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				}
+			]
+		},
+		"special": {
+			"zombies": [
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.69146244244107",
+					"inst_tint": "(0.9961, 0.946, 0.9625, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 4,
+					"surfaces": 6
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.3926016555781",
+					"inst_tint": "(1.0518, 0.9538, 1.0327, 1.0)",
+					"kit": "miner",
+					"materials": 4,
+					"mesh_instances": 3,
+					"surfaces": 4
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.54111819822565",
+					"inst_tint": "(0.9584, 1.0344, 0.9572, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.77824945570533",
+					"inst_tint": "(1.0049, 1.031, 1.0795, 1.0)",
+					"kit": "miner",
+					"materials": 6,
+					"mesh_instances": 3,
+					"surfaces": 6
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": true,
+					"inst_dirt": "0.37267580436385",
+					"inst_tint": "(1.004, 1.0265, 0.953, 1.0)",
+					"kit": "villager",
+					"materials": 3,
+					"mesh_instances": 2,
+					"surfaces": 3
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": true,
+					"inst_dirt": "0.12001108531691",
+					"inst_tint": "(0.956, 1.0762, 1.0609, 1.0)",
+					"kit": "villager",
+					"materials": 3,
+					"mesh_instances": 2,
+					"surfaces": 3
+				},
+				{
+					"build": "medium",
+					"enemy": "glasshide",
+					"female": false,
+					"inst_dirt": "0.63943742642009",
+					"inst_tint": "(0.9594, 1.049, 1.0403, 1.0)",
+					"kit": "soldier",
+					"materials": 6,
+					"mesh_instances": 6,
+					"surfaces": 8
+				},
+				{
+					"build": "thin",
+					"enemy": "bellringer",
+					"female": false,
+					"inst_dirt": "0.5478093108014",
+					"inst_tint": "(0.95, 0.9787, 0.9843, 1.0)",
+					"kit": "bellringer",
+					"materials": 8,
+					"mesh_instances": 6,
+					"surfaces": 9
+				},
+				{
+					"build": "medium",
+					"enemy": "foreman",
+					"female": false,
+					"kit": "soldier",
+					"materials": 17,
+					"mesh_instances": 49,
+					"surfaces": 61
+				}
+			]
+		},
+		"taproom": {
+			"count": 24,
+			"draw_calls_crowd": 2520,
+			"draw_calls_empty": 2165,
+			"draw_calls_per_zombie": 14.7916666666667,
+			"zombies": [
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": true,
+					"inst_dirt": "0.5067498550473",
+					"inst_tint": "(0.9934, 0.9705, 1.0505, 1.0)",
+					"kit": "villager",
+					"materials": 4,
+					"mesh_instances": 3,
+					"surfaces": 4
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.48705234303743",
+					"inst_tint": "(0.9658, 0.9925, 0.9907, 1.0)",
+					"kit": "soldier",
+					"materials": 7,
+					"mesh_instances": 5,
+					"surfaces": 8
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.63314848335752",
+					"inst_tint": "(0.9336, 1.0165, 0.9752, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 4,
+					"surfaces": 6
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.70945277999449",
+					"inst_tint": "(1.0273, 0.9414, 0.9687, 1.0)",
+					"kit": "soldier",
+					"materials": 7,
+					"mesh_instances": 4,
+					"surfaces": 7
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.29766049704848",
+					"inst_tint": "(1.0192, 0.9906, 1.0754, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": true,
+					"inst_dirt": "0.50562799591437",
+					"inst_tint": "(1.0643, 1.006, 0.9726, 1.0)",
+					"kit": "villager",
+					"materials": 4,
+					"mesh_instances": 3,
+					"surfaces": 4
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.35770531352994",
+					"inst_tint": "(1.0288, 1.0371, 1.0033, 1.0)",
+					"kit": "villager",
+					"materials": 4,
+					"mesh_instances": 3,
+					"surfaces": 4
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": true,
+					"inst_dirt": "0.29031627514418",
+					"inst_tint": "(0.9586, 1.0544, 1.0788, 1.0)",
+					"kit": "villager",
+					"materials": 4,
+					"mesh_instances": 3,
+					"surfaces": 4
+				},
+				{
+					"build": "thin",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.16120106810145",
+					"inst_tint": "(0.9512, 1.0555, 0.9418, 1.0)",
+					"kit": "villager",
+					"materials": 5,
+					"mesh_instances": 4,
+					"surfaces": 5
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.21228928272349",
+					"inst_tint": "(0.9299, 1.0771, 0.9369, 1.0)",
+					"kit": "miner",
+					"materials": 7,
+					"mesh_instances": 4,
+					"surfaces": 7
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.4869444578349",
+					"inst_tint": "(1.0767, 0.9726, 0.9805, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.18545924948025",
+					"inst_tint": "(1.0796, 1.0393, 0.9927, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 4,
+					"surfaces": 6
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": true,
+					"inst_dirt": "0.6301207834608",
+					"inst_tint": "(1.0289, 0.9455, 1.0647, 1.0)",
+					"kit": "villager",
+					"materials": 5,
+					"mesh_instances": 4,
+					"surfaces": 5
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.45480592504492",
+					"inst_tint": "(1.0347, 1.0118, 0.9869, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.17087575347265",
+					"inst_tint": "(0.9472, 1.0615, 0.9954, 1.0)",
+					"kit": "labstaff",
+					"materials": 8,
+					"mesh_instances": 4,
+					"surfaces": 8
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.59300399620381",
+					"inst_tint": "(0.9735, 0.9309, 0.9736, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 4,
+					"surfaces": 6
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.62214238178311",
+					"inst_tint": "(1.0252, 1.0292, 1.0428, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 4,
+					"surfaces": 6
+				},
+				{
+					"build": "thin",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.13798883190673",
+					"inst_tint": "(1.0457, 0.9531, 0.9266, 1.0)",
+					"kit": "villager",
+					"materials": 4,
+					"mesh_instances": 3,
+					"surfaces": 4
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.39884350141805",
+					"inst_tint": "(1.0496, 0.977, 0.9443, 1.0)",
+					"kit": "villager",
+					"materials": 4,
+					"mesh_instances": 3,
+					"surfaces": 4
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": true,
+					"inst_dirt": "0.49208344464459",
+					"inst_tint": "(1.0089, 0.9488, 1.072, 1.0)",
+					"kit": "villager",
+					"materials": 5,
+					"mesh_instances": 4,
+					"surfaces": 5
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.48521873612054",
+					"inst_tint": "(0.978, 1.0088, 0.9982, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.57541800312439",
+					"inst_tint": "(1.0617, 0.9984, 1.0523, 1.0)",
+					"kit": "soldier",
+					"materials": 7,
+					"mesh_instances": 5,
+					"surfaces": 8
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.38253847557321",
+					"inst_tint": "(0.945, 1.0591, 0.9391, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 4,
+					"surfaces": 6
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.70449812074767",
+					"inst_tint": "(1.0747, 1.0386, 1.0705, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				}
+			]
+		},
+		"yard": {
+			"count": 24,
+			"draw_calls_crowd": 1917,
+			"draw_calls_empty": 1710,
+			"draw_calls_per_zombie": 8.625,
+			"zombies": [
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.64965067226072",
+					"inst_tint": "(1.0373, 0.9251, 1.0156, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.28458606506596",
+					"inst_tint": "(1.0543, 1.0172, 0.9566, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 4,
+					"surfaces": 6
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.72194542051884",
+					"inst_tint": "(1.0204, 0.9306, 1.0071, 1.0)",
+					"kit": "miner",
+					"materials": 6,
+					"mesh_instances": 3,
+					"surfaces": 6
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.55095333581774",
+					"inst_tint": "(1.0033, 0.9337, 1.037, 1.0)",
+					"kit": "soldier",
+					"materials": 7,
+					"mesh_instances": 5,
+					"surfaces": 8
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.23745869496163",
+					"inst_tint": "(0.9992, 1.0201, 1.0285, 1.0)",
+					"kit": "villager",
+					"materials": 4,
+					"mesh_instances": 3,
+					"surfaces": 4
+				},
+				{
+					"build": "thin",
+					"enemy": "ganger",
+					"female": true,
+					"inst_dirt": "0.71710478752951",
+					"inst_tint": "(0.9222, 1.0583, 1.011, 1.0)",
+					"kit": "villager",
+					"materials": 5,
+					"mesh_instances": 4,
+					"surfaces": 5
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": true,
+					"inst_dirt": "0.78125247042909",
+					"inst_tint": "(1.0736, 0.9857, 0.982, 1.0)",
+					"kit": "villager",
+					"materials": 4,
+					"mesh_instances": 3,
+					"surfaces": 4
+				},
+				{
+					"build": "thin",
+					"enemy": "ganger",
+					"female": true,
+					"inst_dirt": "0.23422091074131",
+					"inst_tint": "(1.0678, 1.0577, 1.0304, 1.0)",
+					"kit": "labstaff",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.79031504154181",
+					"inst_tint": "(0.9492, 1.0291, 1.0657, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.27302248626992",
+					"inst_tint": "(0.9597, 1.019, 0.9938, 1.0)",
+					"kit": "villager",
+					"materials": 4,
+					"mesh_instances": 3,
+					"surfaces": 4
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.77668771638454",
+					"inst_tint": "(0.9224, 1.0026, 1.0458, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.78695108239233",
+					"inst_tint": "(0.9695, 0.9491, 0.961, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.57228397611877",
+					"inst_tint": "(1.0108, 0.9746, 0.9438, 1.0)",
+					"kit": "miner",
+					"materials": 6,
+					"mesh_instances": 3,
+					"surfaces": 6
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.61885542525486",
+					"inst_tint": "(1.0519, 1.0794, 1.0198, 1.0)",
+					"kit": "soldier",
+					"materials": 7,
+					"mesh_instances": 4,
+					"surfaces": 7
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.23613239765157",
+					"inst_tint": "(0.9551, 1.0295, 0.9886, 1.0)",
+					"kit": "miner",
+					"materials": 7,
+					"mesh_instances": 4,
+					"surfaces": 7
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.58249355304608",
+					"inst_tint": "(1.0771, 0.9447, 0.9787, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.46416165017559",
+					"inst_tint": "(1.0425, 0.9834, 1.0187, 1.0)",
+					"kit": "soldier",
+					"materials": 4,
+					"mesh_instances": 3,
+					"surfaces": 4
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.14688120421513",
+					"inst_tint": "(1.0433, 0.9715, 1.0288, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 3,
+					"surfaces": 5
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.23892387378902",
+					"inst_tint": "(1.0512, 0.9891, 0.9643, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 4,
+					"surfaces": 6
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.2862369655479",
+					"inst_tint": "(1.0619, 1.0708, 0.9664, 1.0)",
+					"kit": "miner",
+					"materials": 7,
+					"mesh_instances": 4,
+					"surfaces": 7
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": true,
+					"inst_dirt": "0.40072765846529",
+					"inst_tint": "(0.9422, 0.9589, 1.0125, 1.0)",
+					"kit": "villager",
+					"materials": 4,
+					"mesh_instances": 3,
+					"surfaces": 4
+				},
+				{
+					"build": "medium",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.79871300847752",
+					"inst_tint": "(0.9919, 0.999, 0.9303, 1.0)",
+					"kit": "soldier",
+					"materials": 5,
+					"mesh_instances": 4,
+					"surfaces": 6
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": true,
+					"inst_dirt": "0.59120376474371",
+					"inst_tint": "(1.0442, 1.0562, 1.0019, 1.0)",
+					"kit": "villager",
+					"materials": 4,
+					"mesh_instances": 3,
+					"surfaces": 4
+				},
+				{
+					"build": "heavy",
+					"enemy": "ganger",
+					"female": false,
+					"inst_dirt": "0.36122829964191",
+					"inst_tint": "(1.0023, 0.9441, 1.0048, 1.0)",
+					"kit": "soldier",
+					"materials": 3,
+					"mesh_instances": 2,
+					"surfaces": 3
+				}
+			]
+		}
+	}
+}
