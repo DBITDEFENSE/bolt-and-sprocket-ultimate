@@ -197,7 +197,7 @@ static func ensure_pad_ui_actions() -> int:
 ## T-264: the static caches are emptied while the servers still live (ExitSweep: a release build crashed on the
 ## way out). Autoloads leave the tree only when the game quits.
 func _exit_tree() -> void:
-	var swept: Array = ExitSweep.run()
+	var swept: Array = ExitSweep.run(get_tree().root if get_tree() != null else null)
 	if DisplayServer.get_name() != "headless" or OS.has_feature("template"):
 		print("[GLSettings] exit: %d scripts' static caches emptied (%d variables, %d nodes freed)" % swept)
 
