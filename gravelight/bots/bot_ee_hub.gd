@@ -308,8 +308,20 @@ func resolve(spec: Variant) -> Array[Node]:
 		return []
 	if (spec as Dictionary).has("class") and squad.time() - _pool_t > 6.0:
 		_pool_t = squad.time()
-		_pool = squad.map.find_children("*", "Interactable", true, false)
+		_pool = interactables_of(squad.map)
 	return BotEECatalog.resolve(spec, get_tree(), _pool)
+
+
+## Every Interactable under `map`, in tree order: what map.find_children("*", "Interactable", true, false) gave,
+## from the group each Interactable joins when it is made, so no walk over the map's every node (T-265).
+static func interactables_of(map: Node) -> Array[Node]:
+	var out: Array[Node] = []
+	if map == null or not map.is_inside_tree():
+		return out
+	for n: Node in map.get_tree().get_nodes_in_group(&"interactables"):
+		if map.is_ancestor_of(n):
+			out.append(n)
+	return out
 
 
 func path_of(n: Node) -> String:
@@ -334,15 +346,23 @@ func _load_labels() -> void:
 			knowledge.labels[str(k)] = str((bk[k] as Dictionary).get("label", k))
 
 
+var _sweep_due: bool = false   # the sight sweep owed since last frame's knowledge poll (T-265)
+
+
 func _process(delta: float) -> void:
 	if squad == null or GameState.phase != GameState.Phase.PLAYING:
 		return
 	var c: Dictionary = BotEECatalog.cfg()
+	# T-265: the knowledge poll one frame, the sight sweep the next (both still every sight.every_s): together
+	# they were the squad's dearest frame twice a second (each walks every quest's steps and resolves its nodes)
+	if _sweep_due:
+		_sweep_due = false
+		_sweep_sight()
 	_sweep_t -= delta
 	if _sweep_t <= 0.0:
 		_sweep_t = float((c.get("sight", {}) as Dictionary).get("every_s", 0.5))
 		_poll_knowledge()
-		_sweep_sight()
+		_sweep_due = true
 	_pick_t -= delta
 	if _pick_t <= 0.0:
 		_pick_t = float(c.get("pick_every_s", 1.0))

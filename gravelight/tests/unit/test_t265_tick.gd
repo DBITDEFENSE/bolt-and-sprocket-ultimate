@@ -136,6 +136,29 @@ func test_the_roof_share_arrives() -> void:
 	assert_eq(d.full_frames, full, "and then the frames are free again")
 
 
+# ------------------------------------------------------------------ whole-map searches from groups
+
+class _Thing extends Interactable:
+	func build_greybox() -> void:
+		pass
+
+
+func test_the_interactables_come_from_their_group_in_tree_order() -> void:
+	var map: Node3D = Node3D.new()
+	add_child_autofree(map)
+	var other: Node3D = Node3D.new()
+	add_child_autofree(other)
+	var a: Node3D = Node3D.new()
+	map.add_child(a)
+	for parent: Node in [a, map, a, other]:
+		var t: Interactable = _Thing.new()
+		parent.add_child(t)
+	var want: Array[Node] = map.find_children("*", "Interactable", true, false)
+	var got: Array[Node] = BotEEHub.interactables_of(map)
+	assert_eq(got.size(), 3, "the three under the map, not the one beside it")
+	assert_eq(got, want, "the same nodes in the same order as the walk over the map gave")
+
+
 # ------------------------------------------------------------------ rates
 
 func test_the_named_rates() -> void:

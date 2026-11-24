@@ -18,6 +18,12 @@ const LAYER_INTERACTABLE: int = 1 << 4
 var area: Area3D
 
 
+## T-265: every Interactable is in the group "interactables" from its making (the squad's errand planner asked the
+## whole map for them every 6 s: a walk over every node of it, 3.7 ms on Map 0).
+func _init() -> void:
+	add_to_group(&"interactables")
+
+
 func _ready() -> void:
 	area = Area3D.new()
 	area.name = "InteractArea"
