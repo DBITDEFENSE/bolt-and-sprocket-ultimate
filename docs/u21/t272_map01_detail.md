@@ -73,3 +73,58 @@ Verified (headless):
   on the whole last leg), the park and the drive box, the beacon off the route and the hull, `with_map_rows`, the gate
   and the gateway's collider in the scene file. `test_sherman` and `test_map_detail` changed where they asserted
   "Kaltenbrunn: the raid only".
+
+## 2. The headframe as the map's tower
+
+The deck is the hoist house's flat roof under the headframe (`TowerBase`, x 15..25, z 10..20, 6.0 m up): a 10 m square
+round the shaft collar, already a navmesh island before this pass, with nothing that kept anyone on it or got anyone up.
+A second, higher platform in the frame was looked at and dropped: from 11 m the lines would have to be 20 m and more
+long to stay under 30 degrees, and the yard is 40 x 32 m with the headframe in its middle; every such line would leave
+the yard over a 4 m wall (the rider's feet 3 to 4 m up at the wall) or skip a paid door.
+
+| What | Where | Notes |
+|---|---|---|
+| The railing | the roof's edge, three collider bars a side (`HFRail_*`, 0.06 / 0.55 / 1.05 m over the deck), drawn as an iron railing (posts every 1.25 m, top rail, knee rail, toe plate, snow on the top rail) | closed all round as on Map 0's tower: the climb and the zip mounts carry over it, nobody walks off |
+| The frame's feet | `Prop_A_FrameFoot_*`, 0.76 m square from the deck to 8.4 m at the four corners; the pads drawn the same size (they were 1.2 m and reached past the roof's edge) | the legs were drawn only |
+| The shaft collar | `Prop_A_ShaftCollar`, x 17.2..22.8, z 12.2..17.8, 0.5 m (the iron box already drawn there) | was a ghost; the deck is a 2.1 m walk all round it |
+| The frame's bracing | the lowest tier's cross-braces start on a ring at 8.4 m (2.4 m over the deck); the ring beam that lay across the roof at the legs' line is gone | nobody walks or shoots through a brace on the deck (Map 0's rule) |
+| The ladder | up the west face at z 15 (Props.ladder at x 14.86, stand-offs to the wall, the stiles 0.9 m over the deck), a lantern on a post at its head | `map01.json` `ladders` (foot / head, line [14.345, 15]) and `climb_links` `Climb_Headframe` (line, both ways, drop, `perch` 10) |
+| EastZip | from a davit off the south-east leg, anchor (25.25, 8.0, 18.3), down the east lane to a post at (36.4, 0, 26.8), set down at (35.68, 0, 26.25) by the Rail Yard door's corner | 15.0 m, 21 degrees, 3.3 s |
+| WestZip | from the south-west leg, anchor (14.75, 8.0, 18.3), down the west lane to a post at (3.6, 0, 22.6), set down at (4.44, 0, 22.28) by the Administration door | 13.1 m, 24 degrees, 3.0 s |
+| Lights | the ladder head's lantern (1.6, 9 m) and a lantern on each landing post (1.6, 6.5 m); no shadows | +3 lights |
+
+Rules kept: both lines land in the Minehead yard, so neither skips a paid door and neither is chained; both landings
+are more than 3.5 m from every spawn marker and 31 m apart; down only; the dead and the bots never ride. Two lines, not
+three: a third, north into the forecourt, would be 8 m long at 37 degrees and land where the Sherman parks.
+
+**Shared script change (data-driven, default unchanged):** `climb_link.gd`: a climb-link row's `"perch"` (metres)
+widens `ClimbLink.on_perch` for its own platform, so the undead horse's siege shake (T-268) reaches the whole 10 m deck
+(its far corner is 9.7 m from the ladder's head; the default reach is 4.5 m, made for Map 0's 4.8 m decks). Rows
+without it (Map 0's) behave as before.
+
+Verified (headless):
+- `probe_ladder_tops -- --map=map01`: both ladder ends, both climb-link ends and both landings on the navmesh (0.00 m).
+- `probe_map_site --line`: EastZip 15.0 m, 21 degrees, WestZip 13.1 m, 24 degrees; the only thing in a rider's way is
+  the landing post at the very end (as on Map 0).
+- `smoke_map01_tower` (new, 63 checks) PASS: up and down the ladder (carried, on the line, hands on the rungs, ends on
+  the navmesh); the deck's navmesh goes from the ladder's head all the way round the collar (7 of 7 places); the zone
+  up there is the yard's; the horse's siege counts the whole deck; each line: nothing in the rider's way, the anchor
+  reached on foot, the bar under the Use ray, named prompt, the ride, the landing, standing free; the dead: one climbs
+  and comes round the deck to the player in the far corner and hits them (20 s from its rise), drops back down when
+  the player leaves, one follows the player up, four go up one after another (up to 3 on the rungs, never closer than
+  2.19 m), a climber killed 3.5 m up falls, a crawler never climbs and is requeued after 9 s.
+- `smoke_ladders` PASS (Map 0 and Map 2 unchanged by the climb-link change).
+- `test_map01_detail`: the ladder rows (the same line for players and the dead, the line 0.4 m off the drawn rungs,
+  perch reaches the far corner), the zip rows against the drawn lines (2 m over the deck, outside the railing, 15..30
+  degrees, the cable on its post, set down 0.9 m short on the line, inside the yard, clear of every spawn, apart), the
+  deck's colliders in the scene (12 bars, 4 feet, the collar, braces over head height), `perch`.
+
+Seen (WSL + Xvfb, the Compatibility renderer, 1280x720; `docs/captures/t272/`, set `t272_m01` in `capture_cams.json`):
+the gate shut from the forecourt (`00`), the deck from the Kaue at night and noon (`02`, `11`: the railing on the roof's
+edge, the frame's lowest braces over the deck, both cables), from the east lane (`03`), on the deck at night and noon
+(`05`, `12`: the walk round the shaft collar, the ropes into it, the feet, the lantern post at the ladder's head), down
+the east line with its prompt (`06`) and the west line (`07`), back up from the east landing (`08`), the Sherman parked
+in the forecourt at night and noon (`09`, `10`) and coming through the gateway (`13`). What the frames changed: nothing
+yet; the ladder itself does not read in the night frame (`04`, the west face is dark) and the camera placed outside the
+gate was put back inside the yard by the map (no player may stand there), so that view was dropped; a noon frame of the
+ladder was added to the set for the next render.

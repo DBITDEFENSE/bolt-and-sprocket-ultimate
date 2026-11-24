@@ -25,6 +25,7 @@ const LINE: StringName = &"climb_line"       # meta: Vector2, the ladder's line 
 const DROP: StringName = &"climb_drop"       # meta: bool, the dead may drop down it
 const SPACE_META: StringName = &"climb_space"
 const QUEUE: StringName = &"climb_queue"     # meta: Array, the bodies on the rungs now
+const PERCH_META: StringName = &"climb_perch" # meta: float, T-272: how far from the head its platform reaches (on_perch)
 const SPACE: float = 1.9                     # metres between two climbers on one ladder (a body is 1.8 m)
 
 
@@ -52,6 +53,8 @@ static func try_enter(link: NavigationLink3D, body: Node3D, foot_y: float) -> bo
 
 ## True when `pos` is on a platform a ladder serves: within `reach` m (flat) and 1.5 m (height) of the head of a
 ## ladder link under `map`'s ClimbLinks, the head at least 3 m over its foot. The horse boss's siege asks (T-268).
+## T-272: a row's `"perch"` (metres) widens that for its own platform (Kaltenbrunn's headframe deck is 10 m square, the
+## ladder at one edge); rows without it use `reach` as before.
 static func on_perch(map: Node, pos: Vector3, reach: float = 4.5) -> bool:
 	var holder: Node = map.get_node_or_null("ClimbLinks") if map != null else null
 	if holder == null:
@@ -61,7 +64,8 @@ static func on_perch(map: Node, pos: Vector3, reach: float = 4.5) -> bool:
 		if link == null or not link.has_meta(LINE):
 			continue
 		var head: Vector3 = link.end_position
-		if head.y - link.start_position.y >= 3.0 and absf(pos.y - head.y) < 1.5 and Vector2(pos.x - head.x, pos.z - head.z).length() <= reach:
+		var r: float = maxf(reach, float(link.get_meta(PERCH_META, 0.0)))
+		if head.y - link.start_position.y >= 3.0 and absf(pos.y - head.y) < 1.5 and Vector2(pos.x - head.x, pos.z - head.z).length() <= r:
 			return true
 	return false
 
@@ -119,6 +123,8 @@ static func spawn_all(root: Node3D, map_id: StringName, zone_bits: Dictionary) -
 			link.set_meta(LINE, Vector2(float(ln[0]), float(ln[1])))
 			link.set_meta(DROP, bool(row.get("drop", false)))
 			link.set_meta(SPACE_META, float(row.get("space", SPACE)))
+			if row.has("perch"):
+				link.set_meta(PERCH_META, float(row["perch"]))
 		holder.add_child(link)
 		out.append(link)
 		i += 1

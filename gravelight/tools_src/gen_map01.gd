@@ -281,6 +281,27 @@ const GATE_X1: float = 22.4
 const GATE_Z: float = -0.45
 const GATE_H: float = 3.6
 
+## T-272: the headframe as the map's tower. The hoist house's flat roof (TowerBase, x 15..25, z 10..20, 6 m up) is the
+## deck: an iron railing round its edge (three collider bars, closed all round as on Map 0's tower: the climbs and the
+## zip mounts carry over it), colliders for the frame's four feet and the shaft collar in its middle (a 2.1 m walk all
+## round), one ladder up the west face for the players and the dead (map01.json ladders / climb_links), and two zip
+## lines from davit arms on the frame's south legs down into the yard (ZIP_LINES; map01.json ziplines).
+const HF_X0: float = 15.0
+const HF_X1: float = 25.0
+const HF_Z0: float = 10.0
+const HF_Z1: float = 20.0
+const HF_DECK: float = 6.0
+const HF_FOOT: float = 0.38          # the frame feet's half width (pads and colliders)
+const HF_BRACE_Y: float = 8.4        # the frame's lowest braces start here: 2.4 m over the deck, over every head
+const HF_LADDER: Vector3 = Vector3(14.86, 0.0, 15.0)   # Props.ladder's foot on the west face (the cornice's outer face is x 14.88)
+## The zip lines: [name, the cable's top (a bracket on a davit off a south leg, HF_DECK + 2, a step outside the railing),
+## the landing post's foot]. The cable's low end is ZIP_POST_H up the post; the rider is set down 0.9 m short of it.
+const ZIP_POST_H: float = 2.75
+const ZIP_LINES: Array = [
+	["EastZip", Vector3(25.25, HF_DECK + 2.0, 18.3), Vector3(36.4, 0.0, 26.8)],   # down the east lane to the Rail Yard door's corner
+	["WestZip", Vector3(14.75, HF_DECK + 2.0, 18.3), Vector3(3.6, 0.0, 22.6)],    # down the west lane to the Administration door
+]
+
 ## Greybox colour keys -> material library keys (world/materials.gd).
 const MAT_MAP: Dictionary = {
 	"wall": "stucco", "brick": "brick", "concrete": "concrete", "salt": "halite", "rock": "rock_dark", "snow": "snow",
@@ -315,6 +336,7 @@ const HIDE: Array = [
 	"Confessional", "Turbine", "Catwalk", "Tank", "NurseryBed", "AdminStairs", "FlightA", "FlightB", "FlightC",
 	"NavBlock_Ammo*", "NavBlock_ArmorersBench", "NavBlock_Perk*", "CoreProp*", "KaueProp*", "KaueRoof", "NavBlock_Kaue*",
 	"Prop_*", "AdminStairString*", "DaisSkirt",   # T-239: the solid dressing's colliders; the stair strings are drawn as panelled walls
+	"HFRail*",   # T-272: the headframe deck's railing bars (drawn by _dress_headframe_deck)
 ]
 const SODIUM: Color = Color(1.0, 0.66, 0.36)
 const INCAND: Color = Color(1.0, 0.78, 0.55)
@@ -708,6 +730,7 @@ func build_surface() -> void:
 	for corner: Vector2 in [Vector2(15.5, 10.5), Vector2(24.5, 10.5), Vector2(15.5, 19.5), Vector2(24.5, 19.5)]:
 		box(geo, "TowerLeg", Vector3(corner.x - 0.4, 6, corner.y - 0.4), Vector3(corner.x + 0.4, 28, corner.y + 0.4), "metal", false)
 	box(geo, "TowerHead", Vector3(15, 26, 10), Vector3(25, 29, 20), "metal", false)
+	build_headframe_deck()
 	box(geo, "SnowMound1", Vector3(35, 0, 1), Vector3(39, 0.4, 5), "snow", false)
 	box(geo, "SnowMound2", Vector3(1, 0, 27), Vector3(3.7, 0.4, 31), "snow", false)   # (short of the Kaue's west wall, T-225)
 	build_kaue()
@@ -778,6 +801,28 @@ func build_surface() -> void:
 	box(geo, "LiftFloorE", Vector3(27, -0.5, 49), Vector3(30, 0, 53), "concrete")
 	# drifts outside the yard for silhouette
 	box(geo, "Drift", Vector3(-30, 0, -10), Vector3(-20, 1.2, 0), "snow", false)
+
+
+## T-272: the headframe deck's colliders (HF_*): the railing's three bars on each edge (drawn by _dress_headframe_deck),
+## the frame's four feet up to over head height, the shaft collar, and the zip lines' landing posts.
+func build_headframe_deck() -> void:
+	var y: float = HF_DECK
+	var c: Array = [Vector3(HF_X0 + 0.05, 0, HF_Z0 + 0.05), Vector3(HF_X1 - 0.05, 0, HF_Z0 + 0.05), Vector3(HF_X1 - 0.05, 0, HF_Z1 - 0.05), Vector3(HF_X0 + 0.05, 0, HF_Z1 - 0.05)]
+	for k: int in 4:
+		var a: Vector3 = c[k]
+		var b: Vector3 = c[(k + 1) % 4]
+		for r: Array in [[0.06, 0.06, 0.12], [0.55, 0.04, 0.04], [1.05, 0.06, 0.07]]:   # [centre height over the deck, width, height]
+			var hy: float = y + float(r[0])
+			var hw: float = float(r[1]) * 0.5
+			var hh: float = float(r[2]) * 0.5
+			box(geo, "HFRail_%d%s" % [k, ["L", "M", "T"][int(r[0] * 2.0)]], Vector3(minf(a.x, b.x) - hw, hy - hh, minf(a.z, b.z) - hw), Vector3(maxf(a.x, b.x) + hw, hy + hh, maxf(a.z, b.z) + hw), "metal")
+	for fx: float in [15.5, 24.5]:
+		for fz: float in [10.5, 19.5]:
+			box(geo, "Prop_A_FrameFoot_%s%s" % ["W" if fx < 20.0 else "E", "N" if fz < 15.0 else "S"], Vector3(fx - HF_FOOT, y, fz - HF_FOOT), Vector3(fx + HF_FOOT, HF_BRACE_Y, fz + HF_FOOT), "metal")
+	box(geo, "Prop_A_ShaftCollar", Vector3(17.2, y, 12.2), Vector3(22.8, y + 0.5, 17.8), "metal")
+	for zl: Array in ZIP_LINES:
+		var zp: Vector3 = zl[2]
+		box(geo, "ZipPost_" + str(zl[0]), zp + Vector3(-0.12, 0, -0.12), zp + Vector3(0.12, ZIP_POST_H + 0.15, 0.12), "metal")
 
 
 # ================================================================== maintenance stairs + lift shaft
@@ -1256,6 +1301,7 @@ func build_dressing() -> void:
 	_dress_ground()
 	_dress_yard()
 	_dress_headframe()
+	_dress_headframe_deck()
 	_dress_hoist_house()
 	_dress_yard_south()
 	_dress_admin()
@@ -1790,10 +1836,16 @@ func _dress_headframe() -> void:
 		var bp: Vector2 = base[i]
 		var tp: Vector2 = top[i]
 		Props.strut(dress, Vector3(bp.x, y0, bp.y), Vector3(tp.x, y1, tp.y), 0.55, "iron")
-		B(Vector3(bp.x - 0.6, y0, bp.y - 0.6), Vector3(bp.x + 0.6, y0 + 0.3, bp.y + 0.6), "concrete")
+		# (T-272: the pads are the feet's colliders' size, HF_FOOT; at 1.2 m they reached past the roof's edge and into the walk)
+		B(Vector3(bp.x - HF_FOOT, y0, bp.y - HF_FOOT), Vector3(bp.x + HF_FOOT, y0 + 0.3, bp.y + HF_FOOT), "concrete")
 	for t: int in tiers + 1:
 		var f: float = float(t) / float(tiers)
 		var y: float = lerpf(y0, y1, f)
+		if t == 0:
+			# T-272: the roof is a deck now. No ring beam lying across it, and the lowest tier's cross-bracing starts on a
+			# ring at HF_BRACE_Y, 2.4 m over the deck (nobody walks or shoots through a brace, as on Map 0's tower)
+			f = (HF_BRACE_Y - y0) / (y1 - y0)
+			y = HF_BRACE_Y
 		for i2: int in 4:
 			var a: Vector2 = (base[i2] as Vector2).lerp(top[i2], f)
 			var b: Vector2 = (base[(i2 + 1) % 4] as Vector2).lerp(top[(i2 + 1) % 4], f)
@@ -1846,6 +1898,69 @@ func _dress_headframe() -> void:
 	flood("A_MINEHEAD", Vector3(36.0, 4.6, 0.45), Vector3(31.0, 0.0, 16.0), 22.0, 3.0, 45.0)
 	for fp: Vector3 in [Vector3(4.0, 4.12, 0.3), Vector3(36.0, 4.12, 0.3)]:
 		Props.strut(dress, fp, fp + Vector3(0, 0.45, 0.1), 0.08, "iron")
+
+
+## T-272: the headframe deck. An iron railing on the roof's edge over its collider bars (posts, a top rail, a knee rail and
+## a toe plate, snow on the top rail), the ladder up the west face on stand-offs with a lantern on a post at its head, the
+## frame's ring at HF_BRACE_Y, and the two zip lines (ZIP_LINES): a davit off a south leg with the cable's bracket and a
+## marker lamp, the cable down to its landing post with a stay, a snow cap, a lantern, a coil of rope and trodden snow
+## where you land (the trolleys are the ZipLines' own). Visual only: the colliders are build_headframe_deck's.
+func _dress_headframe_deck() -> void:
+	var y: float = HF_DECK
+	var c: Array = [Vector3(HF_X0 + 0.05, 0, HF_Z0 + 0.05), Vector3(HF_X1 - 0.05, 0, HF_Z0 + 0.05), Vector3(HF_X1 - 0.05, 0, HF_Z1 - 0.05), Vector3(HF_X0 + 0.05, 0, HF_Z1 - 0.05)]
+	for k: int in 4:
+		var a: Vector3 = c[k]
+		var b: Vector3 = c[(k + 1) % 4]
+		var lo: Vector3 = Vector3(minf(a.x, b.x), 0, minf(a.z, b.z))
+		var hi: Vector3 = Vector3(maxf(a.x, b.x), 0, maxf(a.z, b.z))
+		B(lo + Vector3(-0.025, y + 1.02, -0.025), hi + Vector3(0.025, y + 1.08, 0.025), "iron")   # the top rail
+		B(lo + Vector3(-0.015, y + 0.53, -0.015), hi + Vector3(0.015, y + 0.57, 0.015), "iron")   # the knee rail
+		B(lo + Vector3(-0.01, y, -0.01), hi + Vector3(0.01, y + 0.14, 0.01), "iron")   # the toe plate
+		_noshadow(B(lo + Vector3(-0.03, y + 1.08, -0.03), hi + Vector3(0.03, y + 1.11, 0.03), "snow", false))
+		var n: int = int(ceil(a.distance_to(b) / 1.25))
+		for j: int in n:   # the posts (the corner one is the next side's first)
+			var p: Vector3 = a.lerp(b, float(j) / float(n))
+			B(p + Vector3(-0.025, y, -0.025), p + Vector3(0.025, y + 1.08, 0.025), "iron")
+	# the ladder up the west face to the deck, its stiles carried 0.9 m over the deck to hold on to, stand-offs to the wall
+	Props.ladder(dress, HF_LADDER, 90.0, HF_DECK + 0.9, "iron")
+	for sy: float in [0.9, 2.5, 4.1, 5.3]:
+		for sz: float in [-0.2, 0.2]:
+			_noshadow(B(Vector3(HF_LADDER.x - 0.14, sy, HF_LADDER.z + sz - 0.02), Vector3(HF_X0 - 0.06, sy + 0.05, HF_LADDER.z + sz + 0.02), "iron"))
+	# the lantern at the ladder's head: a post on the railing, an arm out over the ladder
+	var lp: Vector3 = Vector3(HF_X0 + 0.08, y, HF_LADDER.z + 0.7)
+	B(lp + Vector3(-0.03, 0, -0.03), lp + Vector3(0.03, 2.25, 0.03), "iron")
+	_noshadow(B(Vector3(HF_X0 - 0.4, y + 2.19, lp.z - 0.015), Vector3(lp.x + 0.03, y + 2.22, lp.z + 0.015), "iron"))
+	var lan: Vector3 = Vector3(HF_X0 - 0.35, y + 1.95, lp.z)
+	_noshadow(B(lan + Vector3(-0.08, -0.12, -0.08), lan + Vector3(0.08, 0.12, 0.08), "lantern_glass", false))
+	_noshadow(B(lan + Vector3(-0.1, 0.12, -0.1), lan + Vector3(0.1, 0.16, 0.1), "iron"))
+	lamp(lan, Color(1.0, 0.66, 0.36), 1.6, 9.0, 0.08)
+	# the zip lines
+	for zl: Array in ZIP_LINES:
+		var top: Vector3 = zl[1]
+		var foot: Vector3 = zl[2]
+		var post_top: Vector3 = foot + Vector3(0, ZIP_POST_H, 0)
+		var flat: Vector3 = Vector3(foot.x - top.x, 0, foot.z - top.z).normalized()
+		var side: Vector3 = Vector3(-flat.z, 0, flat.x)
+		var leg: Vector3 = Vector3(24.5 if top.x > 20.0 else 15.5, HF_BRACE_Y + 0.3, 19.5)   # the south leg it hangs from
+		Props.strut(dress, leg, top + Vector3(0, 0.06, 0), 0.08, "iron")   # the davit (all of it over head height on the deck)
+		_noshadow(Props.strut(dress, leg + Vector3(0, 0.9, 0), top + Vector3(0, 0.08, 0), 0.03, "iron"))   # its tie up to the leg
+		B(top + Vector3(-0.08, -0.1, -0.08), top + Vector3(0.08, 0.1, 0.08), "iron")
+		_noshadow(B(top + Vector3(-0.05, 0.1, -0.05), top + Vector3(0.05, 0.4, 0.05), "iron"))
+		_noshadow(B(top + Vector3(-0.06, 0.16, -0.06), top + Vector3(0.06, 0.34, 0.06), "lantern_glass", false))   # its marker lamp
+		Props.cable(dress, top, post_top, 0.3, 0.022, 16, "iron")
+		B(post_top + Vector3(-0.09, -0.08, -0.09), post_top + Vector3(0.09, 0.08, 0.09), "iron")
+		var stay: Vector3 = foot + flat * 1.6
+		_noshadow(Props.strut(dress, post_top + Vector3(0, -0.2, 0), stay, 0.02, "iron"))   # the stay to its ground anchor, in line with the pull
+		_noshadow(B(stay + Vector3(-0.1, 0, -0.1), stay + Vector3(0.1, 0.25, 0.1), "iron"))
+		_noshadow(B(foot + Vector3(-0.14, ZIP_POST_H + 0.15, -0.14), foot + Vector3(0.14, ZIP_POST_H + 0.22, 0.14), "snow", false))
+		var pl: Vector3 = foot + side * 0.2 + Vector3(0, 2.1, 0)   # a lantern hung on the post, so the landing reads at night
+		_noshadow(B(foot + side * 0.1 + Vector3(-0.015, 2.3, -0.015), foot + side * 0.24 + Vector3(0.015, 2.33, 0.015), "iron"))
+		_noshadow(B(pl + Vector3(-0.07, -0.11, -0.07), pl + Vector3(0.07, 0.11, 0.07), "lantern_glass", false))
+		_noshadow(B(pl + Vector3(-0.08, 0.11, -0.08), pl + Vector3(0.08, 0.14, 0.08), "iron"))
+		lamp(pl - flat * 0.25, Color(1.0, 0.62, 0.32), 1.6, 6.5, 0.08)
+		Props.rope_coil(dress, foot + side * 0.45 - flat * 0.3, 0.14)
+		var land: Vector3 = foot - flat * 0.9
+		_noshadow(OB(land + Vector3(0, 0.006, 0), Vector3(1.8, 0.012, 2.4), "snow_trodden", Vector3(0, rad_to_deg(atan2(flat.x, flat.z)), 0)))
 
 
 func _dress_admin() -> void:

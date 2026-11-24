@@ -122,6 +122,125 @@
       "_doc": "T-271 the mine's cart horse (T-240's rideable horse, T-262's tack chest), tied at a hitching rail on the Minehead yard's east wall between the drums in the corner and the Rail Yard door (the door is 6 m south of the rail, the chest 4.5 m). yaw -90 = it faces the rail and the wall (+x). zones: the two surface yards (the Rail Yard once its door is open); never the Kaue's doorways that lead below, the Administration or the barracks. The rail's collider is on the map-edge layer, the chest has none: the baked navmesh is untouched. Measured by probe_map_site and walked by smoke_map_detail."
     }
   ],
+  "ladders": [
+    {
+      "name": "HeadframeLadder_Foot",
+      "pos": [
+        14.3,
+        0.0,
+        15.0
+      ],
+      "yaw": 90.0,
+      "to": [
+        15.95,
+        6.0,
+        15.0
+      ],
+      "target": "the headframe",
+      "_doc": "T-272 the hoist house's roof under the headframe is the map's tower deck (6 m): the iron ladder up its west face (Props.ladder at x 14.86, the rungs 0.12 m off it); the body climbs the line 0.4 m off the rungs facing the wall (face, default yaw + 180 = east) and swings over the railing onto the deck",
+      "line": [
+        14.345,
+        15.0
+      ],
+      "surface": "metal"
+    },
+    {
+      "name": "HeadframeLadder_Top",
+      "pos": [
+        15.75,
+        6.0,
+        15.0
+      ],
+      "yaw": -90.0,
+      "down": true,
+      "to": [
+        14.1,
+        0.0,
+        15.0
+      ],
+      "target": "the headframe",
+      "line": [
+        14.345,
+        15.0
+      ],
+      "surface": "metal",
+      "face": -90.0
+    }
+  ],
+  "ziplines": [
+    {
+      "name": "EastZip",
+      "pos": [
+        25.25,
+        8.0,
+        18.3
+      ],
+      "end": [
+        36.4,
+        2.75,
+        26.8
+      ],
+      "to": [
+        35.68,
+        0.0,
+        26.25
+      ],
+      "yaw": 90.0,
+      "speed": 9.0,
+      "hang": 2.7,
+      "sag": 0.45,
+      "target": "down the east lane to the Rail Yard door",
+      "_doc": "T-272: from a davit off the headframe's south-east leg, 2 m over the deck and a step outside its railing, down the yard's east lane to a post by the Rail Yard door's corner (15.0 m, 21 degrees). It lands in the Minehead yard, so it is never chained: no paid door is skipped"
+    },
+    {
+      "name": "WestZip",
+      "pos": [
+        14.75,
+        8.0,
+        18.3
+      ],
+      "end": [
+        3.6,
+        2.75,
+        22.6
+      ],
+      "to": [
+        4.44,
+        0.0,
+        22.28
+      ],
+      "yaw": -90.0,
+      "speed": 9.0,
+      "hang": 2.7,
+      "sag": 0.45,
+      "target": "down the west lane to the Administration door",
+      "_doc": "T-272: from the south-west leg down the yard's west lane to a post by the Administration door, in the Minehead yard (13.1 m, 24 degrees). A line from a 6 m deck is short (13 to 15 m at 20 to 24 degrees): the yard is 40 x 32 m with the headframe in its middle, and a longer line would leave the yard over a wall or skip a paid door"
+    }
+  ],
+  "climb_links": [
+    {
+      "name": "Climb_Headframe",
+      "zone": "A_MINEHEAD",
+      "from": [
+        14.3,
+        0.0,
+        15.0
+      ],
+      "to": [
+        15.95,
+        6.0,
+        15.0
+      ],
+      "bidirectional": true,
+      "line": [
+        14.345,
+        15.0
+      ],
+      "drop": true,
+      "_doc": "T-272: the dead take the headframe's ladder as on Map 0's tower (T-268): one at a time up its line, the rest wait at the foot; drop: they come back down by dropping; perch 10: the horse boss's siege shake reaches the whole deck (the far corner is 9.7 m from the ladder's head)",
+      "perch": 10.0
+    }
+  ],
   "sherman_event": {
     "_doc": "T-272 Kaltenbrunn's Sherman (sherman.json; ShermanEvent): THE FULL EVENT, as on the Inn. Round 30: it comes up out of the valley along the buried rail line's terrace, turns west along the north road and in through the yard's north gate (YardGate swings open for it and shuts behind it; the gateway's collider never moves) and parks in the forecourt between the gate and the headframe, facing the yard (route; park and park_yaw are its last point and leg). The dead rise round it in the Minehead yard (assault_zones: the squad's own zone, open from round 1, so the fight is always reachable) and go for it; der Fuhrmann comes in by the gate as it parks (round_bosses' arrival). If it holds it covers the yard for rounds 31..39. Round 40: the dive bomber comes down the valley on it (stuka_target is only for a match where both tanks were lost: the locomotive), then the raid: bombs on the open yards (bomb_zones), every roof a shelter (shelter_roof) and so is everything in shelter_zones. Before T-272 this block was the raid only (\"tank\": false): there was no way in.",
     "arrive_round": 30,

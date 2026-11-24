@@ -16864,6 +16864,207 @@
           "pitch": 0.7
         }
       ]
+    },
+    "t272_m01": {
+      "_doc": "T-272: Kaltenbrunn's detail pass: the north gate and the Sherman's way in, the headframe deck, its ladder and zip lines, at night and at noon (DayCycle.hold_hour). Shot through tools/wsl_godot.sh only; saved under docs/captures/t272/.",
+      "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {
+          "name": "gate_in_night",
+          "pos": [
+            20.0,
+            0.0,
+            8.6
+          ],
+          "yaw": 0.0,
+          "pitch": 6.0,
+          "settle_s": 4.0,
+          "note": "the north gate from the forecourt, shut: the leaves between the pillars under the name board",
+          "do": [
+            "callv:DayCycle:hold_hour:0:1"
+          ]
+        },
+        {
+          "name": "deck_from_kaue_night",
+          "pos": [
+            10.0,
+            0.0,
+            24.5
+          ],
+          "yaw": -36.0,
+          "pitch": 16.0,
+          "settle_s": 4.0,
+          "note": "the headframe from the Kaue's front: the railing round the hoist house's roof, the ladder, the davits and the two cables"
+        },
+        {
+          "name": "deck_from_east_night",
+          "pos": [
+            34.0,
+            0.0,
+            16.0
+          ],
+          "yaw": 86.0,
+          "pitch": 14.0,
+          "settle_s": 4.0,
+          "note": "the hoist house and its deck from the east lane, the east line's cable coming down past the camera"
+        },
+        {
+          "name": "ladder_night",
+          "pos": [
+            11.5,
+            0.0,
+            17.5
+          ],
+          "yaw": -54.0,
+          "pitch": 25.0,
+          "settle_s": 4.0,
+          "note": "the ladder up the west face on its stand-offs, the lantern at its head"
+        },
+        {
+          "name": "on_deck_night",
+          "pos": [
+            16.4,
+            6.0,
+            11.6
+          ],
+          "yaw": -135.0,
+          "pitch": -8.0,
+          "settle_s": 4.0,
+          "note": "on the deck from its north-west corner: the walk round the shaft collar, the railing, the frame's feet and its braces over head height"
+        },
+        {
+          "name": "down_east_zip_night",
+          "pos": [
+            24.3,
+            6.0,
+            18.1
+          ],
+          "yaw": -127.0,
+          "pitch": -14.0,
+          "settle_s": 4.0,
+          "note": "down the east line from its anchor to the post by the Rail Yard door"
+        },
+        {
+          "name": "down_west_zip_night",
+          "pos": [
+            15.7,
+            6.0,
+            18.2
+          ],
+          "yaw": 111.0,
+          "pitch": -16.0,
+          "settle_s": 4.0,
+          "note": "down the west line from its anchor to the post by the Administration door"
+        },
+        {
+          "name": "land_east_night",
+          "pos": [
+            35.0,
+            0.0,
+            25.6
+          ],
+          "yaw": 53.0,
+          "pitch": 22.0,
+          "settle_s": 4.0,
+          "note": "from the east landing back up the cable to the davit"
+        },
+        {
+          "name": "tank_parked_night",
+          "pos": [
+            27.2,
+            0.0,
+            9.2
+          ],
+          "yaw": 57.0,
+          "pitch": 2.0,
+          "settle_s": 4.0,
+          "note": "the Sherman parked in the forecourt (ShermanEvent.force_assist), the gate shut behind it",
+          "do": [
+            "call:ShermanEvent:force_assist:2"
+          ]
+        },
+        {
+          "name": "tank_parked_noon",
+          "pos": [
+            27.2,
+            0.0,
+            9.2
+          ],
+          "yaw": 57.0,
+          "pitch": 2.0,
+          "settle_s": 4.0,
+          "note": "the same at noon",
+          "do": [
+            "callv:DayCycle:hold_hour:12:1"
+          ]
+        },
+        {
+          "name": "deck_from_kaue_noon",
+          "pos": [
+            10.0,
+            0.0,
+            24.5
+          ],
+          "yaw": -36.0,
+          "pitch": 16.0,
+          "settle_s": 4.0,
+          "note": "the headframe deck from the Kaue at noon"
+        },
+        {
+          "name": "on_deck_noon",
+          "pos": [
+            16.4,
+            6.0,
+            11.6
+          ],
+          "yaw": -135.0,
+          "pitch": -8.0,
+          "settle_s": 4.0,
+          "note": "on the deck at noon"
+        },
+        {
+          "name": "ladder_noon",
+          "pos": [
+            11.0,
+            0.0,
+            15.0
+          ],
+          "yaw": -90.0,
+          "pitch": 22.0,
+          "settle_s": 4.0,
+          "note": "the ladder up the hoist house's west face at noon, 4 m off: stiles, rungs, stand-offs, the lantern post at its head"
+        },
+        {
+          "name": "gate_in_noon",
+          "pos": [
+            20.0,
+            0.0,
+            8.6
+          ],
+          "yaw": 0.0,
+          "pitch": 6.0,
+          "settle_s": 4.0,
+          "note": "the north gate from the forecourt at noon"
+        },
+        {
+          "name": "tank_in_gate_night",
+          "pos": [
+            24.2,
+            0.0,
+            9.0
+          ],
+          "yaw": 25.0,
+          "pitch": 5.0,
+          "settle_s": 2.0,
+          "note": "the Sherman coming through the open gate (begin_arrival, 17 s in)",
+          "do": [
+            "callv:DayCycle:hold_hour:0:1",
+            "call:ShermanEvent:begin_arrival:17.0"
+          ]
+        }
+      ]
     }
   }
 }

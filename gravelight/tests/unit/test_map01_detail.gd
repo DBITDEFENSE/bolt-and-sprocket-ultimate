@@ -2,6 +2,8 @@ extends GutTest
 ## T-272: Kaltenbrunn's map detail pass (docs/u21/t272_map01_detail.md), the data and the scene file.
 ##   the Sherman: the full round-30 event through the yard's north gate (map01.json sherman_event, YardGate); the
 ##   running event is walked by smoke_map01_sherman.
+##   the tower: the headframe deck, its ladder and two zip lines (gen_map01 HF_*, ZIP_LINES; map01.json ladders,
+##   ziplines, climb_links); walked by smoke_map01_tower.
 
 const SCENE: String = "res://gravelight/maps/map01_kaltenbrunn/map01.tscn"
 const GATE_X0: float = 17.6
@@ -151,3 +153,117 @@ func test_the_gate_in_the_scene() -> void:
 			var over: bool = hi.x > GATE_X0 + 0.01 and lo.x < GATE_X1 - 0.01 and lo.y < 3.9
 			assert_false(over, "no wall left in the gateway (%s)" % str(bx["name"]))
 	assert_true(shut, "the gateway's collider spans it, full height: nobody walks out")
+
+
+# ================================================================== the headframe deck (the tower)
+
+static func _gen(k: String) -> Variant:
+	return (load("res://gravelight/tools_src/gen_map01.gd") as GDScript).get_script_constant_map()[k]
+
+
+func test_the_ladder_rows() -> void:
+	var d: Dictionary = _json()
+	var lad: Array = d["ladders"]
+	var links: Array = d["climb_links"]
+	assert_eq(lad.size(), 2, "one ladder: a foot and a head")
+	assert_eq(links.size(), 1)
+	var foot: Dictionary = lad[0]
+	var head: Dictionary = lad[1]
+	var cl: Dictionary = links[0]
+	assert_false(bool(foot.get("down", false)))
+	assert_true(bool(head["down"]))
+	assert_eq(Array(foot["line"]), Array(cl["line"]), "the players and the dead use the same ladder line")
+	assert_eq(Array(head["line"]), Array(cl["line"]))
+	assert_eq(_v3(foot["to"]), _v3(cl["to"]), "they arrive at the same place on the deck")
+	assert_true(bool(cl["bidirectional"]) and bool(cl["drop"]), "the dead come back down it")
+	assert_eq(str(cl["zone"]), "A_MINEHEAD")
+	assert_almost_eq(_v3(cl["to"]).y, float(_gen("HF_DECK")), 0.001, "the head is on the deck")
+	var lx: float = (_gen("HF_LADDER") as Vector3).x - 0.115 - 0.4
+	assert_almost_eq(float((cl["line"] as Array)[0]), lx, 0.01, "the line is 0.4 m off the drawn rungs")
+	assert_gt(float(cl.get("perch", 0.0)), Vector2(24.5 - _v3(cl["to"]).x, 19.5 - _v3(cl["to"]).z).length(), "perch reaches the deck's far corner")
+
+
+func test_the_zip_lines() -> void:
+	var d: Dictionary = _json()
+	var rows: Array = d["ziplines"]
+	var drawn: Array = _gen("ZIP_LINES")
+	assert_eq(rows.size(), drawn.size(), "a row for every drawn line")
+	var deck: float = float(_gen("HF_DECK"))
+	var post_h: float = float(_gen("ZIP_POST_H"))
+	var spawns: Array[Vector3] = []
+	for n: Node in _scene.find_children("*", "Marker3D", true, false):
+		var s: Script = n.get_script() as Script
+		if s != null and (s.resource_path.get_file() == "zombie_spawn.gd" or s.resource_path.get_file() == "player_spawn.gd"):
+			spawns.append(_gxf(n).origin)
+	assert_gt(spawns.size(), 10, "the spawn markers are read")
+	var posts: Dictionary = {}
+	for bx: Dictionary in _boxes(_scene):
+		if str(bx["name"]).begins_with("ZipPost_"):
+			posts[str(bx["name"]).substr(8)] = ((bx["lo"] as Vector3) + (bx["hi"] as Vector3)) * 0.5
+	var landings: Array[Vector3] = []
+	for i: int in rows.size():
+		var r: Dictionary = rows[i]
+		var top: Vector3 = _v3(r["pos"])
+		var e: Vector3 = _v3(r["end"])
+		var to: Vector3 = _v3(r["to"])
+		assert_eq(str(r["name"]), str(drawn[i][0]))
+		assert_eq(top, drawn[i][1], "%s: the anchor is where it is drawn" % r["name"])
+		assert_almost_eq(top.y - deck, 2.0, 0.001, "%s: the bar 2 m over the deck" % r["name"])
+		var outside: bool = top.x < 15.0 or top.x > 25.0 or top.z < 10.0 or top.z > 20.0
+		assert_true(outside, "%s: a step outside the railing" % r["name"])
+		var slope: float = rad_to_deg(asin((top.y - e.y) / top.distance_to(e)))
+		assert_true(slope >= 15.0 and slope <= 30.0, "%s: %.1f degrees (inside the trolley's brake)" % [r["name"], slope])
+		var foot: Vector3 = drawn[i][2]
+		assert_almost_eq(e.distance_to(foot + Vector3(0, post_h, 0)), 0.0, 0.01, "%s: the cable ends on its post" % r["name"])
+		assert_true(posts.has(str(r["name"])), "%s: its post is built (a collider)" % r["name"])
+		var flat: Vector3 = Vector3(foot.x - top.x, 0, foot.z - top.z).normalized()
+		assert_almost_eq(to.distance_to(foot - flat * 0.9), 0.0, 0.02, "%s: set down 0.9 m short of the post, on the line" % r["name"])
+		assert_true(to.x > 0.5 and to.x < 39.5 and to.z > 0.5 and to.z < 31.5, "%s: it lands inside the Minehead yard (no paid door skipped)" % r["name"])
+		assert_false(r.has("zone"), "%s: so it is never chained" % r["name"])
+		for sp: Vector3 in spawns:
+			assert_gt(Vector2(sp.x - to.x, sp.z - to.z).length(), 3.5, "%s: the landing is clear of the spawn at %s" % [r["name"], str(sp)])
+		for other: Vector3 in landings:
+			assert_gt(other.distance_to(to), 15.0, "%s: a different place" % r["name"])
+		landings.append(to)
+
+
+func test_the_deck_in_the_scene() -> void:
+	var deck: float = float(_gen("HF_DECK"))
+	var rails: int = 0
+	var feet: int = 0
+	var collar: bool = false
+	for bx: Dictionary in _boxes(_scene):
+		var lo: Vector3 = bx["lo"]
+		var hi: Vector3 = bx["hi"]
+		var nm: String = str(bx["name"])
+		if nm.begins_with("HFRail_"):
+			rails += 1
+			assert_true(lo.y >= deck - 0.01 and hi.y <= deck + 1.2, "a railing bar on the deck")
+		elif nm.begins_with("Prop_A_FrameFoot_"):
+			feet += 1
+			assert_gte(hi.y - deck, 1.8, "a frame foot is solid over head height")
+		elif nm == "Prop_A_ShaftCollar":
+			collar = true
+	assert_eq(rails, 12, "three bars on each of the four edges: closed all round")
+	assert_eq(feet, 4)
+	assert_true(collar, "the shaft collar is solid")
+	assert_gte(float(_gen("HF_BRACE_Y")) - deck, 2.35, "the frame's lowest braces start over every head on the deck")
+	# the dressing's railing and ladder are drawn (merged): the ZipLines and LadderClimbs are the map's at load
+
+
+func test_perch_reaches_a_wide_platform_only_where_the_row_says() -> void:
+	var map: Node3D = Node3D.new()
+	var holder: Node3D = Node3D.new()
+	holder.name = "ClimbLinks"
+	map.add_child(holder)
+	var l: NavigationLink3D = NavigationLink3D.new()
+	l.start_position = Vector3(0, 0, 0)
+	l.end_position = Vector3(1, 6, 0)
+	l.set_meta(ClimbLink.LINE, Vector2(0, 0))
+	holder.add_child(l)
+	add_child_autofree(map)
+	assert_true(ClimbLink.on_perch(map, Vector3(4, 6, 0)), "4 m from the head: on it (the default 4.5)")
+	assert_false(ClimbLink.on_perch(map, Vector3(9, 6, 0)), "8 m from it: not, without a perch")
+	l.set_meta(ClimbLink.PERCH_META, 10.0)
+	assert_true(ClimbLink.on_perch(map, Vector3(9, 6, 0)), "with perch 10: on it")
+	assert_false(ClimbLink.on_perch(map, Vector3(9, 0, 0)), "but never on the ground")
