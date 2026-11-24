@@ -360,7 +360,8 @@ func _raid(block: Dictionary) -> void:
 	var open_pt: Vector3 = Vector3.INF
 	for k: int in 400:
 		var q: Vector3 = NavigationServer3D.map_get_random_point(_nav(), 0x7FFFFFFF, true)
-		if raid.call("_bomb_ok", q, block.get("bomb_zones", []), []):
+		# (open ground a player can walk to: the navmesh also has islands nobody reaches, a roof or a fenced corner)
+		if raid.call("_bomb_ok", q, block.get("bomb_zones", []), []) and _path_reaches(_root().spawn_transform(1).origin, q):
 			open_pt = q
 			break
 	_check(open_pt.is_finite() and not raid.is_sheltered(open_pt), "open ground in a bomb zone is no shelter (%s)" % str(open_pt.snapped(Vector3.ONE * 0.1)))
