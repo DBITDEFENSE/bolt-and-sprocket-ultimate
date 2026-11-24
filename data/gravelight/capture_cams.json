@@ -16864,6 +16864,32 @@
           "pitch": 0.7
         }
       ]
+    },
+    "t273": {
+      "_doc": "T-273: Totenhafen's map detail pass (docs/u21/t273_map02_detail.md): the patrol boat off the quay (night, noon, burning after the dive bomber's bomb), the catwalk ladders, the signal tower's zip line, the perk spots. Shot through tools/wsl_godot.sh only; saved under docs/captures/t273/.",
+      "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {"name": "boat_night", "pos": [14.0, 0.0, 3.0], "yaw": 0.0, "pitch": -2.0, "note": "the patrol boat from behind the parapet, 23 m", "do": ["callv:DayCycle:hold_hour:0:1"]},
+        {"name": "boat_wide_night", "pos": [5.0, 0.0, 5.0], "yaw": -32.0, "pitch": 0.0, "note": "the quay, the parapet and the boat beyond, the breakwater's cranes behind"},
+        {"name": "boat_fire_night", "pos": [14.0, 0.0, 3.0], "yaw": 0.0, "pitch": 2.0, "note": "after the bomb: the boat burning (ShermanEvent.show_hit_nodes)", "do": ["call:ShermanEvent:show_hit_nodes:2"]},
+        {"name": "boat_noon", "pos": [14.0, 0.0, 3.0], "yaw": 0.0, "pitch": -2.0, "note": "the boat at noon", "do": ["callv:DayCycle:hold_hour:12:1"]},
+        {"name": "boat_stage_noon", "pos": [27.5, 0.0, 1.0], "yaw": 40.0, "pitch": -6.0, "note": "from the parapet's east end, down onto the boat's decks"},
+        {"name": "ladder_n_night", "pos": [15.0, 0.0, 40.5], "yaw": 0.0, "pitch": 14.0, "note": "the north catwalk's ladder from the apron", "do": ["callv:DayCycle:hold_hour:0:1", "power"]},
+        {"name": "ladder_w_night", "pos": [-15.0, 0.0, 51.5], "yaw": 140.0, "pitch": 10.0, "note": "the west catwalk's ladder from pier 0"},
+        {"name": "ladder_e_night", "pos": [45.5, 0.0, 74.5], "yaw": -62.0, "pitch": 12.0, "note": "the east catwalk's ladder from the east apron"},
+        {"name": "balcony_night", "pos": [40.6, 0.0, 51.0], "yaw": -36.0, "pitch": 24.0, "note": "the signal balcony, its door and the zip line's cable from the landing"},
+        {"name": "balcony_line_night", "pos": [48.9, 7.0, 39.9], "yaw": 137.0, "pitch": -22.0, "note": "down the zip line from the balcony"},
+        {"name": "tower_door_night", "pos": [46.6, 7.0, 34.8], "yaw": -152.0, "pitch": 4.0, "note": "the balcony door from inside the signal room"},
+        {"name": "balcony_noon", "pos": [40.6, 0.0, 51.0], "yaw": -36.0, "pitch": 24.0, "note": "the balcony at noon", "do": ["callv:DayCycle:hold_hour:12:1"]},
+        {"name": "ladder_w_noon", "pos": [-15.0, 0.0, 51.5], "yaw": 140.0, "pitch": 10.0, "note": "the west ladder at noon"},
+        {"name": "perk_quay_noon", "pos": [6.0, 0.0, 9.0], "yaw": 90.0, "pitch": -4.0, "note": "the quay's perk spot on the cannery's outside wall (a machine or its crate, by the match's deal)"},
+        {"name": "hut_door_noon", "pos": [22.0, 0.0, 13.6], "yaw": 90.0, "pitch": -4.0, "note": "the harbourmaster's hut's door left ajar"},
+        {"name": "perk_pier0_night", "pos": [-15.5, 0.0, 74.0], "yaw": 90.0, "pitch": 0.0, "note": "the pier 0 perk spot under the west catwalk", "do": ["callv:DayCycle:hold_hour:0:1"]},
+        {"name": "perk_apron_night", "pos": [18.0, 0.0, 38.6], "yaw": 0.0, "pitch": 4.0, "note": "the north apron's perk spot under the catwalk"},
+        {"name": "infirmary_night", "pos": [-16.5, 0.0, 6.0], "yaw": 90.0, "pitch": -2.0, "note": "the cannery infirmary's east door left ajar, the curtains beyond"}
+      ]
     }
   }
 }

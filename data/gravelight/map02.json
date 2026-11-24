@@ -357,51 +357,12 @@
     }
   },
   "climb_links": [
-    {
-      "name": "Ladder_CatwalkW",
-      "zone": "D_PENHALL",
-      "from": [
-        -16.2,
-        0.0,
-        60.0
-      ],
-      "to": [
-        -19.0,
-        4.0,
-        60.0
-      ],
-      "_doc": "pier 0 -> west catwalk ladder (MZ climb volume, T-041)"
-    },
-    {
-      "name": "Ladder_CatwalkE",
-      "zone": "D_PENHALL",
-      "from": [
-        48.2,
-        0.0,
-        60.0
-      ],
-      "to": [
-        51.0,
-        4.0,
-        60.0
-      ],
-      "_doc": "east apron -> east catwalk ladder"
-    },
-    {
-      "name": "Ladder_CatwalkN",
-      "zone": "D_PENHALL",
-      "from": [
-        17.0,
-        0.0,
-        37.5
-      ],
-      "to": [
-        17.0,
-        4.0,
-        34.0
-      ],
-      "_doc": "apron -> north catwalk ladder"
-    },
+    {"name": "Ladder_CatwalkW", "zone": "D_PENHALL", "from": [-17.415, 0.0, 55.5], "to": [-19.0, 4.0, 55.5], "bidirectional": true, "line": [-17.415, 55.5], "drop": true,
+      "_doc": "pier 0 -> west catwalk ladder (MZ climb volume, T-041). T-273: z 60 -> 55.5 (the tide's catwalk spawn stands at its old head), a drawn ladder (gen_map02 CATWALK_LADDERS) with the players' LadderClimbs on the same line; a ladder link (ClimbLink: one at a time up its line, the dead drop back down it)"},
+    {"name": "Ladder_CatwalkE", "zone": "D_PENHALL", "from": [49.415, 0.0, 72.0], "to": [51.0, 4.0, 72.0], "bidirectional": true, "line": [49.415, 72.0], "drop": true,
+      "_doc": "east apron -> east catwalk ladder. T-273: moved from z 60 (the east stair's foot) to z 72, where the ladder is drawn"},
+    {"name": "Ladder_CatwalkN", "zone": "D_PENHALL", "from": [15.0, 0.0, 35.585], "to": [15.0, 4.0, 34.0], "bidirectional": true, "line": [15.0, 35.585], "drop": true,
+      "_doc": "apron -> north catwalk ladder. T-273: x 17 -> 15 (5 m from the tide's catwalk spawn at x 20), on the drawn ladder's line"},
     {
       "name": "Ladder_EngineHatch",
       "zone": "E_UBOAT",
@@ -1027,9 +988,22 @@
       ],
       "surface": "metal"
     }
+,
+    {"name": "CatwalkW_Up", "pos": [-17.415, 0.0, 55.5], "yaw": -90.0, "to": [-19.0, 4.0, 55.5], "target": "to the west catwalk", "line": [-17.415, 55.5], "surface": "metal",
+      "_doc": "T-273: the drawn ladders at the zombies' three catwalk climb links (gen_map02 CATWALK_LADDERS); the rails stay closed, the climb carries the body over them (as on Map 0's tower)"},
+    {"name": "CatwalkW_Down", "pos": [-18.75, 4.0, 55.5], "yaw": 90.0, "down": true, "to": [-17.25, 0.0, 55.5], "target": "to the pier", "line": [-17.415, 55.5], "surface": "metal", "face": 90.0},
+    {"name": "CatwalkN_Up", "pos": [15.0, 0.0, 35.585], "yaw": 180.0, "to": [15.0, 4.0, 34.0], "target": "to the north catwalk", "line": [15.0, 35.585], "surface": "metal"},
+    {"name": "CatwalkN_Down", "pos": [15.0, 4.0, 34.25], "yaw": 0.0, "down": true, "to": [15.0, 0.0, 35.75], "target": "to the apron", "line": [15.0, 35.585], "surface": "metal", "face": 0.0},
+    {"name": "CatwalkE_Up", "pos": [49.415, 0.0, 72.0], "yaw": 90.0, "to": [51.0, 4.0, 72.0], "target": "to the east catwalk", "line": [49.415, 72.0], "surface": "metal"},
+    {"name": "CatwalkE_Down", "pos": [50.75, 4.0, 72.0], "yaw": -90.0, "down": true, "to": [49.25, 0.0, 72.0], "target": "to the apron", "line": [49.415, 72.0], "surface": "metal", "face": -90.0}
+  ],
+  "ziplines": [
+    {"name": "SignalZip", "pos": [48.6, 9.0, 40.8], "end": [40.0, 2.75, 49.6], "to": [40.629, 0.0, 48.956], "yaw": 0.0, "speed": 7.5, "hang": 2.7, "sag": 0.3,
+      "target": "down to the east apron",
+      "_doc": "T-273: from the signal balcony (gen_map02 SIGNAL_ZIP, outside a new door in the tower's south wall, 7 m over the hall) south-west down to the east apron between the pump stair and the crane office: 12.3 m, 27 degrees. No zone: it lands in the Pen Hall, the zone you came through to reach the tower, so it skips no paid door. Down only; nothing grabs a rider"}
   ],
   "sherman_event": {
-    "_doc": "T-271 Totenhafen's round-30 set piece: THE RAID ONLY (ShermanEvent with \"tank\": false; AirRaid). No tank on a harbour quay and no dive bomber (no stuka_target): on round 30 the siren, a countdown, then sixty seconds of bombs on the open quay and the roofless part of the cannery (bomb_zones); the pens are what they were built for (shelter_zones: the workshop, the pen hall, the boat, the lower pens, the signal tower), and any roof shelters (shelter_roof: the quay's hut, the cannery's roofed half). Round 30, not 40: round 40 is the campaign's exfil here. shelter_points: where a bot outside runs to (inside both pen hall doors, the cannery's roofed corner). raid: this map's banners over sherman.json's.",
+    "_doc": "T-271 Totenhafen's round-30 set piece: THE RAID ONLY (ShermanEvent with \"tank\": false; AirRaid). No tank on a harbour quay (T-273: the dive bomber came later, see _doc_t273): on round 30 the siren, a countdown, then sixty seconds of bombs on the open quay and the roofless part of the cannery (bomb_zones); the pens are what they were built for (shelter_zones: the workshop, the pen hall, the boat, the lower pens, the signal tower), and any roof shelters (shelter_roof: the quay's hut, the cannery's roofed half). Round 30, not 40: round 40 is the campaign's exfil here. shelter_points: where a bot outside runs to (inside both pen hall doors, the cannery's roofed corner). raid: this map's banners over sherman.json's.",
     "tank": false,
     "stuka_round": 30,
     "shelter_roof": true,
@@ -1063,7 +1037,17 @@
     ],
     "raid": {
       "warn_small": "GET INTO THE PENS",
-      "outside_text": "GET INTO THE PENS"
+      "outside_text": "GET INTO THE PENS",
+      "vo_warn": "OPR_RAID_M2_WARN_01",
+      "vo_clear": "OPR_RAID_M2_CLEAR_01",
+      "burst": [["stone", 3.0, 40], ["snow", 1.8, 16]]
+    },
+    "_doc_t273": "T-273 (the map detail pass): the raid opens with a dive bomber after all. Its landmark is the patrol boat V 1507 moored 20 m off the parapet (gen_map02 PATROL_BOAT, DetailMap02.patrol_boat): stuka_target is its wheelhouse, from the north over the sea (stuka_from), so the quay sees the dive; the bomb is 20 m from the nearest player's ground (it hurts within 6.5 m). stuka_hit_show: the boat's fire (hidden until the bomb lands; ShermanEvent.show_hit_nodes). raid.vo_warn / vo_clear: the Operator's own lines for the pens (Map 0's sent you to the cellars); vo_during was already this map's. raid.burst: a bomb on the concrete quay throws stone and a little snow (AirRaid.burst_fx; Map 0 keeps snow and earth).",
+    "stuka_target": [17.0, 1.7, -20.0],
+    "stuka_from": [40.0, 0.0, -420.0],
+    "stuka_hit_show": ["MooredHullFire"],
+    "stuka": {
+      "banner_small": "A DIVE BOMBER IS COMING DOWN ON THE PATROL BOAT"
     }
   }
 }

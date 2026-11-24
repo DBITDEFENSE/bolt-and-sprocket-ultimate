@@ -111664,6 +111664,8 @@
   "DUT_GL1_02": "U11 T-191: new LAZARUS line, awaits the ElevenLabs bake (T-193 / T-201); no OneCore voice for Russian or German",
   "LSL_REC_DRUMMER_01": "no speech: stage direction only ([faint giggle under the drum])",
   "OPR_ROUND_END_08": "awaits the ElevenLabs bake (T-193 / T-201)",
+  "OPR_RAID_M2_WARN_01": "T-273: new line (Totenhafen's raid), no outside voice service in this pass: subtitle with a timed silence until a bake",
+  "OPR_RAID_M2_CLEAR_01": "T-273: new line (Totenhafen's raid), no outside voice service in this pass: subtitle with a timed silence until a bake",
   "OPR_ROUND_START_14": "awaits the ElevenLabs bake (T-193 / T-201)",
   "OPR_ROUND_START_15": "awaits the ElevenLabs bake (T-193 / T-201)",
   "OPR_ROUND_START_16": "awaits the ElevenLabs bake (T-193 / T-201)",

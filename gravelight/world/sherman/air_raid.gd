@@ -363,7 +363,7 @@ func _land(at: Vector3) -> void:
 	last_impacts.append(at)
 	if last_impacts.size() > 12:
 		last_impacts.pop_front()
-	burst_fx(get_tree(), at, float(cfg.get("radius", 6.5)), float(cfg.get("shake", 0.7)), float(cfg.get("shake_m", 30.0)))
+	burst_fx(get_tree(), at, float(cfg.get("radius", 6.5)), float(cfg.get("shake", 0.7)), float(cfg.get("shake_m", 30.0)), cfg.get("burst", []))
 	if host:
 		hurt(at)
 
@@ -401,10 +401,15 @@ func hurt(at: Vector3) -> int:
 	return n_hit
 
 
-static func burst_fx(tree: SceneTree, at: Vector3, r: float, shake: float, shake_m: float) -> void:
+## T-273: `kinds` ([[dirt kind, strength, amount], ...], the raid table's "burst") names what a bomb throws up; empty:
+## snow and earth, as on Map 0's yard (Totenhafen's concrete quay throws stone and a little snow).
+static func burst_fx(tree: SceneTree, at: Vector3, r: float, shake: float, shake_m: float, kinds: Array = []) -> void:
 	Effects.explosion(at + Vector3.UP * 0.3, r * 0.85)
-	Effects.dirt_burst(at, "snow", 3.0, Vector3.UP, 40)
-	Effects.dirt_burst(at, "earth", 2.4, Vector3.UP, 26)
+	if kinds.is_empty():
+		kinds = [["snow", 3.0, 40], ["earth", 2.4, 26]]
+	for k: Variant in kinds:
+		var row: Array = k
+		Effects.dirt_burst(at, str(row[0]), float(row[1]), Vector3.UP, int(row[2]))
 	BossFx.burst("smoke", at + Vector3.UP * 1.0, tree, 2.2, 2.6)
 	BossFx.burst("sparks", at + Vector3.UP * 0.5, tree, 1.4, 1.5)
 	BossFx.burst("embers", at + Vector3.UP * 0.8, tree, 1.4, 1.5)

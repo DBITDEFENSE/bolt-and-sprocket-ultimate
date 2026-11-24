@@ -111,7 +111,9 @@ func test_rows_fit_their_scene_files() -> void:
 			for sp: Variant in b["shelter_points"]:
 				assert_ne(_zone_at(zones, _v3(sp) + Vector3.UP * 0.6), "", "%s raid: shelter point %s is in a zone" % [key, str(sp)])
 			if b.has("stuka_target"):
-				assert_true((b["bomb_zones"] as Array).has(_zone_at(zones, Vector3(float(b["stuka_target"][0]), 0.6, float(b["stuka_target"][2])))), "%s raid: the dive bomber's landmark stands in open ground" % key)
+				# (in a bombed zone, or outside every zone: T-273, Totenhafen's patrol boat lies out on the water off the quay)
+				var tz: String = _zone_at(zones, Vector3(float(b["stuka_target"][0]), 0.6, float(b["stuka_target"][2])))
+				assert_true((b["bomb_zones"] as Array).has(tz) or tz == "", "%s raid: the dive bomber's landmark stands in open ground (%s)" % [key, tz])
 
 
 # ================================================================== the horse
@@ -172,7 +174,7 @@ func test_raid_only_blocks() -> void:
 		if b.has("stuka_target"):
 			assert_false(str(ShermanEvent.merged(ShermanEvent.table(), b, "stuka")["banner_small"]).contains("SHERMAN"), "%s: the dive bomber's banner does not name a tank" % key)
 	assert_true(_json("map01")["sherman_event"].has("stuka_target"), "Kaltenbrunn: the dive bomber has a landmark")
-	assert_false(_json("map02")["sherman_event"].has("stuka_target"), "Totenhafen: no dive bomber")
+	assert_true(_json("map02")["sherman_event"].has("stuka_target"), "Totenhafen: the dive bomber has a landmark (T-273: the moored patrol boat)")
 	assert_ne(int(_json("map02")["sherman_event"]["stuka_round"]), int(_json("map02")["exfil"]["round"]), "Totenhafen: not on the campaign's exfil round")
 	for row: Dictionary in _json("map01")["round_bosses"]:
 		assert_ne(int(row["round"]), int(_json("map01")["sherman_event"]["stuka_round"]), "Kaltenbrunn: not on a horse's round")

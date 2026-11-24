@@ -29,6 +29,8 @@ extends Node3D
 ## stuka_round the dive bomber comes down on `stuka_target` (a landmark; left out: no dive bomber, the siren at once)
 ## and the air raid follows. The block's own "raid" and "stuka" rows lie over sherman.json's (the banners: where to run
 ## to on this map), "shelter_roof" makes any roof a shelter (AirRaid). Map 0's block has none of these keys.
+## T-273: `stuka_hit_show` (names of hidden nodes under the map) are shown where the dive bomber's bomb lands, on every
+## peer (Totenhafen: the moored patrol boat's fire). Left out: nothing is shown (Map 0, Kaltenbrunn).
 
 enum Phase { IDLE, ARRIVING, ASSAULT, ASSIST, LOST, STUKA, RAID, DONE }
 
@@ -743,7 +745,8 @@ func _tick_stuka() -> void:
 func _on_stuka_impact(pos: Vector3) -> void:
 	stuka_hit_at = pos
 	var rc: Dictionary = raid.cfg
-	AirRaid.burst_fx(get_tree(), pos, float(rc.get("radius", 6.5)), 1.0, 45.0)
+	AirRaid.burst_fx(get_tree(), pos, float(rc.get("radius", 6.5)), 1.0, 45.0, rc.get("burst", []))
+	show_hit_nodes()
 	if puppet:
 		return
 	if tank != null and is_instance_valid(tank) and not tank.is_wreck():
@@ -753,6 +756,20 @@ func _on_stuka_impact(pos: Vector3) -> void:
 	raid.hurt(pos)
 	print("[sherman] the dive bomber's bomb lands at %s%s" % [str(pos.snapped(Vector3.ONE * 0.1)), ": the Sherman brews up" if has_tank else ""])
 	_begin_raid(float(rc.get("warn_after_stuka", 2.5)))
+
+
+## T-273: shows the map block's `stuka_hit_show` nodes (found by name under the map). Returns how many were shown.
+func show_hit_nodes() -> int:
+	var m: Node = _map()
+	var n_shown: int = 0
+	if m == null:
+		return 0
+	for nm: Variant in map_cfg.get("stuka_hit_show", []):
+		var n: Node3D = m.find_child(str(nm), true, false) as Node3D
+		if n != null:
+			n.visible = true
+			n_shown += 1
+	return n_shown
 
 
 ## The air raid, `after` seconds from now (host).

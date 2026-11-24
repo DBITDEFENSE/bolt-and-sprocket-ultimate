@@ -12187,6 +12187,16 @@
     "category": "RAID_M2",
     "text": "[the tannoy rattles with every hit, the bulbs swinging] Oh, now really. Bombers? Tonight? This was not on the {schedule}. Somebody up there has not read the timetable, and I shall be writing to their superiors."
   },
+  "OPR_RAID_M2_WARN_01": {
+    "speaker": "OPR",
+    "category": "RAID_M2_WARN",
+    "text": "Attention, harbour staff. Aircraft over the breakwater, and they did not book. The pens were poured for exactly this evening. Please take shelter under the {concrete}."
+  },
+  "OPR_RAID_M2_CLEAR_01": {
+    "speaker": "OPR",
+    "category": "RAID_M2_CLEAR",
+    "text": "All clear. The harbour authority thanks you for using its {shelters}. The patrol boat regrets it will not be staying for the rest of the evening."
+  },
   "OPR_M4D_TERM_01": {
     "speaker": "OPR",
     "category": "M4D_TERM",
