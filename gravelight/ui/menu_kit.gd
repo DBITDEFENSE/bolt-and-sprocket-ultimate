@@ -55,11 +55,18 @@ static func reset() -> void:
 	_theme = null
 
 
+## T-264: the smallest text size in use (0 = the scale as designed). The UI is laid out for 1920x1080 and shrinks
+## with the window: on a 1280x800 handheld the scale's 13 is under 9 real pixels and its 15 is 10. GLSettings sets
+## this from the "Small text" setting (ui_text_floor); size() and px() never return less. Text built before a
+## change keeps its size until its screen is opened again.
+static var text_floor: int = 0
+
+
 ## A size of the type scale by key (ui.json "scale"); an unknown key is an error and gives the body size.
 static func size(key: String) -> int:
 	var scale: Dictionary = cfg().get("scale", {})
 	if scale.has(key):
-		return int(scale[key])
+		return maxi(int(scale[key]), text_floor)
 	push_error("MenuKit.size: no scale key '%s' in ui.json" % key)
 	return int(scale.get("body", 18))
 
@@ -74,7 +81,7 @@ static func px(n: int) -> int:
 		var v: int = int(s)
 		if absi(v - n) < absi(best - n) or (absi(v - n) == absi(best - n) and v > best):
 			best = v
-	return best
+	return maxi(best, text_floor)
 
 
 ## A HUD layout number (ui.json "hud"), with a default.
@@ -324,7 +331,7 @@ static func menu_link(text_str: String, cb: Callable, size_px: int = 38) -> Butt
 		if not b.is_inside_tree():
 			return
 		var tw: Tween = b.create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-		tw.tween_property(sb, "content_margin_left", LINK_MARGIN + (LINK_SLIDE if on else 0.0), 0.16)
+		tw.tween_property(sb, "content_margin_left", LINK_MARGIN + (LINK_SLIDE if on and not MenuMotion.reduced() else 0.0), 0.16)
 		tw.tween_property(sb, "bg_color:a", 0.07 if on else 0.0, 0.16)
 		tw.tween_property(sb, "shadow_color:a", 0.12 if on else 0.0, 0.16)
 		tw.tween_property(sb, "border_color:a", 1.0 if on else 0.0, 0.16)
@@ -354,28 +361,13 @@ static func rule(height: float, width: float = 2.0, color: Color = VIOLET) -> Co
 
 ## T-144: a screen comes in: 0.25 s cross-fade with a 20 px slide (from the right; dir -1 from the left). The control
 ## must not sit in a container (the container would put it back).
-static func transition_in(c: Control, dir: float = 1.0, secs: float = 0.25, px_off: float = 20.0) -> void:
-	if c == null or not c.is_inside_tree():
-		return
-	var home: Vector2 = c.position
-	c.modulate.a = 0.0
-	c.position = home + Vector2(px_off * dir, 0.0)
-	var tw: Tween = c.create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tw.tween_property(c, "modulate:a", 1.0, secs)
-	tw.tween_property(c, "position", home, secs)
+static func transition_in(c: Control, dir: float = 1.0, secs: float = MenuMotion.SCREEN_S, px_off: float = MenuMotion.SLIDE_PX) -> void:
+	MenuMotion.slide_in(c, dir, secs, px_off)   # T-267: every menu tween lives in MenuMotion (and obeys "Reduce motion")
 
 
 ## T-144: the reverse; `done` runs when it has faded.
-static func transition_out(c: Control, done: Callable = Callable(), dir: float = -1.0, secs: float = 0.18, px_off: float = 20.0) -> void:
-	if c == null or not c.is_inside_tree():
-		if done.is_valid():
-			done.call()
-		return
-	var tw: Tween = c.create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-	tw.tween_property(c, "modulate:a", 0.0, secs)
-	tw.tween_property(c, "position", c.position + Vector2(px_off * dir, 0.0), secs)
-	if done.is_valid():
-		tw.chain().tween_callback(done)
+static func transition_out(c: Control, done: Callable = Callable(), dir: float = -1.0, secs: float = MenuMotion.OUT_S, px_off: float = MenuMotion.SLIDE_PX) -> void:
+	MenuMotion.slide_out(c, done, dir, secs, px_off)
 
 
 ## A readable paragraph in the body face, word-wrapped.
@@ -404,6 +396,7 @@ static func button(text_str: String, cb: Callable, size: int = 24, sound: String
 		b.pressed.connect(func() -> void: AudioDirector.play_2d(sound, 0.0, 0.0))
 	if cb.is_valid():
 		b.pressed.connect(cb)
+	MenuMotion.feedback(b)   # T-267: hover / focus / press feedback on every menu button
 	return b
 
 
@@ -536,6 +529,7 @@ static func check(text_str: String, value: bool, cb: Callable) -> CheckButton:
 	c.add_theme_icon_override("checked_disabled", switch_icon(true, true))
 	c.add_theme_icon_override("unchecked_disabled", switch_icon(false, true))
 	c.toggled.connect(cb)
+	MenuMotion.feedback(c)
 	return c
 
 
@@ -635,6 +629,7 @@ static func options(items: PackedStringArray, selected: int, cb: Callable) -> Op
 	o.add_theme_font_size_override("font_size", MenuKit.size("body_large"))
 	o.focus_mode = Control.FOCUS_ALL
 	o.item_selected.connect(cb)
+	MenuMotion.feedback(o)
 	return o
 
 
@@ -643,6 +638,59 @@ static func focus_first(root: Node) -> void:
 	var c: Control = _first_focusable(root)
 	if c != null:
 		c.grab_focus()
+
+
+## T-264: every focusable control under `root`, in on-screen order (MenuScreen.rebuild keeps the focus's place by it).
+static func focusables(root: Node, out: Array[Control] = []) -> Array[Control]:
+	for ch: Node in root.get_children():
+		var c: Control = ch as Control
+		if c != null and c.focus_mode == Control.FOCUS_ALL and c.is_visible_in_tree():
+			out.append(c)
+		focusables(ch, out)
+	return out
+
+
+## T-264: letter buttons that type into `field`, for a player with only a controller (a handheld in game mode has
+## no keyboard; the system's on-screen keyboard also works where there is one). `chars` are the keys; Del removes
+## the last character, Clear all of them. Mouse and keyboard players never see it (see MenuKit.wants_pad_keys).
+static func pad_keys(field: LineEdit, chars: String, per_row: int = 13) -> Control:
+	var box: VBoxContainer = VBoxContainer.new()
+	box.add_theme_constant_override("separation", 4)
+	var grid: GridContainer = GridContainer.new()
+	grid.columns = per_row
+	grid.add_theme_constant_override("h_separation", 4)
+	grid.add_theme_constant_override("v_separation", 4)
+	box.add_child(grid)
+	var put: Callable = func(ch: String) -> void:
+		if not is_instance_valid(field):
+			return
+		if ch == "<":
+			field.text = field.text.left(maxi(0, field.text.length() - 1))
+		elif ch == "":
+			field.text = ""
+		elif field.max_length <= 0 or field.text.length() < field.max_length:
+			field.text += ch
+		field.caret_column = field.text.length()
+	for i: int in chars.length():
+		var k: Button = button(chars[i], put.bind(chars[i]), 20)
+		k.alignment = HORIZONTAL_ALIGNMENT_CENTER
+		k.custom_minimum_size = Vector2(46, 42)
+		grid.add_child(k)
+	var tail: HBoxContainer = HBoxContainer.new()
+	tail.add_theme_constant_override("separation", 4)
+	box.add_child(tail)
+	for pair: Array in [["Del", "<"], ["Clear", ""]]:
+		var b: Button = button(str(pair[0]), put.bind(str(pair[1])), 20)
+		b.alignment = HORIZONTAL_ALIGNMENT_CENTER
+		b.custom_minimum_size = Vector2(96, 42)
+		tail.add_child(b)
+	return box
+
+
+## T-264: true when text fields should offer pad_keys: the last input came from a controller, or this is a Deck.
+static func wants_pad_keys() -> bool:
+	var gs: Node = (Engine.get_main_loop() as SceneTree).root.get_node_or_null("GLSettings")
+	return gs != null and (bool(gs.get("using_pad")) or bool(gs.call("on_steam_deck")))
 
 
 ## Depth-first in tree (= on-screen) order. find_children would list a direct child (the Muster's bottom spacer)

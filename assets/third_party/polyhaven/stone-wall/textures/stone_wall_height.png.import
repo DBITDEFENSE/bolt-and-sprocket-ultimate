@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://c1darlown21qd"
 path.s3tc="res://.godot/imported/stone_wall_height.png-12ec31cce1f3627472e1cce887984dc2.s3tc.ctex"
+path.etc2="res://.godot/imported/stone_wall_height.png-12ec31cce1f3627472e1cce887984dc2.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/stone-wall/textures/stone_wall_height.png"
-dest_files=["res://.godot/imported/stone_wall_height.png-12ec31cce1f3627472e1cce887984dc2.s3tc.ctex"]
+dest_files=["res://.godot/imported/stone_wall_height.png-12ec31cce1f3627472e1cce887984dc2.s3tc.ctex", "res://.godot/imported/stone_wall_height.png-12ec31cce1f3627472e1cce887984dc2.etc2.ctex"]
 
 [params]
 

@@ -73,6 +73,8 @@ func build() -> void:
 		z.queue_free()
 	bodies.clear()
 	_state.clear()
+	_asleep = false   # (new bodies' animation players start running: the next unseen frame rests them again)
+	_unseen_dt = 0.0
 	ZombieBody.ensure_globals()
 	var n: int = maxi(0, int(cfg.get("count", 8)))
 	var sp: Array = cfg.get("speed", [0.55, 0.8])
@@ -181,10 +183,58 @@ static func clip_library() -> AnimationLibrary:
 	return _lib
 
 
+## T-265: a column the camera does not look toward stands still: its walkers are not placed and their animation
+## players do not run (a dozen skinned bodies animated every frame of the match, on Map 0, wherever the player
+## was looking, the cellar included). The time it was not looked at is handed to the first frame it is: every
+## walker is then where it would have walked to. No camera (a headless run): as before.
+var _unseen_dt: float = 0.0
+var _asleep: bool = false
+## Frames placed / frames slept (the measuring tools).
+var placed_frames: int = 0
+var slept_frames: int = 0
+
+
 func _process(delta: float) -> void:
 	if paused or bodies.is_empty():
 		return
-	_place_all(delta)
+	if Zombie.view_lod and is_inside_tree() and Zombie.view_camera(get_viewport()) and _unseen():
+		_unseen_dt += delta
+		slept_frames += 1
+		if not _asleep:
+			_asleep = true
+			_run_players(false)
+		return
+	if _asleep:
+		_asleep = false
+		_run_players(true)
+	placed_frames += 1
+	_place_all(delta + _unseen_dt)
+	_unseen_dt = 0.0
+
+
+## Is the whole lane from `from` to `to` outside the camera's view? The walkers are spread along all of it, so it
+## is looked at as LANE_BALLS balls in a row (each a stretch of the line, the lane's width and a body's height).
+const LANE_BALLS: int = 8
+
+
+func _unseen() -> bool:
+	return lane_unseen(to_global(_a) - Zombie.vl_pos, to_global(_b) - Zombie.vl_pos, float(cfg.get("width", 2.5)) + 3.0, Zombie.vl_fwd, Zombie.vl_cos)
+
+
+## Pure: the line from `a` to `b` (both from the camera), `pad` wide, is wholly outside the view cone.
+static func lane_unseen(a: Vector3, b: Vector3, pad: float, fwd: Vector3, cone_cos: float, balls: int = LANE_BALLS) -> bool:
+	var r: float = a.distance_to(b) / float(2 * balls) + pad
+	for i: int in balls:
+		if not Zombie.sphere_out_of_view(a.lerp(b, (float(i) + 0.5) / float(balls)), r, fwd, cone_cos):
+			return false
+	return true
+
+
+func _run_players(on: bool) -> void:
+	for z: Node3D in bodies:
+		var ap: AnimationPlayer = z.get_node_or_null(^"AP") as AnimationPlayer
+		if ap != null:
+			ap.active = on
 
 
 func _place_all(delta: float) -> void:
@@ -200,8 +250,8 @@ func _place_all(delta: float) -> void:
 		var k: float = float(st["k"]) + float(st["speed"]) * delta / length
 		if k >= 1.0:
 			if loop_on:
-				k -= 1.0
-				loops += 1
+				loops += int(k)   # (more than one lap when the column was not looked at for long: T-265)
+				k = fposmod(k, 1.0)
 			else:
 				k = 1.0
 		st["k"] = k

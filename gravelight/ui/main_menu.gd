@@ -4,12 +4,14 @@ extends Control
 ## (ui/main_menu.tscn) stays the first screen; its CLAUDE ZOMBIES door opens this one.
 ##   wordmark (MenuKit.wordmark, 140 px) with TERMS & CONDITIONS under it, top left;
 ##   a column of large letter-spaced buttons behind a thin violet rule:
-##     PLAY      > SOLO (survivor, then the map cards), ONLINE (the lobby screens, menu_lobby.gd), CAMPAIGN
-##     MUSTER, ARCHIVE
-##     EXTRAS    > DOSSIERS, SERVICE RECORD, CHALLENGES, CREDITS, TEST RANGE
+##     PLAY      > SOLO (character, then the map cards), CO-OP (the lobby screens, menu_lobby.gd), CAMPAIGN
+##     LOADOUT (MenuMuster), COLLECTION (MenuArchive)
+##     EXTRAS    > CUTSCENES, CHARACTERS (MenuDossiers), STATS (MenuStats), CHALLENGES, CREDITS, SHOOTING RANGE
 ##     SETTINGS
-##     QUIT      > TERMS & CONDITIONS (the hub), QUIT TO DESKTOP (not in a browser)
-## Columns change with a 0.25 s cross-fade and a 20 px slide; every page (MenuScreen) opens over the scene with a
+##     QUIT      > GAME SELECT (the Terms & Conditions hub), QUIT TO DESKTOP (not in a browser)
+## T-267 (the owner: "what the heck is muster?"): the links carry the names every shooter uses, and the line under
+## the column (LINK_HINTS) says in plain words what the focused one opens.
+## Columns change with a short cross-fade and slide (MenuMotion); every page (MenuScreen) opens over the scene with a
 ## darker shade. Keyboard and controller: up / down wrap, accept, Esc / pad B goes back a column.
 ## While an online connection is open (back from a match) the lobby opens straight away.
 ## T-243 (the owner: "make the menu better and more scary"): MenuDread over the scene (a blood-rimmed vignette on a
@@ -35,6 +37,28 @@ const TAGLINES: PackedStringArray = [
 	"Read the fine print. They already have.",
 	"Keep the fire lit. They hate what it shows them.",
 ]
+
+## T-267: what each link opens, shown under the column while it has the focus (keyed by the link's label).
+const LINK_HINTS: Dictionary = {
+	"Play": "Start a match: on your own, with friends, or the story campaign.",
+	"Loadout": "Choose your starting pistol and your starting perks.",
+	"Collection": "The documents, recordings and photographs you have found, and the cutscenes.",
+	"Extras": "Cutscenes, character files, your stats, challenges, credits and the shooting range.",
+	"Settings": "Controls, sound, video, gameplay and accessibility.",
+	"Quit": "Leave the game.",
+	"Solo": "Survive the rounds on your own, or with up to three bots.",
+	"Co-op": "Up to four players online or on your network. Host a game or join one.",
+	"Campaign": "The story: the maps in order, with their cutscenes. Solo, or with a squad from Co-op.",
+	"Cutscenes": "Watch any cutscene again.",
+	"Characters": "The four survivors: who they are, and the pages their levels unlock.",
+	"Stats": "Your rank, career numbers, achievements and weapon camos.",
+	"Challenges": "Goals that pay XP and unlock calling cards and emblems.",
+	"Credits": "Who made this, and whose work it stands on.",
+	"Shooting Range": "Try every weapon with no zombies about.",
+	"Game Select": "Back to the Terms & Conditions title screen.",
+	"Quit to Desktop": "Close the game.",
+	"Back": "",
+}
 
 var scene: MenuScene = null
 var column: String = "main"
@@ -187,7 +211,7 @@ func _build_footer() -> void:
 	col.alignment = BoxContainer.ALIGNMENT_CENTER
 	col.add_child(MenuKit.bar(ProfileSave.rank_progress(), 240))
 	var card: String = str(ProfileSave.profile.get("equipped", {}).get("calling_card", ""))
-	var sub: String = ("Commendation %d   " % p if p > 0 else "") + (_unlock_name(card) if card != "" else "")
+	var sub: String = ("Prestige %d   " % p if p > 0 else "") + (_unlock_name(card) if card != "" else "")
 	if sub != "":
 		col.add_child(MenuKit.label(sub, 18, MenuKit.DIM))
 	head.add_child(col)
@@ -278,20 +302,20 @@ func _open_cutscenes() -> void:
 func column_rows(which: String) -> Array:
 	match which:
 		"play":
-			return [["Solo", open_screen.bind(MenuCharacter)], ["Online", open_screen.bind(MenuLobby)],
+			return [["Solo", open_screen.bind(MenuCharacter)], ["Co-op", open_screen.bind(MenuLobby)],
 				["Campaign", _open_campaign], ["Back", show_column.bind("main", true)]]
 		"extras":
-			return [["Cutscenes", _open_cutscenes], ["Dossiers", open_screen.bind(MenuDossiers)], ["Service Record", open_screen.bind(MenuStats)],
+			return [["Cutscenes", _open_cutscenes], ["Characters", open_screen.bind(MenuDossiers)], ["Stats", open_screen.bind(MenuStats)],
 				["Challenges", open_screen.bind(MenuChallenges)], ["Credits", open_screen.bind(MenuCredits)],
-				["Test Range", func() -> void: get_tree().change_scene_to_file(TEST_RANGE)], ["Back", show_column.bind("main", true)]]
+				["Shooting Range", func() -> void: get_tree().change_scene_to_file(TEST_RANGE)], ["Back", show_column.bind("main", true)]]
 		"quit":
-			var rows: Array = [["Terms & Conditions", func() -> void: get_tree().change_scene_to_file(HUB)]]
+			var rows: Array = [["Game Select", func() -> void: get_tree().change_scene_to_file(HUB)]]
 			if not OS.has_feature("web"):
 				rows.append(["Quit to Desktop", func() -> void: get_tree().quit()])
 			rows.append(["Back", show_column.bind("main", true)])
 			return rows
-	return [["Play", show_column.bind("play", true)], ["Muster", open_screen.bind(MenuMuster)],
-		["Archive", open_screen.bind(MenuArchive)], ["Extras", show_column.bind("extras", true)],
+	return [["Play", show_column.bind("play", true)], ["Loadout", open_screen.bind(MenuMuster)],
+		["Collection", open_screen.bind(MenuArchive)], ["Extras", show_column.bind("extras", true)],
 		["Settings", open_screen.bind(MenuSettings)], ["Quit", show_column.bind("quit", true)]]
 
 
@@ -303,7 +327,7 @@ func show_column(which: String, animate: bool = true) -> void:
 		if f != null and _links.is_ancestor_of(f):
 			_last_focus[column] = str(f.name)
 		old.name = "OldColumn"
-		MenuKit.transition_out(old, old.queue_free, -1.0 if going_in else 1.0, 0.14)
+		MenuKit.transition_out(old, old.queue_free, -1.0 if going_in else 1.0)
 	column = which
 	_col = HBoxContainer.new()
 	_col.name = "Column"
@@ -325,9 +349,19 @@ func show_column(which: String, animate: bool = true) -> void:
 		crumb.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_col_holder.add_child(crumb)   # beside the column, not in it (the HBox would line it up)
 		_col.tree_exiting.connect(crumb.queue_free)
+	# T-267: the plain line for the focused link, under the column
+	var hint: Label = MenuKit.para("", 19, MenuKit.PAPER.darkened(0.2))
+	hint.name = "LinkHint"
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	hint.custom_minimum_size = Vector2(620.0, 0.0)
+	hint.position = Vector2(26.0, rows.size() * size_px * 1.55 + (rows.size() - 1) * 2.0 + 14.0)
+	hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_col_holder.add_child(hint)
+	_col.tree_exiting.connect(hint.queue_free)
 	for r: Array in rows:
 		var b: Button = MenuKit.menu_link(str(r[0]), r[1] as Callable, size_px)
 		bleed_link(b)
+		b.focus_entered.connect(_show_hint.bind(hint, str(r[0])))
 		if str(r[0]) == "Back":
 			b.add_theme_color_override("font_color", MenuKit.DIM)
 		_links.add_child(b)
@@ -336,6 +370,15 @@ func show_column(which: String, animate: bool = true) -> void:
 		AudioDirector.play_2d("ui_whoosh", 0.0, 0.03)
 		MenuKit.transition_in(_col, 1.0 if going_in else -1.0)
 	_focus_column()
+
+
+## T-267: the focused link's plain line fades in under the column.
+func _show_hint(hint: Label, label_text: String) -> void:
+	if not is_instance_valid(hint):
+		return
+	hint.text = str(LINK_HINTS.get(label_text, ""))
+	hint.modulate.a = 0.0
+	MenuMotion.fade(hint, 1.0, 0.12)
 
 
 ## Up / down wrap round the column (keyboard and pad).
@@ -393,6 +436,7 @@ func _show_screen(s: MenuScreen) -> MenuScreen:
 		_last_focus[column] = str(f.name)
 	AudioDirector.play_2d("ui_whoosh", 0.0, 0.03)
 	_col_holder.visible = false
+	MenuMotion.fade(_top, 0.0, 0.0)   # (also ends a fade-in still running from the page before)
 	_top.modulate.a = 0.0
 	_foot.visible = false
 	if scene != null:
@@ -412,7 +456,7 @@ func _on_closed() -> void:
 		scene.dread_enabled = true
 	_col_holder.visible = true
 	_foot.visible = true
-	create_tween().tween_property(_top, "modulate:a", 1.0, 0.25)
+	MenuMotion.fade(_top, 1.0)
 	MenuKit.transition_in(_col, -1.0)
 	_focus_column()
 

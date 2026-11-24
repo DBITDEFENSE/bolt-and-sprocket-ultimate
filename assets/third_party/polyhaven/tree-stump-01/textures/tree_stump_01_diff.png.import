@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://ctk55xaml5p8q"
 path.s3tc="res://.godot/imported/tree_stump_01_diff.png-62b1c51525f43b704d381d700d12b014.s3tc.ctex"
+path.etc2="res://.godot/imported/tree_stump_01_diff.png-62b1c51525f43b704d381d700d12b014.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/tree-stump-01/textures/tree_stump_01_diff.png"
-dest_files=["res://.godot/imported/tree_stump_01_diff.png-62b1c51525f43b704d381d700d12b014.s3tc.ctex"]
+dest_files=["res://.godot/imported/tree_stump_01_diff.png-62b1c51525f43b704d381d700d12b014.s3tc.ctex", "res://.godot/imported/tree_stump_01_diff.png-62b1c51525f43b704d381d700d12b014.etc2.ctex"]
 
 [params]
 

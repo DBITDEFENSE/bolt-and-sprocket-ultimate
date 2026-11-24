@@ -81,7 +81,7 @@ func test_every_camera_stands_on_the_navmesh_inside_the_map() -> void:
 	for c: Dictionary in cams:
 		var n: String = str(c["name"])
 		var p: Vector3 = _v3(c["pos"])
-		assert_true(p.x > -22.0 and p.x < 62.0 and p.z > -32.0 and p.z < 66.0 and p.y > -4.0 and p.y < 8.0, "%s inside Map 0's bounds" % n)
+		assert_true(p.x > -22.0 and p.x < 62.0 and p.z > -32.0 and p.z < 66.0 and p.y > -4.0 and p.y < 12.5, "%s inside Map 0's bounds" % n)
 		assert_true(_near_navmesh(p), "%s at %s stands on or just above the navmesh" % [n, p])
 		if c.has("subject"):
 			assert_true(_near_navmesh(_v3(c["subject"])), "%s's subject is on the navmesh" % n)

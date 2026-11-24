@@ -1,0 +1,40 @@
+{
+ "start": {
+  "pixels": 36492,
+  "share_of_frame": 0.0396,
+  "sat_mean": 0.031,
+  "sat_median": 0.0,
+  "sat_p90": 0.0909,
+  "coloured": 0.0002,
+  "value_mean": 0.0823,
+  "ab_spread": 0.47,
+  "hue_bins": 0,
+  "hue_spread": 0.0
+ },
+ "start_close": {
+  "pixels": 254048,
+  "share_of_frame": 0.2757,
+  "sat_mean": 0.0402,
+  "sat_median": 0.0,
+  "sat_p90": 0.1111,
+  "coloured": 0.0013,
+  "value_mean": 0.0782,
+  "ab_spread": 0.97,
+  "hue_bins": 4,
+  "hue_hist": [
+   0.142,
+   0.17,
+   0.027,
+   0.012,
+   0.0,
+   0.0,
+   0.027,
+   0.109,
+   0.506,
+   0.006,
+   0.0,
+   0.0
+  ],
+  "hue_spread": 78.5
+ }
+}

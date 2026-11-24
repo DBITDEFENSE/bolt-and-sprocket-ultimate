@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://qag2u64ekw4u"
 path.s3tc="res://.godot/imported/white_plaster_rough_01_normal.png-a0ceaaa26e0c48051aa1f53ca3707276.s3tc.ctex"
+path.etc2="res://.godot/imported/white_plaster_rough_01_normal.png-a0ceaaa26e0c48051aa1f53ca3707276.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/white-plaster-rough-01/textures/white_plaster_rough_01_normal.png"
-dest_files=["res://.godot/imported/white_plaster_rough_01_normal.png-a0ceaaa26e0c48051aa1f53ca3707276.s3tc.ctex"]
+dest_files=["res://.godot/imported/white_plaster_rough_01_normal.png-a0ceaaa26e0c48051aa1f53ca3707276.s3tc.ctex", "res://.godot/imported/white_plaster_rough_01_normal.png-a0ceaaa26e0c48051aa1f53ca3707276.etc2.ctex"]
 
 [params]
 

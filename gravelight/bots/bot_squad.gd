@@ -1349,8 +1349,9 @@ func _log_down(pid: int) -> void:
 ## power-up names only) with a ping.
 func _on_powerup_spawned(id: StringName, pos: Vector3) -> void:
 	var node: Node = null
-	for n: Node in map.find_children("*", "PowerupPickup", true, false):
-		if (n as Node3D).global_position.distance_to(pos) < 1.5:
+	# (T-265: from the pickups' own group, not a walk over the map's every node in the frame a power-up drops)
+	for n: Node in get_tree().get_nodes_in_group(&"powerups"):
+		if n is PowerupPickup and map.is_ancestor_of(n) and (n as Node3D).global_position.distance_to(pos) < 1.5:
 			node = n
 	blackboard.add_powerup(node, id, pos, _t)
 	var b: BotBrain = _nearest_standing_brain(pos)

@@ -6,6 +6,11 @@ extends Control
 ## map on a thread (ResourceLoader.load_threaded_request); MapPacks.ensure (the web build's pack fetcher, contract C4,
 ## T-139) runs first, its progress on the same bar (desktop: it returns at once). The screen stays at least MIN_SHOW_S so it can be read.
 ## Opened with no pending load (shots, tests) it just shows `demo_map`.
+## T-267: a Solo / Co-op load (not the Campaign, not a curtain, not the browser) plays one clip from
+## assets/video/loading/*.ogv behind the text (LoadingClips: muted, looping, covering the screen, over the map's art
+## and under the dark grade); the match then starts when the map has loaded AND LoadingClips.MIN_VIDEO_S have shown,
+## through a short fade to black. Accept (Enter / pad A) skips the rest of that minimum once the map is in. With no
+## clip file the screen is exactly what it was: no video node, MIN_SHOW_S, a straight cut.
 
 const SCENE: String = "res://gravelight/ui/loading_screen.tscn"
 const TIPS_JSON: String = "res://data/gravelight/tips.json"
@@ -20,11 +25,24 @@ var scene_path: String = ""
 var tip: String = ""
 var lore: String = ""
 var progress: float = 0.0
+## T-267: how long the screen had been up when the map was in and it left (the smoke's load-time measure), and when
+## the loader first reported the map loaded.
+var load_s: float = -1.0
+var loaded_at_s: float = -1.0
+## The last load that finished: {map, loaded_at, left_at, clip} (smoke_match_start reads it after the screen is gone).
+static var last: Dictionary = {}
 var _t: float = 0.0
 var _requested: bool = false
 var _done: bool = false
 var _bar: ProgressBar
 var _status: Label
+## T-267: the clip (null = the plain screen), its path, the frame that fades it in and the black it leaves through.
+var video: VideoStreamPlayer = null
+var clip_path: String = ""
+var _video_box: Control = null
+var _video_lit: bool = false
+var _skip_min: bool = false
+var _leaving: bool = false
 
 
 ## Swap to the loading screen and load `scene_path` behind it (map_id from MapCards when not given).
@@ -176,6 +194,7 @@ func _build() -> void:
 	art.set_anchors_preset(Control.PRESET_FULL_RECT)
 	art.modulate = Color(0.78, 0.78, 0.82)
 	add_child(art)
+	_build_video()
 	var g: Gradient = Gradient.new()
 	g.set_color(0, Color(0.0, 0.0, 0.02, 0.15))
 	g.set_color(1, Color(0.0, 0.0, 0.02, 0.92))
@@ -220,7 +239,7 @@ func _build() -> void:
 	tip_row.add_child(MenuKit.rule(52.0))
 	var tip_col: VBoxContainer = VBoxContainer.new()
 	tip_row.add_child(tip_col)
-	var tl: Label = MenuKit.label("FIELD NOTE", 18, MenuKit.VIOLET.lightened(0.2))
+	var tl: Label = MenuKit.label("TIP", 18, MenuKit.VIOLET.lightened(0.2))
 	tl.add_theme_font_override("font", MenuKit.spaced(MenuKit.type_font(), 5))
 	tip_col.add_child(tl)
 	var tp: Label = MenuKit.para(tip, 22, MenuKit.PAPER.darkened(0.1))
@@ -238,6 +257,83 @@ func _build() -> void:
 	_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_bar.custom_minimum_size = Vector2(900, 4)
 	foot.add_child(_bar)
+
+
+## T-267: the clip, when one is wanted and found: full screen (cover), over the art and under the grade and the text.
+func _build_video() -> void:
+	clip_path = LoadingClips.choose(Campaign.active, map_id, curtain_s > 0.0)
+	var stream: VideoStream = LoadingClips.open(clip_path)
+	if stream == null:
+		clip_path = ""
+		return
+	_video_box = Control.new()
+	_video_box.name = "Video"
+	_video_box.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_video_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_video_box.clip_contents = true
+	_video_box.modulate = Color(0.86, 0.86, 0.9, 0.0)
+	add_child(_video_box)
+	var cover: AspectRatioContainer = AspectRatioContainer.new()
+	cover.name = "Cover"
+	cover.set_anchors_preset(Control.PRESET_FULL_RECT)
+	cover.stretch_mode = AspectRatioContainer.STRETCH_COVER
+	cover.ratio = 16.0 / 9.0
+	cover.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_video_box.add_child(cover)
+	video = VideoStreamPlayer.new()
+	video.name = "Clip"
+	video.stream = stream
+	video.expand = true
+	video.loop = true
+	video.volume_db = -80.0   # silent: the menu's music has ended and the map brings its own
+	video.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cover.add_child(video)
+	video.finished.connect(func() -> void:   # a stream that does not loop by itself
+		if is_instance_valid(video) and not _leaving:
+			video.play())
+	video.play()
+	print("[loading] clip %s" % clip_path.get_file())
+
+
+## The clip fades in once it has a picture (its real aspect is known then), so a slow first frame is never a black
+## flash over the art.
+func _tick_video() -> void:
+	if video == null or _video_lit:
+		return
+	var tex: Texture2D = video.get_video_texture()
+	if not video.is_playing() or tex == null or tex.get_width() <= 0 or video.stream_position <= 0.0:
+		return
+	_video_lit = true
+	(video.get_parent() as AspectRatioContainer).ratio = float(tex.get_width()) / float(maxi(1, tex.get_height()))
+	create_tween().tween_property(_video_box, "modulate:a", 1.0, MenuMotion.duration(LoadingClips.FADE_IN_S, false))
+
+
+## The match starts: straight away without a clip (as before T-267), through a short fade to black with one.
+func _leave(ps: PackedScene) -> void:
+	if _leaving:
+		return
+	_leaving = true
+	if video == null:
+		get_tree().change_scene_to_packed.call_deferred(ps)
+		return
+	var black: ColorRect = ColorRect.new()
+	black.name = "FadeOut"
+	black.color = Color(0, 0, 0, 1)
+	black.modulate.a = 0.0
+	black.set_anchors_preset(Control.PRESET_FULL_RECT)
+	black.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(black)
+	var tw: Tween = create_tween()
+	tw.tween_property(black, "modulate:a", 1.0, LoadingClips.FADE_OUT_S)
+	tw.tween_callback(func() -> void:
+		if is_instance_valid(video):
+			video.stop()
+		get_tree().change_scene_to_packed(ps))
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if video != null and event.is_action_pressed(&"ui_accept"):
+		_skip_min = true   # the map is in (or will be): do not wait out the clip's minimum
 
 
 func _begin() -> void:
@@ -281,6 +377,7 @@ func _on_pack_progress(_pack: String, fraction: float, _bytes: int, _total: int)
 
 func _process(delta: float) -> void:
 	_t += delta
+	_tick_video()
 	if _status != null and not _done:
 		_status.text = _status.text.rstrip(".") + ".".repeat(int(_t * 2.0) % 4)
 	if not _requested or _done:
@@ -290,11 +387,16 @@ func _process(delta: float) -> void:
 	if not prog.is_empty():
 		progress = float(prog[0])
 		_bar.value = progress
-	if st == ResourceLoader.THREAD_LOAD_LOADED and _t >= MIN_SHOW_S:
+	if st == ResourceLoader.THREAD_LOAD_LOADED and loaded_at_s < 0.0:
+		loaded_at_s = _t
+		print("[loading] %s loaded after %.2f s%s" % [map_id, _t, " (clip playing)" if video != null else ""])
+	if LoadingClips.may_leave(st == ResourceLoader.THREAD_LOAD_LOADED, _t, video != null and not _skip_min, MIN_SHOW_S):
 		_done = true
+		load_s = _t
+		last = {"map": map_id, "loaded_at": loaded_at_s, "left_at": _t, "clip": clip_path}
 		var ps: PackedScene = ResourceLoader.load_threaded_get(scene_path) as PackedScene
 		_bar.value = 1.0
-		get_tree().change_scene_to_packed.call_deferred(ps)
+		_leave(ps)
 	elif st == ResourceLoader.THREAD_LOAD_FAILED or st == ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
 		_done = true
 		push_warning("LoadingScreen: threaded load failed for %s, loading it directly" % scene_path)

@@ -593,22 +593,112 @@ func _smooth_visual(near: bool) -> void:
 		_smooth_off = off
 
 
+## T-265: the animation's rate follows what the local camera sees. Until now the LOD below went by the distance
+## to the zombie's own target, so a horde round a bot 40 m away animated every frame, and so did every zombie
+## behind the player's back (each animation step is the tree's advance, the pose code and the skeleton's modifiers:
+## about 0.1 ms a zombie, the dearest thing a zombie does after its move). With a camera the distance is the
+## camera's, and a body outside the view cone and further than VIEW_NEAR_M is stepped every VIEW_OUT_DIV-th frame
+## with the time it skipped, as the far ones always were: the clip keeps its pace, footsteps and events still
+## fire (up to 3 frames late), and the first frame it is back in view it is stepped again every frame. The body,
+## its hitboxes' place and every gameplay timer are on the physics tick and are not touched. Without a camera
+## (headless tests) the distance to the target decides, as before. `view_lod` false: tools that photograph them.
+static var view_lod: bool = true
+const VIEW_NEAR_M: float = 3.0      # nearer than this a body is never "out of view" (the screen's edge, its shadow)
+const VIEW_OUT_DIV: int = 4         # out of view: one animation step every 4th frame
+const VIEW_MARGIN_RAD: float = 0.17 # the view cone is the screen's corner angle plus this (10 degrees)
+static var _vl_frame: int = -1
+static var _vl_vp: Viewport = null
+static var _vl_has: bool = false
+static var vl_pos: Vector3 = Vector3.ZERO
+static var vl_fwd: Vector3 = Vector3.FORWARD
+static var vl_cos: float = 0.0
+var _out_of_view: bool = false
+## Work counters for the measuring tools (perf_marks): animation steps and ticks with foot rays, all zombies.
+static var anim_steps: int = 0
+static var foot_ray_ticks: int = 0
+static var active_frames: int = 0   # frames an active zombie was drawn in (what the two above are a share of)
+static var out_frames: int = 0      # of those, out of the camera's view
+
+
+## Pure: the cosine of the half-angle of the cone that holds everything on screen: a camera with the vertical field
+## of view `fov_deg` and the picture's `aspect` (width / height), to the screen's corner, plus `margin_rad`.
+static func view_cone_cos(fov_deg: float, aspect: float, margin_rad: float = VIEW_MARGIN_RAD) -> float:
+	var tv: float = tan(deg_to_rad(clampf(fov_deg, 1.0, 179.0)) * 0.5)
+	var th: float = tv * maxf(0.1, aspect)
+	return cos(minf(atan(sqrt(tv * tv + th * th)) + margin_rad, 1.55))
+
+
+## Pure: is a body at `to` (from the camera) outside the cone round the view axis `fwd` (unit) with the half-angle
+## cosine `cone_cos`, and further than `near_m`?
+static func out_of_view(to: Vector3, fwd: Vector3, cone_cos: float, near_m: float = VIEW_NEAR_M) -> bool:
+	var d2: float = to.length_squared()
+	return d2 > near_m * near_m and to.dot(fwd) < cone_cos * sqrt(d2)
+
+
+## Pure: every how many frames a body `d2` (metres squared) away is animated: 1 within full_m, 2 to half_m, 4
+## beyond (anim.json lod), and VIEW_OUT_DIV when it is out of view.
+static func anim_div(d2: float, full_m: float, half_m: float, out: bool) -> int:
+	if out:
+		return VIEW_OUT_DIV
+	if d2 > half_m * half_m:
+		return 4
+	if d2 > full_m * full_m:
+		return 2
+	return 1
+
+
+## Pure: is a ball of `radius` at `to` (from the camera) wholly outside the view cone, and not round the camera?
+## For things bigger than a body (a column of walkers, a horse).
+static func sphere_out_of_view(to: Vector3, radius: float, fwd: Vector3, cone_cos: float, near_m: float = VIEW_NEAR_M) -> bool:
+	var d: float = to.length()
+	if d <= radius + near_m:
+		return false
+	return acos(clampf(to.dot(fwd) / d, -1.0, 1.0)) - asin(clampf(radius / d, 0.0, 1.0)) > acos(clampf(cone_cos, -1.0, 1.0))
+
+
+## The local camera of this body's viewport, read once a frame for the whole horde: true when there is one
+## (vl_pos, vl_fwd and vl_cos then hold its place, its axis and its cone).
+func _vl_camera() -> bool:
+	return view_camera(get_viewport())
+
+
+## The same for any node's viewport (the landscape's walkers, the horse).
+static func view_camera(vp: Viewport) -> bool:
+	var f: int = Engine.get_process_frames()
+	if f != _vl_frame or vp != _vl_vp:
+		_vl_frame = f
+		_vl_vp = vp
+		var cam: Camera3D = vp.get_camera_3d() if vp != null else null
+		_vl_has = cam != null and cam.is_inside_tree()
+		if _vl_has:
+			vl_pos = cam.global_position
+			vl_fwd = -cam.global_basis.z.normalized()
+			var size: Vector2 = vp.get_visible_rect().size
+			vl_cos = view_cone_cos(cam.fov, size.x / maxf(1.0, size.y))
+	return _vl_has
+
+
 func _process(delta: float) -> void:
-	# Animation LOD: full rate within lod.full_m, half to lod.half_m, quarter beyond (anim.json).
+	# Animation LOD: full rate within lod.full_m, half to lod.half_m, quarter beyond (anim.json), and a quarter
+	# out of the local camera's view (T-265).
 	if state == State.INACTIVE:
 		return
 	_anim_skip += 1
+	active_frames += 1
 	var d2: float = global_position.distance_squared_to(target.global_position) if target != null else 0.0
+	_out_of_view = false
+	if view_lod and _vl_camera():
+		var to: Vector3 = global_position + Vector3.UP - vl_pos
+		d2 = to.length_squared()
+		_out_of_view = out_of_view(to, vl_fwd, vl_cos)
 	var lod: Dictionary = _anim["lod"]
-	var div: int = 1
 	var half_m: float = float(lod["half_m"]) * anim_lod_scale
 	var full_m: float = float(lod["full_m"]) * anim_lod_scale
 	if smooth_motion or _smooth_off != Vector3.ZERO:
 		_smooth_visual(d2 <= full_m * full_m)
-	if d2 > half_m * half_m:
-		div = 4
-	elif d2 > full_m * full_m:
-		div = 2
+	if _out_of_view:
+		out_frames += 1
+	var div: int = anim_div(d2, full_m, half_m, _out_of_view)
 	if _anim_skip % div != 0:
 		return
 	_animate(delta * float(div))
@@ -807,7 +897,7 @@ func _update_climb(_delta: float) -> void:
 
 ## The agent reached a navigation link: a climb link starts the scripted climb (vulnerable, no attacks).
 func _on_link_reached(details: Dictionary) -> void:
-	if puppet or state != State.CHASE or is_crawler:
+	if puppet or state != State.CHASE:
 		return
 	var owner_v: Variant = details.get("owner", null)
 	var link: NavigationLink3D = owner_v as NavigationLink3D
@@ -815,6 +905,11 @@ func _on_link_reached(details: Dictionary) -> void:
 		return
 	var start: Vector3 = details.get("link_entry_position", global_position)
 	var end: Vector3 = details.get("link_exit_position", global_position)
+	if link.has_meta(ClimbLink.LINE):
+		_ladder_reached(link, start, end)   # T-268: a ladder (one at a time, up its line, the drop back down)
+		return
+	if is_crawler:
+		return
 	if end.y - start.y < 0.5:
 		return   # a drop or a flat link: walk it
 	_climb_from = start
@@ -826,6 +921,9 @@ func _on_link_reached(details: Dictionary) -> void:
 
 
 func _update_link_climb(_delta: float) -> void:
+	if _ladder != null:
+		_update_ladder(_delta)   # T-268
+		return
 	var spd: float = float(_anim["climb"]["speed_mps"])
 	var mantle: float = float(_anim["climb"]["mantle_seconds"])
 	var dur: float = _climb_dist / maxf(0.2, spd) + mantle
@@ -843,6 +941,245 @@ func _update_link_climb(_delta: float) -> void:
 		_agent.avoidance_enabled = true
 		_stuck_origin = global_position
 		_enter(State.CHASE)
+
+
+# ---------------------------------------------------------------- ladders (T-268; climb links with a "line")
+# The owner: "zombies need to be able to crawl up the watchtower ... if you go on the ladder, have the zombies be able
+# to chase you". A climb link whose map row has a `line` is a ladder (ClimbLink): the dead take it one at a time with
+# room between them (the rest wait at the foot), go up the ladder's line and swing over the edge; with `drop` they
+# come back down it by dropping. Killed on the rungs, a body falls. Crawlers and the horses do not climb: one whose
+# way leads up a ladder is put back in the round's queue after LADDER_REFUSE_S (it comes back on its feet through a
+# window or the snow), so nothing waits at a ladder's foot for good and the round can always end. Everything here is
+# decided when the agent reaches the link (the path already chose the ladder): no scan runs while it chases.
+
+const LADDER_MOUNT_S: float = 0.35      # from the foot onto the ladder's line
+const LADDER_WAIT_LOOK_S: float = 0.25  # a waiting body asks for room this often
+const LADDER_WAIT_MAX_S: float = 25.0   # then it looks for another way (a fresh path)
+const LADDER_REFUSE_S: float = 8.0      # a body that cannot climb gives up on the ladder after this long
+const LADDER_HOP_S: float = 0.45        # the swing out over the edge before a drop
+const LADDER_LAND_S: float = 0.25       # from the line's foot back onto the floor after a drop
+const LADDER_HUMP: float = 1.15         # the body lifts this far crossing the edge (over a 1.1 m parapet)
+
+var _ladder: NavigationLink3D = null        # the ladder this body is on (state CLIMB_LINK)
+var _ladder_line: Vector3 = Vector3.ZERO    # its line (x, z; y unused)
+var _ladder_drop: bool = false              # going down it (a drop), not up
+var _ladder_fall_s: float = 0.0             # the drop's seconds of free fall
+var _ladder_wait: NavigationLink3D = null   # the ladder this body waits at (state CHASE)
+var _ladder_wait_from: Vector3 = Vector3.ZERO
+var _ladder_wait_to: Vector3 = Vector3.ZERO
+var _ladder_wait_t: float = 0.0
+var _ladder_wait_look: float = 0.0
+var _ladder_fall: bool = false              # dead and falling off a climb
+
+
+## True for the bodies that take ladders: not a crawler, not a horse (a boss keeps to the ground: HorseBoss lays its
+## siege from below, which sets the dead near it running, and they climb).
+func can_climb_ladders() -> bool:
+	return not is_crawler and not (self is HorseBoss)
+
+
+## True while this body is on `link`'s rungs going up (ClimbLink's queue asks).
+func on_rungs(link: NavigationLink3D) -> bool:
+	return state == State.CLIMB_LINK and _ladder == link and not _ladder_drop and not _mantling
+
+
+## Climbing or dropping on a ladder now.
+func on_ladder() -> bool:
+	return state == State.CLIMB_LINK and _ladder != null
+
+
+func _ladder_clear() -> void:
+	_ladder = null
+	_ladder_drop = false
+	_ladder_wait = null
+	_ladder_fall = false
+
+
+## The agent reached a ladder's link, entering at `start`, leaving at `end`.
+func _ladder_reached(link: NavigationLink3D, start: Vector3, end: Vector3) -> void:
+	var rise: float = end.y - start.y
+	if rise < -1.5:
+		if bool(link.get_meta(ClimbLink.DROP, false)) and not (self is HorseBoss):
+			_ladder_begin(link, start, end, true)   # crawlers drop too: there is no other way down
+		return
+	if rise < 0.5:
+		return
+	if _ladder_wait != link:
+		_ladder_wait_t = 0.0   # (a body that cannot climb reaches the link again and again: its clock keeps running)
+	_ladder_wait = link
+	_ladder_wait_from = start
+	_ladder_wait_to = end
+	_ladder_wait_look = 0.0
+	if can_climb_ladders() and ClimbLink.try_enter(link, self, start.y):
+		_ladder_wait = null
+		_ladder_begin(link, start, end, false)
+
+
+## One chase tick at a ladder's foot. True while it owns the body (standing, waiting for room on the rungs).
+func _ladder_wait_tick(delta: float) -> bool:
+	var link: NavigationLink3D = _ladder_wait
+	if not is_instance_valid(link) or target.global_position.y < _ladder_wait_from.y + 1.5:
+		_ladder_wait = null   # the ladder is gone, or whoever it hunts is no longer up there
+		force_repath()
+		return false
+	_ladder_wait_t += delta
+	if not can_climb_ladders():
+		if _ladder_wait_t >= LADDER_REFUSE_S:
+			_ladder_wait = null
+			recycle()
+			return true
+		return false   # it keeps its chase (and its attack, if the target comes within reach) meanwhile
+	if _ladder_wait_t >= LADDER_WAIT_MAX_S or _flat_dist(_ladder_wait_from) > 3.5:
+		_ladder_wait = null
+		force_repath()
+		return false
+	if _flat_dist(_ladder_wait_from) > 0.9:
+		_nav_move(_ladder_wait_from, speed, delta, 0.5)   # shoved off the foot: back to it
+	else:
+		_halt(delta)
+		_face(_ladder_wait_to)
+	_ladder_wait_look -= delta
+	if _ladder_wait_look <= 0.0:
+		_ladder_wait_look = LADDER_WAIT_LOOK_S
+		if ClimbLink.try_enter(link, self, _ladder_wait_from.y):
+			_ladder_wait = null
+			_ladder_begin(link, _ladder_wait_from, _ladder_wait_to, false)
+	return true
+
+
+func _ladder_begin(link: NavigationLink3D, start: Vector3, end: Vector3, drop: bool) -> void:
+	var l2: Vector2 = link.get_meta(ClimbLink.LINE)
+	_ladder = link
+	_ladder_line = Vector3(l2.x, 0.0, l2.y)
+	_ladder_drop = drop
+	_ladder_fall_s = sqrt(2.0 * absf(end.y - start.y) / maxf(1.0, GameState.g_zombie()))
+	_climb_from = start
+	_climb_to = end
+	_climb_dist = absf(end.y - start.y)
+	_mantling = false
+	collision_mask = 0
+	_agent.avoidance_enabled = false
+	velocity = Vector3.ZERO
+	_enter(State.CLIMB_LINK)
+	if drop:
+		_tree_play("Climb", str(_anim["clips"]["drop"]), 1.0)
+
+
+## Where the body is `t` seconds into its climb or drop.
+func _ladder_pos(t: float) -> Vector3:
+	var foot: Vector3 = Vector3(_ladder_line.x, _climb_from.y, _ladder_line.z)
+	var head: Vector3 = Vector3(_ladder_line.x, _climb_to.y, _ladder_line.z)
+	if _ladder_drop:
+		if t < LADDER_HOP_S:
+			var k: float = t / LADDER_HOP_S
+			return _climb_from.lerp(foot, k) + Vector3.UP * (LADDER_HUMP * sin(k * PI))
+		t -= LADDER_HOP_S
+		var over: Vector3 = head + Vector3.UP * LADDER_HUMP   # (it comes in over the rail of the floor below, not through it)
+		if t < _ladder_fall_s:
+			return foot.lerp(over, (t / _ladder_fall_s) * (t / _ladder_fall_s))
+		return over.lerp(_climb_to, clampf((t - _ladder_fall_s) / LADDER_LAND_S, 0.0, 1.0))
+	if t < LADDER_MOUNT_S:
+		return _climb_from.lerp(foot, t / LADDER_MOUNT_S)
+	t -= LADDER_MOUNT_S
+	var rungs_s: float = _climb_dist / maxf(0.2, float(_anim["climb"]["speed_mps"]))
+	if t < rungs_s:
+		return foot.lerp(head, t / rungs_s)
+	var m: float = clampf((t - rungs_s) / maxf(0.05, float(_anim["climb"]["mantle_seconds"])), 0.0, 1.0)
+	return head.lerp(_climb_to, m) + Vector3.UP * (LADDER_HUMP * sin(m * PI))
+
+
+## Seconds the whole climb (or drop) takes.
+func ladder_seconds() -> float:
+	if _ladder_drop:
+		return LADDER_HOP_S + _ladder_fall_s + LADDER_LAND_S
+	return LADDER_MOUNT_S + _climb_dist / maxf(0.2, float(_anim["climb"]["speed_mps"])) + float(_anim["climb"]["mantle_seconds"])
+
+
+func _update_ladder(_delta: float) -> void:
+	if is_crawler and not _ladder_drop:
+		_ladder_end(false)   # its legs went on the rungs: it lets go and falls
+		return
+	var total: float = ladder_seconds()
+	global_position = _ladder_pos(minf(_state_t, total))
+	var toward: Vector3 = _climb_from if _ladder_drop else _climb_to
+	_face(Vector3(toward.x, global_position.y, toward.z) + (toward - _ladder_line) * Vector3(1, 0, 1))
+	if not _ladder_drop and not _mantling and _state_t >= total - float(_anim["climb"]["mantle_seconds"]):
+		_mantling = true
+		_tree_play("Climb", str(_anim["clips"]["climb"]["mantle"]), 1.0)
+	if _state_t >= total:
+		_ladder_end(true)
+
+
+## Off the ladder: onto the floor at the far end (arrived), or let go where it is (gravity takes it).
+func _ladder_end(arrived: bool) -> void:
+	var dropped: bool = _ladder_drop
+	_mantling = false
+	_ladder = null
+	_ladder_drop = false
+	collision_mask = LAYER_WORLD | LAYER_PLAYER | LAYER_ZBODY | LAYER_DOOR
+	_agent.avoidance_enabled = true
+	velocity = Vector3.ZERO
+	_stuck_origin = global_position
+	force_repath()
+	if arrived and dropped:
+		_react_clip = ""
+		_enter(State.STAGGER)   # it lands hard and reels before it comes on
+		AudioDirector.play_3d("zombie_gib", global_position + Vector3.UP * 0.3, -6.0)
+	else:
+		_enter(State.CHASE)
+
+
+## Killed on a climb (any climb link): the body is let go and falls. Host and client both come through _start_death.
+func _ladder_on_death() -> void:
+	_ladder_fall = state == State.CLIMB_LINK
+	_ladder_wait = null
+	if not _ladder_fall:
+		return
+	var away: Vector3 = (global_position - _climb_to) * Vector3(1, 0, 1)
+	if _ladder != null:
+		away = (_ladder_line - (_climb_from if _ladder_drop else _climb_to)) * Vector3(1, 0, 1)
+	velocity = away.normalized() * 1.1 if away.length_squared() > 0.0001 else Vector3.ZERO
+	collision_mask = LAYER_WORLD
+	_ladder = null
+	_ladder_drop = false
+	_mantling = false
+
+
+## The dead body's fall off a climb, until the ragdoll takes it or it lies on the floor.
+func _ladder_fall_tick(delta: float) -> void:
+	if _ragdoll != null:
+		_ladder_fall = false   # the ragdoll's own bones fall from here
+		return
+	velocity.y -= GameState.g_zombie() * delta
+	move_and_slide()
+	if is_on_floor() or global_position.y < kill_plane_y:
+		_ladder_fall = false
+		velocity = Vector3.ZERO
+
+
+## Client: the host's sub-state for a climb (2 = over the edge, 3 = dropping). `entered`: the state is new this sample.
+var _puppet_ladder_sub_v: int = 0
+
+
+func _puppet_ladder_sub(sub: int, entered: bool) -> void:
+	if entered:
+		_puppet_ladder_sub_v = 0
+	if sub == _puppet_ladder_sub_v:
+		return
+	_puppet_ladder_sub_v = sub
+	if entered:
+		_ladder_puppet_clip.call_deferred(sub)   # after _enter(CLIMB_LINK) has started the climb loop
+	else:
+		_ladder_puppet_clip(sub)
+
+
+func _ladder_puppet_clip(sub: int) -> void:
+	if state != State.CLIMB_LINK:
+		return
+	if sub == 2:
+		_tree_play("Climb", str(_anim["clips"]["climb"]["mantle"]), 1.0)
+	elif sub == 3:
+		_tree_play("Climb", str(_anim["clips"]["drop"]), 1.0)
 
 
 ## Dev / tools: re-tier a live zombie (speed from enemies.json tiers, a fresh locomotion clip for the tier).
@@ -881,6 +1218,8 @@ func _update_chase(delta: float) -> void:
 	if target == null:
 		_halt(delta)
 		return
+	if _ladder_wait != null and _ladder_wait_tick(delta):
+		return   # T-268: at a ladder's foot, waiting for room on the rungs
 	if _roam_fallback(delta):
 		return
 	var to_t: Vector3 = target.global_position - global_position
@@ -1284,6 +1623,8 @@ func _update_grab(delta: float) -> void:
 
 
 func _update_dead(delta: float) -> void:
+	if _ladder_fall:
+		_ladder_fall_tick(delta)   # T-268
 	if _death_sink:
 		# killed mid-rise: the Emerge clip ran backward and the body is back in the hole; no ragdoll, nothing to dissolve
 		if _state_t > _sink_corpse_s:
@@ -2073,6 +2414,7 @@ func _pick_death(limb: StringName, kind: StringName) -> int:
 
 
 func _start_death() -> void:
+	_ladder_on_death()   # T-268: killed on a climb, the body falls (reads the state it died in)
 	state = State.DEAD
 	_state_t = 0.0
 	_ragdoll_started = false
@@ -2474,6 +2816,7 @@ func _reset_presentation() -> void:
 	_grab_t = 0.0
 	_swipe_t = 0.0
 	_mantling = false
+	_ladder_clear()
 	_react_clip = ""
 	_head_popped = false
 	_death_sink = false
@@ -2496,11 +2839,18 @@ func _apply_variant(variant: String) -> void:
 		variant = "soldier"
 	var kit: Dictionary = kits[variant]
 	_variant = variant
+	# T-269: in a co-op session the body's own rolls (build, sex, height, gear, tint, dirt, rime) come from the seed
+	# every peer has (the net id and the spawn health), so a client sees the host's zombie, not a cousin of it. Alone
+	# they are the global generator's, as before.
+	_look_rng = null
+	if Net.session != null and net_id >= 0:
+		_look_rng = RandomNumberGenerator.new()
+		_look_rng.seed = ZombieWardrobe.look_seed(net_id, max_hp) + 977
 	var builds: Array = kit.get("builds", ["medium"])
-	_build = str(_pick(builds))
-	_female = randf() < float(kit.get("female", 0.0)) if _force_female < 0 else _force_female == 1
+	_build = str(_pick(builds)) if _look_rng == null else str(builds[_look_rng.randi() % builds.size()])
+	_female = _vr() < float(kit.get("female", 0.0)) if _force_female < 0 else _force_female == 1
 	var heights: Array = _anim["builds"].get("heights", [0.95, 1.04])
-	_height = randf_range(float(heights[0]), float(heights[1]))
+	_height = _vrr(float(heights[0]), float(heights[1]))
 	_body.mesh = ZombieBody.build_skinned(_variant, _build, _female)
 	_body.set_surface_override_material(0, null)
 	_pivot.scale = Vector3.ONE * _height
@@ -2513,18 +2863,18 @@ func _apply_variant(variant: String) -> void:
 	var gear: Dictionary = kit.get("gear", {})
 	var pieces: Array = []
 	for piece0: String in gear.keys():
-		if randf() < float(gear[piece0]):
+		if _vr() < float(gear[piece0]):
 			pieces.append(piece0)
 	# T-192: "gear_one_of": at most one of these (a head wears one hat), rolled in order
 	var one_of: Dictionary = kit.get("gear_one_of", {})
-	var roll: float = randf()
+	var roll: float = _vr()
 	for piece1: String in one_of.keys():
 		roll -= float(one_of[piece1])
 		if roll < 0.0:
 			pieces.append(piece1)
 			break
 	for piece: String in pieces:
-		var spec: Array = ZombieBody.gear_mesh(piece, _female)
+		var spec: Array = ZombieBody.zombie_gear_mesh(piece, _female)   # T-269: one surface on the kit material
 		var at: BoneAttachment3D = bone_attachment(str(spec[0]))
 		if at == null:
 			continue
@@ -2545,17 +2895,66 @@ func _apply_variant(variant: String) -> void:
 	# per-instance look: tint, dirt, frost (anim.json variation)
 	var va: Dictionary = _anim["variation"]
 	var t: float = float(va.get("tint", 0.08))
-	_set_inst("inst_tint", Color(1.0 + randf_range(-t, t), 1.0 + randf_range(-t, t), 1.0 + randf_range(-t, t), 1.0))
+	_set_inst("inst_tint", Color(1.0 + _vrr(-t, t), 1.0 + _vrr(-t, t), 1.0 + _vrr(-t, t), 1.0))
 	var dirt: Array = va.get("dirt", [0.1, 0.8])
-	_set_inst("inst_dirt", randf_range(float(dirt[0]), float(dirt[1])))
+	_set_inst("inst_dirt", _vrr(float(dirt[0]), float(dirt[1])))
 	var fbm: Dictionary = va.get("frost_by_map", {})
 	var fr: Array = kit.get("frost", fbm.get(String(GameState.map_id), fbm.get("default", [0.0, 0.2])))   # T-192: a kit's own (the Returned's ice)
-	_frost_base = randf_range(float(fr[0]), float(fr[1]))
+	_frost_base = _vrr(float(fr[0]), float(fr[1]))
 	_set_inst("inst_frost", _frost_base)
 	_set_inst("inst_fuel", 0.0)
+	_apply_look()
 	# posture trait, locomotion clip and the cadence
 	_roll_posture()
 	_pick_locomotion()
+
+
+## T-269: the outfit's colours and the dead skin (ZombieWardrobe), as instance parameters of the two shared
+## materials. From the net id and the spawn health, both on every peer: a co-op puppet is dressed like the host's
+## zombie and nothing is sent. Only plain Gangers are dressed; a special keeps its kit's own look.
+func _apply_look() -> void:
+	var params: Dictionary = {}
+	_outfit = ""
+	if enemy_id == &"ganger":
+		var id: int = net_id if net_id >= 0 else int(get_instance_id() % 1000003)
+		var look: int = ZombieWardrobe.look_seed(id, max_hp)
+		params = ZombieWardrobe.look_params(String(GameState.map_id), _variant, look)
+		if not params.is_empty():
+			_outfit = ZombieWardrobe.outfit_name(String(GameState.map_id), _variant, look)
+			# the map's rime was tuned on pale cloth; on a colour it reads as white mould (wear.frost_scale)
+			_frost_base *= ZombieWardrobe.frost_scale()
+			_set_inst("inst_frost", _frost_base)
+	if params.is_empty():
+		params = ZombieWardrobe.neutral_params()
+	for key: String in params.keys():
+		_set_inst(key, params[key])
+	# a gear piece made for this activation has none of the values _set_inst found unchanged
+	for g: MeshInstance3D in _gear:
+		if g.visible:
+			for key: String in _inst.keys():
+				g.set_instance_shader_parameter(key, _inst[key])
+
+
+var _outfit: String = ""
+var _look_rng: RandomNumberGenerator = null
+
+
+func _vr() -> float:
+	return _look_rng.randf() if _look_rng != null else randf()
+
+
+func _vrr(a: float, b: float) -> float:
+	return _look_rng.randf_range(a, b) if _look_rng != null else randf_range(a, b)
+
+
+## The wardrobe outfit this body wears ("" = its kit's own colours).
+func outfit_name() -> String:
+	return _outfit
+
+
+## The per-instance shader parameters of this body (a severed piece carries the same ones: ZombieGore).
+func instance_look() -> Dictionary:
+	return _inst
 
 
 func _roll_posture() -> void:
@@ -3291,6 +3690,7 @@ func _can_recorded_turn() -> bool:
 func _animate(dt: float) -> void:
 	if state == State.INACTIVE or _tree == null or _ragdoll != null:
 		return   # a ragdolling corpse: the physics bodies drive the bones (ZombieRagdoll.sync)
+	anim_steps += 1
 	ZombieBody.update_cracks(RoundManager.current_round, float(GLData.table("enemies").get("visual", {}).get("crack_energy", 2.6)))
 	var spd: float = Vector2(velocity.x, velocity.z).length()
 	var moving_state: bool = state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW]
@@ -3403,9 +3803,12 @@ func _update_senses(delta: float) -> void:
 	var d: float = global_position.distance_to(target.global_position) if target != null else 999.0
 	var fi: Dictionary = _anim["foot_ik"]
 	var la: Dictionary = _anim["look_at"]
-	var ik_on: bool = d <= float(fi["range_m"]) and is_on_floor() and state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW, State.TEAR, State.ATTACK, State.STAGGER] and not is_crawler
+	# (T-265: no foot rays for a body the camera does not see: four rays a tick each, and the weight eases back in
+	# over a quarter of a second once it is in view again)
+	var ik_on: bool = d <= float(fi["range_m"]) and not _out_of_view and is_on_floor() and state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW, State.TEAR, State.ATTACK, State.STAGGER] and not is_crawler
 	_modifier.active = d <= float(fi["off_m"]) or _modifier.springs_active()
 	if ik_on:
+		foot_ray_ticks += 1
 		var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
 		for i: int in 2:
 			var fidx: int = _foot_idx[i]
@@ -3535,6 +3938,8 @@ func variant_name() -> String:
 
 ## Sub-state for the snapshot (the bosses' own state machines); 0 for the shared one.
 func net_sub_state() -> int:
+	if state == State.CLIMB_LINK and not _dormant:
+		return 3 if _ladder_drop else (2 if _mantling else 0)   # T-268: 2 = over the edge, 3 = dropping back down
 	return 1 if _dormant else 0   # T-192: 1 = a Hard Truth body still lying (the puppet lies still too)
 
 
@@ -3596,6 +4001,8 @@ func _puppet_enter(st: int, _sub: int) -> void:
 	if _dormant and _sub != 1:
 		wake_from_dormant(float(_anim["knockdown"]["getup_seconds"]))   # it got up on the host
 		return
+	if s == State.CLIMB_LINK:
+		_puppet_ladder_sub(_sub, s != state)   # T-268: the mantle and the drop show on the client too
 	if s == State.INACTIVE or s == State.DEAD or s == state:
 		return
 	if s == State.CLIMB:

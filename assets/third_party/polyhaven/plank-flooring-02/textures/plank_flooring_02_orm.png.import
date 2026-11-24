@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cly25onri5bld"
 path.s3tc="res://.godot/imported/plank_flooring_02_orm.png-60044e4c03110db26f6287f9854aaa39.s3tc.ctex"
+path.etc2="res://.godot/imported/plank_flooring_02_orm.png-60044e4c03110db26f6287f9854aaa39.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/plank-flooring-02/textures/plank_flooring_02_orm.png"
-dest_files=["res://.godot/imported/plank_flooring_02_orm.png-60044e4c03110db26f6287f9854aaa39.s3tc.ctex"]
+dest_files=["res://.godot/imported/plank_flooring_02_orm.png-60044e4c03110db26f6287f9854aaa39.s3tc.ctex", "res://.godot/imported/plank_flooring_02_orm.png-60044e4c03110db26f6287f9854aaa39.etc2.ctex"]
 
 [params]
 

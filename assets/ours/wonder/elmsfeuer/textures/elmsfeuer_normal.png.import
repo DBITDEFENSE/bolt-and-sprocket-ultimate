@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://doenf8h8gfc0y"
 path.s3tc="res://.godot/imported/elmsfeuer_normal.png-0efefc1efa1d86a67017c2b9e621dd16.s3tc.ctex"
+path.etc2="res://.godot/imported/elmsfeuer_normal.png-0efefc1efa1d86a67017c2b9e621dd16.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/ours/wonder/elmsfeuer/textures/elmsfeuer_normal.png"
-dest_files=["res://.godot/imported/elmsfeuer_normal.png-0efefc1efa1d86a67017c2b9e621dd16.s3tc.ctex"]
+dest_files=["res://.godot/imported/elmsfeuer_normal.png-0efefc1efa1d86a67017c2b9e621dd16.s3tc.ctex", "res://.godot/imported/elmsfeuer_normal.png-0efefc1efa1d86a67017c2b9e621dd16.etc2.ctex"]
 
 [params]
 

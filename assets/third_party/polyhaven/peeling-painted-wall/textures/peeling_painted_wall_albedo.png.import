@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dxlpjmbe830t7"
 path.s3tc="res://.godot/imported/peeling_painted_wall_albedo.png-aafb1cae995dec5b9e8d7064fc8370dc.s3tc.ctex"
+path.etc2="res://.godot/imported/peeling_painted_wall_albedo.png-aafb1cae995dec5b9e8d7064fc8370dc.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/peeling-painted-wall/textures/peeling_painted_wall_albedo.png"
-dest_files=["res://.godot/imported/peeling_painted_wall_albedo.png-aafb1cae995dec5b9e8d7064fc8370dc.s3tc.ctex"]
+dest_files=["res://.godot/imported/peeling_painted_wall_albedo.png-aafb1cae995dec5b9e8d7064fc8370dc.s3tc.ctex", "res://.godot/imported/peeling_painted_wall_albedo.png-aafb1cae995dec5b9e8d7064fc8370dc.etc2.ctex"]
 
 [params]
 

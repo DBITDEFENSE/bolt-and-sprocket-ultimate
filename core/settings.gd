@@ -19,6 +19,7 @@ const GL_MAP: Dictionary = {
 ## Quality presets for the non-Gravelight modes (Gravelight applies its own PRESETS).
 const QUALITY: Dictionary = {
 	"low": {"msaa": Viewport.MSAA_DISABLED, "scale": 0.75},
+	"handheld": {"msaa": Viewport.MSAA_DISABLED, "scale": 1.0},   # T-264: Gravelight's Handheld preset, mirrored here
 	"medium": {"msaa": Viewport.MSAA_DISABLED, "scale": 1.0},
 	"high": {"msaa": Viewport.MSAA_2X, "scale": 1.0},
 	"ultra": {"msaa": Viewport.MSAA_4X, "scale": 1.0},

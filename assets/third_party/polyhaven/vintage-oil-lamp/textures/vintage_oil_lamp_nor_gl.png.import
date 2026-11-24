@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bs2dwavoduwib"
 path.s3tc="res://.godot/imported/vintage_oil_lamp_nor_gl.png-cfdfac4e8dd011c1802cc182efe935c7.s3tc.ctex"
+path.etc2="res://.godot/imported/vintage_oil_lamp_nor_gl.png-cfdfac4e8dd011c1802cc182efe935c7.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/vintage-oil-lamp/textures/vintage_oil_lamp_nor_gl.png"
-dest_files=["res://.godot/imported/vintage_oil_lamp_nor_gl.png-cfdfac4e8dd011c1802cc182efe935c7.s3tc.ctex"]
+dest_files=["res://.godot/imported/vintage_oil_lamp_nor_gl.png-cfdfac4e8dd011c1802cc182efe935c7.s3tc.ctex", "res://.godot/imported/vintage_oil_lamp_nor_gl.png-cfdfac4e8dd011c1802cc182efe935c7.etc2.ctex"]
 
 [params]
 

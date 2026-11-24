@@ -159,7 +159,7 @@ func _gameplay() -> void:
 	content.add_child(MenuKit.row("Homage Names", MenuKit.options(PackedStringArray(["Real", "In-World"]), ncur,
 		func(i: int) -> void: GLSettings.set_value("homage_names", name_modes[i]))))
 	content.add_child(MenuKit.help("Homage Bosses are tributes to real people. Real shows their first names on the title cards and boss bars; In-World shows only the in-world names. In co-op the host's settings decide."))
-	m1911_rows(content)
+	content.add_child(MenuKit.help("Looking for the M1911's finish and its fitted attachment? They moved to Loadout (main menu), where you can see them on the pistol."))
 	_minimap_rows()
 
 
@@ -199,7 +199,7 @@ func _controls() -> void:
 	content.add_child(MenuKit.row("Sprint", MenuKit.options(PackedStringArray(["Hold", "Toggle"]), scur,
 		func(i: int) -> void: GLSettings.set_value("sprint_mode", sprint_modes[i]))))
 	content.add_child(MenuKit.switch_row("Prone (hold Crouch)", bool(GLSettings.values.get("prone_enabled", false)), _setter("prone_enabled")))
-	content.add_child(MenuKit.help("Select a binding, then press the new key / button. Esc cancels."))
+	content.add_child(MenuKit.help("Select a binding, then press the new key / button. Esc cancels; so does waiting %d seconds (a controller has no Esc)." % int(REBIND_WAIT_S)))
 	content.add_child(MenuKit.section("Bindings"))
 	_wait_label = MenuKit.label("", 20, MenuKit.GOLD)
 	content.add_child(_wait_label)
@@ -259,10 +259,32 @@ func _reset_bindings() -> void:
 	rebuild()
 
 
+## T-264: a controller cannot press Esc, and while a controller binding is awaited every button is a candidate:
+## the wait ends by itself after REBIND_WAIT_S; while a keyboard binding is awaited, pad B cancels too.
+const REBIND_WAIT_S: float = 6.0
+var _wait_started_ms: int = 0
+var _wait_seen: StringName = &""
+
+
+func _process(delta: float) -> void:
+	super._process(delta)
+	if _waiting_action == &"":
+		_wait_seen = &""
+		return
+	if _wait_seen != _waiting_action:
+		_wait_seen = _waiting_action
+		_wait_started_ms = Time.get_ticks_msec()
+	elif Time.get_ticks_msec() - _wait_started_ms > int(REBIND_WAIT_S * 1000.0):
+		_waiting_action = &""
+		if is_instance_valid(_wait_label):
+			_wait_label.text = "Cancelled."
+
+
 func _input(event: InputEvent) -> void:
 	if _waiting_action == &"":
 		return
-	if event is InputEventKey and (event as InputEventKey).physical_keycode == KEY_ESCAPE and event.is_pressed():
+	var pad_b: bool = not _waiting_pad and event is InputEventJoypadButton and (event as InputEventJoypadButton).button_index == JOY_BUTTON_B
+	if (event is InputEventKey and (event as InputEventKey).physical_keycode == KEY_ESCAPE and event.is_pressed()) or (pad_b and event.is_pressed()):
 		_waiting_action = &""
 		_wait_label.text = "Cancelled."
 		get_viewport().set_input_as_handled()
@@ -316,10 +338,11 @@ func _video() -> void:
 	content.add_child(MenuKit.row("Aspect", MenuKit.options(PackedStringArray(["Keep 16:9", "Fill screen"]), acur,
 		func(i: int) -> void: GLSettings.set_value("aspect", aspects[i]))))
 	content.add_child(MenuKit.help("Fill screen uses the whole of a 21:9 or 32:9 monitor (the HUD keeps to its edges); Keep 16:9 shows black bars at the sides."))
-	var fs: bool = DisplayServer.get_name() != "headless" and DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
+	var fs: bool = DisplayServer.get_name() != "headless" and DisplayServer.window_get_mode() in [DisplayServer.WINDOW_MODE_FULLSCREEN, DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN]
+	# T-264: the switch writes the shared window mode (core Settings), so it is kept for the next launch and the
+	# hub's own settings page shows the same thing (before, the next start put the window back)
 	content.add_child(MenuKit.switch_row("Fullscreen", fs, func(on: bool) -> void:
-		if DisplayServer.get_name() != "headless":
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if on else DisplayServer.WINDOW_MODE_WINDOWED)))
+		Settings.set_value("windowMode", "borderless" if on else "windowed")))
 
 
 ## T-133: the graphics block. A preset fills in every setting below it; change any one and the preset reads Custom.
@@ -327,9 +350,9 @@ func _graphics() -> void:
 	var g: Node = GLSettings
 	content.add_child(MenuKit.section("Graphics"))
 	var order: PackedStringArray = GLSettings.preset_order(GLSettings.is_compat())   # T-139: + "Browser" on the web
-	var names: PackedStringArray = ["Low", "Medium", "High", "Ultra"]
-	if order.size() > 4:
-		names.append("Browser")
+	var names: PackedStringArray = []
+	for pn: String in order:   # T-264: the labels follow the order (Handheld joined the desktop presets)
+		names.append(str(GLSettings.PRESET_LABELS.get(pn, pn.capitalize())))
 	names.append("Custom")
 	var now: String = GLSettings.matching_preset(_gfx_values())
 	var pi: int = order.find(now)
@@ -338,10 +361,18 @@ func _graphics() -> void:
 			GLSettings.set_preset(order[i])
 			rebuild())))
 	content.add_child(MenuKit.help(detected_line()))
-	content.add_child(MenuKit.help("Low and Medium render below full resolution and upscale it; High is full quality; Ultra adds 4x MSAA with TAA, 8K shadows, the best AO, fog and level of detail (a fast GPU: RTX 3080 and up)."))
+	content.add_child(MenuKit.help("Low and Medium render below full resolution and upscale it; Handheld is for a small 800-line screen (full resolution, light effects); High is full quality; Ultra adds 4x MSAA with TAA, 8K shadows, the best AO, fog and level of detail (a fast GPU: RTX 3080 and up)."))
 	_choice("Anti-aliasing", "gfx_aa", GLSettings.AA_MODES, ["Off", "FXAA (cheap, soft)", "SMAA (sharp)", "MSAA 2x", "MSAA 4x", "MSAA 8x", "TAA (smoothest, softer in motion)", "MSAA 4x + TAA (best)"])
 	content.add_child(MenuKit.row("Render scale", MenuKit.slider(50, 100, 5, float(g.call("gfx", "gfx_scale")) * 100.0, func(v: float) -> void:
 		GLSettings.set_value("gfx_scale", v / 100.0), "%d%%")))
+	# T-264: the 3D picture's height limit (Retina, 4K and 5K panels): not part of a preset, so a preset keeps it
+	var lines: PackedInt32Array = GLSettings.MAX_LINES_STEPS
+	var line_names: PackedStringArray = []
+	for ln: int in lines:
+		line_names.append("Off" if ln == 0 else "%d lines" % ln)
+	content.add_child(MenuKit.row("3D resolution limit", MenuKit.options(line_names, maxi(0, lines.find(int(GLSettings.values.get("gfx_max_lines", 0)))),
+		func(i: int) -> void: GLSettings.set_value("gfx_max_lines", lines[i]))))
+	content.add_child(MenuKit.help("On a very sharp screen (a Retina laptop, 4K, 5K) the 3D picture is drawn at most this high and upscaled; menus and the HUD stay at full sharpness. Lower it if the frame rate drops in fullscreen."))
 	_choice("Upscaler", "gfx_upscaler", GLSettings.UPSCALERS, ["Bilinear", "AMD FSR 1", "AMD FSR 2 (also anti-aliases)"])
 	content.add_child(MenuKit.row("Sharpening (FSR)", MenuKit.slider(0.0, 2.0, 0.1, 2.0 - float(GLSettings.values.get("gfx_sharpness", 0.4)), func(v: float) -> void:
 		GLSettings.set_value("gfx_sharpness", 2.0 - v))))
@@ -360,9 +391,9 @@ func _graphics() -> void:
 	content.add_child(MenuKit.section("Frame rate"))
 	# vsync and the frame cap live in the shared Settings (core/settings.gd): every mode of the game uses them
 	content.add_child(MenuKit.switch_row("V-Sync", bool(Settings.values.get("vsync", true)), func(on: bool) -> void: Settings.set_value("vsync", on)))
-	var caps: Array = [0, 60, 120, 144, 165, 240, 360]
+	var caps: Array = [0, 30, 40, 45, 60, 90, 120, 144, 165, 240, 360]   # T-264: 30 / 40 / 45 / 90 for handheld panels
 	var ccur: int = maxi(0, caps.find(int(Settings.values.get("maxFps", 0))))
-	content.add_child(MenuKit.row("Frame cap", MenuKit.options(PackedStringArray(["Off", "60", "120", "144", "165", "240", "360"]), ccur,
+	content.add_child(MenuKit.row("Frame cap", MenuKit.options(PackedStringArray(["Off", "30", "40", "45", "60", "90", "120", "144", "165", "240", "360"]), ccur,
 		func(i: int) -> void: Settings.set_value("maxFps", caps[i]))))
 	content.add_child(MenuKit.help("With V-Sync on the game runs at your screen's refresh rate. V-Sync off with a frame cap at your refresh rate gives the least input lag."))
 
@@ -401,6 +432,11 @@ func _access() -> void:
 	var cur: int = maxi(0, modes.find(str(GLSettings.values.get("colorblind", "off"))))
 	content.add_child(MenuKit.row("Colorblind mode", MenuKit.options(PackedStringArray(["Off", "Protanopia", "Deuteranopia", "Tritanopia"]), cur,
 		func(i: int) -> void: GLSettings.set_value("colorblind", modes[i]))))
+	content.add_child(MenuKit.section("Text"))   # T-264
+	var floors: PackedInt32Array = GLSettings.TEXT_FLOORS
+	content.add_child(MenuKit.row("Small text", MenuKit.options(PackedStringArray(["As designed", "Larger (small screens)", "Largest"]),
+		maxi(0, floors.find(int(GLSettings.values.get("ui_text_floor", 0)))), func(i: int) -> void: GLSettings.set_value("ui_text_floor", floors[i]))))
+	content.add_child(MenuKit.help("Raises the smallest print in the menus and the HUD (hints, captions, map notes) for a small or distant screen. Applies to each screen the next time it opens."))
 	content.add_child(MenuKit.section("Subtitles"))
 	content.add_child(MenuKit.switch_row("Subtitles", bool(GLSettings.values.get("subtitles", true)), _setter("subtitles")))
 	var sizes: PackedStringArray = SUBTITLE_SIZES   # T-218 (gravelight/ui/subtitles.gd reads both)
@@ -410,6 +446,9 @@ func _access() -> void:
 	content.add_child(MenuKit.row("Subtitle background", MenuKit.options(PackedStringArray(["Off", "Light", "Dark"]),
 		maxi(0, backs.find(str(GLSettings.values.get("subtitle_back", "off")))), func(i: int) -> void: GLSettings.set_value("subtitle_back", backs[i]))))
 	content.add_child(MenuKit.help("A dark band behind the words keeps them readable on snow and in bright rooms. Both apply from the next line."))
+	content.add_child(MenuKit.section("Motion"))   # T-267
+	content.add_child(MenuKit.switch_row("Reduce motion", bool(GLSettings.values.get("reduce_motion", false)), _setter("reduce_motion")))
+	content.add_child(MenuKit.help("Menus fade instead of sliding, lists appear at once, and the 3D previews of your pistol and character stand still. It does not change anything in a match."))
 
 
 func _unhandled_input(event: InputEvent) -> void:

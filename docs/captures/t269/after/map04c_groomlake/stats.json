@@ -1,0 +1,54 @@
+{
+ "start": {
+  "pixels": 34144,
+  "share_of_frame": 0.037,
+  "sat_mean": 0.3388,
+  "sat_median": 0.2794,
+  "sat_p90": 0.7,
+  "coloured": 0.4601,
+  "value_mean": 0.2523,
+  "ab_spread": 5.6,
+  "hue_bins": 4,
+  "hue_hist": [
+   0.488,
+   0.38,
+   0.062,
+   0.001,
+   0.0,
+   0.0,
+   0.0,
+   0.007,
+   0.05,
+   0.004,
+   0.001,
+   0.006
+  ],
+  "hue_spread": 32.4
+ },
+ "start_close": {
+  "pixels": 179764,
+  "share_of_frame": 0.1951,
+  "sat_mean": 0.4258,
+  "sat_median": 0.3448,
+  "sat_p90": 0.92,
+  "coloured": 0.5273,
+  "value_mean": 0.1898,
+  "ab_spread": 6.64,
+  "hue_bins": 4,
+  "hue_hist": [
+   0.607,
+   0.22,
+   0.098,
+   0.001,
+   0.0,
+   0.0,
+   0.002,
+   0.012,
+   0.042,
+   0.006,
+   0.002,
+   0.011
+  ],
+  "hue_spread": 34.9
+ }
+}

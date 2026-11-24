@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bj5smflqxrsc1"
 path.s3tc="res://.godot/imported/plastered_stone_wall_normal.png-1dd804523c12d50b0e1fa2399fe0059d.s3tc.ctex"
+path.etc2="res://.godot/imported/plastered_stone_wall_normal.png-1dd804523c12d50b0e1fa2399fe0059d.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/plastered-stone-wall/textures/plastered_stone_wall_normal.png"
-dest_files=["res://.godot/imported/plastered_stone_wall_normal.png-1dd804523c12d50b0e1fa2399fe0059d.s3tc.ctex"]
+dest_files=["res://.godot/imported/plastered_stone_wall_normal.png-1dd804523c12d50b0e1fa2399fe0059d.s3tc.ctex", "res://.godot/imported/plastered_stone_wall_normal.png-1dd804523c12d50b0e1fa2399fe0059d.etc2.ctex"]
 
 [params]
 

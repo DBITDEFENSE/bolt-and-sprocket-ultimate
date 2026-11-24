@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cr0s1xk30v562"
 path.s3tc="res://.godot/imported/thompson_artem_goyko_material_002_normal.png-38af7de2223230ae52bef465ebc7779e.s3tc.ctex"
+path.etc2="res://.godot/imported/thompson_artem_goyko_material_002_normal.png-38af7de2223230ae52bef465ebc7779e.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_002_normal.png"
-dest_files=["res://.godot/imported/thompson_artem_goyko_material_002_normal.png-38af7de2223230ae52bef465ebc7779e.s3tc.ctex"]
+dest_files=["res://.godot/imported/thompson_artem_goyko_material_002_normal.png-38af7de2223230ae52bef465ebc7779e.s3tc.ctex", "res://.godot/imported/thompson_artem_goyko_material_002_normal.png-38af7de2223230ae52bef465ebc7779e.etc2.ctex"]
 
 [params]
 

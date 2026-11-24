@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://7srm31g5o6dw"
 path.s3tc="res://.godot/imported/rock_face_03_albedo.png-d8d06d797ecd4ee68c5b4cc76d58c635.s3tc.ctex"
+path.etc2="res://.godot/imported/rock_face_03_albedo.png-d8d06d797ecd4ee68c5b4cc76d58c635.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/rock-face-03/textures/rock_face_03_albedo.png"
-dest_files=["res://.godot/imported/rock_face_03_albedo.png-d8d06d797ecd4ee68c5b4cc76d58c635.s3tc.ctex"]
+dest_files=["res://.godot/imported/rock_face_03_albedo.png-d8d06d797ecd4ee68c5b4cc76d58c635.s3tc.ctex", "res://.godot/imported/rock_face_03_albedo.png-d8d06d797ecd4ee68c5b4cc76d58c635.etc2.ctex"]
 
 [params]
 

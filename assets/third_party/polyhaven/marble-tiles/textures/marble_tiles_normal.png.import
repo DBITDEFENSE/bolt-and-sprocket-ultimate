@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bhyr75i83fene"
 path.s3tc="res://.godot/imported/marble_tiles_normal.png-15d142c93f9db028ea8fa3c195c48c26.s3tc.ctex"
+path.etc2="res://.godot/imported/marble_tiles_normal.png-15d142c93f9db028ea8fa3c195c48c26.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/marble-tiles/textures/marble_tiles_normal.png"
-dest_files=["res://.godot/imported/marble_tiles_normal.png-15d142c93f9db028ea8fa3c195c48c26.s3tc.ctex"]
+dest_files=["res://.godot/imported/marble_tiles_normal.png-15d142c93f9db028ea8fa3c195c48c26.s3tc.ctex", "res://.godot/imported/marble_tiles_normal.png-15d142c93f9db028ea8fa3c195c48c26.etc2.ctex"]
 
 [params]
 

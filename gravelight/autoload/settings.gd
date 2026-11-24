@@ -18,10 +18,18 @@ const PAD_AXES: Dictionary = {
 const COLORBLIND_MODES: PackedStringArray = ["off", "protanopia", "deuteranopia", "tritanopia"]
 ## T-133: the graphics presets. Each preset is a full set of the individual gfx_* settings (Settings > Video): picking
 ## a preset writes them all; changing one afterwards keeps the rest (the preset reads "Custom").
-const PRESET_ORDER: PackedStringArray = ["low", "medium", "high", "ultra"]
+const PRESET_ORDER: PackedStringArray = ["low", "handheld", "medium", "high", "ultra"]
+const PRESET_LABELS: Dictionary = {"low": "Low", "handheld": "Handheld", "medium": "Medium", "high": "High", "ultra": "Ultra", "web": "Browser"}
 const PRESETS: Dictionary = {
 	"low": {"gfx_aa": "fxaa", "gfx_scale": 0.75, "gfx_upscaler": "fsr1", "gfx_shadows": "low", "gfx_ao": "low", "gfx_gi": false,
 		"gfx_ssil": false, "gfx_ssr": false, "gfx_fog": "off", "gfx_lod": "low"},
+	# T-264: a handheld PC with a 1280x800 screen (the Deck: an APU of about GTX 1050 class, four Zen 2 cores, 15 W).
+	# 800 lines are already about what Low draws on a 1080p monitor (1080 x 0.75), so the scale stays at 100% and
+	# nothing is upscaled; the thin volumetric fog stays because the maps' look hangs on it; everything that costs
+	# CPU draw calls (shadowed lamps, small detail, LODs) is at Low's level. Judged from the hardware's class, never
+	# measured on the device (docs/u21/t264_ports.md).
+	"handheld": {"gfx_aa": "fxaa", "gfx_scale": 1.0, "gfx_upscaler": "bilinear", "gfx_shadows": "low", "gfx_ao": "low", "gfx_gi": false,
+		"gfx_ssil": false, "gfx_ssr": false, "gfx_fog": "low", "gfx_lod": "low"},
 	"medium": {"gfx_aa": "msaa2", "gfx_scale": 0.9, "gfx_upscaler": "fsr1", "gfx_shadows": "medium", "gfx_ao": "medium", "gfx_gi": false,
 		"gfx_ssil": true, "gfx_ssr": false, "gfx_fog": "low", "gfx_lod": "medium"},
 	"high": {"gfx_aa": "msaa2", "gfx_scale": 1.0, "gfx_upscaler": "bilinear", "gfx_shadows": "high", "gfx_ao": "high", "gfx_gi": true,
@@ -36,6 +44,16 @@ const PRESETS: Dictionary = {
 		"gfx_ssil": false, "gfx_ssr": false, "gfx_fog": "off", "gfx_lod": "low"},
 }
 const WEB_PRESET: String = "web"
+const HANDHELD_PRESET: String = "handheld"
+## T-264: the 3D picture's height limit in lines (gfx_max_lines; 0 = none). A Retina or 4K panel has two to four
+## times the pixels of a 1080p monitor behind the same GPU: with a limit the render scale drops as the window grows
+## (effective_scale) and the upscaler fills the screen; the menus and the HUD always draw at the panel's full
+## resolution. First launch sets it on Apple silicon by chip tier (detect_max_lines); elsewhere it starts at 0.
+const MAX_LINES_STEPS: PackedInt32Array = [0, 720, 900, 1080, 1200, 1440, 1800, 2160]
+## T-264: the Small text setting's values (ui_text_floor): as designed (the smallest print, 13, is 8.7 real pixels
+## on a 1280x800 screen), 15 (10 real pixels there), 18 (12 real pixels).
+const TEXT_FLOORS: PackedInt32Array = [0, 15, 18]
+const HANDHELD_TEXT_FLOOR: int = 15
 ## The quality tiers behind the individual settings (RenderingServer's global quality, per tier).
 const SHADOW_Q: Dictionary = {   # [directional atlas, positional atlas, soft filter quality 0..5]
 	"low": [1024, 1024, 1], "medium": [2048, 2048, 2], "high": [4096, 4096, 3], "ultra": [8192, 8192, 4]}
@@ -67,6 +85,8 @@ var values: Dictionary = {
 	"post_edge_soft": true,        # edge, the chromatic aberration at the frame edge (film_grain is the grain); the per-map
 	"post_ca": true,               # numbers are data/look/<map>.json `post`, the web profile's _web.json
 	"graphics_preset": "high",
+	"gfx_max_lines": 0,            # T-264: the 3D picture is at most this many lines high (0 = no limit); MAX_LINES_STEPS
+	"ui_text_floor": 0,            # T-264 Small text: 0 (as designed) / 15 / 18: no menu or HUD text below this size (MenuKit.text_floor)
 	"zombie_smooth": true,         # T-162: the zombies' meshes interpolated between physics ticks (above 60 Hz), within the full-rate animation distance
 	"smooth_motion": true,         # T-133: camera + viewmodel at the render rate, the eye interpolated (high-refresh screens)
 	"brightness": 1.0,             # T-133: scales each map's own adjustment brightness (0.7..1.4)
@@ -75,6 +95,7 @@ var values: Dictionary = {
 	"sprint_mode": "hold",     # hold / toggle (Update 02 §1)
 	"prone_enabled": false,    # hold crouch to go prone (Update 02 §1)
 	"screen_shake": 1.0,       # 0..1.5: camera shake + recoil FOV punch (weapons, explosions)
+	"reduce_motion": false,    # T-267 (Accessibility): menus fade instead of sliding, no staggered lists, no zoom, the 3D previews stand still (MenuMotion)
 	"camera_sway": "full",     # T-220 Camera Sway / Turbulence: full / reduced / off: the flight's camera motion (der Kranich's
 	                           # bank roll, its turbulence shake; CameraSway); off keeps the visuals and the audio
 	"last_join_ip": "127.0.0.1",   # co-op: the address typed in the lobby's Join field last time
@@ -117,11 +138,26 @@ var _grain_rect: ColorRect
 
 
 func _ready() -> void:
+	ensure_pad_ui_actions()
 	load_settings()
 	if not _had_preset and DisplayServer.get_name() != "headless":
 		var picked: String = auto_detect_preset()   # T-139: first launch picks low / medium / high / web from the GPU
-		print("[GLSettings] first launch: graphics preset %s (%s)" % [picked, RenderingServer.get_video_adapter_name()])
+		var adapter: String = RenderingServer.get_video_adapter_name()
+		values["gfx_max_lines"] = detect_max_lines(adapter)   # T-264: Apple silicon behind a Retina panel
+		if picked == HANDHELD_PRESET:
+			values["ui_text_floor"] = HANDHELD_TEXT_FLOOR      # T-264: a 7 inch screen: no text under 10 real pixels
+		print("[GLSettings] first launch: graphics preset %s, 3D limit %d lines (%s)" % [picked, int(values["gfx_max_lines"]), adapter])
 		set_preset(picked)
+		if picked == HANDHELD_PRESET and has_node("/root/Settings") and not FileAccess.file_exists(str(get_node("/root/Settings").get("path"))):
+			# T-264: a frame cap that divides the panel's refresh (60 Hz -> 60, 90 Hz -> 45) with V-Sync on: the
+			# frame is CPU-bound in late rounds on four Zen 2 cores, and an even 45 reads better than a 60 that dips
+			# (only when the shared settings were never saved either: a player's own V-Sync or cap is never replaced)
+			var hz: float = DisplayServer.screen_get_refresh_rate()
+			get_node("/root/Settings").call("set_value", "vsync", true)
+			get_node("/root/Settings").call("set_value", "maxFps", handheld_frame_cap(hz))
+	if DisplayServer.get_name() != "headless":
+		print(boot_line())   # T-264: one line a tester on a Mac or a handheld can send back
+		get_tree().root.size_changed.connect(_apply_scale)
 	if OS.get_cmdline_user_args().has("--frame-log") and ResourceLoader.exists("res://gravelight/tools_src/frame_log.gd"):
 		add_child((load("res://gravelight/tools_src/frame_log.gd") as GDScript).new())   # dev: a played session's frame times (not in the web build)
 	if OS.get_cmdline_user_args().has("--probe-campaign") and ResourceLoader.exists("res://gravelight/tools_src/probe_campaign_start.gd"):
@@ -133,6 +169,38 @@ func _ready() -> void:
 	_build_overlays()
 	_overlay.visible = false   # Gravelight only: see activate() (T-024)
 	get_tree().node_added.connect(_on_node_added)
+
+
+## T-264: the engine's own menu actions answer to the keyboard only in this project (ui_accept: Enter / Space,
+## ui_cancel: Escape; the D-pad and the stick do move the focus), so a controller could walk every menu and press
+## nothing. A confirms and B goes back, on every pad, in every mode of the game; Space is jump and Escape is pause
+## in the same way, so nothing new can be pressed by accident in a match. Returns how many bindings it added.
+static func ensure_pad_ui_actions() -> int:
+	var added: int = 0
+	for pair: Array in [[&"ui_accept", JOY_BUTTON_A], [&"ui_cancel", JOY_BUTTON_B]]:
+		var action: StringName = pair[0]
+		if not InputMap.has_action(action):
+			continue
+		var has_pad: bool = false
+		for ev: InputEvent in InputMap.action_get_events(action):
+			if ev is InputEventJoypadButton:
+				has_pad = true
+		if has_pad:
+			continue
+		var jb: InputEventJoypadButton = InputEventJoypadButton.new()
+		jb.device = -1   # every controller
+		jb.button_index = pair[1] as JoyButton
+		InputMap.action_add_event(action, jb)
+		added += 1
+	return added
+
+
+## T-264: the static caches are emptied while the servers still live (ExitSweep: a release build crashed on the
+## way out). Autoloads leave the tree only when the game quits.
+func _exit_tree() -> void:
+	var swept: Array = ExitSweep.run(get_tree().root if get_tree() != null else null)
+	if DisplayServer.get_name() != "headless" or OS.has_feature("template"):
+		print("[GLSettings] exit: %d scripts' static caches emptied (%d variables, %d nodes freed)" % swept)
 
 
 func load_settings() -> void:
@@ -150,6 +218,7 @@ func load_settings() -> void:
 		if cfg.has_section_key("settings", str(k)):
 			values[str(k)] = cfg.get_value("settings", str(k))
 	overrides = cfg.get_value("bindings", "overrides", {})
+	MenuKit.text_floor = clampi(int(values.get("ui_text_floor", 0)), 0, 24)
 	if not cfg.has_section_key("settings", "bot_ee_help_rev"):
 		values["bot_ee_help"] = "full"   # T-086: the default became Full Partner; an older file took "ask" as the default
 		values["bot_ee_help_rev"] = 2
@@ -436,7 +505,7 @@ func set_preset(name_: String) -> void:
 	apply_visuals()
 
 
-## T-139: the presets the Settings menu offers: the desktop four, plus "web" on the Compatibility renderer.
+## T-139: the presets the Settings menu offers: the desktop ones (T-264: with Handheld), plus "web" on the Compatibility renderer.
 static func preset_order(compat: bool) -> PackedStringArray:
 	var out: PackedStringArray = PRESET_ORDER.duplicate()
 	if compat:
@@ -462,8 +531,11 @@ static func is_compat() -> bool:
 
 ## T-139: the first-launch preset from the GPU's name, its type (RenderingDevice.DeviceType) and the renderer:
 ## Compatibility -> web; integrated (Intel UHD / Iris, AMD's "Radeon Graphics" / 680M / 780M) or software -> low;
-## a discrete NVIDIA or AMD card -> high; anything else (unknown, Intel Arc, Apple) -> medium. Never ultra. Pure.
-static func detect_preset(adapter: String, adapter_type: int, rendering_method: String) -> String:
+## a discrete NVIDIA or AMD card -> high; anything else (unknown, Intel Arc) -> medium. Never ultra. Pure.
+## T-264: the Deck (its APU's name, or `steam_deck` = the SteamDeck=1 environment variable its client sets) ->
+## handheld; Apple silicon (integrated by type, but far from an Intel UHD) by chip tier: M-series Max / Ultra ->
+## high, the base chips and Pro -> medium (detect_max_lines holds their 3D picture to a size they can fill).
+static func detect_preset(adapter: String, adapter_type: int, rendering_method: String, steam_deck: bool = false) -> String:
 	if rendering_method == "gl_compatibility":
 		return WEB_PRESET
 	var a: String = adapter.to_lower()
@@ -472,6 +544,13 @@ static func detect_preset(adapter: String, adapter_type: int, rendering_method: 
 	for sw: String in ["llvmpipe", "lavapipe", "swiftshader", "software", "microsoft basic"]:
 		if a.contains(sw):
 			return "low"
+	if steam_deck or is_deck_adapter(adapter):
+		return HANDHELD_PRESET
+	match apple_tier(adapter):
+		"max":
+			return "high"
+		"base", "pro":
+			return "medium"
 	if adapter_type == RenderingDevice.DEVICE_TYPE_INTEGRATED_GPU:
 		return "low"
 	for ig: String in ["uhd graphics", "hd graphics", "iris", "radeon(tm) graphics", "radeon graphics", "radeon vega", "vega 8",
@@ -486,10 +565,89 @@ static func detect_preset(adapter: String, adapter_type: int, rendering_method: 
 	return "medium"
 
 
+## T-264: the Deck's two APUs by the name Mesa's RADV driver gives them: "AMD Custom GPU 0405 (RADV VANGOGH)" (the
+## LCD model) and "AMD Custom GPU 0932 (RADV VANGOGH)" (the OLED model; its chip is called Sephiroth and its board
+## Galileo, kept here in case a driver ever prints those). Pure.
+static func is_deck_adapter(adapter: String) -> bool:
+	var a: String = adapter.to_lower()
+	for mark: String in ["vangogh", "van gogh", "custom gpu 0405", "custom gpu 0932", "sephiroth", "galileo"]:
+		if a.contains(mark):
+			return true
+	return false
+
+
+## T-264: Apple silicon's tier from the adapter name Metal reports ("Apple M1", "Apple M2 Pro", "Apple M3 Max",
+## "Apple M2 Ultra"): "" (not Apple silicon), "base", "pro" or "max" (Max and Ultra). Pure.
+static func apple_tier(adapter: String) -> String:
+	var a: String = adapter.to_lower().strip_edges()
+	if not a.begins_with("apple "):
+		return ""
+	if a.contains("paravirtual") or a.contains("software"):
+		return ""   # a virtual machine's GPU
+	if a.ends_with(" max") or a.ends_with(" ultra"):
+		return "max"
+	if a.ends_with(" pro"):
+		return "pro"
+	return "base"
+
+
+## T-264: the first-launch 3D height limit (gfx_max_lines) for this GPU: Apple silicon sits behind Retina panels
+## (2560x1664 on a 13 inch laptop, 3456x2234 on a 16 inch, 5120x2880 on a 27 inch display), so the base chips get
+## 900 lines, Pro 1200, Max / Ultra 1440; every other GPU none (their panels are not forced on them). Pure.
+static func detect_max_lines(adapter: String) -> int:
+	match apple_tier(adapter):
+		"base":
+			return 900
+		"pro":
+			return 1200
+		"max":
+			return 1440
+	return 0
+
+
+## T-264: the render scale in use: the Render scale setting, lowered so the 3D picture is at most `max_lines` high
+## in a window `window_h` pixels high (never below 50%: the viewport's own floor here). 0 lines = no limit. Pure.
+static func effective_scale(scale: float, max_lines: int, window_h: int) -> float:
+	var s: float = clampf(scale, 0.5, 1.0)
+	if max_lines > 0 and window_h > 0:
+		s = minf(s, float(max_lines) / float(window_h))
+	return clampf(s, 0.5, 1.0)
+
+
+## T-264: the handheld's first-launch frame cap from its panel's refresh rate: the refresh itself up to 60 Hz, half
+## of it above (90 Hz -> 45), 60 when the rate is unknown (screen_get_refresh_rate returns -1). Pure.
+static func handheld_frame_cap(refresh_hz: float) -> int:
+	if refresh_hz < 1.0:
+		return 60
+	var hz: int = roundi(refresh_hz)
+	if hz <= 60:
+		return hz
+	return roundi(hz / 2.0) if hz <= 120 else 60
+
+
+## T-264: true on a Deck: its client sets SteamDeck=1 for every game it starts, in game mode and in desktop mode
+## (not set for a build started from a file manager or a terminal: the adapter name covers that).
+static func on_steam_deck() -> bool:
+	return OS.get_environment("SteamDeck") == "1"
+
+
 ## T-139: the preset for this machine (GLSettings._ready calls it on first launch, when no preset was saved).
 func auto_detect_preset() -> String:
 	var method: String = "gl_compatibility" if is_compat() else str(RenderingServer.get_current_rendering_method())
-	return detect_preset(RenderingServer.get_video_adapter_name(), int(RenderingServer.get_video_adapter_type()), method)
+	return detect_preset(RenderingServer.get_video_adapter_name(), int(RenderingServer.get_video_adapter_type()), method, on_steam_deck())
+
+
+## T-264: what this build runs on, for the log: OS, CPU threads, GPU and its type, the driver, the renderer, the
+## render thread, the window in pixels and the screen's scale and refresh rate.
+func boot_line() -> String:
+	var scr: int = DisplayServer.window_get_current_screen()
+	return "[GLSettings] %s %s | %d threads | %s (type %d, %s) | %s %s | render thread %s | window %s, screen %s x%.2f %.0f Hz | preset %s, 3D limit %d" % [
+		OS.get_name(), OS.get_version(), OS.get_processor_count(), RenderingServer.get_video_adapter_name(),
+		int(RenderingServer.get_video_adapter_type()), RenderingServer.get_video_adapter_api_version(),
+		RenderingServer.get_current_rendering_driver_name(), RenderingServer.get_current_rendering_method(),
+		["unsafe", "safe", "separate"][clampi(int(ProjectSettings.get_setting_with_override("rendering/driver/threads/thread_model")), 0, 2)],
+		str(DisplayServer.window_get_size()), str(DisplayServer.screen_get_size(scr)), DisplayServer.screen_get_scale(scr),
+		DisplayServer.screen_get_refresh_rate(scr), str(values.get("graphics_preset", "?")), int(values.get("gfx_max_lines", 0))]
 
 
 ## T-133: the preset the individual settings match ("custom" when any differs). Pure over `vals`.
@@ -537,6 +695,7 @@ static func apply_aa(vp: Viewport, mode: String) -> void:
 
 
 func apply_visuals() -> void:
+	MenuKit.text_floor = clampi(int(values.get("ui_text_floor", 0)), 0, 24)   # T-264: the Small text setting
 	if _cb_rect != null:
 		var mode: int = maxi(0, COLORBLIND_MODES.find(str(values.get("colorblind", "off"))))
 		_cb_rect.visible = mode > 0
@@ -547,15 +706,7 @@ func apply_visuals() -> void:
 	var vp: Viewport = get_tree().root
 	apply_aa(vp, str(gfx("gfx_aa")))
 	vp.use_debanding = true   # T-133: no banding in the dark gradients (fog, the cellar's lamplight)
-	var scale: float = clampf(float(gfx("gfx_scale")), 0.5, 1.0)
-	vp.scaling_3d_scale = scale
-	match str(gfx("gfx_upscaler")):
-		"fsr1":
-			vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_FSR if scale < 0.999 else Viewport.SCALING_3D_MODE_BILINEAR
-		"fsr2":
-			vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_FSR2   # also a temporal AA at 100%
-		_:
-			vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_BILINEAR
+	_apply_scale()
 	vp.fsr_sharpness = clampf(float(values.get("gfx_sharpness", 0.4)), 0.0, 2.0)
 	vp.mesh_lod_threshold = float(LOD_Q.get(str(gfx("gfx_lod")), 1.0))
 	if is_inside_tree():
@@ -585,6 +736,25 @@ func apply_visuals() -> void:
 	Zombie.smooth_motion = bool(values.get("zombie_smooth", true)) and DisplayServer.get_name() != "headless"
 	if active:
 		apply_aspect()
+
+
+## The render scale and the upscaler on the root viewport. T-264: the scale follows the window's height when a 3D
+## height limit is set (gfx_max_lines), so this also runs when the window is resized or goes fullscreen.
+func _apply_scale() -> void:
+	if not is_inside_tree():
+		return
+	var vp: Window = get_tree().root
+	var scale: float = effective_scale(float(gfx("gfx_scale")), int(values.get("gfx_max_lines", 0)), vp.size.y)
+	if not is_equal_approx(vp.scaling_3d_scale, scale):
+		vp.scaling_3d_scale = scale
+	var mode: Viewport.Scaling3DMode = Viewport.SCALING_3D_MODE_BILINEAR
+	match str(gfx("gfx_upscaler")):
+		"fsr1":
+			mode = Viewport.SCALING_3D_MODE_FSR if scale < 0.999 else Viewport.SCALING_3D_MODE_BILINEAR
+		"fsr2":
+			mode = Viewport.SCALING_3D_MODE_FSR2   # also a temporal AA at 100%
+	if vp.scaling_3d_mode != mode:
+		vp.scaling_3d_mode = mode
 
 
 ## T-100 (ultrawide): the root window's content-scale aspect. The project stretches canvas_items from a 1920x1080

@@ -56,7 +56,8 @@ static func auto_mode(args: Array) -> String:
 
 
 func _init() -> void:
-	super._init("Online")   # T-144: PLAY > ONLINE (LAN stays a page inside it)
+	super._init("Co-op")   # T-144: PLAY > ONLINE, T-267: reads CO-OP (LAN stays a page inside it)
+	subtitle = "Up to four players. Host a game or join one: online with a code, or on your own network."
 
 
 func _ready() -> void:
@@ -130,6 +131,11 @@ func build() -> void:
 			_build_home()
 
 
+## T-264: MenuScreen.rebuild keeps the focus's place while the lobby page is the same (the list refreshes every 5 s).
+func page_key() -> String:
+	return _page
+
+
 func _go(page: String) -> void:
 	_page = page
 	_status = ""
@@ -147,22 +153,24 @@ func _build_name() -> void:
 	_name_field = _line_edit(Lobbies.display_name() if Lobbies.has_display_name() else "", "your name", 24)
 	_name_field.text_submitted.connect(func(_t: String) -> void: _save_name())
 	content.add_child(MenuKit.row("Display name", _name_field, 220))
+	if MenuKit.wants_pad_keys():   # T-264: a controller types the name here (or OK with it empty: "Player")
+		content.add_child(MenuKit.pad_keys(_name_field, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
 	content.add_child(MenuKit.button("OK", _save_name, 26, "ui_confirm"))
 	if Lobbies.has_display_name():
 		content.add_child(MenuKit.button("Back", _go.bind("home"), 22, "ui_back"))
 
 
 func _build_home() -> void:
-	content.add_child(MenuKit.para("Play with friends anywhere: no ports to open. Share the 6-letter code, or find a public lobby. "
+	content.add_child(MenuKit.para("Play with friends anywhere, nothing to set up. Host a game and share its 6-letter code, or join a public game. "
 		+ "You are \"%s\"." % Lobbies.display_name(), 18, MenuKit.DIM))
 	if Lobbies.can_rejoin():
 		content.add_child(MenuKit.button("Rejoin the match (%s, %d s left)" % [Lobbies.rejoin_code(), int(Lobbies.rejoin_seconds_left())],
 			_rejoin, 26, "ui_confirm"))
 	content.add_child(MenuKit.button("Quick Match", _quick, 26, "ui_confirm"))
-	content.add_child(MenuKit.button("Create Lobby", _go.bind("create"), 26))
-	content.add_child(MenuKit.button("Browse Lobbies", _go.bind("browse"), 26))
-	content.add_child(MenuKit.button("Join by Code", _go.bind("join"), 26))
-	content.add_child(MenuKit.button("LAN (direct IP)", _go.bind("lan"), 22))
+	content.add_child(MenuKit.button("Host a Game", _go.bind("create"), 26))
+	content.add_child(MenuKit.button("Find a Game", _go.bind("browse"), 26))
+	content.add_child(MenuKit.button("Join with a Code", _go.bind("join"), 26))
+	content.add_child(MenuKit.button("Local Network (LAN)", _go.bind("lan"), 22))
 	content.add_child(MenuKit.button("Change name", _go.bind("name"), 20))
 	if Lobbies.backend_kind == "mock":
 		content.add_child(MenuKit.para("(local test lobbies: the mock lobby service on port %d)" % Lobbies.mock_port, 16, MenuKit.DIM))
@@ -186,14 +194,14 @@ func _build_create() -> void:
 	content.add_child(MenuKit.row("Map", MenuKit.options(names, sel, func(i: int) -> void: _create_map = ids[i]), 220))
 	content.add_child(MenuKit.row("Players", MenuKit.options(PackedStringArray(["2", "3", "4"]), _create_slots - 2,
 		func(i: int) -> void: _create_slots = i + 2), 220))
-	content.add_child(MenuKit.check("Public (listed in Browse and Quick Match)", _create_public, func(on: bool) -> void: _create_public = on))
+	content.add_child(MenuKit.check("Public (anyone can find it in Find a Game and Quick Match)", _create_public, func(on: bool) -> void: _create_public = on))
 	content.add_child(MenuKit.check("Bots fill empty slots", _create_bots, func(on: bool) -> void: _create_bots = on))
-	content.add_child(MenuKit.button("Create", _create, 26, "ui_confirm"))
+	content.add_child(MenuKit.button("Host", _create, 26, "ui_confirm"))
 	content.add_child(MenuKit.button("Back", _go.bind("home"), 22, "ui_back"))
 
 
 func _build_browse() -> void:
-	content.add_child(MenuKit.para("Public lobbies (refreshing every 5 s).", 18, MenuKit.DIM))
+	content.add_child(MenuKit.para("Public games you can join (the list refreshes every 5 s).", 18, MenuKit.DIM))
 	var shown: int = 0
 	for v: Variant in Lobbies.lobbies:
 		var r: Dictionary = v
@@ -208,16 +216,18 @@ func _build_browse() -> void:
 		content.add_child(b)
 		shown += 1
 	if shown == 0:
-		content.add_child(MenuKit.para("No open lobbies right now. Create one, or try Quick Match.", 20, MenuKit.PAPER))
+		content.add_child(MenuKit.para("No open games right now. Host one, or try Quick Match.", 20, MenuKit.PAPER))
 	content.add_child(MenuKit.button("Refresh", Lobbies.refresh, 20))
 	content.add_child(MenuKit.button("Back", _go.bind("home"), 22, "ui_back"))
 
 
 func _build_join() -> void:
-	content.add_child(MenuKit.para("Type the code your friend sees in their lobby.", 18, MenuKit.DIM))
+	content.add_child(MenuKit.para("Type the 6-letter code the host sees on their screen.", 18, MenuKit.DIM))
 	_code_field = _line_edit("", "e.g. KXMRTA", 6)
 	_code_field.text_submitted.connect(func(_t: String) -> void: _join_code())
 	content.add_child(MenuKit.row("Join code", _code_field, 220))
+	if MenuKit.wants_pad_keys():   # T-264: the code's own letters (no I / O), typed with a controller
+		content.add_child(MenuKit.pad_keys(_code_field, LobbyService.CODE_ALPHABET, 12))
 	content.add_child(MenuKit.button("Join", _join_code, 26, "ui_confirm"))
 	content.add_child(MenuKit.button("Back", _go.bind("home"), 22, "ui_back"))
 
@@ -226,9 +236,9 @@ func _build_busy() -> void:
 	var what: String = "Connecting..."
 	match Lobbies.state:
 		LobbyService.State.CREATING:
-			what = "Creating the lobby..."
+			what = "Setting up your game..."
 		LobbyService.State.SEARCHING:
-			what = "Looking for a lobby..."
+			what = "Looking for a game..."
 	content.add_child(MenuKit.para(what, 24, MenuKit.GOLD))
 	content.add_child(MenuKit.button("Cancel", _cancel, 22, "ui_back"))
 
@@ -240,7 +250,7 @@ func _build_room() -> void:
 	var head: String = ""
 	if online:
 		var code: String = str(Net.lobby.get("code", Lobbies.current.get("code", "")))
-		head = "Lobby code: %s   ·   %s   ·   %s" % [code, LobbyService.map_name(str(Net.lobby.get("map_id", LobbyService.DEFAULT_MAP))),
+		head = "Join code: %s   ·   %s   ·   %s" % [code, LobbyService.map_name(str(Net.lobby.get("map_id", LobbyService.DEFAULT_MAP))),
 			"public" if bool(Net.lobby.get("is_public", true)) else "private"]
 	elif host:
 		head = "You're hosting (LAN)."
@@ -258,7 +268,7 @@ func _build_room() -> void:
 		content.add_child(MenuKit.button("Not ready" if ready_now else "Ready", Lobbies.set_ready.bind(not ready_now), 26, "ui_confirm"))
 	else:
 		_build_host_controls(online)
-	content.add_child(MenuKit.button("Leave the lobby" if not host else "Close the lobby", _leave, 22, "ui_back"))
+	content.add_child(MenuKit.button("Leave the game" if not host else "Close the game", _leave, 22, "ui_back"))
 
 
 func _build_squad() -> void:
@@ -279,7 +289,7 @@ func _build_squad() -> void:
 
 
 func _build_survivor_pick() -> void:
-	content.add_child(MenuKit.label("Your survivor", 22, MenuKit.PAPER))
+	content.add_child(MenuKit.label("Your character", 22, MenuKit.PAPER))
 	var row: HBoxContainer = HBoxContainer.new()
 	row.add_theme_constant_override("separation", 10)
 	content.add_child(row)
@@ -295,7 +305,7 @@ func _build_survivor_pick() -> void:
 		b.custom_minimum_size = Vector2(150, 44)
 		row.add_child(b)
 	var mk: Dictionary = Muster.loadout_for(mine, ProfileSave.profile)
-	content.add_child(MenuKit.button("Muster: " + Muster.summary(mk), _open_muster.bind(mine), 20))   # T-079
+	content.add_child(MenuKit.button("Loadout: " + Muster.summary(mk), _open_muster.bind(mine), 20))   # T-079
 
 
 func _build_host_controls(online: bool) -> void:
@@ -325,12 +335,14 @@ func _build_host_controls(online: bool) -> void:
 
 ## The direct-IP lobby (ENet): host or join by address. Port %d UDP must be reachable (LAN, or a forwarded port).
 func _build_lan() -> void:
-	content.add_child(MenuKit.para("Up to four survivors on one network. The host runs the game; everyone else joins by address "
+	content.add_child(MenuKit.para("Up to four players on one network. The host runs the game; everyone else joins by address "
 		+ "(same PC: 127.0.0.1, LAN: the host's address shown in their lobby). Port %d (UDP)." % _port(), 18, MenuKit.DIM))
-	content.add_child(MenuKit.button("Host a LAN game", _host_lan, 26, "ui_confirm"))
+	content.add_child(MenuKit.button("Host on this network", _host_lan, 26, "ui_confirm"))
 	_ip = _line_edit(str(GLSettings.values.get("last_join_ip", "127.0.0.1")), "host address, e.g. 192.168.1.20", 64)
 	_ip.text_submitted.connect(func(_t: String) -> void: _join_lan())
 	content.add_child(MenuKit.row("Join address", _ip, 220))
+	if MenuKit.wants_pad_keys():   # T-264: an IPv4 address (and :port) typed with a controller
+		content.add_child(MenuKit.pad_keys(_ip, "1234567890.:", 12))
 	content.add_child(MenuKit.button("Join", _join_lan, 26, "ui_confirm"))
 	content.add_child(MenuKit.button("Back", _go.bind("home"), 22, "ui_back"))
 

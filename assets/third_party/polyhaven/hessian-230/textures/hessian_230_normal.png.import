@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bsutgkjyuqk5r"
 path.s3tc="res://.godot/imported/hessian_230_normal.png-445d4d483bd1285a05dc2e3a1372e9e6.s3tc.ctex"
+path.etc2="res://.godot/imported/hessian_230_normal.png-445d4d483bd1285a05dc2e3a1372e9e6.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/hessian-230/textures/hessian_230_normal.png"
-dest_files=["res://.godot/imported/hessian_230_normal.png-445d4d483bd1285a05dc2e3a1372e9e6.s3tc.ctex"]
+dest_files=["res://.godot/imported/hessian_230_normal.png-445d4d483bd1285a05dc2e3a1372e9e6.s3tc.ctex", "res://.godot/imported/hessian_230_normal.png-445d4d483bd1285a05dc2e3a1372e9e6.etc2.ctex"]
 
 [params]
 

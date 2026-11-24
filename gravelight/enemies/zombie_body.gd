@@ -495,12 +495,24 @@ uniform sampler2D orm_tex : filter_linear_mipmap, hint_default_white;
 uniform float use_maps = 0.0;
 uniform float normal_depth = 0.6;
 uniform float origin_bias = 0.09;
-instance uniform vec4 inst_tint : source_color = vec4(1.0);
-instance uniform float inst_dirt = 0.3;
-instance uniform float inst_frost = 0.0;
-instance uniform float inst_char = 0.0;
-instance uniform float inst_fuel = 0.0;
-instance uniform float inst_dissolve = 0.0;
+// one instance, two surfaces, one per-instance buffer: the slots are fixed so the skin and the kit shader agree
+instance uniform vec4 inst_tint : source_color, instance_index(0) = vec4(1.0);
+instance uniform float inst_dirt : instance_index(1) = 0.3;
+instance uniform float inst_frost : instance_index(2) = 0.0;
+instance uniform float inst_char : instance_index(3) = 0.0;
+instance uniform float inst_fuel : instance_index(4) = 0.0;
+instance uniform float inst_dissolve : instance_index(5) = 0.0;
+// T-269 (ZombieWardrobe.look_params): the dead look. inst_wear: x blood (mouth, hands), y dead (sockets, veins)
+instance uniform vec4 inst_wear : instance_index(10) = vec4(0.0);
+instance uniform vec4 inst_skin : instance_index(11) = vec4(1.0, 1.0, 1.0, 0.0);
+instance uniform vec4 inst_mottle : instance_index(12) = vec4(0.0);
+uniform vec3 stain_color = vec3(0.07, 0.004, 0.003);
+uniform vec3 dead_vein_color = vec3(0.02, 0.03, 0.07);
+uniform vec3 socket_color = vec3(0.023, 0.005, 0.007);
+uniform float min_light = 0.0;
+uniform float rim = 0.0;
+uniform float rim_power = 3.0;
+uniform vec3 rim_color = vec3(1.0);
 varying vec3 v_pos;
 varying vec3 v_nrm;
 varying vec4 v_col;
@@ -519,6 +531,18 @@ void fragment() {
 	vec3 orm = texture(orm_tex, UV).rgb;
 	vec3 painted = alb.rgb * 1.5 * mix(0.9, 1.06, n);
 	vec3 base = v_col.rgb * skin_mul * inst_tint.rgb * mix(vec3(mix(0.62, 1.1, n)), painted, use_maps);
+	// T-269: dead skin. The tone, bruise-coloured blotches, dark veins under the skin (the same cells the Nachtglas
+	// veins glow along), sunken sockets and mouth, blood on the mouth and the hands (the painted map's alpha).
+	float ridge = tri(ridge_tex, v_pos, v_nrm, 3.0).r;
+	float cell = tri(vein_tex, v_pos, v_nrm, 2.2).r;
+	float mouth_hands = alb.a * use_maps;
+	base *= inst_skin.rgb;
+	float blotch = smoothstep(0.42, 0.74, (n - 0.62) * 1.25 + ridge * 0.5) * inst_skin.a * inst_mottle.a;
+	base = mix(base, inst_mottle.rgb * (0.7 + 1.4 * dot(base, vec3(0.333))), blotch * 0.75);
+	base = mix(base, dead_vein_color, (1.0 - smoothstep(0.0, 0.075, cell)) * 0.6 * inst_wear.y);
+	base = mix(base, socket_color, mouth_hands * 0.62 * inst_wear.y);
+	float bloody = mouth_hands * smoothstep(0.25, 0.75, n * 0.9 + mouth_hands * 0.35) * inst_wear.x;
+	base = mix(base, stain_color * mix(0.7, 1.3, n), bloody * 0.9);
 	float dirt = inst_dirt * (1.0 - smoothstep(0.0, 1.3, v_h)) * (0.4 + 0.6 * n);
 	base = mix(base, base * vec3(0.5, 0.42, 0.38), dirt);
 	float up = clamp(v_nrm.y, 0.0, 1.0);
@@ -526,7 +550,7 @@ void fragment() {
 	base = mix(base, vec3(0.86, 0.9, 0.96), frost);
 	base = mix(base, vec3(0.03, 0.02, 0.02), clamp(inst_char * smoothstep(0.15, 0.75, n + inst_char * 0.4), 0.0, 1.0));
 	ALBEDO = base;
-	ROUGHNESS = mix(roughness, 0.2, max(inst_fuel, frost * 0.6)) * mix(1.0, orm.g / max(roughness, 0.05), use_maps);
+	ROUGHNESS = mix(roughness, 0.2, max(inst_fuel, frost * 0.6)) * mix(1.0, orm.g / max(roughness, 0.05), use_maps) * mix(1.0, 0.5, bloody);
 	METALLIC = metallic;
 	if (use_maps > 0.5) {
 		NORMAL_MAP = texture(normal_tex, UV).rgb;
@@ -535,14 +559,12 @@ void fragment() {
 		AO_LIGHT_AFFECT = 0.6;
 	}
 	// where the Nachtglas starts (eyes, mouth, hands): cracks open there first and the veins run thicker
-	float origin = alb.a * use_maps;
+	float origin = mouth_hands;
 	// cracks: the ridged noise thresholded by the round (more of the body crystallises as rounds climb)
-	float ridge = tri(ridge_tex, v_pos, v_nrm, 3.0).r;
 	float thr = mix(0.93, 0.74, gl_round_k) - origin_bias * origin;
 	float cr = smoothstep(thr, thr + 0.03, ridge);
 	float cr_edge = smoothstep(thr - 0.05, thr, ridge) * (1.0 - cr);
 	// veins: cellular edges under the skin, pulsing with the map's hum
-	float cell = tri(vein_tex, v_pos, v_nrm, 2.2).r;
 	float vein = (1.0 - smoothstep(0.0, 0.09, cell)) * 0.55 * mix(1.0, 0.45 + 0.9 * alb.a, use_maps);
 	float pulse = 0.35 + hum_pulse * gl_hum;
 	vec3 em = crack_color * cr * crack_energy * gl_round_k + crack_edge * cr_edge * crack_energy * 0.35 * gl_round_k
@@ -552,6 +574,9 @@ void fragment() {
 		if (n < inst_dissolve) { discard; }
 		em += vec3(0.55, 0.25, 1.0) * smoothstep(inst_dissolve + 0.08, inst_dissolve, n) * 4.0;
 	}
+	// T-269: readable in the dark without a map light: a floor of its own colour, and a soft edge light in it
+	float fres = pow(1.0 - clamp(dot(normalize(NORMAL), normalize(VIEW)), 0.0, 1.0), rim_power);
+	em += base * (vec3(min_light) + rim_color * (rim * fres));
 	EMISSION = em;
 }
 """
@@ -587,12 +612,25 @@ uniform float fabric_roughness_floor = 0.7;
 uniform float leather_roughness_floor = 0.4;
 uniform float roughness_amount = 0.0;
 uniform float ao_amount = 0.0;
-instance uniform vec4 inst_tint : source_color = vec4(1.0);
-instance uniform float inst_dirt = 0.3;
-instance uniform float inst_frost = 0.0;
-instance uniform float inst_char = 0.0;
-instance uniform float inst_fuel = 0.0;
-instance uniform float inst_dissolve = 0.0;
+// one instance, two surfaces, one per-instance buffer: the slots are fixed so the skin and the kit shader agree
+instance uniform vec4 inst_tint : source_color, instance_index(0) = vec4(1.0);
+instance uniform float inst_dirt : instance_index(1) = 0.3;
+instance uniform float inst_frost : instance_index(2) = 0.0;
+instance uniform float inst_char : instance_index(3) = 0.0;
+instance uniform float inst_fuel : instance_index(4) = 0.0;
+instance uniform float inst_dissolve : instance_index(5) = 0.0;
+// T-269 (ZombieWardrobe.look_params): the outfit. A vertex's colour slot is in CUSTOM0.a (see fragment); rgb = the
+// cloth's colour (linear), a = 1 to use it (0 keeps the baked colour: specials, the people, the squads).
+instance uniform vec4 inst_cloth : instance_index(6) = vec4(0.0);
+instance uniform vec4 inst_cloth2 : instance_index(7) = vec4(0.0);
+instance uniform vec4 inst_accent : instance_index(8) = vec4(0.0);
+instance uniform vec4 inst_pattern : instance_index(9) = vec4(0.0);   // rgb the pattern's colour, a 1 stripes / 2 check / 3 dots
+instance uniform vec4 inst_wear : instance_index(10) = vec4(0.0);    // x blood stains, z their layout
+uniform vec3 stain_color = vec3(0.07, 0.004, 0.003);
+uniform float min_light = 0.0;
+uniform float rim = 0.0;
+uniform float rim_power = 3.0;
+uniform vec3 rim_color = vec3(1.0);
 varying vec3 v_pos;
 varying vec3 v_nrm;
 varying vec4 v_col;
@@ -606,7 +644,8 @@ void vertex() {
 	v_nrm = NORMAL;
 	v_col = COLOR;
 	v_cus = CUSTOM0;
-	v_h = VERTEX.y;
+	// (a gear piece, CUSTOM0.a >= 64, hangs on a bone: its height on the body is its rest position's)
+	v_h = CUSTOM0.a > 63.5 ? CUSTOM1.y : VERTEX.y;
 	// the rest-pose normal packed in CUSTOM1.w (ZombieBody.pack_rest_normal: octahedral, 12 bits a component, +1;
 	// 0 = none); an exact integer in the float attribute, so the split below is exact
 	v_rest_nrm = vec3(0.0);
@@ -623,11 +662,40 @@ void vertex() {
 void fragment() {
 	float n = tri(noise_tex, v_pos, v_nrm, 4.0).r;
 	float emit = v_cus.b;
-	vec3 base = v_col.rgb * mix(0.7, 1.08, n);
-	// T-091: tiling detail by class (CUSTOM0.a): 1 wool, 2 knit, 5 canvas -> the fabric weave; 3 leather, 4 rubber
+	// CUSTOM0.a = detail class + 8 x colour slot (+ 64 on a gear piece). T-269: a slotted vertex (1 the kit's main
+	// cloth, 2 its second, 3 the accent) takes the instance's colour for that slot times its baked AO (COLOR.a)
+	float code = floor(v_cus.a + 0.5);
+	code -= 64.0 * step(63.5, code);
+	float slot = floor(code / 8.0);
+	vec3 colour = v_col.rgb;
+	if (slot > 0.5) {
+		vec4 sc = slot < 1.5 ? inst_cloth : (slot < 2.5 ? inst_cloth2 : inst_accent);
+		vec3 c = sc.rgb;
+		if (slot < 1.5 && inst_pattern.a > 0.5) {
+			// stripes / check / dots on the rest position (fixed to the cloth); they fade to their mean where a
+			// band is under a pixel wide
+			float k;
+			float freq;
+			if (inst_pattern.a < 1.5) {
+				freq = 15.0;
+				k = smoothstep(0.22, 0.28, abs(fract(v_pos.y * freq) - 0.5));
+			} else if (inst_pattern.a < 2.5) {
+				freq = 10.0;
+				k = 0.5 * (smoothstep(0.2, 0.3, abs(fract(v_pos.x * freq) - 0.5)) + smoothstep(0.2, 0.3, abs(fract(v_pos.y * freq) - 0.5)));
+			} else {
+				freq = 12.0;
+				k = 1.0 - smoothstep(0.17, 0.25, length(fract(vec2(v_pos.x + v_pos.z * 0.7, v_pos.y) * freq) - 0.5));
+			}
+			float aa = clamp(1.5 - 2.5 * freq * max(fwidth(v_pos.x), fwidth(v_pos.y)), 0.0, 1.0);
+			c = mix(c, inst_pattern.rgb, mix(inst_pattern.a < 2.5 ? 0.5 : 0.2, k, aa));
+		}
+		colour = mix(colour, c * v_col.a, sc.a);
+	}
+	vec3 base = colour * mix(0.7, 1.08, n);
+	// T-091: tiling detail by class: 1 wool, 2 knit, 5 canvas -> the fabric weave; 3 leather, 4 rubber
 	// -> the leather grain (rubber flattened); triplanar on the rest position, centred on its mean so the vertex
 	// colour stays the colour
-	float cls = floor(v_cus.a + 0.5);
+	float cls = code - slot * 8.0;
 	float material_roughness = v_cus.r;
 	if (cls > 0.5) {
 		bool leathery = cls > 2.5 && cls < 4.5;
@@ -662,8 +730,19 @@ void fragment() {
 	if (emit < 0.01) { base *= inst_tint.rgb; }
 	float dirt = inst_dirt * (1.0 - smoothstep(0.0, 1.3, v_h)) * (0.4 + 0.6 * n) * (1.0 - step(0.01, emit));
 	base = mix(base, base * vec3(0.5, 0.45, 0.4), dirt);
+	// T-269: dried blood on the clothes, thickest down the chest; the layout differs per zombie (inst_wear.z)
+	if (inst_wear.x > 0.0 && emit < 0.01) {
+		float ph = inst_wear.z * 6.2831;
+		float blob = sin(v_pos.x * 8.0 + ph) * sin(v_pos.y * 6.0 + ph * 1.7) + 0.6 * sin(v_pos.z * 9.0 - ph + v_pos.y * 4.0);
+		float chest = 1.0 - smoothstep(0.0, 0.45, abs(v_pos.y - 1.25));
+		float thr = 1.22 - 0.6 * inst_wear.x;
+		float st = smoothstep(thr, thr + 0.07, 0.5 + 0.42 * blob + (n - 0.86) * 0.45 + 0.3 * chest);
+		base = mix(base, stain_color * mix(0.7, 1.2, n), st * 0.88);
+		material_roughness = mix(material_roughness, 0.42, st * 0.5);
+	}
 	float up = clamp(v_nrm.y, 0.0, 1.0);
-	float frost = inst_frost * smoothstep(0.35, 0.9, n * 0.55 + up * 0.55) * (1.0 - step(0.01, emit));
+	// (T-269: a gear piece's metal takes no rime: a helmet is on this shader now and was not frosted before)
+	float frost = inst_frost * smoothstep(0.35, 0.9, n * 0.55 + up * 0.55) * (1.0 - step(0.01, emit)) * (1.0 - step(63.5, v_cus.a) * step(0.2, v_cus.g));
 	base = mix(base, vec3(0.86, 0.9, 0.96), frost);
 	base = mix(base, vec3(0.03, 0.02, 0.02), clamp(inst_char * smoothstep(0.15, 0.75, n + inst_char * 0.4), 0.0, 1.0) * (1.0 - step(0.01, emit)));
 	ALBEDO = base;
@@ -674,6 +753,9 @@ void fragment() {
 		if (n < inst_dissolve) { discard; }
 		em += vec3(0.55, 0.25, 1.0) * smoothstep(inst_dissolve + 0.08, inst_dissolve, n) * 4.0;
 	}
+	// T-269: readable in the dark without a map light: a floor of its own colour, and a soft edge light in it
+	float fres = pow(1.0 - clamp(dot(normalize(NORMAL), normalize(VIEW)), 0.0, 1.0), rim_power);
+	em += base * (vec3(min_light) + rim_color * (rim * fres));
 	EMISSION = em;
 }
 """
@@ -734,8 +816,32 @@ static func skin_material(look: String = "base") -> ShaderMaterial:
 		m.set_shader_parameter("normal_tex", load(dir.path_join(str(tex.get("normal", "")))))
 		m.set_shader_parameter("orm_tex", load(dir.path_join(str(tex.get("orm", "")))))
 		m.set_shader_parameter("use_maps", 1.0)
+	if look != "living":
+		_look_uniforms(m)
 	_mats[key] = m
 	return m
+
+
+## T-269: the readability terms and the wear colours of the two zombie materials (zombie_wardrobe.json light / wear).
+static func _look_uniforms(m: ShaderMaterial) -> void:
+	if legacy_bodies or not ZombieWardrobe.enabled():
+		return
+	var c: Dictionary = ZombieWardrobe.cfg()
+	var wear: Dictionary = c.get("wear", {})
+	for pair: Array in [["stain_color", "stain_color"], ["dead_vein_color", "vein_color"], ["socket_color", "socket_color"]]:
+		if wear.has(pair[1]) and Color.html_is_valid(str(wear[pair[1]])):
+			var col: Color = Color.html(str(wear[pair[1]])).srgb_to_linear()
+			m.set_shader_parameter(str(pair[0]), Vector3(col.r, col.g, col.b))
+	if ZombieWardrobe.rim_enabled():
+		var li: Dictionary = c.get("light", {})
+		# the values are for an exposure of 1 (Map 0): a map graded at 1.7 would show the floor 1.7 times as bright
+		# and the figures would glow, so both terms are divided by the map's exposure (data/look/<map>.json)
+		var expo: float = maxf(1.0, float(LookGrade.data(String(GameState.map_id)).get("exposure", 1.0)))
+		m.set_shader_parameter("min_light", float(li.get("min_light", 0.0)) / expo)
+		m.set_shader_parameter("rim", float(li.get("rim", 0.0)) / expo)
+		m.set_shader_parameter("rim_power", float(li.get("rim_power", 3.0)))
+		var rc: Color = Color.html(str(li.get("rim_color", "#ffffff"))).srgb_to_linear()
+		m.set_shader_parameter("rim_color", Vector3(rc.r, rc.g, rc.b))
 
 
 ## Fabric and leather detail for the kit shader (the CC0 library's wool and leather sets, T-088).
@@ -769,6 +875,8 @@ static func kit_material(zombie_detail: bool = false) -> ShaderMaterial:
 			m.set_shader_parameter("roughness_amount", float(detail["roughness_amount"]))
 			m.set_shader_parameter("ao_amount", float(detail["ao_amount"]))
 			m.set_shader_parameter("zombie_pbr", true)
+	if zombie_detail:
+		_look_uniforms(m)
 	_mats[mkey] = m
 	return m
 
@@ -792,6 +900,10 @@ static func _linear_mean(t: Texture2D) -> float:
 
 ## Builds the kits a map uses up front (avoids a hitch on first spawn).
 static func warm_up(kits: PackedStringArray = KITS) -> void:
+	# T-269: the materials outlive a map (static cache); their light terms follow the map being loaded
+	for mk: String in _mats.keys():
+		if mk.contains("shader:skin:") and not mk.ends_with(":living") or mk.ends_with("shader:kit_zombie"):
+			_look_uniforms(_mats[mk] as ShaderMaterial)
 	var kit_rows: Dictionary = GLData.table("anim")["kits"]
 	for k: String in kits:
 		for b: String in BUILDS:
@@ -920,6 +1032,7 @@ static func request_dressed(kit: String, build: String, female: bool, tone: Colo
 	if not base.has("Body"):
 		return
 	char_cfg()
+	ZombieWardrobe.cfg()
 	skin_material("living" if living else _skin_look(kit))
 	kit_material(not living)
 	_dressed_tasks[key] = WorkerThreadPool.add_task(_dressed_job.bind(key, base, kit, female, living, tone, palette.duplicate(true)), true, "dressed body")
@@ -1062,6 +1175,7 @@ static func _merge_glb(base: Dictionary, kit: String, female: bool, living: bool
 		objs.append(hair)
 	objs.append("Kit_" + kit)
 	var looks: Dictionary = {}
+	var slots: Dictionary = {}   # T-269: part key -> colour slot (ZombieWardrobe.slot_of); 0 keeps the baked colour
 	for name: String in objs:
 		if not base.has(name):
 			continue
@@ -1080,6 +1194,9 @@ static func _merge_glb(base: Dictionary, kit: String, female: bool, living: bool
 				kname = "eye_white"
 			if not looks.has(kname):
 				looks[kname] = _look(kit, kname)
+				# (only a plain kit body is recoloured per instance: a body dressed from a palette, the people, the
+				# squads and the drowned, keeps the colours it was built with)
+				slots[kname] = ZombieWardrobe.slot_of(kit, kname) if palette.is_empty() and not living else 0
 				if palette.has(kname):
 					if palette[kname] is Array:
 						looks[kname] = (palette[kname] as Array).duplicate()   # T-192: a whole look (the milky eyes)
@@ -1092,8 +1209,9 @@ static func _merge_glb(base: Dictionary, kit: String, female: bool, living: bool
 			var col: Color = look[0]
 			acc.verts.append(v[i])
 			acc.norms.append(n[i])
-			acc.cols.append(Color(col.r * ao, col.g * ao, col.b * ao, 1.0))
-			acc.cus0.append_array(PackedFloat32Array([float(look[1]), float(look[2]), float(look[3]), float(DETAIL.get(kname, 0))]))
+			var slot: int = slots[kname]
+			acc.cols.append(Color(col.r * ao, col.g * ao, col.b * ao, ao if slot > 0 else 1.0))
+			acc.cus0.append_array(PackedFloat32Array([float(look[1]), float(look[2]), float(look[3]), float(int(DETAIL.get(kname, 0)) + 8 * slot)]))
 			acc.cus1.append_array(PackedFloat32Array([v[i].x, v[i].y, v[i].z, pack_rest_normal(n[i])]))
 			for k: int in 4:
 				acc.bones.append(bones[i * stride + k] if k < stride else 0)
@@ -1763,6 +1881,74 @@ static func gear_mesh(piece: String, female: bool = false) -> Array:
 		m.surface_set_material(m.get_surface_count() - 1, em)
 		m.surface_set_name(m.get_surface_count() - 1, "emblem")
 	var out: Array = [bone, m]
+	_meshes[key] = out
+	return out
+
+
+## T-269: a gear piece as a walker wears it: [bone, mesh] like gear_mesh, the piece's material surfaces merged into
+## ONE surface on the shared zombie kit material (vertex colour = the part key's look, CUSTOM0 = roughness /
+## metallic / emission / detail class + 8 x colour slot + 64, CUSTOM1 = the position on the body at rest), so a cap,
+## a scarf or an oilskin takes the outfit's colours from the instance parameters, is one draw call instead of one
+## per material key, and adds no material. The armband's textured mark stays its own surface. With the look off
+## (`--zombie-look=off`) it is gear_mesh's mesh.
+static func zombie_gear_mesh(piece: String, female: bool = false) -> Array:
+	var spec: Array = gear_mesh(piece, female)
+	if legacy_bodies or not ZombieWardrobe.enabled():
+		return spec
+	var key: String = "zgear:%s:%s" % [piece, "f" if female else "m"]
+	if _meshes.has(key):
+		return _meshes[key]
+	var src: ArrayMesh = spec[1]
+	var rest: Transform3D = ZombieRig.rest_global(str(spec[0]))
+	var acc: _SurfaceAcc = _SurfaceAcc.new()
+	var kept: Array = []
+	for si: int in src.get_surface_count():
+		var kname: String = src.surface_get_name(si)
+		if not (KEY_LOOK.has(kname) or kname == "cloth" or kname == "cloth2"):
+			kept.append(si)
+			continue
+		var look: Array = _look("_", kname)
+		# gear_mesh's legacy materials take the key's colour as sRGB (albedo_color); a vertex colour on the kit
+		# shader is linear. Converted here, so a helmet or a strap is as dark as it was.
+		var col: Color = (look[0] as Color).srgb_to_linear()
+		var code: float = float(int(DETAIL.get(kname, 0)) + 8 * ZombieWardrobe.slot_of("", kname) + 64)
+		var a: Array = src.surface_get_arrays(si)
+		var v: PackedVector3Array = a[Mesh.ARRAY_VERTEX]
+		var n: PackedVector3Array = a[Mesh.ARRAY_NORMAL]
+		var start: int = acc.verts.size()
+		for i: int in v.size():
+			var on_body: Vector3 = rest * v[i]
+			acc.verts.append(v[i])
+			acc.norms.append(n[i])
+			acc.cols.append(Color(col.r, col.g, col.b, 1.0))
+			acc.cus0.append_array(PackedFloat32Array([float(look[1]), float(look[2]), float(look[3]), code]))
+			acc.cus1.append_array(PackedFloat32Array([on_body.x, on_body.y, on_body.z, pack_rest_normal(rest.basis * n[i])]))
+		if a[Mesh.ARRAY_INDEX] != null:
+			for ix: int in (a[Mesh.ARRAY_INDEX] as PackedInt32Array):
+				acc.index.append(ix + start)
+		else:
+			for i: int in v.size():
+				acc.index.append(i + start)
+	var mesh: ArrayMesh = ArrayMesh.new()
+	if not acc.verts.is_empty():
+		var arr: Array = []
+		arr.resize(Mesh.ARRAY_MAX)
+		arr[Mesh.ARRAY_VERTEX] = acc.verts
+		arr[Mesh.ARRAY_NORMAL] = acc.norms
+		arr[Mesh.ARRAY_COLOR] = acc.cols
+		arr[Mesh.ARRAY_CUSTOM0] = acc.cus0
+		arr[Mesh.ARRAY_CUSTOM1] = acc.cus1
+		arr[Mesh.ARRAY_INDEX] = acc.index
+		var flags: int = (Mesh.ARRAY_CUSTOM_RGBA_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM0_SHIFT) | (Mesh.ARRAY_CUSTOM_RGBA_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM1_SHIFT)
+		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr, [], {}, flags)
+		mesh.surface_set_name(0, "kit")
+		mesh.surface_set_material(0, kit_material(true))
+	for si: int in kept:
+		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, src.surface_get_arrays(si))
+		var s2: int = mesh.get_surface_count() - 1
+		mesh.surface_set_name(s2, src.surface_get_name(si))
+		mesh.surface_set_material(s2, src.surface_get_material(si))
+	var out: Array = [spec[0], mesh]
 	_meshes[key] = out
 	return out
 

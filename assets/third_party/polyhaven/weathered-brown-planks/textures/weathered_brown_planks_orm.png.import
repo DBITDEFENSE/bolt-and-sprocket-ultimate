@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://c2cwmwu4ncf6x"
 path.s3tc="res://.godot/imported/weathered_brown_planks_orm.png-86210871ad18518680a1e023799b0d4b.s3tc.ctex"
+path.etc2="res://.godot/imported/weathered_brown_planks_orm.png-86210871ad18518680a1e023799b0d4b.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/weathered-brown-planks/textures/weathered_brown_planks_orm.png"
-dest_files=["res://.godot/imported/weathered_brown_planks_orm.png-86210871ad18518680a1e023799b0d4b.s3tc.ctex"]
+dest_files=["res://.godot/imported/weathered_brown_planks_orm.png-86210871ad18518680a1e023799b0d4b.s3tc.ctex", "res://.godot/imported/weathered_brown_planks_orm.png-86210871ad18518680a1e023799b0d4b.etc2.ctex"]
 
 [params]
 

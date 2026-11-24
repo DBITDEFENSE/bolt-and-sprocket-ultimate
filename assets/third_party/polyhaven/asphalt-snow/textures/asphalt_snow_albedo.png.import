@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cgyc2suexxd23"
 path.s3tc="res://.godot/imported/asphalt_snow_albedo.png-19d74a350c392a7354bdb6ed689ae043.s3tc.ctex"
+path.etc2="res://.godot/imported/asphalt_snow_albedo.png-19d74a350c392a7354bdb6ed689ae043.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/asphalt-snow/textures/asphalt_snow_albedo.png"
-dest_files=["res://.godot/imported/asphalt_snow_albedo.png-19d74a350c392a7354bdb6ed689ae043.s3tc.ctex"]
+dest_files=["res://.godot/imported/asphalt_snow_albedo.png-19d74a350c392a7354bdb6ed689ae043.s3tc.ctex", "res://.godot/imported/asphalt_snow_albedo.png-19d74a350c392a7354bdb6ed689ae043.etc2.ctex"]
 
 [params]
 

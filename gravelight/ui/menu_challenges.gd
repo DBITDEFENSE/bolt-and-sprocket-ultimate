@@ -8,7 +8,8 @@ const KIND_NAMES: Dictionary = {"calling_card": "Calling cards", "emblem": "Embl
 
 
 func _init() -> void:
-	super._init("Challenges & Rewards")
+	super._init("Challenges")
+	subtitle = "Goals that pay XP. Ranks and challenges unlock the rewards at the bottom: equip them here."
 
 
 func build() -> void:

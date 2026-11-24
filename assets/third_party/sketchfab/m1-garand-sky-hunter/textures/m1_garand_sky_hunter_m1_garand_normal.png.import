@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://b0rs0ocn8811g"
 path.s3tc="res://.godot/imported/m1_garand_sky_hunter_m1_garand_normal.png-0949f1204d2b41a2a72027ec3c18282c.s3tc.ctex"
+path.etc2="res://.godot/imported/m1_garand_sky_hunter_m1_garand_normal.png-0949f1204d2b41a2a72027ec3c18282c.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/sketchfab/m1-garand-sky-hunter/textures/m1_garand_sky_hunter_m1_garand_normal.png"
-dest_files=["res://.godot/imported/m1_garand_sky_hunter_m1_garand_normal.png-0949f1204d2b41a2a72027ec3c18282c.s3tc.ctex"]
+dest_files=["res://.godot/imported/m1_garand_sky_hunter_m1_garand_normal.png-0949f1204d2b41a2a72027ec3c18282c.s3tc.ctex", "res://.godot/imported/m1_garand_sky_hunter_m1_garand_normal.png-0949f1204d2b41a2a72027ec3c18282c.etc2.ctex"]
 
 [params]
 

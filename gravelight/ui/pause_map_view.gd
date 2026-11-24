@@ -20,7 +20,7 @@ extends Control
 signal mark_placed(result: Dictionary)
 
 const TYPE_NAMES: Dictionary = {
-	"perk": "Perk machine", "wall_buy": "Wall weapon", "ammo_box": "Ammo box", "door": "Door", "crate_spot": "Requisition Crate",
+	"perk": "Perk machine", "wall_buy": "Wall weapon", "ammo_box": "Ammo box", "door": "Door", "crate_spot": "Requisition Crate (random weapon box)",
 	"crucible": "The Crucible", "workbench": "Workbench", "trap": "Trap", "power_switch": "Power switch", "lift": "Lift",
 	"bank": "Savings bank", "vendor": "Vendor", "save": "Save point", "checkpoint": "Checkpoint", "exit": "Exit", "npc": "Someone to talk to", "ship": "Ship",
 }

@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dkviy0f5e84eq"
 path.s3tc="res://.godot/imported/wine_barrel_01_arm.png-41991e4f7e47373ab183d0f6f271b21f.s3tc.ctex"
+path.etc2="res://.godot/imported/wine_barrel_01_arm.png-41991e4f7e47373ab183d0f6f271b21f.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/wine-barrel-01/textures/wine_barrel_01_arm.png"
-dest_files=["res://.godot/imported/wine_barrel_01_arm.png-41991e4f7e47373ab183d0f6f271b21f.s3tc.ctex"]
+dest_files=["res://.godot/imported/wine_barrel_01_arm.png-41991e4f7e47373ab183d0f6f271b21f.s3tc.ctex", "res://.godot/imported/wine_barrel_01_arm.png-41991e4f7e47373ab183d0f6f271b21f.etc2.ctex"]
 
 [params]
 

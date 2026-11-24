@@ -26,6 +26,11 @@ extends Node3D
 ## zombie shot in its spawn pocket through the invisible edge) are pulled inside it. Zero size = no edge.
 @export var drop_bounds: Rect2 = Rect2()
 
+## T-265: scripts nothing names but the code that loads them by path the first time play needs one: the dog tags
+## a kill drops, the local player's status overlay. A script's first load compiles it on the main thread (14 ms
+## for the dog tags, in the frame of the kill that first dropped them); the map's load takes them instead.
+const LATE_SCRIPTS: PackedStringArray = ["res://gravelight/world/scrip_tag.gd", "res://gravelight/ui/status_fx.gd"]
+
 var player: Player
 var players: Dictionary = {}     # pid -> Player (solo: {1: player})
 var hud: Hud
@@ -118,6 +123,8 @@ func _ready() -> void:
 		_start_bot_session()
 	JakubCompanion.attach(self)   # the prisoner companion (U02 section 6.2): his cage on Map 0, or he travels with you
 	PlayerBot.attach(self)   # player bot mode (T-071): off until F6 / the pause menu / `botmode on` / --botmode
+	for late: String in LATE_SCRIPTS:
+		load(late)
 	GLBus.match_started.emit(map_id)
 	PerkLayout.attach(self)   # T-251: the tonic machines dealt onto the map's perk spots from the match seed (every peer the same)
 	Campaign.restore_flags(self)   # UPDATE 07 (T-114): the acts' carried flags (london_seen, bomb_*, ...)

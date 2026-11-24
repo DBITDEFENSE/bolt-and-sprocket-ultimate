@@ -132,7 +132,9 @@ func _ready() -> void:
 	var hr: ColorRect = MenuKit.rule(2.0)   # T-144: the violet rule under the header
 	hr.custom_minimum_size = Vector2(0, 2)
 	box.add_child(hr)
-	box.add_child(MenuKit.label("Q / E or LB / RB switch tabs   ·   %s resumes" % GLSettings.binding_label(&"pause", false), 16, MenuKit.DIM))
+	_tab_hint = MenuKit.label("", 16, MenuKit.DIM)
+	box.add_child(_tab_hint)
+	_refresh_tab_hint()
 	# the pages
 	var body: Control = Control.new()
 	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -223,7 +225,7 @@ func _build_map_page(page: Control) -> void:
 	var v: VBoxContainer = VBoxContainer.new()
 	v.add_theme_constant_override("separation", 10)
 	ph.add_child(v)
-	v.add_child(_ink_label("FIELD MAP", 30, ObjectivesView.LEDGER_RED, true))
+	v.add_child(_ink_label("MAP", 30, ObjectivesView.LEDGER_RED, true))
 	_map_info = _ink_label("", 20, ObjectivesView.LEDGER_INK)
 	_map_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	v.add_child(_map_info)
@@ -832,8 +834,22 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
+## T-264: the line under the header names the device in use (it always said Escape, with a controller too).
+var _tab_hint: Label = null
+
+
+func _refresh_tab_hint() -> void:
+	if not is_instance_valid(_tab_hint):
+		return
+	var pad: bool = GLSettings.using_pad
+	_tab_hint.text = "%s switch tabs   ·   %s resumes" % ["LB / RB" if pad else "Q / E or LB / RB",
+		MenuSettings.pad_name(GLSettings.binding_label(&"pause", true)) if pad else GLSettings.binding_label(&"pause", false)]
+
+
 func toggle() -> void:
 	visible = not visible
+	if visible:
+		_refresh_tab_hint()
 	if Net.is_online():
 		GameState.input_blocked = visible   # co-op never stops the world
 	else:

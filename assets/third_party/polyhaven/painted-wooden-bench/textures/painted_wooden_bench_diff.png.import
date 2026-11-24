@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cp7bdo1axhjtp"
 path.s3tc="res://.godot/imported/painted_wooden_bench_diff.png-5e68bb0824a92656ad47cb47b374de11.s3tc.ctex"
+path.etc2="res://.godot/imported/painted_wooden_bench_diff.png-5e68bb0824a92656ad47cb47b374de11.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/painted-wooden-bench/textures/painted_wooden_bench_diff.png"
-dest_files=["res://.godot/imported/painted_wooden_bench_diff.png-5e68bb0824a92656ad47cb47b374de11.s3tc.ctex"]
+dest_files=["res://.godot/imported/painted_wooden_bench_diff.png-5e68bb0824a92656ad47cb47b374de11.s3tc.ctex", "res://.godot/imported/painted_wooden_bench_diff.png-5e68bb0824a92656ad47cb47b374de11.etc2.ctex"]
 
 [params]
 

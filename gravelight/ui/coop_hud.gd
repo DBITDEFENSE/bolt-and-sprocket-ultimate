@@ -118,6 +118,11 @@ func _banner(text: String) -> void:
 		hud.show_banner(text, 1.6)
 
 
+## Seconds between two looks at the squad's rows (the panel under the minimap) while nobody is down.
+const ROWS_EVERY_S: float = 0.1
+var _rows_t: float = 0.0
+
+
 func _process(_delta: float) -> void:
 	var s: NetMatch = Net.session
 	if s == null:
@@ -126,7 +131,13 @@ func _process(_delta: float) -> void:
 	var vp: Vector2 = get_viewport().get_visible_rect().size
 	var sq: BotSquad = get_tree().get_first_node_in_group(&"bot_squad") as BotSquad
 	_panel.position = Vector2(MenuKit.hud_margin(vp).x, panel_top())   # the HUD grid (T-096), clear of the minimap
-	_panel.set_rows(squad_rows(s, Net.local_player_id()))
+	# T-265: the squad's rows (names, Scrip, tonics, state) are gathered and compared ROWS_EVERY_S apart, not every
+	# frame (a list of dictionaries built and turned into text to see whether it changed); every frame while
+	# someone is down (the cross pulses, the bleed-out counts)
+	_rows_t -= _delta
+	if _rows_t <= 0.0 or _panel._pulse:
+		_rows_t = ROWS_EVERY_S
+		_panel.set_rows(squad_rows(s, Net.local_player_id()))
 	var show_board: bool = force_board or (InputMap.has_action(&"ui_scoreboard") and Input.is_action_pressed(&"ui_scoreboard")
 		and not get_tree().paused)
 	if show_board != _board.visible:

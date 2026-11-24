@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://by7co3vfmaxf5"
 path.s3tc="res://.godot/imported/Fabric031_albedo.png-89f0060ba36d39de8c8342d38a766008.s3tc.ctex"
+path.etc2="res://.godot/imported/Fabric031_albedo.png-89f0060ba36d39de8c8342d38a766008.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/ambientcg/fabric-031/textures/Fabric031_albedo.png"
-dest_files=["res://.godot/imported/Fabric031_albedo.png-89f0060ba36d39de8c8342d38a766008.s3tc.ctex"]
+dest_files=["res://.godot/imported/Fabric031_albedo.png-89f0060ba36d39de8c8342d38a766008.s3tc.ctex", "res://.godot/imported/Fabric031_albedo.png-89f0060ba36d39de8c8342d38a766008.etc2.ctex"]
 
 [params]
 

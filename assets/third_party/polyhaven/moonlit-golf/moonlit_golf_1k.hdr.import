@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://73jdjpwsb5g0"
 path.bptc="res://.godot/imported/moonlit_golf_1k.hdr-cf34c35db87f063f52636f991c3305f9.bptc.ctex"
+path.astc="res://.godot/imported/moonlit_golf_1k.hdr-cf34c35db87f063f52636f991c3305f9.astc.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/moonlit-golf/moonlit_golf_1k.hdr"
-dest_files=["res://.godot/imported/moonlit_golf_1k.hdr-cf34c35db87f063f52636f991c3305f9.bptc.ctex"]
+dest_files=["res://.godot/imported/moonlit_golf_1k.hdr-cf34c35db87f063f52636f991c3305f9.bptc.ctex", "res://.godot/imported/moonlit_golf_1k.hdr-cf34c35db87f063f52636f991c3305f9.astc.ctex"]
 
 [params]
 

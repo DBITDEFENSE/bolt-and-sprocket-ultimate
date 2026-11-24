@@ -352,6 +352,13 @@ func _say_line(s: InnSurvivor, line_id: String) -> void:
 	var text: String = GLVO.strip_tags(str(rec.get("text", "")))
 	var dur: float = GLVO.duration_for(text, GLVO.rules)
 	var path: String = GLVO.audio_path(StringName(line_id))
+	GLVO.when_ready(path, _voice_line.bind(s, line_id, text, dur, path))   # T-265: when its file is in memory
+
+
+func _voice_line(who: Variant, line_id: String, text: String, dur: float, path: String) -> void:
+	if not is_instance_valid(who):
+		return   # (gone while the file loaded)
+	var s: InnSurvivor = who as InnSurvivor
 	if path != "":
 		var stream: AudioStream = GLVO.load_stream(path)
 		if stream != null:

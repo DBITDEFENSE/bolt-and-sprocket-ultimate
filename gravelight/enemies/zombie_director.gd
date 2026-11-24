@@ -1189,6 +1189,25 @@ func spawn_burst(points: Array, count: int) -> int:
 	return made
 
 
+## Dev / captures / smokes (T-268): puts `count` zombies on the ladder `link_name` (a climb link with a line under the
+## map's ClimbLinks) at once, `gap_s` seconds of climbing apart, as if each had reached its foot. Returns them.
+func debug_ladder(link_name: String, count: int = 1, gap_s: float = 1.6) -> Array[Zombie]:
+	var out: Array[Zombie] = []
+	var link: NavigationLink3D = get_parent().get_node_or_null("ClimbLinks/" + link_name) as NavigationLink3D
+	if link == null or not link.has_meta(ClimbLink.LINE):
+		return out
+	var before: Array[Zombie] = active_zombies()
+	spawn_burst([link.global_transform * link.start_position], count)
+	for z: Zombie in active_zombies():
+		if before.has(z):
+			continue
+		z._enter(Zombie.State.CHASE)
+		z._ladder_begin(link, link.global_transform * link.start_position, link.global_transform * link.end_position, false)
+		z._state_t = Zombie.LADDER_MOUNT_S + gap_s * float(out.size())
+		out.append(z)
+	return out
+
+
 ## Dev console: spawn `count` of a kind near the player (bosses included). Ignores the round queue.
 func debug_spawn_kind(enemy_id: StringName, count: int) -> int:
 	if enemy_id == &"ganger":
