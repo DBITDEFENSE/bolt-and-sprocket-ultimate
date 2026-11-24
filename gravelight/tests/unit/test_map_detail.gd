@@ -131,7 +131,8 @@ func test_horse_rows() -> void:
 		assert_gt(fwd.dot((rail - pos).normalized()), 0.99, "%s: it faces its rail" % key)
 		assert_eq(pos.y, rail.y, "%s: on the rail's level" % key)
 		assert_false((h["zones"] as Array).is_empty(), "%s: it has zones (it never leaves them)" % key)
-		assert_eq(str(h.get("look", "")), "noriker", key)
+		# (T-274: Groom Lake's horse is a buckskin on a rail without snow; the others are the Noriker)
+		assert_eq(str(h.get("look", "")), "buckskin" if key == "map04c" else "noriker", key)
 	assert_false(HorseRules.upgrade_rows().is_empty(), "the tack chest has pieces to sell (a rail gets a chest)")
 	var m0: Dictionary = (_json("map00")["horses"] as Array)[0]
 	assert_eq(_v3(m0["pos"]), Vector3(24.15, 0.0, 37.2), "Map 0's horse stands where it stood")

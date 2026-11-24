@@ -181,6 +181,22 @@
       "ground": 1
     }
   },
+  "ziplines": [
+    {
+      "name": "RadarZip",
+      "pos": [41.55, 18.0, 116.55],
+      "end": [2.6, 2.75, 88.9],
+      "to": [3.33, 0.0, 89.42],
+      "yaw": -135.0,
+      "speed": 9.0,
+      "hang": 2.7,
+      "sag": 0.45,
+      "target": "over the hangar to the motor pool lane",
+      "zone": "D_MOTORPOOL",
+      "locked_text": "The trolley is chained: the motor pool is not open",
+      "_doc": "T-274 the radar tower's zip line (gen_map04c.gd ZIP_TOP / ZIP_POST draw the posts and the cable): from the perch deck's south-west corner past the hangar's north-west corner and over the motor pool's north wall to the service lane by the hangar's side door. 50.1 m, 18 degrees; probe_map_site --line: nothing in a rider's way; the landing is on the navmesh, 3.3 m free. Chained until the motor pool is open (the tower is beyond the hangar's doors, the lane beyond the motor pool's)."
+    }
+  ],
   "climb_links": [
     {"name": "Climb_TowerPerch", "zone": "E_RADAR", "from": [45.0, 0.0, 115.6], "to": [45.0, 16.0, 118.3], "bidirectional": true, "_doc": "U10 §3 (T-157): the zombies climb the radar tower ladder to the sniper perch deck"}
   ],
@@ -362,7 +378,8 @@
       "zones": [
         "B_LAKEBED"
       ],
-      "look": "noriker",
+      "look": "buckskin",
+      "rail_dress": {"snow": false, "hay_net": false, "ice": false, "post": "board_wood", "pole": "board_wood", "_doc": "T-274: the desert rail: no snow, a nosebag instead of the carter's hay net, water in the bucket, sun-greyed boards"},
       "_doc": "T-271 a range horse (T-240, T-262's tack chest) tied at a rail on the lakebed side of the wreck's wall, 9 m along it from the Lakebed door (the chest 7.4 m): reached once that door is open. yaw 0 = it faces the rail and the wall (-z). zones: the dry lake only (120 x 64 m of flat ground), never the hangar, the motor pool or below ground. The rail's collider is on the map-edge layer, the chest has none: the baked navmesh is untouched."
     }
   ]

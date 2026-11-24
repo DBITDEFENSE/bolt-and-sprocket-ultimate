@@ -20,6 +20,15 @@ const CEIL_HANGAR: float = 9.0
 const CEIL_SHED: float = 3.4
 const CEIL_LAB: float = 4.0
 const CEIL_CTRL: float = 4.0
+## T-274: the zip line off the radar tower's perch deck (map04c.json "ziplines" RadarZip; the trolley is the ZipLine's
+## own, the posts and the cable are drawn here): the cable's top on an arm off a post in the deck's south-west corner,
+## 2 m over the deck and a step outside its rails; down south-west past the hangar's north-west corner, over the
+## motor pool's north wall, to a post in the service lane by the hangar's side door (50.1 m, 18 degrees; the rider's
+## body clears every collider: probe_map_site --line). ZIP_POST_H up the post the cable ends.
+const ZIP_TOP: Vector3 = Vector3(41.55, 18.0, 116.55)
+const ZIP_POST: Vector3 = Vector3(2.6, 0, 88.9)
+const ZIP_POST_H: float = 2.75
+const ZIP_ANCHOR_POST: Vector3 = Vector3(42.3, 16.0, 117.3)
 const ROCKET_X: float = -33.0
 const ROCKET_Z: float = 176.0
 const D = preload("res://gravelight/tools_src/detail_map04c.gd")
@@ -303,6 +312,9 @@ func _radar() -> void:
 	box(geo, "Perch_RailW", Vector3(42.0, 16.0, 117.0), Vector3(42.08, 17.1, 123.0), "rail")
 	box(geo, "Perch_RailSW", Vector3(42.0, 16.0, 117.0), Vector3(44.4, 17.1, 117.08), "rail")
 	box(geo, "Perch_RailSE", Vector3(45.6, 16.0, 117.0), Vector3(48.0, 17.1, 117.08), "rail")
+	# T-274: the zip line's two posts (ZIP_TOP / ZIP_POST): the anchor post in the deck's corner, the landing post
+	box(geo, "ZipAnchorPost", ZIP_ANCHOR_POST + Vector3(-0.08, 0, -0.08), ZIP_ANCHOR_POST + Vector3(0.08, 2.6, 0.08), "steel")
+	box(geo, "ZipPost_RadarZip", ZIP_POST + Vector3(-0.1, 0, -0.1), ZIP_POST + Vector3(0.1, ZIP_POST_H + 0.25, 0.1), "steel")
 	for w: Array in windows:
 		if str(w[1]) == "E_RADAR":
 			closet(w[2], float(w[3]))
@@ -851,6 +863,7 @@ func _dress_radar() -> void:
 	CYL(Vector3(46.2, 23.0, 121.2), 0.05, 10.0, "iron")
 	_noshadow(Props.ball(dress, Vector3(46.2, 28.1, 121.2), Vector3(0.28, 0.32, 0.28), "lamp_red_lit"))
 	Props.cable(dress, Vector3(45, 16, 120), Vector3(62, 3.0, 132), 1.5, 0.03, 10, "rubber")
+	_dress_zip_t274()
 	# the shack (Shack collider 58..66 × 128..136): plank walls, the gable roof, the door, a lit window, the aerial
 	B(Vector3(58, 0, 128), Vector3(66, 3.0, 136), "planks")
 	Props.gable_roof(dress, Vector3(57.6, 3.0, 127.6), Vector3(66.4, 3.0, 136.4), 1.4, true, "roof", false)
@@ -1219,3 +1232,45 @@ func build_gameplay_extra() -> void:
 		a.name = str(an[0])
 		a.position = an[1]
 		gameplay.add_child(a)
+	_reactive_t274()
+
+
+## T-274 (the map detail pass): the act's reactive dressing (gen_map04_lib.gd "reactive props"). Salt dust that puffs
+## under feet on the crash site, the lakebed's track to the hangar and the motor pool's apron; door leaves in the open
+## doorways (the wreck's buckled starboard hatch, the lab's door to the cable trench, the silo control room's door);
+## the lab bench's sample jars and glasses (they break when shot) with the night's notes beside them; loose papers
+## from the wreck's cargo (the Kranich's manifests blown across the crash site) and on the motor pool's floor.
+func _reactive_t274() -> void:
+	var salt: Color = Color(0.84, 0.8, 0.72)
+	dust_zone("Wreck", Vector3(0, 0, -20.0), Vector3(16.0, 0.6, 14.0), salt)
+	dust_zone("Track", Vector3(0, 0, 26.0), Vector3(24.0, 0.6, 30.0), salt)
+	dust_zone("Apron", Vector3(-45.0, 0, 78.0), Vector3(20.0, 0.6, 16.0), Color(0.72, 0.66, 0.56))
+	swing_door("WreckHatch", Vector3(8.8, 0, -4.0 - T * 0.5), 0.0, 2.35, {"mat_key": "steel", "rest_deg": 70.0})
+	swing_door("LabTrenchDoor", Vector3(-20.0 - T * 0.5, LAB_Y, 138.2), 90.0, 2.35, {"mat_key": "machine_grey"})
+	swing_door("ControlDoor", Vector3(-46.0 - T * 0.5, LAB_Y, 167.2), 90.0, 2.35, {"mat_key": "machine_grey", "rest_deg": 40.0})
+	shatter_set("LabBench", Vector3(-60.0, LAB_Y + 0.9, 113.0), 0.0, [[Vector3(-1.5, 0, 0.1), "jar", 1.0], [Vector3(-1.3, 0, -0.15), "jar", 0.9],
+		[Vector3(-1.05, 0, 0.12), "glass", 1.0], [Vector3(0.9, 0, -0.1), "bottle_amber", 0.8], [Vector3(1.15, 0, 0.12), "jar", 1.1],
+		[Vector3(1.45, 0, -0.05), "glass", 1.0]])
+	loose_papers("LabBench", Vector3(-60.0, LAB_Y + 0.9, 113.0), 0.0, Vector3(1.4, 0, 0.6), 5, {"floor_drop": 0.9, "mat_key": "paper"})
+	loose_papers("WreckManifests", Vector3(-4.0, 0, -24.0), 0.0, Vector3(5.0, 0, 4.0), 10)
+	loose_papers("Motorpool", Vector3(-48.0, 0, 92.0), 0.0, Vector3(3.0, 0, 2.0), 7)
+
+
+
+## T-274: the radar zip line's dressing: the arm and the sheave block off the anchor post, the cable with its sag (the
+## ZipLine's own 0.45 m), the landing post's cap, its back-stay to a ground anchor, a red marker lamp (no light) and a
+## buffer of tyre rubber where the trolley stops.
+func _dress_zip_t274() -> void:
+	var post_top: Vector3 = ZIP_ANCHOR_POST + Vector3(0, 2.45, 0)
+	Props.strut(dress, post_top, ZIP_TOP + Vector3(0, 0.08, 0), 0.08, "steel")
+	_noshadow(Props.strut(dress, post_top + Vector3(0, -0.6, 0), ZIP_TOP + Vector3(0, 0.02, 0), 0.04, "iron"))   # the brace under the arm
+	CYL(ZIP_TOP + Vector3(0, 0.06, 0), 0.07, 0.06, "iron", Vector3(90, -45, 0))   # the sheave
+	var end: Vector3 = ZIP_POST + Vector3(0, ZIP_POST_H, 0)
+	Props.cable(dress, ZIP_TOP, end, 0.45, 0.011, 28, "iron")
+	var back: Vector3 = Vector3(ZIP_POST.x - ZIP_TOP.x, 0, ZIP_POST.z - ZIP_TOP.z).normalized()
+	var ground: Vector3 = ZIP_POST + back * 1.5
+	Props.cable(dress, end + Vector3(0, 0.15, 0), ground + Vector3(0, 0.12, 0), 0.0, 0.009, 2, "iron")   # the back-stay
+	B(ground + Vector3(-0.18, 0, -0.18), ground + Vector3(0.18, 0.14, 0.18), "concrete")
+	B(ZIP_POST + Vector3(-0.14, ZIP_POST_H + 0.25, -0.14), ZIP_POST + Vector3(0.14, ZIP_POST_H + 0.3, 0.14), "steel")   # the cap
+	CYL(end - back * 0.35, 0.16, 0.22, "rubber", Vector3(90, rad_to_deg(atan2(back.x, back.z)), 0))   # the buffer
+	_noshadow(Props.ball(dress, ZIP_POST + Vector3(0, ZIP_POST_H + 0.42, 0), Vector3(0.12, 0.15, 0.12), "lamp_red_lit"))

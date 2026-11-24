@@ -179,33 +179,35 @@
     {
       "name": "Climb_CraneLadderW",
       "zone": "H_HALLE",
-      "from": [
-        -66.0,
-        0.0,
-        190.0
-      ],
-      "to": [
-        -68.2,
-        12.0,
-        190.0
-      ],
-      "_doc": "floor -> west crane-rail catwalk ladder"
+      "from": [-66.0, 0.0, 190.0],
+      "to": [-67.6, 12.0, 190.0],
+      "bidirectional": true,
+      "line": [-65.985, 190.0],
+      "drop": true,
+      "_doc": "floor -> west crane-rail catwalk ladder. T-274: the ladder is drawn now (gen_map04a.gd CRANE_LADDER_Z) and players climb it too (ladders CraneLadderW_*); line: one body at a time up the rungs, the rest wait at the foot; drop: they come back down by dropping (as on Map 0's tower, T-268)"
     },
     {
       "name": "Climb_CraneLadderE",
       "zone": "H_HALLE",
-      "from": [
-        26.0,
-        0.0,
-        190.0
-      ],
-      "to": [
-        28.2,
-        12.0,
-        190.0
-      ],
-      "_doc": "floor -> east crane-rail catwalk ladder"
+      "from": [26.0, 0.0, 190.0],
+      "to": [27.6, 12.0, 190.0],
+      "bidirectional": true,
+      "line": [25.985, 190.0],
+      "drop": true,
+      "_doc": "floor -> east crane-rail catwalk ladder. T-274: drawn, players climb it too (ladders CraneLadderE_*), one body at a time (line), down by dropping"
     }
+  ],
+  "ladders": [
+    {"name": "CraneLadderW_Foot", "pos": [-66.0, 0.0, 190.0], "yaw": -90.0, "to": [-67.6, 12.0, 190.0], "target": "the west catwalk",
+      "line": [-65.985, 190.0], "surface": "metal",
+      "_doc": "T-274: the Great Hangar's west crane-rail catwalk (12 m), a fixed steel ladder up its edge; the ramp from the south-west corner still goes up too. The dead climb the same rungs (climb_links Climb_CraneLadderW)"},
+    {"name": "CraneLadderW_Top", "pos": [-67.3, 12.0, 190.0], "yaw": 90.0, "down": true, "to": [-65.6, 0.0, 190.0], "target": "the hangar floor",
+      "line": [-65.985, 190.0], "surface": "metal", "face": 90.0},
+    {"name": "CraneLadderE_Foot", "pos": [26.0, 0.0, 190.0], "yaw": 90.0, "to": [27.6, 12.0, 190.0], "target": "the east catwalk",
+      "line": [25.985, 190.0], "surface": "metal",
+      "_doc": "T-274: the east catwalk's ladder, the mirror of the west one"},
+    {"name": "CraneLadderE_Top", "pos": [27.3, 12.0, 190.0], "yaw": -90.0, "down": true, "to": [25.6, 0.0, 190.0], "target": "the hangar floor",
+      "line": [25.985, 190.0], "surface": "metal", "face": -90.0}
   ],
   "fliegeralarm": {
     "_doc": "The Allied night raid (replaces Bellringer rounds on this act): sirens wind up, the searchlights sweep, and bombs fall on searchlight-marked impact circles (telegraph_seconds of a lit ring, then a shockwave of `radius` m dealing `damage` to everyone inside, zombies included), one circle every `interval_seconds` while the round's queue lasts; Fallschirm-Gänger (kit aircrew, jog) land on every circle's edge instead of coming through the windows. Clearing the round drops a Resupply on the last circle. lander_kit is the soldier kit (plain coveralls, no insignia) until the art pass gives the burnt aircrew their own kit.",

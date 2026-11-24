@@ -990,6 +990,81 @@ func tag_light_zones(cap: int = 6) -> Dictionary:
 	return counts
 
 
+# ================================================================== T-274: reactive props (an act calls these from
+# build_gameplay_extra). Map 0's reactive dressing (gravelight/world/reactive/, T-053) and LoosePapers: all built at
+# load from a few exported values, nothing collides, nothing touches the navmesh. Under one "Reactive" node on the root.
+
+var _reactive: Node3D = null
+
+
+func reactive_root() -> Node3D:
+	if _reactive == null:
+		_reactive = Node3D.new()
+		_reactive.name = "Reactive"
+		map_root.add_child(_reactive)
+	return _reactive
+
+
+func _reactive_node(script: String, n: String, props: Dictionary, pos: Vector3, yaw: float = 0.0, base: Node = null) -> Node3D:
+	var node: Node3D = (base if base != null else Node3D.new()) as Node3D
+	node.set_script(load(script))
+	node.name = n
+	for k: String in props.keys():
+		node.set(k, props[k])
+	node.position = pos
+	node.rotation.y = deg_to_rad(yaw)
+	reactive_root().add_child(node)
+	return node
+
+
+## A door leaf left ajar in an open doorway (SwingDoor): hinged at `hinge` (floor, on the jamb), the shut leaf along
+## local +X (yaw), opening toward local -Z; `width` the leaf.
+func swing_door(n: String, hinge: Vector3, yaw: float, width: float, props: Dictionary = {}) -> Node3D:
+	var p: Dictionary = {"width": width, "height": 2.15, "rest_deg": 55.0, "open_deg": 100.0, "zone_size": Vector3(width + 0.2, 2.0, 3.2),
+		"zone_center": Vector3(width * 0.5, 1.0, 0.0)}
+	p.merge(props, true)
+	return _reactive_node("res://gravelight/world/reactive/swing_door.gd", n, p, hinge, yaw)
+
+
+## Two curtain strips either side of a gameplay window (DraftCurtain, billowing harder as its boards go), hung from the
+## lintel on the room side.
+func window_curtains(window_id: String, mat_key: String = "cloth_navy") -> void:
+	for w: Array in windows:
+		if str(w[0]) != window_id:
+			continue
+		var b: Basis = Basis(Vector3.UP, deg_to_rad(float(w[3])))
+		var inward: Vector3 = b * Vector3(0, 0, 1)
+		var along: Vector3 = b * Vector3(1, 0, 0)
+		for s: float in [-1.0, 1.0]:
+			var p: Vector3 = (w[2] as Vector3) + along * s * 1.05 + inward * (T * 0.5 + 0.08) + Vector3(0, WTOP + 0.05, 0)
+			_reactive_node("res://gravelight/world/reactive/draft_curtain.gd", "Curtain_%s_%s" % [window_id, "L" if s < 0.0 else "R"],
+				{"height": WTOP - SILL + 0.4, "mat_key": mat_key, "window": NodePath("../../Gameplay/" + window_id)}, p, float(w[3]) + 180.0)
+		return
+	push_warning("gen_map04: no window %s for curtains" % window_id)
+
+
+## Glassware that breaks when shot or blasted (ShatterSet): items [[local base, kind, height scale], ...].
+func shatter_set(n: String, pos: Vector3, yaw: float, items: Array) -> Node3D:
+	return _reactive_node("res://gravelight/world/reactive/shatter_set.gd", "Glass_" + n, {"items": items}, pos, yaw)
+
+
+## Loose sheets on a floor or a desk top (LoosePapers).
+func loose_papers(n: String, pos: Vector3, yaw: float, size: Vector3, count: int, props: Dictionary = {}) -> Node3D:
+	var p: Dictionary = {"size": size, "count": count, "seed_value": hash(n) & 0xFFFF}
+	p.merge(props, true)
+	return _reactive_node("res://gravelight/world/map04/loose_papers.gd", "Papers_" + n, p, pos, yaw)
+
+
+## Water dripping from a ceiling at `pos` to the floor `height` below (DripPoint).
+func drip(n: String, pos: Vector3, height: float) -> Node3D:
+	return _reactive_node("res://gravelight/world/drip_point.gd", "Drip_" + n, {"height": height}, pos)
+
+
+## Dust (or chaff) that puffs up under feet (HayPuffZone with a tint): a box on the floor.
+func dust_zone(n: String, pos: Vector3, size: Vector3, tint: Color) -> Node3D:
+	return _reactive_node("res://gravelight/world/reactive/hay_puff_zone.gd", "Dust_" + n, {"size": size, "tint": tint}, pos, 0.0, Area3D.new())
+
+
 # ================================================================== T-274: perk spots (opt-in: an act fills perk_spots)
 # The perk deal of Map 0 (T-251, T-255) on the Map 4 acts: each act's machines are dealt onto its spots each match
 # from the match seed (PerkShuffle / PerkLayout, perk_layout.json "maps"), the spots left over show their filler crate

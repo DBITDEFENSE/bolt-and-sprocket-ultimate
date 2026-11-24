@@ -1314,6 +1314,7 @@ func build_gameplay_extra() -> void:
 		var dn: Node = gameplay.get_node_or_null(str(dd[0]))
 		if dn != null:
 			dn.set("art_style", &"steel")
+	_reactive_t274()   # T-274: the reactive dressing (below)
 	_u10_act4(table)   # UPDATE 10 §3 (T-158): the heaters, the mast, the pads, the hall's leap points, the shaft grate, the tag slot
 	_presentation()
 
@@ -1513,3 +1514,13 @@ func _u10_act4(table: Dictionary) -> void:
 	# Pohl's tag slot on the console's dais (the favour's end: ExtraPerson "pohl")
 	_node("res://gravelight/world/map04/tag_slot.gd", "TagSlot", {"person_id": "pohl"}, Vector3(26.2, 0.0, -29.2), 90.0)
 
+
+
+## T-274 (the map detail pass): what moves inside the base. Loose papers on the floor behind the reception desk and in
+## the concourse that float up and drift down at the Moon's 1.62 m/s2 (LoosePapers `gravity`), grey regolith dust
+## trodden in at the yard airlock's inner door and at the store's.
+func _reactive_t274() -> void:
+	loose_papers("Reception", Vector3(8.5, 0, 16.4), 0.0, Vector3(3.0, 0, 1.0), 8, {"gravity": 1.62, "mat_key": "paper"})
+	loose_papers("Concourse", Vector3(-6.0, 0, 40.0), 0.0, Vector3(3.0, 0, 3.0), 7, {"gravity": 1.62})
+	dust_zone("YardLock", Vector3(0, 0, 57.5), Vector3(3.0, 0.5, 3.0), Color(0.58, 0.58, 0.6))
+	dust_zone("StoreLock", Vector3(28.0, 0, 57.5), Vector3(2.6, 0.5, 3.0), Color(0.58, 0.58, 0.6))

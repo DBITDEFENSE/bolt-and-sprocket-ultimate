@@ -172,6 +172,7 @@ static func dress_all(g: Variant) -> void:
 	cockpit(g)
 	london_plate(g)
 	signage(g)
+	swing_cables(g)
 
 
 # ---------------------------------------------------------------- A Bombenschacht
@@ -731,3 +732,22 @@ static func signage(g: Variant) -> void:
 	g.label("KANZEL", Vector3(52.16, 2.6, 36), -90.0, 36)
 	placard(g, Vector3(-8.84, 1.95, 36.0), -90.0, "FLÜGEL · BACKBORD", 24)
 	placard(g, Vector3(8.84, 1.95, 36.0), 90.0, "FLÜGEL · STEUERBORD", 24)
+
+
+# ---------------------------------------------------------------- T-274: slack cables
+
+## T-274 (the map detail pass): slack loops of cable hanging from the trays (one in the body, one over the crawlway's
+## corridor in each engine room), kept movers in "flight_swing": the bank and the turbulence swing them like the
+## lamps. Each loop is one merged mesh (a draw call or two); none hangs lower than 2.2 m over the deck.
+static func swing_cables(g: Variant) -> void:
+	var i: int = 0
+	for c: Array in [[Vector3(-3.2, 3.6, 33.5), 1.1, 0.7], [Vector3(3.4, 3.6, 38.5), 1.25, 0.9], [Vector3(-66.0, 4.8, 44.0), 2.2, 1.0],
+			[Vector3(64.0, 4.8, 44.0), 2.0, 0.8]]:
+		var top: Vector3 = c[0]
+		var hang: float = minf(float(c[1]), top.y - 2.2)
+		var m: Node3D = mover(g, "SwingCable%d" % i, top, &"flight_swing", {"swing_len": hang, "swing_phase": 0.7 * float(i)})
+		blk(m, Vector3(-0.06, -0.08, -0.06), Vector3(0.06, 0.0, 0.06), "iron")   # the tray clamp
+		Props.cable(m, Vector3(0, -0.06, 0), Vector3(float(c[2]), -0.06, 0.04), hang, 0.014, 8, "rubber")
+		Props.cable(m, Vector3(0.05, -0.06, 0.03), Vector3(float(c[2]) * 0.6, -0.06, -0.05), hang * 0.55, 0.009, 6, "lead")
+		merge_local(m)
+		i += 1
