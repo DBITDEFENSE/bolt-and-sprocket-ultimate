@@ -313,12 +313,30 @@ func _gore_scene() -> void:
 		await _shot("gore_01_arm_in_air")
 		await _secs(1.4)
 		await _shot("gore_02_arm_on_floor")
+		# the piece itself, close: it must wear the sleeve's colour (the body's instance parameters)
+		var pieces: Array = ZombieGore._pieces
+		var check: Dictionary = {}
+		if not pieces.is_empty() and is_instance_valid(pieces.back()):
+			var piece: RigidBody3D = pieces.back()
+			piece.freeze = true
+			var body_mi: MeshInstance3D = zs[0].body_mesh()
+			for n: Node in piece.get_children():
+				if n is MeshInstance3D and (n as MeshInstance3D).mesh != null and (n as MeshInstance3D).mesh.get_surface_count() > 0 and (n as MeshInstance3D).mesh.surface_get_material(0) is ShaderMaterial:
+					for key: String in ["inst_cloth", "inst_cloth2", "inst_skin", "inst_wear", "inst_tint", "inst_dirt"]:
+						check[key] = [str((n as MeshInstance3D).get_instance_shader_parameter(key)), str(body_mi.get_instance_shader_parameter(key))]
+			var pp: Vector3 = piece.global_position
+			_look(pp + Vector3(-0.9, 0.7, 0.5), pp, 40.0)
+			await _shot("gore_02b_piece_close")
+			_look(cam, c + Vector3(0, 1.0, 0), 56.0)
+		_report["piece_vs_body"] = check
+		print("[zlook] piece vs body ", check)
 		ZombieGore.sever(zs[0], "Head", Vector3(-0.8, 2.0, -0.3))
 		await _frames(5)
 		await _shot("gore_03_head")
 		zs[2].set_physics_process(true)
 		zs[2].take_damage(zs[2].hp + 1.0, &"torso", &"m1_garand", 1, &"bullet")
-		await _secs(2.6)
+		await _secs(1.0)
+		await _skip(5.0)
 		await _shot("gore_04_corpse")
 		_look(c + Vector3(-1.7, 1.2, 2.2), c + Vector3(0.2, 0.2, 1.5), 50.0)
 		await _shot("gore_05_corpse_close")

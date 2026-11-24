@@ -185,3 +185,25 @@ func test_gear_is_one_surface_on_the_kit_material() -> void:
 	var cus: PackedFloat32Array = (ZombieBody.zombie_gear_mesh("scarf")[1] as ArrayMesh).surface_get_arrays(0)[Mesh.ARRAY_CUSTOM0]
 	assert_eq((int(cus[3]) - 64) / 8, 3, "the scarf is the accent")
 	assert_gte(cus[3], 64.0, "gear flag")
+
+
+func test_light_and_wear_values_stay_subtle() -> void:
+	var cfg: Dictionary = ZombieWardrobe.cfg()
+	assert_between(ZombieWardrobe.frost_scale(), 0.0, 1.0)
+	assert_between(float(cfg["light"]["min_light"]), 0.0, 0.2, "a floor, not a glow: walkers are not lamps")
+	assert_between(float(cfg["light"]["rim"]), 0.0, 1.0)
+	var kit: ShaderMaterial = ZombieBody.kit_material(true)
+	assert_almost_eq(float(kit.get_shader_parameter("min_light")), float(cfg["light"]["min_light"]), 0.0001, "the zombie kit material carries it")
+	var living: ShaderMaterial = ZombieBody.kit_material(false)
+	assert_true(living.get_shader_parameter("min_light") == null or float(living.get_shader_parameter("min_light")) == 0.0, "the living people's material does not")
+	assert_true(ZombieBody.skin_material("living").get_shader_parameter("rim") == null or float(ZombieBody.skin_material("living").get_shader_parameter("rim")) == 0.0)
+
+
+func test_gear_keeps_its_colour_on_the_kit_material() -> void:
+	# gear_mesh's StandardMaterial took the key's colour as sRGB; the kit shader's vertex colour is linear
+	var m: ArrayMesh = ZombieBody.zombie_gear_mesh("helmet")[1]
+	var cols: PackedColorArray = m.surface_get_arrays(0)[Mesh.ARRAY_COLOR]
+	var want: Color = (ZombieBody.KEY_LOOK["helmet"][0] as Color).srgb_to_linear()
+	assert_almost_eq(cols[0].r, want.r, 0.01)
+	assert_almost_eq(cols[0].g, want.g, 0.01)
+	assert_almost_eq(cols[0].b, want.b, 0.01)

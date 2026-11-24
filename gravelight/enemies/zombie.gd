@@ -2496,11 +2496,18 @@ func _apply_variant(variant: String) -> void:
 		variant = "soldier"
 	var kit: Dictionary = kits[variant]
 	_variant = variant
+	# T-269: in a co-op session the body's own rolls (build, sex, height, gear, tint, dirt, rime) come from the seed
+	# every peer has (the net id and the spawn health), so a client sees the host's zombie, not a cousin of it. Alone
+	# they are the global generator's, as before.
+	_look_rng = null
+	if Net.session != null and net_id >= 0:
+		_look_rng = RandomNumberGenerator.new()
+		_look_rng.seed = ZombieWardrobe.look_seed(net_id, max_hp) + 977
 	var builds: Array = kit.get("builds", ["medium"])
-	_build = str(_pick(builds))
-	_female = randf() < float(kit.get("female", 0.0)) if _force_female < 0 else _force_female == 1
+	_build = str(_pick(builds)) if _look_rng == null else str(builds[_look_rng.randi() % builds.size()])
+	_female = _vr() < float(kit.get("female", 0.0)) if _force_female < 0 else _force_female == 1
 	var heights: Array = _anim["builds"].get("heights", [0.95, 1.04])
-	_height = randf_range(float(heights[0]), float(heights[1]))
+	_height = _vrr(float(heights[0]), float(heights[1]))
 	_body.mesh = ZombieBody.build_skinned(_variant, _build, _female)
 	_body.set_surface_override_material(0, null)
 	_pivot.scale = Vector3.ONE * _height
@@ -2513,11 +2520,11 @@ func _apply_variant(variant: String) -> void:
 	var gear: Dictionary = kit.get("gear", {})
 	var pieces: Array = []
 	for piece0: String in gear.keys():
-		if randf() < float(gear[piece0]):
+		if _vr() < float(gear[piece0]):
 			pieces.append(piece0)
 	# T-192: "gear_one_of": at most one of these (a head wears one hat), rolled in order
 	var one_of: Dictionary = kit.get("gear_one_of", {})
-	var roll: float = randf()
+	var roll: float = _vr()
 	for piece1: String in one_of.keys():
 		roll -= float(one_of[piece1])
 		if roll < 0.0:
@@ -2545,12 +2552,12 @@ func _apply_variant(variant: String) -> void:
 	# per-instance look: tint, dirt, frost (anim.json variation)
 	var va: Dictionary = _anim["variation"]
 	var t: float = float(va.get("tint", 0.08))
-	_set_inst("inst_tint", Color(1.0 + randf_range(-t, t), 1.0 + randf_range(-t, t), 1.0 + randf_range(-t, t), 1.0))
+	_set_inst("inst_tint", Color(1.0 + _vrr(-t, t), 1.0 + _vrr(-t, t), 1.0 + _vrr(-t, t), 1.0))
 	var dirt: Array = va.get("dirt", [0.1, 0.8])
-	_set_inst("inst_dirt", randf_range(float(dirt[0]), float(dirt[1])))
+	_set_inst("inst_dirt", _vrr(float(dirt[0]), float(dirt[1])))
 	var fbm: Dictionary = va.get("frost_by_map", {})
 	var fr: Array = kit.get("frost", fbm.get(String(GameState.map_id), fbm.get("default", [0.0, 0.2])))   # T-192: a kit's own (the Returned's ice)
-	_frost_base = randf_range(float(fr[0]), float(fr[1]))
+	_frost_base = _vrr(float(fr[0]), float(fr[1]))
 	_set_inst("inst_frost", _frost_base)
 	_set_inst("inst_fuel", 0.0)
 	_apply_look()
@@ -2586,6 +2593,16 @@ func _apply_look() -> void:
 
 
 var _outfit: String = ""
+var _look_rng: RandomNumberGenerator = null
+
+
+func _vr() -> float:
+	return _look_rng.randf() if _look_rng != null else randf()
+
+
+func _vrr(a: float, b: float) -> float:
+	return _look_rng.randf_range(a, b) if _look_rng != null else randf_range(a, b)
+
 
 ## The wardrobe outfit this body wears ("" = its kit's own colours).
 func outfit_name() -> String:
