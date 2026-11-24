@@ -267,3 +267,129 @@ func test_perch_reaches_a_wide_platform_only_where_the_row_says() -> void:
 	l.set_meta(ClimbLink.PERCH_META, 10.0)
 	assert_true(ClimbLink.on_perch(map, Vector3(9, 6, 0)), "with perch 10: on it")
 	assert_false(ClimbLink.on_perch(map, Vector3(9, 0, 0)), "but never on the ground")
+
+
+# ================================================================== the perk deal
+
+static func _deal_rows() -> Array:
+	var spots: Array = []
+	for sp: Array in _gen("PERK_SPOTS"):
+		var f: Dictionary = sp[4]
+		spots.append({"id": str(sp[0]), "zone": str(sp[1]), "outdoor": bool(f.get("outdoor", false)), "start": bool(f.get("start", false)), "near": bool(f.get("near", false))})
+	var perks: Array = []
+	var table: Dictionary = GLData.table("perks")["perks"]
+	for id: String in GLData.load_json(PerkShuffle.RULES_PATH)["maps"]["map01"]["perks"]:
+		perks.append({"id": id, "cost": int(table[id]["cost"]), "shape": str(table[id]["shape"])})
+	return [spots, perks]
+
+
+static func _on_navmesh(map: Node, p: Vector3) -> bool:
+	for r: Node in map.find_children("Nav_*", "NavigationRegion3D", true, false):
+		var nm: NavigationMesh = (r as NavigationRegion3D).navigation_mesh
+		var v: PackedVector3Array = nm.get_vertices()
+		for i: int in nm.get_polygon_count():
+			var poly: PackedInt32Array = nm.get_polygon(i)
+			var pts: PackedVector2Array = []
+			var ys: float = 0.0
+			for k: int in poly:
+				pts.append(Vector2(v[k].x, v[k].z))
+				ys += v[k].y
+			if absf(ys / float(poly.size()) - p.y) > 0.6:
+				continue
+			if Geometry2D.is_point_in_polygon(Vector2(p.x, p.z), pts):
+				return true
+	return false
+
+
+func test_the_perk_spots_and_the_scene_agree() -> void:
+	var spots: Array = _gen("PERK_SPOTS")
+	var dealt: Array = _gen("PERK_DEALT")
+	assert_eq(Array(GLData.load_json(PerkShuffle.RULES_PATH)["maps"]["map01"]["perks"]), dealt, "perk_layout.json's row is the generator's dealt list")
+	assert_gte(spots.size(), int(ceil(dealt.size() * 1.5)), "half again as many spots as dealt machines (%d for %d)" % [spots.size(), dealt.size()])
+	var per_zone: Dictionary = {}
+	var gp: Node3D = _scene.get_node("Gameplay") as Node3D
+	for sp: Array in spots:
+		var id: String = str(sp[0])
+		per_zone[str(sp[1])] = int(per_zone.get(str(sp[1]), 0)) + 1
+		var n: Node3D = gp.get_node_or_null("PerkSpot_" + id) as Node3D
+		assert_not_null(n, "PerkSpot_%s is in the scene" % id)
+		if n == null:
+			continue
+		assert_almost_eq(n.position, sp[2] as Vector3, Vector3(0.01, 0.01, 0.01), "%s stands where the table says" % id)
+		assert_eq(str(n.get("zone_id")), str(sp[1]))
+		assert_eq(int(n.get("flush")), int((sp[4] as Dictionary).get("flush", 0)))
+		# its zone, from the scene's zone volumes
+		var p: Vector3 = (sp[2] as Vector3) + Vector3.UP * 0.3
+		var zone: String = ""
+		for c: Node in gp.get_children():
+			var zv: ZoneVolume = c as ZoneVolume
+			if zv == null or zone != "":
+				continue
+			var l: Vector3 = p - zv.position
+			if absf(l.x) <= zv.size.x * 0.5 and absf(l.z) <= zv.size.z * 0.5 and l.y >= -0.5 and l.y <= zv.size.y:
+				zone = String(zv.zone_id)
+		assert_eq(zone, str(sp[1]), "%s stands in its zone" % id)
+		# its floor is baked out, its front is on the navmesh
+		var blocks: Array = _scene.find_children("NavBlock_PerkSpot_" + id, "StaticBody3D", true, false)
+		assert_eq(blocks.size(), 1, "%s has its footprint box" % id)
+		if not blocks.is_empty():
+			assert_true((blocks[0] as Node).is_in_group(&"bake_only"), "%s's box only shapes the bake" % id)
+		var b: Basis = Basis(Vector3.UP, deg_to_rad(float(sp[3])))
+		assert_false(_on_navmesh(_scene, sp[2]), "no navmesh under %s" % id)
+		assert_true(_on_navmesh(_scene, (sp[2] as Vector3) + b * Vector3(0, 0, -1.3)), "the navmesh covers %s's front" % id)
+	for z: String in per_zone.keys():
+		assert_lte(int(per_zone[z]), 3, "at most three spots in %s" % z)
+	assert_gte(per_zone.size(), 7, "spread over the map's zones (%s)" % str(per_zone.keys()))
+
+
+func test_the_scene_holds_the_seed_zero_deal_and_the_three_that_stay() -> void:
+	var rows: Array = _deal_rows()
+	var rules: Dictionary = GLData.load_json(PerkShuffle.RULES_PATH)
+	var deal: Dictionary = PerkShuffle.assign(0, rows[0], rows[1], rules)
+	assert_eq(deal.size(), (rows[1] as Array).size(), "every dealt tonic gets a spot")
+	var gp: Node3D = _scene.get_node("Gameplay") as Node3D
+	for pk: Dictionary in rows[1]:
+		var m: Node3D = gp.get_node_or_null("Perk_" + str(pk["id"])) as Node3D
+		var s: Node3D = gp.get_node_or_null("PerkSpot_" + str(deal.get(pk["id"], "?"))) as Node3D
+		if m != null and s != null:
+			var at: Vector3 = s.position + s.basis * (s as PerkSpot).stand_offset(PerkMachine._shape_footprint(str(pk["shape"])).z)
+			assert_almost_eq(m.position, at, Vector3(0.01, 0.01, 0.01), "%s stands on %s in the saved scene" % [pk["id"], s.name])
+	for row: Array in _gen("PERKS"):
+		if (_gen("PERK_DEALT") as Array).has(str(row[0])):
+			continue
+		var m2: Node3D = gp.get_node_or_null("Perk_" + str(row[0])) as Node3D
+		assert_not_null(m2)
+		if m2 != null:
+			assert_almost_eq(m2.position, row[1] as Vector3, Vector3(0.01, 0.01, 0.01), "%s stays where it belongs" % row[0])
+		assert_eq(_scene.find_children("NavBlock_Perk_" + str(row[0]), "StaticBody3D", true, false).size(), 1, "%s keeps its own baked footprint" % row[0])
+
+
+func test_the_deals_rules_over_many_seeds() -> void:
+	var rows: Array = _deal_rows()
+	var rules: Dictionary = GLData.load_json(PerkShuffle.RULES_PATH)
+	var spot_by: Dictionary = {}
+	for s: Dictionary in rows[0]:
+		spot_by[s["id"]] = s
+	var shape: Dictionary = {}
+	for pk: Dictionary in rows[1]:
+		shape[pk["id"]] = pk["shape"]
+	var sw_spots: Dictionary = {}
+	var used: Dictionary = {}
+	for seed_v: int in 300:
+		var deal: Dictionary = PerkShuffle.assign(seed_v, rows[0], rows[1], rules)
+		assert_eq(deal.size(), 8, "seed %d deals all eight" % seed_v)
+		assert_true(PerkShuffle.valid(deal, rows[0], rows[1], rules), "seed %d keeps the rules" % seed_v)
+		var per_zone: Dictionary = {}
+		for pid: String in deal.keys():
+			var s2: Dictionary = spot_by[deal[pid]]
+			used[deal[pid]] = true
+			per_zone[s2["zone"]] = int(per_zone.get(s2["zone"], 0)) + 1
+			if bool(s2["outdoor"]):
+				assert_true((rules["outdoor_shapes"] as Array).has(shape[pid]), "seed %d: %s under the snow is weather kit" % [seed_v, pid])
+			if pid == "second_wind":
+				assert_true(bool(s2["near"]), "seed %d: Second Wind one door from the yard" % seed_v)
+				sw_spots[deal[pid]] = true
+		for z: String in per_zone.keys():
+			assert_lte(int(per_zone[z]), int(rules["max_per_zone"]), "seed %d: at most two in %s" % [seed_v, z])
+	assert_gte(sw_spots.size(), 2, "Second Wind has more than one place (%s)" % str(sw_spots.keys()))
+	assert_eq(used.size(), (rows[0] as Array).size(), "every spot gets a machine on some seed")

@@ -16,7 +16,7 @@
     1304
   ],
   "baked_at": "2026-11-12T00:19:33",
-  "poi_signature": "35bf7d58232fec8f8c9ce95ae44a687c",
+  "poi_signature": "3eda6554a4bf7afba3de899ec236e14d",
   "floors": [
     {
       "id": "vault",
@@ -824,11 +824,11 @@
       "id": "perk:Gameplay/Perk_blastproof_bock",
       "type": "perk",
       "pos": [
-        64.0,
-        -12.0,
-        97.2
+        20.68,
+        0.0,
+        54.2
       ],
-      "floor": 1,
+      "floor": 2,
       "label": "Blastproof Bock",
       "price": 2000,
       "node_path": "Gameplay/Perk_blastproof_bock",
@@ -841,9 +841,9 @@
       "id": "perk:Gameplay/Perk_hawkeye_brandy",
       "type": "perk",
       "pos": [
-        55.0,
+        64.0,
         -12.0,
-        88.8
+        97.47
       ],
       "floor": 1,
       "label": "Hawkeye Brandy",
@@ -858,9 +858,9 @@
       "id": "perk:Gameplay/Perk_ironhide_stout",
       "type": "perk",
       "pos": [
-        24.0,
+        40.8,
         0.0,
-        32.8
+        19.0
       ],
       "floor": 2,
       "label": "Ironhide Stout",
@@ -892,9 +892,9 @@
       "id": "perk:Gameplay/Perk_marathon_malt",
       "type": "perk",
       "pos": [
-        2.0,
+        -4.67,
         -12.0,
-        60.8
+        56.5
       ],
       "floor": 1,
       "label": "Marathon Malt",
@@ -928,7 +928,7 @@
       "pos": [
         96.0,
         -12.0,
-        88.8
+        88.63
       ],
       "floor": 1,
       "label": "Packmule Porter",
@@ -943,11 +943,11 @@
       "id": "perk:Gameplay/Perk_second_wind",
       "type": "perk",
       "pos": [
-        -15.2,
-        0.0,
-        14.0
+        -0.53,
+        3.8,
+        29.0
       ],
-      "floor": 2,
+      "floor": 3,
       "label": "Second Wind Schnapps",
       "price": 500,
       "node_path": "Gameplay/Perk_second_wind",
@@ -977,11 +977,11 @@
       "id": "perk:Gameplay/Perk_trigger_tonic",
       "type": "perk",
       "pos": [
-        68.0,
-        -12.0,
-        81.2
+        -15.47,
+        0.0,
+        14.0
       ],
-      "floor": 1,
+      "floor": 2,
       "label": "Trigger Tonic",
       "price": 3000,
       "node_path": "Gameplay/Perk_trigger_tonic",
@@ -996,7 +996,7 @@
       "pos": [
         34.0,
         -12.0,
-        60.8
+        60.5
       ],
       "floor": 1,
       "label": "Twin Barrel Bitters",

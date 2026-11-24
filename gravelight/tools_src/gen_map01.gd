@@ -122,6 +122,46 @@ const MACHINE_FOOTPRINTS: Dictionary = {
 	"wagon": Vector3(1.7, 1.7, 0.85), "safe": Vector3(1.1, 1.9, 0.95), "coil": Vector3(0.8, 2.3, 0.6),
 	"register": Vector3(1.0, 2.2, 0.75), "glider": Vector3(0.8, 2.4, 0.7), "bandit": Vector3(0.9, 2.3, 0.65),
 }
+## T-272 (the perk deal, T-251's, on this map): PERK_SPOTS are the places a dealt machine may stand; each match the host
+## deals PERK_DEALT onto them from the match seed (PerkShuffle / PerkLayout, data/gravelight/perk_layout.json "map01") and
+## the spots left over show their filler crate (PerkSpot). The scene is saved with the seed-0 deal. Three machines are
+## NOT dealt: they belong where they stand (PERKS): Ledger Lager is the pay office's own cabinet beside Fenske's desk
+## (T-141), Overclock Cordial is wired into the Generator Hall's switchgear (T-034), Skyhook Sekt is the cabinet the
+## installers set up in the Core Vault (T-226). [spot id, zone, floor position, yaw (local -Z faces the room), flags]:
+## "outdoor" (under the snow: only perk_layout.json's outdoor shapes), "near" (one bought door from the Minehead yard:
+## where Second Wind may stand), "flush" (the back on the wall, the fine print on that local side). Every origin is
+## 0.65 m out from its wall's face (the deepest machine's back 0.05 m off it; PerkSpot.stand_transform moves a shallower
+## cabinet back to the same line). The first eight are where the dealt machines stood before T-272 (the ids keep the
+## deal stable); the other six were measured on the running map (every one: the wall 0.65 m behind, nothing solid in
+## the 1.7 x 1.2 m footprint, the front on the navmesh, no door, window or spawn within 2.4 m).
+const PERK_DEALT: Array = ["second_wind", "ironhide_stout", "marathon_malt", "twin_barrel", "trigger_tonic", "hawkeye_brandy",
+	"packmule_porter", "blastproof_bock"]
+const PERK_SPOTS: Array = [
+	["pay_office", "C_ADMIN", Vector3(-15.2, 0, 14), -90.0, {"near": true, "flush": -1}],
+	["mess_west", "D_BARRACKS", Vector3(24, 0, 32.8), 180.0, {"flush": 1}],
+	["chapel_nw", "F_CHAPEL", Vector3(2, DY, 60.8), 180.0, {"flush": 1}],
+	["chapel_ne", "F_CHAPEL", Vector3(34, DY, 60.8), 180.0, {"flush": -1}],
+	["gen_south", "G_GENERATOR", Vector3(68, DY, 81.2), 0.0, {"flush": 1}],
+	["lab_hall_west", "H_LAB", Vector3(55, DY, 88.8), 180.0, {"flush": 1}],
+	["lab_hall_east", "H_LAB", Vector3(96, DY, 88.8), 180.0, {"flush": 1}],
+	["lab_south", "H_LAB", Vector3(64, DY, 97.2), 0.0, {"flush": 1}],
+	# the Administration's upper floor, on its east wall at the stair head's end (Reinholt's side of the partition)
+	["admin_upper", "C_ADMIN", Vector3(-0.83, 3.8, 29.0), 90.0, {"near": true, "flush": 1}],
+	# the Rail Yard's west wall north of its first door, 3.4 m from the ore-cart trap's track (under the snow)
+	["railyard_west", "B_RAILYARD", Vector3(40.8, 0, 19.0), -90.0, {"outdoor": true, "near": true, "flush": 1}],
+	# the mess hall's north wall, east of Ironhide's old place
+	["mess_east", "D_BARRACKS", Vector3(32.0, 0, 32.8), 180.0, {"flush": 1}],
+	# the lift house's west wall, opposite the cage
+	["lift_house", "E_LIFT", Vector3(20.81, 0, 54.2), -90.0, {"flush": -1}],
+	# the foot of the maintenance stairs, on the stair house's east wall
+	["stairs_foot", "M_STAIRS", Vector3(-4.82, DY, 56.5), 90.0, {"flush": 1}],
+	# the Generator Hall's north wall east of the switchgear
+	["gen_north", "G_GENERATOR", Vector3(70.0, DY, 60.8), 180.0, {"flush": 1}],
+]
+const PERK_SPOT_W: float = 1.7     # the widest machine (the Packmule wagon) ...
+const PERK_SPOT_D: float = 1.2     # ... by the deepest (the Ironhide barrel): the floor every spot keeps (baked)
+const PerkShuffleScript: Script = preload("res://gravelight/world/perk_shuffle.gd")
+
 ## T-226: the Core Vault's solid dressing (hidden colliders drawn by _dress_core): the installers' bench and crates in the
 ## east wall's south corner, the cable drums by the G ramp door, oil drums in the north-east corner. [name, min, max].
 const CORE_PROPS: Array = [
@@ -1022,11 +1062,21 @@ func build_yard_prop_blocks() -> void:
 func build_perk_blocks() -> void:
 	var pdata: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/perks.json"))["perks"]
 	for pk: Array in PERKS:
+		if PERK_DEALT.has(str(pk[0])):
+			continue   # T-272: a dealt machine's floor is its spot's (below), whichever spot it stands on
 		var fp: Vector3 = MACHINE_FOOTPRINTS.get(str((pdata[str(pk[0])] as Dictionary).get("shape", "cabinet")), Vector3(1.0, 2.0, 0.7))
 		if absf(float(pk[2])) == 90.0:
 			fp = Vector3(fp.z, fp.y, fp.x)
 		var c: Vector3 = pk[1]
 		box(geo, "NavBlock_Perk_" + str(pk[0]), c - Vector3(fp.x * 0.5, 0, fp.z * 0.5), c + Vector3(fp.x * 0.5, minf(fp.y, 1.6), fp.z * 0.5), "metal")
+	# T-272: every perk spot's floor (PERK_SPOT_W x PERK_SPOT_D), baked whichever machine or crate stands on it; bake only
+	# (MapRoot clears its layer: the machine's or the crate's own body is what stops you)
+	for sp: Array in PERK_SPOTS:
+		var w: float = PERK_SPOT_W if absf(float(sp[3])) != 90.0 else PERK_SPOT_D
+		var d: float = PERK_SPOT_D if absf(float(sp[3])) != 90.0 else PERK_SPOT_W
+		var c2: Vector3 = sp[2]
+		var nb: Node3D = box(geo, "NavBlock_PerkSpot_" + str(sp[0]), c2 - Vector3(w * 0.5, 0, d * 0.5), c2 + Vector3(w * 0.5, 1.6, d * 0.5), "metal")
+		nb.add_to_group(&"bake_only", true)
 
 
 ## T-226: the Core Vault's solid dressing (CORE_PROPS), baked.
@@ -4279,9 +4329,21 @@ func build_gameplay() -> void:
 		bl.position = (b[1] as Vector3) + Basis(Vector3.UP, deg_to_rad(float(b[2]))) * Vector3(0, 0.75, -0.5)
 		gameplay.add_child(bl)
 
-	# perk machines (PERKS; their footprints are baked, build_perk_blocks)
+	# perk machines (PERKS; their footprints are baked, build_perk_blocks). T-272: the dealt ones stand on their spot of
+	# the seed-0 deal (PerkLayout deals them again at every match's start); the three that belong where they are stay
+	build_perk_spots()
+	var deal: Dictionary = _seed0_deal()
+	var pdata: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/perks.json"))["perks"]
 	for p: Array in PERKS:
-		_node("res://gravelight/world/perk_machine.gd", "Perk_" + str(p[0]), {"perk_id": StringName(p[0])}, p[1], float(p[2]))
+		var at: Vector3 = p[1]
+		var yaw: float = float(p[2])
+		if deal.has(str(p[0])):
+			for sp: Array in PERK_SPOTS:
+				if str(sp[0]) == str(deal[str(p[0])]):
+					var depth: float = (MACHINE_FOOTPRINTS.get(str((pdata[str(p[0])] as Dictionary).get("shape", "cabinet")), Vector3(1.0, 2.0, 0.7)) as Vector3).z
+					yaw = float(sp[3])
+					at = (sp[2] as Vector3) + Basis(Vector3.UP, deg_to_rad(yaw)) * Vector3(0, 0, maxf(0.0, (PERK_SPOT_D - depth) * 0.5))
+		_node("res://gravelight/world/perk_machine.gd", "Perk_" + str(p[0]), {"perk_id": StringName(p[0])}, at, yaw)
 
 	# crate spots: [name, pos, yaw, can_start]
 	var crates: Array = [
@@ -4362,6 +4424,30 @@ func _build_yard_gate() -> void:
 		Props._noshadow(Props.obox(le, Vector3(-half + 0.24, 1.08 - c * 0.075, 0.09), Vector3(0.05, 0.07, 0.015), "iron", Vector3(0, 0, 90.0 * float(c % 2))))
 	for leaf: String in ["LeafW", "LeafE"]:   # one mesh per material a leaf (it swings as one piece): 3 draw calls, not 20
 		_bake_local(g.get_node(leaf) as Node3D, false)
+
+
+## T-272: the perk spots (PerkSpot nodes, group perk_spots: MapRoot attaches a PerkLayout when a map has them).
+func build_perk_spots() -> void:
+	for sp: Array in PERK_SPOTS:
+		var fl: Dictionary = sp[4]
+		_node("res://gravelight/world/perk_spot.gd", "PerkSpot_" + str(sp[0]), {"spot_id": StringName(sp[0]), "zone_id": StringName(sp[1]),
+			"outdoor": bool(fl.get("outdoor", false)), "start": bool(fl.get("start", false)), "near": bool(fl.get("near", false)),
+			"flush": int(fl.get("flush", 0))}, sp[2], float(sp[3]))
+
+
+## The seed-0 deal of the map's row onto PERK_SPOTS under perk_layout.json's rules: the call PerkLayout makes each match.
+func _seed0_deal() -> Dictionary:
+	var rules: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/perk_layout.json"))
+	var pdata: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/perks.json"))["perks"]
+	var spots: Array = []
+	for sp: Array in PERK_SPOTS:
+		var fl: Dictionary = sp[4]
+		spots.append({"id": str(sp[0]), "zone": str(sp[1]), "outdoor": bool(fl.get("outdoor", false)), "start": bool(fl.get("start", false)), "near": bool(fl.get("near", false))})
+	var perks: Array = []
+	for id: String in ((rules.get("maps", {}) as Dictionary).get("map01", {}) as Dictionary).get("perks", []):
+		var d: Dictionary = pdata.get(id, {})
+		perks.append({"id": id, "cost": int(d.get("cost", 0)), "shape": str(d.get("shape", "cabinet"))})
+	return PerkShuffleScript.call("assign", 0, spots, perks, rules)
 
 
 ## Art for a BlastDoor (it uses a child named "Visual" instead of its greybox, and slides it up to open).

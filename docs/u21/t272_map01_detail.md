@@ -128,3 +128,54 @@ in the forecourt at night and noon (`09`, `10`) and coming through the gateway (
 yet; the ladder itself does not read in the night frame (`04`, the west face is dark) and the camera placed outside the
 gate was put back inside the yard by the map (no player may stand there), so that view was dropped; a noon frame of the
 ladder was added to the set for the next render.
+
+## 3. Perk spots for the perk deal
+
+T-251's deal (PerkShuffle / PerkLayout, `perk_layout.json`) now runs on Kaltenbrunn: 14 `PerkSpot` nodes, a row
+`maps.map01` with 8 dealt machines, the scene saved with the seed-0 deal, the mapdata's POIs refreshed
+(`tools_src/refresh_mapdata_pois.tscn -- --maps=map01_kaltenbrunn`: the eight dealt machines' rows moved; no bake).
+
+**Eight of eleven are dealt; three stay where they belong.** Ledger Lager is the pay office's own cabinet beside
+Fenske's desk (T-141, its lore and its quest line), Overclock Cordial is wired into the Generator Hall's switchgear
+(T-034), Skyhook Sekt is the cabinet the installers set up in the Core Vault (T-226). Map 0 deals all twelve because
+its machines were one delivery in the vault; here three are part of the rooms they stand in. They keep their own baked
+footprints and their places; the deal moves the other eight (`perk_layout.json` lists only those).
+
+| Spot | Zone | Floor point, yaw | Flags | Notes |
+|---|---|---|---|---|
+| `pay_office` | C_ADMIN | (-15.2, 0, 14), -90 | near, flush -1 | Second Wind's old place |
+| `mess_west` | D_BARRACKS | (24, 0, 32.8), 180 | flush 1 | Ironhide's old place |
+| `chapel_nw` | F_CHAPEL | (2, -12, 60.8), 180 | flush 1 | Marathon's old place |
+| `chapel_ne` | F_CHAPEL | (34, -12, 60.8), 180 | flush -1 | Twin Barrel's old place |
+| `gen_south` | G_GENERATOR | (68, -12, 81.2), 0 | flush 1 | Trigger Tonic's old place |
+| `lab_hall_west` | H_LAB | (55, -12, 88.8), 180 | flush 1 | Hawkeye's old place |
+| `lab_hall_east` | H_LAB | (96, -12, 88.8), 180 | flush 1 | Packmule's old place |
+| `lab_south` | H_LAB | (64, -12, 97.2), 0 | flush 1 | Blastproof's old place |
+| `admin_upper` | C_ADMIN | (-0.83, 3.8, 29.0), 90 | near, flush 1 | new: the upper floor's east wall at the stair head's end |
+| `railyard_west` | B_RAILYARD | (40.8, 0, 19.0), -90 | outdoor, near, flush 1 | new: the Rail Yard's west wall north of its first door, 3.4 m from the ore-cart trap's track |
+| `mess_east` | D_BARRACKS | (32.0, 0, 32.8), 180 | flush 1 | new: the mess hall's north wall |
+| `lift_house` | E_LIFT | (20.81, 0, 54.2), -90 | flush -1 | new: the lift house's west wall, opposite the cage |
+| `stairs_foot` | M_STAIRS | (-4.82, -12, 56.5), 90 | flush 1 | new: the foot of the maintenance stairs |
+| `gen_north` | G_GENERATOR | (70.0, -12, 60.8), 180 | flush 1 | new: the Generator Hall's north wall east of the switchgear |
+
+Every origin is 0.65 m out from its wall's face (measured: a ray from each origin hits its wall at 0.65..0.68 m); the
+deepest machine's back is then 0.05 m off the wall and `PerkSpot.stand_transform` sets shallower cabinets back to the
+same line. Each spot bakes a 1.7 x 1.2 m footprint (`NavBlock_PerkSpot_*`, bake only, as on Map 0), so whatever
+stands there (machine or crate) is walked round. The six new places were measured on the running map with a throwaway
+probe: nothing solid in the footprint, the front on the navmesh, no door, window or spawn within 2.4 m. Two candidates
+were dropped: the Chapel's south wall at x 8 (the pews leave no navmesh in front of it) and at x -8 (2.2 m from the
+window W_F_S1).
+
+Second Wind (near-start, never outdoor) has two places: the pay office and the Administration's upper floor. Max two
+dealt machines a zone: the Generator Hall can then hold three machines in all with Overclock Cordial (fixed); the Lab
+has three spots for at most two.
+
+Verified (headless): `smoke_map01_perks` (new, 13 checks) PASS: the pinned seed's deal, 14 spots / 11 machines / 8
+dealt, the rules kept, every dealt machine on its spot with its front in the spot's zone, the three fixed machines
+where they belong, the 6 spots left over show a solid crate, the bake boxes stop nobody, the navmesh reaches all 14
+fronts from the yard with every door open, another seed moves 6 of 8, the POIs follow the machines, Ironhide Stout and
+Marathon Malt bought at dealt machines (one above ground, one below). `test_map01_detail`: the table and the scene
+agree, each spot in its zone with its floor baked out and its front on the navmesh, the seed-0 deal in the saved
+scene, the three fixed machines and their footprints, 300 seeds keep the rules (weather kit under the snow, Second Wind
+near the yard and in two places over the seeds, at most two a zone, every spot used). `test_perk_layout` (Map 0),
+`test_mapdata`, `test_ledger_lager` PASS.
