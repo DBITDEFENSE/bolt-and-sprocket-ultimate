@@ -35,13 +35,12 @@ Measured here (BUILD_NUMBERS).
 ### Export presets (`export_presets.cfg`)
 
 - **Linux** (preset 2): x86_64, pack embedded, S3TC / BPTC textures, the Windows preset's include / exclude filters
-  unchanged, custom features `cz_direct,cz_render_thread`.
+  unchanged, custom feature `cz_direct`.
 - **macOS** (preset 3): universal (arm64 + x86_64), the same filters, custom feature `cz_direct`, bundle identifier
   `org.claudezombies.termsandconditions` (no personal name in it; change it before any store release, it must then
   stay fixed), category Action games, minimum macOS 11.0 on both architectures, high-resolution (Retina) capable,
   version 0.0.1 (the project's `0.0.1-m0` is not a legal macOS version string), ad-hoc signed.
-- **Windows** (preset 0): filters untouched. One change: custom features are now `cz_direct,cz_render_thread`
-  (see "the render thread").
+- **Windows** (preset 0): not changed at all (`git diff master -- export_presets.cfg` only adds presets 2 and 3).
 
 ### Signing on macOS: what is possible from Windows
 
@@ -82,20 +81,32 @@ someone else (Godot's documentation asks for this with GDExtensions and ad-hoc s
 
 ## 2. The render thread (what Play.bat's `--render-thread separate` does)
 
-`project.godot`: `rendering/driver/threads/thread_model.cz_render_thread=2`. A project setting with a feature
-suffix applies only in builds that carry that feature; the Windows and Linux presets carry `cz_render_thread`, so
-their exported builds run the renderer on its own thread, like Play.bat (T-258: Map 0 round 15 went from 66 to
-92 FPS because the frame is CPU-bound). The editor, the tests, the web build and the macOS build stay on the
-default.
+**Chosen: no exported build turns it on by itself; it is a launch option.** I first switched it on for the Linux
+and Windows builds and took it out again on the evidence below.
 
-- Verified: the Linux build's log line says `render thread separate` and the build ran the menu and Map 0 that
-  way under Vulkan (section 5).
-- **Not macOS**, on purpose: Metal with a separate render thread has never been run by anyone here, and the
-  engine prints "The separate rendering thread feature is experimental ... can lead to project crashes" at every
-  start with it. A Mac can try it: `open "CLAUDE ZOMBIES.app" --args --render-thread separate`.
-- Going back, any build: launch option `--render-thread safe` (Linux: `./start.sh safe`).
-- The Windows exported build changed with this (it ran single-threaded before; Play.bat did not change). It was
-  re-exported and booted headless only: a rendered run on Windows was not allowed in this session.
+How it can be had:
+
+- any build: the launch option `--render-thread separate` (Linux: `./start.sh fast`; macOS:
+  `open "CLAUDE ZOMBIES.app" --args --render-thread separate`; Deck: put `fast` in the shortcut's launch options);
+- per preset: `project.godot` has `rendering/driver/threads/thread_model.cz_render_thread=2`. A project setting
+  with a feature suffix applies only in builds that carry that feature, so adding `cz_render_thread` to a preset's
+  custom features makes that build start with the separate thread (checked: a Linux build exported that way
+  logged `render thread separate`). No preset carries it now.
+
+Why not by default (the Linux build under WSL, Vulkan Forward+ on the software GPU, Map 0, Handheld preset):
+
+| | separate thread | default (safe) |
+| --- | --- | --- |
+| Menu, rendered | runs, exit 0; 3 `_texture_2d_update: image is null or empty`, 1 `finalize can only be called from the render thread` | not run separately |
+| Map 0, rendered, then quit | plays; 4 `_texture_2d_update` errors; **the process never exits**: 150 s after the game printed its last line every thread was asleep, I had to kill it | plays, 0 error lines, exit 0 |
+| Map 0, headless | PASS; one `Parameter "material" is null` (an earlier build: `Parameter "m" is null` x3, `Condition "!F"` x5) | PASS, 0 error lines |
+
+The engine itself says at every start with it: "The separate rendering thread feature is experimental ... can lead
+to project crashes or instability". A build that hangs on quit would have to be force-closed on a Deck. A software
+GPU is not a Deck or a 5090, so this may not happen on real hardware: T-258's 66 to 92 FPS on the owner's PC
+stands, and Play.bat is unchanged. **Worth checking on the owner's PC**: after quitting from a match started with
+Play.bat, is a Godot process left in Task Manager? If not, and a Deck run with `fast` quits cleanly too, the tag
+can go back into the Windows and Linux presets (one word each).
 
 ## 3. Quality defaults (`gravelight/autoload/settings.gd`)
 
@@ -233,7 +244,8 @@ Left open on purpose (each is a decision or needs a device):
 3. For game mode: in desktop mode open Steam > Games > "Add a Non-Steam Game to My Library" > Browse > pick
    `start.sh` (or `ClaudeZombies.x86_64`). Leave "Force the use of a compatibility tool" **off** (it is a native
    Linux build, no Proton). Return to game mode; it is under Library > Non-Steam.
-4. If something looks wrong: launch option `safe` with `start.sh` (or `--render-thread safe` with the binary).
+4. To try the separate render thread (section 2): `./start.sh fast`, or `fast` as the shortcut's launch option.
+   Then quit from a match and see that the game really closes.
 
 Test first on the Deck: (1) it starts and the menu shows; (2) the D-pad moves, A confirms, B goes back; (3)
 Settings > Video shows "Handheld" and Frame cap 60 (LCD) or 45 (OLED); (4) a solo match on Map 0 to round 5:
@@ -248,9 +260,10 @@ back to the library with no error; (8) Online > Join by code with the on-screen 
    path).
 2. Clear the quarantine flag (the build is ad-hoc signed and not notarized). Terminal:
    `xattr -dr com.apple.quarantine "/Applications/CLAUDE ZOMBIES.app"`
-3. Open it. If macOS still refuses: System Settings > Privacy & Security, scroll to "CLAUDE ZOMBIES was blocked",
-   "Open Anyway". (On macOS 14 and earlier, right-click the app > Open > Open also works; macOS 15 removed that
-   shortcut.) If it says the app "is damaged": step 2 was skipped, or the zip was re-packed on Windows.
+3. Open it. If macOS still refuses: System Settings > Privacy & Security, scroll to the line about CLAUDE ZOMBIES
+   being blocked, "Open Anyway". (Godot's documentation also gives right-click the app > Open > Open; as far as I
+   know macOS 15 no longer offers that, not re-checked.) If it says the app "is damaged": step 2 was skipped, or
+   the zip was re-packed on Windows.
 4. The log: `~/Library/Application Support/Godot/app_userdata/CLAUDE ZOMBIES/logs/godot.log`.
 5. To try the separate render thread: `open "/Applications/CLAUDE ZOMBIES.app" --args --render-thread separate`.
 
@@ -274,7 +287,8 @@ VERIFIED_BLOCK
 - Nothing ran on a Deck: frame rate, RADV, gamescope, the Handheld preset's values, the 45 / 60 cap, text size on
   the 7 inch panel, `SteamDeck=1` and the adapter names (taken from published device reports, not seen).
 - Apple silicon tiers and their 3D limits are estimates.
-- The Windows exported build with the separate render thread was booted headless only.
+- Whether the separate render thread hangs on quit on a real GPU (it did on the software one, Linux).
+- No rendered run of any Windows build (not allowed on this PC); the Windows export was booted and played headless.
 - Maps other than Map 0 were not loaded in the exported Linux build under Vulkan (OTHER_MAPS).
 - Cross-platform co-op (Windows host, Linux or Mac client) was not played. The transport and packet code have
   nothing platform-specific by reading; that is not a played match.
@@ -282,7 +296,8 @@ VERIFIED_BLOCK
 
 ## 9. Decisions the owner may want differently
 
-1. The Windows exported build now uses the separate render thread (as Play.bat does).
+1. No exported build uses the separate render thread by default (section 2); it is a launch option until a real
+   GPU shows it quits cleanly.
 2. macOS is named "CLAUDE ZOMBIES" (app, window, user folder), the other platforms keep "TERMS & CONDITIONS".
 3. Bundle identifier `org.claudezombies.termsandconditions`.
 4. Apple silicon: Medium / High with a 3D limit instead of Low; macOS minimum 11.0 on Intel too.

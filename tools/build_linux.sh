@@ -20,13 +20,14 @@ rm -rf "$DIR" "$OUT"
 mkdir -p "$DIR"
 "$GODOT" --headless --audio-driver Dummy --path . --export-release "Linux" "$DIR/ClaudeZombies.x86_64" > build/linux/export.log 2>&1
 [ -f "$DIR/ClaudeZombies.x86_64" ] || { echo "[build_linux] export failed (see build/linux/export.log)"; exit 1; }
-# the start script: logs next to the game, and "safe" starts the renderer on the game's thread (see docs/u21/t264_ports.md)
+# the start script: logs next to the game; "fast" tries the renderer on its own thread (see docs/u21/t264_ports.md)
 cat > "$DIR/start.sh" <<'EOF'
 #!/bin/sh
-# Starts CLAUDE ZOMBIES. "./start.sh safe" runs the renderer on the game's own thread (if anything looks wrong).
+# Starts CLAUDE ZOMBIES. "./start.sh fast" runs the renderer on its own thread (more frames when the CPU is the
+# limit; experimental: under a software GPU it hung when quitting after a match).
 cd "$(dirname "$0")"
 RT=""
-[ "$1" = "safe" ] && { RT="--render-thread safe"; shift; }
+[ "$1" = "fast" ] && { RT="--render-thread separate"; shift; }
 exec ./ClaudeZombies.x86_64 $RT --log-file "$(pwd)/game_last.log" "$@"
 EOF
 "$PYTHON" -I -c "
