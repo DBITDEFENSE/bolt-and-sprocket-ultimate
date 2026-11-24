@@ -26,8 +26,10 @@ func test_on_the_inn_only() -> void:
 	assert_false(b.is_empty(), "the Inn has the block")
 	assert_eq(int(b["arrive_round"]), 30, "the Sherman comes on round 30")
 	assert_eq(int(b["stuka_round"]), 40, "the dive bomber and the raid on round 40")
-	for m: StringName in [&"map01_kaltenbrunn", &"map02_totenhafen", &"map04a_thalbach", &"test_range"]:
+	for m: StringName in [&"map04a_thalbach", &"map04b_kranich", &"map04c_groomlake", &"map04d_mondlicht", &"test_range"]:
 		assert_true(ShermanEvent.block_for(m).is_empty(), "%s: no Sherman" % m)
+	for m2: StringName in [&"map01_kaltenbrunn", &"map02_totenhafen"]:   # T-271: the raid only (test_map_detail)
+		assert_false(ShermanEvent.block_has_tank(ShermanEvent.block_for(m2)), "%s: no Sherman (the raid only)" % m2)
 	var c: Dictionary = _cfg()
 	for k: String in ["tank", "arrival", "assault", "fire_zombie", "assist", "stuka", "raid"]:
 		assert_true(c.has(k), "sherman.json has %s" % k)
