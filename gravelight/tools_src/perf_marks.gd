@@ -266,7 +266,13 @@ func _process(delta: float) -> void:
 			if (_quick and _census_done) or (_t > 9.0 and _t < _t_end):
 				if _win_frame < 0:
 					_win_frame = Engine.get_physics_frames()
+					if "--diag" in OS.get_cmdline_user_args():
+						var ts1: int = Time.get_ticks_usec()
+						_uncached = _uncached_resources()
+						_skip_us += Time.get_ticks_usec() - ts1
+						_gap_skip += Time.get_ticks_usec() - ts1
 				_samples.append(delta)
+				_built_frame_end()
 				_frame_stats(delta)
 				if _hitch:
 					var wn: int = Time.get_ticks_usec()
@@ -394,7 +400,32 @@ func _frame_stats(delta: float) -> void:
 	_added = []
 
 
+## T-265: every node that entered the tree in the sampled window, counted per frame (a count does not depend on
+## how busy the machine is): the frames that built the most, and what they built.
+var _built_now: int = 0
+var _built_names: PackedStringArray = []
+var _built_top: Array = []   # [count, text]
+var _built_total: int = 0
+
+
+func _built_frame_end() -> void:
+	if _built_now > 0:
+		_built_total += _built_now
+		if _built_top.size() < 10 or _built_now > int(_built_top[_built_top.size() - 1][0]):
+			_built_top.append([_built_now, "t=%.2f %d nodes: %s" % [_t, _built_now, ", ".join(_built_names)]])
+			_built_top.sort_custom(func(a: Array, b: Array) -> bool: return int(a[0]) > int(b[0]))
+			if _built_top.size() > 10:
+				_built_top.resize(10)
+	_built_now = 0
+	_built_names = []
+
+
 func _on_node_added(n: Node) -> void:
+	if _hitch and _phase == 2 and _t > 9.0 and not (n.get_parent() == self):
+		_built_now += 1
+		if _built_names.size() < 8 and (n.get_script() != null or n is VisualInstance3D or n is AudioStreamPlayer3D or n is CollisionObject3D):
+			var sc: Script = n.get_script() as Script
+			_built_names.append("%s%s" % [n.name, ("(" + sc.resource_path.get_file() + ")") if sc != null else "<" + n.get_class() + ">"])
 	if _phase == 2 and _added.size() < 40 and (n is VisualInstance3D or n is CanvasItem or n.get_script() != null):
 		var s: Script = n.get_script() as Script
 		var what: String = ""
@@ -498,6 +529,7 @@ func probe_tick(physics: bool, delta: float) -> void:
 			for b: BotBrain in _map.squad.brains:
 				b_us.append(b.us_total)
 				b_th.append(b.thinks)
+	var added0: int = _added.size()
 	for key: String in _groups:
 		var g: Dictionary = _groups[key]
 		var arr: Array = g[list_key]
@@ -550,6 +582,8 @@ func probe_tick(physics: bool, delta: float) -> void:
 	var pr: String = BotProf.tick_text(7)
 	if pr != "":
 		line += " | " + pr
+	if _added.size() > added0:   # T-265: what entered the tree during this tick's scripts (a first use shows here)
+		line += " | new nodes %d: %s" % [_added.size() - added0, ", ".join(_added.slice(added0, added0 + 6))]
 	_worst.append([tick_us, line])
 	_worst.sort_custom(func(a: Array, b: Array) -> bool: return int(a[0]) > int(b[0]))
 	if _worst.size() > 14:
@@ -704,6 +738,9 @@ func _report_hitch() -> void:
 	for i: int in mini(16, rows.size()):
 		var d: Array = rows[i][1]
 		print("[hitch]   %-36s mean %.3f p50 %.3f p95 %.3f p99 %.3f worst %.3f (%d nodes)" % [rows[i][0], d[0], d[1], d[2], d[3], d[4], rows[i][2]])
+	print("[hitch] nodes built in the window: %d in %d frames; the frames that built the most:" % [_built_total, _wall.size()])
+	for e: Array in _built_top:
+		print("[hitch]   built " + str(e[1]))
 	print("[hitch] worst ticks (scripts):")
 	for e: Array in _worst:
 		print("[hitch]   " + str(e[1]))
@@ -715,9 +752,45 @@ func _report_hitch() -> void:
 	print("[hitch] nodes %d, orphans %d" % [int(Performance.get_monitor(Performance.OBJECT_NODE_COUNT)), int(Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT))])
 
 
+## `--diag`: every script, scene, shader, model, texture and sound of the project that is not in the engine's
+## resource cache (res://gravelight, res://core, res://assets, res://data).
+var _uncached: PackedStringArray = []
+const DIAG_EXT: PackedStringArray = ["gd", "tscn", "scn", "gdshader", "tres", "res", "glb", "png", "jpg", "wav", "ogg"]
+
+
+func _uncached_resources() -> PackedStringArray:
+	var out: PackedStringArray = []
+	var stack: PackedStringArray = ["res://gravelight", "res://core", "res://assets", "res://data"]
+	while not stack.is_empty():
+		var dir: String = stack[stack.size() - 1]
+		stack.remove_at(stack.size() - 1)
+		var da: DirAccess = DirAccess.open(dir)
+		if da == null:
+			continue
+		for sub: String in da.get_directories():
+			if not sub.begins_with("."):
+				stack.append(dir + "/" + sub)
+		for f: String in da.get_files():
+			if DIAG_EXT.has(f.get_extension()) and not ResourceLoader.has_cached(dir + "/" + f):
+				out.append(dir + "/" + f)
+	return out
+
+
 ## `--diag` (T-265): what a whole-map search costs here (find_children by class, as several scripts make at run
 ## time), and which animation players and trees are running, by the node they sit under.
 func _diag() -> void:
+	var first: PackedStringArray = []
+	for path: String in _uncached:
+		if ResourceLoader.has_cached(path):
+			first.append(path.trim_prefix("res://"))
+	print("[diag] resources that came into the cache during the window (first loaded in play, on the main thread or a loader thread): %d" % first.size())
+	var by_ext: Dictionary = {}
+	for path: String in first:
+		by_ext[path.get_extension()] = int(by_ext.get(path.get_extension(), 0)) + 1
+	print("[diag]   by kind: %s" % str(by_ext))
+	for path: String in first:
+		if not (path.get_extension() in ["wav", "ogg"]):
+			print("[diag]   first load: " + path)
 	var t0: int = Time.get_ticks_usec()
 	var n: int = 0
 	for i: int in 5:
