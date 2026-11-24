@@ -554,7 +554,7 @@ func _hunt(map: MapRoot, me: Player, delta: float) -> void:
 
 
 ## T-268 (client): a zombie puppet in the climb state on the watchtower's lower ladder, on the ladder's line, rising,
-## and then standing on the landing: the climb looks on the client as it does on the host.
+## and then over the edge at the ladder's head on the landing: the climb looks on the client as it does on the host.
 var _climb_seen: bool = false
 var _climb_top: bool = false
 var _climb_rise: float = 0.0
@@ -576,7 +576,8 @@ func _watch_climb(map: MapRoot) -> void:
 			_climb_y[z] = r
 			_climb_rise = maxf(_climb_rise, float(r[1]) - float(r[0]))
 			_climb_seen = _climb_seen or _climb_rise > 1.5
-		elif _climb_y.has(z) and z.state != Zombie.State.CLIMB_LINK and z.state != Zombie.State.DEAD and absf(at.y - link.end_position.y) < 0.4:
+		elif _climb_y.has(z) and z.state != Zombie.State.DEAD and at.y > link.end_position.y - 0.2 and Vector2(at.x - link.end_position.x, at.z - link.end_position.z).length() < 0.7:
+			# over the edge, at the link's head (it may turn round at once and drop back down: the players are elsewhere)
 			_climb_top = true
 
 

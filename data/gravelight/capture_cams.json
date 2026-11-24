@@ -15584,14 +15584,14 @@
         {
           "name": "land_InnZip_night",
           "pos": [
-            -0.66,
+            2.5,
             0.0,
-            16.16
+            17.6
           ],
-          "yaw": -166.8,
-          "pitch": 14.9,
+          "yaw": 179.1,
+          "pitch": 15.2,
           "settle_s": 4.0,
-          "note": "the InnZip landing: the post, its stay and lantern, the trodden snow, the cable up to the tower"
+          "note": "the InnZip landing from the passage behind the inn: the post, its stay and lantern, the trodden snow, the cable up past the stable's west wall to the tower (the first camera spot stood in the Old Cellar's stair lean-to)"
         },
         {
           "name": "down_BankZip_night",
@@ -15731,14 +15731,17 @@
         {
           "name": "land_InnZip_noon",
           "pos": [
-            -0.66,
+            2.5,
             0.0,
-            16.16
+            17.6
           ],
-          "yaw": -166.8,
-          "pitch": 14.9,
+          "yaw": 179.1,
+          "pitch": 15.2,
           "settle_s": 4.0,
-          "note": "the InnZip landing: the post, its stay and lantern, the trodden snow, the cable up to the tower"
+          "note": "the InnZip landing from the passage behind the inn: the post, its stay and lantern, the trodden snow, the cable up past the stable's west wall to the tower (the first camera spot stood in the Old Cellar's stair lean-to)",
+          "do": [
+            "callv:DayCycle:hold_hour:12:1"
+          ]
         },
         {
           "name": "down_BankZip_noon",
@@ -15836,6 +15839,22 @@
           "pitch": 8.4,
           "settle_s": 4.0,
           "note": "power on, from the south-east grounds: the tower reads across the map (beam, red masthead lamp, lanterns)"
+        },
+        {
+          "name": "searchlight_pool_night",
+          "pos": [
+            24.0,
+            0.0,
+            40.0
+          ],
+          "yaw": 116.6,
+          "pitch": 6.4,
+          "settle_s": 6.0,
+          "do": [
+            "callv:DayCycle:hold_hour:0:1",
+            "power"
+          ],
+          "note": "power on, from the yard's east side: the searchlight's pool on the snow inside the gate, the lit lens on the roof's east gable"
         },
         {
           "name": "ride_inn_night",

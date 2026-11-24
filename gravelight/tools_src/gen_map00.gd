@@ -942,7 +942,7 @@ func build_yard() -> void:
 ## the field sides; four roof posts under a gable roof with its snow; a mast
 ## over the ridge with a pennant and a red lamp; the ladder up the north face to the landing and a second up the east
 ## face to the top (the LadderClimbs stand at their feet and heads); lanterns at the foot, on the landing and under
-## the roof; the searchlight on the top's north-east corner (its light is _tower_lights'); and the three zip lines
+## the roof; the searchlight on the roof's east gable (its light is _tower_lights'); and the three zip lines
 ## (ZIP_LINES): a bracket and a marker lantern on a roof post, the cable down to its landing post with a stay, a
 ## lantern, a snow cap, a coil of rope and the trodden snow where you land (the trolleys are the ZipLines' own).
 func _dress_tower(g: Node3D) -> void:
@@ -1027,10 +1027,11 @@ func _dress_tower(g: Node3D) -> void:
 	Props.cyl(g, Vector3(cx - 1.5, d2 + 0.16, cz + 0.6), 0.15, 0.32, "zinc")
 	Props.crate(g, Vector3(cx - 1.55, d1, cz + 1.5), 0.55, -8.0)
 	Props.rope_coil(g, Vector3(cx + 1.3, d1, cz + 1.5), 0.2)
-	# the searchlight on the top's north-east corner: a drum on a yoke outside the parapet, aimed over the yard at the gate
-	var sl: Vector3 = Vector3(cx + h + 0.3, d2 + 1.55, cz - h + 0.9)
-	Props.block(g, Vector3(cx + h - 0.05, d2 + 0.9, sl.z - 0.05), Vector3(sl.x + 0.05, d2 + 1.0, sl.z + 0.05), "iron")
-	Props.block(g, Vector3(sl.x - 0.04, d2 + 0.9, sl.z - 0.04), Vector3(sl.x + 0.04, d2 + 1.3, sl.z + 0.04), "iron")
+	# the searchlight: a drum on a yoke bracketed to the roof's east gable, over everyone's head (on the parapet's
+	# corner it stood in the face of whoever took the yard's zip line), aimed over the yard at the gate
+	var sl: Vector3 = TOWER_SEARCHLIGHT
+	Props.block(g, Vector3(cx + h + 0.4, sl.y - 0.42, sl.z - 0.05), Vector3(sl.x + 0.05, sl.y - 0.32, sl.z + 0.05), "iron")
+	Props.block(g, Vector3(sl.x - 0.04, sl.y - 0.42, sl.z - 0.04), Vector3(sl.x + 0.04, sl.y - 0.26, sl.z + 0.04), "iron")
 	var drum: Node3D = Props.group(g, "SearchlightDrum", sl)
 	drum.transform = Transform3D(Basis.looking_at(TOWER_SEARCH_AIM - sl, Vector3.UP), sl)
 	Props.cyl(drum, Vector3(0, 0, 0.0), 0.24, 0.36, "iron", Vector3(90, 0, 0))
@@ -1090,6 +1091,7 @@ func _tower_parapet(g: Node3D, dy: float) -> void:
 ## yard has no turn of its own), then a beam over the yard onto the gate. Only the searchlight asks for a shadow
 ## (one spot view; ShadowBudget decides, T-258); the lanterns have none.
 const TOWER_SEARCH_AIM: Vector3 = Vector3(18.0, 0.0, 45.5)
+const TOWER_SEARCHLIGHT: Vector3 = Vector3(TOWER_X + TOWER_HALF + 0.85, TOWER_TOP + 2.75, TOWER_Z)   # on the roof's east gable end
 
 
 func _tower_lights() -> void:
@@ -1099,12 +1101,12 @@ func _tower_lights() -> void:
 	# field corner for the south and west faces
 	var ne: Vector3 = Vector3(TOWER_X + TOWER_HALF + 0.55, 0, TOWER_Z - TOWER_HALF - 0.55)
 	var sw: Vector3 = Vector3(TOWER_X - TOWER_HALF - 0.55, 0, TOWER_Z + TOWER_HALF + 0.55)
-	_lamp("YardTowerFootLamp", ne + Vector3(0, 2.3, 0), warm, 5.0, 13.0, false, true, 0.2)
-	_lamp("YardTowerLandingLamp", ne + Vector3(0, TOWER_DECK - 0.9, 0), warm, 5.5, 14.0, false, true, 0.2)
-	_lamp("YardTowerEaveLamp", ne + Vector3(0, TOWER_TOP - 0.9, 0), warm, 5.5, 14.0, false, true, 0.2)
-	_lamp("YardTowerFieldLamp", sw + Vector3(0, TOWER_DECK - 0.9, 0), warm, 4.5, 14.0, false, true, 0.2)
+	_lamp("YardTowerFootLamp", ne + Vector3(0, 2.3, 0), warm, 6.5, 14.0, false, true, 0.2)
+	_lamp("YardTowerLandingLamp", ne + Vector3(0, TOWER_DECK - 0.9, 0), warm, 8.5, 16.0, false, true, 0.2)
+	_lamp("YardTowerEaveLamp", ne + Vector3(0, TOWER_TOP - 0.9, 0), warm, 8.5, 16.0, false, true, 0.2)
+	_lamp("YardTowerFieldLamp", sw + Vector3(0, TOWER_DECK - 0.9, 0), warm, 7.0, 16.0, false, true, 0.2)
 	_lamp("YardTowerLamp", Vector3(TOWER_X, TOWER_TOP + 1.95, TOWER_Z), warm, 3.5, 11.0, false, true, 0.2)
-	_lamp("YardTowerBeacon", Vector3(TOWER_X, TOWER_TOP + 6.98, TOWER_Z), Color(1.0, 0.12, 0.08), 4.0, 11.0, false, false)
+	_lamp("YardTowerBeacon", Vector3(TOWER_X, TOWER_TOP + 6.98, TOWER_Z), Color(1.0, 0.12, 0.08), 6.0, 12.0, false, false)
 	for zl: Array in ZIP_LINES:
 		var top: Vector3 = zl[1]
 		var foot: Vector3 = zl[2]
@@ -1124,7 +1126,7 @@ func _tower_lights() -> void:
 	sl.set_meta("energy", 14.0)
 	sl.add_to_group(&"power_lights", true)
 	map_root.add_child(sl)
-	var at: Vector3 = Vector3(TOWER_X + TOWER_HALF + 0.3, TOWER_TOP + 1.55, TOWER_Z - TOWER_HALF + 0.9)
+	var at: Vector3 = TOWER_SEARCHLIGHT
 	sl.transform = Transform3D(Basis.looking_at(TOWER_SEARCH_AIM - at, Vector3.UP), at + (TOWER_SEARCH_AIM - at).normalized() * 0.24)
 	var lens: MeshInstance3D = Props.cyl(sl, Vector3(0, 0, 0.02), 0.2, 0.02, "flood_glass", Vector3(90, 0, 0))   # the lit lens shows with the light
 	lens.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF

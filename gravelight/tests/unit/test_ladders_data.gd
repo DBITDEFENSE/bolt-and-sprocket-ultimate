@@ -248,3 +248,28 @@ class _Climber extends Node3D:
 
 	func on_rungs(l: NavigationLink3D) -> bool:
 		return climbing and l == link
+
+
+## T-268: the tower's lights. The lanterns burn from the start and cast no shadows; the searchlight is electric (dark
+## until the lever's sweep reaches its zone, which must be one the sweep visits) and is the only one that asks for one.
+func test_map00_tower_lights() -> void:
+	var m: Node = _map00()
+	var lamps: int = 0
+	for n: Node in m.get_children():
+		if n is OmniLight3D and (String(n.name).begins_with("YardTower") or String(n.name).begins_with("YardZipLamp")):
+			lamps += 1
+			assert_false((n as Light3D).shadow_enabled, "%s casts no shadow" % n.name)
+			assert_true((n as Light3D).visible and not n.is_in_group(&"power_lights"), "%s is an oil lantern: it burns without the power" % n.name)
+			assert_lte((n as OmniLight3D).omni_range, 16.0, "%s has a lantern's reach" % n.name)
+	assert_eq(lamps, 9, "five lanterns and the masthead lamp on the tower, one lantern at each of the three landing posts")
+	var sl: SpotLight3D = m.get_node_or_null("YardTowerSearchlight") as SpotLight3D
+	assert_not_null(sl, "the searchlight")
+	if sl == null:
+		return
+	assert_true(sl.is_in_group(&"power_lights") and not sl.visible, "the searchlight is dark until the power is on")
+	var order: PackedStringArray = []
+	for sw: Node in m.find_children("*", "", true, false):
+		if sw.get("zone_order") != null:
+			order = sw.get("zone_order")
+	assert_true(order.has(str(sl.get_meta("zone", ""))), "its zone (%s) is one the lever's sweep lights" % str(sl.get_meta("zone", "")))
+	assert_gt(sl.position.y, 14.0, "it is over the top platform's heads (y %.1f)" % sl.position.y)
