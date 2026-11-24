@@ -273,10 +273,28 @@ func _run() -> void:
 	var p: Player = _map.player
 	var scenes: Array = SCENES.get(_map_id, [])
 	if scenes.is_empty() and p != null:
-		var f: Vector3 = -p.global_transform.basis.z * Vector3(1, 0, 1)
-		f = f.normalized() if f.length() > 0.01 else Vector3(0, 0, -1)
+		# the longest clear line from the spawn at chest height (sixteen directions): the crowd stands along it
 		var base: Vector3 = p.global_position
-		scenes = [["start", base + f * 8.5, base + f * 1.2 + Vector3(0, 1.65, 0), -1.0]]
+		var space: PhysicsDirectSpaceState3D = _map.get_world_3d().direct_space_state
+		var f: Vector3 = Vector3(0, 0, -1)
+		var best: float = 0.0
+		for i: int in 16:
+			var d: Vector3 = Vector3(sin(TAU * float(i) / 16.0), 0.0, cos(TAU * float(i) / 16.0))
+			var from: Vector3 = base + Vector3(0, 1.2, 0)
+			var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, from + d * 16.0, 1)
+			var hit: Dictionary = space.intersect_ray(q)
+			var dist: float = 16.0 if hit.is_empty() else from.distance_to(hit["position"] as Vector3)
+			# (and the floor must go on: a ray down at the far end finds one within two metres of the spawn's height)
+			var end: Vector3 = base + d * minf(dist - 1.0, 9.0)
+			var fq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(end + Vector3(0, 1.0, 0), end + Vector3(0, -2.0, 0), 1)
+			if space.intersect_ray(fq).is_empty():
+				continue
+			if dist > best:
+				best = dist
+				f = d
+		var far: float = clampf(best - 3.2, 4.0, 8.5)
+		scenes = [["start", base + f * far, base + f * maxf(0.3, far - 7.3) + Vector3(0, 1.65, 0), -1.0]]
+		print("[zlook] start: clear %.1f m toward %s" % [best, str(f)])
 	for s: Array in scenes:
 		if _wants(str(s[0])):
 			await _crowd_scene(str(s[0]), s[1], s[2], float(s[3]))
