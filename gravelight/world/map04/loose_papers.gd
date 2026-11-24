@@ -27,6 +27,7 @@ var vel: PackedVector3Array = PackedVector3Array()
 var rot: PackedVector3Array = PackedVector3Array()    # yaw, pitch, roll (radians)
 var spin: PackedVector3Array = PackedVector3Array()
 var gone: PackedByteArray = PackedByteArray()
+var pulled: PackedByteArray = PackedByteArray()   # blown toward a sink: steered to it, no fall, until _pull_t runs out
 var flying: int = 0
 ## How many times a sheet has been lifted (tests).
 var lifts: int = 0
@@ -35,6 +36,7 @@ var _bodies: Array[Node3D] = []
 var _poll: float = 0.0
 var _sound_cd: float = 0.0
 var _sink: Vector3 = Vector3.INF
+var _pull_t: float = 0.0
 
 
 func _ready() -> void:
@@ -46,6 +48,7 @@ func _ready() -> void:
 		rot.append(Vector3(rng.randf() * TAU, 0.0, 0.0))
 		spin.append(Vector3.ZERO)
 		gone.append(0)
+		pulled.append(0)
 	_mm = MultiMesh.new()
 	_mm.transform_format = MultiMesh.TRANSFORM_3D
 	_mm.mesh = Props.unit_box()
@@ -109,12 +112,15 @@ func blow(at: Vector3, strength: float = 6.0, radius: float = 12.0, sink: bool =
 	var local: Vector3 = to_local(at)
 	if sink:
 		_sink = local
+		_pull_t = 6.0
 	for i: int in count:
 		var d: Vector3 = local - pos[i]
 		if d.length() > radius or gone[i] != 0:
 			continue
 		var dir: Vector3 = (d if sink else -d).normalized()
 		lift(i, dir * strength * randf_range(0.7, 1.2) + Vector3.UP * randf_range(0.6, 1.6))
+		if sink:
+			pulled[i] = 1
 
 
 func _on_explosion(at: Vector3, radius: float) -> void:
@@ -146,23 +152,31 @@ func _process(delta: float) -> void:
 			set_process(false)
 		return
 	var term: float = -clampf(gravity * 0.12, 0.25, 1.4)   # a sheet falls at its own slow speed
+	_pull_t -= delta
 	for i: int in count:
 		if vel[i] == Vector3.ZERO or gone[i] != 0:
 			continue
 		var v: Vector3 = vel[i]
-		v.y = maxf(v.y - gravity * delta, term)
-		var drag: float = clampf(1.0 - 1.6 * delta, 0.0, 1.0)
-		v.x *= drag
-		v.z *= drag
+		if pulled[i] != 0 and _pull_t > 0.0:   # the breach's suction: straight for the hole, tumbling
+			var to_sink: Vector3 = _sink - pos[i]
+			v = v.lerp(to_sink.normalized() * maxf(7.0, v.length()), clampf(5.0 * delta, 0.0, 1.0))
+		else:
+			pulled[i] = 0
+			v.y = maxf(v.y - gravity * delta, term)
+		if pulled[i] == 0:
+			var drag: float = clampf(1.0 - 1.6 * delta, 0.0, 1.0)
+			v.x *= drag
+			v.z *= drag
 		pos[i] += v * delta + Vector3(sin(Time.get_ticks_msec() * 0.004 + i) * 0.15, 0, cos(Time.get_ticks_msec() * 0.003 + i) * 0.15) * delta
 		rot[i] += spin[i] * delta
 		spin[i] *= clampf(1.0 - 0.8 * delta, 0.0, 1.0)
 		var floor_y: float = 0.002 if absf(pos[i].x) <= size.x * 0.5 + 0.1 and absf(pos[i].z) <= size.z * 0.5 + 0.1 else -floor_drop + 0.002
 		if _sink != Vector3.INF and pos[i].distance_to(_sink) < 1.0:
 			gone[i] = 1
+			pulled[i] = 0
 			vel[i] = Vector3.ZERO
 			flying -= 1
-		elif pos[i].y <= floor_y and v.y <= 0.0:
+		elif pulled[i] == 0 and pos[i].y <= floor_y and v.y <= 0.0:
 			pos[i].y = floor_y + 0.001 * i
 			rot[i] = Vector3(rot[i].x, 0.0, 0.0)
 			vel[i] = Vector3.ZERO

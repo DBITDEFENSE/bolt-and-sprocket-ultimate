@@ -599,8 +599,12 @@ func _tick_fighters(delta: float) -> void:
 		spawn_pass(false)
 	var fcfg: Dictionary = cfg.get("fighters", {})
 	var dcfg: Dictionary = fcfg.get("downed", {})
-	if not dcfg.is_empty() and _down_round != _act_round() and (dcfg.get("act_rounds", []) as Array).has(_act_round()) 			and round_t >= float(dcfg.get("at_s", 45.0)):
-		_down_round = _act_round()
+	var ar: int = _act_round()
+	var due: bool = false
+	for r: Variant in dcfg.get("act_rounds", []):   # (json numbers are floats: Array.has(int) would miss them)
+		due = due or int(r) == ar
+	if due and _down_round != ar and round_t >= float(dcfg.get("at_s", 45.0)):
+		_down_round = ar
 		spawn_downed()
 	for f: Dictionary in _fighters.duplicate():
 		f["t"] = float(f["t"]) + delta

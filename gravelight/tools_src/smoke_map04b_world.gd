@@ -125,24 +125,6 @@ func _body() -> void:
 		_check(QuestManager.is_complete(&"map04b_crew_tags") and GameState.has_flag(&"kranich_lastcall_heard"), "the Bordfunk plays the crew's last transmission")
 		_check(ProfileSave.has_intel("INT_M4B_LASTCALL"), "...an Archive entry")
 
-	# T-274: a night fighter shot down on the act's own clock (map04b.json flight.sky.fighters.downed)
-	if sky != null:
-		var dn0: int = sky.downed
-		_act(2)
-		sky.round_t = 46.0
-		await _secs(0.4)
-		_check(sky.downed == dn0 + 1, "act round 2, 45 s in: a night fighter comes up alongside and is shot down")
-		await _secs(6.0)
-		var low: float = INF
-		var burning: bool = false
-		for f: Dictionary in sky._fighters:
-			if f.has("mid") and is_instance_valid(f["node"]):
-				low = minf(low, (f["node"] as Node3D).global_position.y)
-				burning = burning or (f["node"] as Node).get_node_or_null("BurningTrail") != null
-		_check(burning and low < -40.0, "it falls away burning (%.0f m below the deck)" % -low)
-		sky.round_t = 60.0
-		await _secs(0.3)
-		_check(sky.downed == dn0 + 1, "one a round")
 	# the bay doors
 	var trap: BayDoorsTrap = _g("Trap_BayDoors") as BayDoorsTrap
 	var lever: TrapLever = _g("Lever_BayDoors") as TrapLever
@@ -179,6 +161,25 @@ func _body() -> void:
 		_check(gone >= 3, "papers pulled out through the hole (%d of %d)" % [gone, papers.count])
 		_check(stash.broken_count() == stash.items.size(), "the stash by the breach broke (%d)" % stash.broken_count())
 		await _until(func() -> bool: return int(stb.get("phase")) == 3, 10.0)
+	# T-274: a night fighter shot down on the act's own clock (map04b.json flight.sky.fighters.downed)
+	sky = get_tree().get_first_node_in_group(&"flight_sky") as FlightSky
+	if sky != null:
+		var dn0: int = sky.downed
+		_act(2)
+		sky.round_t = 46.0
+		await _secs(0.4)
+		_check(sky.downed == dn0 + 1, "act round 2, 45 s in: a night fighter comes up alongside and is shot down")
+		await _secs(9.0)   # (hit about 4 s in, then the fall gathers speed)
+		var low: float = INF
+		var burning: bool = false
+		for f: Dictionary in sky._fighters:
+			if f.has("mid") and is_instance_valid(f["node"]):
+				low = minf(low, (f["node"] as Node3D).global_position.y)
+				burning = burning or (f["node"] as Node).get_node_or_null("BurningTrail") != null
+		_check(burning and low < -60.0, "it falls away burning (%.0f m below the deck)" % -low)
+		sky.round_t = 60.0
+		await _secs(0.3)
+		_check(sky.downed == dn0 + 1, "one a round")
 
 	# the next act loads behind a transition
 	Campaign.preload_next(&"map04c_groomlake")
