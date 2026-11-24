@@ -188,6 +188,37 @@ const SIGNAL_ZIP: Array = ["SignalZip", Vector3(48.6, TY + 2.0, BALC_Z1 + 0.15),
 const CATWALK_LADDERS: Array = [
 	["W", Vector3(-17.93, 0.0, 55.5), -90.0], ["N", Vector3(15.0, 0.0, 35.07), 180.0], ["E", Vector3(49.93, 0.0, 72.0), 90.0],
 ]
+## T-273 (the perk deal on Totenhafen, T-251's PerkShuffle / PerkLayout, perk_layout.json "map02"): the places a tonic
+## machine may stand; each match deals the map's seven onto them and the spots left over show their filler crate
+## (PerkSpot). The scene is saved with the seed-0 deal. [spot id, zone, floor position, yaw (local -Z = the front, faces
+## the room), flags] with gen_map00's flags: "start" (the quay: only the cheap ones, never Second Wind), "near" (one
+## bought door from the quay: the cannery and the workshop, where Second Wind may stand), "outdoor" (under the snow:
+## only the weather-safe shapes), "flush" (+1 / -1: the back on the wall 0.1 m off for the deepest machine, a shallower
+## one stood back to it, the fine print on its local +X / -X side). The first seven are where the seven machines
+## stood before (their NavBlock footprints as they were); the other five were found with locker_spot.gd's wall scan
+## (the wall behind a 1.8 m body, nothing in front, no navmesh under it, 6 m of room) and get a 1.8 x 1.2 m footprint
+## (NavBlock_PerkSpot_*). Every spot is 4 m or more from the ammo boxes and the Crucible (smoke_ammo_box).
+const PERK_SPOTS: Array = [
+	["infirmary", "B_CANNERY", Vector3(-26.0, 0, 0.9), 180.0, {"near": true}],
+	["cannery_passage", "B_CANNERY", Vector3(-5.0, 0, 29.3), 0.0, {"near": true}],
+	["cannery_north", "B_CANNERY", Vector3(-7.0, 0, 0.86), 180.0, {"near": true, "flush": 1}],
+	["workshop_west", "C_WORKSHOP", Vector3(32.8, 0, 8.0), -90.0, {"near": true}],
+	["workshop_north", "C_WORKSHOP", Vector3(40.0, 0, 0.8), 180.0, {"near": true}],
+	["workshop_lathe", "C_WORKSHOP", Vector3(57.5, 0, 0.86), 180.0, {"near": true, "flush": 1}],
+	["signal_west", "G_SIGNAL", Vector3(42.9, TY, 36.7), -90.0, {}],
+	["signal_east", "G_SIGNAL", Vector3(51.4, TY, 36.3), 90.0, {}],
+	["crane_office", "D_PENHALL", Vector3(43.6, 0, 56.1), 90.0, {}],
+	["north_apron", "D_PENHALL", Vector3(18.0, 0, 33.72), 180.0, {"flush": -1}],
+	["pier0_wall", "D_PENHALL", Vector3(-19.14, 0, 74.0), -90.0, {"flush": 1}],
+	["quay_cannery_wall", "A_QUAY", Vector3(0.86, 0, 9.0), -90.0, {"start": true, "outdoor": true, "flush": -1}],
+]
+## The spots that are new in T-273 (the others keep the footprints their machines had).
+const PERK_SPOTS_NEW: Array = ["cannery_north", "workshop_lathe", "north_apron", "pier0_wall", "quay_cannery_wall"]
+const PerkShuffleScript: Script = preload("res://gravelight/world/perk_shuffle.gd")
+## The machines' depths (PerkMachine._shape_footprint's z; a --script run cannot lean on the game's classes) and the
+## spot's own depth (PerkSpot.DEPTH): a flush spot stands a shallower machine back to the wall by the difference.
+const MACHINE_DEPTHS: Dictionary = {"barrel": 1.2, "cabinet": 0.6, "crate": 0.65, "teardrop": 0.9, "periscope": 0.65, "coil": 0.6, "register": 0.75}
+const PERK_SPOT_D: float = 1.2
 ## Visibility groups (U09 s5, T-145; ViewCells): a static mesh, light, label or decal belongs to the first box that
 ## holds its centre (dressing built by a zone's _dress_* function carries that zone's group as meta "vis" and skips
 ## the boxes); anything in no box is "ALL" and always drawn. "DH" is the hall round U-1047's hatch and tower: the
@@ -266,6 +297,10 @@ func _initialize() -> void:
 		box(geo, "NavBlock_Stove_" + str(sv[0]), (sv[1] as Vector3) - Vector3(0.5, 0, 0.5), (sv[1] as Vector3) + Vector3(0.5, 1.1, 0.5), "metal")
 	for br: Array in BRAZIERS:   # the fire barrels' footprints (dressed in build_dressing)
 		box(geo, "NavBlock_Brazier_" + str(br[0]), (br[1] as Vector3) - Vector3(0.32, 0, 0.32), (br[1] as Vector3) + Vector3(0.32, 0.9, 0.32), "metal")
+	for sp: Array in PERK_SPOTS:   # T-273: the new perk spots' footprints (the deepest, widest machine's), baked only
+		if PERK_SPOTS_NEW.has(str(sp[0])):
+			var sh: Vector3 = Vector3(0.9, 0, 0.6) if absf(float(sp[3])) != 90.0 else Vector3(0.6, 0, 0.9)
+			box(geo, "NavBlock_PerkSpot_" + str(sp[0]), (sp[2] as Vector3) - sh, (sp[2] as Vector3) + sh + Vector3(0, 2.0, 0), "metal")
 
 
 func _process(_delta: float) -> bool:
@@ -280,6 +315,7 @@ func _process(_delta: float) -> bool:
 	_adopt_t273_batches()
 	build_lights()
 	build_gameplay()
+	build_reactive()   # T-273
 	_prune(dress)
 	_prune(geo)
 	_tag_visibility(map_root)
@@ -2849,8 +2885,45 @@ func build_gameplay() -> void:
 		# pay window is on the south wall (the east end of that wall is the foot of the east stair: kept clear)
 		["ledger_lager", Vector3(43.6, 0, 56.1), 90.0],
 	]
-	for p: Array in perks:
-		_node("res://gravelight/world/perk_machine.gd", "Perk_" + str(p[0]), {"perk_id": StringName(p[0])}, p[1], float(p[2]))
+	# T-273: those were the seven machines' places until the perk deal came to Totenhafen; they are seven of the twelve
+	# PERK_SPOTS now, and the scene is saved with the seed-0 deal (PerkLayout re-deals at every match start)
+	_build_perk_deal(perks)
+
+
+## T-273: the perk spots (PerkSpot: the filler crate shows while no machine stands on it) and the seven machines on
+## the seed-0 deal (PerkShuffle.assign with perk_layout.json's rules, the same call PerkLayout makes each match), the
+## way gen_map00.build_perk_gameplay does it. `perks` lists the map's machines (only their ids are used).
+func _build_perk_deal(perks: Array) -> void:
+	var spots: Array = []
+	for sp: Array in PERK_SPOTS:
+		var flags: Dictionary = sp[4]
+		_node("res://gravelight/world/perk_spot.gd", "PerkSpot_" + str(sp[0]), {"spot_id": StringName(str(sp[0])), "zone_id": StringName(str(sp[1])),
+			"outdoor": bool(flags.get("outdoor", false)), "start": bool(flags.get("start", false)), "near": bool(flags.get("near", false)),
+			"flush": int(flags.get("flush", 0))}, sp[2], float(sp[3]))
+		spots.append({"id": str(sp[0]), "zone": str(sp[1]), "outdoor": bool(flags.get("outdoor", false)), "start": bool(flags.get("start", false)),
+			"near": bool(flags.get("near", false))})
+	var pdata: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/perks.json"))["perks"]
+	var rules: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/perk_layout.json"))
+	var rows: Array = []
+	for pid: String in (rules.get("maps", {}) as Dictionary).get("map02", {}).get("perks", []):
+		rows.append({"id": pid, "cost": int((pdata[pid] as Dictionary).get("cost", 0)), "shape": str((pdata[pid] as Dictionary).get("shape", "cabinet"))})
+	if rows.size() != perks.size():
+		push_error("gen_map02: perk_layout.json map02 lists %d perks, the map places %d" % [rows.size(), perks.size()])
+	var deal: Dictionary = PerkShuffleScript.call("assign", 0, spots, rows, rules)
+	for pk: Dictionary in rows:
+		var at: Array = []
+		for sp2: Array in PERK_SPOTS:
+			if str(sp2[0]) == str(deal.get(pk["id"], "")):
+				at = sp2
+		if at.is_empty():
+			push_error("gen_map02: no spot dealt to %s" % pk["id"])
+			continue
+		var m: Node3D = _node("res://gravelight/world/perk_machine.gd", "Perk_" + str(pk["id"]), {"perk_id": StringName(str(pk["id"]))}, at[2], float(at[3]))
+		if int((at[4] as Dictionary).get("flush", 0)) != 0:   # back on the wall (PerkSpot.stand_transform does the same each match)
+			var fpz: float = float(MACHINE_DEPTHS.get(str(pk["shape"]), 0.7))
+			var off: Vector3 = Basis(Vector3.UP, m.rotation.y) * Vector3(0, 0, maxf(0.0, (PERK_SPOT_D - fpz) * 0.5))
+			m.position = Vector3(snappedf(m.position.x + off.x, 0.001), m.position.y, snappedf(m.position.z + off.z, 0.001))
+	print("perk spots: %d, machines: %d (seed-0 deal: %s)" % [PERK_SPOTS.size(), rows.size(), str(deal)])
 	# crate spots: [name, pos, yaw, can_start, drummer route]
 	var crates: Array = [
 		["Hut", Vector3(16.6, 0, 11.4), 180.0, true, [Vector3(16.6, 0, 13.5), Vector3(19.5, 0, 13.5), Vector3(19.5, 0, 22)]],
@@ -3095,6 +3168,52 @@ func _dress_t273_sea() -> void:
 	GenDetail.merge_children(dress.get_node("PatrolBoat") as Node3D)
 
 
+## T-273 (the map detail pass: Map 0's reactive props where they fit; gravelight/world/reactive/, drip_point.gd): water
+## dripping from the lower pens' slab, U-1047's deckhead and the two pen passages; the cannery infirmary's two doors
+## and the harbourmaster's hut's door left ajar (SwingDoor: whoever comes through swings the leaf, it never collides);
+## the infirmary window's curtains in the draught from W_B_N (they billow harder as its boards come off); glassware
+## that breaks when shot on the hut's desk and on the signal room's chart table. All built at load from these rows;
+## nothing collides, nothing changes the navmesh, nothing casts a shadow.
+func build_reactive() -> void:
+	var r: Node3D = Node3D.new()
+	r.name = "Reactive"
+	map_root.add_child(r)
+	var add: Callable = func(script: String, n: String, props: Dictionary, pos: Vector3, yaw: float) -> Node3D:
+		var node: Node3D = Node3D.new()
+		node.set_script(load(script))
+		node.name = n
+		for k: String in props.keys():
+			node.set(k, props[k])
+		node.position = pos
+		node.rotation.y = deg_to_rad(yaw)
+		r.add_child(node)
+		return node
+	# drips: [position of the drop's start, the fall to the floor]
+	var di: int = 0
+	for dp: Array in [[Vector3(40.0, -0.32, 60.0), 2.68], [Vector3(44.0, -0.32, 66.5), 2.68], [Vector3(34.5, -0.32, 77.5), 2.68],
+			[Vector3(6.0, 0.58, 46.0), 2.58], [Vector3(7.6, 0.58, 76.0), 2.58], [Vector3(-10.0, DOOR_H - 0.02, 31.4), DOOR_H - 0.02],
+			[Vector3(44.0, DOOR_H - 0.02, 31.6), DOOR_H - 0.02]]:
+		add.call("res://gravelight/world/drip_point.gd", "Drip%d" % di, {"height": float(dp[1])}, dp[0], 0.0)
+		di += 1
+	# doors left ajar: the infirmary's east door (hinged on its south jamb, opening west into the infirmary), its south
+	# door (hinged on its west jamb, opening north into it), the hut's door (hinged on its south jamb, opening west in)
+	for sd: Array in [["InfirmaryDoorE", Vector3(-20.0, 0, 6.9), 90.0, 1.8], ["InfirmaryDoorS", Vector3(-25.9, 0, 10.0), 0.0, 1.8],
+			["HutDoor", Vector3(18.0, 0, 14.4), 90.0, 1.8]]:
+		add.call("res://gravelight/world/reactive/swing_door.gd", str(sd[0]), {"width": float(sd[3]), "height": 2.3, "rest_deg": 60.0, "open_deg": 100.0,
+			"zone_size": Vector3(float(sd[3]), 2.0, 3.2), "zone_center": Vector3(float(sd[3]) * 0.5, 1.0, 0.0)}, sd[1], float(sd[2]))
+	# the infirmary window's curtains (W_B_N), either side of it, the draught pushing them into the room (their rod is
+	# _dress_t273_hall's, batched)
+	for cx: float in [-22.0 - 0.8 - 0.25, -22.0 + 0.8 + 0.25]:
+		add.call("res://gravelight/world/reactive/draft_curtain.gd", "InfirmaryCurtain" + ("W" if cx < -22.0 else "E"), {"height": WTOP - SILL + 0.4,
+			"mat_key": "cloth_cream", "window": NodePath("../../Gameplay/W_B_N")}, Vector3(cx, WTOP + 0.05, T * 0.5 + 0.08), 180.0)
+	# glassware that breaks: [name, node position (the surface under it), yaw, items [[local base, kind, height scale]]]
+	for gs: Array in [["Glass_HutDesk", Vector3(11.9, 0.8, 15.55), 0.0, [[Vector3(-0.15, 0, 0.0), "bottle_amber", 1.0], [Vector3(0.05, 0, -0.08), "glass", 1.0],
+				[Vector3(0.18, 0, 0.05), "glass", 0.9], [Vector3(0.32, 0, -0.04), "stein", 1.0]]],
+			["Glass_ChartTable", Vector3(46.75, TY + 0.86, 34.5), 0.0, [[Vector3(0.0, 0, 0.0), "glass", 1.0], [Vector3(0.14, 0, -0.1), "bottle_green", 1.0],
+				[Vector3(-0.12, 0, -0.16), "jar", 1.0]]]]:
+		add.call("res://gravelight/world/reactive/shatter_set.gd", str(gs[0]), {"items": gs[3]}, gs[1], float(gs[2]))
+
+
 ## T-273: the hall's new climbs. The three catwalk ladders (CATWALK_LADDERS: iron rung ladders against the catwalks'
 ## edges, stayed to the deck's underside, a foot plate on the floor; the LadderClimbs and the climb links are
 ## map02.json's) and the signal balcony's dressing: the door's frame and its rolled-up steel shutter, two beams under
@@ -3137,6 +3256,8 @@ func _dress_t273_hall() -> void:
 	_noshadow(B(stay + Vector3(-0.1, 0, -0.1), stay + Vector3(0.1, 0.25, 0.1), "iron"))
 	_noshadow(B(foot + side * 0.1 + Vector3(-0.06, 2.0, -0.06), foot + side * 0.1 + Vector3(0.06, 2.18, 0.06), "lamp_red_lit", false))
 	Props.rope_coil(dress, foot + side * 0.45 - flat * 0.3, 0.14)
+	# T-273: the rod of the infirmary window's curtains (build_reactive hangs them)
+	_noshadow(B(Vector3(-23.3, WTOP + 0.15, T * 0.5 + 0.06), Vector3(-20.7, WTOP + 0.18, T * 0.5 + 0.1), "iron"))
 
 
 ## T-273: the patrol boat's folded meshes into StaticBatches/VisGroup_A (the batch container the shadow proxies and
@@ -3203,7 +3324,8 @@ const FIT: Array = [["Brine*", 0.3], ["Pallet_Cans*", 0.3], ["Cradle*", 0.3], ["
 ## bank's counter, the ammo boxes, the Armorer's Bench): navmesh only, so an empty crate spot or the half metre round
 ## a machine is not an invisible box.
 const BAKE_ONLY: Array = ["NavBlock_SecondWind", "NavBlock_Marathon", "NavBlock_Ironhide", "NavBlock_Trigger", "NavBlock_Overclock",
-	"NavBlock_Hawkeye", "NavBlock_Ledger", "NavBlock_Bank", "NavBlock_Crate*", "NavBlock_Ammo_*", "NavBlock_ArmorersBench", "NavBlock_Crucible"]
+	"NavBlock_Hawkeye", "NavBlock_Ledger", "NavBlock_Bank", "NavBlock_Crate*", "NavBlock_Ammo_*", "NavBlock_ArmorersBench", "NavBlock_Crucible",
+	"NavBlock_PerkSpot_*"]
 ## The tall railing colliders beside stairs and ramps (5.2 m beside the catwalk stairs, 4 m along the tower ramp and
 ## U-1047's companionway): an invisible wall under the flight and above the handrail. Each becomes bake_only and is
 ## replaced by what you see: a grating panel under the flight (from the floor to the steps' underside) and a band

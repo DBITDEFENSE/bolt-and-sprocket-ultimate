@@ -76,3 +76,50 @@ tower (the door, the balcony) and under the new zip post.
 
 Renders, looked at: `docs/captures/t273/05_ladder_n_night` .. `12_ladder_w_noon` (each ladder from its floor, the
 balcony from the landing, down the line from the balcony, the door from inside the signal room).
+
+## 3. The perk deal on Totenhafen
+
+`perk_layout.json` has a `map02` row (the seven: Second Wind, Marathon Malt, Ironhide Stout, Trigger Tonic, Overclock
+Cordial, Hawkeye Brandy, Ledger Lager) and the scene twelve `PerkSpot` nodes (gen_map02 `PERK_SPOTS`); `PerkLayout`
+deals the seven onto them at every match start from the match seed, the spots left over show their filler crate. The
+scene is saved with the seed-0 deal (Second Wind in the cannery by its pen passage, Ironhide in the signal room,
+Overclock on pier 0, Ledger Lager and Hawkeye in the workshop, Trigger in the cannery, Marathon on the quay).
+
+| Spot | Zone | Floor point, yaw | Flags | From |
+|---|---|---|---|---|
+| infirmary | B_CANNERY | `[-26, 0, 0.9]`, 180 | near | Second Wind's old place |
+| cannery_passage | B_CANNERY | `[-5, 0, 29.3]`, 0 | near | Marathon's old place |
+| cannery_north | B_CANNERY | `[-7, 0, 0.86]`, 180 | near, flush +1 | new: the north wall east of the conveyor's end |
+| workshop_west | C_WORKSHOP | `[32.8, 0, 8]`, -90 | near | Ironhide's old place |
+| workshop_north | C_WORKSHOP | `[40, 0, 0.8]`, 180 | near | Trigger's old place |
+| workshop_lathe | C_WORKSHOP | `[57.5, 0, 0.86]`, 180 | near, flush +1 | new: the north wall over the lathe |
+| signal_west | G_SIGNAL | `[42.9, 7, 36.7]`, -90 | | Overclock's old place |
+| signal_east | G_SIGNAL | `[51.4, 7, 36.3]`, 90 | | Hawkeye's old place |
+| crane_office | D_PENHALL | `[43.6, 0, 56.1]`, 90 | | Ledger Lager's old place (T-141) |
+| north_apron | D_PENHALL | `[18, 0, 33.72]`, 180 | flush -1 | new: the bunker face under the north catwalk, 3 m east of its ladder |
+| pier0_wall | D_PENHALL | `[-19.14, 0, 74]`, -90 | flush +1 | new: the hall's west wall on pier 0, under the west catwalk |
+| quay_cannery_wall | A_QUAY | `[0.86, 0, 9]`, -90 | start, outdoor, flush -1 | new: the cannery's outside wall on the quay, north of its door |
+
+The rules are perk_layout.json's (at most two machines in a zone; the quay takes only a weather-safe cabinet up to
+2000, never Second Wind; Second Wind only one bought door from the quay, the cannery or the workshop). The new five
+were found with `locker_spot.gd`'s wall scan (the wall behind a 1.8 m body, no collider in front, no navmesh under it,
+6 m of room, nothing within 1.6 m) and get a 1.8 x 1.2 m footprint baked out of the navmesh (`NavBlock_PerkSpot_*`,
+bake only); the seven old places keep the footprints their machines had. Every spot is 4 m or more from the ammo
+boxes and the Crucible. test_map02_detail: the table and the scene agree, each spot stands in its zone with no
+navmesh under it and its front on the navmesh, the scene holds the seed-0 deal, 300 seeds all deal the seven within
+the rules and every spot is used by some seed. The minimap was rebaked (WSL): its POIs follow the seed-0 deal
+(test_mapdata), the balcony is on the tower's floor image.
+
+Known: the old seven places were sized for their own machine, not the deepest; the Ironhide barrel (1.2 m deep) on
+`signal_east` or `crane_office` stands about 0.15 m into the wall behind it (drawing only; its collider overlaps the
+wall). The bot planner's Totenhafen plan names perks by id and walks to wherever they stand.
+
+## 4. Reactive props
+
+Built at load under `Reactive` (gen_map02 `build_reactive`), Map 0's scripts: seven drips (the lower pens' slab x3,
+U-1047's deckhead x2, the two pen passages); three doors left ajar (`SwingDoor`: the cannery infirmary's east and
+south doors, the harbourmaster's hut's door; whoever comes through swings the leaf, it never collides); the infirmary
+window's two curtains in the draught from `W_B_N` (they billow harder as its boards come off); glassware that breaks
+when shot on the hut's desk and on the signal room's chart table (`ShatterSet`). Nothing collides, nothing changes the
+navmesh, nothing casts a shadow. Paper (`PaperDecor`) left out: its kinds are Map 0's (the inn's December calendar,
+the patrol's map, the cousins' drawings).

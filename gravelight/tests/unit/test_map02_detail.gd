@@ -218,3 +218,113 @@ func test_the_signal_balcony_zip_line() -> void:
 	var cables: Array = (_json("map02")["tide"] as Dictionary).get("cables", [])
 	for c: Dictionary in cables:
 		assert_gt(Vector2(float(c["pos"][0]) - to.x, float(c["pos"][2]) - to.z).length(), float(c["radius_m"]) + 1.0, "the landing is clear of the tide's live cable %s" % str(c["id"]))
+
+
+# ================================================================== 3. the perk deal
+
+func _spot_rows() -> Array:
+	var out: Array = []
+	for sp: Array in _gen_const("PERK_SPOTS"):
+		var f: Dictionary = sp[4]
+		out.append({"id": str(sp[0]), "zone": str(sp[1]), "outdoor": bool(f.get("outdoor", false)), "start": bool(f.get("start", false)),
+			"near": bool(f.get("near", false))})
+	return out
+
+
+func test_the_spot_table_and_the_scene_agree() -> void:
+	var table: Array = _gen_const("PERK_SPOTS")
+	assert_eq(table.size(), 12, "twelve spots for seven machines")
+	var nodes: Dictionary = {}
+	for n: Node in _scene().find_children("PerkSpot_*", "", true, false):
+		nodes[str(n.get("spot_id"))] = n
+	assert_eq(nodes.size(), table.size(), "a PerkSpot node per row")
+	var per_zone: Dictionary = {}
+	for sp: Array in table:
+		var id: String = str(sp[0])
+		var n: Node3D = nodes.get(id) as Node3D
+		assert_not_null(n, id + " is in the scene")
+		if n == null:
+			continue
+		assert_lt(n.position.distance_to(sp[2] as Vector3), 0.01, id + ": where the table says")
+		assert_eq(str(n.get("zone_id")), str(sp[1]), id + ": its zone")
+		assert_eq(_zone((sp[2] as Vector3) + Vector3.UP * 0.6), str(sp[1]), id + ": it stands in that zone")
+		per_zone[str(sp[1])] = int(per_zone.get(str(sp[1]), 0)) + 1
+		var front: Vector3 = Basis(Vector3.UP, deg_to_rad(float(sp[3]))) * Vector3(0, 0, -1)
+		assert_true(_on_nav((sp[2] as Vector3) + front * 1.4), id + ": the floor in front of it is on the navmesh")
+		assert_false(_on_nav(sp[2] as Vector3), id + ": no navmesh under the machine")
+		# 4 m or more from the ammo boxes and the Crucible (smoke_ammo_box holds the boxes to it)
+		for o: Node in _scene().find_children("AmmoBox_*", "", true, false) + _scene().find_children("Crucible", "", true, false):
+			if absf((o as Node3D).position.y - (sp[2] as Vector3).y) < 2.5:
+				assert_gt(Vector2((o as Node3D).position.x - (sp[2] as Vector3).x, (o as Node3D).position.z - (sp[2] as Vector3).z).length(), 4.0, "%s: clear of %s" % [id, o.name])
+	for z: String in per_zone.keys():
+		assert_lte(int(per_zone[z]), 3, "at most three spots in %s" % z)
+	var rows: Array = _spot_rows()
+	assert_eq(rows.filter(func(r: Dictionary) -> bool: return bool(r["start"])).size(), 1, "one spot on the quay (the start)")
+	for r: Dictionary in rows:
+		if bool(r["near"]):
+			assert_true(["B_CANNERY", "C_WORKSHOP"].has(str(r["zone"])), "%s: near = one bought door from the quay" % r["id"])
+
+
+func test_the_layout_row_and_the_scene_hold_the_seed_zero_deal() -> void:
+	var rules: Dictionary = PerkLayout.rules()
+	var ids: Array = (rules["maps"]["map02"] as Dictionary)["perks"]
+	assert_eq(ids.size(), 7, "Totenhafen's seven")
+	var rows: Array = PerkLayout.map_perk_rows("map02")
+	var deal: Dictionary = PerkShuffle.assign(0, _spot_rows(), rows, rules)
+	assert_eq(deal.size(), 7, "the seed-0 deal places all seven")
+	assert_true(PerkShuffle.valid(deal, _spot_rows(), rows, rules), "and keeps every rule")
+	var by_id: Dictionary = {}
+	for sp: Array in _gen_const("PERK_SPOTS"):
+		by_id[str(sp[0])] = sp
+	for pid: String in ids:
+		var m: Node3D = _scene().find_child("Perk_" + pid, true, false) as Node3D
+		assert_not_null(m, pid + " is in the scene")
+		if m == null:
+			continue
+		var sp2: Array = by_id[str(deal[pid])]
+		assert_lt(Vector2(m.position.x - (sp2[2] as Vector3).x, m.position.z - (sp2[2] as Vector3).z).length(), 0.31, "%s stands on its seed-0 spot %s" % [pid, str(sp2[0])])
+	assert_eq(PerkLayout.scene_spot_rows(SCENE).size(), 12, "PerkLayout reads the twelve off the packed scene")
+
+
+func test_the_rules_hold_over_many_seeds() -> void:
+	var rules: Dictionary = PerkLayout.rules()
+	var rows: Array = PerkLayout.map_perk_rows("map02")
+	var spots: Array = _spot_rows()
+	var used: Dictionary = {}
+	for seed_v: int in 300:
+		var deal: Dictionary = PerkShuffle.assign(seed_v, spots, rows, rules)
+		assert_true(deal.size() == 7 and PerkShuffle.valid(deal, spots, rows, rules), "seed %d deals all seven within the rules" % seed_v)
+		for pid: String in deal.keys():
+			used[str(deal[pid])] = true
+	assert_eq(used.size(), 12, "every spot gets a machine on some seed (%d of 12)" % used.size())
+
+
+# ================================================================== 4. the reactive props
+
+func test_the_reactive_props_are_built_where_they_fit() -> void:
+	var r: Node = _scene().get_node_or_null("Reactive")
+	assert_not_null(r, "a Reactive holder")
+	if r == null:
+		return
+	var by_script: Dictionary = {}
+	for c: Node in r.get_children():
+		var s: Script = c.get_script() as Script
+		var f: String = s.resource_path.get_file() if s != null else ""
+		by_script[f] = int(by_script.get(f, 0)) + 1
+	assert_gte(int(by_script.get("drip_point.gd", 0)), 6, "drips in the lower pens, the boat and the passages")
+	assert_eq(int(by_script.get("swing_door.gd", 0)), 3, "three doors left ajar")
+	assert_eq(int(by_script.get("draft_curtain.gd", 0)), 2, "the infirmary window's two curtains")
+	assert_eq(int(by_script.get("shatter_set.gd", 0)), 2, "two sets of glassware")
+	for c2: Node in r.get_children():
+		var f2: String = (c2.get_script() as Script).resource_path.get_file()
+		var p: Vector3 = (c2 as Node3D).position
+		if f2 == "drip_point.gd":
+			var floor_p: Vector3 = p - Vector3.UP * float(c2.get("height"))
+			assert_true(_on_nav(floor_p), "%s lands on a floor (%s)" % [c2.name, str(floor_p)])
+		elif f2 == "swing_door.gd":
+			assert_ne(_zone(p + Vector3.UP * 0.6 + (Basis(Vector3.UP, (c2 as Node3D).rotation.y) * Vector3(0.9, 0, 0))), "", "%s hangs in a doorway inside the map" % c2.name)
+		elif f2 == "draft_curtain.gd":
+			var w: Node = c2.get_node_or_null(c2.get("window"))
+			assert_true(w != null and w.name == "W_B_N", "%s knows its window" % c2.name)
+		elif f2 == "shatter_set.gd":
+			assert_gte((c2.get("items") as Array).size(), 3, c2.name + " has its pieces")

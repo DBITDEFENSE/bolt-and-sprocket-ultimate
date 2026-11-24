@@ -15,8 +15,8 @@
     928,
     880
   ],
-  "baked_at": "2026-11-02T14:59:17",
-  "poi_signature": "6640c2bacc7c507a23ffde0565db7c0e",
+  "baked_at": "2026-11-24T10:44:19",
+  "poi_signature": "480ffb8c21e906a9def2467f59ea5db1",
   "floors": [
     {
       "id": "lower",
@@ -155,6 +155,12 @@
           33.0,
           23.0,
           5.0
+        ],
+        [
+          46.6,
+          38.0,
+          4.0,
+          2.9
         ]
       ],
       "depth": 0.6,
@@ -613,6 +619,24 @@
             29.0,
             38.0
           ]
+        ],
+        [
+          [
+            46.6,
+            38.0
+          ],
+          [
+            50.6,
+            38.0
+          ],
+          [
+            50.6,
+            40.9
+          ],
+          [
+            46.6,
+            40.9
+          ]
         ]
       ],
       "ys": [
@@ -627,6 +651,10 @@
         [
           5.45,
           12.0
+        ],
+        [
+          6.0,
+          10.3
         ]
       ]
     },
@@ -1032,11 +1060,11 @@
       "id": "perk:Gameplay/Perk_hawkeye_brandy",
       "type": "perk",
       "pos": [
-        51.4,
-        7.0,
-        36.3
+        57.5,
+        0.0,
+        0.58
       ],
-      "floor": 3,
+      "floor": 1,
       "label": "Hawkeye Brandy",
       "price": 1500,
       "node_path": "Gameplay/Perk_hawkeye_brandy",
@@ -1049,11 +1077,11 @@
       "id": "perk:Gameplay/Perk_ironhide_stout",
       "type": "perk",
       "pos": [
-        32.8,
-        0.0,
-        8.0
+        51.4,
+        7.0,
+        36.3
       ],
-      "floor": 1,
+      "floor": 3,
       "label": "Ironhide Stout",
       "price": 2500,
       "node_path": "Gameplay/Perk_ironhide_stout",
@@ -1066,9 +1094,9 @@
       "id": "perk:Gameplay/Perk_ledger_lager",
       "type": "perk",
       "pos": [
-        43.6,
+        40.0,
         0.0,
-        56.1
+        0.8
       ],
       "floor": 1,
       "label": "Ledger Lager",
@@ -1083,9 +1111,9 @@
       "id": "perk:Gameplay/Perk_marathon_malt",
       "type": "perk",
       "pos": [
-        -5.0,
+        0.71,
         0.0,
-        29.3
+        9.0
       ],
       "floor": 1,
       "label": "Marathon Malt",
@@ -1100,11 +1128,11 @@
       "id": "perk:Gameplay/Perk_overclock_cordial",
       "type": "perk",
       "pos": [
-        42.9,
-        7.0,
-        36.7
+        -19.44,
+        0.0,
+        74.0
       ],
-      "floor": 3,
+      "floor": 1,
       "label": "Overclock Cordial",
       "price": 2500,
       "node_path": "Gameplay/Perk_overclock_cordial",
@@ -1117,9 +1145,9 @@
       "id": "perk:Gameplay/Perk_second_wind",
       "type": "perk",
       "pos": [
-        -26.0,
+        -5.0,
         0.0,
-        0.9
+        29.3
       ],
       "floor": 1,
       "label": "Second Wind Schnapps",
@@ -1134,9 +1162,9 @@
       "id": "perk:Gameplay/Perk_trigger_tonic",
       "type": "perk",
       "pos": [
-        40.0,
+        -7.0,
         0.0,
-        0.8
+        0.58
       ],
       "floor": 1,
       "label": "Trigger Tonic",
@@ -1417,14 +1445,14 @@
     {
       "kind": "ladder",
       "a": [
-        -16.2,
+        -17.42,
         0.0,
-        60.0
+        55.5
       ],
       "b": [
         -19.0,
         4.0,
-        60.0
+        55.5
       ],
       "floor_a": 1,
       "floor_b": 2
@@ -1432,14 +1460,14 @@
     {
       "kind": "ladder",
       "a": [
-        48.2,
+        49.42,
         0.0,
-        60.0
+        72.0
       ],
       "b": [
         51.0,
         4.0,
-        60.0
+        72.0
       ],
       "floor_a": 1,
       "floor_b": 2
@@ -1447,17 +1475,32 @@
     {
       "kind": "ladder",
       "a": [
-        17.0,
+        15.0,
         0.0,
-        37.5
+        35.58
       ],
       "b": [
-        17.0,
+        15.0,
         4.0,
         34.0
       ],
       "floor_a": 1,
       "floor_b": 2
+    },
+    {
+      "kind": "ladder",
+      "a": [
+        7.0,
+        -2.0,
+        82.6
+      ],
+      "b": [
+        7.0,
+        1.0,
+        81.8
+      ],
+      "floor_a": 0,
+      "floor_b": 1
     }
   ]
 }
