@@ -6,7 +6,7 @@ extends Node
 ##                            the map starts with no cutscene, no letterbox card, the player's input free
 ##   2 solo, a clip           (only when a clip folder is given or assets/video/loading has one) the clip plays while
 ##                            the map loads on its thread, the map is in no later than without it, and the screen
-##                            leaves at LoadingClips.MIN_VIDEO_S or when the map is in, whichever is later
+##                            leaves when the clip has played through (LoadingClips.min_show_s) or the map is in, whichever is later
 ##   3 solo, no clip again    the warm load time the clip run is compared with
 ##   4 campaign               the campaign's card; the loading screen plays no clip even with one on disk; the
 ##                            campaign's cutscenes play (the prologue first on a new profile)
@@ -115,6 +115,7 @@ func _start(card: Button) -> Dictionary:
 		await _tree.process_frame
 	out["loaded_at"] = float(LoadingScreen.last.get("loaded_at", -1.0))
 	out["left_at"] = float(LoadingScreen.last.get("left_at", -1.0))
+	out["clip_s"] = float(LoadingScreen.last.get("clip_s", 0.0))
 	await _wait(func() -> bool: return _tree.current_scene is MapRoot, 60.0)
 	out["map"] = _tree.current_scene as MapRoot
 	return out
@@ -159,9 +160,11 @@ func _run() -> void:
 		var b: Dictionary = await _solo("solo/clip", _clips)
 		_check(not b.is_empty() and bool(b["video"]), "solo/clip: the loading screen plays %s" % str(b.get("clip", "")).get_file())
 		_check(not b.is_empty() and bool(b["played"]) and float(b["pos"]) > 0.5, "solo/clip: the clip ran while the map loaded (%.2f s of it)" % float(b.get("pos", 0.0)))
-		_check(not b.is_empty() and float(b["left_at"]) >= LoadingClips.MIN_VIDEO_S - 0.05, "solo/clip: at least %.1f s shown (%.2f s)" % [LoadingClips.MIN_VIDEO_S, float(b.get("left_at", -1.0))])
-		_check(not b.is_empty() and float(b["left_at"]) <= maxf(LoadingClips.MIN_VIDEO_S, float(b["loaded_at"])) + 1.0,
-			"solo/clip: it left when the map was in, not at the clip's end (loaded %.2f s, left %.2f s)" % [float(b.get("loaded_at", -1.0)), float(b.get("left_at", -1.0))])
+		var want: float = LoadingClips.min_show_s(true, LoadingScreen.MIN_SHOW_S, float(b.get("clip_s", 0.0)))
+		_check(not b.is_empty() and float(b.get("clip_s", 0.0)) > 1.0, "solo/clip: the stream reported its length (%.2f s)" % float(b.get("clip_s", 0.0)))
+		_check(not b.is_empty() and float(b["left_at"]) >= want - 0.05, "solo/clip: the clip played through (%.2f s of a %.2f s clip, %.2f s wanted)" % [float(b.get("left_at", -1.0)), float(b.get("clip_s", 0.0)), want])
+		_check(not b.is_empty() and float(b["left_at"]) <= maxf(want, float(b["loaded_at"])) + 1.0,
+			"solo/clip: and then it left (loaded %.2f s, left %.2f s)" % [float(b.get("loaded_at", -1.0)), float(b.get("left_at", -1.0))])
 		var c: Dictionary = await _solo("solo/no clip, warm", NO_CLIPS)
 		if not b.is_empty() and not c.is_empty():
 			var with_clip: float = float(b["loaded_at"])
