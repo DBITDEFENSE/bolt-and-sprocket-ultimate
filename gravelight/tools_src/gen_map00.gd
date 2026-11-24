@@ -1510,6 +1510,7 @@ const PERK_SPOTS: Array = [
 	# the Lagering Vault, on its south wall opposite Door_Lager; the Dynamo Room's south wall east of the set
 	["lager", "LAGERKELLER", Vector3(25.95, CELLAR_Y, 36.15), 0.0, {"flush": -1}],
 	["dynamo", "MASCHINENRAUM", Vector3(42.3, CELLAR_Y, 38.15), 0.0, {"flush": -1}],
+	MapRocketGen.PERK_SPOT,   # T-276: the V2 site's dugout (Rocket Man is pinned there: perk_layout.json "fixed")
 ]
 ## The guest rooms' swing doors (SwingDoor, build_reactive): [hinge x, flipped (the leaf runs along -X), room]. They
 ## open into the room (-Z) from the hall wall's north face; _spot_grid_build keeps the perk spots out of their swing.
@@ -1604,6 +1605,7 @@ const MACHINE_FOOTPRINTS: Dictionary = {
 	"register": Vector3(1.0, 2.2, 0.75),   # Ledger Lager (T-141): the brass cash register
 	"glider": Vector3(0.8, 2.4, 0.7),   # Skyhook Sekt (T-105; on Map 0 since T-179)
 	"bandit": Vector3(0.9, 2.3, 0.65),  # Magpie Mead (T-105; on Map 0 since T-179)
+	"rocket": Vector3(1.0, 2.1, 0.9),   # Rocket Man (T-276; pinned in the launch site's dugout)
 }
 ## crate spots: [name, position, yaw, can_start]
 const CRATES: Array = [["Hearth", Vector3(22.9, 0, 14.0), 90.0, true], ["GuestBed", Vector3(22.0, UP_Y, 0.8), 180.0, false],

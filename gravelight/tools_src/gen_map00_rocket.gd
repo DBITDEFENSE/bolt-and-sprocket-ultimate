@@ -59,14 +59,14 @@ const GEN_TRAILER: Vector3 = Vector3(116.5, 0.0, 54.0)
 ## (z span), its viewing slit in the south wall toward the table.
 const BUNKER_OUT: Rect2 = Rect2(114.4, 23.4, 6.2, 5.2)
 const BUNKER_IN: Rect2 = Rect2(115.2, 24.2, 4.6, 3.6)
-const BUNKER_H: float = 2.3
+const BUNKER_H: float = 2.6
 const BUNKER_DOOR: Vector2 = Vector2(25.1, 26.9)
 ## The guard hut (Wachhaus) by the clearing's mouth: footprint (x, z), wall height.
 const HUT: Rect2 = Rect2(86.4, 26.6, 4.0, 3.4)
 const HUT_H: float = 2.3
 ## The Rocket Man machine's spot: on the dugout's east wall facing the doorway (a PERK_SPOTS-style row; the deal
 ## pins Rocket Man here, perk_layout.json "fixed").
-const PERK_SPOT: Array = ["launch_bunker", "STELLUNG", Vector3(119.05, 0.0, 26.0), 90.0, {"flush": 1}]
+const PERK_SPOT: Array = ["launch_bunker", "STELLUNG", Vector3(119.05, 0.0, 26.2), 90.0, {"flush": 1}]
 ## Wall-buys: [weapon, position, yaw so local -Z faces the walk] (gen_map00 BUYS' format): the STG-44 on the guard
 ## hut's east wall, facing the clearing. One only: of the weapons with a wall price the Gewehr 43 is already in the Old
 ## Cellar and the rest are on Map 0's walls but the M1 Carbine, an American rifle a German firing site would not hold.
@@ -94,7 +94,7 @@ const LAMPS: Array = [
 	["OutRktNetLampS", Vector3(97.5, 3.1, 51.5), Color(0.95, 0.78, 0.55), 2.6, 11.0, 0.0],
 	["OutRktGenLamp", Vector3(116.5, 2.6, 52.6), Color(0.95, 0.85, 0.65), 2.2, 9.0, 0.0],
 	["OutRktMoonFill", Vector3(105.0, 7.0, 40.0), Color(0.5, 0.6, 0.85), 0.3, 30.0, 0.0],
-	["RktBunkerBulb", Vector3(117.5, 2.05, 26.0), Color(1.0, 0.84, 0.62), 1.2, 6.0, 0.0],
+	["RktBunkerBulb", Vector3(117.5, 2.35, 26.0), Color(1.0, 0.84, 0.62), 1.2, 6.0, 0.0],
 ]
 const FLOOD_POS: Vector3 = Vector3(100.2, 6.2, 33.6)
 const FLOOD_AIM: Vector3 = Vector3(108.0, 5.5, 40.0)

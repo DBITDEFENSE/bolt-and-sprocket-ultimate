@@ -1715,7 +1715,8 @@ def gen_crate():
 PERK_ROOTS = {"ironhide_stout": "Bb2", "second_wind": "F3", "trigger_tonic": "Eb3", "twin_barrel": "D3",
               "marathon_malt": "G2", "hawkeye_brandy": "C3", "packmule_porter": "A2", "blastproof_bock": "F2",
               "overclock_cordial": "F#2",   # the cracked reed's note: this Plan never resolves
-              "skyhook_sekt": "A2", "magpie_mead": "G2", "ledger_lager": "F2"}   # T-105, T-141
+              "skyhook_sekt": "A2", "magpie_mead": "G2", "ledger_lager": "F2",   # T-105, T-141
+              "rocket_man": "C3"}   # T-276
 
 
 def gen_perks():
@@ -2630,6 +2631,37 @@ def gen_ledger():
          pitch=[1.0, 1.0], attenuation="world")
 
 
+def rocket_man_jingle(r):
+    """\"Rocket Man\" (T-276, the V2 site's tonic): three ticks of a countdown on a woodblock, a muffled ignition
+    thump, then a cornet fanfare climbing in C at 132 BPM (C4 E4 G4 C5, G4 C5 E5 G5, a held C6) over a timpani roll,
+    while a band of noise rises under it like an engine leaving the table; ends on the woodblock's last tick."""
+    beat = 60.0 / 132.0
+    total = 0.9 + beat * 9 + 2.4
+    x = zeros(total)
+    for k in range(3):                                                                              # the countdown
+        place(x, mech_click(r, 1500 - k * 120, 0.08, 0.012, 8), k * 0.3, 0.55)
+    place(x, kick(r, 0.9, 80, 32, 0.35, 1.0), 0.9, 0.6)                                             # ignition
+    whoosh = bp(white(r, beat * 9 + 1.5), 300, 2600)
+    n = len(whoosh)
+    env = np.linspace(0.0, 1.0, n) ** 1.6 * np.exp(-np.linspace(0.0, 1.0, n) * 0.4)
+    place(x, nrm(whoosh) * env, 0.9, 0.16)                                                          # the engine climbing away
+    notes = ["C4", "E4", "G4", "C5", "G4", "C5", "E5", "G5"]
+    for k, note in enumerate(notes):
+        place(x, brass_cluster(r, [note], beat * 1.1, 0.04), 1.0 + k * beat, 0.3)                   # the cornet
+    place(x, brass_cluster(r, ["C5", "E5", "G5", "C6"], beat * 2.6, 0.12), 1.0 + 8 * beat, 0.32)     # the held chord
+    for k in range(int(beat * 9 / 0.07)):                                                           # the timpani roll
+        place(x, kick(r, 0.25 + 0.2 * (k / (beat * 9 / 0.07)), 98, 60, 0.12, 0.3), 1.0 + k * 0.07, 0.18)
+    place(x, mech_click(r, 1100, 0.1, 0.02, 8), 1.0 + 9 * beat + 0.9, 0.5)                           # the last tick
+    return reverb(lp(x, 7000), r, 0.9, 0.2)
+
+
+def gen_rocket_man():
+    """Rocket Man (T-276): the jingle (the machine's hum is in PERK_ROOTS)."""
+    r = rng_for("rm_jingle")
+    emit("jingle_rocket_man", "jingles/rocket_man_01", rocket_man_jingle(r), -2.0, bus="Jingles", volume_db=-4.0, max_voices=1,
+         pitch=[1.0, 1.0], attenuation="world")
+
+
 def gen_lodestone():
     """The Lodestone (T-105): the lift's cracked-bell ring over a sub-bass wind-up, the slam's thud-and-crack, the
     fling's rising whoosh, the fling wind-up hum, the reload's quarter turn."""
@@ -2837,6 +2869,7 @@ def main():
     gen_overclock()
     gen_map4_perks()
     gen_ledger()
+    gen_rocket_man()
     gen_lodestone()
     gen_undertow()
     gen_totenhafen()

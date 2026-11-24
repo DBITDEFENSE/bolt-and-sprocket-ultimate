@@ -2433,6 +2433,19 @@
       ],
       "attenuation": "world"
     },
+    "jingle_rocket_man": {
+      "files": [
+        "res://gravelight/audio/jingles/rocket_man_01.wav"
+      ],
+      "bus": "Jingles",
+      "volume_db": -4.0,
+      "max_voices": 1,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "attenuation": "world"
+    },
     "jingle_skyhook_sekt": {
       "files": [
         "res://gravelight/audio/jingles/skyhook_sekt_01.wav"
@@ -2756,6 +2769,20 @@
     "perk_hum_packmule_porter": {
       "files": [
         "res://gravelight/audio/sfx/world/perks/hum_packmule_porter.wav"
+      ],
+      "bus": "SFX",
+      "volume_db": -10.0,
+      "pitch": [
+        1.0,
+        1.0
+      ],
+      "max_voices": 1,
+      "attenuation": "hum",
+      "loop": true
+    },
+    "perk_hum_rocket_man": {
+      "files": [
+        "res://gravelight/audio/sfx/world/perks/hum_rocket_man.wav"
       ],
       "bus": "SFX",
       "volume_db": -10.0,

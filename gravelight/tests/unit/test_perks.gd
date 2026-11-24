@@ -143,7 +143,7 @@ func test_coop_down_loses_all() -> void:
 
 func test_perks_json_valid() -> void:
 	var perks: Dictionary = GLData.table("perks")["perks"]
-	assert_eq(perks.size(), 12, "nine perk tonics plus Map 4's two (Skyhook Sekt, Magpie Mead; T-105) and Ledger Lager (T-141)")
+	assert_eq(perks.size(), 13, "nine perk tonics plus Map 4's two (Skyhook Sekt, Magpie Mead; T-105), Ledger Lager (T-141) and Rocket Man (T-276)")
 	var shapes: Dictionary = {}
 	for id: String in perks.keys():
 		var p: Dictionary = perks[id]

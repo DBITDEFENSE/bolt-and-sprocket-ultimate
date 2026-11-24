@@ -33,7 +33,7 @@ const POWERUP_TOKENS: Dictionary = {&"resupply": "RESUPPLY", &"deaths_door": "DE
 const PERK_TOKENS: Dictionary = {&"ironhide_stout": "IRONHIDE", &"second_wind": "SECONDWIND", &"trigger_tonic": "TRIGGER",
 	&"twin_barrel": "TWINBARREL", &"marathon_malt": "MARATHON", &"hawkeye_brandy": "HAWKEYE",
 	&"packmule_porter": "PACKMULE", &"blastproof_bock": "BLASTPROOF", &"overclock_cordial": "OVERCLOCK",
-	&"fine_print_fernet": "FERNET", &"skyhook_sekt": "SKYHOOK", &"magpie_mead": "MAGPIE", &"ledger_lager": "LEDGER"}   # T-105: Fernet's token was missing
+	&"fine_print_fernet": "FERNET", &"skyhook_sekt": "SKYHOOK", &"magpie_mead": "MAGPIE", &"ledger_lager": "LEDGER", &"rocket_man": "ROCKETMAN"}   # T-105: Fernet's token was missing
 const CLASS_TOKENS: Dictionary = {&"pistol": "PISTOL", &"bolt": "RIFLE", &"rifle": "RIFLE", &"sniper": "RIFLE",
 	&"smg": "SMG", &"assault": "SMG", &"shotgun": "SHOTGUN", &"lmg": "LMG", &"launcher": "LAUNCHER",
 	&"wonder": "WONDER", &"special": "LAUNCHER", &"melee": "MELEE"}

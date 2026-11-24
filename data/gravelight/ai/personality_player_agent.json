@@ -35,7 +35,7 @@
     "flank": false,
     "high_ground": false
   },
-  "economy": {"save_bias": 1.0, "perk_order": ["second_wind", "ironhide_stout", "ledger_lager", "marathon_malt", "@weapon", "hawkeye_brandy", "blastproof_bock", "overclock_cordial", "packmule_porter", "magpie_mead", "skyhook_sekt"], "perk_skill": 1.0,
+  "economy": {"save_bias": 1.0, "perk_order": ["second_wind", "ironhide_stout", "ledger_lager", "marathon_malt", "@weapon", "hawkeye_brandy", "blastproof_bock", "overclock_cordial", "packmule_porter", "magpie_mead", "skyhook_sekt", "rocket_man"], "perk_skill": 1.0,
     "priority_mult": {"gun": 1.25, "power_door": 1.1, "door": 2.0, "perk": 1.05},
     "_priority_doc": "x economy.json priorities: a real gun (the Garand, the MP40) before the power's 1500 door.",
     "_perk_doc": "Second Wind first: for the human's own survivor in solo it is a self-revive (an extra life for 500), then Ironhide."},

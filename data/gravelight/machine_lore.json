@@ -55,6 +55,11 @@
      "title": "Maker's Plate: Ledger Lager (the Kreuzweg)",
      "text": "The amber cash register standing in for a cabinet: a brass till on an iron base with a drum of violet digits on top, and a paper card in its window that says ZAHLTAG.\n\nHELVETIA AUTOMATEN AG · BASEL. Formula: R. Fenske. Replacement unit 3 of 8, held at the Kreuzweg for the pay parades. A line pencilled under the plate: the tally drum \"to be read weekly by the pay office\".\n\nNobody came to read it. The drum has been turning since the day it was bolted down, one digit for every sum somebody earned under this roof, and it is the only thing at the Kreuzweg that is exactly on time. Fenske made the lager at Kaltenbrunn; this is the unit the Provider sent south to be ready for a payday that never reached the crossroads."
     },
+    "perk.rocket_man": {
+     "plate": "Firing site, not named · the fitter's own unit · Wolff recipe · runs on the site's generator",
+     "title": "Maker's Plate: Rocket Man (the forest clearing)",
+     "text": "A rocket the size of a man stood on its fins in the firing-control dugout, painted in the trials' black and white quarters, its sign lit off the generator outside.\n\nHELVETIA AUTOMATEN AG · BASEL. Formula: I. Wolff. One unit, delivered by handcart, December 1944. No service label; a card tucked behind the hatch in a fitter's capitals: \"IT SHOULD NOT KILL THE MEN BESIDE IT.\"\n\nThe battery that used this clearing was gone before the squad came, and left its last rocket on the table and its generator running. The machine was found where the fitter left it, against the dugout's east wall, facing the door, so that the first thing anyone coming in from the snow would see was its light."
+    },
     "perk.skyhook_sekt": {
      "plate": "Nachlieferung · Consignment W.T. · Cabinet 1 of 2 · ELEVATION · J. Maurer",
      "title": "Maker's Plate: Skyhook Sekt (the late delivery)",
@@ -92,6 +97,9 @@
     },
     "chalk.gewehr43": {
      "plate": "The road patrol's: they clamped it properly, then ran"
+    },
+    "chalk.stg44": {
+     "plate": "The launch site's guard rifle, left in its clamps on the hut wall when the battery pulled out"
     },
     "chalk.bar": {
      "plate": "\"Beutewaffe (amerik.) · off GRAVELIGHT ONE\" · the carters hauled it up through the hoist window with the crates"

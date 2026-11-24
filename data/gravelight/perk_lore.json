@@ -332,6 +332,32 @@
     "[i]He over-posted every tally by a fifth for two years and nobody noticed. I have been in this business for six and they notice everything. I would like to have been a bookkeeper.[/i]",
     "[i]— V.[/i]"
    ]
+  },
+  "rocket_man": {
+   "name": "Rocket Man",
+   "plan_name": "ESCAPE VELOCITY",
+   "plan_id": "DMS-VP-ESC-13",
+   "human": "Ignaz Wolff.",
+   "human_story": "A propellant fitter from the Leuna works, forty-one, sent east with a firing battery in the autumn of 1944 because he knew how to fill a tank with liquid oxygen without losing his hands (he had lost two fingernails learning). His war was the forty minutes before a launch: the trailers backed up, the hoses coupled, the vapour pouring off the tank like breath in the cold, then everyone running for the dugout. He had seen where the rockets came from, a mountain in the Harz where men in striped jackets built them underground and died at it, and he never spoke of it except to say that the thing should at least not kill the men standing next to it as well. Asked to make the ESCAPE VELOCITY substrate drinkable, he made it so that what you light cannot hurt you, and so that it throws you clear instead. He left the battery in December with a handcart and a box of the fine print; the dugout at the Kreuzweg clearing is where the box was found.",
+   "panel": [
+    "[b]HELVETIA AUTOMATEN AG · BASEL · CONDITIONS OF USE: ROCKET MAN[/b]",
+    "[b](PLAN ESCAPE VELOCITY · ISSUED 1944 · A FIRING SITE, NOT NAMED)[/b]",
+    "",
+    "[b]§1. Benefit.[/b] [b]What the Holder lights goes further and hits harder, and does not turn on the Holder.[/b] A charge set off at the Holder's feet lifts the Holder clear of it instead. The Provider calls this \"operator retention\". The fitter called it \"the least it could do\".",
+    "",
+    "[b]§2. Range safety.[/b] At the second tier, whatever the Holder's blast leaves standing is left reeling.",
+    "",
+    "[b]§3. Burn-through.[/b] At the third tier, it is also left burning.",
+    "",
+    "[b]§4. Engine cut-off.[/b] At the fourth tier the Plan is permanent, the blasts are half again as heavy, and the launch itself no longer reaches the Holder. The undersigned notes that this is the only clause in the catalogue that protects anyone from the Provider's own equipment.",
+    "",
+    "[b]§5. Side effects.[/b] Holders may count backwards from ten without meaning to and look up when a door slams.",
+    "",
+    "[b]§6. Cancellation.[/b] The battery moved on. The Plan stays where it was poured.",
+    "",
+    "[i]He brought me the box himself, on a handcart, through the snow. He said the men who built the things had no Plan at all. I have not found a clause for that.[/i]",
+    "[i]— V.[/i]"
+   ]
   }
  }
 }

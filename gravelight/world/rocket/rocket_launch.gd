@@ -362,7 +362,7 @@ func _blast(site: Vector3) -> void:
 			continue
 		var po: Vector3 = pl.global_position - site
 		po.y = 0.0
-		var dmg: float = player_damage(po.length(), cfg, pl.has_explosive_immunity())
+		var dmg: float = 0.0 if PerkManager.v2_immune(pl.player_id) else player_damage(po.length(), cfg, pl.has_explosive_immunity())
 		if dmg > 0.0:
 			pl.take_hit(dmg, self)
 			pl.apply_knockback(po.normalized() * 6.0 if po.length() > 0.1 else Vector3.RIGHT * 6.0)

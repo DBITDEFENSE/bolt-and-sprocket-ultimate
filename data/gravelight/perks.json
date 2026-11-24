@@ -576,6 +576,54 @@
      }
     }
    }
+  },
+  "rocket_man": {
+   "name": "Rocket Man",
+   "desc": "Your explosives hit harder and reach further, never hurt you, and one at your feet throws you clear like a launch.",
+   "cost": 2500,
+   "needs_power": false,
+   "_doc": "T-276: the V2 site's tonic (Map 0, the firing-control dugout; perk_layout.json pins it there). Its machine runs on the site's own generator, so it needs no power. explosive_damage_mult / explosive_radius_mult: the owner's blasts (Explosion.detonate with by_player = them: frags, the Panzerschreck, cluster bomblets, the gramophone). self_explosive_immune: as Blastproof Bock's. blast_jump: their own blast within blast_jump_m of them while they stand on the ground throws them blast_jump m/s away from it and blast_jump_up m/s up (PerkManager.blast_jump; on the ground only, so it never lifts anyone over a fence). Tiers: II staggers what the blast leaves standing, III sets it alight, IV adds the launch's own blast (RocketLaunch: no damage from the V2 at all).",
+   "effects": {
+    "explosive_damage_mult": 1.3,
+    "explosive_radius_mult": 1.25,
+    "self_explosive_immune": true,
+    "blast_jump": 7.5,
+    "blast_jump_up": 5.5,
+    "blast_jump_m": 3.5
+   },
+   "color": "#5c6670",
+   "neon": "#ff9a3c",
+   "abbr": "RM",
+   "shape": "rocket",
+   "sign": "ROCKET MAN",
+   "tiers": {
+    "2": {
+     "name": "Range Safety",
+     "cost": 3500,
+     "desc": "Whatever your blast leaves standing reels from it.",
+     "effects": {
+      "explosive_stagger": true
+     }
+    },
+    "3": {
+     "name": "Burn-Through",
+     "cost": 7000,
+     "desc": "Your blasts set whatever they leave standing alight (a fifth of a zombie's health a second for three seconds).",
+     "effects": {
+      "explosive_ignite_frac": 0.2,
+      "explosive_radius_mult": 1.35
+     }
+    },
+    "4": {
+     "name": "Brennschluss",
+     "cost": 13000,
+     "desc": "Permanent. Your blasts hit half again as hard, and the V2's launch cannot hurt you.",
+     "effects": {
+      "explosive_damage_mult": 1.5,
+      "v2_immune": true
+     }
+    }
+   }
   }
  },
  "drink_seconds": 1.2,

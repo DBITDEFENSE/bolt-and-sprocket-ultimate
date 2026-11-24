@@ -31,8 +31,8 @@ const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 ## alcove, the twelve machine footprints out of the vault, and one footprint box on each of the 17 perk spots
 ## (PERK_SPOTS) all over the map.
 const NAV_FP: Dictionary = {
-	"Navigation": "4ca0237cd39ac29e8b9a673d3941f8fd95a0b576",   # 2026-11-24 (T-276: the V2 site east of the grounds, the forest track through the east fence; T-268's was d26ff6...)
-	"NavigationBreachOpen": "3f0c8b857414a2d30ba226f57226c0192a66818b",
+	"Navigation": "5f270b7dbab61df84e524ab1bfa93669f56844b0",   # 2026-11-24 (T-276: the V2 site east of the grounds, the forest track through the east fence, the Rocket Man spot's bake box; T-268's was d26ff6...)
+	"NavigationBreachOpen": "a7836b74665f70c7691f7f066b7fe9b0c4ad4ca6",
 }
 ## Library-prop triangles within CAM_RADIUS of any capture camera (data/gravelight/capture_cams.json).
 const CAM_RADIUS: float = 12.0

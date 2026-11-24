@@ -265,6 +265,7 @@ static func _shape_footprint(shape: String) -> Vector3:
 		"glider": return Vector3(0.8, 2.4, 0.7)   # Skyhook Sekt (T-105): a glider fuselage on its tail
 		"bandit": return Vector3(0.9, 2.3, 0.65)  # Magpie Mead (T-105): the Allied-painted cabinet with the bandit lever
 		"register": return Vector3(1.0, 2.2, 0.75)   # Ledger Lager (T-141): the brass cash register with the tally drum
+		"rocket": return Vector3(1.0, 2.1, 0.9)   # Rocket Man (T-276): a rocket on its fins, under the dugout's 2.2 m ceiling
 	return Vector3(1.0, 2.0, 0.7)
 
 
