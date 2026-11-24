@@ -593,22 +593,112 @@ func _smooth_visual(near: bool) -> void:
 		_smooth_off = off
 
 
+## T-265: the animation's rate follows what the local camera sees. Until now the LOD below went by the distance
+## to the zombie's own target, so a horde round a bot 40 m away animated every frame, and so did every zombie
+## behind the player's back (each animation step is the tree's advance, the pose code and the skeleton's modifiers:
+## about 0.1 ms a zombie, the dearest thing a zombie does after its move). With a camera the distance is the
+## camera's, and a body outside the view cone and further than VIEW_NEAR_M is stepped every VIEW_OUT_DIV-th frame
+## with the time it skipped, as the far ones always were: the clip keeps its pace, footsteps and events still
+## fire (up to 3 frames late), and the first frame it is back in view it is stepped again every frame. The body,
+## its hitboxes' place and every gameplay timer are on the physics tick and are not touched. Without a camera
+## (headless tests) the distance to the target decides, as before. `view_lod` false: tools that photograph them.
+static var view_lod: bool = true
+const VIEW_NEAR_M: float = 3.0      # nearer than this a body is never "out of view" (the screen's edge, its shadow)
+const VIEW_OUT_DIV: int = 4         # out of view: one animation step every 4th frame
+const VIEW_MARGIN_RAD: float = 0.17 # the view cone is the screen's corner angle plus this (10 degrees)
+static var _vl_frame: int = -1
+static var _vl_vp: Viewport = null
+static var _vl_has: bool = false
+static var vl_pos: Vector3 = Vector3.ZERO
+static var vl_fwd: Vector3 = Vector3.FORWARD
+static var vl_cos: float = 0.0
+var _out_of_view: bool = false
+## Work counters for the measuring tools (perf_marks): animation steps and ticks with foot rays, all zombies.
+static var anim_steps: int = 0
+static var foot_ray_ticks: int = 0
+static var active_frames: int = 0   # frames an active zombie was drawn in (what the two above are a share of)
+static var out_frames: int = 0      # of those, out of the camera's view
+
+
+## Pure: the cosine of the half-angle of the cone that holds everything on screen: a camera with the vertical field
+## of view `fov_deg` and the picture's `aspect` (width / height), to the screen's corner, plus `margin_rad`.
+static func view_cone_cos(fov_deg: float, aspect: float, margin_rad: float = VIEW_MARGIN_RAD) -> float:
+	var tv: float = tan(deg_to_rad(clampf(fov_deg, 1.0, 179.0)) * 0.5)
+	var th: float = tv * maxf(0.1, aspect)
+	return cos(minf(atan(sqrt(tv * tv + th * th)) + margin_rad, 1.55))
+
+
+## Pure: is a body at `to` (from the camera) outside the cone round the view axis `fwd` (unit) with the half-angle
+## cosine `cone_cos`, and further than `near_m`?
+static func out_of_view(to: Vector3, fwd: Vector3, cone_cos: float, near_m: float = VIEW_NEAR_M) -> bool:
+	var d2: float = to.length_squared()
+	return d2 > near_m * near_m and to.dot(fwd) < cone_cos * sqrt(d2)
+
+
+## Pure: every how many frames a body `d2` (metres squared) away is animated: 1 within full_m, 2 to half_m, 4
+## beyond (anim.json lod), and VIEW_OUT_DIV when it is out of view.
+static func anim_div(d2: float, full_m: float, half_m: float, out: bool) -> int:
+	if out:
+		return VIEW_OUT_DIV
+	if d2 > half_m * half_m:
+		return 4
+	if d2 > full_m * full_m:
+		return 2
+	return 1
+
+
+## Pure: is a ball of `radius` at `to` (from the camera) wholly outside the view cone, and not round the camera?
+## For things bigger than a body (a column of walkers, a horse).
+static func sphere_out_of_view(to: Vector3, radius: float, fwd: Vector3, cone_cos: float, near_m: float = VIEW_NEAR_M) -> bool:
+	var d: float = to.length()
+	if d <= radius + near_m:
+		return false
+	return acos(clampf(to.dot(fwd) / d, -1.0, 1.0)) - asin(clampf(radius / d, 0.0, 1.0)) > acos(clampf(cone_cos, -1.0, 1.0))
+
+
+## The local camera of this body's viewport, read once a frame for the whole horde: true when there is one
+## (vl_pos, vl_fwd and vl_cos then hold its place, its axis and its cone).
+func _vl_camera() -> bool:
+	return view_camera(get_viewport())
+
+
+## The same for any node's viewport (the landscape's walkers, the horse).
+static func view_camera(vp: Viewport) -> bool:
+	var f: int = Engine.get_process_frames()
+	if f != _vl_frame or vp != _vl_vp:
+		_vl_frame = f
+		_vl_vp = vp
+		var cam: Camera3D = vp.get_camera_3d() if vp != null else null
+		_vl_has = cam != null and cam.is_inside_tree()
+		if _vl_has:
+			vl_pos = cam.global_position
+			vl_fwd = -cam.global_basis.z.normalized()
+			var size: Vector2 = vp.get_visible_rect().size
+			vl_cos = view_cone_cos(cam.fov, size.x / maxf(1.0, size.y))
+	return _vl_has
+
+
 func _process(delta: float) -> void:
-	# Animation LOD: full rate within lod.full_m, half to lod.half_m, quarter beyond (anim.json).
+	# Animation LOD: full rate within lod.full_m, half to lod.half_m, quarter beyond (anim.json), and a quarter
+	# out of the local camera's view (T-265).
 	if state == State.INACTIVE:
 		return
 	_anim_skip += 1
+	active_frames += 1
 	var d2: float = global_position.distance_squared_to(target.global_position) if target != null else 0.0
+	_out_of_view = false
+	if view_lod and _vl_camera():
+		var to: Vector3 = global_position + Vector3.UP - vl_pos
+		d2 = to.length_squared()
+		_out_of_view = out_of_view(to, vl_fwd, vl_cos)
 	var lod: Dictionary = _anim["lod"]
-	var div: int = 1
 	var half_m: float = float(lod["half_m"]) * anim_lod_scale
 	var full_m: float = float(lod["full_m"]) * anim_lod_scale
 	if smooth_motion or _smooth_off != Vector3.ZERO:
 		_smooth_visual(d2 <= full_m * full_m)
-	if d2 > half_m * half_m:
-		div = 4
-	elif d2 > full_m * full_m:
-		div = 2
+	if _out_of_view:
+		out_frames += 1
+	var div: int = anim_div(d2, full_m, half_m, _out_of_view)
 	if _anim_skip % div != 0:
 		return
 	_animate(delta * float(div))
@@ -3291,6 +3381,7 @@ func _can_recorded_turn() -> bool:
 func _animate(dt: float) -> void:
 	if state == State.INACTIVE or _tree == null or _ragdoll != null:
 		return   # a ragdolling corpse: the physics bodies drive the bones (ZombieRagdoll.sync)
+	anim_steps += 1
 	ZombieBody.update_cracks(RoundManager.current_round, float(GLData.table("enemies").get("visual", {}).get("crack_energy", 2.6)))
 	var spd: float = Vector2(velocity.x, velocity.z).length()
 	var moving_state: bool = state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW]
@@ -3403,9 +3494,12 @@ func _update_senses(delta: float) -> void:
 	var d: float = global_position.distance_to(target.global_position) if target != null else 999.0
 	var fi: Dictionary = _anim["foot_ik"]
 	var la: Dictionary = _anim["look_at"]
-	var ik_on: bool = d <= float(fi["range_m"]) and is_on_floor() and state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW, State.TEAR, State.ATTACK, State.STAGGER] and not is_crawler
+	# (T-265: no foot rays for a body the camera does not see: four rays a tick each, and the weight eases back in
+	# over a quarter of a second once it is in view again)
+	var ik_on: bool = d <= float(fi["range_m"]) and not _out_of_view and is_on_floor() and state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW, State.TEAR, State.ATTACK, State.STAGGER] and not is_crawler
 	_modifier.active = d <= float(fi["off_m"]) or _modifier.springs_active()
 	if ik_on:
+		foot_ray_ticks += 1
 		var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
 		for i: int in 2:
 			var fidx: int = _foot_idx[i]

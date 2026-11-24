@@ -1443,9 +1443,22 @@ func _tick_stuck(delta: float, me_before: Vector3, goal: Vector3, wants_move: bo
 	# navmesh first; if it is still up there after drop_after_s (chairs round the table pen it in), it steps down
 	# onto the nearest navmesh point: a hop of under reach_m, never a teleport, and it is logged as a drop
 	if wants_move and player.is_on_floor():
+		# T-265: the navmesh is asked for its nearest point every NAV_LOOK_S, not every tick (that one call was a
+		# quarter of a walking bot's tick, as it was of a chasing zombie's: T-256's wedge check). Each look counts
+		# the time since the last, so the drop still comes drop_after_s and the snap off_mesh_snap_s after it began
+		# (up to NAV_LOOK_S later); between looks nothing here changes.
+		_nav_look_since += delta
+		_nav_look_t -= delta
+		if _nav_look_t > 0.0:
+			_tick_stuck_ladder(delta, now, moved, goal, wants_move, remaining, detour)
+			return
+		_nav_look_t = NAV_LOOK_S
+		var look_dt: float = _nav_look_since
+		_nav_look_since = 0.0
+		nav_looks += 1
 		var nav_here: Vector3 = _snap(now)
 		if marooned(now, nav_here, float(_g("stuck", "marooned_up_m", 0.4)), float(_g("stuck", "marooned_reach_m", 1.5))):
-			_marooned_t += delta
+			_marooned_t += look_dt
 			if _marooned_t >= float(_g("stuck", "drop_after_s", 2.0)):
 				player.global_position = nav_here + Vector3.UP * 0.05
 				player.velocity = Vector3.ZERO
@@ -1462,7 +1475,7 @@ func _tick_stuck(delta: float, me_before: Vector3, goal: Vector3, wants_move: bo
 		# if it is still off after off_mesh_snap_s without getting anywhere, it steps onto that point (a hop of under
 		# off_mesh_reach_m, logged as a snap, never a teleport)
 		if off_mesh(now, nav_here, float(_g("stuck", "off_mesh_m", 0.55))):
-			_off_mesh_t += delta
+			_off_mesh_t += look_dt
 			if _off_mesh_t >= float(_g("stuck", "off_mesh_snap_s", 3.0)) and moved < 0.01 * (delta * 60.0) \
 					and _flat(nav_here, now) <= float(_g("stuck", "off_mesh_reach_m", 2.5)) and absf(nav_here.y - now.y) <= 1.2:
 				player.global_position = nav_here + Vector3.UP * 0.05
@@ -1478,6 +1491,21 @@ func _tick_stuck(delta: float, me_before: Vector3, goal: Vector3, wants_move: bo
 	else:
 		_marooned_t = 0.0
 		_off_mesh_t = 0.0
+		_nav_look_since = 0.0
+	_tick_stuck_ladder(delta, now, moved, goal, wants_move, remaining, detour)
+
+
+## Seconds between two looks at the navmesh under a walking bot (the marooned / off-mesh checks), the time to this
+## bot's next look (the squad's bots start apart, so their looks fall on different ticks), the walking time since
+## its last one, and how many looks it has made (the measuring tools).
+const NAV_LOOK_S: float = 0.2
+var _nav_look_t: float = NAV_LOOK_S * float(get_instance_id() % 12) / 12.0
+var _nav_look_since: float = 0.0
+var nav_looks: int = 0
+
+
+## The rest of the stuck tick: the progress ladder (re-plan, nudge, teleport) and the metrics.
+func _tick_stuck_ladder(delta: float, now: Vector3, moved: float, goal: Vector3, wants_move: bool, remaining: float, detour: int) -> void:
 	if detour == 1:
 		return   # stepping aside for a human on purpose
 	if detour == 0 and (goal == Vector3.INF or _arrived):

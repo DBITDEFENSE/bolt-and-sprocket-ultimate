@@ -494,7 +494,24 @@ func _process(delta: float) -> void:
 	else:
 		rig.position = Vector3.ZERO
 		rig.rotation = Vector3.ZERO
-	rig.tick(delta)
+	# T-265: a horse standing at its rail (or loose) that the camera does not see is posed every RIG_OUT_DIV-th
+	# frame with the time it skipped (its breathing, tail and ears: 0.12 ms a frame for a horse nobody looks at)
+	_rig_dt += delta
+	rig_frames += 1
+	if rider == null and (mode == Mode.TIED or mode == Mode.LOOSE) and Zombie.view_lod and Zombie.view_camera(get_viewport()) 			and Zombie.sphere_out_of_view(global_position + Vector3.UP - Zombie.vl_pos, 2.0, Zombie.vl_fwd, Zombie.vl_cos):
+		_rig_skip += 1
+		if _rig_skip % RIG_OUT_DIV != 0:
+			return
+	rig_ticks += 1
+	rig.tick(_rig_dt)
+	_rig_dt = 0.0
+
+
+const RIG_OUT_DIV: int = 4
+var rig_frames: int = 0   # frames drawn / frames the rig was posed in (the measuring tools)
+var rig_ticks: int = 0
+var _rig_dt: float = 0.0
+var _rig_skip: int = 0
 
 
 static func _flat(a: Vector3, b: Vector3) -> float:

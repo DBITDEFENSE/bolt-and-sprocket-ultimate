@@ -19,6 +19,11 @@ var area: Area3D
 
 
 func _ready() -> void:
+	# T-265: every Interactable is in the group "interactables" (the squad's errand planner asked the whole map
+	# for them every 6 s: a walk over every node of it, 3.7 ms on Map 0). Here and not in _init: a subclass with
+	# an _init of its own does not run this class's, while every subclass's _ready calls this one (it builds the
+	# interact area).
+	add_to_group(&"interactables")
 	area = Area3D.new()
 	area.name = "InteractArea"
 	area.collision_layer = LAYER_INTERACTABLE

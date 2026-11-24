@@ -442,6 +442,11 @@ func _build_decals() -> void:
 		d.hide()
 		add_child(d)
 		_decals.append(d)
+	# T-265: the two decal textures are drawn pixel by pixel in script the first time one is asked for (26 ms on
+	# this desktop: the match's first kill for the blood, its first riser for the mud). Drawn here, with the map.
+	if not _decals.is_empty():
+		blood_texture()
+		mud_texture()
 
 
 func _place_decal(at: Vector3, kind: String, dc: Dictionary) -> void:

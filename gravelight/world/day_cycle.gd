@@ -57,6 +57,30 @@ var _applied_hour: float = -99.0
 var _roof_t: float = 0.0
 var _roofed: bool = false
 var _snap: bool = true
+## T-265: a frame whose inputs are last frame's writes nothing. The hour stands still for the whole of a round once
+## it has reached the round's hour, and the camera's share of roof and depth settles within a second or two; until
+## now every frame still built the factors, parsed the file's colours, wrote five Environment values, two global
+## shader values and the key light's four, and read each one back. `_settled()` is true when the hour, the roof
+## and depth shares are the ones last applied and every value this node wrote is still there (another script
+## writing one of them, a zone's night value or a room switching the moon off, makes the next frame a full one).
+## ENV_PROPS: the Environment values _apply_air drives. SETTLE_EPS: the roof / depth share lands on its target
+## once it is this near (an exponential approach never arrives by itself). HOUR_STEP: while the hour walks to the
+## round's hour (80 s of every round) the light and the air follow it in steps of this many hours (0.002 h: six
+## steps a second, 0.03 degrees of sun each; the sky's own step, _apply_sky, was always this), and exactly once
+## more when it arrives.
+const ENV_PROPS: PackedStringArray = ["ambient_light_color", "ambient_light_energy", "tonemap_exposure", "fog_light_color", "background_color"]
+const SETTLE_EPS: float = 0.001
+const HOUR_STEP: float = 0.002
+var _at_target: bool = true
+var _in_hour: float = -99.0
+var _in_indoor: float = -1.0
+var _in_depth: float = -1.0
+var _key_basis_wrote: Basis = Basis.IDENTITY
+var _key_color_wrote: Color = Color.BLACK
+var _key_fog_wrote: float = -1.0
+## Frames that wrote everything / frames that found nothing to write (the measuring tools, the tests).
+var full_frames: int = 0
+var skipped_frames: int = 0
 
 
 # ================================================================== pure rules (unit-tested)
@@ -225,18 +249,54 @@ func _process(delta: float) -> void:
 	var target: float = held_hour if held_hour >= 0.0 else hour_for_round(_round(), cfg)
 	var step: float = delta / maxf(1.0, float(cfg.get("seconds_per_hour", 80.0)))
 	hour = target if _snap else step_hour(hour, target, step)
+	_at_target = hour == target
 	var cam: Camera3D = get_viewport().get_camera_3d() if get_viewport() != null else null
 	var below: float = 1.0 if cam != null and cam.global_position.y < float(cfg.get("below_y", -2.5)) else 0.0
 	var k: float = 1.0 if _snap else 1.0 - exp(-delta * float(cfg.get("follow", 1.6)))
-	indoor = lerpf(indoor, 1.0 if _roofed else 0.0, k)
+	var roof: float = 1.0 if _roofed else 0.0
+	indoor = lerpf(indoor, roof, k)
 	depth = lerpf(depth, below, k)
+	if absf(indoor - roof) < SETTLE_EPS:
+		indoor = roof
+	if absf(depth - below) < SETTLE_EPS:
+		depth = below
 	_snap = false
-	now = factors(hour, cfg)
-	_apply_key()
-	_apply_air()
+	if _settled():
+		skipped_frames += 1
+	else:
+		full_frames += 1
+		now = factors(hour, cfg)
+		_apply_key()
+		_apply_air()
+		_in_hour = hour
+		_in_indoor = indoor
+		_in_depth = depth
 	if absf(hour - _applied_hour) > 0.002:
 		_applied_hour = hour
 		_apply_sky()
+
+
+## Pure: may the hour `h` go unapplied, the light and air standing as they were written for `applied`? Yes within
+## HOUR_STEP of it, unless the hour has arrived at its target (then only when it is the applied one exactly).
+static func hour_settled(h: float, applied: float, at_target: bool, step: float = HOUR_STEP) -> bool:
+	if at_target:
+		return h == applied
+	var gap: float = absf(h - applied)
+	return minf(gap, 24.0 - gap) < step
+
+
+## T-265: nothing this frame would write differs from what is there (see ENV_PROPS above).
+func _settled() -> bool:
+	if not hour_settled(hour, _in_hour, _at_target) or indoor != _in_indoor or depth != _in_depth:
+		return false
+	if is_instance_valid(key):
+		if not is_equal_approx(key.light_energy, _key_wrote) or key.light_color != _key_color_wrote 				or key.light_volumetric_fog_energy != _key_fog_wrote or not key.global_basis.is_equal_approx(_key_basis_wrote):
+			return false
+	for prop: String in ENV_PROPS:
+		var t: Variant = _tracks.get(prop)
+		if t == null or env.get(prop) != (t as Dictionary)["wrote"]:
+			return false
+	return true
 
 
 ## The key light: the authored moon, nothing in the dark before first light, then the sun on its arc.
@@ -264,6 +324,9 @@ func _apply_key() -> void:
 	key.light_volumetric_fog_energy = fog
 	key.light_energy = 0.0 if _key_muted else e
 	_key_wrote = key.light_energy
+	_key_color_wrote = key.light_color
+	_key_fog_wrote = key.light_volumetric_fog_energy
+	_key_basis_wrote = key.global_basis
 
 
 ## The value another script (or the scene) holds for `prop` now: what is there, unless it is what this node wrote.
