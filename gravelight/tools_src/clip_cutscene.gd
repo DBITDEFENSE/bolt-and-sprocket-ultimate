@@ -83,6 +83,8 @@ func _ready() -> void:
 	for a2: String in OS.get_cmdline_user_args():
 		if a2.begins_with("--gore="):
 			GLSettings.values["gore"] = a2.substr(7)
+		elif a2 == "--no-subs":   # a clean picture for the photoreal reel clips (no lettering for a video model to garble)
+			GLSettings.values["subtitles"] = false
 	if CinemaArchive.is_known(cut):
 		Campaign.cutscene_speed = 1.0
 		_reel_alone.call_deferred()

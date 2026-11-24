@@ -8,7 +8,7 @@ extends Control
 ## Opened with no pending load (shots, tests) it just shows `demo_map`.
 ## T-267: a Solo / Co-op load (not the Campaign, not a curtain, not the browser) plays one clip from
 ## assets/video/loading/*.ogv behind the text (LoadingClips: muted, looping, covering the screen, over the map's art
-## and under the dark grade); the match then starts when the map has loaded AND LoadingClips.MIN_VIDEO_S have shown,
+## and under the dark grade); the match then starts when the map has loaded AND the clip has played through once (LoadingClips.min_show_s),
 ## through a short fade to black. Accept (Enter / pad A) skips the rest of that minimum once the map is in. With no
 ## clip file the screen is exactly what it was: no video node, MIN_SHOW_S, a straight cut.
 
@@ -42,6 +42,7 @@ var clip_path: String = ""
 var _video_box: Control = null
 var _video_lit: bool = false
 var _skip_min: bool = false
+var _clip_s: float = 0.0   # the clip's length once the stream reports it
 var _leaving: bool = false
 
 
@@ -333,7 +334,7 @@ func _leave(ps: PackedScene) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if video != null and event.is_action_pressed(&"ui_accept"):
-		_skip_min = true   # the map is in (or will be): do not wait out the clip's minimum
+		_skip_min = true   # the player cuts the clip short; the match still waits for the map
 
 
 func _begin() -> void:
@@ -390,10 +391,12 @@ func _process(delta: float) -> void:
 	if st == ResourceLoader.THREAD_LOAD_LOADED and loaded_at_s < 0.0:
 		loaded_at_s = _t
 		print("[loading] %s loaded after %.2f s%s" % [map_id, _t, " (clip playing)" if video != null else ""])
-	if LoadingClips.may_leave(st == ResourceLoader.THREAD_LOAD_LOADED, _t, video != null and not _skip_min, MIN_SHOW_S):
+	if video != null and _clip_s <= 0.0:
+		_clip_s = video.get_stream_length()
+	if LoadingClips.may_leave(st == ResourceLoader.THREAD_LOAD_LOADED, _t, video != null and not _skip_min, MIN_SHOW_S, _clip_s):
 		_done = true
 		load_s = _t
-		last = {"map": map_id, "loaded_at": loaded_at_s, "left_at": _t, "clip": clip_path}
+		last = {"map": map_id, "loaded_at": loaded_at_s, "left_at": _t, "clip": clip_path, "clip_s": _clip_s, "skipped": _skip_min}
 		var ps: PackedScene = ResourceLoader.load_threaded_get(scene_path) as PackedScene
 		_bar.value = 1.0
 		_leave(ps)

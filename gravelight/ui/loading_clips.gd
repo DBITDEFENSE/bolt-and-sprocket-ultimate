@@ -9,15 +9,21 @@ extends RefCounted
 ##               art card, and its cutscenes are its own), never on a curtain (the endings), never in the browser
 ##               build (a pack fetch and a software Theora decode on one thread);
 ##   pick        one clip at random, not the one shown last time when there is another;
-##   may_leave   the match starts when the map has loaded AND the screen has been up for MIN_VIDEO_S with a clip
-##               (LoadingScreen.MIN_SHOW_S without one): the player is never held for the whole clip, a long load
-##               simply loops it.
+##   may_leave   the match starts when the map has loaded AND the clip has played through once (its length, at
+##               most MAX_VIDEO_S; FALLBACK_VIDEO_S when the stream cannot say), or LoadingScreen.MIN_SHOW_S without a
+##               clip. Accept (Enter / pad A) cuts it short once the map is in; a load longer than the clip loops it.
+##               (T-267 left after MIN_VIDEO_S, 3 s: on a fast PC the owner saw three seconds of a fifteen-second clip
+##               and read it as "the Higgsfield clips didn't work"; he had asked for 10 to 20 s while it loads.)
 ## No clip file (a fresh checkout, the browser build, a missing folder): `list` is empty and the loading screen is
 ## exactly what it was before T-267. Nothing about the clip is synced in co-op: every peer draws its own.
 
 const DIR: String = "res://assets/video/loading/"
 const EXT: String = "ogv"
 const MIN_VIDEO_S: float = 3.0
+## A clip plays through once, up to this long (the owner: "a simple Higgsfield video of 10 seconds, 20 seconds").
+const MAX_VIDEO_S: float = 20.0
+## When the stream cannot report its length.
+const FALLBACK_VIDEO_S: float = 12.0
 const FADE_IN_S: float = 0.4
 const FADE_OUT_S: float = 0.35
 ## The names tried when a directory cannot be listed (an exported pack that does not list plain files).
@@ -87,13 +93,16 @@ static func choose(campaign_active: bool, map_id: String, is_curtain: bool) -> S
 
 
 ## How long the screen stays up at least (pure).
-static func min_show_s(has_clip: bool, base_s: float) -> float:
-	return maxf(base_s, MIN_VIDEO_S) if has_clip else base_s
+static func min_show_s(has_clip: bool, base_s: float, clip_s: float = 0.0) -> float:
+	if not has_clip:
+		return base_s
+	var whole: float = minf(clip_s if clip_s > 0.0 else FALLBACK_VIDEO_S, MAX_VIDEO_S)
+	return maxf(maxf(base_s, MIN_VIDEO_S), whole - FADE_OUT_S)   # the fade to black ends on the clip's last frame
 
 
 ## May the match start now? (pure)
-static func may_leave(loaded: bool, shown_s: float, has_clip: bool, base_s: float) -> bool:
-	return loaded and shown_s >= min_show_s(has_clip, base_s)
+static func may_leave(loaded: bool, shown_s: float, has_clip: bool, base_s: float, clip_s: float = 0.0) -> bool:
+	return loaded and shown_s >= min_show_s(has_clip, base_s, clip_s)
 
 
 ## The stream for a clip file, or null when it cannot be opened.

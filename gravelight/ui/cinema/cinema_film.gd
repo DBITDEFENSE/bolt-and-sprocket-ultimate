@@ -8,7 +8,7 @@ extends Node
 ##       black is made invisible; its alpha still drives this one), so black frames get grain and dust like leader;
 ##   9   the archive cards: the native lines (Russian or German, Old Standard TT) over the in-engine card's English
 ##       (Special Elite), in and out at the card's `at` / `hold` (a shot's `archive_card`);
-##   29  the treatment: black-and-white or sepia through the archival curve, grain per film frame, scratches, dust,
+##   29  the treatment: black-and-white or sepia through the archival curve (colour when clip_colour, T-277), grain per film frame, scratches, dust,
 ##       gate weave, flicker, the vignette and the Academy-ratio gate (pillarbox). Under the frame (30: hold to skip).
 ## Deterministic per reel shot: the shader's seed is the shot's (CinemaArchive.seed_of, as archive_reel.py), its clock
 ## the director's. Over a built clip (CinemaVideo, already graded and gated by archive_reel.py) only the damage is
@@ -32,6 +32,7 @@ uniform float flicker = 0.045;
 uniform float vignette = 0.42;
 uniform float aspect = 1.375;
 uniform float graded = 0.0;
+uniform float colour = 0.0;
 uniform vec2 view_px = vec2(1920.0, 1080.0);
 
 float h11(float p) { p = fract(p * 0.1031); p *= p + 33.33; p *= p + p; return fract(p); }
@@ -53,10 +54,13 @@ void fragment() {
 		vec3 c = texture(screen_tex, uv + wpx / view_px).rgb;
 		float l0 = dot(c, vec3(0.299, 0.587, 0.114));
 		float l = l0;
+		vec3 cg = c;
 		if (graded < 0.5) {
 			l = clamp((l - 0.5) * contrast + 0.5, 0.0, 1.0);
 			l = lift + (gain - lift) * l;
+			cg = lift + (gain - lift) * clamp((c - 0.5) * contrast + 0.5, 0.0, 1.0);
 		}
+		float lg = l;
 		l *= 1.0 + (h11(fk * 0.71 + seed * 2.3) - 0.5) * 2.0 * flicker;
 		vec2 gp = floor(FRAGCOORD.xy / 1.5);
 		float g = h21(gp + vec2(fk * 17.0, fk * 29.0)) - 0.5;
@@ -82,8 +86,12 @@ void fragment() {
 		vec3 col;
 		if (graded < 0.5) {
 			vec2 d2 = pu - 0.5;
-			l *= mix(1.0 - vignette, 1.0, smoothstep(0.85, 0.25, length(d2 * vec2(1.0, 0.9))));
-			col = vec3(l) * tone;
+			float vg = mix(1.0 - vignette, 1.0, smoothstep(0.85, 0.25, length(d2 * vec2(1.0, 0.9))));
+			if (colour > 0.5) {
+				col = (cg + vec3(l - lg)) * vg;   // T-277: the colour reels' stand-ins keep their colour
+			} else {
+				col = vec3(l * vg) * tone;
+			}
 		} else {
 			col = c + vec3(l - l0);
 		}
@@ -149,6 +157,7 @@ func _ready() -> void:
 	mat.shader = sh
 	_film_rect.material = mat
 	var rgb: Array = cfg.get("tone_rgb", [1.0, 1.0, 1.0])
+	mat.set_shader_parameter("colour", 1.0 if bool(cfg.get("clip_colour", false)) else 0.0)
 	mat.set_shader_parameter("tone", Vector3(float(rgb[0]), float(rgb[1]), float(rgb[2])))
 	for k: String in ["contrast", "lift", "gain", "scratches", "dust", "weave", "flicker", "vignette", "aspect", "film_fps"]:
 		if cfg.has(k):

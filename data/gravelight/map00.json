@@ -39,10 +39,10 @@
       "to": [
         5.4,
         6.2,
-        43.6
+        43.05
       ],
       "target": "the watchtower",
-      "_doc": "T-229 the Hochsitz; T-230: the body climbs the ladder line 0.4 m off the rungs (line), facing the tower (face, default yaw + 180). T-268: the tower has two stages; this ladder (the north face) ends on the landing, 6.2 m up",
+      "_doc": "T-229 the Hochsitz; T-230: the body climbs the ladder line 0.4 m off the rungs (line), facing the tower (face, default yaw + 180). T-268: the tower has two stages; this ladder (the north face) ends on the landing, 6.2 m up. T-275: it arrives through a 1 m opening in the landing's north parapet, its stiles carried on 1 m over the deck as hand holds; the climb ends just inside the opening",
       "line": [
         5.4,
         42.065
@@ -54,7 +54,7 @@
       "pos": [
         5.4,
         6.2,
-        43.4
+        43.05
       ],
       "yaw": 180.0,
       "down": true,
@@ -74,46 +74,46 @@
     {
       "name": "TowerLadder_Upper",
       "pos": [
-        6.8,
+        6.875,
         6.2,
-        45.9
+        44.7
       ],
-      "yaw": -90.0,
+      "yaw": 0.0,
       "to": [
         6.8,
         12.0,
-        45.9
+        46.4
       ],
       "target": "to the top platform",
-      "_doc": "T-268 the second stage: the ladder up the east face from the landing to the top platform (12 m)",
+      "_doc": "T-268 the second stage, the landing to the top platform (12 m). T-275: inside the tower, from the landing's floor up through a hatch in the top platform's floor against its east parapet (x 6.45..7.3, z 44.65..45.6); the climber hangs over the hatch facing south and steps off over the ladder's head onto the platform south of it",
       "line": [
-        8.335,
-        45.9
+        6.875,
+        45.085
       ],
       "surface": "wood",
-      "face": 90.0
+      "face": 180.0
     },
     {
       "name": "TowerLadder_Head",
       "pos": [
-        7.0,
+        6.8,
         12.0,
-        45.9
+        46.4
       ],
-      "yaw": 90.0,
+      "yaw": 180.0,
       "down": true,
       "to": [
-        6.8,
+        6.875,
         6.2,
-        45.9
+        44.7
       ],
       "target": "to the landing",
       "line": [
-        8.335,
-        45.9
+        6.875,
+        45.085
       ],
       "surface": "wood",
-      "face": 90.0
+      "face": 180.0
     },
     {
       "name": "CellarHatch_Up",
@@ -252,7 +252,7 @@
       "to": [
         5.4,
         6.2,
-        43.6
+        43.35
       ],
       "bidirectional": true,
       "line": [
@@ -260,28 +260,30 @@
         42.065
       ],
       "drop": true,
-      "_doc": "T-229: the zombies climb the watchtower's ladder to the landing. T-268: a ladder (line): one at a time up its line, the rest wait at the foot; drop: they come back down it by dropping (ClimbLink)"
+      "_doc": "T-229: the zombies climb the watchtower's ladder to the landing. T-268: a ladder (line): one at a time up its line, the rest wait at the foot; drop: they come back down it by dropping (ClimbLink). T-275: the head is just inside the landing's parapet opening; perch: the siege shake reaches the landing's corners from it",
+      "perch": 5.3
     },
     {
       "name": "Climb_TowerUpper",
       "zone": "YARD",
       "from": [
-        6.8,
+        6.875,
         6.2,
-        45.9
+        44.75
       ],
       "to": [
-        6.8,
+        6.6,
         12.0,
-        45.9
+        46.5
       ],
       "bidirectional": true,
       "line": [
-        8.335,
-        45.9
+        6.875,
+        45.085
       ],
       "drop": true,
-      "_doc": "T-268: the second ladder, from the landing to the top platform"
+      "_doc": "T-268: the second ladder, from the landing to the top platform. T-275: inside the tower, up through the top's hatch (the line over the hatch, the head south of the ladder's head); a body shot on it falls north onto the landing; perch: the siege shake reaches the top's corners",
+      "perch": 5.3
     },
     {
       "name": "Climb_CellarHatch",

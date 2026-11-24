@@ -447,11 +447,16 @@ func test_clip_choice() -> void:
 
 func test_minimum_time_rule() -> void:
 	assert_false(LoadingClips.may_leave(false, 99.0, true, 1.2), "never before the map is in")
-	assert_false(LoadingClips.may_leave(true, 2.9, true, 1.2), "a clip: at least MIN_VIDEO_S")
-	assert_true(LoadingClips.may_leave(true, 3.0, true, 1.2))
-	assert_true(LoadingClips.may_leave(true, 1.2, false, 1.2), "no clip: the old minimum")
+	# the owner asked for 10 to 20 s of clip while it loads: it plays through once (the fade ends on its last frame)
+	assert_false(LoadingClips.may_leave(true, 3.0, true, 1.2, 15.0), "a 15 s clip is not cut at 3 s")
+	assert_false(LoadingClips.may_leave(true, 14.0, true, 1.2, 15.0))
+	assert_true(LoadingClips.may_leave(true, 15.0 - LoadingClips.FADE_OUT_S, true, 1.2, 15.0), "it leaves as the clip ends")
+	assert_false(LoadingClips.may_leave(true, 19.0, true, 1.2, 40.0), "a long clip: up to MAX_VIDEO_S")
+	assert_true(LoadingClips.may_leave(true, LoadingClips.MAX_VIDEO_S, true, 1.2, 40.0))
+	assert_true(LoadingClips.may_leave(true, LoadingClips.FALLBACK_VIDEO_S, true, 1.2, 0.0), "length unknown: the fallback")
+	assert_true(LoadingClips.may_leave(true, 1.2, false, 1.2), "no clip (or skipped): the old minimum")
 	assert_false(LoadingClips.may_leave(true, 1.1, false, 1.2))
-	assert_between(LoadingClips.MIN_VIDEO_S, 2.0, 4.0, "about three seconds: never the whole clip")
+	assert_between(LoadingClips.MAX_VIDEO_S, 10.0, 20.0, "10 to 20 s, as asked")
 	assert_eq(LoadingScreen.MIN_SHOW_S, 1.2, "the plain screen's minimum is what it was")
 
 
