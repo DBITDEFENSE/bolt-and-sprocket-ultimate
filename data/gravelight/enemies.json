@@ -36,7 +36,18 @@
         "villager": 0.2
       },
       "variants_by_map": {
-        "_doc": "Outfit kits per map (MZ, T-041; kits in anim.json). The retired laborer share is the villager kit on Map 0 and the technician kit on Map 1; the Map 1 Intake laborers are story only.",
+        "_doc": "Outfit kits per map (MZ, T-041; kits in anim.json). The retired laborer share is the villager kit on Map 0 and the technician kit on Map 1; the Map 1 Intake laborers are story only. T-269: Map 0 has its own table (the inn and the village are mostly their own people; the default made six in ten of them soldiers in one grey-green uniform) and so has Mondlicht (the station's crew; the default put villagers and miners on the Moon). The kit is look only (build, sex, gear, colours from zombie_wardrobe.json), never health or speed.",
+        "map00_crossroads": {
+          "villager": 0.5,
+          "soldier": 0.32,
+          "miner": 0.12,
+          "labstaff": 0.06
+        },
+        "map04d_mondlicht": {
+          "technician": 0.5,
+          "labstaff": 0.25,
+          "soldier": 0.25
+        },
         "map01_kaltenbrunn": {
           "soldier": 0.3,
           "miner": 0.3,

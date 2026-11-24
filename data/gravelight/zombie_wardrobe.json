@@ -1,0 +1,137 @@
+{
+  "_doc": "T-269 (docs/u21/t269_zombie_look.md): what the walkers wear and how dead they look, per map. Nothing here adds a mesh, a material or a texture: an outfit is three colours (a = the kit's main cloth, b = its second cloth, c = the accent: scarf, shawl, cap, oilskin, hood) written to per-instance shader parameters of the two shared zombie materials, a skin is a tone and a mottling amount. Colours are sRGB hex as they should read in a neutral light; the map's grade then takes about half of the saturation away (data/look/<map>.json mono), which is why they are stronger here than the art bible's 30 % box. pattern: none | stripes | check | dots (on colour a; pattern_color optional, else a darker a). maps.<map>.<kit>: outfit -> weight; a kit a map does not list takes maps.default.<kit>; a kit listed nowhere keeps its baked colours (the Soviet risen, the drowned, the Bellringer). Only plain Gangers are dressed: specials and bosses keep their own look so they stand apart. The choice is a hash of the zombie's net id and its spawn health (ZombieWardrobe.look_seed): the same on host and clients, nothing is sent.",
+  "enabled": true,
+  "slots": {
+    "_doc": "Which part key of a kit's clothes takes which colour (1 = a, 2 = b, 3 = c; a key not listed keeps its own). kit_slots overrides per kit. Gear pieces use the shared table only.",
+    "cloth": 1, "cloth2": 2, "navy": 1, "knit": 3, "hat": 3, "oilskin": 3
+  },
+  "kit_slots": {
+    "dockworker": {"knit": 1, "cloth2": 2},
+    "soviet": {}, "soviet_tunic": {}, "soviet_burial": {}, "bellringer": {}
+  },
+  "light": {
+    "_doc": "Readability in the dark, in the zombie materials only (no map light changes): min_light = the share of its own colour a zombie shows with no light on it at all; rim = a soft edge light tinted by the cloth / skin under it (rim_power: how tight to the silhouette). `-- --zombie-look=norim` switches both off for an A/B.",
+    "min_light": 0.045,
+    "rim": 0.22,
+    "rim_power": 2.6,
+    "rim_color": "#aab6d0"
+  },
+  "wear": {
+    "_doc": "On top of the colour: blood = the range of the per-zombie stain amount on clothes, mouth and hands (0..1); stain_color the dried blood; dead = the range of how sunken the sockets, mouth and hands are and how dark the veins under the skin.",
+    "blood": [0.15, 0.9],
+    "stain_color": "#4a0d0b",
+    "dead": [0.55, 1.0],
+    "vein_color": "#27314a",
+    "socket_color": "#2a0f14"
+  },
+  "skins": {
+    "_doc": "tone multiplies the kit's skin colour, mottle (0..1) is how much of the bruise colour shows in blotches.",
+    "pallid": {"weight": 0.34, "tone": [1.2, 1.1, 0.9], "mottle": 0.3, "mottle_color": "#5b4a63"},
+    "grey_green": {"weight": 0.3, "tone": [0.86, 1.04, 0.66], "mottle": 0.45, "mottle_color": "#3f4a3a"},
+    "bruised": {"weight": 0.22, "tone": [1.0, 0.8, 1.02], "mottle": 0.8, "mottle_color": "#4a2f5c"},
+    "ashen": {"weight": 0.14, "tone": [0.84, 0.94, 1.08], "mottle": 0.5, "mottle_color": "#39405a"}
+  },
+  "outfits": {
+    "farmhand_ochre": {"a": "#b98d3a", "b": "#5c4029", "c": "#a8332a"},
+    "farmhand_blue": {"a": "#4a6ea3", "b": "#7c4727", "c": "#cda42a"},
+    "farmhand_check": {"a": "#a8332a", "b": "#4f3b2a", "c": "#d9cfae", "pattern": "check", "pattern_color": "#3a2320"},
+    "cook": {"a": "#dfd3b2", "b": "#2f4072", "c": "#a8332a"},
+    "barmaid": {"a": "#d9d0b4", "b": "#1f5645", "c": "#a8332a", "pattern": "dots", "pattern_color": "#a8332a"},
+    "postman": {"a": "#2d4180", "b": "#263663", "c": "#cda42a"},
+    "priest": {"a": "#1f1e25", "b": "#1f1e25", "c": "#dcd7c6"},
+    "railway": {"a": "#3d6296", "b": "#2e3d55", "c": "#9c4b22"},
+    "hunter": {"a": "#2f6a3f", "b": "#614831", "c": "#9c4b22"},
+    "sunday_plum": {"a": "#752f5c", "b": "#3c3035", "c": "#dfd3b2"},
+    "sunday_green": {"a": "#1f5c49", "b": "#cfc4a2", "c": "#a8332a"},
+    "sunday_dress": {"a": "#a8332a", "b": "#7f2a26", "c": "#cda42a", "pattern": "dots", "pattern_color": "#dfd3b2"},
+    "nightshirt": {"a": "#dcd7c6", "b": "#d2cab0", "c": "#dfd3b2", "pattern": "stripes", "pattern_color": "#4a5f96"},
+    "striped_shirt": {"a": "#dfd3b2", "b": "#5c4029", "c": "#9c4b22", "pattern": "stripes", "pattern_color": "#a8332a"},
+    "mustard_jacket": {"a": "#c79f2c", "b": "#3a3a52", "c": "#2f6a3f"},
+
+    "field_uniform": {"a": "#586a3c", "b": "#4b5a38", "c": "#586a3c"},
+    "field_faded": {"a": "#74805a", "b": "#525d42", "c": "#74805a"},
+    "field_greatcoat": {"a": "#5d6148", "b": "#3f4a36", "c": "#3f4a36"},
+    "field_shirtsleeves": {"a": "#c2b690", "b": "#4b5a38", "c": "#4b5a38"},
+
+    "miner_ochre": {"a": "#bd8a2e", "b": "#99722a", "c": "#3a332c"},
+    "miner_rust": {"a": "#a14d22", "b": "#7f4020", "c": "#cda42a"},
+    "miner_blue": {"a": "#40649c", "b": "#a67d30", "c": "#3a332c"},
+    "miner_mustard": {"a": "#cda42a", "b": "#6b4428", "c": "#a14d22"},
+    "overseer": {"a": "#dbcfac", "b": "#3c342e", "c": "#93302a"},
+
+    "labcoat_white": {"a": "#dedacd", "b": "#2f4072", "c": "#dedacd"},
+    "labcoat_green": {"a": "#b4cbb0", "b": "#5c4029", "c": "#b4cbb0"},
+    "labcoat_stained": {"a": "#cfc7a8", "b": "#1f5645", "c": "#cfc7a8"},
+    "labcoat_blue": {"a": "#9fb4d2", "b": "#3c3035", "c": "#9fb4d2"},
+
+    "coverall_blue": {"a": "#40649c", "b": "#40649c", "c": "#cda42a"},
+    "coverall_rust": {"a": "#93512a", "b": "#93512a", "c": "#3a332c"},
+    "coverall_olive": {"a": "#667038", "b": "#667038", "c": "#a14d22"},
+    "coverall_mustard": {"a": "#b89c43", "b": "#b89c43", "c": "#2d4180"},
+    "flight_leather": {"a": "#70482a", "b": "#70482a", "c": "#dfd3b2"},
+    "flight_blue": {"a": "#34507f", "b": "#34507f", "c": "#dfd3b2"},
+    "pressure_suit_pale": {"a": "#d8d4c4", "b": "#d8d4c4", "c": "#a8332a"},
+    "pressure_suit_dark": {"a": "#5b6068", "b": "#5b6068", "c": "#d8d4c4"},
+    "pressure_suit_tan": {"a": "#b5a070", "b": "#b5a070", "c": "#2d4180"},
+
+    "sailor_navy": {"a": "#29407c", "b": "#29407c", "c": "#29407c"},
+    "sailor_oilskin_yellow": {"a": "#d9a51a", "b": "#d9a51a", "c": "#d9a51a"},
+    "sailor_oilskin_orange": {"a": "#cb641e", "b": "#cb641e", "c": "#cb641e"},
+    "sailor_striped": {"a": "#dcd7c6", "b": "#29407c", "c": "#29407c", "pattern": "stripes", "pattern_color": "#29407c"},
+    "sailor_whites": {"a": "#d2ccb8", "b": "#d2ccb8", "c": "#29407c"},
+
+    "docker_madder": {"a": "#a8332a", "b": "#4f3b2a", "c": "#d9a51a"},
+    "docker_green": {"a": "#1f5c49", "b": "#614831", "c": "#cb641e"},
+    "docker_indigo": {"a": "#2d4180", "b": "#3a332c", "c": "#d9a51a"},
+    "fisherman_cream": {"a": "#dccfa8", "b": "#2e3d55", "c": "#d9a51a"},
+    "fisherman_mustard": {"a": "#c79f2c", "b": "#2e3d55", "c": "#3d4a30"},
+    "docker_rust": {"a": "#a14d22", "b": "#29407c", "c": "#cb641e"},
+
+    "nurse_blue": {"a": "#5c7cab", "b": "#2f4072", "c": "#5c7cab"}
+  },
+  "maps": {
+    "_doc": "Per map and kit: outfit -> weight.",
+    "default": {
+      "villager": {"farmhand_ochre": 3, "farmhand_blue": 3, "farmhand_check": 2, "cook": 2, "barmaid": 1.5, "postman": 1.5, "priest": 0.5, "railway": 2, "hunter": 2, "sunday_plum": 1.5, "sunday_green": 1.5, "sunday_dress": 1.5, "nightshirt": 1.5, "striped_shirt": 2, "mustard_jacket": 1.5},
+      "soldier": {"field_uniform": 5, "field_faded": 3, "field_greatcoat": 2, "field_shirtsleeves": 1.5},
+      "miner": {"miner_ochre": 4, "miner_rust": 3, "miner_blue": 2, "miner_mustard": 2, "overseer": 1},
+      "labstaff": {"labcoat_white": 4, "labcoat_green": 2, "labcoat_stained": 2, "labcoat_blue": 1.5},
+      "technician": {"coverall_blue": 4, "coverall_rust": 3, "coverall_olive": 2, "coverall_mustard": 2},
+      "sailor": {"sailor_navy": 3, "sailor_oilskin_yellow": 3, "sailor_oilskin_orange": 2, "sailor_striped": 2, "sailor_whites": 1},
+      "dockworker": {"docker_madder": 3, "docker_green": 2, "docker_indigo": 2, "fisherman_cream": 2, "fisherman_mustard": 2, "docker_rust": 2},
+      "nurse": {"nurse_blue": 1}
+    },
+    "map00_crossroads": {
+      "_doc": "The inn and the village: farmhands, the inn's own people, a postman, the priest, a railwayman, a hunter, Sunday clothes, people caught in their nightshirts; soldiers of the occupation force in field green; the odd miner come down from Kaltenbrunn.",
+      "miner": {"miner_ochre": 3, "miner_rust": 2, "overseer": 1}
+    },
+    "map01_kaltenbrunn": {
+      "_doc": "The mine town: ochre and rust overalls, blue drill, the overseers in shirt and waistcoat; the Werk's lab staff and technicians.",
+      "miner": {"miner_ochre": 5, "miner_rust": 4, "miner_blue": 2, "miner_mustard": 2, "overseer": 1.5},
+      "technician": {"coverall_blue": 3, "coverall_rust": 3, "coverall_mustard": 2, "coverall_olive": 1}
+    },
+    "map02_totenhafen": {
+      "_doc": "The harbour: dockers and fishermen in wool, sailors in navy, stripes and oilskins.",
+      "sailor": {"sailor_navy": 3, "sailor_oilskin_yellow": 4, "sailor_oilskin_orange": 2.5, "sailor_striped": 2.5, "sailor_whites": 1}
+    },
+    "map04a_thalbach": {
+      "_doc": "Werk Thalbach: factory hands in coveralls, townspeople, the guard.",
+      "technician": {"coverall_blue": 4, "coverall_rust": 3, "coverall_olive": 2, "coverall_mustard": 2}
+    },
+    "map04b_kranich": {
+      "_doc": "The flight: ground crew in coveralls, flight crew in leather and blue with a pale scarf.",
+      "technician": {"coverall_blue": 3, "coverall_mustard": 2, "coverall_olive": 2, "flight_leather": 3, "flight_blue": 2}
+    },
+    "map04c_groomlake": {
+      "_doc": "The test site: lab coats, coveralls bleached by the desert.",
+      "technician": {"coverall_mustard": 3, "coverall_blue": 3, "coverall_rust": 2, "coverall_olive": 1},
+      "labstaff": {"labcoat_white": 4, "labcoat_stained": 3, "labcoat_blue": 2, "labcoat_green": 1}
+    },
+    "map04d_mondlicht": {
+      "_doc": "The Moon: pressure suits. The map's grade is black and white by rule (violet the only colour), so these differ in value, not hue: pale, tan and dark suits.",
+      "technician": {"pressure_suit_pale": 4, "pressure_suit_tan": 2.5, "pressure_suit_dark": 2},
+      "labstaff": {"labcoat_white": 3, "pressure_suit_pale": 2, "pressure_suit_dark": 1.5},
+      "soldier": {"pressure_suit_dark": 3, "field_greatcoat": 2, "pressure_suit_tan": 2}
+    }
+  }
+}

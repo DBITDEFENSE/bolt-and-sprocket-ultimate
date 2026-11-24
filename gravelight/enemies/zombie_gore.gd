@@ -105,6 +105,12 @@ static func _throw_piece(z: Zombie, bone: String, impulse: Vector3) -> void:
 	mi.mesh = own if own != null else ZombieBody.piece_mesh(z.kit_name(), z.build_name(), z.is_female(), bone)
 	mi.scale = z.pivot_scale()
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	# T-269: the piece shares the body's two materials: it carries the body's instance parameters, so the sleeve
+	# that comes off is the colour of the jacket it came off (and as dirty, as bloody, as burnt)
+	var look: Dictionary = z.instance_look()
+	for key: String in look.keys():
+		if key != "inst_dissolve":
+			mi.set_instance_shader_parameter(key, look[key])
 	body.add_child(mi)
 	var stump: MeshInstance3D = MeshInstance3D.new()
 	stump.mesh = ZombieBody.stump_mesh()

@@ -2524,7 +2524,7 @@ func _apply_variant(variant: String) -> void:
 			pieces.append(piece1)
 			break
 	for piece: String in pieces:
-		var spec: Array = ZombieBody.gear_mesh(piece, _female)
+		var spec: Array = ZombieBody.zombie_gear_mesh(piece, _female)   # T-269: one surface on the kit material
 		var at: BoneAttachment3D = bone_attachment(str(spec[0]))
 		if at == null:
 			continue
@@ -2553,9 +2553,40 @@ func _apply_variant(variant: String) -> void:
 	_frost_base = randf_range(float(fr[0]), float(fr[1]))
 	_set_inst("inst_frost", _frost_base)
 	_set_inst("inst_fuel", 0.0)
+	_apply_look()
 	# posture trait, locomotion clip and the cadence
 	_roll_posture()
 	_pick_locomotion()
+
+
+## T-269: the outfit's colours and the dead skin (ZombieWardrobe), as instance parameters of the two shared
+## materials. From the net id and the spawn health, both on every peer: a co-op puppet is dressed like the host's
+## zombie and nothing is sent. Only plain Gangers are dressed; a special keeps its kit's own look.
+func _apply_look() -> void:
+	var params: Dictionary = {}
+	_outfit = ""
+	if enemy_id == &"ganger":
+		var id: int = net_id if net_id >= 0 else int(get_instance_id() % 1000003)
+		var look: int = ZombieWardrobe.look_seed(id, max_hp)
+		params = ZombieWardrobe.look_params(String(GameState.map_id), _variant, look)
+		if not params.is_empty():
+			_outfit = ZombieWardrobe.outfit_name(String(GameState.map_id), _variant, look)
+	if params.is_empty():
+		params = ZombieWardrobe.neutral_params()
+	for key: String in params.keys():
+		_set_inst(key, params[key])
+
+
+var _outfit: String = ""
+
+## The wardrobe outfit this body wears ("" = its kit's own colours).
+func outfit_name() -> String:
+	return _outfit
+
+
+## The per-instance shader parameters of this body (a severed piece carries the same ones: ZombieGore).
+func instance_look() -> Dictionary:
+	return _inst
 
 
 func _roll_posture() -> void:
