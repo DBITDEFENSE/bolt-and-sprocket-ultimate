@@ -123,3 +123,82 @@ window's two curtains in the draught from `W_B_N` (they billow harder as its boa
 when shot on the hut's desk and on the signal room's chart table (`ShatterSet`). Nothing collides, nothing changes the
 navmesh, nothing casts a shadow. Paper (`PaperDecor`) left out: its kinds are Map 0's (the inn's December calendar,
 the patrol's map, the cousins' drawings).
+
+## 5. Not built: the round-1 opening and the survivors
+
+Left for a later pass (the run's time went to items 1 to 4 and their checks). What each needs, from reading
+`inn_opening.gd` / `inn_survivors.gd` (both already take any map: `data/gravelight/map02_opening.json` /
+`map02_survivors.json`, `"map": "map02_totenhafen"`):
+- **Survivors in the torpedo store** (the smaller job): `reveal_door` `door_workshop`; two or three sailors hidden in
+  the warhead cage (x 52..62, z 16..24; its gap at x 52, z 19..21; keep clear of the crate spot `Warheads` at
+  `(58.6, 0, 19)` and the lead coffins), posts in the workshop facing its windows (`W_C_E1/E2`, `W_C_N`); an `arm`
+  row (a gun and a price); the `ally` numbers can be Map 0's. Each survivor needs nine text lines in `lines.json`
+  (reveal, scared x2, flinch, armed, fight, hurt, downed, death: the "SURV_*" categories), an `audio_manifest.json`
+  "missing" row for each, a speaker code and probably a `people.json` look; then an `InnSurvivors` node under
+  Gameplay (gen_map02) and a smoke like `smoke_inn_survivors` for the map.
+- **The opening (dockworkers flee the cannery)**: the players start on the quay, the cannery is behind a 1000 door.
+  An `InnFrontDoor` is a doorway the generator fills with an invisible collider until it is unbarred: a second
+  doorway from the cannery onto the quay would skip the paid door unless it is barred again for good after round 1
+  (the script re-bars at `bar_at`, which fits). The patrons' routes would run out of that door, across the quay and
+  down the surf steps at the parapet's ends (both steps are already ground spawns' heads: `(2, 0, 2)`,
+  `(31, 0, 1.6)`), with `attackers` rising there; a `flare.light` (the quay's brazier) and the title card. The tide
+  is not touched by either (round 1 is before its `min_round` 3).
+- **The optional U-boat surfacing** (a round event of the map's own with `uboat_sail.gd` and the drowned / Kielholer
+  kinds): not started.
+
+## Cost, all of it (scene census, master -> this branch)
+
+Every MeshInstance3D / Light3D / CollisionShape3D in `map02.tscn`: meshes 1210 -> 1241 (+31 draw calls at most: 23
+for the boat where the quay is drawn, 8 in the hall), triangles 381,361 -> 403,567 (+22,206; in shadow casters
++14,374), lights 192 -> 193 (+1: the boat's fire light, hidden until round 30's bomb, no shadow), shadowed lights 22
+(unchanged), collision shapes 1288 -> 1300 (+12: the balcony and its rails, the zip post, the tower wall's new
+pieces, five perk footprints that are bake-only and switched off at runtime). Everything new batches into
+`StaticBatches` (the boat into `VisGroup_A`, the hall pieces by their boxes) except the hull's four lofted meshes,
+which are in `VisGroup_A` too. The reactive props are scripts built at load (idle when nobody is near), no lights.
+`perf_marks` was not run (it opens a rendered window); the census is the headless count.
+
+## Results (headless, this PC, 2026-11-24)
+
+- `check_scripts`: 0 failed.
+- Full GUT: 2599 tests, 2598 passing, 0 failing, 1 risky (the known `test_neural_lines_are_loudness_normalised`).
+  New: `test_map02_detail` (10 tests). Changed: `test_map_detail` (Totenhafen has a dive bomber now; a raid
+  landmark may stand outside every zone, out on the water).
+- Smokes, all PASS with 0 script errors: `smoke_map_detail` (155 checks), `smoke_ladders` (twice), `smoke_coop`,
+  `smoke_sherman` (74), `smoke_weapon_locker`, `smoke_map02`, `smoke_map02_art`, `smoke_map02_world`,
+  `smoke_ammo_box`, `smoke_bank`, `smoke_bots_u10`, `smoke_lf_start`.
+- Minimap rebaked under WSL (`bake_minimap --map=map02_totenhafen`), PNGs imported; `test_mapdata` passes.
+- Not run: the other bot smokes, `smoke_campaign`, `smoke_kielholer`, `smoke_undertow`, `smoke_horse_boss`,
+  `perf_marks`.
+
+## Not verified
+
+- Seen only through the software Compatibility renderer (WSL + Xvfb). The boat at night is a silhouette with riding
+  lamps; its fire, the balcony's lamps and the ladders want a look on a real GPU.
+- The raid's new lines have no voice (subtitle with a timed silence until a bake).
+- Co-op: the boat's fire shows on every peer from the mirrored dive (the show runs before the puppet's return); not run
+  on two machines. A client joining after round 30 does not see the fire.
+- The perk deal's live run on Totenhafen (a match with PerkLayout dealing from a random seed, buying at a dealt
+  machine) is covered by the smokes that load the map with a match (smoke_map02, smoke_bank found Ledger Lager
+  wherever it stood), not by a dedicated smoke like Map 0's `smoke_map00_cellar_bay`.
+- Bots: the Totenhafen plan buys perks by id; when the deal puts Ironhide in the signal tower the plan's order
+  (Ironhide right after the workshop door) waits on the tower; smoke_bots_u10 passed, a long solo-bot run on many
+  seeds was not made.
+
+## For DECISIONS.md (the main session writes it at the merge)
+
+**T-273: Totenhafen's map detail pass (the geometry step).** Branch `claude/detail-map02`, notes
+`docs/u21/t273_map02_detail.md`, renders `docs/captures/t273/`. Round 30's raid opens with a dive bomber after all:
+its landmark is the patrol boat V 1507 (a Vorpostenboot, `DetailMap02.patrol_boat`) moored 20 m off the parapet,
+`stuka_target` its wheelhouse, its fire shown at the hit (`ShermanEvent.stuka_hit_show`), the raid's own banner and
+Operator lines (`OPR_RAID_M2_WARN_01` / `_CLEAR_01`, not Map 0's cellars), a stone burst on the concrete quay
+(`AirRaid.burst_fx` kinds; defaults unchanged for Map 0 and Kaltenbrunn). Drawn ladders at the three catwalk climb
+links with the players' LadderClimbs on the zombies' lines (now ladder links: one at a time, they drop back down;
+the east link moved off the east stair's foot to z 72, the north to x 15 and the west to z 55.5, clear of the tide's
+catwalk spawns). A signal balcony outside a new door in the tower's south wall and one zip line from it, 12.3 m at 27
+degrees down to the east apron (no chain: it lands in the Pen Hall the tower is reached through); a second line from
+a 4 m catwalk was not worth a post. The perk deal on Totenhafen: twelve spots for the seven machines (the seven old
+places and five new wall spots found with locker_spot's scan), `perk_layout.json` `map02`, the scene saved with the
+seed-0 deal, the minimap rebaked. Reactive props built at load: drips, three doors left ajar, the infirmary's
+curtains, glassware that breaks. Not built: the round-1 opening (dockworkers flee the cannery), the sailors in the
+torpedo store and the optional U-boat surfacing (what each needs is in the notes). Cost: +31 meshes at most, +22 k
+triangles, one hidden unshadowed light.
