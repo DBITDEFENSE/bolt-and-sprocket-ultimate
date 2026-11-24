@@ -16890,8 +16890,7 @@
         {"name": "perk_apron_night", "pos": [18.0, 0.0, 38.6], "yaw": 0.0, "pitch": 4.0, "note": "the north apron's perk spot under the catwalk"},
         {"name": "infirmary_night", "pos": [-16.5, 0.0, 6.0], "yaw": 90.0, "pitch": -2.0, "note": "the cannery infirmary's east door left ajar, the curtains beyond"},
         {"name": "survivors_night", "pos": [49.0, 0.0, 21.5], "yaw": -100.0, "pitch": -8.0, "note": "the two sailors revealed in the warhead cage", "do": ["callv:DayCycle:hold_hour:0:1", "power", "open:Door_Workshop", "wait:2"]},
-        {"name": "opening_door_night", "pos": [7.0, 0.0, 5.5], "yaw": 72.0, "pitch": -4.0, "settle_s": 1.0, "note": "the round-1 opening: the cannery's side door open, the night shift coming out (a still timed after the map's start)", "do": ["wait:8.0"]},
-        {"name": "opening_after_night", "pos": [7.0, 0.0, 5.5], "yaw": 72.0, "pitch": -4.0, "settle_s": 1.0, "note": "a few seconds later", "do": ["wait:5.0"]}
+        {"name": "side_door_night", "pos": [7.0, 0.0, 5.5], "yaw": 72.0, "pitch": -4.0, "note": "the cannery's side door onto the quay, shut (the round-1 opening's door; a capture holds the rounds, so the opening does not play here)"}
       ]
     }
   }
