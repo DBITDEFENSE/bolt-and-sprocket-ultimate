@@ -143,6 +143,27 @@ class _Thing extends Interactable:
 		pass
 
 
+class _ThingWithInit extends Interactable:
+	var made: bool = false
+	func _init() -> void:
+		made = true
+	func _ready() -> void:
+		super._ready()
+	func build_greybox() -> void:
+		pass
+
+
+func test_an_interactable_with_its_own_init_is_in_the_group_too() -> void:
+	var t: _ThingWithInit = _ThingWithInit.new()
+	assert_true(t.made)
+	assert_false(t.is_in_group(&"interactables"), "not before it is in the tree (as the walk over the map did not find it)")
+	add_child_autofree(t)
+	assert_true(t.is_in_group(&"interactables"), "a subclass with an _init of its own joins the group in _ready")
+	var use: Horse.HorseUse = Horse.HorseUse.new()   # (an inner class with an _init of its own)
+	add_child_autofree(use)
+	assert_true(use.is_in_group(&"interactables"))
+
+
 func test_the_interactables_come_from_their_group_in_tree_order() -> void:
 	var map: Node3D = Node3D.new()
 	add_child_autofree(map)
