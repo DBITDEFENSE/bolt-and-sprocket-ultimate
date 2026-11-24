@@ -53,6 +53,8 @@ var _hum_t: float = 0.0
 ## T-237: the bank's one-shot sounds loaded in the background from the start of a match (StreamWarm), so the first
 ## shot of a gun, the first footstep on a floor or the first purchase doesn't load its file in that frame.
 var warm: StreamWarm = StreamWarm.new()
+var sync_loads: int = 0
+var sync_log: PackedStringArray = []   # "<sound>@<physics frame>" of the first 64 (perf_marks prints them)
 
 
 func _ready() -> void:
@@ -76,6 +78,7 @@ func _ready() -> void:
 	_connect_events()
 	apply_volumes()
 	warm.in_flight_max = 6
+	warm_bank.call_deferred()   # T-265 (a no-op where background loading is off: StreamWarm.enabled)
 
 
 func _make_player(bus_name: StringName) -> AudioStreamPlayer:
@@ -134,6 +137,10 @@ func _streams(sound_name: String) -> Array:
 	for f: Variant in e.get("files", []):
 		var path: String = str(f)
 		if ResourceLoader.exists(path):
+			if not ResourceLoader.has_cached(path):
+				sync_loads += 1   # (the measuring tools: a file loaded in the frame that played it)
+				if sync_log.size() < 64:
+					sync_log.append("%s@%d" % [sound_name, Engine.get_physics_frames()])
 			var s: AudioStream = load(path) as AudioStream
 			if s != null:
 				found.append(s)
@@ -544,18 +551,24 @@ func _on_match_started(map_id: StringName) -> void:
 	warm_bank()
 
 
-## T-237: queues every one-shot sound of the bank (the SFX and Jingles buses; not the music and the ambience beds,
-## which are long and start with the map anyway) for background loading. Sounds already played are cache hits.
+## T-237: queues the bank's sounds for background loading: everything but the looping beds of the Music and
+## Ambience buses (long, and they start with the map anyway). Sounds already played are cache hits.
+## T-265: the one-shots of the Ambience and Music buses too (a gust, a stable creak, a round's stinger: 20-30 ms
+## each on the frame that first played one, 40 MB in all) and the short loops of the SFX bus (a machine's hum,
+## the crate, an engine: 10 MB); and the warm-up starts when the game does (_ready), not with the first match,
+## so the first match's first seconds no longer load what they play.
 func warm_bank() -> void:
 	for key: Variant in _sounds.keys():
 		var e: Dictionary = _sounds[key]
-		if _cache.has(str(key)) or bool(_opt(e, "loop", false)):
-			continue
-		var bus: String = str(_opt(e, "bus", "SFX"))
-		if bus == "Music" or bus == "Ambience":
+		if _cache.has(str(key)) or not warm_wanted(str(_opt(e, "bus", "SFX")), bool(_opt(e, "loop", false))):
 			continue
 		for f: Variant in e.get("files", []):
 			warm.add(str(f))
+
+
+## Pure: is a sound on `bus`, looping or not, loaded ahead of its first play? All but the Music / Ambience beds.
+static func warm_wanted(bus: String, loop: bool) -> bool:
+	return not (loop and (bus == "Music" or bus == "Ambience"))
 
 
 func _on_round_started(round_number: int, is_special: bool) -> void:

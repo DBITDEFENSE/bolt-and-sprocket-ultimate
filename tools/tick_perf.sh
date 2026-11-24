@@ -45,9 +45,9 @@ while [ "$r" -le "$RUNS" ]; do
 	LOG="$OUT/${SC}_$r.log"
 	if [ "$HIGH" = 1 ]; then
 		cmd //c start "" //b //high //wait "$(cygpath -w "$GODOT")" --headless --audio-driver Dummy --fixed-fps 60 --path . \
-			res://gravelight/tools_src/perf_marks.tscn -- --preset=low --hitch --no-marks --probe-all --seed=7 --secs=30 $F "$@" > "$LOG" 2>&1
+			res://gravelight/tools_src/perf_marks.tscn -- --preset=low --hitch --no-marks --probe-all --vo-async --seed=7 --secs=30 $F "$@" > "$LOG" 2>&1
 	else
-		"$GODOT" --headless --audio-driver Dummy --fixed-fps 60 --path . res://gravelight/tools_src/perf_marks.tscn -- --preset=low --hitch --no-marks --probe-all --seed=7 --secs=30 $F "$@" > "$LOG" 2>&1
+		"$GODOT" --headless --audio-driver Dummy --fixed-fps 60 --path . res://gravelight/tools_src/perf_marks.tscn -- --preset=low --hitch --no-marks --probe-all --vo-async --seed=7 --secs=30 $F "$@" > "$LOG" 2>&1
 	fi
 	echo "== $SC run $r (exit $?)"
 	grep -E "^\[hitch\] (frame wall|scripts per)" "$LOG"

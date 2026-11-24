@@ -29,7 +29,8 @@ extends Node
 ## left lying about (corpses, ragdoll bones, rigid bodies, decals) and the planner bot's ask counts.
 ## `--ab=no_piece_warm` leaves the zombies' severed pieces to be cut in the frame that first needs each (the
 ## before of ZombieBody.warm_pieces, docs/perf/movement_perf_2026-11.md). `--ab=no_view_lod` (T-265) animates the
-## zombies by distance only (the before of the camera's-view rate). `--seed=N` seeds the global random
+## zombies by distance only (the before of the camera's-view rate). `--vo-async` (T-265) starts voice lines as
+## the windowed game does: when a loader thread has brought the file (a headless run loads it on the spot). `--seed=N` seeds the global random
 ## number generator before the map loads (a `--live` round then starts from the same rolls; it still plays out
 ## differently run to run, the loader threads' timing is not seeded).
 ## T-265 (the scripts' cost per tick): `--tank` parks the round-30 Sherman and lets it cover the yard (ShermanEvent
@@ -75,6 +76,7 @@ var _gap_worst: Array = []   # [us, text]: the longest gaps after the physics sc
 var _nav_iter: int = -1      # the navigation map's iteration (it counts the map's rebuilds)
 var _nav_syncs: int = 0
 var _gap_skip: int = 0       # the probe's own tree walk inside the current gap (taken off it)
+var _win_frame: int = -1     # the physics frame the sampled window began at
 ## --hitch: wall microseconds per frame, the scripts' microseconds per physics tick, the worst ticks [us, text]
 var _wall: PackedInt32Array = []
 var _wall_prev: int = 0
@@ -137,6 +139,8 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	BotProf.on = _hitch
 	BotProf.reset()
+	if "--vo-async" in OS.get_cmdline_user_args():   # T-265: a headless run with the windowed game's voice loading
+		GLVO.set("async_start", true)
 	if "no_view_lod" in _ab:   # T-265: the zombies animated by distance only, as before the camera's view counted
 		(load("res://gravelight/enemies/zombie.gd") as GDScript).set("view_lod", false)
 	if "no_piece_warm" in _ab:   # (set through the script object: this tool also runs on a build without the switch)
@@ -260,6 +264,8 @@ func _process(delta: float) -> void:
 			if "--mm-bench" in OS.get_cmdline_user_args() and _t > 16.0 and _t - delta <= 16.0:
 				_minimap_bench()
 			if (_quick and _census_done) or (_t > 9.0 and _t < _t_end):
+				if _win_frame < 0:
+					_win_frame = Engine.get_physics_frames()
 				_samples.append(delta)
 				_frame_stats(delta)
 				if _hitch:
@@ -644,6 +650,10 @@ func _report_hitch() -> void:
 			print("[hitch] " + (pl as BotPlanner).status_line())
 	if "--diag" in OS.get_cmdline_user_args():
 		_diag()
+	if GLVO.get("late_starts") != null:
+		print("[hitch] work counted: voice lines whose start waited for a loader thread %d, voice files loaded in the frame that needed them %d, sound files loaded in the frame that played them %d (async voice %s)" % [
+			int(GLVO.get("late_starts")), int(GLVO.get("sync_loads")), int(AudioDirector.get("sync_loads")), str(GLVO.get("async_start"))])
+		print("[hitch]   sounds loaded in their frame (name@physics frame; the window began at frame %d): %s" % [_win_frame, ", ".join(AudioDirector.get("sync_log") as PackedStringArray)])
 	var dc: DayCycle = DayCycle.of(_map)
 	if dc != null and dc.get("full_frames") != null:
 		print("[hitch] work counted: the day wrote its values in %d frames and found nothing to write in %d" % [int(dc.get("full_frames")), int(dc.get("skipped_frames"))])

@@ -165,3 +165,15 @@ func test_the_named_rates() -> void:
 	assert_eq(BotLocomotion.NAV_LOOK_S, 0.2, "a walking bot asks the navmesh under it five times a second")
 	assert_eq(CoopHud.ROWS_EVERY_S, 0.1, "the squad panel's rows are gathered ten times a second")
 	assert_eq(Zombie.VIEW_OUT_DIV, 4)
+
+
+# ------------------------------------------------------------------ sounds and voices are not loaded in the frame
+
+func test_the_bank_is_loaded_ahead_but_for_the_beds() -> void:
+	assert_true(AudioDirector.warm_wanted("SFX", false))
+	assert_true(AudioDirector.warm_wanted("SFX", true), "a machine's hum, an engine: short loops")
+	assert_true(AudioDirector.warm_wanted("Ambience", false), "a gust, a creak")
+	assert_true(AudioDirector.warm_wanted("Music", false), "a round's stinger")
+	assert_false(AudioDirector.warm_wanted("Ambience", true), "the map's bed starts with the map")
+	assert_false(AudioDirector.warm_wanted("Music", true))
+
