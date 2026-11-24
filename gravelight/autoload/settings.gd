@@ -50,6 +50,10 @@ const HANDHELD_PRESET: String = "handheld"
 ## (effective_scale) and the upscaler fills the screen; the menus and the HUD always draw at the panel's full
 ## resolution. First launch sets it on Apple silicon by chip tier (detect_max_lines); elsewhere it starts at 0.
 const MAX_LINES_STEPS: PackedInt32Array = [0, 720, 900, 1080, 1200, 1440, 1800, 2160]
+## T-264: the Small text setting's values (ui_text_floor): as designed (the smallest print, 13, is 8.7 real pixels
+## on a 1280x800 screen), 15 (10 real pixels there), 18 (12 real pixels).
+const TEXT_FLOORS: PackedInt32Array = [0, 15, 18]
+const HANDHELD_TEXT_FLOOR: int = 15
 ## The quality tiers behind the individual settings (RenderingServer's global quality, per tier).
 const SHADOW_Q: Dictionary = {   # [directional atlas, positional atlas, soft filter quality 0..5]
 	"low": [1024, 1024, 1], "medium": [2048, 2048, 2], "high": [4096, 4096, 3], "ultra": [8192, 8192, 4]}
@@ -82,6 +86,7 @@ var values: Dictionary = {
 	"post_ca": true,               # numbers are data/look/<map>.json `post`, the web profile's _web.json
 	"graphics_preset": "high",
 	"gfx_max_lines": 0,            # T-264: the 3D picture is at most this many lines high (0 = no limit); MAX_LINES_STEPS
+	"ui_text_floor": 0,            # T-264 Small text: 0 (as designed) / 15 / 18: no menu or HUD text below this size (MenuKit.text_floor)
 	"zombie_smooth": true,         # T-162: the zombies' meshes interpolated between physics ticks (above 60 Hz), within the full-rate animation distance
 	"smooth_motion": true,         # T-133: camera + viewmodel at the render rate, the eye interpolated (high-refresh screens)
 	"brightness": 1.0,             # T-133: scales each map's own adjustment brightness (0.7..1.4)
@@ -138,6 +143,8 @@ func _ready() -> void:
 		var picked: String = auto_detect_preset()   # T-139: first launch picks low / medium / high / web from the GPU
 		var adapter: String = RenderingServer.get_video_adapter_name()
 		values["gfx_max_lines"] = detect_max_lines(adapter)   # T-264: Apple silicon behind a Retina panel
+		if picked == HANDHELD_PRESET:
+			values["ui_text_floor"] = HANDHELD_TEXT_FLOOR      # T-264: a 7 inch screen: no text under 10 real pixels
 		print("[GLSettings] first launch: graphics preset %s, 3D limit %d lines (%s)" % [picked, int(values["gfx_max_lines"]), adapter])
 		set_preset(picked)
 		if picked == HANDHELD_PRESET and has_node("/root/Settings") and not FileAccess.file_exists(str(get_node("/root/Settings").get("path"))):
@@ -210,6 +217,7 @@ func load_settings() -> void:
 		if cfg.has_section_key("settings", str(k)):
 			values[str(k)] = cfg.get_value("settings", str(k))
 	overrides = cfg.get_value("bindings", "overrides", {})
+	MenuKit.text_floor = clampi(int(values.get("ui_text_floor", 0)), 0, 24)
 	if not cfg.has_section_key("settings", "bot_ee_help_rev"):
 		values["bot_ee_help"] = "full"   # T-086: the default became Full Partner; an older file took "ask" as the default
 		values["bot_ee_help_rev"] = 2
@@ -686,6 +694,7 @@ static func apply_aa(vp: Viewport, mode: String) -> void:
 
 
 func apply_visuals() -> void:
+	MenuKit.text_floor = clampi(int(values.get("ui_text_floor", 0)), 0, 24)   # T-264: the Small text setting
 	if _cb_rect != null:
 		var mode: int = maxi(0, COLORBLIND_MODES.find(str(values.get("colorblind", "off"))))
 		_cb_rect.visible = mode > 0

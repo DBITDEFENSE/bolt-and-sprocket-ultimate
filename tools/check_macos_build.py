@@ -75,7 +75,11 @@ def main():
     if not plists:
         bad.append("no Contents/Info.plist")
     else:
-        pl = plistlib.loads(z.read(plists[0]))
+        try:
+            pl = plistlib.loads(z.read(plists[0]))
+        except Exception as e:  # an unescaped "&" in the app name made this invalid XML once (T-264)
+            bad.append("Info.plist does not parse (%s): macOS cannot start this app" % e)
+            pl = {}
         exe_name = pl.get("CFBundleExecutable")
         for k in ("CFBundleName", "CFBundleDisplayName", "CFBundleIdentifier", "CFBundleExecutable", "CFBundleShortVersionString", "CFBundleVersion",
                   "LSMinimumSystemVersionByArchitecture", "LSArchitecturePriority", "NSHighResolutionCapable", "LSApplicationCategoryType", "CFBundleIconFile"):
@@ -107,6 +111,25 @@ def main():
     pcks = [n for n in names if n.endswith(".pck")]
     for n in pcks:
         print("[check_macos]   pck %s, %d bytes" % (n, z.getinfo(n).file_size))
+        # which compressed-texture variants the pack carries (file names are plain text in a pack's directory)
+        counts = {b".s3tc.ctex": 0, b".bptc.ctex": 0, b".etc2.ctex": 0, b".astc.ctex": 0}
+        with z.open(n) as f:
+            tail = b""
+            while True:
+                chunk = f.read(1 << 24)
+                if not chunk:
+                    break
+                data = tail + chunk
+                for k in counts:
+                    counts[k] += data.count(k)
+                tail = data[-16:]
+                for k in counts:
+                    counts[k] -= tail.count(k)
+            for k in counts:
+                counts[k] += tail.count(k)
+        print("[check_macos]     texture names in the pack: " + ", ".join("%s x%d" % (k.decode(), v) for k, v in counts.items()))
+    fw = sorted({n.split(".framework/")[0] + ".framework" for n in names if ".framework/" in n})
+    print("[check_macos]   frameworks: %s" % (", ".join(fw) or "none"))
     if not pcks:
         bad.append("no .pck in Contents/Resources")
     seal = [n for n in names if n.endswith("_CodeSignature/CodeResources")]

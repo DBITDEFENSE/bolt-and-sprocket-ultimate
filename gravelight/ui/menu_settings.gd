@@ -432,6 +432,11 @@ func _access() -> void:
 	var cur: int = maxi(0, modes.find(str(GLSettings.values.get("colorblind", "off"))))
 	content.add_child(MenuKit.row("Colorblind mode", MenuKit.options(PackedStringArray(["Off", "Protanopia", "Deuteranopia", "Tritanopia"]), cur,
 		func(i: int) -> void: GLSettings.set_value("colorblind", modes[i]))))
+	content.add_child(MenuKit.section("Text"))   # T-264
+	var floors: PackedInt32Array = GLSettings.TEXT_FLOORS
+	content.add_child(MenuKit.row("Small text", MenuKit.options(PackedStringArray(["As designed", "Larger (small screens)", "Largest"]),
+		maxi(0, floors.find(int(GLSettings.values.get("ui_text_floor", 0)))), func(i: int) -> void: GLSettings.set_value("ui_text_floor", floors[i]))))
+	content.add_child(MenuKit.help("Raises the smallest print in the menus and the HUD (hints, captions, map notes) for a small or distant screen. Applies to each screen the next time it opens."))
 	content.add_child(MenuKit.section("Subtitles"))
 	content.add_child(MenuKit.switch_row("Subtitles", bool(GLSettings.values.get("subtitles", true)), _setter("subtitles")))
 	var sizes: PackedStringArray = SUBTITLE_SIZES   # T-218 (gravelight/ui/subtitles.gd reads both)

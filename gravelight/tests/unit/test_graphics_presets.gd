@@ -191,3 +191,48 @@ func test_set_preset_handheld_writes_gates_and_survives_a_restart() -> void:
 	GLSettings.load_settings()
 	GLSettings.values = _saved.duplicate(true)
 	GLSettings.apply_visuals()
+
+
+func test_pad_ui_actions_are_bound_once() -> void:
+	# GLSettings._ready already ran: A confirms and B goes back, and asking again adds nothing
+	assert_eq(GLSettings.ensure_pad_ui_actions(), 0, "bound at start, not twice")
+	var want: Dictionary = {&"ui_accept": JOY_BUTTON_A, &"ui_cancel": JOY_BUTTON_B}
+	for action: StringName in want.keys():
+		var e: InputEventJoypadButton = InputEventJoypadButton.new()
+		e.device = 3
+		e.button_index = want[action] as JoyButton
+		e.pressed = true
+		assert_true(e.is_action_pressed(action), "%s answers to the pad on any device" % action)
+		var pads: int = 0
+		for ev: InputEvent in InputMap.action_get_events(action):
+			if ev is InputEventJoypadButton:
+				pads += 1
+		assert_eq(pads, 1, "%s has one pad button" % action)
+
+
+func test_small_text_floor() -> void:
+	var before: int = MenuKit.text_floor
+	MenuKit.text_floor = 0
+	var fine: int = MenuKit.size("fine")
+	var title: int = MenuKit.size("title")
+	assert_lt(fine, 15, "the scale has print under 15")
+	assert_eq(MenuKit.px(14), MenuKit.px(14))
+	MenuKit.text_floor = 15
+	assert_eq(MenuKit.size("fine"), 15, "the floor lifts the smallest size")
+	assert_gte(MenuKit.px(12), 15)
+	assert_gte(MenuKit.px(14), 15)
+	assert_eq(MenuKit.size("title"), title, "and leaves the big sizes alone")
+	MenuKit.text_floor = 18
+	assert_eq(MenuKit.size("caption"), 18)
+	assert_eq(MenuKit.size("title"), title)
+	MenuKit.text_floor = before
+	for f: int in GLSettings.TEXT_FLOORS:
+		assert_true(f == 0 or f >= 15)
+	assert_true(GLSettings.TEXT_FLOORS.has(GLSettings.HANDHELD_TEXT_FLOOR), "the menu offers what a handheld gets at first launch")
+	GLSettings.values["ui_text_floor"] = 18
+	GLSettings.apply_visuals()
+	assert_eq(MenuKit.text_floor, 18, "the setting reaches MenuKit")
+	GLSettings.values["ui_text_floor"] = 0
+	GLSettings.apply_visuals()
+	assert_eq(MenuKit.text_floor, 0)
+	assert_eq(fine, MenuKit.size("fine"))

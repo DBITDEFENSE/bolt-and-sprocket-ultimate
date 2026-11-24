@@ -55,11 +55,18 @@ static func reset() -> void:
 	_theme = null
 
 
+## T-264: the smallest text size in use (0 = the scale as designed). The UI is laid out for 1920x1080 and shrinks
+## with the window: on a 1280x800 handheld the scale's 13 is under 9 real pixels and its 15 is 10. GLSettings sets
+## this from the "Small text" setting (ui_text_floor); size() and px() never return less. Text built before a
+## change keeps its size until its screen is opened again.
+static var text_floor: int = 0
+
+
 ## A size of the type scale by key (ui.json "scale"); an unknown key is an error and gives the body size.
 static func size(key: String) -> int:
 	var scale: Dictionary = cfg().get("scale", {})
 	if scale.has(key):
-		return int(scale[key])
+		return maxi(int(scale[key]), text_floor)
 	push_error("MenuKit.size: no scale key '%s' in ui.json" % key)
 	return int(scale.get("body", 18))
 
@@ -74,7 +81,7 @@ static func px(n: int) -> int:
 		var v: int = int(s)
 		if absi(v - n) < absi(best - n) or (absi(v - n) == absi(best - n) and v > best):
 			best = v
-	return best
+	return maxi(best, text_floor)
 
 
 ## A HUD layout number (ui.json "hud"), with a default.
