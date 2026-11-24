@@ -157,6 +157,8 @@ func _ready() -> void:
 		print("[PropShadows] %s: %s" % [map_id, str(PropShadows.build(self))])   # T-266: one shadow draw per static prop mesh (deferred: after the loaders' props)
 		var ow: OcclusionWalls = OcclusionWalls.attach(self)   # T-266: on Low / Medium rooms behind walls are not drawn
 		print("[OcclusionWalls] %s: wanted %s, %s" % [map_id, str(ow.want), str(ow.stats)])).call_deferred()
+	(func() -> void: print("[LightRange] %s: %d lamps fade with distance (gfx_lod %s)" % [map_id, LightRange.apply(self, LightRange.end_for(str(GLSettings.gfx("gfx_lod")))),
+		str(GLSettings.gfx("gfx_lod"))])).call_deferred()   # T-266: on Low / Medium the lamps have a draw distance (deferred: after the loaders' lamps)
 	if GLSettings.is_compat():   # T-139: the browser / Compatibility profile (no SDFGI / SSIL / SSR / volumetrics, capped shadows)
 		print("[WebProfile] %s: %s" % [map_id, str(WebProfile.apply(self))])
 		(func() -> void: WebProfile.apply(self)).call_deferred()   # again for what spawns deferred (intel, lamp glow)

@@ -54,6 +54,7 @@ static func set_off(map_root: Node, off_now: PackedStringArray) -> void:
 	var sb: ShadowBudget = map_root.get_node_or_null("ShadowBudget") as ShadowBudget
 	if sb != null:
 		sb.set_level(sb.level)
+	LightRange.apply(map_root, LightRange.end_for(str(GLSettings.gfx("gfx_lod"))))
 
 
 static func set_enabled(map_root: Node, on_: bool) -> void:
