@@ -4,7 +4,7 @@
  "closing": "No text, lettering, numbers, insignia, emblems or logos anywhere in frame. Nobody is struck or hurt on screen. Every person is fictional.",
  "raw_root": "res://assets/user_supplied/cutscenes",
  "built_root": "res://assets/cutscene_reels",
- "in_game": false,
+ "in_game": true,
  "treatment": {
   "fps": 24,
   "width": 1920,

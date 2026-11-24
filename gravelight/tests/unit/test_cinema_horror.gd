@@ -21,10 +21,13 @@ func test_direction_preserves_every_story_event_and_duration() -> void:
 		assert_eq(CinemaDirector.validate(CinemaLibrary.resolved(id)).size(), 0, id + " valid")
 
 
-func test_new_presentation_is_the_default_and_archive_is_replayable() -> void:
-	assert_false(CinemaArchive.in_game(), "campaign uses the replacement 3D scenes")
+## T-277: the owner asked for the history cutscenes as hyperreal footage ("use what we have as a wire frame"), so the
+## campaign plays the three photoreal reels; the 3D scenes stay the default for every other cut and replayable as engine:.
+func test_reels_play_the_history_scenes_and_the_3d_scenes_stay_replayable() -> void:
+	assert_true(CinemaArchive.in_game(), "campaign plays the photoreal reels")
 	for id: String in CinemaLibrary.ids():
-		assert_false(CinemaArchive.resolved(id).has("archive"), id + " has no damaged-film overlay")
+		assert_eq(CinemaArchive.resolved(id).has("archive"), CinemaArchive.has_scene(id), id + ": a reel only where one exists")
+		assert_false(CinemaArchive.resolved("engine:" + id).has("archive"), id + ": engine: is the 3D scene")
 	assert_true(CinemaArchive.resolved("reel:lazarus_saturday").has("archive"))
 
 

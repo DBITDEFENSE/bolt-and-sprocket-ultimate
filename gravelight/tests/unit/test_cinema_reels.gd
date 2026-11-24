@@ -176,7 +176,7 @@ func test_reel_definition_validates_and_carries_the_film() -> void:
 
 
 func test_clip_pick_desktop_web_gore() -> void:
-	assert_eq(CinemaArchive.clip_path("staub", 1, "full", false), "", "no clip: a stand-in")
+	assert_eq(CinemaArchive.clip_path("staub", 99, "full", false), "", "no clip: a stand-in")
 	_clips("staub", ["shot_01", "shot_01_720"])
 	assert_eq(CinemaArchive.clip_path("staub", 1, "full", false), TMP + "/staub/shot_01.ogv")
 	assert_eq(CinemaArchive.clip_path("staub", 1, "full", true), TMP + "/staub/shot_01_720.ogv", "the web takes the 720p variant")
