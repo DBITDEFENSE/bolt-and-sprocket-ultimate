@@ -2888,6 +2888,8 @@ func build_gameplay() -> void:
 	# T-273: those were the seven machines' places until the perk deal came to Totenhafen; they are seven of the twelve
 	# PERK_SPOTS now, and the scene is saved with the seed-0 deal (PerkLayout re-deals at every match start)
 	_build_perk_deal(perks)
+	# T-273: the sailors in the torpedo store (InnSurvivors reads data/gravelight/map02_survivors.json by the map's id)
+	_node("res://gravelight/world/inn_opening/inn_survivors.gd", "InnSurvivors", {}, Vector3.ZERO, 0.0)
 
 
 ## T-273: the perk spots (PerkSpot: the filler crate shows while no machine stands on it) and the seven machines on

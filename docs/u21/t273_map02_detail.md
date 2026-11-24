@@ -202,3 +202,24 @@ seed-0 deal, the minimap rebaked. Reactive props built at load: drips, three doo
 curtains, glassware that breaks. Not built: the round-1 opening (dockworkers flee the cannery), the sailors in the
 torpedo store and the optional U-boat surfacing (what each needs is in the notes). Cost: +31 meshes at most, +22 k
 triangles, one hidden unshadowed light.
+
+## 6. Added after the merge: the sailors in the torpedo store
+
+`data/gravelight/map02_survivors.json` and an `InnSurvivors` node under Gameplay (gen_map02); no script changed.
+Two of U-1047's crew, Obermaschinist Hinrich Kahlke (`KAH`) and Matrosengefreiter Jonas Pietsch (`PIE`), shut
+themselves into the warhead cage in the Torpedo Workshop's south-east corner when the boat's crew turned. Hidden until
+the workshop's door (`door_workshop`, 1000, off the quay) opens; then crouched in the cage: hide spots `[53.5, 0, 17.4]`
+and `[55.8, 0, 17.3]` (clear of the Warheads crate spot and the lead coffins). Arming one costs 1000 (a Kar98k); they
+walk out of the cage's gap to posts `[50.5, 0, 19.0]` (facing the cradles and the north window) and `[50.5, 0, 22.0]`
+(facing the workshop's door). Map 0's ally numbers. They rise as the `sailor` kind. Nine text lines each
+(`KAH_SURV_*`, `PIE_SURV_*`) and the squad's warning in a category of this map's (`M2_SURV_TURN`: Map 0's says
+"upstairs"), 22 lines in all, every one listed as not baked in `audio_manifest.json` (a subtitle with a timed
+silence); both cast in `voice_cast.json` (German accent, for a later bake). Their bodies are PatronBody's
+procedural ones (no person GLB built for them).
+
+Verified: `smoke_map02_survivors` (new, Map 0's survivor smoke on this map) PASS: hidden before the door, spots and
+posts on the navmesh, nothing solid on them; the door reveals them cowering with the arm prompt; Pietsch's reveal
+line; a shot makes one flinch; a zombie in the cage killed Kahlke, who warned and rose as a zombie; Pietsch armed for
+1000, walked to his post (0.0 m off) and hit a zombie in the workshop; downed at 0 hp and helped up.
+`test_map02_detail.test_the_sailors_in_the_torpedo_store`. Cost: nothing drawn until the door opens; two procedural
+bodies after.

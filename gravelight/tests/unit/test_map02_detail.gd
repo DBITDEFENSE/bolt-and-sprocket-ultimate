@@ -328,3 +328,40 @@ func test_the_reactive_props_are_built_where_they_fit() -> void:
 			assert_true(w != null and w.name == "W_B_N", "%s knows its window" % c2.name)
 		elif f2 == "shatter_set.gd":
 			assert_gte((c2.get("items") as Array).size(), 3, c2.name + " has its pieces")
+
+
+# ================================================================== 5. the survivors in the torpedo store
+
+func test_the_sailors_in_the_torpedo_store() -> void:
+	var c: Dictionary = InnSurvivors.load_cfg(InnSurvivors.data_path_for(&"map02_totenhafen"))
+	assert_false(c.is_empty(), "map02_survivors.json is found by the map's id")
+	assert_eq(str(c.get("map", "")), "map02_totenhafen")
+	assert_eq(str(c.get("reveal_door", "")), "door_workshop", "the Torpedo Workshop's door reveals them")
+	assert_not_null(_scene().find_child("InnSurvivors", true, false), "the scene has the InnSurvivors node")
+	var weapons: Dictionary = GLData.table("weapons")["weapons"]
+	assert_true(weapons.has(str(c["arm"]["weapon"])), "the arming weapon is a real weapon")
+	var cast: Dictionary = GLData.load_json("res://data/gravelight/vo/voice_cast.json")["cast"]
+	var lines: Dictionary = GLData.load_json("res://data/gravelight/vo/lines.json")
+	var missing: Dictionary = GLData.load_json("res://data/gravelight/vo/audio_manifest.json").get("missing", {})
+	var ss: Array = c["survivors"]
+	assert_between(ss.size(), 2, 3, "two or three sailors")
+	for r: Dictionary in ss:
+		assert_true(str(r["name"]).contains(" ") and str(r.get("role", "")).length() > 20, "%s: a full name and a backstory" % r["id"])
+		assert_true(cast.has(str(r["speaker"])) and str(cast.get(str(r["speaker"]), {}).get("accent", "")).begins_with("german"), "%s is cast, German" % r["id"])
+		assert_eq(str(r.get("rise_variant", "")), "sailor", "%s rises as a sailor" % r["id"])
+		for kind: String in ["reveal", "scared", "flinch", "armed", "fight", "hurt", "downed", "death"]:
+			var pool: Array = (r["lines"] as Dictionary).get(kind, [])
+			assert_gt(pool.size(), 0, "%s has a %s line" % [r["id"], kind])
+			for id: Variant in pool:
+				assert_true(lines.has(str(id)) and str(lines[str(id)]["speaker"]) == str(r["speaker"]), "line %s is %s's" % [id, r["id"]])
+				assert_true(missing.has(str(id)), "%s is listed as not baked" % id)
+		var hide: Vector3 = _v3(r["hide"])
+		var post: Vector3 = _v3(r["post"])
+		assert_true(hide.x > 52.2 and hide.x < 61.8 and hide.z > 16.2 and hide.z < 24.0, "%s hides inside the warhead cage" % r["id"])
+		assert_eq(_zone(hide + Vector3.UP * 0.6), "C_WORKSHOP", "%s: the cage is the workshop's" % r["id"])
+		assert_true(_on_nav(hide) and _on_nav(post), "%s: hiding spot and post on the baked navmesh" % r["id"])
+		assert_gt(Vector2(hide.x - 58.6, hide.z - 19.0).length(), 1.5, "%s is clear of the Warheads crate spot" % r["id"])
+	var sq: String = str((c.get("squad_turn_line", {}) as Dictionary).get("category", ""))
+	assert_ne(sq, "INN_SURV_TURN", "the squad's warning is this map's (not 'upstairs')")
+	for sp: String in ["DUT", "PEG", "DEA", "WRN"]:
+		assert_true(lines.has("%s_%s_01" % [sp, sq]), "%s warns when a sailor turns" % sp)

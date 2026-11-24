@@ -7633,6 +7633,116 @@
     "category": "INN_SURV_TURN",
     "text": "Upstairs. The civilian is turning. Do not wait for them to look at you. [quietly] You will not shoot if they look at you."
   },
+  "KAH_SURV_REVEAL_01": {
+    "speaker": "KAH",
+    "category": "SURV_REVEAL",
+    "text": "Wait! Don't shoot, we're Kriegsmarine. U-1047. We shut ourselves in with the warheads... [a breath] it was the only door in the pens that held."
+  },
+  "KAH_SURV_SCARED_01": {
+    "speaker": "KAH",
+    "category": "SURV_SCARED",
+    "text": "They were our own crew. Our own crew, down in the pens. I heard them come up the gangway singing."
+  },
+  "KAH_SURV_SCARED_02": {
+    "speaker": "KAH",
+    "category": "SURV_SCARED",
+    "text": "Stay behind the cases, Jonas. Keep low. They can smell us through the wire."
+  },
+  "KAH_SURV_FLINCH_01": {
+    "speaker": "KAH",
+    "category": "SURV_FLINCH",
+    "text": "Gott! [a sharp breath] That was close. Keep shooting, keep shooting."
+  },
+  "KAH_SURV_ARMED_01": {
+    "speaker": "KAH",
+    "category": "SURV_ARMED",
+    "text": "A rifle. Good. I was a gunner before I was ever a mechanic. Show me where."
+  },
+  "KAH_SURV_FIGHT_01": {
+    "speaker": "KAH",
+    "category": "SURV_FIGHT",
+    "text": "Over the cradles! They are coming over the cradles!"
+  },
+  "KAH_SURV_HURT_01": {
+    "speaker": "KAH",
+    "category": "SURV_HURT",
+    "text": "Ach... it has my arm. I am all right. I am all right."
+  },
+  "KAH_SURV_DOWNED_01": {
+    "speaker": "KAH",
+    "category": "SURV_DOWNED",
+    "text": "I am down... the deck is going round. Someone. Please."
+  },
+  "KAH_SURV_DEATH_01": {
+    "speaker": "KAH",
+    "category": "SURV_DEATH",
+    "text": "Tell them at Bremerhaven... we held the store."
+  },
+  "PIE_SURV_REVEAL_01": {
+    "speaker": "PIE",
+    "category": "SURV_REVEAL",
+    "text": "Are you real? Please be real. We have been in here since the tide came in. We heard the singing in the pens."
+  },
+  "PIE_SURV_SCARED_01": {
+    "speaker": "PIE",
+    "category": "SURV_SCARED",
+    "text": "I can hear them on the other side of the wall. Scratching. Like rats in the bilge."
+  },
+  "PIE_SURV_SCARED_02": {
+    "speaker": "PIE",
+    "category": "SURV_SCARED",
+    "text": "Herr Kahlke says the warheads will not go off by themselves. He says so. He says so."
+  },
+  "PIE_SURV_FLINCH_01": {
+    "speaker": "PIE",
+    "category": "SURV_FLINCH",
+    "text": "Please, please, not so near..."
+  },
+  "PIE_SURV_ARMED_01": {
+    "speaker": "PIE",
+    "category": "SURV_ARMED",
+    "text": "I... yes. I can do it. I passed the range at Stralsund. Where do you want me?"
+  },
+  "PIE_SURV_FIGHT_01": {
+    "speaker": "PIE",
+    "category": "SURV_FIGHT",
+    "text": "The window! Something at the window!"
+  },
+  "PIE_SURV_HURT_01": {
+    "speaker": "PIE",
+    "category": "SURV_HURT",
+    "text": "It bit me... it bit me through the jacket!"
+  },
+  "PIE_SURV_DOWNED_01": {
+    "speaker": "PIE",
+    "category": "SURV_DOWNED",
+    "text": "I can't get up. Mama... I can't get up."
+  },
+  "PIE_SURV_DEATH_01": {
+    "speaker": "PIE",
+    "category": "SURV_DEATH",
+    "text": "I only wanted to see the sea..."
+  },
+  "DUT_M2_SURV_TURN_01": {
+    "speaker": "DUT",
+    "category": "M2_SURV_TURN",
+    "text": "One of the sailors by the cage is getting up again. That's not him any more. Put him down."
+  },
+  "PEG_M2_SURV_TURN_01": {
+    "speaker": "PEG",
+    "category": "M2_SURV_TURN",
+    "text": "Oh, no. The sailor in the workshop... he's turning. [quiet] Make it quick. Make it kind."
+  },
+  "DEA_M2_SURV_TURN_01": {
+    "speaker": "DEA",
+    "category": "M2_SURV_TURN",
+    "text": "Lord, the boy from the boat is rising. Don't let him suffer it. [quietly] Put him to rest."
+  },
+  "WRN_M2_SURV_TURN_01": {
+    "speaker": "WRN",
+    "category": "M2_SURV_TURN",
+    "text": "The sailor is turning. By the warheads. Do not wait for him to look at you."
+  },
   "OPR_ECO_MILESTONE_01": {
     "speaker": "OPR",
     "category": "ECO_MILESTONE",
