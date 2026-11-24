@@ -63,7 +63,7 @@ FONTS = {
 RAW_EXT = (".mp4", ".mov", ".webm", ".mkv", ".m4v")
 STILL_EXT = (".png", ".jpg", ".jpeg")
 LEADER = "0x0c0b0a"
-TOOL_VERSION = "1"   # bump to rebuild every clip when the treatment changes
+TOOL_VERSION = "2"   # bump to rebuild every clip when the treatment changes
 
 
 # ================================================================== data
@@ -482,11 +482,18 @@ def clip_chain(inp, label, src_dur, span, seed, lut_file, tone, t, w, h, fps, ba
         f.append("setsar=1")
         cf, _, _ = conform(src_dur, span, t, w, h, fps)
         f += cf
-    f += ["format=gray", "format=rgb24", "lut1d=file=%s" % lut_file, "format=gray", "crop=%d:%d" % (pw, h)]
+    colour = bool(t.get("clip_colour", False)) and not still
+    if colour:
+        # T-277: photoreal colour clips keep their colour; a light film grade instead of the grey archival LUT
+        f += ["format=rgb24", "eq=contrast=%.4f:saturation=%.4f:gamma=%.4f" % (float(t.get("colour_contrast", 1.04)),
+              float(t.get("colour_saturation", 0.86)), float(t.get("colour_gamma", 0.97))), "crop=%d:%d" % (pw, h)]
+    else:
+        f += ["format=gray", "format=rgb24", "lut1d=file=%s" % lut_file, "format=gray", "crop=%d:%d" % (pw, h)]
     if bake:
         f += weave_flicker(seed, t, pw, h)
         f.append(grain(seed, t))
-    f += tone_filters(tone, t)
+    if not colour:
+        f += tone_filters(tone, t)
     if bake:
         f += damage(seed, span, t, pw, h, fps)
     f.append(vignette(t))

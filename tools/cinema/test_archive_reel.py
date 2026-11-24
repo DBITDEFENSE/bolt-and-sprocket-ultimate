@@ -95,7 +95,7 @@ class PureTests(unittest.TestCase):
         self.assertTrue(any(x.startswith("zoompan") for x in f), "a long hold pushes in")
 
     def test_damage_is_deterministic(self):
-        t = ar.treatment()
+        t = dict(ar.treatment(), dust=0.55, scratches=0.35)   # the archival amounts (T-277 lightened the live ones)
         a = ar.damage(12345, 6.0, t, 1484, 1080, 24)
         b = ar.damage(12345, 6.0, t, 1484, 1080, 24)
         c = ar.damage(54321, 6.0, t, 1484, 1080, 24)
