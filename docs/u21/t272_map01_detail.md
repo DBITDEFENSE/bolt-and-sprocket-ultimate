@@ -179,3 +179,30 @@ agree, each spot in its zone with its floor baked out and its front on the navme
 scene, the three fixed machines and their footprints, 300 seeds keep the rules (weather kit under the snow, Second Wind
 near the yard and in two places over the seeds, at most two a zone, every spot used). `test_perk_layout` (Map 0),
 `test_mapdata`, `test_ledger_lager` PASS.
+
+## 4. Reactive props
+
+`gen_map01` `build_reactive()`: runtime nodes under `Reactive` (T-053's kit; they build their art at load, the scene
+holds only their settings). Nothing collides or touches the navmesh.
+
+| What | Where |
+|---|---|
+| Glass that breaks when shot (`ShatterSet`) | `Glass_Mess`: 15 steins and glasses on the three mess tables (kept 0.16 m off the crockery already drawn there) and 5 bottles on the serving line's counter; `Glass_Lab`: jars and glasses on Fasbender's bench behind its bottles; `Glass_Office`: a bottle and two glasses on Reinholt's desk |
+| Curtains in the draught of their window (`DraftCurtain`, linked to the barricade: harder when boards are gone) | the Administration's three windows (W_C_N, W_C_UN, W_C_BAL; green cloth) and the barracks' three (W_D_W, W_D_S1, W_D_S2; sacking), a rod over each |
+| A door left ajar (`SwingDoor`) | the Administration's upstairs partition (hinge (-9.8, 3.8, 15.85)), opening into the radio room; it swings back for anyone coming through |
+| Footprints (`SnowFootprints`) | the open snow of the Minehead yard and the Rail Yard; not in the Kaue, the gatehouse, the winding house or the hoist house |
+| Drips (`DripPoint`) | the Salt Chapel's east aisle (from the dome, 14 m), the F and G vault ramps (from their rock roofs onto the slope), the Core's west side (12 m), the H corridor |
+| Wind (`AudioZone`, linked to the window) | the six windows with a room behind them (the Administration's two north windows, the barracks' three, the lift house's) |
+| Timber creaks | the barracks (random, 14..34 s) |
+| Paper (`PaperDecor`) | the December calendar on the pay office's north wall |
+
+Not added: hay (there is none on this map); a second paper (the patrol's map would lie on Reinholt's plan table over
+the open plan already drawn there). Cost: 12 curtain nodes (4 strips each, built at load, idle beyond 30 m), 6 curtain
+rods (6 small meshes without shadows, outside the batches: built after them), 3 glass sets (one MultiMesh per glass
+material each), 7 looping or random sound players, 5 drips (one-shot particles), one footprint MultiMesh.
+
+Verified (headless): `smoke_map01_reactive` (new, 16 checks) PASS: the three glass sets build their 30 pieces, all 30
+on a collider's top, none inside one, a shot piece of each breaks; 12 curtains each find their barricade and hang
+inside the room, off the wall, over the floor; the partition door swings from 65 to 100 degrees for the player walking
+through; the yards take prints and the Kaue does not, 7 prints from a walk; every drip under a ceiling and falling its
+height onto a floor; the six wind zones find their windows.

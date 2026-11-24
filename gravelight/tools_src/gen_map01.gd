@@ -445,6 +445,7 @@ func _process(_delta: float) -> bool:
 	build_lights()
 	build_landscape()
 	build_gameplay()
+	build_reactive()
 	_prune(dress)
 	_prune(geo)
 	_own(map_root)
@@ -4424,6 +4425,107 @@ func _build_yard_gate() -> void:
 		Props._noshadow(Props.obox(le, Vector3(-half + 0.24, 1.08 - c * 0.075, 0.09), Vector3(0.05, 0.07, 0.015), "iron", Vector3(0, 0, 90.0 * float(c % 2))))
 	for leaf: String in ["LeafW", "LeafE"]:   # one mesh per material a leaf (it swings as one piece): 3 draw calls, not 20
 		_bake_local(g.get_node(leaf) as Node3D, false)
+
+
+## T-272: the parts that react (T-053's kit, gravelight/world/reactive/), as runtime nodes under "Reactive" (they build their
+## art at load, so the scene holds only their settings): glassware that breaks when shot (the mess tables and the serving
+## line, Fasbender's bench, Reinholt's desk), curtains that move in the draught of their window (the Administration's
+## three, sacking in the barracks' three), the door in the Administration's upstairs partition left ajar (it swings for
+## anyone who comes through), footprints in the open snow of the two yards, water dripping from the Salt Chapel's dome,
+## the vault ramps and the Core, the wind through the windows, the barracks' timbers creaking, a paper (the
+## December calendar in the pay office). Nothing here collides or touches
+## the navmesh.
+func build_reactive() -> void:
+	var r: Node3D = Node3D.new()
+	r.name = "Reactive"
+	map_root.add_child(r)
+	# ---- glass: [base (world), kind, height scale]
+	var mess: Array = []
+	var old_cups: Array[Vector3] = []   # the crockery _dress_barracks drew (its own rng, seed 33): the glass keeps off it
+	var r33: RandomNumberGenerator = RandomNumberGenerator.new()
+	r33.seed = 33
+	for i0: int in 3:
+		for k0: int in 6:
+			old_cups.append(Vector3(12.0 + i0 * 8.0 + 0.5 + r33.randf() * 4.0, 0.8, 37.2 + r33.randf() * 1.1))
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 272
+	for i: int in 3:
+		var x0: float = 12.0 + i * 8.0
+		var placed: int = 0
+		var tries: int = 0
+		while placed < 5 and tries < 60:
+			tries += 1
+			var gp: Vector3 = Vector3(x0 + 0.35 + rng.randf() * 4.3, 0.8, 37.25 + rng.randf() * 1.0)
+			var clear: bool = true
+			for oc: Vector3 in old_cups:
+				clear = clear and Vector2(oc.x - gp.x, oc.z - gp.z).length() > 0.16
+			for it: Array in mess:
+				clear = clear and Vector2((it[0] as Vector3).x - gp.x, (it[0] as Vector3).z - gp.z).length() > 0.16
+			if clear:
+				mess.append([gp, "stein" if placed % 2 == 0 else "glass", 1.0])
+				placed += 1
+	for bx: float in [35.9, 36.25, 36.6, 37.3, 37.65]:
+		mess.append([Vector3(bx, 1.0, 45.15), "bottle_green" if bx < 37.0 else "bottle_amber", 1.0])
+	var lab: Array = []
+	for jx: float in [70.5, 70.85, 71.2, 72.3, 72.65, 73.0, 73.4]:
+		lab.append([Vector3(jx, DY + 1.02, 83.35), "jar" if jx < 72.0 else "glass", 1.15 if jx < 72.0 else 1.3])
+	var office: Array = [[Vector3(-5.2, 4.58, 25.8), "bottle_amber", 1.0], [Vector3(-5.25, 4.58, 26.15), "glass", 1.0], [Vector3(-5.1, 4.58, 26.3), "glass", 1.0]]
+	for gs: Array in [["Mess", mess], ["Lab", lab], ["Office", office]]:
+		r.add_child(_reactive("res://gravelight/world/reactive/shatter_set.gd", "Glass_" + str(gs[0]), {"items": gs[1]}, Vector3.ZERO))
+	# ---- curtains: [window id, floor point on the wall line, inward yaw, material]
+	for cw: Array in [["W_C_N", Vector3(-8, 0, 8), 0.0, "cloth_green"], ["W_C_UN", Vector3(-8, 3.8, 8), 0.0, "cloth_green"],
+			["W_C_BAL", Vector3(0, 3.8, 14), -90.0, "cloth_green"], ["W_D_W", Vector3(-16, 0, 39), 90.0, "tarp"],
+			["W_D_S1", Vector3(-2, 0, 46), 180.0, "tarp"], ["W_D_S2", Vector3(14, 0, 46), 180.0, "tarp"]]:
+		var wb: Basis = Basis(Vector3.UP, deg_to_rad(float(cw[2])))
+		var wp: Vector3 = cw[1]
+		for cx: float in [-1.05, 1.05]:
+			var dc: Node3D = _reactive("res://gravelight/world/reactive/draft_curtain.gd", "DraftCurtain_%s_%s" % [cw[0], "L" if cx < 0.0 else "R"], {
+				"height": WTOP - SILL + 0.4, "mat_key": cw[3], "window": NodePath("../../Gameplay/" + str(cw[0]))},
+				wp + wb * Vector3(cx, WTOP + 0.05, T * 0.5 + 0.1), float(cw[2]) + 180.0)
+			r.add_child(dc)
+		var rod: Node3D = Props.group(r, "CurtainRod_" + str(cw[0]), wp, float(cw[2]))
+		Props._noshadow(Props.block(rod, Vector3(-1.35, WTOP + 0.15, T * 0.5 + 0.07), Vector3(1.35, WTOP + 0.18, T * 0.5 + 0.11), "iron"))
+	# ---- the upstairs partition's door, ajar into the radio room (the doorway x -9.8..-8.2 in the wall at z 16)
+	r.add_child(_reactive("res://gravelight/world/reactive/swing_door.gd", "PartitionDoor", {"width": 1.55, "height": 2.15,
+		"rest_deg": 65.0, "open_deg": 100.0, "flip": false}, Vector3(-9.8, 3.8, 16.0 - T * 0.5), 0.0))
+	# ---- footprints in the open snow: the Minehead yard and the Rail Yard (not under the Kaue's roof, not in the sheds)
+	r.add_child(_reactive("res://gravelight/world/reactive/snow_footprints.gd", "SnowFootprints", {
+		"areas": [AABB(Vector3(0.15, -1, 0.15), Vector3(39.7, 3, 31.7)), AABB(Vector3(40.15, -1, 14.15), Vector3(19.7, 3, 33.7))] as Array[AABB],
+		"holes": [AABB(Vector3(KAUE_X0, -2, KAUE_Z0), Vector3(KAUE_X1 - KAUE_X0, 4, KAUE_ZW - KAUE_Z0)), AABB(Vector3(4, -2, 4), Vector3(8, 4, 6)),
+			AABB(Vector3(28, -2, 4), Vector3(10, 4, 6)), AABB(Vector3(15, -2, 10), Vector3(10, 4, 10))] as Array[AABB]}, Vector3.ZERO))
+	# ---- drips: the salt dome over the Chapel's nave, the vault ramps' rock, the Core
+	# [point under the ceiling, the floor's height below it]: the Chapel's east aisle (the dome at y 2), the F and G vault
+	# ramps (their rock roofs at y -9, the ramp's floor where the drop lands), the Core's west side (its roof at y -6),
+	# the H corridor (its roof at y -14.5)
+	for dp: Array in [[Vector3(37.4, 1.95, 74.0), DY], [Vector3(20.0, -9.05, 96.0), DY - 6.0 * (96.0 - 90.0) / 11.0],
+			[Vector3(44.5, -9.05, 92.0), DY - 6.0 * (92.0 - 82.0) / 19.0], [Vector3(25.0, CY + 11.95, 124.0), CY],
+			[Vector3(60.0, CY + 3.45, 115.0), CY]]:
+		var dpos: Vector3 = dp[0]
+		var drip: Node3D = _reactive("res://gravelight/world/drip_point.gd", "Drip_%d" % r.get_child_count(), {"height": dpos.y - float(dp[1]), "volume_db": -6.0}, dpos)
+		r.add_child(drip)
+	# ---- the wind through the windows that have a room behind them (louder in gusts and as the boards go)
+	for ww: Array in [["W_C_N", Vector3(-8, 1.5, 8.4)], ["W_C_UN", Vector3(-8, 5.3, 8.4)], ["W_D_W", Vector3(-15.6, 1.5, 39)],
+			["W_D_S1", Vector3(-2, 1.5, 45.6)], ["W_D_S2", Vector3(14, 1.5, 45.6)], ["W_E", Vector3(29.6, 1.5, 51)]]:
+		r.add_child(_reactive("res://gravelight/world/reactive/audio_zone.gd", "WindHowl_" + str(ww[0]), {
+			"sound": "wind_howl", "mode": "loop", "volume_db": -15.0, "wind_db": 7.0, "broken_db": 8.0,
+			"window": NodePath("../../Gameplay/" + str(ww[0])), "max_distance": 11.0}, ww[1]))
+	r.add_child(_reactive("res://gravelight/world/reactive/audio_zone.gd", "BarracksCreaks", {
+		"sound": "stable_creak", "mode": "random", "volume_db": -4.0, "interval": Vector2(14.0, 34.0), "spread": Vector3(20.0, 1.0, 5.0)},
+		Vector3(12.0, 3.6, 39.0)))
+	# ---- paper: the pay office's December calendar on its north wall
+	r.add_child(_reactive("res://gravelight/world/paper_decor.gd", "Paper_calendar", {"kind": "calendar", "flat": false, "tilt_deg": -2.0},
+		Vector3(-12.6, 1.75, 8.15 + 0.03), 180.0))
+
+
+func _reactive(script_path: String, n: String, props: Dictionary, pos: Vector3, yaw: float = 0.0) -> Node3D:
+	var node: Node3D = Area3D.new() if script_path.ends_with("hay_puff_zone.gd") else Node3D.new()
+	node.set_script(load(script_path))
+	node.name = n
+	for k: String in props.keys():
+		node.set(k, props[k])
+	node.position = pos
+	node.rotation.y = deg_to_rad(yaw)
+	return node
 
 
 ## T-272: the perk spots (PerkSpot nodes, group perk_spots: MapRoot attaches a PerkLayout when a map has them).
