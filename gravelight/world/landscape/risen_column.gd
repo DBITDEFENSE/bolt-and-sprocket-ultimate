@@ -73,6 +73,8 @@ func build() -> void:
 		z.queue_free()
 	bodies.clear()
 	_state.clear()
+	_asleep = false   # (new bodies' animation players start running: the next unseen frame rests them again)
+	_unseen_dt = 0.0
 	ZombieBody.ensure_globals()
 	var n: int = maxi(0, int(cfg.get("count", 8)))
 	var sp: Array = cfg.get("speed", [0.55, 0.8])
