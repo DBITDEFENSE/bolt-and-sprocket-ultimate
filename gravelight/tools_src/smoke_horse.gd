@@ -115,8 +115,8 @@ func _run() -> void:
 	_check((h.collision_layer & (Zombie.LAYER_WORLD | Zombie.LAYER_PLAYER | Zombie.LAYER_ZBODY | Zombie.LAYER_DOOR | Hitbox.LAYER_HITBOX)) == 0, "zombies and shots pass the horse (layer %d)" % h.collision_layer)
 	_check((h.collision_layer & Player.MASK_MOVE) != 0, "players are stopped by it")
 	_check(not h.has_method("take_damage"), "it cannot be hurt (no damage entry point)")
-	var zip: Vector3 = Vector3(18.6, 0, 36.2)
-	var ladder: Vector3 = Vector3(5.4, 0, 42.6)
+	var zip: Vector3 = Vector3(29.8, 0, 42.1)   # (T-268: the yard zip line's landing post moved east of the cart)
+	var ladder: Vector3 = Vector3(5.4, 0, 42.1)
 	_check(h.global_position.distance_to(zip) > 4.0 and h.global_position.distance_to(ladder) > 10.0, "it is clear of the zip line's post (%.1f m) and the tower's ladder (%.1f m)" % [h.global_position.distance_to(zip), h.global_position.distance_to(ladder)])
 	_check(h.rig != null and h.rig.body.mesh.get_surface_count() >= 5, "the model is built (%d surfaces, %d bones)" % [h.rig.body.mesh.get_surface_count(), h.rig.skel.get_bone_count()])
 

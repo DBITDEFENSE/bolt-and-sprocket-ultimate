@@ -15,6 +15,10 @@ extends Interactable
 ## cable's top), "end": [x, y, z] (the cable's low end on its post), "to": [x, y, z] (the landing, feet), "yaw":
 ## degrees (local -Z toward the rider), "speed": 7.5 (the cap, m/s), "hang": 2.7 (the rider's feet this far under
 ## the cable: the bar is BAR_DROP under it, the arms up), "sag": 0.3, "target": "down to the yard"}]
+## T-268 (the owner: "3 zip lines that go to 3 different spots on the map"): a map may list several; each is its own
+## node at its own anchor with its own prompt ("... ride the zip line <target>"). A row may name a "zone": the line
+## is chained (its "locked_text" is the prompt, a use is refused) until that zone is open, so a line that lands
+## beyond a paid door never skips the door. Lines run down only; nothing grabs a rider.
 
 const MOUNT_S: float = 0.4        # to the bar, turning down the line
 const LAND_S: float = 0.3         # the drop off the bar at the post
@@ -39,6 +43,8 @@ const BAR_X: float = 0.17         # the hands this far either side of the bar's 
 @export var hang: float = 2.7                   # the rider's feet this far under the cable while hanging
 @export var sag: float = 0.3                    # the cable's dip at mid-span
 @export var target: String = "down the line"
+@export var zone: StringName = &""              # usable only once this zone is open ("" = always), T-268
+@export var locked_text: String = "The trolley is chained"
 
 var rides: int = 0                              # the smokes count these
 var _busy: Dictionary = {}                      # player id -> the ride's state (see ride)
@@ -59,11 +65,18 @@ func _ready() -> void:
 
 
 func get_prompt(_player: Player) -> String:
+	if not is_open():
+		return locked_text
 	return "Hold [%s] to ride the zip line %s" % [prompt_key(&"interact"), target]
 
 
+## False while the zone the line lands in is still shut (T-268).
+func is_open() -> bool:
+	return zone == &"" or GameState.is_zone_open(zone)
+
+
 func can_interact(player: Player) -> bool:
-	return player != null and player.is_alive() and not bool(player.get("downed")) and not _busy.has(player.player_id) and player.carry == null
+	return is_open() and player != null and player.is_alive() and not bool(player.get("downed")) and not _busy.has(player.player_id) and player.carry == null
 
 
 func hold_time(_player: Player) -> float:
@@ -394,6 +407,8 @@ static func spawn_all(root: Node3D, map_id: StringName) -> Array[ZipLine]:
 		z.hang = float(row.get("hang", 2.7))
 		z.sag = float(row.get("sag", 0.3))
 		z.target = str(row.get("target", "down the line"))
+		z.zone = StringName(str(row.get("zone", "")))
+		z.locked_text = str(row.get("locked_text", "The trolley is chained"))
 		z.position = ClimbLink._v3(row.get("pos", [0, 0, 0]))
 		z.rotation.y = deg_to_rad(float(row.get("yaw", 0.0)))
 		holder.add_child(z)

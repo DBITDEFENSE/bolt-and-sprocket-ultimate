@@ -807,7 +807,7 @@ func _update_climb(_delta: float) -> void:
 
 ## The agent reached a navigation link: a climb link starts the scripted climb (vulnerable, no attacks).
 func _on_link_reached(details: Dictionary) -> void:
-	if puppet or state != State.CHASE or is_crawler:
+	if puppet or state != State.CHASE:
 		return
 	var owner_v: Variant = details.get("owner", null)
 	var link: NavigationLink3D = owner_v as NavigationLink3D
@@ -815,6 +815,11 @@ func _on_link_reached(details: Dictionary) -> void:
 		return
 	var start: Vector3 = details.get("link_entry_position", global_position)
 	var end: Vector3 = details.get("link_exit_position", global_position)
+	if link.has_meta(ClimbLink.LINE):
+		_ladder_reached(link, start, end)   # T-268: a ladder (one at a time, up its line, the drop back down)
+		return
+	if is_crawler:
+		return
 	if end.y - start.y < 0.5:
 		return   # a drop or a flat link: walk it
 	_climb_from = start
@@ -826,6 +831,9 @@ func _on_link_reached(details: Dictionary) -> void:
 
 
 func _update_link_climb(_delta: float) -> void:
+	if _ladder != null:
+		_update_ladder(_delta)   # T-268
+		return
 	var spd: float = float(_anim["climb"]["speed_mps"])
 	var mantle: float = float(_anim["climb"]["mantle_seconds"])
 	var dur: float = _climb_dist / maxf(0.2, spd) + mantle
@@ -843,6 +851,245 @@ func _update_link_climb(_delta: float) -> void:
 		_agent.avoidance_enabled = true
 		_stuck_origin = global_position
 		_enter(State.CHASE)
+
+
+# ---------------------------------------------------------------- ladders (T-268; climb links with a "line")
+# The owner: "zombies need to be able to crawl up the watchtower ... if you go on the ladder, have the zombies be able
+# to chase you". A climb link whose map row has a `line` is a ladder (ClimbLink): the dead take it one at a time with
+# room between them (the rest wait at the foot), go up the ladder's line and swing over the edge; with `drop` they
+# come back down it by dropping. Killed on the rungs, a body falls. Crawlers and the horses do not climb: one whose
+# way leads up a ladder is put back in the round's queue after LADDER_REFUSE_S (it comes back on its feet through a
+# window or the snow), so nothing waits at a ladder's foot for good and the round can always end. Everything here is
+# decided when the agent reaches the link (the path already chose the ladder): no scan runs while it chases.
+
+const LADDER_MOUNT_S: float = 0.35      # from the foot onto the ladder's line
+const LADDER_WAIT_LOOK_S: float = 0.25  # a waiting body asks for room this often
+const LADDER_WAIT_MAX_S: float = 25.0   # then it looks for another way (a fresh path)
+const LADDER_REFUSE_S: float = 8.0      # a body that cannot climb gives up on the ladder after this long
+const LADDER_HOP_S: float = 0.45        # the swing out over the edge before a drop
+const LADDER_LAND_S: float = 0.25       # from the line's foot back onto the floor after a drop
+const LADDER_HUMP: float = 1.15         # the body lifts this far crossing the edge (over a 1.1 m parapet)
+
+var _ladder: NavigationLink3D = null        # the ladder this body is on (state CLIMB_LINK)
+var _ladder_line: Vector3 = Vector3.ZERO    # its line (x, z; y unused)
+var _ladder_drop: bool = false              # going down it (a drop), not up
+var _ladder_fall_s: float = 0.0             # the drop's seconds of free fall
+var _ladder_wait: NavigationLink3D = null   # the ladder this body waits at (state CHASE)
+var _ladder_wait_from: Vector3 = Vector3.ZERO
+var _ladder_wait_to: Vector3 = Vector3.ZERO
+var _ladder_wait_t: float = 0.0
+var _ladder_wait_look: float = 0.0
+var _ladder_fall: bool = false              # dead and falling off a climb
+
+
+## True for the bodies that take ladders: not a crawler, not a horse (a boss keeps to the ground: HorseBoss lays its
+## siege from below, which sets the dead near it running, and they climb).
+func can_climb_ladders() -> bool:
+	return not is_crawler and not (self is HorseBoss)
+
+
+## True while this body is on `link`'s rungs going up (ClimbLink's queue asks).
+func on_rungs(link: NavigationLink3D) -> bool:
+	return state == State.CLIMB_LINK and _ladder == link and not _ladder_drop and not _mantling
+
+
+## Climbing or dropping on a ladder now.
+func on_ladder() -> bool:
+	return state == State.CLIMB_LINK and _ladder != null
+
+
+func _ladder_clear() -> void:
+	_ladder = null
+	_ladder_drop = false
+	_ladder_wait = null
+	_ladder_fall = false
+
+
+## The agent reached a ladder's link, entering at `start`, leaving at `end`.
+func _ladder_reached(link: NavigationLink3D, start: Vector3, end: Vector3) -> void:
+	var rise: float = end.y - start.y
+	if rise < -1.5:
+		if bool(link.get_meta(ClimbLink.DROP, false)) and not (self is HorseBoss):
+			_ladder_begin(link, start, end, true)   # crawlers drop too: there is no other way down
+		return
+	if rise < 0.5:
+		return
+	if _ladder_wait != link:
+		_ladder_wait_t = 0.0   # (a body that cannot climb reaches the link again and again: its clock keeps running)
+	_ladder_wait = link
+	_ladder_wait_from = start
+	_ladder_wait_to = end
+	_ladder_wait_look = 0.0
+	if can_climb_ladders() and ClimbLink.try_enter(link, self, start.y):
+		_ladder_wait = null
+		_ladder_begin(link, start, end, false)
+
+
+## One chase tick at a ladder's foot. True while it owns the body (standing, waiting for room on the rungs).
+func _ladder_wait_tick(delta: float) -> bool:
+	var link: NavigationLink3D = _ladder_wait
+	if not is_instance_valid(link) or target.global_position.y < _ladder_wait_from.y + 1.5:
+		_ladder_wait = null   # the ladder is gone, or whoever it hunts is no longer up there
+		force_repath()
+		return false
+	_ladder_wait_t += delta
+	if not can_climb_ladders():
+		if _ladder_wait_t >= LADDER_REFUSE_S:
+			_ladder_wait = null
+			recycle()
+			return true
+		return false   # it keeps its chase (and its attack, if the target comes within reach) meanwhile
+	if _ladder_wait_t >= LADDER_WAIT_MAX_S or _flat_dist(_ladder_wait_from) > 3.5:
+		_ladder_wait = null
+		force_repath()
+		return false
+	if _flat_dist(_ladder_wait_from) > 0.9:
+		_nav_move(_ladder_wait_from, speed, delta, 0.5)   # shoved off the foot: back to it
+	else:
+		_halt(delta)
+		_face(_ladder_wait_to)
+	_ladder_wait_look -= delta
+	if _ladder_wait_look <= 0.0:
+		_ladder_wait_look = LADDER_WAIT_LOOK_S
+		if ClimbLink.try_enter(link, self, _ladder_wait_from.y):
+			_ladder_wait = null
+			_ladder_begin(link, _ladder_wait_from, _ladder_wait_to, false)
+	return true
+
+
+func _ladder_begin(link: NavigationLink3D, start: Vector3, end: Vector3, drop: bool) -> void:
+	var l2: Vector2 = link.get_meta(ClimbLink.LINE)
+	_ladder = link
+	_ladder_line = Vector3(l2.x, 0.0, l2.y)
+	_ladder_drop = drop
+	_ladder_fall_s = sqrt(2.0 * absf(end.y - start.y) / maxf(1.0, GameState.g_zombie()))
+	_climb_from = start
+	_climb_to = end
+	_climb_dist = absf(end.y - start.y)
+	_mantling = false
+	collision_mask = 0
+	_agent.avoidance_enabled = false
+	velocity = Vector3.ZERO
+	_enter(State.CLIMB_LINK)
+	if drop:
+		_tree_play("Climb", str(_anim["clips"]["drop"]), 1.0)
+
+
+## Where the body is `t` seconds into its climb or drop.
+func _ladder_pos(t: float) -> Vector3:
+	var foot: Vector3 = Vector3(_ladder_line.x, _climb_from.y, _ladder_line.z)
+	var head: Vector3 = Vector3(_ladder_line.x, _climb_to.y, _ladder_line.z)
+	if _ladder_drop:
+		if t < LADDER_HOP_S:
+			var k: float = t / LADDER_HOP_S
+			return _climb_from.lerp(foot, k) + Vector3.UP * (LADDER_HUMP * sin(k * PI))
+		t -= LADDER_HOP_S
+		var over: Vector3 = head + Vector3.UP * LADDER_HUMP   # (it comes in over the rail of the floor below, not through it)
+		if t < _ladder_fall_s:
+			return foot.lerp(over, (t / _ladder_fall_s) * (t / _ladder_fall_s))
+		return over.lerp(_climb_to, clampf((t - _ladder_fall_s) / LADDER_LAND_S, 0.0, 1.0))
+	if t < LADDER_MOUNT_S:
+		return _climb_from.lerp(foot, t / LADDER_MOUNT_S)
+	t -= LADDER_MOUNT_S
+	var rungs_s: float = _climb_dist / maxf(0.2, float(_anim["climb"]["speed_mps"]))
+	if t < rungs_s:
+		return foot.lerp(head, t / rungs_s)
+	var m: float = clampf((t - rungs_s) / maxf(0.05, float(_anim["climb"]["mantle_seconds"])), 0.0, 1.0)
+	return head.lerp(_climb_to, m) + Vector3.UP * (LADDER_HUMP * sin(m * PI))
+
+
+## Seconds the whole climb (or drop) takes.
+func ladder_seconds() -> float:
+	if _ladder_drop:
+		return LADDER_HOP_S + _ladder_fall_s + LADDER_LAND_S
+	return LADDER_MOUNT_S + _climb_dist / maxf(0.2, float(_anim["climb"]["speed_mps"])) + float(_anim["climb"]["mantle_seconds"])
+
+
+func _update_ladder(_delta: float) -> void:
+	if is_crawler and not _ladder_drop:
+		_ladder_end(false)   # its legs went on the rungs: it lets go and falls
+		return
+	var total: float = ladder_seconds()
+	global_position = _ladder_pos(minf(_state_t, total))
+	var toward: Vector3 = _climb_from if _ladder_drop else _climb_to
+	_face(Vector3(toward.x, global_position.y, toward.z) + (toward - _ladder_line) * Vector3(1, 0, 1))
+	if not _ladder_drop and not _mantling and _state_t >= total - float(_anim["climb"]["mantle_seconds"]):
+		_mantling = true
+		_tree_play("Climb", str(_anim["clips"]["climb"]["mantle"]), 1.0)
+	if _state_t >= total:
+		_ladder_end(true)
+
+
+## Off the ladder: onto the floor at the far end (arrived), or let go where it is (gravity takes it).
+func _ladder_end(arrived: bool) -> void:
+	var dropped: bool = _ladder_drop
+	_mantling = false
+	_ladder = null
+	_ladder_drop = false
+	collision_mask = LAYER_WORLD | LAYER_PLAYER | LAYER_ZBODY | LAYER_DOOR
+	_agent.avoidance_enabled = true
+	velocity = Vector3.ZERO
+	_stuck_origin = global_position
+	force_repath()
+	if arrived and dropped:
+		_react_clip = ""
+		_enter(State.STAGGER)   # it lands hard and reels before it comes on
+		AudioDirector.play_3d("zombie_gib", global_position + Vector3.UP * 0.3, -6.0)
+	else:
+		_enter(State.CHASE)
+
+
+## Killed on a climb (any climb link): the body is let go and falls. Host and client both come through _start_death.
+func _ladder_on_death() -> void:
+	_ladder_fall = state == State.CLIMB_LINK
+	_ladder_wait = null
+	if not _ladder_fall:
+		return
+	var away: Vector3 = (global_position - _climb_to) * Vector3(1, 0, 1)
+	if _ladder != null:
+		away = (_ladder_line - (_climb_from if _ladder_drop else _climb_to)) * Vector3(1, 0, 1)
+	velocity = away.normalized() * 1.1 if away.length_squared() > 0.0001 else Vector3.ZERO
+	collision_mask = LAYER_WORLD
+	_ladder = null
+	_ladder_drop = false
+	_mantling = false
+
+
+## The dead body's fall off a climb, until the ragdoll takes it or it lies on the floor.
+func _ladder_fall_tick(delta: float) -> void:
+	if _ragdoll != null:
+		_ladder_fall = false   # the ragdoll's own bones fall from here
+		return
+	velocity.y -= GameState.g_zombie() * delta
+	move_and_slide()
+	if is_on_floor() or global_position.y < kill_plane_y:
+		_ladder_fall = false
+		velocity = Vector3.ZERO
+
+
+## Client: the host's sub-state for a climb (2 = over the edge, 3 = dropping). `entered`: the state is new this sample.
+var _puppet_ladder_sub_v: int = 0
+
+
+func _puppet_ladder_sub(sub: int, entered: bool) -> void:
+	if entered:
+		_puppet_ladder_sub_v = 0
+	if sub == _puppet_ladder_sub_v:
+		return
+	_puppet_ladder_sub_v = sub
+	if entered:
+		_ladder_puppet_clip.call_deferred(sub)   # after _enter(CLIMB_LINK) has started the climb loop
+	else:
+		_ladder_puppet_clip(sub)
+
+
+func _ladder_puppet_clip(sub: int) -> void:
+	if state != State.CLIMB_LINK:
+		return
+	if sub == 2:
+		_tree_play("Climb", str(_anim["clips"]["climb"]["mantle"]), 1.0)
+	elif sub == 3:
+		_tree_play("Climb", str(_anim["clips"]["drop"]), 1.0)
 
 
 ## Dev / tools: re-tier a live zombie (speed from enemies.json tiers, a fresh locomotion clip for the tier).
@@ -881,6 +1128,8 @@ func _update_chase(delta: float) -> void:
 	if target == null:
 		_halt(delta)
 		return
+	if _ladder_wait != null and _ladder_wait_tick(delta):
+		return   # T-268: at a ladder's foot, waiting for room on the rungs
 	if _roam_fallback(delta):
 		return
 	var to_t: Vector3 = target.global_position - global_position
@@ -1284,6 +1533,8 @@ func _update_grab(delta: float) -> void:
 
 
 func _update_dead(delta: float) -> void:
+	if _ladder_fall:
+		_ladder_fall_tick(delta)   # T-268
 	if _death_sink:
 		# killed mid-rise: the Emerge clip ran backward and the body is back in the hole; no ragdoll, nothing to dissolve
 		if _state_t > _sink_corpse_s:
@@ -2073,6 +2324,7 @@ func _pick_death(limb: StringName, kind: StringName) -> int:
 
 
 func _start_death() -> void:
+	_ladder_on_death()   # T-268: killed on a climb, the body falls (reads the state it died in)
 	state = State.DEAD
 	_state_t = 0.0
 	_ragdoll_started = false
@@ -2474,6 +2726,7 @@ func _reset_presentation() -> void:
 	_grab_t = 0.0
 	_swipe_t = 0.0
 	_mantling = false
+	_ladder_clear()
 	_react_clip = ""
 	_head_popped = false
 	_death_sink = false
@@ -3535,6 +3788,8 @@ func variant_name() -> String:
 
 ## Sub-state for the snapshot (the bosses' own state machines); 0 for the shared one.
 func net_sub_state() -> int:
+	if state == State.CLIMB_LINK and not _dormant:
+		return 3 if _ladder_drop else (2 if _mantling else 0)   # T-268: 2 = over the edge, 3 = dropping back down
 	return 1 if _dormant else 0   # T-192: 1 = a Hard Truth body still lying (the puppet lies still too)
 
 
@@ -3596,6 +3851,8 @@ func _puppet_enter(st: int, _sub: int) -> void:
 	if _dormant and _sub != 1:
 		wake_from_dormant(float(_anim["knockdown"]["getup_seconds"]))   # it got up on the host
 		return
+	if s == State.CLIMB_LINK:
+		_puppet_ladder_sub(_sub, s != state)   # T-268: the mantle and the drop show on the client too
 	if s == State.INACTIVE or s == State.DEAD or s == state:
 		return
 	if s == State.CLIMB:

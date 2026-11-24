@@ -89,36 +89,267 @@ func _climb_and_check(l: LadderClimb, label: String) -> void:
 					print("[ladders]   overlaps at to_pos: %s (%s)" % [str(col.get_path()) if col != null else "?", str(col.get("collision_layer")) if col != null else ""])
 
 
+func _zip(name_: String) -> ZipLine:
+	for n: Node in get_tree().get_nodes_in_group(&"ziplines"):
+		if n.name == name_:
+			return n as ZipLine
+	return null
+
+
+## True when a player standing at `feet` and looking at the zip line's bar gets it under the interaction ray.
+func _zip_in_reach(z: ZipLine, feet: Vector3) -> bool:
+	var eye: Vector3 = feet + Vector3.UP * 1.62
+	var at: Vector3 = z.global_position + Vector3.UP * -0.9
+	if eye.distance_to(at) > Player.INTERACT_RANGE:
+		return false
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(eye, eye + (at - eye).normalized() * Player.INTERACT_RANGE, Player.MASK_INTERACT, [_p.get_rid()])
+	q.collide_with_areas = true
+	var res: Dictionary = _p.get_world_3d().direct_space_state.intersect_ray(q)
+	return not res.is_empty() and (res["collider"] as Node).get_parent() == z
+
+
+## What a hanging rider's body would touch along the line ("" = nothing): a 1.6 m capsule under the cable at 40
+## places, on the world layer. The tower's own rail under the anchor and the landing post at the far end do not count.
+func _zip_path_hit(zip: ZipLine) -> String:
+	var shape: CapsuleShape3D = CapsuleShape3D.new()
+	shape.radius = 0.4
+	shape.height = 1.6
+	var q: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
+	q.shape = shape
+	q.collision_mask = 1 | (1 << 8)
+	for i: int in range(1, 40):
+		var at: Vector3 = zip.cable_point(float(i) / 40.0) - Vector3.UP * (zip.hang - 1.0)
+		q.transform = Transform3D(Basis.IDENTITY, at)
+		for hit: Dictionary in _p.get_world_3d().direct_space_state.intersect_shape(q, 6):
+			var col: Node = hit.get("collider")
+			var nm: String = String(col.name) if col != null else "?"
+			if nm.begins_with("Tower") or nm.begins_with("ZipPost"):
+				continue
+			return "%s at %s" % [nm, str(at.snapped(Vector3(0.1, 0.1, 0.1)))]
+	return ""
+
+
+func _ride_and_check(zip: ZipLine, stand: Vector3) -> void:
+	var label: String = "zip " + String(zip.name)
+	var touch: String = _zip_path_hit(zip)
+	_check(touch == "", label + ": nothing is in the hanging rider's way down the line" + ("" if touch == "" else " (" + touch + ")"))
+	_p.global_position = stand + Vector3(0, 0.05, 0)
+	_p.velocity = Vector3.ZERO
+	await _frames(4)
+	_check(_p.is_on_floor() and absf(_p.global_position.y - stand.y) < 0.2, label + ": its anchor is reached from the top platform (standing at %s)" % str(stand))
+	_check(_zip_in_reach(zip, _p.global_position), label + ": the bar is under the interaction ray from there")
+	_check(_on_nav(zip.to_pos, 0.7), label + ": the landing is on the navmesh")
+	_check(zip.can_interact(_p) and zip.get_prompt(_p).contains(zip.target), label + ": usable, named for where it goes (" + zip.get_prompt(_p) + ")")
+	var zt: float = zip.ride_seconds()
+	_check(zt > 2.5 and zt < 9.0, label + ": the ride takes a few seconds (%.1f s over %.1f m, capped at %.1f m/s)" % [zt, zip.cable_length(), zip.speed])
+	zip.ride(_p)
+	await _secs(zt * 0.5)
+	var zm: Vector3 = _p.global_position
+	_check(_p.carry == zip and zip.is_riding(_p), label + ": mid-ride the player is carried by the line")
+	_check(zm.y < zip.global_position.y - 1.0 and zm.y > zip.to_pos.y + 0.5, label + ": mid-ride the body hangs between the platform and the ground (y %.2f)" % zm.y)
+	_check(_p.weapons.hands_mode == &"hang", label + ": mid-ride the hands are on the bar (%s)" % _p.weapons.hands_mode)
+	await _secs(zt * 0.5 + 0.9)
+	_check(_p.global_position.distance_to(zip.to_pos) < 0.3, label + ": the ride ended at its landing (at %s, wanted %s)" % [str(_p.global_position), str(zip.to_pos)])
+	_check(_p.is_physics_processing() and _p.carry == null, label + ": the player moves again after it")
+	_check(_p.weapons.hands_mode == &"", label + ": the gun is back after it")
+	await _frames(20)
+	_check(_p.is_on_floor() and _p.global_position.distance_to(zip.to_pos) < 0.6, label + ": the rider stands free at the landing (not in a post or a wall)")
+
+
+func _stand(at: Vector3) -> void:
+	_p.global_position = at + Vector3(0, 0.05, 0)
+	_p.velocity = Vector3.ZERO
+	await _frames(4)
+
+
+## One zombie risen at `at` (it comes up out of the ground and chases). null when the pool gave none.
+func _raise(at: Vector3) -> Zombie:
+	var dir: ZombieDirector = _map.get("director")
+	var before: Array[Zombie] = dir.active_zombies()
+	dir.spawn_burst([at], 1)
+	for z: Zombie in dir.active_zombies():
+		if not before.has(z):
+			return z
+	return null
+
+
+func _hips_y(z: Zombie) -> float:
+	var sk: Skeleton3D = z.get("_skel")
+	if sk == null or sk.find_bone("Hips") < 0:
+		return z.global_position.y
+	return (sk.global_transform * sk.get_bone_global_pose(sk.find_bone("Hips"))).origin.y
+
+
+## T-268: the dead and the watchtower. They climb both ladders to a player on the top platform and hit them; with
+## the player gone they drop back down; they follow a player up a ladder; a queue goes up one after another with room
+## between; a climber killed on the rungs falls; a crawler does not climb and does not wait at the foot for good.
+func _zombies_and_the_tower(top: Vector3, landing: Vector3) -> void:
+	var dir: ZombieDirector = _map.get("director")
+	var links: Node = _map.get_node_or_null("ClimbLinks")
+	var lower: NavigationLink3D = links.get_node_or_null("Climb_Tower") as NavigationLink3D
+	var upper: NavigationLink3D = links.get_node_or_null("Climb_TowerUpper") as NavigationLink3D
+	_check(lower != null and upper != null and lower.has_meta(ClimbLink.LINE) and upper.has_meta(ClimbLink.LINE), "climb: both tower ladders are climb links with a line")
+	if lower == null or upper == null:
+		return
+	var foot: Vector3 = lower.start_position
+	# ---- a zombie climbs both stages to a player on the top platform and hits them
+	await _stand(top)
+	GameState.god_mode = false
+	_p.hp = 100.0
+	var z1: Zombie = _raise(foot + Vector3(1.5, 0, -4.0))
+	_check(z1 != null, "climb: a zombie rises in the yard")
+	var saw_lower: bool = false
+	var saw_upper: bool = false
+	var mid_ok: bool = false
+	var t: float = 0.0
+	while z1 != null and t < 60.0 and _p.hp >= 100.0:
+		await _frames(6)
+		t += 0.1
+		if z1.on_rungs(lower):
+			saw_lower = true
+			if z1.global_position.y > 1.0 and z1.global_position.y < 5.5:
+				var l2: Vector2 = lower.get_meta(ClimbLink.LINE)
+				mid_ok = mid_ok or Vector2(z1.global_position.x, z1.global_position.z).distance_to(l2) < 0.05
+		if z1.on_rungs(upper):
+			saw_upper = true
+	_check(saw_lower and saw_upper, "climb: it took the lower ladder, crossed the landing and took the upper one")
+	_check(mid_ok, "climb: on the rungs its body is on the ladder's line")
+	_check(_p.hp < 100.0, "climb: it reached the player on the top platform and hit them (hp %.0f after %.0f s)" % [_p.hp, t])
+	_check(z1 != null and absf(z1.global_position.y - top.y) < 0.6, "climb: it stands on the top platform (y %.2f)" % (z1.global_position.y if z1 != null else -1.0))
+	GameState.god_mode = true
+	_p.hp = 100.0
+	# ---- with the player gone to the ground, it comes back down by dropping (both stages)
+	await _stand(Vector3(20.0, 0.0, 41.0))
+	var dropped: bool = false
+	t = 0.0
+	while z1 != null and z1.is_active() and t < 30.0 and z1.global_position.y > 0.6:
+		await _frames(6)
+		t += 0.1
+		dropped = dropped or (z1.on_ladder() and bool(z1.get("_ladder_drop")))
+	_check(dropped and z1 != null and z1.is_active() and z1.global_position.y < 0.6, "drop: left on the platform, it dropped back down both stages and is on the ground (y %.2f after %.0f s)" % [z1.global_position.y if z1 != null else -1.0, t])
+	dir.kill_all(true)
+	await _secs(0.5)
+	# ---- a zombie follows a player up a ladder
+	await _stand(foot)
+	var z2: Zombie = _raise(foot + Vector3(3.0, 0, -5.0))
+	await _secs(3.2)   # it is up and coming
+	var up: LadderClimb = _ladder("TowerLadder_Foot")
+	up.climb(_p)
+	var followed: bool = false
+	t = 0.0
+	while z2 != null and t < 30.0 and not (z2.state == Zombie.State.CHASE and absf(z2.global_position.y - landing.y) < 0.5):
+		await _frames(6)
+		t += 0.1
+		followed = followed or z2.on_rungs(lower)
+	_check(followed and z2 != null and absf(z2.global_position.y - landing.y) < 0.5, "follow: the player went up the ladder and the zombie came up it after them (on the landing after %.0f s)" % t)
+	dir.kill_all(true)
+	await _secs(0.5)
+	# ---- a queue: four at the foot, the player on the landing: one after another, never stacked
+	await _stand(landing)
+	var pack: Array[Zombie] = []
+	for i: int in 4:
+		var zq: Zombie = _raise(foot + Vector3(-1.5 + i * 1.0, 0, -2.5))
+		if zq != null:
+			pack.append(zq)
+	var min_gap: float = INF
+	var most: int = 0
+	var arrived: Dictionary = {}
+	t = 0.0
+	while t < 45.0 and arrived.size() < pack.size():
+		await _frames(3)
+		t += 0.05
+		var ys: Array[float] = []
+		for zq2: Zombie in pack:
+			if zq2.on_rungs(lower):
+				ys.append(zq2.global_position.y)
+			elif zq2.state != Zombie.State.CLIMB_LINK and absf(zq2.global_position.y - landing.y) < 0.5:
+				arrived[zq2] = true
+		most = maxi(most, ys.size())
+		ys.sort()
+		for k: int in range(1, ys.size()):
+			min_gap = minf(min_gap, ys[k] - ys[k - 1])
+	_check(arrived.size() == pack.size() and pack.size() == 4, "queue: all four reached the landing (%d of %d in %.0f s)" % [arrived.size(), pack.size(), t])
+	_check(most >= 2 and min_gap >= 1.5, "queue: they went up one after another with room between (up to %d on the rungs, never closer than %.2f m)" % [most, min_gap])
+	dir.kill_all(true)
+	await _secs(0.5)
+	# ---- a climber killed on the rungs falls; it can be shot there (its hitboxes are with it)
+	var hung: Array[Zombie] = dir.debug_ladder("Climb_Tower", 1)
+	_check(hung.size() == 1, "fall: a zombie is put on the lower ladder")
+	if hung.size() == 1:
+		var zk: Zombie = hung[0]
+		t = 0.0
+		while t < 8.0 and zk.global_position.y < 3.5:
+			await _frames(3)
+			t += 0.05
+		var hb_ok: bool = false
+		for hb: Hitbox in zk.get("_hitboxes"):
+			if hb.collision_layer != 0 and hb.global_position.distance_to(zk.global_position + Vector3.UP * 0.9) < 1.6:
+				hb_ok = true
+		_check(zk.on_rungs(lower) and zk.global_position.y >= 3.5 and hb_ok, "fall: 3.5 m up the rungs its hitboxes are live and with the body")
+		var y_dead: float = zk.global_position.y
+		zk.take_damage(zk.hp + 1.0, &"torso", &"none", 1, &"bullet")
+		_check(zk.state == Zombie.State.DEAD, "fall: shot there, it dies")
+		await _secs(2.2)
+		var low: float = minf(zk.global_position.y, _hips_y(zk))
+		_check(low < 1.3, "fall: killed %.1f m up, the body fell off the ladder (now %.2f)" % [y_dead, low])
+	dir.kill_all(true)
+	await _secs(0.5)
+	# ---- a crawler does not climb, and does not wait at the foot for good
+	var zc: Zombie = _raise(foot + Vector3(0.6, 0, -1.6))
+	if zc != null:
+		await _secs(3.0)
+		zc.become_crawler()
+		var climbed: bool = false
+		t = 0.0
+		while t < 60.0 and zc.is_active():
+			await _frames(6)
+			t += 0.1
+			climbed = climbed or zc.state == Zombie.State.CLIMB_LINK
+		_check(not climbed, "crawler: it never took the ladder")
+		_check(not zc.is_active(), "crawler: it was put back in the round's queue instead of waiting at the foot (after %.0f s)" % t)
+	dir.kill_all(true)
+	await _secs(0.5)
+
+
 func _run() -> void:
 	await _load("res://gravelight/maps/map00_crossroads/map00.tscn")
-	# the sniper tower
+	# the watchtower (T-229, T-268): two ladders in stages, three zip lines from the top
 	var up: LadderClimb = _ladder("TowerLadder_Foot")
 	var down: LadderClimb = _ladder("TowerLadder_Top")
-	_check(up != null and down != null, "map00: the tower's two LadderClimbs are in the scene")
-	if up != null and down != null:
-		await _climb_and_check(up, "tower up")
-		var zip: ZipLine = null
-		for n: Node in get_tree().get_nodes_in_group(&"ziplines"):
-			zip = n as ZipLine
-		_check(zip != null, "map00: the yard zip line is in the scene")
-		if zip != null:
-			_check(_on_nav(zip.to_pos, 0.7), "zip: the landing is on the navmesh")
-			_check(zip.can_interact(_p), "zip: usable from the deck (" + zip.get_prompt(_p) + ")")
-			var zt: float = zip.ride_seconds()
-			_check(zt > 2.5 and zt < 8.0, "zip: the ride takes a few seconds (%.1f s: the roll gains speed under gravity, capped at %.1f m/s)" % [zt, zip.speed])
-			zip.ride(_p)
-			await _secs(zt * 0.5)
-			var zm: Vector3 = _p.global_position
-			_check(_p.carry == zip and zip.is_riding(_p), "zip: mid-ride the player is carried by the line")
-			_check(zm.y < zip.global_position.y - 1.0 and zm.y > zip.to_pos.y + 0.5, "zip: mid-ride the body hangs between the deck and the yard (y %.2f)" % zm.y)
-			_check(_p.weapons.hands_mode == &"hang", "zip: mid-ride the hands are on the bar (%s)" % _p.weapons.hands_mode)
-			await _secs(zt * 0.5 + 0.9)
-			_check(_p.global_position.distance_to(zip.to_pos) < 0.3, "zip: the ride ended at the landing")
-			_check(_p.is_physics_processing() and _p.carry == null, "zip: the player moves again after it")
-			_check(_p.weapons.hands_mode == &"", "zip: the gun is back after it")
-		await _climb_and_check(down, "tower down")
+	var up2: LadderClimb = _ladder("TowerLadder_Upper")
+	var down2: LadderClimb = _ladder("TowerLadder_Head")
+	_check(up != null and down != null and up2 != null and down2 != null, "map00: the tower's four LadderClimbs are in the scene")
+	if up != null and down != null and up2 != null and down2 != null:
+		GameState.open_zone(&"YARD")
+		await _climb_and_check(up, "tower up to the landing")
+		await _climb_and_check(up2, "tower up to the top")
+		_check(up2.to_pos.y - up.global_position.y > 11.0, "the top platform is %.1f m up (the old deck was 6.2)" % (up2.to_pos.y - up.global_position.y))
+		var zips: Array[Node] = get_tree().get_nodes_in_group(&"ziplines")
+		_check(zips.size() == 3, "map00: three zip lines are in the scene (%d)" % zips.size())
+		var top: Vector3 = up2.to_pos
+		var landings: Array[Vector3] = []
+		for zn: String in ["YardZip", "InnZip", "BankZip"]:
+			var zip: ZipLine = _zip(zn)
+			_check(zip != null, "map00: the zip line %s is in the scene" % zn)
+			if zip == null:
+				continue
+			if zip.zone != &"" and not GameState.is_zone_open(zip.zone):
+				await _stand(top)
+				_check(not zip.can_interact(_p) and zip.get_prompt(_p) == zip.locked_text, "zip %s: chained while %s is shut (%s)" % [zn, zip.zone, zip.get_prompt(_p)])
+				GameState.open_zone(zip.zone)
+				await _frames(3)
+			var m: Vector3 = zip.mount_pos(top.y)
+			var c: Vector3 = Vector3(5.4, top.y, 45.0)   # the platform's middle
+			await _ride_and_check(zip, m + (Vector3(c.x - m.x, 0, c.z - m.z)).normalized() * 0.55)
+			for other: Vector3 in landings:
+				_check(other.distance_to(zip.to_pos) > 15.0, "zip %s: its landing is a different place (%.0f m from another)" % [zn, other.distance_to(zip.to_pos)])
+			landings.append(zip.to_pos)
+		await _stand(top)
+		await _climb_and_check(down2, "tower down to the landing")
+		await _climb_and_check(down, "tower down to the yard")
+		await _zombies_and_the_tower(top, up.to_pos)
 	var links: Node = _map.get_node_or_null("ClimbLinks")
-	_check(links != null and links.has_node("Climb_Tower") and links.has_node("Climb_CellarHatch"), "map00: the zombies' climb links (tower, hatch) exist")
+	_check(links != null and links.has_node("Climb_Tower") and links.has_node("Climb_TowerUpper") and links.has_node("Climb_CellarHatch"), "map00: the zombies' climb links (tower, tower upper, hatch) exist")
 	# the cellar hatch: bolted until the Old Cellar opens
 	var hup: LadderClimb = _ladder("CellarHatch_Up")
 	var hdown: LadderClimb = _ladder("CellarHatch_Down")
