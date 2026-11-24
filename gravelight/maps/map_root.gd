@@ -156,15 +156,16 @@ func _ready() -> void:
 	DayCycle.attach(self)   # T-259: one day every 24 rounds (data/gravelight/day_cycle.json); presentation only
 	CrucibleRoom.attach(self)   # T-175: the Crucible's room (props, lights, hum, forge fx) from data/gravelight/crucible_rooms.json
 	(func() -> void: LampGlow.attach(self)).call_deferred()   # lamp glass dims with its light (T-057)
-	ShadowProxies.build(self)   # the static batches' shadows drawn from a few merged depth meshes (T-070)
+	print("[ShadowProxies] %s: %s" % [map_id, str(ShadowProxies.build_all(self))])   # the batches' shadows drawn from a few merged depth meshes (T-070; T-266: every batch container)
 	ShadowBudget.attach(self)   # T-258: only the lamps nearest the camera draw shadows, within the Shadows setting's budget
 	print("[DetailRange] %s: %d cut-offs x%.2f (gfx_lod %s)" % [map_id, DetailRange.apply(self, DetailRange.factor(str(GLSettings.gfx("gfx_lod")))),
 		DetailRange.factor(str(GLSettings.gfx("gfx_lod"))), str(GLSettings.gfx("gfx_lod"))])   # T-223: no ring of missing detail
-	var sb: Node = get_node_or_null("StaticBatches")
-	if sb != null:   # T-145: batches split into ViewCells visibility groups get proxies per group (hidden with it)
-		for vg: Node in sb.get_children():
-			if vg.has_meta("vis_group"):
-				ShadowProxies.build(self, "StaticBatches/" + String(vg.name))
+	(func() -> void:
+		print("[PropShadows] %s: %s" % [map_id, str(PropShadows.build(self))])   # T-266: one shadow draw per static prop mesh (deferred: after the loaders' props)
+		var ow: OcclusionWalls = OcclusionWalls.attach(self)   # T-266: on Low / Medium rooms behind walls are not drawn
+		print("[OcclusionWalls] %s: wanted %s, %s" % [map_id, str(ow.want), str(ow.stats)])).call_deferred()
+	(func() -> void: print("[LightRange] %s: %d lamps fade with distance (gfx_lod %s)" % [map_id, LightRange.apply(self, LightRange.end_for(str(GLSettings.gfx("gfx_lod")))),
+		str(GLSettings.gfx("gfx_lod"))])).call_deferred()   # T-266: on Low / Medium the lamps have a draw distance (deferred: after the loaders' lamps)
 	if GLSettings.is_compat():   # T-139: the browser / Compatibility profile (no SDFGI / SSIL / SSR / volumetrics, capped shadows)
 		print("[WebProfile] %s: %s" % [map_id, str(WebProfile.apply(self))])
 		(func() -> void: WebProfile.apply(self)).call_deferred()   # again for what spawns deferred (intel, lamp glow)

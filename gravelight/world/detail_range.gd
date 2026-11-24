@@ -58,3 +58,6 @@ static func refresh(tree: SceneTree, lod: String) -> void:
 	var cs: Node = tree.current_scene if tree != null else null
 	if cs is MapRoot:
 		apply(cs, factor(lod))
+	LightRange.refresh(tree, lod)   # T-266: the lamps' draw distance follows the same setting
+	if cs is MapRoot:
+		OcclusionWalls.refresh(cs, lod)   # T-266: and whether rooms behind walls are culled

@@ -15872,6 +15872,998 @@
           "note": "mid-ride down the InnZip line: the hands on the bar, the stable's west wall going by, the passage ahead"
         }
       ]
+    },
+    "t266_m00": {
+      "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "T-266 render census: the heaviest views of the map (tools/perf/pick_views.py)",
+      "cams": [
+        {
+          "name": "yard",
+          "pos": [
+            9.0,
+            0.1,
+            35.5
+          ],
+          "yaw": 150.0,
+          "pitch": 4.0,
+          "do": [
+            "callv:DayCycle:hold_hour:0:1"
+          ]
+        },
+        {
+          "name": "spot_carters_road",
+          "pos": [
+            15.2,
+            0.0,
+            53.6
+          ],
+          "yaw": 0.0,
+          "pitch": 0.0
+        },
+        {
+          "name": "front",
+          "pos": [
+            20.0,
+            0.0,
+            -15.0
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0
+        },
+        {
+          "name": "close_squad",
+          "pos": [
+            15.0,
+            0.0,
+            3.2
+          ],
+          "yaw": 180.0,
+          "pitch": -3.0
+        },
+        {
+          "name": "tower_deck",
+          "pos": [
+            5.6,
+            6.2,
+            45.6
+          ],
+          "yaw": -40.0,
+          "pitch": -6.0
+        },
+        {
+          "name": "hall_west",
+          "pos": [
+            4.6,
+            3.8,
+            7.6
+          ],
+          "yaw": -90.0,
+          "pitch": -3.0
+        },
+        {
+          "name": "dynamo_set_work",
+          "pos": [
+            41.6,
+            -3.2,
+            37.6
+          ],
+          "yaw": 52.0,
+          "pitch": -6.0
+        },
+        {
+          "name": "cellar_bay_back",
+          "pos": [
+            39.2,
+            -3.2,
+            28.6
+          ],
+          "yaw": 62.0,
+          "pitch": -6.0
+        }
+      ]
+    },
+    "t266_m00_noon": {
+      "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "T-266 render census: the heaviest views of the map (tools/perf/pick_views.py), the day held at noon",
+      "cams": [
+        {
+          "name": "yard",
+          "pos": [
+            9.0,
+            0.1,
+            35.5
+          ],
+          "yaw": 150.0,
+          "pitch": 4.0,
+          "do": [
+            "callv:DayCycle:hold_hour:12:1"
+          ]
+        },
+        {
+          "name": "spot_carters_road",
+          "pos": [
+            15.2,
+            0.0,
+            53.6
+          ],
+          "yaw": 0.0,
+          "pitch": 0.0
+        },
+        {
+          "name": "front",
+          "pos": [
+            20.0,
+            0.0,
+            -15.0
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0
+        },
+        {
+          "name": "close_squad",
+          "pos": [
+            15.0,
+            0.0,
+            3.2
+          ],
+          "yaw": 180.0,
+          "pitch": -3.0
+        },
+        {
+          "name": "tower_deck",
+          "pos": [
+            5.6,
+            6.2,
+            45.6
+          ],
+          "yaw": -40.0,
+          "pitch": -6.0
+        },
+        {
+          "name": "hall_west",
+          "pos": [
+            4.6,
+            3.8,
+            7.6
+          ],
+          "yaw": -90.0,
+          "pitch": -3.0
+        },
+        {
+          "name": "dynamo_set_work",
+          "pos": [
+            41.6,
+            -3.2,
+            37.6
+          ],
+          "yaw": 52.0,
+          "pitch": -6.0
+        },
+        {
+          "name": "cellar_bay_back",
+          "pos": [
+            39.2,
+            -3.2,
+            28.6
+          ],
+          "yaw": 62.0,
+          "pitch": -6.0
+        }
+      ]
+    },
+    "t266_m01": {
+      "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "T-266 render census: the heaviest views of the map (tools/perf/pick_views.py)",
+      "cams": [
+        {
+          "name": "kaue",
+          "pos": [
+            10.0,
+            0.0,
+            20.5
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "do": [
+            "callv:DayCycle:hold_hour:0:1"
+          ]
+        },
+        {
+          "name": "u15_I_ledger_out",
+          "pos": [
+            34.0,
+            -18.0,
+            136.6
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0
+        },
+        {
+          "name": "u15_H_hall_e",
+          "pos": [
+            100.8,
+            -12.0,
+            90.0
+          ],
+          "yaw": 90.0,
+          "pitch": 2.0
+        },
+        {
+          "name": "I_crucible_corner",
+          "pos": [
+            41.0,
+            -18.0,
+            121.5
+          ],
+          "yaw": -115.0,
+          "pitch": 2.0
+        },
+        {
+          "name": "u15_R_h_foot",
+          "pos": [
+            74.0,
+            -18.0,
+            115.0
+          ],
+          "yaw": 0.0,
+          "pitch": 14.0
+        },
+        {
+          "name": "u15_H_fasbender",
+          "pos": [
+            82.5,
+            -12.0,
+            87.0
+          ],
+          "yaw": 75.0,
+          "pitch": 3.0
+        },
+        {
+          "name": "u15_R_g_foot",
+          "pos": [
+            44.5,
+            -18.0,
+            102.4
+          ],
+          "yaw": 0.0,
+          "pitch": 14.0
+        },
+        {
+          "name": "u15_A_gatehouse_lane",
+          "pos": [
+            13.5,
+            0.0,
+            3.0
+          ],
+          "yaw": 175.0,
+          "pitch": 2.0
+        }
+      ]
+    },
+    "t266_m01_noon": {
+      "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "T-266 render census: the heaviest views of the map (tools/perf/pick_views.py), the day held at noon",
+      "cams": [
+        {
+          "name": "kaue",
+          "pos": [
+            10.0,
+            0.0,
+            20.5
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0,
+          "do": [
+            "callv:DayCycle:hold_hour:12:1"
+          ]
+        },
+        {
+          "name": "u15_I_ledger_out",
+          "pos": [
+            34.0,
+            -18.0,
+            136.6
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0
+        },
+        {
+          "name": "u15_H_hall_e",
+          "pos": [
+            100.8,
+            -12.0,
+            90.0
+          ],
+          "yaw": 90.0,
+          "pitch": 2.0
+        },
+        {
+          "name": "I_crucible_corner",
+          "pos": [
+            41.0,
+            -18.0,
+            121.5
+          ],
+          "yaw": -115.0,
+          "pitch": 2.0
+        },
+        {
+          "name": "u15_R_h_foot",
+          "pos": [
+            74.0,
+            -18.0,
+            115.0
+          ],
+          "yaw": 0.0,
+          "pitch": 14.0
+        },
+        {
+          "name": "u15_H_fasbender",
+          "pos": [
+            82.5,
+            -12.0,
+            87.0
+          ],
+          "yaw": 75.0,
+          "pitch": 3.0
+        },
+        {
+          "name": "u15_R_g_foot",
+          "pos": [
+            44.5,
+            -18.0,
+            102.4
+          ],
+          "yaw": 0.0,
+          "pitch": 14.0
+        },
+        {
+          "name": "u15_A_gatehouse_lane",
+          "pos": [
+            13.5,
+            0.0,
+            3.0
+          ],
+          "yaw": 175.0,
+          "pitch": 2.0
+        }
+      ]
+    },
+    "t266_m02": {
+      "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "T-266 render census: the heaviest views of the map (tools/perf/pick_views.py)",
+      "cams": [
+        {
+          "name": "quay",
+          "pos": [
+            18.5,
+            0.0,
+            5.0
+          ],
+          "yaw": -90.0,
+          "pitch": -6.0,
+          "do": [
+            "callv:DayCycle:hold_hour:0:1"
+          ]
+        },
+        {
+          "name": "bank",
+          "pos": [
+            45.0,
+            0.0,
+            60.5
+          ],
+          "yaw": 0.0,
+          "pitch": -6.0
+        },
+        {
+          "name": "sub_from_pier1",
+          "pos": [
+            -1.0,
+            0.0,
+            52.0
+          ],
+          "yaw": -70.0,
+          "pitch": -10.0
+        },
+        {
+          "name": "sub_from_pier2",
+          "pos": [
+            16.5,
+            0.0,
+            66.0
+          ],
+          "yaw": 70.0,
+          "pitch": -6.0
+        },
+        {
+          "name": "sub_engine_fwd",
+          "pos": [
+            7.0,
+            -2.0,
+            83.0
+          ],
+          "yaw": 0.0,
+          "pitch": -2.0
+        },
+        {
+          "name": "sub_bow",
+          "pos": [
+            6.7,
+            -2.0,
+            49.0
+          ],
+          "yaw": 0.0,
+          "pitch": -4.0
+        },
+        {
+          "name": "sub_deck_tower",
+          "pos": [
+            8.6,
+            1.0,
+            60.0
+          ],
+          "yaw": 10.0,
+          "pitch": 0.0
+        },
+        {
+          "name": "yard",
+          "pos": [
+            -10.0,
+            0.0,
+            35.0
+          ],
+          "yaw": -147.8,
+          "pitch": 0.7
+        }
+      ]
+    },
+    "t266_m02_noon": {
+      "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "T-266 render census: the heaviest views of the map (tools/perf/pick_views.py), the day held at noon",
+      "cams": [
+        {
+          "name": "quay",
+          "pos": [
+            18.5,
+            0.0,
+            5.0
+          ],
+          "yaw": -90.0,
+          "pitch": -6.0,
+          "do": [
+            "callv:DayCycle:hold_hour:12:1"
+          ]
+        },
+        {
+          "name": "bank",
+          "pos": [
+            45.0,
+            0.0,
+            60.5
+          ],
+          "yaw": 0.0,
+          "pitch": -6.0
+        },
+        {
+          "name": "sub_from_pier1",
+          "pos": [
+            -1.0,
+            0.0,
+            52.0
+          ],
+          "yaw": -70.0,
+          "pitch": -10.0
+        },
+        {
+          "name": "sub_from_pier2",
+          "pos": [
+            16.5,
+            0.0,
+            66.0
+          ],
+          "yaw": 70.0,
+          "pitch": -6.0
+        },
+        {
+          "name": "sub_engine_fwd",
+          "pos": [
+            7.0,
+            -2.0,
+            83.0
+          ],
+          "yaw": 0.0,
+          "pitch": -2.0
+        },
+        {
+          "name": "sub_bow",
+          "pos": [
+            6.7,
+            -2.0,
+            49.0
+          ],
+          "yaw": 0.0,
+          "pitch": -4.0
+        },
+        {
+          "name": "sub_deck_tower",
+          "pos": [
+            8.6,
+            1.0,
+            60.0
+          ],
+          "yaw": 10.0,
+          "pitch": 0.0
+        },
+        {
+          "name": "yard",
+          "pos": [
+            -10.0,
+            0.0,
+            35.0
+          ],
+          "yaw": -147.8,
+          "pitch": 0.7
+        }
+      ]
+    },
+    "t266_m04a": {
+      "map": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "T-266 render census: the heaviest views of the map (tools/perf/pick_views.py)",
+      "cams": [
+        {
+          "name": "wide",
+          "pos": [
+            20.0,
+            0.0,
+            29.0
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "do": [
+            "callv:DayCycle:hold_hour:0:1"
+          ]
+        },
+        {
+          "name": "dark_A_0_off",
+          "pos": [
+            19.7,
+            0.0,
+            -1.9
+          ],
+          "yaw": 180.0,
+          "pitch": -4.0
+        },
+        {
+          "name": "dark_A_1_off",
+          "pos": [
+            33.6,
+            0.0,
+            -1.9
+          ],
+          "yaw": 180.0,
+          "pitch": -4.0
+        },
+        {
+          "name": "C_stage",
+          "pos": [
+            -24.0,
+            0.0,
+            47.5
+          ],
+          "yaw": 120.7,
+          "pitch": -1.0
+        },
+        {
+          "name": "dark_H_0_off",
+          "pos": [
+            -68.6,
+            0.0,
+            211.8
+          ],
+          "yaw": 0.0,
+          "pitch": -4.0
+        },
+        {
+          "name": "wind_tunnel",
+          "pos": [
+            41.0,
+            0.0,
+            115.0
+          ],
+          "yaw": 90.0,
+          "pitch": 4.0
+        },
+        {
+          "name": "dark_D_0_off",
+          "pos": [
+            13.7,
+            0.0,
+            60.7
+          ],
+          "yaw": 0.0,
+          "pitch": -4.0
+        },
+        {
+          "name": "dark_C_0_off",
+          "pos": [
+            -43.0,
+            0.0,
+            37.8
+          ],
+          "yaw": -135.0,
+          "pitch": -4.0
+        }
+      ]
+    },
+    "t266_m04a_noon": {
+      "map": "res://gravelight/maps/map04_fernflug/map04a.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "T-266 render census: the heaviest views of the map (tools/perf/pick_views.py), the day held at noon",
+      "cams": [
+        {
+          "name": "wide",
+          "pos": [
+            20.0,
+            0.0,
+            29.0
+          ],
+          "yaw": 0.0,
+          "pitch": 2.0,
+          "do": [
+            "callv:DayCycle:hold_hour:12:1"
+          ]
+        },
+        {
+          "name": "dark_A_0_off",
+          "pos": [
+            19.7,
+            0.0,
+            -1.9
+          ],
+          "yaw": 180.0,
+          "pitch": -4.0
+        },
+        {
+          "name": "dark_A_1_off",
+          "pos": [
+            33.6,
+            0.0,
+            -1.9
+          ],
+          "yaw": 180.0,
+          "pitch": -4.0
+        },
+        {
+          "name": "C_stage",
+          "pos": [
+            -24.0,
+            0.0,
+            47.5
+          ],
+          "yaw": 120.7,
+          "pitch": -1.0
+        },
+        {
+          "name": "dark_H_0_off",
+          "pos": [
+            -68.6,
+            0.0,
+            211.8
+          ],
+          "yaw": 0.0,
+          "pitch": -4.0
+        },
+        {
+          "name": "wind_tunnel",
+          "pos": [
+            41.0,
+            0.0,
+            115.0
+          ],
+          "yaw": 90.0,
+          "pitch": 4.0
+        },
+        {
+          "name": "dark_D_0_off",
+          "pos": [
+            13.7,
+            0.0,
+            60.7
+          ],
+          "yaw": 0.0,
+          "pitch": -4.0
+        },
+        {
+          "name": "dark_C_0_off",
+          "pos": [
+            -43.0,
+            0.0,
+            37.8
+          ],
+          "yaw": -135.0,
+          "pitch": -4.0
+        }
+      ]
+    },
+    "t266_m04b": {
+      "map": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "T-266 render census: the heaviest views of the map (tools/perf/pick_views.py)",
+      "cams": [
+        {
+          "name": "AuxBus_dark",
+          "pos": [
+            6.4,
+            0.0,
+            42.0
+          ],
+          "yaw": -90.0,
+          "pitch": -4.0
+        },
+        {
+          "name": "WW_back",
+          "pos": [
+            -112.0,
+            3.4,
+            24.0
+          ],
+          "yaw": -105.0,
+          "pitch": -2.0
+        },
+        {
+          "name": "EW_walk_dark",
+          "pos": [
+            50.0,
+            0.0,
+            54.0
+          ],
+          "yaw": 90.0,
+          "pitch": 0.0
+        },
+        {
+          "name": "Ruhland",
+          "pos": [
+            0.9,
+            0.0,
+            49.2
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0
+        },
+        {
+          "name": "WW_inboard",
+          "pos": [
+            -49.0,
+            3.4,
+            30.0
+          ],
+          "yaw": -100.0,
+          "pitch": -6.0
+        },
+        {
+          "name": "Breach_bay",
+          "pos": [
+            0.0,
+            0.0,
+            12.6
+          ],
+          "yaw": 0.0,
+          "pitch": -4.0
+        },
+        {
+          "name": "DW_walk_dark",
+          "pos": [
+            -50.0,
+            0.0,
+            54.0
+          ],
+          "yaw": -90.0,
+          "pitch": 0.0
+        },
+        {
+          "name": "Galley_photo",
+          "pos": [
+            -4.6,
+            0.0,
+            43.0
+          ],
+          "yaw": 90.0,
+          "pitch": 8.0
+        }
+      ]
+    },
+    "t266_m04c": {
+      "map": "res://gravelight/maps/map04_fernflug/map04c.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "T-266 render census: the heaviest views of the map (tools/perf/pick_views.py)",
+      "cams": [
+        {
+          "name": "J_jukebox",
+          "pos": [
+            25.0,
+            0.0,
+            76.0
+          ],
+          "yaw": 90.0,
+          "pitch": -4.0
+        },
+        {
+          "name": "dark_G_0_off",
+          "pos": [
+            -29.8,
+            -6.0,
+            196.7
+          ],
+          "yaw": 0.0,
+          "pitch": -4.0
+        },
+        {
+          "name": "A_outside",
+          "pos": [
+            -30.0,
+            0.0,
+            -45.0
+          ],
+          "yaw": -142.0,
+          "pitch": -0.2
+        },
+        {
+          "name": "E_shack",
+          "pos": [
+            54.0,
+            0.0,
+            122.0
+          ],
+          "yaw": -126.9,
+          "pitch": -0.7
+        },
+        {
+          "name": "hall_wreck_bay_off",
+          "pos": [
+            0.0,
+            0.0,
+            -16.0
+          ],
+          "yaw": 180.0,
+          "pitch": -4.0
+        },
+        {
+          "name": "E_perch",
+          "pos": [
+            46.6,
+            16.0,
+            118.0
+          ],
+          "yaw": 45.0,
+          "pitch": -8.0
+        },
+        {
+          "name": "B_wide",
+          "pos": [
+            0.0,
+            0.0,
+            -3.0
+          ],
+          "yaw": 180.0,
+          "pitch": 1.8
+        },
+        {
+          "name": "B_storm",
+          "pos": [
+            0.0,
+            0.0,
+            20.0
+          ],
+          "yaw": 180.0,
+          "pitch": 2.0
+        }
+      ]
+    },
+    "t266_m04d": {
+      "map": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "_doc": "T-266 render census: the heaviest views of the map (tools/perf/pick_views.py)",
+      "cams": [
+        {
+          "name": "T_line_yard",
+          "pos": [
+            0.0,
+            0.0,
+            62.0
+          ],
+          "yaw": 180.0,
+          "pitch": 4.0
+        },
+        {
+          "name": "dark_C_0_off",
+          "pos": [
+            -38.7,
+            0.0,
+            107.2
+          ],
+          "yaw": 0.0,
+          "pitch": -4.0
+        },
+        {
+          "name": "dark_B_1_off",
+          "pos": [
+            -9.3,
+            0.0,
+            52.9
+          ],
+          "yaw": -45.0,
+          "pitch": -4.0
+        },
+        {
+          "name": "dark_E_0_off",
+          "pos": [
+            19.6,
+            0.0,
+            22.9
+          ],
+          "yaw": 0.0,
+          "pitch": -4.0
+        },
+        {
+          "name": "dark_B_0_off",
+          "pos": [
+            10.9,
+            0.0,
+            58.1
+          ],
+          "yaw": 0.0,
+          "pitch": -4.0
+        },
+        {
+          "name": "Pohl",
+          "pos": [
+            30.4,
+            0.0,
+            36.6
+          ],
+          "yaw": 180.0,
+          "pitch": -2.0
+        },
+        {
+          "name": "dark_D_1_off",
+          "pos": [
+            36.4,
+            0.0,
+            53.2
+          ],
+          "yaw": 90.0,
+          "pitch": -4.0
+        },
+        {
+          "name": "B_wide",
+          "pos": [
+            0.0,
+            0.0,
+            25.0
+          ],
+          "yaw": 180.0,
+          "pitch": 0.7
+        }
+      ]
     }
   }
 }

@@ -15,8 +15,9 @@ shift 2 2>/dev/null || shift $#
 EXTRA="$*"
 G="${GODOT_LINUX:-tools/dl_godot/Godot_v4.7.2-stable_linux.x86_64}"
 [ -x "$G" ] || G="../../../tools/dl_godot/Godot_v4.7.2-stable_linux.x86_64"   # a worktree under .claude/worktrees
+[ -x "$G" ] || G="../../tools/dl_godot/Godot_v4.7.2-stable_linux.x86_64"   # a worktree under .wt
 [ -x "$G" ] || { echo "[wsl_perf] no Linux Godot (set GODOT_LINUX)"; exit 1; }
-OUT=.smoke_logs/u09/census
+OUT="${PERF_OUT:-.smoke_logs/u09/census}"
 mkdir -p "$OUT"
 for m in ${MAPS//,/ }; do
 	for p in ${PRESETS//,/ }; do
@@ -25,6 +26,6 @@ for m in ${MAPS//,/ }; do
 		echo "[wsl_perf] $m $p $EXTRA"
 		timeout 900 xvfb-run -a -s "-screen 0 1280x720x24" "$G" $DRV --audio-driver Dummy --resolution 1280x720 --path . \
 			res://gravelight/tools_src/perf_marks.tscn -- --map="$m" --preset="$p" --breakdown --quick $EXTRA > "$OUT/$tag.log" 2>&1
-		grep -E "^\[perf\] (per frame|shadowed omni|in play|census:|env:|renderer|map |WebProfile)|^\[WebProfile\]|SHADER ERROR|shader compilation failed" "$OUT/$tag.log" | head -20
+		grep -E "^\[view|^\[perf\] (per frame|shadowed omni|in play|census:|env:|renderer|map |WebProfile)|^\[WebProfile\]|SHADER ERROR|shader compilation failed" "$OUT/$tag.log" | head -20
 	done
 done
