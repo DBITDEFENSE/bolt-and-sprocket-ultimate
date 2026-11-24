@@ -10,7 +10,7 @@
     "soviet": {}, "soviet_tunic": {}, "soviet_burial": {}, "bellringer": {}
   },
   "light": {
-    "_doc": "Readability in the dark, in the zombie materials only (no map light changes): min_light = the share of its own colour a zombie shows with no light on it at all; rim = a soft edge light tinted by the cloth / skin under it (rim_power: how tight to the silhouette). `-- --zombie-look=norim` switches both off for an A/B.",
+    "_doc": "Readability in the dark, in the zombie materials only (no map light changes): min_light = the share of its own colour a zombie shows with no light on it at all; rim = a soft edge light tinted by the cloth / skin under it (rim_power: how tight to the silhouette). `-- --zombie-look=norim` switches both off for an A/B. Both are divided by the map's exposure (data/look/<map>.json), so the floor looks the same on a map graded at 1.7 as on Map 0.",
     "min_light": 0.11,
     "rim": 0.5,
     "rim_power": 2.6,
@@ -18,7 +18,7 @@
   },
   "wear": {
     "_doc": "On top of the colour: blood = the range of the per-zombie stain amount on clothes, mouth and hands (0..1); stain_color the dried blood; dead = the range of how sunken the sockets, mouth and hands are and how dark the veins under the skin; frost_scale = how much of the map's standing rime (anim.json variation.frost_by_map, tuned on the old pale cloth) a dressed walker keeps: on a colour the full amount reads as white mould. A weapon's freeze is not scaled.",
-    "frost_scale": 0.45,
+    "frost_scale": 0.3,
     "blood": [0.15, 0.9],
     "stain_color": "#4a0d0b",
     "dead": [0.55, 1.0],
@@ -75,7 +75,7 @@
     "pressure_suit_dark": {"a": "#5b6068", "b": "#5b6068", "c": "#d8d4c4"},
     "pressure_suit_tan": {"a": "#b59b61", "b": "#b59b61", "c": "#1b3380"},
 
-    "sailor_navy": {"a": "#1e409a", "b": "#1e409a", "c": "#1e409a"},
+    "sailor_navy": {"a": "#2f4a86", "b": "#2f4a86", "c": "#2f4a86"},
     "sailor_oilskin_yellow": {"a": "#d9a61e", "b": "#d9a61e", "c": "#d9a61e"},
     "sailor_oilskin_orange": {"a": "#cb631c", "b": "#cb631c", "c": "#cb631c"},
     "sailor_striped": {"a": "#dcd7c6", "b": "#17337c", "c": "#17337c", "pattern": "stripes", "pattern_color": "#17337c"},

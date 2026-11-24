@@ -834,8 +834,11 @@ static func _look_uniforms(m: ShaderMaterial) -> void:
 			m.set_shader_parameter(str(pair[0]), Vector3(col.r, col.g, col.b))
 	if ZombieWardrobe.rim_enabled():
 		var li: Dictionary = c.get("light", {})
-		m.set_shader_parameter("min_light", float(li.get("min_light", 0.0)))
-		m.set_shader_parameter("rim", float(li.get("rim", 0.0)))
+		# the values are for an exposure of 1 (Map 0): a map graded at 1.7 would show the floor 1.7 times as bright
+		# and the figures would glow, so both terms are divided by the map's exposure (data/look/<map>.json)
+		var expo: float = maxf(1.0, float(LookGrade.data(String(GameState.map_id)).get("exposure", 1.0)))
+		m.set_shader_parameter("min_light", float(li.get("min_light", 0.0)) / expo)
+		m.set_shader_parameter("rim", float(li.get("rim", 0.0)) / expo)
 		m.set_shader_parameter("rim_power", float(li.get("rim_power", 3.0)))
 		var rc: Color = Color.html(str(li.get("rim_color", "#ffffff"))).srgb_to_linear()
 		m.set_shader_parameter("rim_color", Vector3(rc.r, rc.g, rc.b))
@@ -897,6 +900,10 @@ static func _linear_mean(t: Texture2D) -> float:
 
 ## Builds the kits a map uses up front (avoids a hitch on first spawn).
 static func warm_up(kits: PackedStringArray = KITS) -> void:
+	# T-269: the materials outlive a map (static cache); their light terms follow the map being loaded
+	for mk: String in _mats.keys():
+		if mk.contains("shader:skin:") and not mk.ends_with(":living") or mk.ends_with("shader:kit_zombie"):
+			_look_uniforms(_mats[mk] as ShaderMaterial)
 	var kit_rows: Dictionary = GLData.table("anim")["kits"]
 	for k: String in kits:
 		for b: String in BUILDS:
