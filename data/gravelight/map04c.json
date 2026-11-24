@@ -343,5 +343,27 @@
     "vo_open": "OPR_EXFIL_OPEN_M4C_01",
     "vo_wait": "OPR_EXFIL_WAIT_M4C_01",
     "vo_missed": "OPR_EXFIL_MISSED_M4C_01"
-  }
+  },
+  "horses": [
+    {
+      "name": "LakebedHorse",
+      "pos": [
+        -9.0,
+        0.0,
+        -1.75
+      ],
+      "yaw": 0.0,
+      "rail": [
+        -9.0,
+        0.0,
+        -3.0
+      ],
+      "rail_yaw": 0.0,
+      "zones": [
+        "B_LAKEBED"
+      ],
+      "look": "noriker",
+      "_doc": "T-271 a range horse (T-240, T-262's tack chest) tied at a rail on the lakebed side of the wreck's wall, 9 m along it from the Lakebed door (the chest 7.4 m): reached once that door is open. yaw 0 = it faces the rail and the wall (-z). zones: the dry lake only (120 x 64 m of flat ground), never the hangar, the motor pool or below ground. The rail's collider is on the map-edge layer, the chest has none: the baked navmesh is untouched."
+    }
+  ]
 }

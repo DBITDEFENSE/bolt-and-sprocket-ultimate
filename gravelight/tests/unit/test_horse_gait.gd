@@ -367,7 +367,7 @@ func test_map_rows() -> void:
 	assert_gt(pos.distance_to(Vector3(5.4, 0, 42.6)), 8.0, "clear of the tower's ladder")
 	assert_gt(absf(pos.x - 22.0), 1.6, "clear of the wall-buy chalked on the stable wall")
 	assert_lt(ClimbLink._v3(row["rail"]).distance_to(pos), 2.0, "the rail is in front of it")
-	for map: String in ["map01", "map02"]:
+	for map: String in ["map02", "map04b", "map04d"]:   # T-271: Kaltenbrunn, Thalbach and Groom Lake have one (test_map_detail)
 		assert_false(GLData.load_json("res://data/gravelight/%s.json" % map).has("horses"), "%s has no horse row" % map)
 
 

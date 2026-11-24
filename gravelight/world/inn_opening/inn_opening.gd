@@ -28,6 +28,10 @@ extends Node3D
 ## hands, the camera and every timing; nothing here touches the patrons, the door or round 1.
 
 const DATA_PATH: String = "res://data/gravelight/map00_opening.json"
+## T-271: the opening's data is per map. Left empty the node reads data/gravelight/<map prefix>_opening.json for the
+## map it stands in (map00_crossroads -> map00_opening.json, map04a_thalbach -> map04a_opening.json); a generator may
+## name another file here. A map without the file has no opening (the node cancels itself, as on a wrong map).
+@export var data_path: String = ""
 
 enum Phase { IDLE, RUNNING, DONE, CANCELLED }
 
@@ -68,8 +72,18 @@ var _card_t: float = -1.0
 var _card_titled: bool = false
 
 
-static func load_cfg() -> Dictionary:
-	return GLData.load_json(DATA_PATH)
+## The opening file of a map: data/gravelight/<prefix>_opening.json, the prefix the map id up to its first underscore
+## (T-271; Map 0's is DATA_PATH).
+static func data_path_for(map_id: StringName) -> String:
+	var prefix: String = String(map_id).get_slice("_", 0)
+	return "res://data/gravelight/%s_opening.json" % prefix if prefix != "" else DATA_PATH
+
+
+## The file's data ({} when the map has none). Without a path: Map 0's (the tests and tools that read its numbers).
+static func load_cfg(path: String = DATA_PATH) -> Dictionary:
+	if not (ResourceLoader.exists(path) or FileAccess.file_exists(path)):
+		return {}
+	return GLData.load_json(path)
 
 
 ## The rule: only on the configured round of the configured map, only once, never on a campaign arrival.
@@ -180,9 +194,9 @@ static func exit_times(c: Dictionary) -> Dictionary:
 
 func _ready() -> void:
 	add_to_group(&"inn_opening")   # (VOManager holds the squad's SPAWN lines until the opening is over)
-	cfg = load_cfg()
 	var map: MapRoot = _map()
 	var map_id: StringName = map.map_id if map != null else &""
+	cfg = load_cfg(data_path if data_path != "" else data_path_for(map_id))
 	if cfg.is_empty() or String(map_id) != str(cfg.get("map", "")):
 		phase = Phase.CANCELLED
 		return
