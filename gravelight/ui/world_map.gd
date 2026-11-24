@@ -34,7 +34,7 @@ const LEG_WORDS: Dictionary = {"road": "by road and rail", "air": "by air", "roc
 ## The Atlantic crossing is one curve from Werk Thalbach to Groom Lake; the Kranich sits at its middle.
 const FLIGHT_CTRL: Vector2 = Vector2(0.39, 0.26)
 const ROCKET_CTRL: Vector2 = Vector2(0.21, 0.40)
-const PLATE: Vector2 = Vector2(250.0, 74.0)
+const PLATE: Vector2 = Vector2(276.0, 74.0)
 const PLATE_GAP: float = 28.0
 const NODE_R: float = 15.0
 const MOON_R: float = 26.0
@@ -197,7 +197,7 @@ static func leg_points(i: int, size_px: Vector2 = REF, steps: int = 24) -> Packe
 			_:
 				var mid: Vector2 = (a + b) * 0.5
 				var d: Vector2 = b - a
-				p = _bezier(a, mid + Vector2(-d.y, d.x) * 0.14, b, t)
+				p = _bezier(a, mid + Vector2(-d.y, d.x) * 0.07, b, t)
 		out.append(p * size_px)
 	return out
 
@@ -226,7 +226,7 @@ static func inset_rect(size_px: Vector2 = REF) -> Rect2:
 	var i: int = PLACES.size() - 1
 	var p: Vector2 = point(i, size_px)
 	var r: Rect2 = Rect2(p - Vector2(MOON_R, MOON_R), Vector2(MOON_R, MOON_R) * 2.0).merge(plate_rect(i, size_px))
-	return r.grow_individual(minf(60.0, r.position.x - 8.0), 18.0, 14.0, 22.0)
+	return r.grow_individual(minf(60.0, r.position.x - 8.0), 18.0, 14.0, 26.0)
 
 
 ## A closed outline with its corners cut twice (Chaikin).
@@ -292,7 +292,7 @@ func _init() -> void:
 	name = "World"
 	clip_contents = true
 	mouse_filter = Control.MOUSE_FILTER_PASS
-	custom_minimum_size = Vector2(1150.0, REF.y)
+	custom_minimum_size = Vector2(1250.0, REF.y)
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_paper = _layer("Paper")
 	_paper.draw.connect(_draw_paper)
@@ -679,13 +679,13 @@ func _draw_plate(i: int, st: Dictionary, sel: bool) -> void:
 	if locked:
 		m.draw_string(MenuKit.spaced(mono, 2), Vector2(x, y), "LOCKED", HORIZONTAL_ALIGNMENT_LEFT, w, 14, MenuKit.INK.lightened(0.3))
 	else:
-		m.draw_string(mono, Vector2(x, y), str(st["best_text"]), HORIZONTAL_ALIGNMENT_LEFT, w, 14, MenuKit.GOLD if int(st["best"]) > 0 else MenuKit.DIM)
+		m.draw_string(mono, Vector2(x, y), str(st["best_text"]).replace("  ", " "), HORIZONTAL_ALIGNMENT_LEFT, w, 14, MenuKit.GOLD if int(st["best"]) > 0 else MenuKit.DIM)
 		var ec: Color = MenuKit.DIM.darkened(0.2)
 		if str(st["egg"]) == "done":
 			ec = MenuKit.VIOLET.lightened(0.25)
 		elif str(st["egg"]) == "not done":
 			ec = MenuKit.DIM
-		m.draw_string(mono, Vector2(x, y), str(st["egg_text"]), HORIZONTAL_ALIGNMENT_RIGHT, w, 14, ec)
+		m.draw_string(mono, Vector2(x, y), str(st["egg_text"]).replace("  ", " "), HORIZONTAL_ALIGNMENT_RIGHT, w, 14, ec)
 
 
 ## Outlines of the two small pictures on the route, nose towards +x, about one unit long each way.

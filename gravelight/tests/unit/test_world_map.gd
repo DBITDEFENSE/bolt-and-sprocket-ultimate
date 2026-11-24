@@ -7,7 +7,7 @@ extends GutTest
 
 const IDS: PackedStringArray = ["map00_crossroads", "map01_kaltenbrunn", "map02_totenhafen", "map04a_thalbach", "map04b_kranich",
 	"map04c_groomlake", "map04d_mondlicht"]
-const SIZES: Array = [Vector2(1300.0, 600.0), Vector2(1150.0, 600.0), Vector2(1600.0, 600.0)]
+const SIZES: Array = [Vector2(1300.0, 600.0), Vector2(1250.0, 600.0), Vector2(1600.0, 600.0)]
 
 var _saved_profile: Dictionary = {}
 var _saved_path: String = ""
@@ -290,7 +290,7 @@ func test_the_solo_page_is_the_war_map() -> void:
 	var page: Control = solo.get("_page_root") as Control
 	assert_lte(page.size.x, screen.x + 0.5, "the page is no wider than the screen (%s)" % page.size)
 	assert_lte(page.size.y, screen.y + 0.5, "nor taller (%s)" % page.size)
-	assert_gte(w.size.x, 1150.0, "the sheet has its width (%s)" % w.size)
+	assert_gte(w.size.x, 1250.0, "the sheet has its width (%s)" % w.size)
 	# the campaign page keeps its card and has no sheet
 	var camp: MenuCharacter = MenuCharacter.new()
 	camp.campaign_only = true
