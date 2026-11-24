@@ -45,6 +45,7 @@ var whips: int = 0
 var tramples_started: int = 0
 var trample_interrupts: int = 0
 var sieges: int = 0
+var perch_hits: int = 0               # T-268: players shaken on a ladder's platform by a siege scream
 var doors_smashed: Array = []
 var tele_log: Array = []              # [move id, seconds] of every telegraph (the smoke checks none is short)
 var posed: bool = false               # a capture's still pose: the brain is off
@@ -567,6 +568,27 @@ func _tick_siege(delta: float) -> void:
 					z.debug_set_tier(StringName(str(sc.get("tier", "sprint"))))
 					n += 1
 		print("[%s] siege scream: %d of the dead run" % [boss_key, n])
+		_siege_perch(sc)
+
+
+## T-268: a ladder's platform in its own arena is no shelter from it. It cannot climb, so at each siege scream every
+## player standing on a platform a ladder serves (ClimbLink.on_perch: the watchtower's landing and top) within
+## siege.perch_radius is shaken by it: siege.perch_damage and a jolt of the view. The dead it set running climb after
+## them. 0 damage (or no such block) turns it off.
+func _siege_perch(sc: Dictionary) -> void:
+	var dmg: float = float(sc.get("perch_damage", 0.0))
+	if dmg <= 0.0:
+		return
+	var map_n: Node = (director as Node).get_parent() if director != null else get_parent()
+	for p: Player in alive_players():
+		if p.downed or not ClimbLink.on_perch(map_n, p.global_position):
+			continue
+		if Vector2(p.global_position.x - global_position.x, p.global_position.z - global_position.z).length() > float(sc.get("perch_radius", 30.0)):
+			continue
+		perch_hits += 1
+		p.take_hit(dmg, self)
+		p.kick_camera(6.0, 10.0, 0.0, 6.0, 0.6, 0.0)
+		print("[%s] siege: the scream shakes player %d on a ladder's platform" % [boss_key, p.player_id])
 
 
 # ---- moves

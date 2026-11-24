@@ -44,10 +44,24 @@ const ATT_WIN_Z: float = 4.5   # the gable windows' centre (z) on the west and e
 ## up: the taproom floor is cut there, a Trapdoor leaf fills it until the Old Cellar opens.
 const TOWER_X: float = 5.4
 const TOWER_Z: float = 45.0
-const TOWER_DECK: float = 6.2       # the deck's top
-const TOWER_HALF: float = 1.9       # the deck's half width (3.8 m: inside its rail the walkable square must stay over the 4 m2 the bake keeps, T-106)
-const ZIP_ANCHOR: Vector3 = Vector3(7.35, 8.2, 43.1)    # the cable's top, a bracket on the north-east roof post
-const ZIP_POST: Vector3 = Vector3(18.6, 0, 36.2)        # the landing post's foot by the stable wall; the cable ends 2.75 m up it
+## T-268 (the owner: "make the watchtower like more badass, make it taller ... 3 zip lines that go to 3 different spots
+## on the map"): two stages. The landing (TOWER_DECK, where the old deck was) and the top platform (TOWER_TOP), both
+## TOWER_HALF * 2 square behind a closed parapet; a ladder up the north face to the landing, a second one up the east
+## face to the top; three zip lines from brackets on the roof posts 2 m over the top platform (ZIP_LINES).
+const TOWER_DECK: float = 6.2       # the landing's top (the first stage)
+const TOWER_TOP: float = 12.0       # the top platform's top (the second stage)
+const TOWER_HALF: float = 2.4       # the decks' half width (4.8 m: room for the squad; inside the rail the walkable square is far over the 4 m2 the bake keeps, T-106)
+const TOWER_LEG: float = 2.1        # the legs' offset from the centre
+const TOWER_LADDER2_Z: float = 45.9 # the upper ladder's line on the east face (z)
+## The zip lines: [name, the cable's top (a bracket on an iron arm off a roof post, TOWER_TOP + 2, a step outside the
+## parapet so the rider mounts half a metre back up the line, on the deck), the landing post's foot]. The cable
+## ends ZIP_POST_H up its post. The same numbers are in map00.json "ziplines" (test_ladders_data holds them together).
+const ZIP_POST_H: float = 2.75
+const ZIP_LINES: Array = [
+	["YardZip", Vector3(TOWER_X + TOWER_HALF + 0.15, TOWER_TOP + 2.0, TOWER_Z - TOWER_HALF + 0.25), Vector3(29.8, 0, 42.1)],    # across the yard to the cart and the hitching rail
+	["InnZip", Vector3(TOWER_X - TOWER_HALF + 0.25, TOWER_TOP + 2.0, TOWER_Z - TOWER_HALF - 0.15), Vector3(1.6, 0, 19.6)],      # north past the stable's west wall to the passage behind the inn
+	["BankZip", Vector3(TOWER_X - TOWER_HALF - 0.1, TOWER_TOP + 2.0, TOWER_Z + TOWER_HALF - 0.05), Vector3(-15.2, 0, 59.6)],   # south-west over the fence to the road by the savings bank
+]
 const HATCH_X0: float = 6.15
 const HATCH_X1: float = 7.05
 const HATCH_Z0: float = 5.15
@@ -902,48 +916,161 @@ func build_yard() -> void:
 	box(geo, "Woodpile", Vector3(13.3, 0, 34.15), Vector3(15.9, 1.3, 35.4), "furniture", true, false)   # east of the window W_STB_S (x 11.2..12.8), which the zombies need clear (T-040)
 	box(geo, "YardCart", Vector3(27.0, 0, 37.0), Vector3(29.6, 1.1, 39.2), "furniture", true, false)
 	box(geo, "YardTrough", Vector3(30.5, 0, 44.0), Vector3(33.5, 0.7, 45.0), "furniture", true, false)
-	# T-229: the sniper tower (TOWER_*): four legs, the deck slab, three collider bars round its edge (a closed rail:
-	# the climbs and the zombies' link carry over it, nobody walks off), and the zip line's landing post by the stable wall
-	for lx: float in [TOWER_X - 1.6, TOWER_X + 1.6]:
-		for lz: float in [TOWER_Z - 1.6, TOWER_Z + 1.6]:
-			box(geo, "TowerLeg", Vector3(lx - 0.11, 0, lz - 0.11), Vector3(lx + 0.11, TOWER_DECK - 0.2, lz + 0.11), "beam")
-	box(geo, "TowerDeck", Vector3(TOWER_X - TOWER_HALF, TOWER_DECK - 0.2, TOWER_Z - TOWER_HALF), Vector3(TOWER_X + TOWER_HALF, TOWER_DECK, TOWER_Z + TOWER_HALF), "planks")
-	var tc: Array = [Vector3(TOWER_X - TOWER_HALF + 0.05, 0, TOWER_Z - TOWER_HALF + 0.05), Vector3(TOWER_X + TOWER_HALF - 0.05, 0, TOWER_Z - TOWER_HALF + 0.05),
-		Vector3(TOWER_X + TOWER_HALF - 0.05, 0, TOWER_Z + TOWER_HALF - 0.05), Vector3(TOWER_X - TOWER_HALF + 0.05, 0, TOWER_Z + TOWER_HALF - 0.05)]
-	for k: int in 4:
-		for r: Array in [[0.06, 0.06, 0.12], [0.55, 0.035, 0.04], [1.05, 0.07, 0.07]]:   # [centre height over the deck, width, height]
-			var hy: float = TOWER_DECK + float(r[0])
-			bar(geo, "TowerRail", tc[k] + Vector3(0, hy, 0), tc[(k + 1) % 4] + Vector3(0, hy, 0), float(r[1]), float(r[2]), "beam")
-	box(geo, "ZipPost", ZIP_POST + Vector3(-0.12, 0, -0.12), ZIP_POST + Vector3(0.12, 2.9, 0.12), "beam")
+	# T-229 / T-268: the watchtower (TOWER_*): four legs up to the top platform, the two deck slabs, three collider bars
+	# round each deck's edge (a closed rail: the climbs and the zombies' links carry over it, nobody walks off), and the
+	# three zip lines' landing posts
+	for lx: float in [TOWER_X - TOWER_LEG, TOWER_X + TOWER_LEG]:
+		for lz: float in [TOWER_Z - TOWER_LEG, TOWER_Z + TOWER_LEG]:
+			box(geo, "TowerLeg", Vector3(lx - 0.13, 0, lz - 0.13), Vector3(lx + 0.13, TOWER_TOP - 0.2, lz + 0.13), "beam")
+	for deck_y: float in [TOWER_DECK, TOWER_TOP]:
+		box(geo, "TowerDeck", Vector3(TOWER_X - TOWER_HALF, deck_y - 0.2, TOWER_Z - TOWER_HALF), Vector3(TOWER_X + TOWER_HALF, deck_y, TOWER_Z + TOWER_HALF), "planks")
+		var tc: Array = [Vector3(TOWER_X - TOWER_HALF + 0.05, 0, TOWER_Z - TOWER_HALF + 0.05), Vector3(TOWER_X + TOWER_HALF - 0.05, 0, TOWER_Z - TOWER_HALF + 0.05),
+			Vector3(TOWER_X + TOWER_HALF - 0.05, 0, TOWER_Z + TOWER_HALF - 0.05), Vector3(TOWER_X - TOWER_HALF + 0.05, 0, TOWER_Z + TOWER_HALF - 0.05)]
+		for k: int in 4:
+			for r: Array in [[0.06, 0.06, 0.12], [0.55, 0.035, 0.04], [1.05, 0.07, 0.07]]:   # [centre height over the deck, width, height]
+				var hy: float = deck_y + float(r[0])
+				bar(geo, "TowerRail", tc[k] + Vector3(0, hy, 0), tc[(k + 1) % 4] + Vector3(0, hy, 0), float(r[1]), float(r[2]), "beam")
+	for zl: Array in ZIP_LINES:
+		var zp: Vector3 = zl[2]
+		box(geo, "ZipPost_" + str(zl[0]), zp + Vector3(-0.12, 0, -0.12), zp + Vector3(0.12, ZIP_POST_H + 0.15, 0.12), "beam")
 
 
-## T-229: the sniper tower, a carters' Hochsitz over the yard's south-west corner: the legs' braces and ring beams, the
-## deck's boards, the boarded parapet on its rail bars with a plank cap, four roof posts under a little gable roof with
-## its snow, the ladder up the north face (the LadderClimbs stand at its foot and head), a lantern under the roof, a row
-## of sandbags on the field side, a cartridge crate and an upturned bucket for a seat, the zip line's cable from the
-## bracket on the north-east roof post down to the landing post by the stable wall (the trolley is the ZipLine's own),
-## the post's stay, a coil of rope and the trodden snow where you land.
+## T-229 / T-268: the watchtower over the yard's south-west corner, a carters' Hochsitz built up into a two-stage
+## timber tower. Four heavy legs on stone pads, strapped in iron; each stage cross-braced on all four faces above head
+## height (nobody walks through a brace, on the ground or on the landing) with ring beams; the landing at TOWER_DECK
+## and the top platform at TOWER_TOP, both boarded behind a parapet on the rail bars with a plank cap and sandbags on
+## the field sides; four roof posts under a gable roof with its snow; a mast
+## over the ridge with a pennant and a red lamp; the ladder up the north face to the landing and a second up the east
+## face to the top (the LadderClimbs stand at their feet and heads); lanterns at the foot, on the landing and under
+## the roof; the searchlight on the roof's east gable (its light is _tower_lights'); and the three zip lines
+## (ZIP_LINES): a bracket and a marker lantern on a roof post, the cable down to its landing post with a stay, a
+## lantern, a snow cap, a coil of rope and the trodden snow where you land (the trolleys are the ZipLines' own).
 func _dress_tower(g: Node3D) -> void:
 	var cx: float = TOWER_X
 	var cz: float = TOWER_Z
 	var h: float = TOWER_HALF
-	var dy: float = TOWER_DECK
-	var legs: Array = [Vector3(cx - 1.6, 0, cz - 1.6), Vector3(cx + 1.6, 0, cz - 1.6), Vector3(cx + 1.6, 0, cz + 1.6), Vector3(cx - 1.6, 0, cz + 1.6)]
-	for tier: Array in [[0.5, 3.0], [3.2, 5.7]]:
+	var lg: float = TOWER_LEG
+	var d1: float = TOWER_DECK
+	var d2: float = TOWER_TOP
+	var legs: Array = [Vector3(cx - lg, 0, cz - lg), Vector3(cx + lg, 0, cz - lg), Vector3(cx + lg, 0, cz + lg), Vector3(cx - lg, 0, cz + lg)]
+	# the feet: a stone pad, an iron strap, a snow skirt
+	for leg: Vector3 in legs:
+		Props.block(g, leg + Vector3(-0.3, 0, -0.3), leg + Vector3(0.3, 0.22, 0.3), "stone")
+		Props._noshadow(Props.block(g, leg + Vector3(-0.15, 0.5, -0.15), leg + Vector3(0.15, 0.62, 0.15), "iron"))
+		Props._noshadow(Props.block(g, leg + Vector3(-0.15, d1 + 1.3, -0.15), leg + Vector3(0.15, d1 + 1.42, 0.15), "iron"))
+		Props._noshadow(Props.block(g, leg + Vector3(-0.36, 0.2, -0.36), leg + Vector3(0.36, 0.28, 0.36), "snow"))
+	# the bracing: one tall cross a face per stage, a ring beam under and over it, all above head height
+	for tier: Array in [[2.45, d1 - 0.55], [d1 + 2.35, d2 - 0.55]]:
 		var y0: float = float(tier[0])
 		var y1: float = float(tier[1])
 		for k: int in 4:
 			var a: Vector3 = legs[k]
 			var b: Vector3 = legs[(k + 1) % 4]
-			Props.strut(g, a + Vector3(0, y0, 0), b + Vector3(0, y1, 0), 0.09, "beam")
-			Props.strut(g, a + Vector3(0, y1, 0), b + Vector3(0, y0, 0), 0.09, "beam")
-			Props.strut(g, a + Vector3(0, y1 + 0.06, 0), b + Vector3(0, y1 + 0.06, 0), 0.13, "beam")   # the ring beam
-	for k2: int in 4:   # the deck's bearers under its edges
-		var a2: Vector3 = legs[k2]
-		var b2: Vector3 = legs[(k2 + 1) % 4]
-		Props.strut(g, a2 + Vector3(0, dy - 0.3, 0), b2 + Vector3(0, dy - 0.3, 0), 0.16, "beam")
-	Props.block(g, Vector3(cx - h, dy, cz - h), Vector3(cx + h, dy + 0.012, cz + h), "floorboards")
-	# the boarded parapet: two boards between the rail bars each side, a plank cap on the top bar, corner posts up to the roof
+			Props.strut(g, a + Vector3(0, y0, 0), b + Vector3(0, y1, 0), 0.12, "beam")
+			Props.strut(g, a + Vector3(0, y1, 0), b + Vector3(0, y0, 0), 0.12, "beam")
+			Props.strut(g, a + Vector3(0, y0 - 0.08, 0), b + Vector3(0, y0 - 0.08, 0), 0.15, "beam")   # the ring beams
+			Props.strut(g, a + Vector3(0, y1 + 0.08, 0), b + Vector3(0, y1 + 0.08, 0), 0.15, "beam")
+			var mid: Vector3 = (a + b) * 0.5 + Vector3(0, (y0 + y1) * 0.5, 0)   # the iron plate where the cross meets
+			var out: Vector3 = (mid - Vector3(cx, mid.y, cz)).normalized()
+			Props._noshadow(Props.obox(g, mid + out * 0.07, Vector3(0.3, 0.3, 0.03) if absf(out.z) > 0.5 else Vector3(0.03, 0.3, 0.3), "iron"))
+	# knee braces from the legs out under each deck's overhang
+	for dy: float in [d1, d2]:
+		for k2: int in 4:
+			var a2: Vector3 = legs[k2]
+			var b2: Vector3 = legs[(k2 + 1) % 4]
+			Props.strut(g, a2 + Vector3(0, dy - 0.3, 0), b2 + Vector3(0, dy - 0.3, 0), 0.18, "beam")   # the bearers
+			var c2: Vector3 = Vector3(cx, 0, cz)
+			var o2: Vector3 = (a2 - c2).normalized()
+			Props.strut(g, a2 + Vector3(0, dy - 1.2, 0), a2 + o2 * 0.38 + Vector3(0, dy - 0.24, 0), 0.1, "beam")
+		for j: int in 5:   # the joists' ends showing under the edge
+			var jx: float = cx - h + 0.4 + j * (2.0 * h - 0.8) / 4.0
+			Props._noshadow(Props.block(g, Vector3(jx - 0.05, dy - 0.3, cz - h - 0.06), Vector3(jx + 0.05, dy - 0.2, cz + h + 0.06), "beam"))
+		Props.block(g, Vector3(cx - h, dy, cz - h), Vector3(cx + h, dy + 0.012, cz + h), "floorboards")
+		_tower_parapet(g, dy)
+	# the top: roof posts at the corners, the plates, the gable roof, the mast with its pennant and red lamp
+	for px: float in [cx - h + 0.1, cx + h - 0.1]:
+		for pz: float in [cz - h + 0.1, cz + h - 0.1]:
+			Props.block(g, Vector3(px - 0.09, d2, pz - 0.09), Vector3(px + 0.09, d2 + 2.3, pz + 0.09), "beam")
+	for pz2: float in [cz - h + 0.1, cz + h - 0.1]:
+		Props.block(g, Vector3(cx - h - 0.3, d2 + 2.14, pz2 - 0.08), Vector3(cx + h + 0.3, d2 + 2.3, pz2 + 0.08), "beam")   # the plates
+	for px2: float in [cx - h + 0.1, cx + h - 0.1]:
+		Props.block(g, Vector3(px2 - 0.07, d2 + 2.0, cz - h + 0.1), Vector3(px2 + 0.07, d2 + 2.14, cz + h - 0.1), "beam")
+	Props.gable_roof(g, Vector3(cx - h - 0.45, d2 + 2.25, cz - h - 0.45), Vector3(cx + h + 0.45, d2 + 2.25, cz + h + 0.45), 1.05, true)
+	Props.block(g, Vector3(cx - 0.07, d2 + 2.3, cz - 0.07), Vector3(cx + 0.07, d2 + 6.8, cz + 0.07), "beam")   # the mast (3.5 m over the ridge: from the yard the eaves hide anything shorter)
+	Props._noshadow(Props.obox(g, Vector3(cx + 0.55, d2 + 6.1, cz + 0.05), Vector3(0.95, 0.8, 0.03), "cloth_red", Vector3(0, 8, -9)))   # the pennant, hanging frozen
+	Props._noshadow(Props.block(g, Vector3(cx - 0.09, d2 + 6.8, cz - 0.09), Vector3(cx + 0.09, d2 + 6.86, cz + 0.09), "iron"))
+	Props._noshadow(Props.block(g, Vector3(cx - 0.09, d2 + 6.86, cz - 0.09), Vector3(cx + 0.09, d2 + 7.1, cz + 0.09), "lamp_red_lit", false))
+	Props._noshadow(Props.block(g, Vector3(cx - 0.12, d2 + 7.1, cz - 0.12), Vector3(cx + 0.12, d2 + 7.14, cz + 0.12), "iron"))
+	# the ladders: the north face up to the landing, the east face from the landing up to the top (stand-offs to the legs)
+	Props.ladder(g, Vector3(cx, 0, cz - h - 0.02), 0.0, d1 + 0.9, "beam")
+	Props.ladder(g, Vector3(cx + h + 0.02, d1, TOWER_LADDER2_Z), -90.0, d2 - d1 + 0.9, "beam")
+	for sy: float in [d1 + 2.3, d1 + 4.2]:
+		for sz: float in [-0.2, 0.2]:
+			Props._noshadow(Props.block(g, Vector3(cx + lg, sy, TOWER_LADDER2_Z + sz - 0.02), Vector3(cx + h + 0.12, sy + 0.04, TOWER_LADDER2_Z + sz + 0.02), "iron"))
+	# lanterns: three down the yard-side (north-east) corner, one on the field (south-west) corner, one under the roof
+	for lan: Array in [[1.0, 2.3], [1.0, d1 - 0.9], [1.0, d2 - 0.9], [-1.0, d1 - 0.9]]:   # an iron arm off the corner, a lantern hung on it (_tower_lights)
+		var sgn: float = float(lan[0])
+		var leg_c: Vector3 = Vector3(cx + sgn * lg, float(lan[1]) + 0.32, cz - sgn * lg)
+		var tip: Vector3 = Vector3(cx + sgn * (h + 0.55), float(lan[1]) + 0.32, cz - sgn * (h + 0.55))
+		Props._noshadow(Props.strut(g, leg_c, tip, 0.04, "iron"))
+		Props._noshadow(Props.block(g, tip + Vector3(-0.01, -0.2, -0.01), tip + Vector3(0.01, 0.0, 0.01), "iron"))
+		Props._noshadow(Props.block(g, tip + Vector3(-0.08, -0.42, -0.08), tip + Vector3(0.08, -0.2, 0.08), "lantern_glass", false))
+		Props._noshadow(Props.block(g, tip + Vector3(-0.1, -0.2, -0.1), tip + Vector3(0.1, -0.17, 0.1), "iron"))
+	Props.lantern(g, Vector3(cx, d2 + 2.05, cz), d2 + 2.6)   # (up in the gable, over head height: at 1.6 m it hung in the squad's faces)
+	# sandbags on the caps of the field sides, a crate and a bucket on each deck, a cartridge box on the top
+	Props.sandbags(g, Vector3(cx - h + 0.3, d2 + 1.14, cz + h - 0.2), Vector3(cx + h - 0.3, d2 + 1.14, cz + h - 0.2), 1)
+	Props.sandbags(g, Vector3(cx - h + 0.2, d2 + 1.14, cz - h + 0.5), Vector3(cx - h + 0.2, d2 + 1.14, cz + h - 0.5), 1)
+	Props.sandbags(g, Vector3(cx - h + 0.6, d2 + 1.14, cz - h + 0.2), Vector3(cx + h - 1.6, d2 + 1.14, cz - h + 0.2), 1)
+	Props.sandbags(g, Vector3(cx - h + 0.3, d1 + 1.14, cz + h - 0.2), Vector3(cx + h - 0.3, d1 + 1.14, cz + h - 0.2), 1)
+	Props.sandbags(g, Vector3(cx - h + 0.2, d1 + 1.14, cz - h + 0.5), Vector3(cx - h + 0.2, d1 + 1.14, cz + h - 0.5), 1)
+	Props.crate(g, Vector3(cx - 1.55, d2, cz + 1.55), 0.5, 12.0)
+	Props.cyl(g, Vector3(cx - 1.5, d2 + 0.16, cz + 0.6), 0.15, 0.32, "zinc")
+	Props.crate(g, Vector3(cx - 1.55, d1, cz + 1.5), 0.55, -8.0)
+	Props.rope_coil(g, Vector3(cx + 1.3, d1, cz + 1.5), 0.2)
+	# the searchlight: a drum on a yoke bracketed to the roof's east gable, over everyone's head (on the parapet's
+	# corner it stood in the face of whoever took the yard's zip line), aimed over the yard at the gate
+	var sl: Vector3 = TOWER_SEARCHLIGHT
+	Props.block(g, Vector3(cx + h + 0.4, sl.y - 0.42, sl.z - 0.05), Vector3(sl.x + 0.05, sl.y - 0.32, sl.z + 0.05), "iron")
+	Props.block(g, Vector3(sl.x - 0.04, sl.y - 0.42, sl.z - 0.04), Vector3(sl.x + 0.04, sl.y - 0.26, sl.z + 0.04), "iron")
+	var drum: Node3D = Props.group(g, "SearchlightDrum", sl)
+	drum.transform = Transform3D(Basis.looking_at(TOWER_SEARCH_AIM - sl, Vector3.UP), sl)
+	Props.cyl(drum, Vector3(0, 0, 0.0), 0.24, 0.36, "iron", Vector3(90, 0, 0))
+	Props._noshadow(Props.cyl(drum, Vector3(0, 0, -0.19), 0.26, 0.03, "steel", Vector3(90, 0, 0)))
+	Props._noshadow(Props.cyl(drum, Vector3(0, 0, -0.2), 0.21, 0.02, "bulb_off", Vector3(90, 0, 0)))
+	for sx: float in [-0.27, 0.27]:
+		Props._noshadow(Props.block(drum, Vector3(sx - 0.015, -0.3, -0.03), Vector3(sx + 0.015, 0.04, 0.03), "iron"))
+	# the zip lines
+	for zl: Array in ZIP_LINES:
+		var top: Vector3 = zl[1]
+		var foot: Vector3 = zl[2]
+		var post_top: Vector3 = foot + Vector3(0, ZIP_POST_H, 0)
+		var flat: Vector3 = Vector3(foot.x - top.x, 0, foot.z - top.z).normalized()
+		var side: Vector3 = Vector3(-flat.z, 0, flat.x)
+		var corner: Vector3 = Vector3(cx + signf(top.x - cx) * (h - 0.1), top.y + 0.2, cz + signf(top.z - cz) * (h - 0.1))
+		Props.strut(g, corner, top + Vector3(0, 0.06, 0), 0.07, "iron")   # the arm off the roof post, and its bracket
+		Props.block(g, top + Vector3(-0.08, -0.1, -0.08), top + Vector3(0.08, 0.1, 0.08), "iron")
+		Props._noshadow(Props.block(g, top + Vector3(-0.05, 0.1, -0.05), top + Vector3(0.05, 0.4, 0.05), "iron"))
+		Props._noshadow(Props.block(g, top + Vector3(-0.06, 0.16, -0.06), top + Vector3(0.06, 0.34, 0.06), "lantern_glass", false))   # its marker lantern
+		Props.cable(g, top, post_top, 0.3, 0.022, 20, "iron")
+		Props.block(g, post_top + Vector3(-0.09, -0.08, -0.09), post_top + Vector3(0.09, 0.08, 0.09), "iron")
+		var stay: Vector3 = foot + flat * 1.6
+		Props._noshadow(Props.strut(g, post_top + Vector3(0, -0.2, 0), stay, 0.02, "iron"))   # the stay to its ground anchor, in line with the pull
+		Props._noshadow(Props.block(g, stay + Vector3(-0.1, 0, -0.1), stay + Vector3(0.1, 0.25, 0.1), "iron"))
+		Props._noshadow(Props.block(g, foot + Vector3(-0.14, ZIP_POST_H + 0.15, -0.14), foot + Vector3(0.14, ZIP_POST_H + 0.22, 0.14), "snow"))
+		var lan: Vector3 = foot + side * 0.2 + Vector3(0, 2.1, 0)   # a lantern hung on the post, so the landing reads at night
+		Props._noshadow(Props.block(g, foot + side * 0.1 + Vector3(-0.015, 2.3, -0.015), foot + side * 0.24 + Vector3(0.015, 2.33, 0.015), "iron"))
+		Props._noshadow(Props.block(g, lan + Vector3(-0.07, -0.11, -0.07), lan + Vector3(0.07, 0.11, 0.07), "lantern_glass", false))
+		Props._noshadow(Props.block(g, lan + Vector3(-0.08, 0.11, -0.08), lan + Vector3(0.08, 0.14, 0.08), "iron"))
+		Props.rope_coil(g, foot + side * 0.45 - flat * 0.3, 0.14)
+		var land: Vector3 = foot - flat * 0.9
+		Props._noshadow(Props.obox(g, land + Vector3(0, 0.006, 0), Vector3(1.8, 0.012, 2.4), "snow_trodden", Vector3(0, rad_to_deg(atan2(flat.x, flat.z)), 0)))
+
+
+## One deck's boarded parapet: two boards between the rail bars each side, a plank cap on the top bar.
+func _tower_parapet(g: Node3D, dy: float) -> void:
+	var cx: float = TOWER_X
+	var cz: float = TOWER_Z
+	var h: float = TOWER_HALF
 	for side: int in 4:
 		var n: Vector3 = [Vector3(0, 0, -1), Vector3(1, 0, 0), Vector3(0, 0, 1), Vector3(-1, 0, 0)][side]   # outward
 		var t: Vector3 = Vector3(n.z, 0, -n.x)
@@ -955,31 +1082,55 @@ func _dress_tower(g: Node3D) -> void:
 		var a4: Vector3 = c - t * (h + 0.02) + Vector3(0, dy + 1.09, 0) - n * 0.08
 		var b4: Vector3 = c + t * (h + 0.02) + Vector3(0, dy + 1.14, 0) + n * 0.06
 		Props.block(g, Vector3(minf(a4.x, b4.x), a4.y, minf(a4.z, b4.z)), Vector3(maxf(a4.x, b4.x), b4.y, maxf(a4.z, b4.z)), "beam")
-	for px: float in [cx - h + 0.1, cx + h - 0.1]:
-		for pz: float in [cz - h + 0.1, cz + h - 0.1]:
-			Props.block(g, Vector3(px - 0.08, dy, pz - 0.08), Vector3(px + 0.08, dy + 2.25, pz + 0.08), "beam")
-	for pz2: float in [cz - h + 0.1, cz + h - 0.1]:
-		Props.block(g, Vector3(cx - h + 0.02, dy + 2.1, pz2 - 0.07), Vector3(cx + h - 0.02, dy + 2.25, pz2 + 0.07), "beam")   # the plates
-	Props.gable_roof(g, Vector3(cx - h - 0.35, dy + 2.2, cz - h - 0.35), Vector3(cx + h + 0.35, dy + 2.2, cz + h + 0.35), 0.8, true)
-	# the ladder up the north face, a lantern under the roof, sandbags on the field side, a crate and a bucket
-	Props.ladder(g, Vector3(cx, 0, cz - h - 0.02), 0.0, dy + 0.9, "beam")
-	Props.wall_lamp(g, Vector3(cx + 1.6, 2.3, cz - 1.6 - 0.11), 0.0)   # a lantern on the north-east leg over the ladder's foot
-	Props.lantern(g, Vector3(cx, dy + 1.55, cz), dy + 2.2)
-	Props.sandbags(g, Vector3(cx - h + 0.3, dy + 1.14, cz + h - 0.2), Vector3(cx + h - 0.3, dy + 1.14, cz + h - 0.2), 1)
-	Props.sandbags(g, Vector3(cx - h + 0.2, dy + 1.14, cz - h + 0.4), Vector3(cx - h + 0.2, dy + 1.14, cz + h - 0.5), 1)
-	Props.crate(g, Vector3(cx + 0.95, dy, cz + 0.95), 0.5, 12.0)
-	Props.cyl(g, Vector3(cx - 0.95, dy + 0.16, cz + 0.3), 0.15, 0.32, "zinc")
-	# the zip line: the bracket on the roof post, the cable down to the post (its stay, a snow cap, a coil of rope), the trodden landing
-	Props.block(g, ZIP_ANCHOR + Vector3(-0.08, -0.1, -0.08), ZIP_ANCHOR + Vector3(0.08, 0.1, 0.08), "iron")
-	Props.block(g, ZIP_ANCHOR + Vector3(-0.3, -0.06, -0.12), ZIP_ANCHOR + Vector3(0.0, 0.06, 0.0), "iron")
-	var post_top: Vector3 = ZIP_POST + Vector3(0, 2.75, 0)
-	Props.cable(g, ZIP_ANCHOR, post_top, 0.3, 0.018, 14, "iron")
-	Props.block(g, post_top + Vector3(-0.09, -0.08, -0.09), post_top + Vector3(0.09, 0.08, 0.09), "iron")
-	Props.strut(g, post_top + Vector3(0, -0.2, 0), ZIP_POST + Vector3(1.6, 0.0, 0.0), 0.02, "iron")   # the stay to its ground anchor
-	Props.block(g, ZIP_POST + Vector3(1.5, 0, -0.1), ZIP_POST + Vector3(1.7, 0.25, 0.1), "iron")
-	Props._noshadow(Props.block(g, ZIP_POST + Vector3(-0.14, 2.9, -0.14), ZIP_POST + Vector3(0.14, 2.97, 0.14), "snow"))
-	Props.rope_coil(g, ZIP_POST + Vector3(-0.4, 0, 0.35), 0.14)
-	Props._noshadow(Props.block(g, Vector3(17.1, 0.0, 35.9), Vector3(18.9, 0.012, 37.5), "snow_trodden"))
+
+
+## T-268: the tower's lights. Oil lanterns that always burn (three down the yard-side corner, one on the field
+## corner, one under the roof), the red lamp on
+## the mast (the tower reads from across the map at night), a small lantern at each zip line's landing post, and the
+## searchlight: electric, dark until the cellar lever's sweep reaches the stable (the last zone of the sweep; the
+## yard has no turn of its own), then a beam over the yard onto the gate. Only the searchlight asks for a shadow
+## (one spot view; ShadowBudget decides, T-258); the lanterns have none.
+const TOWER_SEARCH_AIM: Vector3 = Vector3(18.0, 0.0, 45.5)
+const TOWER_SEARCHLIGHT: Vector3 = Vector3(TOWER_X + TOWER_HALF + 0.85, TOWER_TOP + 2.75, TOWER_Z)   # on the roof's east gable end
+
+
+func _tower_lights() -> void:
+	var warm: Color = Color(1.0, 0.62, 0.32)
+	# the lanterns hang OUTSIDE the yard-side corner, one a stage, so they wash the north and east faces' timber from
+	# the ground to the roof (a lamp inside a parapet lights the deck and leaves the tower a black shape); one on the
+	# field corner for the south and west faces
+	var ne: Vector3 = Vector3(TOWER_X + TOWER_HALF + 0.55, 0, TOWER_Z - TOWER_HALF - 0.55)
+	var sw: Vector3 = Vector3(TOWER_X - TOWER_HALF - 0.55, 0, TOWER_Z + TOWER_HALF + 0.55)
+	_lamp("YardTowerFootLamp", ne + Vector3(0, 2.3, 0), warm, 6.5, 14.0, false, true, 0.2)
+	_lamp("YardTowerLandingLamp", ne + Vector3(0, TOWER_DECK - 0.9, 0), warm, 8.5, 16.0, false, true, 0.2)
+	_lamp("YardTowerEaveLamp", ne + Vector3(0, TOWER_TOP - 0.9, 0), warm, 8.5, 16.0, false, true, 0.2)
+	_lamp("YardTowerFieldLamp", sw + Vector3(0, TOWER_DECK - 0.9, 0), warm, 7.0, 16.0, false, true, 0.2)
+	_lamp("YardTowerLamp", Vector3(TOWER_X, TOWER_TOP + 1.95, TOWER_Z), warm, 3.5, 11.0, false, true, 0.2)
+	_lamp("YardTowerBeacon", Vector3(TOWER_X, TOWER_TOP + 6.98, TOWER_Z), Color(1.0, 0.12, 0.08), 6.0, 12.0, false, false)
+	for zl: Array in ZIP_LINES:
+		var top: Vector3 = zl[1]
+		var foot: Vector3 = zl[2]
+		var flat: Vector3 = Vector3(foot.x - top.x, 0, foot.z - top.z).normalized()
+		_lamp("YardZipLamp_" + str(zl[0]), foot + Vector3(-flat.z, 0, flat.x) * 0.2 - flat * 0.25 + Vector3(0, 2.1, 0), warm, 1.6, 6.5, false, true, 0.2)
+	var sl: SpotLight3D = SpotLight3D.new()
+	sl.name = "YardTowerSearchlight"
+	sl.light_color = Color(0.86, 0.92, 1.0)
+	sl.light_energy = 14.0
+	sl.light_volumetric_fog_energy = 1.6
+	sl.spot_range = 38.0
+	sl.spot_angle = 17.0
+	sl.spot_attenuation = 0.6
+	sl.shadow_enabled = true
+	sl.visible = false
+	sl.set_meta("zone", &"STABLE")
+	sl.set_meta("energy", 14.0)
+	sl.add_to_group(&"power_lights", true)
+	map_root.add_child(sl)
+	var at: Vector3 = TOWER_SEARCHLIGHT
+	sl.transform = Transform3D(Basis.looking_at(TOWER_SEARCH_AIM - at, Vector3.UP), at + (TOWER_SEARCH_AIM - at).normalized() * 0.24)
+	var lens: MeshInstance3D = Props.cyl(sl, Vector3(0, 0, 0.02), 0.2, 0.02, "flood_glass", Vector3(90, 0, 0))   # the lit lens shows with the light
+	lens.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	lens.set_meta("keep", true)
 
 
 ## T-125: a blocking fence's collider: the world layer up to FENCE_SOLID_H (zombies and shots stop at the drawn
@@ -4014,8 +4165,7 @@ func _dress_yard() -> void:
 	_lamp("YardDoorLamp", Vector3(8.0, 2.6, 34.9), Color(1.0, 0.62, 0.32), 7.5, 16.0, true, true, 0.15)
 	Props.wall_lamp(g, Vector3(19.2, 2.75, 34.2), 180.0)   # (west of the hoist ledge over the Thompson since T-084)
 	_lamp("YardWallLamp", Vector3(19.2, 2.6, 34.9), Color(1.0, 0.62, 0.32), 6.5, 15.0, false, true, 0.15)
-	_lamp("YardTowerLamp", Vector3(TOWER_X, TOWER_DECK + 1.45, TOWER_Z), Color(1.0, 0.62, 0.32), 3.0, 11.0, false, true, 0.2)   # the lantern under the tower's roof (T-229)
-	_lamp("YardTowerFootLamp", Vector3(TOWER_X + 1.6, 2.1, TOWER_Z - 2.0), Color(1.0, 0.62, 0.32), 2.2, 10.0, false, true, 0.2)   # the lantern on its leg over the ladder's foot
+	_tower_lights()   # T-268: the watchtower's lanterns, its red masthead lamp, the zip posts' lanterns and the searchlight
 	# the hoist over the loft door (T-084): the beam out of the gable, its pulley and rope down to the ledge, the
 	# ledge's brackets, snow on its boards
 	Props.block(g, Vector3(21.85, 5.9, 33.6), Vector3(22.15, 6.15, 36.3), "beam")
@@ -4654,7 +4804,8 @@ func _spot_grid_build() -> void:
 		_spot_keep.append(["PlayerSpawn", ps, 2.0])
 	for gs: Array in [["Spawn_HayPile", Vector3(22.5, 0, 23.7)], ["Spawn_YardMound", Vector3(5.0, 0, 44.5)], ["Spawn_CoalChute", Vector3(34.2, CELLAR_Y, 29.6)],
 			["Spawn_LagerDrain", Vector3(32.9, CELLAR_Y, 32.1)], ["Spawn_DynamoSump", Vector3(35.2, CELLAR_Y, 37.9)], ["Kellerschalter", DYN_LEVER - Vector3(0, 0.3, 0)],
-			["Crucible", DYN_CRUCIBLE], ["FieldRadio", Vector3(SHELF_X1 - 0.2, 0, 4.9)], ["ZipPost", ZIP_POST], ["Tower", Vector3(TOWER_X, 0, TOWER_Z - 2.4)]]:
+			["Crucible", DYN_CRUCIBLE], ["FieldRadio", Vector3(SHELF_X1 - 0.2, 0, 4.9)], ["ZipPost", ZIP_LINES[0][2]], ["ZipPost", ZIP_LINES[1][2]], ["ZipPost", ZIP_LINES[2][2]],
+			["Tower", Vector3(TOWER_X, 0, TOWER_Z - TOWER_HALF - 0.5)]]:
 		_spot_keep.append([str(gs[0]), gs[1], 2.2])
 	for gp: Vector3 in OUT_GROUND_SPAWNS:
 		_spot_keep.append(["Spawn_Snow", gp, 3.0])
@@ -5424,7 +5575,7 @@ func build_gameplay() -> void:
 		[&"STABLE", Vector3((STB_X0 + STB_X1) * 0.5, 0, 28), Vector3(STB_X1 - STB_X0, 7, 12)],
 		[&"STABLE", Vector3(20, 0, 19), Vector3(4, 3, 6)],
 		[&"YARD", Vector3(18, 0, 41), Vector3(32, 4, 14)],
-		[&"YARD", Vector3(TOWER_X, TOWER_DECK, TOWER_Z), Vector3(5, 5, 5)],   # the sniper tower's deck (T-229)
+		[&"YARD", Vector3(TOWER_X, TOWER_DECK, TOWER_Z), Vector3(6, TOWER_TOP - TOWER_DECK + 5.0, 6)],   # the watchtower's landing and top platform (T-229, T-268; a volume holds y from its origin - 0.5 up to + size.y)
 	]
 	for r: Array in OUT_ZONE_RECTS:   # T-080: the grounds, open ground (roam)
 		var a: Vector2 = r[0]

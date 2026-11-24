@@ -324,6 +324,13 @@ func _inn() -> void:
 			running += 1
 	_check(b.target == null and sieged and running >= 1, "a player in the taproom is not chased: it screams and the dead run (%d of %d, sieges %d)" % [running, made, b.sieges])
 	_check(ZoneVolume.zone_at(get_tree(), b.global_position + Vector3.UP) in [&"YARD", &"GROUNDS", &"STABLE"], "it stays on its own ground (%s)" % str(ZoneVolume.zone_at(get_tree(), b.global_position + Vector3.UP)))
+	# ---- T-268: the watchtower is no shelter from it. It cannot climb; its siege scream shakes whoever stands up there
+	_place(Vector3(5.4, 12.05, 45.0))
+	await _secs(0.3)
+	var s0: int = b.sieges
+	var shaken: bool = await _until(func() -> bool: return b.sieges > s0 and b.perch_hits >= 1, 26.0, false)
+	_check(b.target == null and shaken, "a player on the watchtower's top is not chased, and the siege scream shakes them (sieges %d, shaken %d)" % [b.sieges, b.perch_hits])
+	_check(b.global_position.y < 1.0 and not b.can_climb_ladders(), "the horse stays on the ground (y %.2f)" % b.global_position.y)
 	_place(Vector3(14.0, 0.05, 41.0))
 	_cull_horde()
 

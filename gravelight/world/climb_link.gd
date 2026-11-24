@@ -5,6 +5,14 @@ extends RefCounted
 ## from the link's start to its end instead of walking it. Data-driven per map: data/gravelight/<mapNN>.json
 ## "climb_links": [{"zone": "D_PENHALL", "from": [x, y, z], "to": [x, y, z], "name": "..."}]. The link's
 ## navigation layer is the zone's bit (MapRoot.nav_zone_bits) so closed zones keep their ladders closed.
+## T-268 (the owner: "zombies need to be able to crawl up the watchtower ... if you go on the ladder, have the zombies
+## be able to chase you"): a row may be a LADDER. `"line": [x, z]` is the ladder's line (where a body hangs on the
+## rungs, the LadderClimb's own `line`): the zombie steps onto it, goes straight up it and swings over the edge onto
+## `to`, instead of the straight diagonal from `from` to `to`. A ladder is climbed ONE AT A TIME with room between
+## (`"space"`, metres between two climbers, default SPACE): the others wait at the foot (try_enter), so a queue goes
+## up one after another and never stacks. `"drop": true` with `"bidirectional": true` lets the dead come back down
+## it: they swing out over the edge and drop down the line (a fall, a stagger on landing), so nobody is left standing
+## on a platform the players have left. Rows without `line` behave as before (every other map's links).
 
 const META: StringName = &"climb"
 ## T-153: a zone's ladders live on its climb layer (the zone's bit + CLIMB_OFFSET), not on its walk layer: the
@@ -13,6 +21,58 @@ const META: StringName = &"climb"
 ## at the foot of the ladder for good instead of taking a stair.
 const CLIMB_OFFSET: int = 16
 const WALK_MASK: int = 0xFFFF
+const LINE: StringName = &"climb_line"       # meta: Vector2, the ladder's line (x, z)
+const DROP: StringName = &"climb_drop"       # meta: bool, the dead may drop down it
+const SPACE_META: StringName = &"climb_space"
+const QUEUE: StringName = &"climb_queue"     # meta: Array, the bodies on the rungs now
+const SPACE: float = 1.9                     # metres between two climbers on one ladder (a body is 1.8 m)
+
+
+## True when `body` may start up the ladder `link` now: nobody on its rungs is within the link's spacing of the foot
+## (`foot_y`). The body is then counted as on the rungs until it leaves them (on_rungs(body) false: it got over the
+## edge, died, fell or was freed). A link without a line never queues.
+static func try_enter(link: NavigationLink3D, body: Node3D, foot_y: float) -> bool:
+	if link == null or not link.has_meta(LINE):
+		return true
+	var q: Array = link.get_meta(QUEUE, [])
+	var keep: Array = []
+	var space: float = float(link.get_meta(SPACE_META, SPACE))
+	var free: bool = true
+	for b: Variant in q:
+		if not is_instance_valid(b) or b == body or not (b as Node).has_method("on_rungs") or not bool((b as Node).call("on_rungs", link)):
+			continue
+		keep.append(b)
+		if (b as Node3D).global_position.y - foot_y < space:
+			free = false
+	if free:
+		keep.append(body)
+	link.set_meta(QUEUE, keep)
+	return free
+
+
+## True when `pos` is on a platform a ladder serves: within `reach` m (flat) and 1.5 m (height) of the head of a
+## ladder link under `map`'s ClimbLinks, the head at least 3 m over its foot. The horse boss's siege asks (T-268).
+static func on_perch(map: Node, pos: Vector3, reach: float = 4.5) -> bool:
+	var holder: Node = map.get_node_or_null("ClimbLinks") if map != null else null
+	if holder == null:
+		return false
+	for n: Node in holder.get_children():
+		var link: NavigationLink3D = n as NavigationLink3D
+		if link == null or not link.has_meta(LINE):
+			continue
+		var head: Vector3 = link.end_position
+		if head.y - link.start_position.y >= 3.0 and absf(pos.y - head.y) < 1.5 and Vector2(pos.x - head.x, pos.z - head.z).length() <= reach:
+			return true
+	return false
+
+
+## How many bodies are on the ladder's rungs now (the smokes and the notes' soak read it).
+static func on_ladder(link: NavigationLink3D) -> int:
+	var n: int = 0
+	for b: Variant in (link.get_meta(QUEUE, []) as Array):
+		if is_instance_valid(b) and (b as Node).has_method("on_rungs") and bool((b as Node).call("on_rungs", link)):
+			n += 1
+	return n
 
 
 ## The climb layer bit (a mask value) for a zone's 1-based layer bit.
@@ -54,6 +114,11 @@ static func spawn_all(root: Node3D, map_id: StringName, zone_bits: Dictionary) -
 		else:
 			link.navigation_layers = 1
 		link.set_meta(META, true)
+		if row.has("line"):   # T-268: a ladder (see the header)
+			var ln: Array = row["line"]
+			link.set_meta(LINE, Vector2(float(ln[0]), float(ln[1])))
+			link.set_meta(DROP, bool(row.get("drop", false)))
+			link.set_meta(SPACE_META, float(row.get("space", SPACE)))
 		holder.add_child(link)
 		out.append(link)
 		i += 1

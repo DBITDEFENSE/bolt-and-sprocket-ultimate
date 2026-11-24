@@ -218,6 +218,9 @@ func _host_tick(_delta: float) -> void:
 			if RoundManager.current_round >= 2:
 				_log("round %d on the host" % RoundManager.current_round)
 				_qa_send("round2", {"round": RoundManager.current_round})
+				var climbers: Array[Zombie] = map.director.debug_ladder("Climb_Tower", 2, 2.5)   # T-268: two on the watchtower's ladder, for the client to see
+				if climbers.size() != 2:
+					_fail("T-268: the host could not put two zombies on the tower's ladder (%d)" % climbers.size())
 				map.director.debug_spawn(24)   # a full horde for the client to see (snapshot load check)
 				_zbytes0 = int(map.session.sent_bytes["zombies"])
 				_goto("wait_result")
@@ -441,7 +444,12 @@ func _client_tick(delta: float) -> void:
 					if z.puppet and z.interp != null and not z.interp.is_empty():
 						n += 1
 				_horde_seen = maxi(_horde_seen, n)
-				if (_horde_seen >= 20 and _locker_state == 2) or _step_t > 60.0:
+				_watch_climb(map)
+				if (_horde_seen >= 20 and _locker_state == 2 and _climb_seen and _climb_top) or _step_t > 60.0:
+					if not (_climb_seen and _climb_top):
+						_fail("T-268: the client never saw a zombie climb the tower's ladder (on the rungs %s, rising %.1f m, over the edge onto the landing %s)" % [str(_climb_seen), _climb_rise, str(_climb_top)])
+					else:
+						_notes.append("T-268: the client saw a zombie puppet climb the tower's ladder on its line (%.1f m of rise seen) and step onto the landing" % _climb_rise)
 					_notes.append("round 2 reached the client (rounds seen %s); up to %d zombie puppets at once" % [str(_rounds_seen), _horde_seen])
 					if not (_saw_body and _saw_dormant):
 						_fail("Hard Truth: the client never saw Peg's body lying (body %s, dormant %s)" % [str(_saw_body), str(_saw_dormant)])
@@ -543,6 +551,34 @@ func _hunt(map: MapRoot, me: Player, delta: float) -> void:
 	me.weapons.tick(delta, {"fire_pressed": fire, "fire_held": fire, "ads": true, "sprinting": false})
 	if _shots > 25:
 		_target = null   # stubborn target: pick another
+
+
+## T-268 (client): a zombie puppet in the climb state on the watchtower's lower ladder, on the ladder's line, rising,
+## and then over the edge at the ladder's head on the landing: the climb looks on the client as it does on the host.
+var _climb_seen: bool = false
+var _climb_top: bool = false
+var _climb_rise: float = 0.0
+var _climb_y: Dictionary = {}   # puppet -> [lowest y seen on the rungs, highest]
+
+
+func _watch_climb(map: MapRoot) -> void:
+	var link: NavigationLink3D = map.get_node_or_null("ClimbLinks/Climb_Tower") as NavigationLink3D
+	if link == null or not link.has_meta(ClimbLink.LINE):
+		return
+	var line: Vector2 = link.get_meta(ClimbLink.LINE)
+	for z: Zombie in map.director.active_zombies():
+		if not z.puppet:
+			continue
+		var at: Vector3 = z.global_position
+		if z.state == Zombie.State.CLIMB_LINK and Vector2(at.x, at.z).distance_to(line) < 0.25 and at.y > 0.3 and at.y < link.end_position.y - 0.2:
+			var r: Array = _climb_y.get(z, [at.y, at.y])
+			r = [minf(float(r[0]), at.y), maxf(float(r[1]), at.y)]
+			_climb_y[z] = r
+			_climb_rise = maxf(_climb_rise, float(r[1]) - float(r[0]))
+			_climb_seen = _climb_seen or _climb_rise > 1.5
+		elif _climb_y.has(z) and z.state != Zombie.State.DEAD and at.y > link.end_position.y - 0.2 and Vector2(at.x - link.end_position.x, at.z - link.end_position.z).length() < 0.7:
+			# over the edge, at the link's head (it may turn round at once and drop back down: the players are elsewhere)
+			_climb_top = true
 
 
 func _client_finish() -> void:
