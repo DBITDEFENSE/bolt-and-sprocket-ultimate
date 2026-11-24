@@ -149,12 +149,33 @@ the reactive props is 40 extra on Thalbach's busiest view, under 15 elsewhere, a
 - `smoke_map04b_world`: + the fighter shot down on act round 2, + the starboard decompression taking the crawlway's
   papers and stash. `smoke_map04d_world`: + the capsule (tins on the yard's open ground, by the navmesh).
 
-(Results: see the end of this file.)
+## Results (headless, this PC, 2026-11-24)
+
+- `check_scripts`: 1009 scripts, 0 failed.
+- Full GUT: 2603 tests, 2601 passing, 1 risky (the known `test_neural_lines_are_loudness_normalised`), 1 failing:
+  `test_hud_stamp_perks.test_round_stamp_fits_high_rounds` on "Lambda capture at index 0 was freed" (an earlier
+  test's timer firing late under load); it passes alone and with every `test_h*` file (85 of 85). Master had about
+  2570; the new ones are `test_map04_perk_spots` (5), `test_map04_detail_t274` (9) and other branches' merges.
+- Smokes, all PASS with 0 script errors: the eleven `smoke_map04*` (on the perk-spot build, and again after the
+  reactive props, the zip line and the ladders; `smoke_map04b_world` failed first on its new checks: json act rounds
+  are floats and `Array.has(int)` missed them, and the papers landed short of the breach; both fixed, then PASS),
+  `smoke_ladders`, `smoke_map_detail` (151), `smoke_weapon_locker`, `smoke_horse` (116), `smoke_horse_boss` (81),
+  `smoke_coop`; on the final build again `smoke_map04a`, `smoke_map04b`, `smoke_map04b_world`, `smoke_map04_full`.
+  `smoke_map04b_world`'s fighter check was moved to the end: run before the bay doors at act round 2
+  it left the player mid-push and the old bay-doors check failed.
+- `probe_map_site --line` (the zip), `probe_ladder_tops --map=map04a` (all eight ends 0.00 m from the navmesh).
 
 ## Renders
 
-`docs/captures/t274/` (WSL Xvfb, Compatibility renderer, 960 x 540, night): the sets `t274_m04a..d` in
-`capture_cams.json`.
+`docs/captures/t274/` (WSL Xvfb, Compatibility renderer, 960 x 540, the acts' night): one contact sheet per act from
+the sets `t274_m04a..d` in `capture_cams.json`. Looked at: the dealt machines and crates stand on their walls (the
+Great Hangar, the church square, the Kranich's wing and bay, Mondlicht's core); the catwalk ladder runs from the floor
+to the rail's gap; the parish and cellar leaves hang open in their doorways; the desert horse is a buckskin on a
+plain board rail; the zip cable is visible from the deck and its landing post stands in the lane; the Kranich's
+slack cable hangs in the body; Mondlicht's papers lie behind the reception desk. Fixed from the pictures: the goods
+shed got a hinged leaf in a doorway that already has its sliding door drawn (removed). Too dark to judge at this
+size: the canteen's curtains and glasses, the zip cable's full run, the lab bench (the camera stood on the other
+side of its wall).
 
 ## Not verified, open
 
