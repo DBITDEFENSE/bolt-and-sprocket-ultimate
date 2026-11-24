@@ -644,6 +644,18 @@ func _report_hitch() -> void:
 			print("[hitch] " + (pl as BotPlanner).status_line())
 	if "--diag" in OS.get_cmdline_user_args():
 		_diag()
+	var dc: DayCycle = DayCycle.of(_map)
+	if dc != null and dc.get("full_frames") != null:
+		print("[hitch] work counted: the day wrote its values in %d frames and found nothing to write in %d" % [int(dc.get("full_frames")), int(dc.get("skipped_frames"))])
+	if _map.squad != null:
+		var looks: int = 0
+		var lticks: int = 0
+		for b: BotBrain in _map.squad.brains:
+			if b.loco != null and b.loco.get("nav_looks") != null:
+				looks += int(b.loco.get("nav_looks"))
+				lticks += int(b.loco.get("_ticks"))
+		if lticks > 0 and looks > 0:
+			print("[hitch] work counted: the bots asked the navmesh under them %d times in %d locomotion ticks" % [looks, lticks])
 	var zs: GDScript = load("res://gravelight/enemies/zombie.gd") as GDScript
 	if zs.get("anim_steps") != null:   # T-265's work counters (since the map loaded), per frame of the whole run
 		var fr: float = float(maxi(1, Engine.get_process_frames()))

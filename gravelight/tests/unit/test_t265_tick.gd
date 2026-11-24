@@ -37,3 +37,10 @@ func test_the_animation_rate_by_distance_and_view() -> void:
 	assert_eq(Zombie.anim_div(10.0 * 10.0, 15.0, 35.0, true), Zombie.VIEW_OUT_DIV, "near and not seen: every 4th frame")
 	assert_eq(Zombie.anim_div(40.0 * 40.0, 15.0, 35.0, true), 4)
 
+
+
+# ------------------------------------------------------------------ rates
+
+func test_the_named_rates() -> void:
+	assert_eq(BotLocomotion.NAV_LOOK_S, 0.2, "a walking bot asks the navmesh under it five times a second")
+	assert_eq(Zombie.VIEW_OUT_DIV, 4)
