@@ -31,9 +31,25 @@ extends Node
 ## before of ZombieBody.warm_pieces, docs/perf/movement_perf_2026-11.md). `--seed=N` seeds the global random
 ## number generator before the map loads (a `--live` round then starts from the same rolls; it still plays out
 ## differently run to run, the loader threads' timing is not seeded).
+## T-266 (the render census): `--views=<capture set>[,<set>]` stands the player at every distinct camera of those sets
+## of data/gravelight/capture_cams.json in turn (the 24 zombies in a block in front of the camera, the bots behind it),
+## lets each view settle and prints one `[view]` line: what the renderer drew in the colour pass and in the shadow
+## passes (objects, draw calls, triangles: zeros headless) and a census of what stands in the camera's frustum (mesh
+## instances, surfaces, skinned meshes, lights, shadowed lamps and their shadow views under ShadowBudget, the sun's
+## cascades, shadow casters in reach of a lamp that has its shadow, particle systems, decals, transparent surfaces,
+## materials and shaders). `--views-max=N` samples at most N of them evenly, `--hour=H` holds the day at hour H (`--hours=0,12`: the views once per hour in one run)
+## (DayCycle.hold_hour; nothing on a map without the day), `--views-only=a,b` keeps the named cameras. It then quits.
+## `--t266-ab` goes through the views twice in the one run: first with T-266's render passes switched off
+## (RenderTune.set_off: the lines read "<preset>/before"), then with them on; `--t266-ab=proxies:props:occlusion+sun+lights`
+## switches them on in those steps, each view counted in every step before the next view (a line reads "<preset>/-<what is still off>"); `--t266-off[=a,b]` runs without them.
+## `--cheap` (software rendering under WSL: a High frame takes a minute there) makes the pixels cheap without
+## changing what is drawn: the 3D scale 0.25, no MSAA / TAA / FXAA, SDFGI / SSIL / SSAO / SSR / volumetric fog / glow
+## off, the shadow atlases 256 px. Objects, draw calls, lights and shadow views are the same as without it (mesh LODs
+## are picked for the smaller picture, so triangles read lower than at full size: compare like with like).
 
 const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 const SPIKE_MS: float = 40.0
+const PerfViews: GDScript = preload("res://gravelight/tools_src/perf_views.gd")
 
 var _map: MapRoot
 var _t: float = 0.0
@@ -84,6 +100,18 @@ const QUICK_FRAMES: int = 6
 ## T-139: `--quick` (software GL under Xvfb, a frame a second or slower): census at 6 s, then 6 frames sampled, quit
 ## (no pause-map phase). Counts (draw calls, triangles, lights) are what it is for, not timings.
 var _quick: bool = "--quick" in OS.get_cmdline_user_args()
+## T-266: the views still to visit [{name, pos, yaw, pitch}], the one being measured, frames spent on it
+var _views: Array = []
+var _views_on: bool = false
+var _view_i: int = -1
+var _view_f: int = 0
+var _view_acc: Dictionary = {}
+var _hour: float = -1.0
+var _hours: PackedFloat32Array = []   # `--hours=0,12`: the views once per hour, in one run
+var _ab_t266: bool = false   # `--t266-ab[=a+b:c]`: the views with T-266's passes off, then switched on step by step, in one run
+var _ab_steps: Array = []    # the features switched on at each step after "before"
+var _states: Array = []      # [{tag, off: PackedStringArray, rows}]: every view is counted in each of them
+var _state_i: int = 0
 
 
 func _ready() -> void:
@@ -110,6 +138,26 @@ func _ready() -> void:
 			_round = maxi(1, int(a.substr(8)))
 		elif a.begins_with("--secs="):
 			_t_end = 9.0 + maxf(1.0, float(a.substr(7)))
+		elif a.begins_with("--hour="):
+			_hour = float(a.substr(7))
+		elif a.begins_with("--hours="):
+			for h: String in a.substr(8).split(","):
+				_hours.append(float(h))
+			_hour = _hours[0]
+			_hours.remove_at(0)
+		elif a.begins_with("--t266-ab"):
+			_ab_t266 = true
+			var spec: String = a.substr(10) if a.begins_with("--t266-ab=") else "proxies+props+occlusion+sun+lights"   # steps a:b, features in a step a+b
+			for st: String in spec.split(":", false):
+				_ab_steps.append(st.split("+", false))
+		elif a.begins_with("--views="):
+			_views_on = true
+			_views = PerfViews.load_views(a.substr(8).split(","))
+	for a: String in OS.get_cmdline_user_args():
+		if a.begins_with("--views-only="):
+			_views = PerfViews.only(_views, a.substr(13).split(","))
+		elif a.begins_with("--views-max="):
+			_views = PerfViews.sample(_views, int(a.substr(12)))
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	BotProf.on = _hitch
 	BotProf.reset()
@@ -198,6 +246,16 @@ func _process(delta: float) -> void:
 			if _breakdown or not _ab.is_empty():
 				_census()
 			_apply_ab()
+			for ta: String in OS.get_cmdline_user_args():
+				if ta.begins_with("--tree="):
+					PerfViews.tree(_map, ta.substr(7))
+			if "--casters" in OS.get_cmdline_user_args():
+				PerfViews.casters(_map)
+			if _hour >= 0.0 and DayCycle.of(_map) != null:
+				DayCycle.of(_map).hold_hour(_hour)
+				print("[perf] the day held at hour %.1f" % _hour)
+		2 when _views_on and _census_done:
+			_views_step()
 		2:
 			if not _live:
 				for z: Zombie in _map.director.active_zombies():
@@ -785,3 +843,102 @@ func _minimap_bench() -> void:
 	var t4: int = Time.get_ticks_usec()
 	print("[perf] minimap bench (us per call): live list %.1f, place icons (list cached) %.1f, static rebuild %.1f, minimap+canvas _process %.1f; live icons %d" % [
 		(t1 - t0) / float(n), (t2 - t1) / float(n), (t3 - t2) / float(n), (t4 - t3) / float(n), ms.live_icons().size()])
+
+
+# ================================================================== --views: the render census per camera (T-266)
+
+func _views_step() -> void:
+	for z: Zombie in _map.director.active_zombies():
+		z.hp = maxf(z.hp, 1.0e9)
+	var settle: int = 3 if _quick else 30   # (a software-rendered frame takes 10 s and more: three to settle, one counted)
+	var counted: int = 1 if _quick else 2
+	if _states.is_empty():
+		_build_states()
+	if _view_i < 0 or _view_f >= settle + counted:
+		if _view_i >= 0:
+			_view_done()
+			_state_i += 1
+		if _view_i < 0 or _state_i >= _states.size():   # the next view (each view is counted in every state before moving on,
+			_view_i += 1                                 # so a pair is seconds apart and the living map has not moved on)
+			_state_i = 0
+		_view_f = 0
+		_view_acc = {}
+		if _view_i >= _views.size():
+			for st: Dictionary in _states:
+				print("[views] %s%s h%s:" % [str(GLSettings.values.get("graphics_preset", "high")), st["tag"], ("%.0f" % _hour) if _hour >= 0.0 else "-"])
+				PerfViews.summary(st["rows"])
+				st["rows"] = []
+			if not _hours.is_empty() and DayCycle.of(_map) != null:
+				_hour = _hours[0]
+				_hours.remove_at(0)
+				DayCycle.of(_map).hold_hour(_hour)
+				print("[perf] the day held at hour %.1f" % _hour)
+				_view_i = -1
+				return
+			print("[perf] active zombies %d   GPU: %s" % [_map.director.active_zombies().size(), RenderingServer.get_video_adapter_name()])
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(ProfileSave.path))
+			get_tree().quit()
+			_views_on = false
+			_phase = 9
+			return
+		if _states.size() > 1:
+			RenderTune.set_off(_map, PackedStringArray(_states[_state_i]["off"]))
+	var v: Dictionary = _views[_view_i]
+	if "--cheap" in OS.get_cmdline_user_args():
+		_cheap_pixels()
+	var cc: Camera3D = get_viewport().get_camera_3d()
+	if cc is CinemaCamera and cc.get_parent() is CinemaDirector:   # a set piece playing at this round: back to the player's eye
+		(cc.get_parent() as CinemaDirector).release(true)
+	PerfViews.stand(_map, v)   # every frame: nothing drifts while the view settles
+	_view_f += 1
+	if _view_f > settle:
+		PerfViews.add_render(_view_acc, get_viewport())
+
+
+## The states every view is counted in: the build as it runs, or with `--t266-ab` T-266's passes all off ("/before"),
+## then switched on step by step.
+func _build_states() -> void:
+	if not _ab_t266:
+		_states = [{"tag": "" if RenderTune.off.is_empty() else "/-" + "-".join(RenderTune.off), "off": RenderTune.off.duplicate(), "rows": []}]
+		return
+	var off: PackedStringArray = RenderTune.FEATURES.duplicate()
+	_states = [{"tag": "/before", "off": off.duplicate(), "rows": []}]
+	for step: PackedStringArray in _ab_steps:
+		for f: String in step:
+			if off.has(f):
+				off.remove_at(off.find(f))
+		_states.append({"tag": ("/-" + "-".join(off)) if not off.is_empty() else "", "off": off.duplicate(), "rows": []})
+
+
+func _view_done() -> void:
+	var v: Dictionary = _views[_view_i]
+	var st: Dictionary = _states[_state_i]
+	var row: Dictionary = PerfViews.census(_map, get_viewport().get_camera_3d())
+	for k: String in _view_acc:
+		row[k] = float(_view_acc[k]) / (1.0 if _quick else 2.0)
+	row["name"] = v["name"]
+	(st["rows"] as Array).append(row)
+	var cam: Camera3D = get_viewport().get_camera_3d()
+	if cam != null and cam.global_position.distance_to((v["pos"] as Vector3) + Vector3.UP * 1.6) > 1.5:
+		print("[view] NOTE %s: the camera is at %s (%s), not at the view" % [v["name"], str(cam.global_position.snapped(Vector3.ONE * 0.1)), str(cam.get_path())])
+	print("[view] %s %s%s h%s %s at %s | %s" % [str(_map.map_id), str(GLSettings.values.get("graphics_preset", "high")), st["tag"],
+		("%.0f" % _hour) if _hour >= 0.0 else "-", v["name"], str(v["pos"]), PerfViews.line(row)])
+
+
+## `--cheap`: see the header. Applied at every view (GLSettings.apply_visuals may run again in between).
+func _cheap_pixels() -> void:
+	var vp: Viewport = get_viewport()
+	vp.scaling_3d_scale = 0.25
+	vp.msaa_3d = Viewport.MSAA_DISABLED
+	vp.screen_space_aa = Viewport.SCREEN_SPACE_AA_DISABLED
+	vp.use_taa = false
+	vp.positional_shadow_atlas_size = 256
+	RenderingServer.directional_shadow_atlas_set_size(256, true)
+	var env: Environment = _env()
+	if env != null:
+		env.sdfgi_enabled = false
+		env.ssil_enabled = false
+		env.ssao_enabled = false
+		env.ssr_enabled = false
+		env.volumetric_fog_enabled = false
+		env.glow_enabled = false

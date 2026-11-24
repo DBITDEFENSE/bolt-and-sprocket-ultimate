@@ -31,6 +31,15 @@ var _label: String = "before"
 
 
 var _open_after: bool = false
+## T-266: `--preset=low|medium|high|ultra` plays the set on that graphics preset (default: whatever the settings
+## file holds; under Xvfb the first launch would pick Low for the software adapter), and `--frames=N` waits N more
+## drawn frames at every camera after its settle time (software Forward+ draws a frame in many seconds, so a settle
+## counted in seconds is one frame: not enough for the lamps' shadow budget and the temporal effects to come to rest).
+var _min_frames: int = 0
+## `--t266-ab`: every camera is shot twice from the one loaded map, first with T-266's render passes switched off
+## (RenderTune.set_off; saved under <label>_before/), then with them on (<label>/): the pairs for
+## `tools/compare_shots.py <label>_before <label> --set=<set>`.
+var _ab: bool = false
 
 
 func _ready() -> void:
@@ -48,6 +57,15 @@ func _ready() -> void:
 			_label = a.substr(8)
 		elif a == "--open-after":   # U12 launcher "Look test": open the folder when the tour ends
 			_open_after = true
+		elif a == "--t266-ab":
+			_ab = true
+		elif a.begins_with("--frames="):
+			_min_frames = int(a.substr(9))
+		elif a.begins_with("--preset=") and GLSettings.PRESETS.has(a.substr(9)):
+			GLSettings.path = "user://_qa_capture_settings.cfg"
+			GLSettings.values["graphics_preset"] = a.substr(9)
+			for k: Variant in (GLSettings.PRESETS[a.substr(9)] as Dictionary).keys():
+				GLSettings.values[str(k)] = GLSettings.PRESETS[a.substr(9)][k]
 	if _out == "":
 		if _set_name != "":
 			_out = ProjectSettings.globalize_path("res://").path_join("morning/screenshots").path_join(_set_name).path_join(_label)
@@ -69,6 +87,19 @@ func _secs(s: float) -> void:
 
 
 func _shot(name: String) -> void:
+	if _ab and _scene is MapRoot:
+		RenderTune.set_off(_scene, RenderTune.FEATURES.duplicate())
+		for i: int in maxi(3, _min_frames):
+			await get_tree().process_frame
+		await RenderingServer.frame_post_draw
+		var before_dir: String = _out.rstrip("/") + "_before"
+		DirAccess.make_dir_recursive_absolute(before_dir)
+		get_viewport().get_texture().get_image().save_png(before_dir.path_join(name + ".png"))
+		RenderTune.set_off(_scene, PackedStringArray())
+		for i: int in 3:
+			await get_tree().process_frame
+	for i: int in _min_frames:
+		await get_tree().process_frame
 	await RenderingServer.frame_post_draw
 	var img: Image = get_viewport().get_texture().get_image()
 	var path: String = _out.path_join(name + ".png")
