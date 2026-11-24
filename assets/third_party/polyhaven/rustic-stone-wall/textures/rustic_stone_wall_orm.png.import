@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://0ea0xky7qyw1"
 path.s3tc="res://.godot/imported/rustic_stone_wall_orm.png-f0ff74d673d03104329eeccf59aa2c81.s3tc.ctex"
+path.etc2="res://.godot/imported/rustic_stone_wall_orm.png-f0ff74d673d03104329eeccf59aa2c81.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/rustic-stone-wall/textures/rustic_stone_wall_orm.png"
-dest_files=["res://.godot/imported/rustic_stone_wall_orm.png-f0ff74d673d03104329eeccf59aa2c81.s3tc.ctex"]
+dest_files=["res://.godot/imported/rustic_stone_wall_orm.png-f0ff74d673d03104329eeccf59aa2c81.s3tc.ctex", "res://.godot/imported/rustic_stone_wall_orm.png-f0ff74d673d03104329eeccf59aa2c81.etc2.ctex"]
 
 [params]
 

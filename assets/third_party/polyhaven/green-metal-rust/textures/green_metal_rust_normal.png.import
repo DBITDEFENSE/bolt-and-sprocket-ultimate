@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bkgp6v3o5as6x"
 path.s3tc="res://.godot/imported/green_metal_rust_normal.png-0f432cf94a65a5cea492bd4f5d236ed6.s3tc.ctex"
+path.etc2="res://.godot/imported/green_metal_rust_normal.png-0f432cf94a65a5cea492bd4f5d236ed6.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/green-metal-rust/textures/green_metal_rust_normal.png"
-dest_files=["res://.godot/imported/green_metal_rust_normal.png-0f432cf94a65a5cea492bd4f5d236ed6.s3tc.ctex"]
+dest_files=["res://.godot/imported/green_metal_rust_normal.png-0f432cf94a65a5cea492bd4f5d236ed6.s3tc.ctex", "res://.godot/imported/green_metal_rust_normal.png-0f432cf94a65a5cea492bd4f5d236ed6.etc2.ctex"]
 
 [params]
 

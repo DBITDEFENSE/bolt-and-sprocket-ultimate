@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://caxtcafhdya15"
 path.s3tc="res://.godot/imported/wine_bottles_01_label_ftero_vinea_02_arm.png-34c9e0db2a72e87ba83dea68e2f54a8e.s3tc.ctex"
+path.etc2="res://.godot/imported/wine_bottles_01_label_ftero_vinea_02_arm.png-34c9e0db2a72e87ba83dea68e2f54a8e.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/wine-bottles-01/textures/wine_bottles_01_label_ftero_vinea_02_arm.png"
-dest_files=["res://.godot/imported/wine_bottles_01_label_ftero_vinea_02_arm.png-34c9e0db2a72e87ba83dea68e2f54a8e.s3tc.ctex"]
+dest_files=["res://.godot/imported/wine_bottles_01_label_ftero_vinea_02_arm.png-34c9e0db2a72e87ba83dea68e2f54a8e.s3tc.ctex", "res://.godot/imported/wine_bottles_01_label_ftero_vinea_02_arm.png-34c9e0db2a72e87ba83dea68e2f54a8e.etc2.ctex"]
 
 [params]
 

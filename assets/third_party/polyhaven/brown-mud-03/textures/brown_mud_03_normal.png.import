@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://c4g8auufrbd5d"
 path.s3tc="res://.godot/imported/brown_mud_03_normal.png-0999f69d367b982702903b847180080b.s3tc.ctex"
+path.etc2="res://.godot/imported/brown_mud_03_normal.png-0999f69d367b982702903b847180080b.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/brown-mud-03/textures/brown_mud_03_normal.png"
-dest_files=["res://.godot/imported/brown_mud_03_normal.png-0999f69d367b982702903b847180080b.s3tc.ctex"]
+dest_files=["res://.godot/imported/brown_mud_03_normal.png-0999f69d367b982702903b847180080b.s3tc.ctex", "res://.godot/imported/brown_mud_03_normal.png-0999f69d367b982702903b847180080b.etc2.ctex"]
 
 [params]
 

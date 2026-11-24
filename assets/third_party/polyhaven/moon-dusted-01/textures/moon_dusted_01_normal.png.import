@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cq7i762abibk3"
 path.s3tc="res://.godot/imported/moon_dusted_01_normal.png-df67f61458fc24b37552c74eb0c9a7b9.s3tc.ctex"
+path.etc2="res://.godot/imported/moon_dusted_01_normal.png-df67f61458fc24b37552c74eb0c9a7b9.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/moon-dusted-01/textures/moon_dusted_01_normal.png"
-dest_files=["res://.godot/imported/moon_dusted_01_normal.png-df67f61458fc24b37552c74eb0c9a7b9.s3tc.ctex"]
+dest_files=["res://.godot/imported/moon_dusted_01_normal.png-df67f61458fc24b37552c74eb0c9a7b9.s3tc.ctex", "res://.godot/imported/moon_dusted_01_normal.png-df67f61458fc24b37552c74eb0c9a7b9.etc2.ctex"]
 
 [params]
 

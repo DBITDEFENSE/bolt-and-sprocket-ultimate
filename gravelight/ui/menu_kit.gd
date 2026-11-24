@@ -55,11 +55,18 @@ static func reset() -> void:
 	_theme = null
 
 
+## T-264: the smallest text size in use (0 = the scale as designed). The UI is laid out for 1920x1080 and shrinks
+## with the window: on a 1280x800 handheld the scale's 13 is under 9 real pixels and its 15 is 10. GLSettings sets
+## this from the "Small text" setting (ui_text_floor); size() and px() never return less. Text built before a
+## change keeps its size until its screen is opened again.
+static var text_floor: int = 0
+
+
 ## A size of the type scale by key (ui.json "scale"); an unknown key is an error and gives the body size.
 static func size(key: String) -> int:
 	var scale: Dictionary = cfg().get("scale", {})
 	if scale.has(key):
-		return int(scale[key])
+		return maxi(int(scale[key]), text_floor)
 	push_error("MenuKit.size: no scale key '%s' in ui.json" % key)
 	return int(scale.get("body", 18))
 
@@ -74,7 +81,7 @@ static func px(n: int) -> int:
 		var v: int = int(s)
 		if absi(v - n) < absi(best - n) or (absi(v - n) == absi(best - n) and v > best):
 			best = v
-	return best
+	return maxi(best, text_floor)
 
 
 ## A HUD layout number (ui.json "hud"), with a default.
@@ -631,6 +638,59 @@ static func focus_first(root: Node) -> void:
 	var c: Control = _first_focusable(root)
 	if c != null:
 		c.grab_focus()
+
+
+## T-264: every focusable control under `root`, in on-screen order (MenuScreen.rebuild keeps the focus's place by it).
+static func focusables(root: Node, out: Array[Control] = []) -> Array[Control]:
+	for ch: Node in root.get_children():
+		var c: Control = ch as Control
+		if c != null and c.focus_mode == Control.FOCUS_ALL and c.is_visible_in_tree():
+			out.append(c)
+		focusables(ch, out)
+	return out
+
+
+## T-264: letter buttons that type into `field`, for a player with only a controller (a handheld in game mode has
+## no keyboard; the system's on-screen keyboard also works where there is one). `chars` are the keys; Del removes
+## the last character, Clear all of them. Mouse and keyboard players never see it (see MenuKit.wants_pad_keys).
+static func pad_keys(field: LineEdit, chars: String, per_row: int = 13) -> Control:
+	var box: VBoxContainer = VBoxContainer.new()
+	box.add_theme_constant_override("separation", 4)
+	var grid: GridContainer = GridContainer.new()
+	grid.columns = per_row
+	grid.add_theme_constant_override("h_separation", 4)
+	grid.add_theme_constant_override("v_separation", 4)
+	box.add_child(grid)
+	var put: Callable = func(ch: String) -> void:
+		if not is_instance_valid(field):
+			return
+		if ch == "<":
+			field.text = field.text.left(maxi(0, field.text.length() - 1))
+		elif ch == "":
+			field.text = ""
+		elif field.max_length <= 0 or field.text.length() < field.max_length:
+			field.text += ch
+		field.caret_column = field.text.length()
+	for i: int in chars.length():
+		var k: Button = button(chars[i], put.bind(chars[i]), 20)
+		k.alignment = HORIZONTAL_ALIGNMENT_CENTER
+		k.custom_minimum_size = Vector2(46, 42)
+		grid.add_child(k)
+	var tail: HBoxContainer = HBoxContainer.new()
+	tail.add_theme_constant_override("separation", 4)
+	box.add_child(tail)
+	for pair: Array in [["Del", "<"], ["Clear", ""]]:
+		var b: Button = button(str(pair[0]), put.bind(str(pair[1])), 20)
+		b.alignment = HORIZONTAL_ALIGNMENT_CENTER
+		b.custom_minimum_size = Vector2(96, 42)
+		tail.add_child(b)
+	return box
+
+
+## T-264: true when text fields should offer pad_keys: the last input came from a controller, or this is a Deck.
+static func wants_pad_keys() -> bool:
+	var gs: Node = (Engine.get_main_loop() as SceneTree).root.get_node_or_null("GLSettings")
+	return gs != null and (bool(gs.get("using_pad")) or bool(gs.call("on_steam_deck")))
 
 
 ## Depth-first in tree (= on-screen) order. find_children would list a direct child (the Muster's bottom spacer)

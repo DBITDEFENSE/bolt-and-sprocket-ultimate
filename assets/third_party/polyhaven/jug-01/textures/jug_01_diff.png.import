@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cvju8txqjdeu8"
 path.s3tc="res://.godot/imported/jug_01_diff.png-77d1de7250f8701813b298d8489b06ca.s3tc.ctex"
+path.etc2="res://.godot/imported/jug_01_diff.png-77d1de7250f8701813b298d8489b06ca.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/jug-01/textures/jug_01_diff.png"
-dest_files=["res://.godot/imported/jug_01_diff.png-77d1de7250f8701813b298d8489b06ca.s3tc.ctex"]
+dest_files=["res://.godot/imported/jug_01_diff.png-77d1de7250f8701813b298d8489b06ca.s3tc.ctex", "res://.godot/imported/jug_01_diff.png-77d1de7250f8701813b298d8489b06ca.etc2.ctex"]
 
 [params]
 

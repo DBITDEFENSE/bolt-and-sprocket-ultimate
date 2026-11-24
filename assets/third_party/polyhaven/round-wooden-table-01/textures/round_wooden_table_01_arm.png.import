@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dy588m6g4psdm"
 path.s3tc="res://.godot/imported/round_wooden_table_01_arm.png-ec9ddc49127ad1953f29059cd7f2a637.s3tc.ctex"
+path.etc2="res://.godot/imported/round_wooden_table_01_arm.png-ec9ddc49127ad1953f29059cd7f2a637.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/round-wooden-table-01/textures/round_wooden_table_01_arm.png"
-dest_files=["res://.godot/imported/round_wooden_table_01_arm.png-ec9ddc49127ad1953f29059cd7f2a637.s3tc.ctex"]
+dest_files=["res://.godot/imported/round_wooden_table_01_arm.png-ec9ddc49127ad1953f29059cd7f2a637.s3tc.ctex", "res://.godot/imported/round_wooden_table_01_arm.png-ec9ddc49127ad1953f29059cd7f2a637.etc2.ctex"]
 
 [params]
 

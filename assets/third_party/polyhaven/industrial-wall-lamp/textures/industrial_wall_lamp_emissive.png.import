@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://b0fj1ecx51m5m"
 path.s3tc="res://.godot/imported/industrial_wall_lamp_emissive.png-96cbb12e395ffb6391f8099d86ea6ddb.s3tc.ctex"
+path.etc2="res://.godot/imported/industrial_wall_lamp_emissive.png-96cbb12e395ffb6391f8099d86ea6ddb.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/industrial-wall-lamp/textures/industrial_wall_lamp_emissive.png"
-dest_files=["res://.godot/imported/industrial_wall_lamp_emissive.png-96cbb12e395ffb6391f8099d86ea6ddb.s3tc.ctex"]
+dest_files=["res://.godot/imported/industrial_wall_lamp_emissive.png-96cbb12e395ffb6391f8099d86ea6ddb.s3tc.ctex", "res://.godot/imported/industrial_wall_lamp_emissive.png-96cbb12e395ffb6391f8099d86ea6ddb.etc2.ctex"]
 
 [params]
 

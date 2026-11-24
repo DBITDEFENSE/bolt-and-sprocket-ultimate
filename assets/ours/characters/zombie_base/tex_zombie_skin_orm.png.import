@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://b6tvp1qhqect6"
 path.s3tc="res://.godot/imported/tex_zombie_skin_orm.png-65f135f82c2518c9e3a4c3321752f4be.s3tc.ctex"
+path.etc2="res://.godot/imported/tex_zombie_skin_orm.png-65f135f82c2518c9e3a4c3321752f4be.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/ours/characters/zombie_base/tex_zombie_skin_orm.png"
-dest_files=["res://.godot/imported/tex_zombie_skin_orm.png-65f135f82c2518c9e3a4c3321752f4be.s3tc.ctex"]
+dest_files=["res://.godot/imported/tex_zombie_skin_orm.png-65f135f82c2518c9e3a4c3321752f4be.s3tc.ctex", "res://.godot/imported/tex_zombie_skin_orm.png-65f135f82c2518c9e3a4c3321752f4be.etc2.ctex"]
 
 [params]
 

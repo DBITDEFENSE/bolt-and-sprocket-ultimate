@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bufntu1uhdl68"
 path.s3tc="res://.godot/imported/stone_wall_orm.png-e237f6da8c4725ecb323da6710fddf13.s3tc.ctex"
+path.etc2="res://.godot/imported/stone_wall_orm.png-e237f6da8c4725ecb323da6710fddf13.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/stone-wall/textures/stone_wall_orm.png"
-dest_files=["res://.godot/imported/stone_wall_orm.png-e237f6da8c4725ecb323da6710fddf13.s3tc.ctex"]
+dest_files=["res://.godot/imported/stone_wall_orm.png-e237f6da8c4725ecb323da6710fddf13.s3tc.ctex", "res://.godot/imported/stone_wall_orm.png-e237f6da8c4725ecb323da6710fddf13.etc2.ctex"]
 
 [params]
 

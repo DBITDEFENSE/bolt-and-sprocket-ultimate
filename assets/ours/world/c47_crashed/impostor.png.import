@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dltudnwvd6ikg"
 path.s3tc="res://.godot/imported/impostor.png-7925cb91665c9ddf6e1aea0f42d2dc51.s3tc.ctex"
+path.etc2="res://.godot/imported/impostor.png-7925cb91665c9ddf6e1aea0f42d2dc51.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/ours/world/c47_crashed/impostor.png"
-dest_files=["res://.godot/imported/impostor.png-7925cb91665c9ddf6e1aea0f42d2dc51.s3tc.ctex"]
+dest_files=["res://.godot/imported/impostor.png-7925cb91665c9ddf6e1aea0f42d2dc51.s3tc.ctex", "res://.godot/imported/impostor.png-7925cb91665c9ddf6e1aea0f42d2dc51.etc2.ctex"]
 
 [params]
 

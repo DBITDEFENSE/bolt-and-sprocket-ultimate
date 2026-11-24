@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://sxtfo5uvd8d"
 path.s3tc="res://.godot/imported/snow_01_normal.png-03b37cf6849175c935c9b5b640437113.s3tc.ctex"
+path.etc2="res://.godot/imported/snow_01_normal.png-03b37cf6849175c935c9b5b640437113.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/snow-01/textures/snow_01_normal.png"
-dest_files=["res://.godot/imported/snow_01_normal.png-03b37cf6849175c935c9b5b640437113.s3tc.ctex"]
+dest_files=["res://.godot/imported/snow_01_normal.png-03b37cf6849175c935c9b5b640437113.s3tc.ctex", "res://.godot/imported/snow_01_normal.png-03b37cf6849175c935c9b5b640437113.etc2.ctex"]
 
 [params]
 

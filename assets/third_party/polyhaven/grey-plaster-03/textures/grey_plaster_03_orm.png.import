@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://io0ladvu43gm"
 path.s3tc="res://.godot/imported/grey_plaster_03_orm.png-ab30c2be5fa34aebea5145a7de7ad5ca.s3tc.ctex"
+path.etc2="res://.godot/imported/grey_plaster_03_orm.png-ab30c2be5fa34aebea5145a7de7ad5ca.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/grey-plaster-03/textures/grey_plaster_03_orm.png"
-dest_files=["res://.godot/imported/grey_plaster_03_orm.png-ab30c2be5fa34aebea5145a7de7ad5ca.s3tc.ctex"]
+dest_files=["res://.godot/imported/grey_plaster_03_orm.png-ab30c2be5fa34aebea5145a7de7ad5ca.s3tc.ctex", "res://.godot/imported/grey_plaster_03_orm.png-ab30c2be5fa34aebea5145a7de7ad5ca.etc2.ctex"]
 
 [params]
 

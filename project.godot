@@ -6,6 +6,9 @@ config_version=5
 [application]
 
 config/name="TERMS & CONDITIONS"
+; T-264: the macOS export writes the name into Info.plist unescaped: the "&" made the plist invalid XML (an app that
+; cannot start). On macOS the app, its window and its user folder are named like the Windows product.
+config/name.macos="CLAUDE ZOMBIES"
 config/description="Bolt & Sprocket (remade) + GRAVELIGHT + THE FINE PRINT."
 config/version="0.0.1-m0"
 run/main_scene="res://ui/main_menu.tscn"
@@ -58,6 +61,14 @@ renderer/rendering_method="forward_plus"
 renderer/rendering_method.web="gl_compatibility"
 textures/default_filters/anisotropic_filtering_level=4
 anti_aliasing/quality/msaa_3d=2
+; T-264 (macOS / SteamOS), docs/u21/t264_ports.md. Keep these lines together (the ports' own block).
+; Apple silicon reads ETC2 / ASTC textures: the universal macOS export refuses to run without this import. Windows and
+; Linux builds still ship S3TC / BPTC only (their presets' texture_format options).
+textures/vram_compression/import_etc2_astc=true
+; The renderer on its own thread (what Play.bat's --render-thread separate does, T-258) for any export preset that
+; carries the custom feature "cz_render_thread". No preset carries it today: the Linux build hung when quitting
+; after a match with it (Vulkan, software GPU). Any build can try it with the launch option --render-thread separate.
+driver/threads/thread_model.cz_render_thread=2
 
 [audio]
 

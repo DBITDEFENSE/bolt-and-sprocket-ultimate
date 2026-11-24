@@ -107,6 +107,11 @@ func build() -> void:
 		_build_maps()
 
 
+## T-264: the survivor list and the map page are two sub-pages (MenuScreen.rebuild keeps the focus within one).
+func page_key() -> String:
+	return "survivors" if _picked == "" else "maps"
+
+
 func _build_characters() -> void:
 	var classic: bool = bool(GLSettings.values.get("classic_rules", false))
 	var last: String = String(GameState.character_id)

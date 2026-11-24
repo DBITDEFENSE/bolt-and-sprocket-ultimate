@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://jy6knjqajeys"
 path.s3tc="res://.godot/imported/kar98k_dsamuta_material_001_albedo.png-8bbcaebec50a97f9e7d63aaec284062e.s3tc.ctex"
+path.etc2="res://.godot/imported/kar98k_dsamuta_material_001_albedo.png-8bbcaebec50a97f9e7d63aaec284062e.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/sketchfab/kar98k-dsamuta/textures/kar98k_dsamuta_material_001_albedo.png"
-dest_files=["res://.godot/imported/kar98k_dsamuta_material_001_albedo.png-8bbcaebec50a97f9e7d63aaec284062e.s3tc.ctex"]
+dest_files=["res://.godot/imported/kar98k_dsamuta_material_001_albedo.png-8bbcaebec50a97f9e7d63aaec284062e.s3tc.ctex", "res://.godot/imported/kar98k_dsamuta_material_001_albedo.png-8bbcaebec50a97f9e7d63aaec284062e.etc2.ctex"]
 
 [params]
 

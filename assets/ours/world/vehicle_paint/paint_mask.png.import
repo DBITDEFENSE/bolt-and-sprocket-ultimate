@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cscploa5vmjol"
 path.s3tc="res://.godot/imported/paint_mask.png-7cfcbea753ac9da9f14e8f0ab45e831c.s3tc.ctex"
+path.etc2="res://.godot/imported/paint_mask.png-7cfcbea753ac9da9f14e8f0ab45e831c.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/ours/world/vehicle_paint/paint_mask.png"
-dest_files=["res://.godot/imported/paint_mask.png-7cfcbea753ac9da9f14e8f0ab45e831c.s3tc.ctex"]
+dest_files=["res://.godot/imported/paint_mask.png-7cfcbea753ac9da9f14e8f0ab45e831c.s3tc.ctex", "res://.godot/imported/paint_mask.png-7cfcbea753ac9da9f14e8f0ab45e831c.etc2.ctex"]
 
 [params]
 

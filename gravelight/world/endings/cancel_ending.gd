@@ -474,8 +474,10 @@ func _show_end_screen() -> void:
 	sub.add_theme_color_override("font_color", Color(0.62, 0.45, 0.85))
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(sub)
-	box.add_child(MenuKit.button("To the menu", func() -> void:
+	var to_menu: Button = MenuKit.button("To the menu", func() -> void:
 		get_tree().paused = false
 		GameState.phase = GameState.Phase.MENU
-		get_tree().change_scene_to_file("res://gravelight/ui/main_menu.tscn"), 22, "ui_confirm"))
+		get_tree().change_scene_to_file("res://gravelight/ui/main_menu.tscn"), 22, "ui_confirm")
+	box.add_child(to_menu)
+	to_menu.grab_focus.call_deferred()   # T-264: the only way out; a controller could not reach it without the focus
 	queue_free()

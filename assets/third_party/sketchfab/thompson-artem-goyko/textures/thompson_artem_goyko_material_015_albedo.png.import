@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://b6iv2jfsf8iin"
 path.s3tc="res://.godot/imported/thompson_artem_goyko_material_015_albedo.png-3b3b343a033fbae88cd161c04f935fb8.s3tc.ctex"
+path.etc2="res://.godot/imported/thompson_artem_goyko_material_015_albedo.png-3b3b343a033fbae88cd161c04f935fb8.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/sketchfab/thompson-artem-goyko/textures/thompson_artem_goyko_material_015_albedo.png"
-dest_files=["res://.godot/imported/thompson_artem_goyko_material_015_albedo.png-3b3b343a033fbae88cd161c04f935fb8.s3tc.ctex"]
+dest_files=["res://.godot/imported/thompson_artem_goyko_material_015_albedo.png-3b3b343a033fbae88cd161c04f935fb8.s3tc.ctex", "res://.godot/imported/thompson_artem_goyko_material_015_albedo.png-3b3b343a033fbae88cd161c04f935fb8.etc2.ctex"]
 
 [params]
 

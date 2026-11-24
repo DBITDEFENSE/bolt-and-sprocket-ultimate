@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://nfexunnsbreq"
 path.s3tc="res://.godot/imported/Lantern_01_brass_arm.png-91a43f43db0870ec537ef69ce31d0a3a.s3tc.ctex"
+path.etc2="res://.godot/imported/Lantern_01_brass_arm.png-91a43f43db0870ec537ef69ce31d0a3a.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/lantern-01/textures/Lantern_01_brass_arm.png"
-dest_files=["res://.godot/imported/Lantern_01_brass_arm.png-91a43f43db0870ec537ef69ce31d0a3a.s3tc.ctex"]
+dest_files=["res://.godot/imported/Lantern_01_brass_arm.png-91a43f43db0870ec537ef69ce31d0a3a.s3tc.ctex", "res://.godot/imported/Lantern_01_brass_arm.png-91a43f43db0870ec537ef69ce31d0a3a.etc2.ctex"]
 
 [params]
 

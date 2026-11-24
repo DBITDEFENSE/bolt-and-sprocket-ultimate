@@ -53,7 +53,7 @@ func test_detect_preset_on_sample_adapters() -> void:
 		["llvmpipe (LLVM 17.0.6, 256 bits)", "cpu", "forward_plus", "low"],
 		["NVIDIA GeForce RTX 4070 Laptop GPU", "other", "forward_plus", "high"],
 		["Intel(R) Arc(TM) A770 Graphics", "dgpu", "forward_plus", "medium"],
-		["Apple M2", "igpu", "forward_plus", "low"],
+		["Apple M2", "igpu", "forward_plus", "medium"],   # T-264: Apple silicon by tier (test_graphics_presets)
 		["", "other", "forward_plus", "medium"],
 		["Some Future GPU", "other", "forward_plus", "medium"],
 		["NVIDIA GeForce RTX 5090", "dgpu", "gl_compatibility", "web"],

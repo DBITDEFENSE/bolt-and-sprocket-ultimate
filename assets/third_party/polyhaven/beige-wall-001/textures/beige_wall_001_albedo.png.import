@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://0vhi1223x5e7"
 path.s3tc="res://.godot/imported/beige_wall_001_albedo.png-9c8f8b5c3fcd5ae49b21ae4eac89914c.s3tc.ctex"
+path.etc2="res://.godot/imported/beige_wall_001_albedo.png-9c8f8b5c3fcd5ae49b21ae4eac89914c.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/beige-wall-001/textures/beige_wall_001_albedo.png"
-dest_files=["res://.godot/imported/beige_wall_001_albedo.png-9c8f8b5c3fcd5ae49b21ae4eac89914c.s3tc.ctex"]
+dest_files=["res://.godot/imported/beige_wall_001_albedo.png-9c8f8b5c3fcd5ae49b21ae4eac89914c.s3tc.ctex", "res://.godot/imported/beige_wall_001_albedo.png-9c8f8b5c3fcd5ae49b21ae4eac89914c.etc2.ctex"]
 
 [params]
 

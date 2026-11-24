@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://05065f13wum2"
 path.s3tc="res://.godot/imported/red_brick_03_albedo.png-6df539845043114f9b49bf41c170fa9a.s3tc.ctex"
+path.etc2="res://.godot/imported/red_brick_03_albedo.png-6df539845043114f9b49bf41c170fa9a.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/red-brick-03/textures/red_brick_03_albedo.png"
-dest_files=["res://.godot/imported/red_brick_03_albedo.png-6df539845043114f9b49bf41c170fa9a.s3tc.ctex"]
+dest_files=["res://.godot/imported/red_brick_03_albedo.png-6df539845043114f9b49bf41c170fa9a.s3tc.ctex", "res://.godot/imported/red_brick_03_albedo.png-6df539845043114f9b49bf41c170fa9a.etc2.ctex"]
 
 [params]
 
