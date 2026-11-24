@@ -41,9 +41,11 @@ static func set_off(map_root: Node, off_now: PackedStringArray) -> void:
 	if map_root == null or not map_root.is_inside_tree():
 		off = off_now
 		return
+	PropShadows.undo(map_root)
 	ShadowProxies.undo_all(map_root)
 	off = off_now
 	ShadowProxies.build_all(map_root)
+	PropShadows.build(map_root)
 	var vc: Node = map_root.get_node_or_null("ViewCells")
 	if vc is ViewCells:
 		(vc as ViewCells).apply({})   # everything shown and the moon as authored, so collect reads the base state

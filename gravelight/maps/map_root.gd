@@ -153,6 +153,8 @@ func _ready() -> void:
 	ShadowBudget.attach(self)   # T-258: only the lamps nearest the camera draw shadows, within the Shadows setting's budget
 	print("[DetailRange] %s: %d cut-offs x%.2f (gfx_lod %s)" % [map_id, DetailRange.apply(self, DetailRange.factor(str(GLSettings.gfx("gfx_lod")))),
 		DetailRange.factor(str(GLSettings.gfx("gfx_lod"))), str(GLSettings.gfx("gfx_lod"))])   # T-223: no ring of missing detail
+	(func() -> void:
+		print("[PropShadows] %s: %s" % [map_id, str(PropShadows.build(self))])).call_deferred()   # T-266: one shadow draw per static prop mesh (deferred: after the loaders' props)
 	if GLSettings.is_compat():   # T-139: the browser / Compatibility profile (no SDFGI / SSIL / SSR / volumetrics, capped shadows)
 		print("[WebProfile] %s: %s" % [map_id, str(WebProfile.apply(self))])
 		(func() -> void: WebProfile.apply(self)).call_deferred()   # again for what spawns deferred (intel, lamp glow)
