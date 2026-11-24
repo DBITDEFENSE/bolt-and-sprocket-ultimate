@@ -4384,6 +4384,8 @@ func build_gameplay() -> void:
 	_build_yard_gate()
 	# T-272: round 1's opening, the night shift runs (InnOpening reads data/gravelight/map01_opening.json for this map)
 	_node("res://gravelight/world/inn_opening/inn_opening.gd", "InnOpening", {}, Vector3.ZERO)
+	# T-272: the survivors upstairs in the Administration (InnSurvivors reads data/gravelight/map01_survivors.json)
+	_node("res://gravelight/world/inn_opening/inn_survivors.gd", "InnSurvivors", {}, Vector3.ZERO)
 	build_quest_objects()
 	# power-on burst points (G and F ground)
 	for bp: Vector3 in [Vector3(50, DY, 64), Vector3(78, DY, 79), Vector3(0, DY, 88), Vector3(24, DY, 88)]:

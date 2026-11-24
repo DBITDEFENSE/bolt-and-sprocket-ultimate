@@ -1,0 +1,282 @@
+{
+ "_doc": "T-272 Kaltenbrunn's survivors behind a door (inn_survivors.gd / inn_survivor.gd read it: data_path_for(map01_kaltenbrunn); map00_survivors.json documents every key). The night watchman ran from his gatehouse to the Administration with the keys when the dead came over the wall; two of the office staff were still upstairs. They locked the Administration's yard door (Door_Admin, door_a_c, 1000: its boards are theirs) and hid in the radio room on the upper floor. Hidden until a player opens that door; then they cower there, pleading. A player pays arm.cost to hand one a rifle from the watchman's rack: they take a post on the upper floor (Bartsch at the balcony window over the yard, Frau Lenz at the north window, Hedda at the head of the stairs) and shoot the dead they can see. The rest as on Map 0 (downs, help up, deaths and rises; the dead on the upper floor go for them). Bodies: the project's own person models by the row's `person` (wiesner, pohl, trudi). Lines: text only (BAR, LNZ, SHR; no audio is baked: the subtitle shows).",
+ "map": "map01_kaltenbrunn",
+ "reveal_door": "door_a_c",
+ "nav_layers": 4,
+ "_doc_nav_layers": "T-272: the survivors walk to their posts on the Administration's navigation layer (C_ADMIN, bit 3: 4); Kaltenbrunn bakes a layer per zone",
+ "arm": {
+  "cost": 750,
+  "weapon": "kar98k",
+  "weapon_name": "Kar98k",
+  "hold_seconds": 1.0
+ },
+ "ally": {
+  "hp": 220,
+  "hidden_hp": 135,
+  "swipe_damage": 45,
+  "range": 20.0,
+  "fire_interval": 1.5,
+  "first_shot_delay": 0.6,
+  "hit_chance": 0.8,
+  "head_chance": 0.3,
+  "damage_mult": 1.0,
+  "head_mult": 2.0,
+  "lure_radius": 8.0,
+  "lure_radius_hidden": 4.5,
+  "lure_floor_dy": 1.6,
+  "max_lured": 2,
+  "lure_every": 0.4,
+  "bleed_seconds": 25.0,
+  "revive_hold": 2.5,
+  "revive_hp_frac": 0.6,
+  "rise_after": 5.0,
+  "rise_getup_seconds": 2.4,
+  "walk_speed": 2.2,
+  "turn_speed": 8.0,
+  "flinch_radius": 14.0,
+  "line_near": 7.0,
+  "scared_every": [
+   9.0,
+   15.0
+  ],
+  "fight_line_chance": 0.25,
+  "fight_line_cooldown": 12.0,
+  "flinch_line_cooldown": 6.0
+ },
+ "squad_turn_line": {
+  "category": "INN_SURV_TURN",
+  "delay": 1.2
+ },
+ "survivors": [
+  {
+   "id": "bartsch",
+   "person": "wiesner",
+   "name": "Paul Bartsch",
+   "display": "BARTSCH",
+   "speaker": "BAR",
+   "role": "the mine's night watchman (60s), an old soldier of 1916 who left his gatehouse when the dead came over the wall and ran for the Administration with the keys; the KAN line in the opening asks where he is",
+   "look": {
+    "jacket": [
+     0.14,
+     0.16,
+     0.22
+    ],
+    "trousers": [
+     0.14,
+     0.14,
+     0.16
+    ],
+    "skin": [
+     0.8,
+     0.64,
+     0.55
+    ],
+    "head": [
+     0.4,
+     0.4,
+     0.38
+    ],
+    "headgear": "cap",
+    "build": 1.04,
+    "skirt": false,
+    "apron": false,
+    "scarf": [
+     0.3,
+     0.28,
+     0.24
+    ]
+   },
+   "hide": [
+    -13.6,
+    3.8,
+    13.6
+   ],
+   "hide_yaw": 90.0,
+   "post": [
+    -1.0,
+    3.8,
+    14.0
+   ],
+   "post_yaw": -90.0,
+   "female": false,
+   "rise_variant": "villager",
+   "lines": {
+    "reveal": [
+     "BAR_M1SURV_REVEAL_01"
+    ],
+    "scared": [
+     "BAR_M1SURV_SCARED_01",
+     "BAR_M1SURV_SCARED_02"
+    ],
+    "flinch": [
+     "BAR_M1SURV_FLINCH_01"
+    ],
+    "armed": [
+     "BAR_M1SURV_ARMED_01"
+    ],
+    "fight": [
+     "BAR_M1SURV_FIGHT_01"
+    ],
+    "hurt": [
+     "BAR_M1SURV_HURT_01"
+    ],
+    "downed": [
+     "BAR_M1SURV_DOWNED_01"
+    ],
+    "death": [
+     "BAR_M1SURV_DEATH_01"
+    ]
+   }
+  },
+  {
+   "id": "lenz",
+   "person": "pohl",
+   "name": "Martha Lenz",
+   "display": "FRAU LENZ",
+   "speaker": "LNZ",
+   "role": "the pay office's senior clerk (40s), who stayed late to finish the Christmas wage packets; dry, exact, and terrified under it",
+   "look": {
+    "jacket": [
+     0.22,
+     0.2,
+     0.26
+    ],
+    "trousers": [
+     0.18,
+     0.18,
+     0.2
+    ],
+    "skin": [
+     0.86,
+     0.72,
+     0.64
+    ],
+    "head": [
+     0.36,
+     0.3,
+     0.24
+    ],
+    "headgear": "kerchief",
+    "build": 0.92,
+    "skirt": true,
+    "apron": false
+   },
+   "hide": [
+    -11.0,
+    3.8,
+    9.0
+   ],
+   "hide_yaw": 0.0,
+   "post": [
+    -8.0,
+    3.8,
+    9.3
+   ],
+   "post_yaw": 0.0,
+   "female": true,
+   "rise_variant": "villager",
+   "lines": {
+    "reveal": [
+     "LNZ_M1SURV_REVEAL_01"
+    ],
+    "scared": [
+     "LNZ_M1SURV_SCARED_01",
+     "LNZ_M1SURV_SCARED_02"
+    ],
+    "flinch": [
+     "LNZ_M1SURV_FLINCH_01"
+    ],
+    "armed": [
+     "LNZ_M1SURV_ARMED_01"
+    ],
+    "fight": [
+     "LNZ_M1SURV_FIGHT_01"
+    ],
+    "hurt": [
+     "LNZ_M1SURV_HURT_01"
+    ],
+    "downed": [
+     "LNZ_M1SURV_DOWNED_01"
+    ],
+    "death": [
+     "LNZ_M1SURV_DEATH_01"
+    ]
+   }
+  },
+  {
+   "id": "schramm",
+   "person": "trudi",
+   "name": "Hedda Schramm",
+   "display": "HEDDA SCHRAMM",
+   "speaker": "SHR",
+   "role": "the switchboard's relief typist (19), on her first winter at the mine; quick, frightened, braver than she sounds",
+   "look": {
+    "jacket": [
+     0.36,
+     0.22,
+     0.2
+    ],
+    "trousers": [
+     0.22,
+     0.2,
+     0.2
+    ],
+    "skin": [
+     0.88,
+     0.74,
+     0.65
+    ],
+    "head": [
+     0.5,
+     0.36,
+     0.2
+    ],
+    "headgear": "bun",
+    "build": 0.88,
+    "skirt": true,
+    "apron": false
+   },
+   "hide": [
+    -2.2,
+    3.8,
+    10.4
+   ],
+   "hide_yaw": -90.0,
+   "post": [
+    -9.0,
+    3.8,
+    18.6
+   ],
+   "post_yaw": 180.0,
+   "female": true,
+   "rise_variant": "villager",
+   "lines": {
+    "reveal": [
+     "SHR_M1SURV_REVEAL_01"
+    ],
+    "scared": [
+     "SHR_M1SURV_SCARED_01",
+     "SHR_M1SURV_SCARED_02"
+    ],
+    "flinch": [
+     "SHR_M1SURV_FLINCH_01"
+    ],
+    "armed": [
+     "SHR_M1SURV_ARMED_01"
+    ],
+    "fight": [
+     "SHR_M1SURV_FIGHT_01"
+    ],
+    "hurt": [
+     "SHR_M1SURV_HURT_01"
+    ],
+    "downed": [
+     "SHR_M1SURV_DOWNED_01"
+    ],
+    "death": [
+     "SHR_M1SURV_DEATH_01"
+    ]
+   }
+  }
+ ]
+}

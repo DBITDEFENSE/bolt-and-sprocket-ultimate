@@ -335,3 +335,32 @@ of its own for each miner would need new person models. `smoke_map01_opening` no
 modelled body (4 of 4) and that both risen wear their person's body (2 of 2): 17 checks, PASS. Seen:
 `docs/captures/t272/c00_kaue_miners_night_models.jpg` (Kubiak warming his hands at the stove, Rother and Petersen on
 the west bench, in their own clothes; the blockout bodies of `b00` are gone).
+
+### The survivors behind a door: the Administration
+
+`data/gravelight/map01_survivors.json` on the generalised `inn_survivors.gd` / `inn_survivor.gd` (the node
+`Gameplay/InnSurvivors`, empty `data_path`); no script change. The night watchman ran from his gatehouse to the
+Administration with the keys when the dead came over the wall (the opening's Kania asks where he is); two of the office
+staff were still upstairs. They locked the Administration's yard door (`door_a_c`, Door_Admin, 1000) and hid in the
+radio room upstairs. Opening that door reveals them, cowering and pleading; a player pays 750 to hand one a Kar98k and
+they take a post on the upper floor and shoot the dead they see. Downs, helping up, deaths and rises as on Map 0.
+
+| Survivor | Body (`person`) | Hides | Post |
+|---|---|---|---|
+| Paul Bartsch, the night watchman (60s), speaker BAR | wiesner | (-13.6, 3.8, 13.6) by the radio desk | (-1.0, 3.8, 14.0), the balcony window over the yard (facing east) |
+| Martha Lenz, the pay office's senior clerk (40s), LNZ | pohl | (-11.0, 3.8, 9.0) | (-8.0, 3.8, 9.3), the north window (the ledge the dead climb to) |
+| Hedda Schramm, the switchboard's relief typist (19), SHR | trudi | (-2.2, 3.8, 10.4) | (-9.0, 3.8, 18.6), the south room by the stair head |
+
+`nav_layers` 4 (T-273's key): Kaltenbrunn bakes a navigation layer per zone and the Administration is bit 3. The
+numbers (`ally`, `arm`, `squad_turn_line` INN_SURV_TURN: "one of the civvies upstairs") are Map 0's. Lines: 27 text
+lines (nine a survivor: reveal, two scared, flinch, armed, fight, hurt, downed, death) and three cast entries; no
+audio, listed under `missing` in `audio_manifest.json`. Faces: wiesner is also the hidden orderly on this map (T-143),
+pohl and trudi are the Inn's women who got away; the same reuse as above.
+
+Verified: `smoke_map01_survivors` (new, the steps of `smoke_map02_survivors`) PASS: hidden before the door, their spots
+on the navmesh, nothing solid on them, each in a modelled body; the door reveals them cowering with an arm prompt
+("Hold [F] to arm Paul Bartsch with a Kar98k [750]"); Frau Lenz's reveal line plays near them and she flinches at a
+shot; a zombie in the radio room kills Bartsch while hiding (3 swipes), who rises in his body after the turning
+warning; Lenz is armed for 750, walks to her post (0.0 m off in 1.4 s) and shoots a zombie on the upper floor; downed
+at 0 hp, helped up, she holds again. `test_map01_detail` `test_the_survivors_data`; `test_vo`, `test_inn_survivors`
+PASS. Not seen in a render (they are hidden until the door is bought; the capture tool does not buy doors).

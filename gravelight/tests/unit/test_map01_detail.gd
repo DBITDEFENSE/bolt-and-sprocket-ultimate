@@ -440,3 +440,31 @@ func test_the_opening_data() -> void:
 	for id: String in ["gorny", "kania"]:
 		assert_true(float(exits[id]) >= float(g["open_at"]) - 0.5 and float(exits[id]) < float(g["close_at"]) - 2.0, "%s reaches the gate while it is open (%.1f s)" % [id, float(exits[id])])
 	assert_false(c.has("squad_line"), "no squad line on a rise (the squad's INN_RISE lines name Map 0's people)")
+
+
+# ================================================================== the survivors behind a door
+
+func test_the_survivors_data() -> void:
+	var c: Dictionary = InnSurvivors.load_cfg(InnSurvivors.data_path_for(&"map01_kaltenbrunn"))
+	assert_false(c.is_empty(), "Kaltenbrunn has its survivors file")
+	assert_eq(str(c["map"]), "map01_kaltenbrunn")
+	assert_eq(str(c["reveal_door"]), "door_a_c", "behind the Administration's yard door")
+	assert_eq(int(c["nav_layers"]), 4, "they walk on the Administration's layer (C_ADMIN, bit 3)")
+	assert_true(_scene.find_child("InnSurvivors", true, false) != null, "the scene has the survivors' node")
+	var door_ok: bool = false
+	for n: Node in _scene.find_children("Door_*", "Node3D", true, false):
+		if str(n.get("door_id")) == "door_a_c":
+			door_ok = true
+	assert_true(door_ok, "the reveal door is one of the scene's doors")
+	var cast: Dictionary = GLData.load_json("res://data/gravelight/vo/voice_cast.json")["cast"]
+	var lines: Dictionary = GLData.load_json("res://data/gravelight/vo/lines.json")
+	for s: Dictionary in c["survivors"]:
+		assert_true(PeopleBodies.available(str(s["person"])), "%s wears a modelled person (%s)" % [s["id"], s["person"]])
+		assert_true(cast.has(str(s["speaker"])), "%s's speaker is in the cast" % s["id"])
+		var hide: Vector3 = _v3(s["hide"])
+		assert_true(hide.x > -16.0 and hide.x < 0.0 and hide.z > 8.0 and hide.z < 16.0 and absf(hide.y - 3.8) < 0.01, "%s hides in the radio room upstairs" % s["id"])
+		for key: String in ["hide", "post"]:
+			assert_true(_on_navmesh(_scene, _v3(s[key])), "%s's %s is on the navmesh" % [s["id"], key])
+		for kind: Variant in (s["lines"] as Dictionary).keys():
+			for lid: Variant in s["lines"][kind]:
+				assert_true(lines.has(str(lid)), "line %s exists" % lid)
