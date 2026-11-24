@@ -1,0 +1,9 @@
+Title: Loading-screen clips (inn at the crossroads, barricaded taproom, mine town, harbour in a storm)
+Author: GRAVELIGHT project (text-to-video, model Seedance 2.5 on Higgsfield, prompts written by Claude for the owner, T-267)
+Source: generated 2026-11-23 on the owner's Higgsfield account; four jobs, 15 s each, 1280x720, 24 fps, no audio, 105 credits each
+License: Ours (original work, AI-generated in-house; no third-party footage, no text, logos or insignia in the prompts)
+Credit line: none needed
+Format: Ogg Theora (ffmpeg libtheora -q:v 7 -g 12 -r 24, no audio track), converted from the service's H.264 mp4
+Downloaded: 2026-11-23
+Files used: load_01_inn_crossroads.ogv, load_02_taproom_barricade.ogv, load_03_mine_town.ogv, load_04_harbour_storm.ogv
+Game use: one clip, chosen at random, plays muted behind the loading screen of a Solo or Co-op match (gravelight/ui/loading_clips.gd, loading_screen.gd); never in the Campaign

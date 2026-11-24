@@ -159,7 +159,7 @@ func _gameplay() -> void:
 	content.add_child(MenuKit.row("Homage Names", MenuKit.options(PackedStringArray(["Real", "In-World"]), ncur,
 		func(i: int) -> void: GLSettings.set_value("homage_names", name_modes[i]))))
 	content.add_child(MenuKit.help("Homage Bosses are tributes to real people. Real shows their first names on the title cards and boss bars; In-World shows only the in-world names. In co-op the host's settings decide."))
-	m1911_rows(content)
+	content.add_child(MenuKit.help("Looking for the M1911's finish and its fitted attachment? They moved to Loadout (main menu), where you can see them on the pistol."))
 	_minimap_rows()
 
 
@@ -446,6 +446,9 @@ func _access() -> void:
 	content.add_child(MenuKit.row("Subtitle background", MenuKit.options(PackedStringArray(["Off", "Light", "Dark"]),
 		maxi(0, backs.find(str(GLSettings.values.get("subtitle_back", "off")))), func(i: int) -> void: GLSettings.set_value("subtitle_back", backs[i]))))
 	content.add_child(MenuKit.help("A dark band behind the words keeps them readable on snow and in bright rooms. Both apply from the next line."))
+	content.add_child(MenuKit.section("Motion"))   # T-267
+	content.add_child(MenuKit.switch_row("Reduce motion", bool(GLSettings.values.get("reduce_motion", false)), _setter("reduce_motion")))
+	content.add_child(MenuKit.help("Menus fade instead of sliding, lists appear at once, and the 3D previews of your pistol and character stand still. It does not change anything in a match."))
 
 
 func _unhandled_input(event: InputEvent) -> void:

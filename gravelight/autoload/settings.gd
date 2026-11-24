@@ -95,6 +95,7 @@ var values: Dictionary = {
 	"sprint_mode": "hold",     # hold / toggle (Update 02 §1)
 	"prone_enabled": false,    # hold crouch to go prone (Update 02 §1)
 	"screen_shake": 1.0,       # 0..1.5: camera shake + recoil FOV punch (weapons, explosions)
+	"reduce_motion": false,    # T-267 (Accessibility): menus fade instead of sliding, no staggered lists, no zoom, the 3D previews stand still (MenuMotion)
 	"camera_sway": "full",     # T-220 Camera Sway / Turbulence: full / reduced / off: the flight's camera motion (der Kranich's
 	                           # bank roll, its turbulence shake; CameraSway); off keeps the visuals and the audio
 	"last_join_ip": "127.0.0.1",   # co-op: the address typed in the lobby's Join field last time

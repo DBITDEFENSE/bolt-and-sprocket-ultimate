@@ -3,7 +3,7 @@ extends MenuScreen
 ## Service record: rank, Commendations (prestige), career stats, best rounds, weapon mastery.
 
 const STAT_NAMES: Array = [["matches", "Matches"], ["kills", "Kills"], ["headshots", "Headshots"], ["downs", "Times downed"],
-	["revives", "Revives"], ["eggs", "Easter eggs completed"], ["rounds", "Rounds survived (total)"], ["scrip", "Scrip earned"],
+	["revives", "Revives"], ["eggs", "Easter eggs completed"], ["rounds", "Rounds survived (total)"], ["scrip", "Scrip earned (match money)"],
 	["boards", "Boards rebuilt"], ["doors", "Doors opened"]]
 const CAMO_NAMES: Dictionary = {"": "-", "olive_drab": "Olive Drab", "winter": "Winter", "bronze": "Bronze", "silver": "Silver",
 	"gold": "Gold", "nachtglas": "Nachtglas"}
@@ -12,24 +12,25 @@ var _confirm: bool = false
 
 
 func _init() -> void:
-	super._init("Service Record")
+	super._init("Stats")
+	subtitle = "Your rank, your career numbers, achievements and weapon camos."
 
 
 func build() -> void:
 	var r: int = ProfileSave.rank()
 	var p: int = ProfileSave.prestige()
-	content.add_child(MenuKit.label("Rank %d%s" % [r, ("   ·   Commendation %d" % p) if p > 0 else ""], 30, MenuKit.INK.lightened(0.3), true))
+	content.add_child(MenuKit.label("Rank %d%s" % [r, ("   ·   Prestige %d" % p) if p > 0 else ""], 30, MenuKit.INK.lightened(0.3), true))
 	content.add_child(MenuKit.bar(ProfileSave.rank_progress(), 520))
 	content.add_child(MenuKit.label("Lifetime XP: %d" % int(ProfileSave.profile.get("xp_lifetime", 0)), 18, MenuKit.DIM))
 	if ProfileSave.can_prestige():
 		if _confirm:
-			content.add_child(MenuKit.para("Accept a Commendation? Your rank resets to 1. Unlocks, dossiers, camos and stats are kept.", 20, MenuKit.GOLD))
+			content.add_child(MenuKit.para("Prestige? Your rank resets to 1 and you earn a Prestige star. Unlocks, character levels, camos and stats are kept.", 20, MenuKit.GOLD))
 			var h: HBoxContainer = HBoxContainer.new()
 			h.add_child(MenuKit.button("Yes, reset my rank", _do_prestige, 22, "ui_confirm"))
 			h.add_child(MenuKit.button("No", _cancel_prestige, 22, "ui_back"))
 			content.add_child(h)
 		else:
-			content.add_child(MenuKit.button("Accept a Commendation (prestige)", _ask_prestige, 22))
+			content.add_child(MenuKit.button("Prestige (reset your rank for a Prestige star)", _ask_prestige, 22))
 	var stats: Dictionary = ProfileSave.profile.get("stats", {})
 	content.add_child(MenuKit.label("Career", 26, MenuKit.VIOLET, true))
 	var g: GridContainer = GridContainer.new()
@@ -48,10 +49,10 @@ func build() -> void:
 	g.add_child(MenuKit.label(_weapon_name(fav) if fav != "" else "-", 20, MenuKit.GOLD))
 	# T-162: the citations (achievements): earned in gold, the rest dim with their task
 	var cits: Array = Citations.rows()
-	content.add_child(MenuKit.label("Citations  %d / %d" % [Citations.count_earned(), cits.size()], 26, MenuKit.VIOLET, true))
+	content.add_child(MenuKit.label("Achievements  %d / %d" % [Citations.count_earned(), cits.size()], 26, MenuKit.VIOLET, true))
 	for c: Dictionary in cits:
 		content.add_child(MenuKit.label("%s  -  %s" % [c["name"], c["desc"]], 18, MenuKit.GOLD if bool(c["earned"]) else MenuKit.DIM))
-	content.add_child(MenuKit.label("Weapon mastery", 26, MenuKit.VIOLET, true))
+	content.add_child(MenuKit.label("Weapon camos", 26, MenuKit.VIOLET, true))
 	content.add_child(MenuKit.para("Camos: Olive Drab 100 · Winter 250 · Bronze 500 · Silver 1000 · Gold 2000 kills. Gold on every weapon unlocks Nachtglas for all.", 17, MenuKit.DIM))
 	var mg: GridContainer = GridContainer.new()
 	mg.columns = 3

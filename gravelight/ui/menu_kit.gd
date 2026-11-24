@@ -331,7 +331,7 @@ static func menu_link(text_str: String, cb: Callable, size_px: int = 38) -> Butt
 		if not b.is_inside_tree():
 			return
 		var tw: Tween = b.create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-		tw.tween_property(sb, "content_margin_left", LINK_MARGIN + (LINK_SLIDE if on else 0.0), 0.16)
+		tw.tween_property(sb, "content_margin_left", LINK_MARGIN + (LINK_SLIDE if on and not MenuMotion.reduced() else 0.0), 0.16)
 		tw.tween_property(sb, "bg_color:a", 0.07 if on else 0.0, 0.16)
 		tw.tween_property(sb, "shadow_color:a", 0.12 if on else 0.0, 0.16)
 		tw.tween_property(sb, "border_color:a", 1.0 if on else 0.0, 0.16)
@@ -361,28 +361,13 @@ static func rule(height: float, width: float = 2.0, color: Color = VIOLET) -> Co
 
 ## T-144: a screen comes in: 0.25 s cross-fade with a 20 px slide (from the right; dir -1 from the left). The control
 ## must not sit in a container (the container would put it back).
-static func transition_in(c: Control, dir: float = 1.0, secs: float = 0.25, px_off: float = 20.0) -> void:
-	if c == null or not c.is_inside_tree():
-		return
-	var home: Vector2 = c.position
-	c.modulate.a = 0.0
-	c.position = home + Vector2(px_off * dir, 0.0)
-	var tw: Tween = c.create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tw.tween_property(c, "modulate:a", 1.0, secs)
-	tw.tween_property(c, "position", home, secs)
+static func transition_in(c: Control, dir: float = 1.0, secs: float = MenuMotion.SCREEN_S, px_off: float = MenuMotion.SLIDE_PX) -> void:
+	MenuMotion.slide_in(c, dir, secs, px_off)   # T-267: every menu tween lives in MenuMotion (and obeys "Reduce motion")
 
 
 ## T-144: the reverse; `done` runs when it has faded.
-static func transition_out(c: Control, done: Callable = Callable(), dir: float = -1.0, secs: float = 0.18, px_off: float = 20.0) -> void:
-	if c == null or not c.is_inside_tree():
-		if done.is_valid():
-			done.call()
-		return
-	var tw: Tween = c.create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-	tw.tween_property(c, "modulate:a", 0.0, secs)
-	tw.tween_property(c, "position", c.position + Vector2(px_off * dir, 0.0), secs)
-	if done.is_valid():
-		tw.chain().tween_callback(done)
+static func transition_out(c: Control, done: Callable = Callable(), dir: float = -1.0, secs: float = MenuMotion.OUT_S, px_off: float = MenuMotion.SLIDE_PX) -> void:
+	MenuMotion.slide_out(c, done, dir, secs, px_off)
 
 
 ## A readable paragraph in the body face, word-wrapped.
@@ -411,6 +396,7 @@ static func button(text_str: String, cb: Callable, size: int = 24, sound: String
 		b.pressed.connect(func() -> void: AudioDirector.play_2d(sound, 0.0, 0.0))
 	if cb.is_valid():
 		b.pressed.connect(cb)
+	MenuMotion.feedback(b)   # T-267: hover / focus / press feedback on every menu button
 	return b
 
 
@@ -543,6 +529,7 @@ static func check(text_str: String, value: bool, cb: Callable) -> CheckButton:
 	c.add_theme_icon_override("checked_disabled", switch_icon(true, true))
 	c.add_theme_icon_override("unchecked_disabled", switch_icon(false, true))
 	c.toggled.connect(cb)
+	MenuMotion.feedback(c)
 	return c
 
 
@@ -642,6 +629,7 @@ static func options(items: PackedStringArray, selected: int, cb: Callable) -> Op
 	o.add_theme_font_size_override("font_size", MenuKit.size("body_large"))
 	o.focus_mode = Control.FOCUS_ALL
 	o.item_selected.connect(cb)
+	MenuMotion.feedback(o)
 	return o
 
 
