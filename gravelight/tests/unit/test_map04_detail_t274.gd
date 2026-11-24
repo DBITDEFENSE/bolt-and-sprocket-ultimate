@@ -51,7 +51,7 @@ func _scripts_under(n: Node) -> Dictionary:
 
 func test_every_act_has_its_reactive_dressing() -> void:
 	var want: Dictionary = {
-		"map04a": {"swing_door.gd": 4, "draft_curtain.gd": 2, "shatter_set.gd": 3, "loose_papers.gd": 5, "drip_point.gd": 3},
+		"map04a": {"swing_door.gd": 3, "draft_curtain.gd": 2, "shatter_set.gd": 3, "loose_papers.gd": 5, "drip_point.gd": 3},
 		"map04b": {"loose_papers.gd": 2, "shatter_set.gd": 3, "decomp_reactive.gd": 2},
 		"map04c": {"hay_puff_zone.gd": 3, "swing_door.gd": 3, "shatter_set.gd": 1, "loose_papers.gd": 3},
 		"map04d": {"loose_papers.gd": 2, "hay_puff_zone.gd": 2},

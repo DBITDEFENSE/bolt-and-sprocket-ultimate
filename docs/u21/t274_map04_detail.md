@@ -58,8 +58,8 @@ without a machine shows the nailed Helvetia crate.
 Map 0's kit (`gravelight/world/reactive/`), placed by `gen_map04_lib.gd` helpers under one `Reactive` node, all built
 at load, nothing collides, nothing touches the navmesh:
 
-- **Thalbach**: door leaves left ajar in the four open doorways (goods shed `[28.15, 0, 55]`, yardmaster's hut
-  `[5.85, 0, 54.9]`, parish hall `[36, 0, 88.15]`, the air-raid cellar `[6.1, 0, 9.85]`); blackout curtains at the
+- **Thalbach**: door leaves left ajar in the three open doorways that had no leaf (the yardmaster's hut
+  `[5.85, 0, 54.9]`, parish hall `[36, 0, 88.15]`, the air-raid cellar `[6.1, 0, 9.85]`; the goods shed keeps its drawn sliding door); blackout curtains at the
   canteen's south window `W_C_S` (billow harder as its boards go); the night shift's glasses, steins and bottles on
   the three canteen tables (break when shot or blasted); loose papers on the hut desk, on the floor beside the three
   office desks (beside the Fernflug files, never on them) and on hall 1's floor; drips in the air-raid cellar

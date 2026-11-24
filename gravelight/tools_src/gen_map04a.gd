@@ -1898,12 +1898,11 @@ func build_gameplay_extra() -> void:
 
 
 ## T-274 (the map detail pass): the act's reactive dressing (Map 0's kit, gen_map04_lib.gd "reactive props"): door
-## leaves left ajar in the four open doorways (the goods shed, the yardmaster's hut, the parish hall, the air-raid
-## cellar), blackout curtains at the canteen's south window, the night shift's glasses and steins on the canteen
+## leaves left ajar in the three open doorways without a leaf (the yardmaster's hut, the parish hall, the air-raid
+## cellar; the goods shed has its sliding door drawn), blackout curtains at the canteen's south window, the night shift's glasses and steins on the canteen
 ## tables (they break when shot), loose papers by the three office desks (beside the Fernflug files, never on them),
 ## on the hut's desk and on hall 1's floor, and water dripping in the air-raid cellar and the bunker.
 func _reactive_t274() -> void:
-	swing_door("ShedDoor", Vector3(28.0 + T * 0.5, 0, 55.0), -90.0, 1.95)
 	swing_door("HutDoor", Vector3(6.0 - T * 0.5, 0, 54.9), 90.0, 1.75)
 	swing_door("ParishDoor", Vector3(36.0, 0, 88.0 + T * 0.5), 180.0, 1.95)
 	swing_door("CellarDoor", Vector3(6.1, 0, 10.0 - T * 0.5), 0.0, 1.75, {"rest_deg": 35.0})
