@@ -437,5 +437,5 @@ func _opening() -> void:
 	_check(op != null and op.data_path == "" and not op.cfg.is_empty() and str(op.cfg.get("map", "")) == "map00_crossroads", "Map 0's opening found its file by the map's id")
 	_check(op != null and op.phase != InnOpening.Phase.CANCELLED and (op.cfg.get("patrons", []) as Array).size() > 0, "and it is not cancelled (%d patrons)" % ((op.cfg.get("patrons", []) as Array).size() if op != null else 0))
 	_check(sv != null and not sv.cfg.is_empty() and sv.survivors.size() == (sv.cfg.get("survivors", []) as Array).size() and sv.survivors.size() > 0, "Map 0's survivors found theirs (%d upstairs)" % (sv.survivors.size() if sv != null else 0))
-	# (T-272: Kaltenbrunn has its own opening now, smoke_map01_opening; Totenhafen is a map without one)
-	_check(InnOpening.data_path_for(&"map02_totenhafen") == "res://data/gravelight/map02_opening.json" and InnOpening.load_cfg(InnOpening.data_path_for(&"map02_totenhafen")).is_empty(), "a map without an opening file has none")
+	# (T-272 / T-273: Kaltenbrunn and Totenhafen have their own openings now; Thalbach is a map without one)
+	_check(InnOpening.data_path_for(&"map04a_thalbach") == "res://data/gravelight/map04a_opening.json" and InnOpening.load_cfg(InnOpening.data_path_for(&"map04a_thalbach")).is_empty(), "a map without an opening file has none")
