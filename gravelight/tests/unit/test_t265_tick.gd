@@ -39,6 +39,25 @@ func test_the_animation_rate_by_distance_and_view() -> void:
 
 
 
+func test_a_body_behind_the_camera_is_posed_every_fourth_frame() -> void:
+	var host: Node3D = Node3D.new()
+	add_child_autofree(host)
+	var n: Node3D = Node3D.new()
+	host.add_child(n)
+	var cam: Camera3D = Camera3D.new()
+	host.add_child(cam)
+	cam.make_current()
+	n.global_position = cam.global_position + Vector3(0, 0, -6)
+	assert_eq(PatronBody.lod_div(n), 1, "in front: every frame")
+	n.global_position = cam.global_position + Vector3(0, 0, 6)
+	assert_eq(PatronBody.lod_div(n), 4, "behind: every 4th frame")
+	n.global_position = cam.global_position + Vector3(0, 0, 2)
+	assert_eq(PatronBody.lod_div(n), 1, "behind but at arm's length: every frame")
+	Zombie.view_lod = false
+	n.global_position = cam.global_position + Vector3(0, 0, 6)
+	assert_eq(PatronBody.lod_div(n), 1, "the switch off: by distance only")
+
+
 # ------------------------------------------------------------------ the day at rest writes nothing
 
 func _day_rig() -> Array:

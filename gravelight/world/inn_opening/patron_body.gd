@@ -363,14 +363,16 @@ static func lod_div(n: Node3D) -> int:
 		_lod = (GLData.table("anim").get("lod", {}) as Dictionary) if n.has_node(^"/root/GLData") else {}
 		if _lod.is_empty():
 			_lod = {"full_m": 15.0, "half_m": 35.0}
-	var d2: float = cam.global_position.distance_squared_to(n.global_position)
+	var to: Vector3 = n.global_position - cam.global_position
+	var d2: float = to.length_squared()
 	var half_m: float = float(_lod["half_m"]) * Zombie.anim_lod_scale
 	var full_m: float = float(_lod["full_m"]) * Zombie.anim_lod_scale
-	if d2 > half_m * half_m:
-		return 4
-	if d2 > full_m * full_m:
-		return 2
-	return 1
+	# T-265: and every 4th frame out of the camera's view, as the zombies are (Zombie.out_of_view)
+	var out: bool = false
+	if Zombie.view_lod:
+		var size: Vector2 = n.get_viewport().get_visible_rect().size
+		out = Zombie.out_of_view(to + Vector3.UP, -cam.global_basis.z.normalized(), Zombie.view_cone_cos(cam.fov, size.x / maxf(1.0, size.y)))
+	return Zombie.anim_div(d2, full_m, half_m, out)
 
 
 func _pose_body(delta: float) -> void:
