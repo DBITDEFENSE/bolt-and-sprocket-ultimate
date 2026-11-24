@@ -113,6 +113,7 @@ func _physics_process(delta: float) -> void:
 				if s2.state == InnSurvivor.State.DEAD and _victim == null:
 					_victim = s2
 					print("[m2surv] %s killed while hiding after %d swipes" % [s2.sid, s2.swipes_taken])
+					_kill_mine()   # (two sailors, not Map 0's three: the zombie in the cage would take the other one too)
 					_go("rise")
 			if _victim == null and _step_t > 40.0:
 				_fail("no hiding survivor was killed by the zombie in their room (prey: %s)" % str(_mine.map(func(z: Zombie) -> String: return str(z.prey))))

@@ -124,7 +124,7 @@ when shot on the hut's desk and on the signal room's chart table (`ShatterSet`).
 navmesh, nothing casts a shadow. Paper (`PaperDecor`) left out: its kinds are Map 0's (the inn's December calendar,
 the patrol's map, the cousins' drawings).
 
-## 5. Not built: the round-1 opening and the survivors
+## 5. Not built in the first pass: the round-1 opening and the survivors (both built after the merge: sections 6 and 7)
 
 Left for a later pass (the run's time went to items 1 to 4 and their checks). What each needs, from reading
 `inn_opening.gd` / `inn_survivors.gd` (both already take any map: `data/gravelight/map02_opening.json` /
@@ -257,3 +257,32 @@ before look.min_seconds), four slots taken; the door unbarred and opened; a play
 doorway from the quay stopped at x 0.50 (the wall's face is at 0.15: never inside); Tews escaped, Boldt and Rahn rose
 on the quay, both attackers rose, the leaf shut. `test_map02_detail.test_the_night_shift_opening`. The tide is not
 touched (round 1 is before its `min_round` 3).
+
+## Results of the addition (headless, this PC, 2026-11-24)
+
+- Smokes, all PASS with 0 script errors: `smoke_map02_survivors` (new; twice after one fix in the smoke: with two
+  sailors, not Map 0's three, the zombie in the cage took the second one before the smoke could arm him, so the smoke
+  now puts its zombie down once the first falls), `smoke_map02_opening` (new, twice), `smoke_map02`,
+  `smoke_map02_art`, `smoke_map02_world`, `smoke_map_detail` (155), `smoke_coop`, and Map 0's `smoke_map00_alive`,
+  `smoke_inn_survivors`, `smoke_inn_opening_paths` (7 cases: the opening change keeps Map 0's).
+- `test_map02_detail` 12 tests; `test_inn_survivors`, `test_vo`, `test_mapdata` pass. Full GUT and check_scripts:
+  see the report.
+- Not seen in motion: a capture holds the rounds, so the opening's run was not rendered (`19_side_door_night` shows
+  the shut door, its frame and sign). The sailors cowering in the cage were (`18_survivors_night`).
+- The patrons and the sailors are PatronBody's procedural bodies (no person GLB built for them); the risers get the
+  `dockworker` / `sailor` kits.
+- The opening's patrons duck through the surf steps' chain at the parapet's west end (they have no colliders and the
+  chain is dressing); not seen.
+
+## For DECISIONS.md: the addition (the main session writes it at the merge)
+
+**T-273 addition: Totenhafen's survivors and round-1 opening.** Branch `claude/detail-map02` (after the T-273 merge),
+notes `docs/u21/t273_map02_detail.md` sections 6 and 7. Two of U-1047's crew (Kahlke, Pietsch) hide in the
+Torpedo Workshop's warhead cage, revealed by the workshop's door, armed for 1000 (a Kar98k) to hold posts by the cage,
+rising as sailors when they fall (`map02_survivors.json`, Map 0's InnSurvivors unchanged). Round 1 opens with the
+cannery's night shift running out of a new side door onto the quay (`map02_opening.json`, Map 0's InnOpening): two
+caught and risen on the quay, one away down the sea stairs. The side door's doorway is filled for good with an
+invisible collider: only the patrons (no colliders) pass, so the cannery's 1000 door is never skipped; the leaf is
+never barred again. One shared change, data-driven with Map 0's default kept: `inn_opening.gd`
+`front_door.face_door`. 30 new text lines (not baked) and five cast rows. Verified by two new smokes and Map 0's
+opening and survivor smokes.
