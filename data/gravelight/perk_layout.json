@@ -10,6 +10,26 @@
     "map00": {
       "perks": ["ironhide_stout", "second_wind", "trigger_tonic", "twin_barrel", "marathon_malt", "hawkeye_brandy", "ledger_lager", "packmule_porter",
         "blastproof_bock", "overclock_cordial", "skyhook_sekt", "magpie_mead"]
+    },
+    "map04a": {
+      "_doc": "T-274: Werk Thalbach's nine machines onto its perk spots (gen_map04a.gd perk_spots).",
+      "perks": ["second_wind", "ironhide_stout", "trigger_tonic", "twin_barrel", "marathon_malt", "hawkeye_brandy", "packmule_porter",
+        "blastproof_bock", "ledger_lager"]
+    },
+    "map04b": {
+      "_doc": "T-274: der Kranich's nine machines onto its perk spots (gen_map04b.gd perk_spots).",
+      "perks": ["second_wind", "skyhook_sekt", "trigger_tonic", "ironhide_stout", "marathon_malt", "blastproof_bock", "hawkeye_brandy",
+        "packmule_porter", "ledger_lager"]
+    },
+    "map04c": {
+      "_doc": "T-274: Groom Lake's ten machines onto its perk spots (gen_map04c.gd perk_spots).",
+      "perks": ["second_wind", "ironhide_stout", "magpie_mead", "trigger_tonic", "hawkeye_brandy", "twin_barrel", "blastproof_bock",
+        "packmule_porter", "skyhook_sekt", "ledger_lager"]
+    },
+    "map04d": {
+      "_doc": "T-274: Mondlicht's nine machines onto its perk spots (gen_map04d.gd perk_spots).",
+      "perks": ["second_wind", "skyhook_sekt", "magpie_mead", "ironhide_stout", "trigger_tonic", "hawkeye_brandy", "blastproof_bock",
+        "packmule_porter", "ledger_lager"]
     }
   }
 }

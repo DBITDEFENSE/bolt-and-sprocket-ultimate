@@ -120,6 +120,22 @@ func setup_tables() -> void:
 		# Ledger Lager (T-141): on the forward bulkhead of the centre body, 5 m port of the Bordkasse (bank.json)
 		["ledger_lager", Vector3(-5.0, 0, 53.45), 0.0],
 	]
+	# T-274: the perk deal (perk_layout.json maps.map04b): the nine machines are dealt onto these spots each match; the
+	# first nine are where they stood (the spot's back where the machine's back was, then onto its wall)
+	perk_spots = [
+		# (Second Wind's place, 1 m clear of the bay doors' lever; Ironhide's and Marathon Malt's in the wings, centred
+		# between two ribs)
+		["bay_fwd", "", Vector3(7.0, 0, 22.8), 0.0, {"snap": true}], spot_from_perk("body_port", "skyhook_sekt"),
+		spot_from_perk("body_stbd", "trigger_tonic"), ["wing_port", "", Vector3(-23.0, 0, 44.6), 0.0, {"snap": true}],
+		["wing_stbd", "", Vector3(23.0, 0, 44.6), 0.0, {"snap": true}], spot_from_perk("engines", "blastproof_bock"),
+		spot_from_perk("kanzel", "hawkeye_brandy"), spot_from_perk("cockpit", "packmule_porter"),
+		spot_from_perk("bordkasse", "ledger_lager"),
+		# the bay's port wall between the racks' ends, each wing's far bay, the port engine room's outboard wall, the
+		# starboard gun room's inboard wall
+		["bay_port", "", Vector3(-8.25, 0, 14.5), -90.0, {}], ["wing_port_aft", "", Vector3(-45.25, 0, 31.75), 180.0, {}],
+		["wing_stbd_fwd", "", Vector3(16.75, 0, 42.25), 0.0, {}], ["engines_out", "", Vector3(-77.0, 0, 48.75), -90.0, {}],
+		["kanzel_in", "", Vector3(52.75, 0, 41.25), -90.0, {}],
+	]
 	crates = [["Galley", Vector3(-6.0, 0, 50.0), 90.0, true, [Vector3(-6, 0, 47), Vector3(-6, 0, 44), Vector3(0, 0, 44)]],
 		# T-156 (THE_BAR row 25): a second spot, the gun blisters' east wall: the drummer walks the crate across the wing
 		# T-219: yaw 90 (was -90: it faced the blister wall)

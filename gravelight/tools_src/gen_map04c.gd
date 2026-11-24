@@ -121,6 +121,22 @@ func setup_tables() -> void:
 		# Ledger Lager (T-141): on the hangar's north wall, 8 m west of Dee's cage and the Range Finance Office (bank.json)
 		["ledger_lager", Vector3(54.0, 0, 99.45), 0.0],
 	]
+	# T-274: the perk deal (perk_layout.json maps.map04c): the ten machines are dealt onto these spots each match; the
+	# first ten are where they stood (the spot's back where the machine's back was, then onto its wall)
+	perk_spots = [
+		spot_from_perk("wreck", "second_wind"), spot_from_perk("lakebed", "ironhide_stout"),
+		spot_from_perk("hangar_w", "magpie_mead"), spot_from_perk("motorpool", "trigger_tonic"),
+		spot_from_perk("radar", "hawkeye_brandy"), ["lab_hall", "", Vector3(-60.25, LAB_Y, 111.0), 0.0, {}],
+		spot_from_perk("lab_east", "blastproof_bock"), spot_from_perk("silo_w", "packmule_porter"),
+		spot_from_perk("silo_e", "skyhook_sekt"), spot_from_perk("finance", "ledger_lager"),
+		# (Twin Barrel's place by the lab's glass wall had the jamb and the work bench in it: lab_hall is on the hall's
+		# south wall 3 m west.) New: the crash site's west berm wall, the lakebed side of the wreck's wall twice (Second
+		# Wind's: one door from the start), the radar yard's west wall, the service lane's north wall, the lab's
+		# records-room wall
+		["wreck_w", "", Vector3(-13.25, 0, -22.5), -90.0, {}], ["lakebed_w", "", Vector3(-38.25, 0, -3.0), 180.0, {}],
+		["lakebed_far", "", Vector3(-50.25, 0, -3.0), 180.0, {}], ["radar_w", "", Vector3(20.75, 0, 107.0), -90.0, {}],
+		["service_lane", "", Vector3(-5.75, 0, 99.0), 0.0, {}], ["lab_records", "", Vector3(-62.0, LAB_Y, 136.75), 180.0, {}],
+	]
 	crates = [
 		["Wreck", Vector3(6.0, 0, -12.0), -90.0, true, [Vector3(6, 0, -15), Vector3(0, 0, -15), Vector3(0, 0, -20)]],
 		["Hangar", Vector3(26.0, 0, 76.0), 90.0, true, [Vector3(29, 0, 76), Vector3(29, 0, 70), Vector3(35, 0, 66)]],

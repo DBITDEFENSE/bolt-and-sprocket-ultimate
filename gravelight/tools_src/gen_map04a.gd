@@ -132,6 +132,20 @@ func setup_tables() -> void:
 		# Ledger Lager (T-141): in the yardmaster's hut, on its far wall; the hut's south wall is the works' pay window (bank.json)
 		["ledger_lager", Vector3(3.6, 0, 57.45), 0.0],
 	]
+	# T-274: the perk deal (perk_layout.json maps.map04a): the nine machines are dealt onto these spots each match. The
+	# first nine are where the machines stood (the spot's back where the machine's back was); the rest are new.
+	perk_spots = [
+		spot_from_perk("siedlung", "second_wind"), spot_from_perk("bahnhof_shed", "ironhide_stout", {"ignore": ["WallBuy_m1_carbine"]}),   # (the carbine is on the Siedlung side of the wall)
+		spot_from_perk("kantine", "trigger_tonic"), ["kirchplatz", "", Vector3(5.4, 0, 99.0), 0.0, {"snap": true}],   # (where Twin Barrel stood, 0.6 m further from the tunnel door)
+		spot_from_perk("montage", "marathon_malt"), spot_from_perk("windkanal", "hawkeye_brandy"),
+		spot_from_perk("pruefstand_e", "packmule_porter"), spot_from_perk("pruefstand_w", "blastproof_bock"),
+		spot_from_perk("yardmaster", "ledger_lager"),
+		# the rail yard's west wall (a second spot one door from the start: Second Wind's), the church square's west wall,
+		# hall 1's west wall, the wind tunnel's control-room wall, and the Great Hangar's two long walls
+		["bahnhof_w", "", Vector3(0.75, 0, 42.5), -90.0, {}], ["kirchplatz_w", "", Vector3(0.75, 0, 76.0), -90.0, {}],
+		["montage_w", "", Vector3(-59.25, 0, 87.25), -90.0, {}], ["windkanal_w", "", Vector3(0.75, 0, 107.75), -90.0, {}],
+		["halle_w", "", Vector3(-69.25, 0, 186.25), -90.0, {}], ["halle_e", "", Vector3(29.25, 0, 195.0), 90.0, {}],
+	]
 	crates = [
 		["Cellar", Vector3(7, 0, 3.2), 180.0, true, [Vector3(7, 0, 6), Vector3(7, 0, 12), Vector3(14, 0, 14)]],
 		["Shed", Vector3(34, 0, 58.6), 0.0, true, [Vector3(34, 0, 56), Vector3(30, 0, 54), Vector3(24, 0, 50)]],
@@ -1674,6 +1688,8 @@ func _finish_dressing() -> void:
 
 func merge_static_meshes() -> int:
 	_finish_dressing()
+	if not perk_spots.is_empty():
+		_spot_grid_build()   # T-274: the perk spots' audit sees the dressing before it is folded into batches
 	var pre: int = _premerge_dressing(40.0, 12.0)
 	return super.merge_static_meshes() + pre
 
