@@ -482,14 +482,34 @@ func _kaltenbrunn() -> void:
 	var c0: int = b.charges
 	var charged: bool = false
 	var t: float = 0.0
+	var blocked_n: int = 0
+	var frames_n: int = 0
+	var nav: RID = _map.get_world_3d().navigation_map
 	while t < 25.0 and not charged:
-		# keep the squad 12 m off its nose with a clear run so it chooses the charge itself
+		# keep the squad about 12 m off it with a clear run so it chooses the charge itself. The old fixed spot (home, or
+		# 6 m past it away from the horse) stands behind solid things in the spawn corner since T-272 (the yard's new
+		# zip line post and props), so: of a ring of spots 12 m round the horse, the first on the navmesh with a straight run.
+		if b.bstate == HomageBoss.B.MOVE and (frames_n % 30 == 0 or not b.call("_line_clear", _p()) or b.dist_to(_p()) < 8.0):
+			var placed: bool = false
+			for k: int in 24:
+				var dir: Vector3 = Vector3(cos(k * TAU / 24.0), 0.0, sin(k * TAU / 24.0))
+				var cand: Vector3 = b.global_position + dir * 12.0
+				var snapped: Vector3 = NavigationServer3D.map_get_closest_point(nav, cand)
+				if Vector2(snapped.x - cand.x, snapped.z - cand.z).length() > 0.5 or absf(snapped.y - b.global_position.y) > 0.6:
+					continue
+				_place(Vector3(snapped.x, b.global_position.y, snapped.z))
+				if b.call("_line_clear", _p()):
+					placed = true
+					break
+			if not placed:
+				blocked_n += 1
 		if b.bstate == HomageBoss.B.MOVE:
-			_place(home if b.global_position.distance_to(home) > 9.0 else home + (home - b.global_position).normalized() * 6.0)
+			frames_n += 1
 		await get_tree().physics_frame
 		t += get_physics_process_delta_time()
 		charged = b.charges > c0
 		_cull_horde()
+	print("[horse_boss] map01 charge: no clear spot found on %d placements (%d frames in MOVE)" % [blocked_n, frames_n])
 	_check(charged and b.tele_log.size() > n0 and str(b.tele_log[n0][0]) == "charge" and float(b.tele_log[n0][1]) >= 0.5, "it chooses the charge itself and telegraphs it (%d charges, %d before)" % [b.charges, c0])
 	_hit_on(false)
 	await _until(func() -> bool: return b.bstate == HomageBoss.B.MOVE or b.bstate == HomageBoss.B.STAGGER, 8.0)
