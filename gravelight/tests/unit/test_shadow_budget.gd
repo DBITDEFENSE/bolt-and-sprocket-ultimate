@@ -87,6 +87,29 @@ func test_node_keeps_nearest_and_lets_go_of_script_toggles() -> void:
 	assert_false(near.shadow_enabled, "a shadow its own script turned off is not turned back on")
 
 
+
+func test_compatibility_keeps_cube_omni_shadows() -> void:
+	# T-266 found it: Godot 4.7's Compatibility renderer has no dual-paraboloid omni shadow (an error per lamp, and the
+	# lamp casts none). There an omni keeps its cube on every level and costs 6 views.
+	var root: Node3D = Node3D.new()
+	add_child_autofree(root)
+	var cam: Camera3D = Camera3D.new()
+	root.add_child(cam)
+	cam.make_current()
+	var near: OmniLight3D = _lamp(root, "Near", Vector3(0, 0, 3))
+	var mid: OmniLight3D = _lamp(root, "Mid", Vector3(0, 0, 12))
+	var sb: ShadowBudget = ShadowBudget.new()
+	sb.map_root = root
+	sb.cube_only = true
+	sb.level = "medium"   # 8 views: one cube omni fits, not two
+	root.add_child(sb)
+	await wait_process_frames(3)
+	sb._rerank()
+	assert_eq(near.omni_shadow_mode, OmniLight3D.SHADOW_CUBE, "no dual paraboloid on Compatibility")
+	assert_true(near.shadow_enabled)
+	assert_false(mid.shadow_enabled, "a cube costs 6 views: the second does not fit 8")
+	assert_eq(int(sb.stats["views"]), 6)
+
 func test_individual_graphics_settings_survive_a_restart() -> void:
 	# T-258: gfx_* keys were saved but never read back (only the defaults' keys were), so every launch played the
 	# whole preset again.

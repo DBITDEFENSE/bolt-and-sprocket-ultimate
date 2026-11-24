@@ -46,6 +46,9 @@ const CAST_BASE: StringName = &"shadow_budget_cast"
 var map_root: Node
 var level: String = "high"
 var stats: Dictionary = {"lamps": 0, "on": 0, "views": 0}
+## The Compatibility renderer has no dual-paraboloid omni shadows (Godot 4.7 logs an error per lamp per frame and the
+## lamp casts none): there an omni keeps its cube and is priced at 6 views (T-266 found it; fixed 2026-11-24).
+var cube_only: bool = GLSettings.is_compat()
 var _lamps: Array[Light3D] = []
 var _suns: Array[DirectionalLight3D] = []
 var _small: Array = []   # [GeometryInstance3D, longest side (m)]: the casters small enough for a setting to drop
@@ -231,6 +234,8 @@ func _consider(n: Variant) -> void:   # (untyped: a deferred call may arrive aft
 
 
 func _omni_mode(l: Light3D) -> int:
+	if cube_only:
+		return OmniLight3D.SHADOW_CUBE
 	if bool(row(level)[2]):
 		return int(l.get_meta(MODE, OmniLight3D.SHADOW_CUBE))
 	return OmniLight3D.SHADOW_DUAL_PARABOLOID
@@ -254,7 +259,7 @@ func _rerank() -> void:
 	if cam == null:
 		return
 	var eye: Vector3 = cam.global_position
-	var cube: bool = bool(row(level)[2])
+	var cube: bool = cube_only or bool(row(level)[2])
 	var live: Array[Light3D] = []
 	var entries: Array = []
 	for l: Light3D in _lamps:

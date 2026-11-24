@@ -7,8 +7,9 @@ extends RefCounted
 ##   - directional shadows reach SHADOW_DIST_M (40 m) at most in 2 cascades (not 4), MSAA off,
 ##   - at most MAX_SHADOWED_PER_ZONE (4) shadowed omni / spot lights per zone (ZoneVolume; lights outside every zone
 ##     count as one more zone): the ones nearest the players' spawn keep their shadow, the rest light without one;
-##     the omni lights that keep one use dual-paraboloid shadows (2 shadow renders a frame instead of a cube's 6:
-##     the first census had Map 0 at 9.5k draw calls a frame on the Compatibility renderer, mostly shadow passes),
+##     the omni lights that keep one use cube shadows: the Compatibility renderer has no dual-paraboloid mode (T-139
+##     set it to save shadow renders; Godot 4.7 rejects it there and the lamp cast none, T-266), and ShadowBudget
+##     prices a cube at 6 views, so fewer omnis keep a shadow on this renderer,
 ##   - zombie animation LOD distances halved (anim.json lod: Zombie.anim_lod_scale),
 ##   - particle amounts halved (GPUParticles3D.amount_ratio; Effects' bursts through Effects.particles_k; the
 ##     snowfall's layers through Snowfall.density_scale).
@@ -80,7 +81,7 @@ static func apply(root: Node) -> Dictionary:
 		out["shadows_off"] = int(out["shadows_off"]) + r2.y
 		for l: Variant in by_zone[z]:
 			if l is OmniLight3D and (l as OmniLight3D).shadow_enabled:
-				(l as OmniLight3D).omni_shadow_mode = OmniLight3D.SHADOW_DUAL_PARABOLOID
+				(l as OmniLight3D).omni_shadow_mode = OmniLight3D.SHADOW_CUBE
 	return out
 
 

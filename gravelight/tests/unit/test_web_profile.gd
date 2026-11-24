@@ -138,7 +138,7 @@ func test_web_profile_caps_a_synthetic_scene() -> void:
 	assert_gt(env.fog_light_color.b, 0.0, "the fog keeps a colour from the volumetric fog")
 	assert_almost_eq((root.get_node("Sun") as DirectionalLight3D).directional_shadow_max_distance, 40.0, 0.001)
 	assert_eq((root.get_node("Sun") as DirectionalLight3D).directional_shadow_mode, DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS)
-	assert_eq((root.get_node("A0") as OmniLight3D).omni_shadow_mode, OmniLight3D.SHADOW_DUAL_PARABOLOID, "kept omni shadows: 2 renders, not 6")
+	assert_eq((root.get_node("A0") as OmniLight3D).omni_shadow_mode, OmniLight3D.SHADOW_CUBE, "kept omni shadows are cubes: Compatibility has no dual paraboloid")
 	for i: int in 7:
 		assert_eq((root.get_node("A%d" % i) as Light3D).shadow_enabled, i < 4, "zone A lamp %d (the 4 nearest keep it)" % i)
 	assert_true((root.get_node("B0") as Light3D).shadow_enabled, "zone B is under the cap")
