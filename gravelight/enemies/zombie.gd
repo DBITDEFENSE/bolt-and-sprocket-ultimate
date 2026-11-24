@@ -2571,10 +2571,18 @@ func _apply_look() -> void:
 		params = ZombieWardrobe.look_params(String(GameState.map_id), _variant, look)
 		if not params.is_empty():
 			_outfit = ZombieWardrobe.outfit_name(String(GameState.map_id), _variant, look)
+			# the map's rime was tuned on pale cloth; on a colour it reads as white mould (wear.frost_scale)
+			_frost_base *= ZombieWardrobe.frost_scale()
+			_set_inst("inst_frost", _frost_base)
 	if params.is_empty():
 		params = ZombieWardrobe.neutral_params()
 	for key: String in params.keys():
 		_set_inst(key, params[key])
+	# a gear piece made for this activation has none of the values _set_inst found unchanged
+	for g: MeshInstance3D in _gear:
+		if g.visible:
+			for key: String in _inst.keys():
+				g.set_instance_shader_parameter(key, _inst[key])
 
 
 var _outfit: String = ""

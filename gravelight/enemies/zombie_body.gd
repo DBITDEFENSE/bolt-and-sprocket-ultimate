@@ -735,13 +735,14 @@ void fragment() {
 		float ph = inst_wear.z * 6.2831;
 		float blob = sin(v_pos.x * 8.0 + ph) * sin(v_pos.y * 6.0 + ph * 1.7) + 0.6 * sin(v_pos.z * 9.0 - ph + v_pos.y * 4.0);
 		float chest = 1.0 - smoothstep(0.0, 0.45, abs(v_pos.y - 1.25));
-		float thr = 1.2 - 0.6 * inst_wear.x;
-		float st = smoothstep(thr, thr + 0.1, 0.5 + 0.3 * blob + (n - 0.86) * 1.4 + 0.25 * chest);
+		float thr = 1.22 - 0.6 * inst_wear.x;
+		float st = smoothstep(thr, thr + 0.07, 0.5 + 0.42 * blob + (n - 0.86) * 0.45 + 0.3 * chest);
 		base = mix(base, stain_color * mix(0.7, 1.2, n), st * 0.88);
 		material_roughness = mix(material_roughness, 0.42, st * 0.5);
 	}
 	float up = clamp(v_nrm.y, 0.0, 1.0);
-	float frost = inst_frost * smoothstep(0.35, 0.9, n * 0.55 + up * 0.55) * (1.0 - step(0.01, emit));
+	// (T-269: a gear piece's metal takes no rime: a helmet is on this shader now and was not frosted before)
+	float frost = inst_frost * smoothstep(0.35, 0.9, n * 0.55 + up * 0.55) * (1.0 - step(0.01, emit)) * (1.0 - step(63.5, v_cus.a) * step(0.2, v_cus.g));
 	base = mix(base, vec3(0.86, 0.9, 0.96), frost);
 	base = mix(base, vec3(0.03, 0.02, 0.02), clamp(inst_char * smoothstep(0.15, 0.75, n + inst_char * 0.4), 0.0, 1.0) * (1.0 - step(0.01, emit)));
 	ALBEDO = base;
@@ -1900,7 +1901,9 @@ static func zombie_gear_mesh(piece: String, female: bool = false) -> Array:
 			kept.append(si)
 			continue
 		var look: Array = _look("_", kname)
-		var col: Color = look[0]
+		# gear_mesh's legacy materials take the key's colour as sRGB (albedo_color); a vertex colour on the kit
+		# shader is linear. Converted here, so a helmet or a strap is as dark as it was.
+		var col: Color = (look[0] as Color).srgb_to_linear()
 		var code: float = float(int(DETAIL.get(kname, 0)) + 8 * ZombieWardrobe.slot_of("", kname) + 64)
 		var a: Array = src.surface_get_arrays(si)
 		var v: PackedVector3Array = a[Mesh.ARRAY_VERTEX]

@@ -11,13 +11,14 @@
   },
   "light": {
     "_doc": "Readability in the dark, in the zombie materials only (no map light changes): min_light = the share of its own colour a zombie shows with no light on it at all; rim = a soft edge light tinted by the cloth / skin under it (rim_power: how tight to the silhouette). `-- --zombie-look=norim` switches both off for an A/B.",
-    "min_light": 0.045,
-    "rim": 0.22,
+    "min_light": 0.11,
+    "rim": 0.5,
     "rim_power": 2.6,
     "rim_color": "#aab6d0"
   },
   "wear": {
-    "_doc": "On top of the colour: blood = the range of the per-zombie stain amount on clothes, mouth and hands (0..1); stain_color the dried blood; dead = the range of how sunken the sockets, mouth and hands are and how dark the veins under the skin.",
+    "_doc": "On top of the colour: blood = the range of the per-zombie stain amount on clothes, mouth and hands (0..1); stain_color the dried blood; dead = the range of how sunken the sockets, mouth and hands are and how dark the veins under the skin; frost_scale = how much of the map's standing rime (anim.json variation.frost_by_map, tuned on the old pale cloth) a dressed walker keeps: on a colour the full amount reads as white mould. A weapon's freeze is not scaled.",
+    "frost_scale": 0.45,
     "blood": [0.15, 0.9],
     "stain_color": "#4a0d0b",
     "dead": [0.55, 1.0],
@@ -29,7 +30,7 @@
     "pallid": {"weight": 0.34, "tone": [1.2, 1.1, 0.9], "mottle": 0.3, "mottle_color": "#5b4a63"},
     "grey_green": {"weight": 0.3, "tone": [0.86, 1.04, 0.66], "mottle": 0.45, "mottle_color": "#3f4a3a"},
     "bruised": {"weight": 0.22, "tone": [1.0, 0.8, 1.02], "mottle": 0.8, "mottle_color": "#4a2f5c"},
-    "ashen": {"weight": 0.14, "tone": [0.84, 0.94, 1.08], "mottle": 0.5, "mottle_color": "#39405a"}
+    "ashen": {"weight": 0.14, "tone": [0.86, 0.95, 1.02], "mottle": 0.5, "mottle_color": "#39405a"}
   },
   "outfits": {
     "farmhand_ochre": {"a": "#b98d3a", "b": "#5c4029", "c": "#a8332a"},

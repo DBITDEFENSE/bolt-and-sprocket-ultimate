@@ -235,7 +235,7 @@ func _clear() -> void:
 
 
 func _crowd_scene(name: String, centre: Vector3, cam: Vector3, hour: float) -> void:
-	var dc: Node = get_tree().root.get_node_or_null("DayCycle")
+	var dc: Node = _map.find_child("DayCycle", true, false)
 	if dc != null and hour >= 0.0:
 		dc.call("hold_hour", hour)
 		await _skip(1.5)
@@ -355,6 +355,12 @@ func _special_scene() -> void:
 func _gallery_scene() -> void:
 	if not ClassDB.class_exists("Node") or not ResourceLoader.exists("res://gravelight/enemies/zombie_wardrobe.gd"):
 		return
+	var dressed: bool = false   # (a build before T-269 has no outfits to show)
+	for m: Dictionary in (load("res://gravelight/enemies/zombie.gd") as Script).get_script_method_list():
+		if str(m["name"]) == "outfit_name":
+			dressed = true
+	if not dressed:
+		return
 	var ward: Object = load("res://gravelight/enemies/zombie_wardrobe.gd") as Object
 	var cfg: Dictionary = ward.call("cfg")
 	if not bool(ward.call("enabled")):
@@ -372,7 +378,7 @@ func _gallery_scene() -> void:
 	for o: Variant in (cfg["outfits"] as Dictionary).keys():
 		if kit_of.has(o):
 			names.append(str(o))
-	var dc: Node = get_tree().root.get_node_or_null("DayCycle")
+	var dc: Node = _map.find_child("DayCycle", true, false)
 	if dc != null:
 		dc.call("hold_hour", 12.0)
 		await _skip(1.5)

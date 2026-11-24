@@ -176,6 +176,12 @@ static func look_params(map_id: String, kit: String, look: int) -> Dictionary:
 	return out
 
 
+## How much of the map's standing rime (anim.json variation.frost_by_map) a dressed walker keeps. A weapon's freeze is
+## not scaled.
+static func frost_scale() -> float:
+	return clampf(float((cfg().get("wear", {}) as Dictionary).get("frost_scale", 1.0)), 0.0, 1.0)
+
+
 ## The parameters that undo a look (a pooled zombie that becomes a special, a risen person in their own clothes).
 static func neutral_params() -> Dictionary:
 	return {"inst_cloth": Color(0, 0, 0, 0), "inst_cloth2": Color(0, 0, 0, 0), "inst_accent": Color(0, 0, 0, 0),

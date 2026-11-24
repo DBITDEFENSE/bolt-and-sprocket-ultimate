@@ -10,6 +10,8 @@ pixels are the ones that differ from the empty view; over them this prints
   hue_bins                how many of twelve 30-degree hue bins hold at least 4 % of the coloured pixels
   hue_spread              circular standard deviation of the coloured pixels' hue, degrees (0 = one hue)
   value_mean              mean HSV value (brightness) of the crowd
+  ab_spread               colour variety: the standard deviation of the crowd's pixels in the CIELAB a*b* plane (a
+                          crowd in one colour under a coloured lamp is saturated but has a small spread)
 
 and writes stats.json into the directory. Usage:
   python -I tools/zombie_look_stats.py docs/captures/t269/before/map00_crossroads [more dirs...]
@@ -20,7 +22,7 @@ import os
 import sys
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageFilter
 
 
 def hsv(rgb):
@@ -39,12 +41,29 @@ def hsv(rgb):
     return h * 360.0, s, mx
 
 
+def lab_ab(rgb):
+    """CIELAB a*, b* of sRGB pixels (D65)."""
+    lin = np.where(rgb <= 0.04045, rgb / 12.92, ((rgb + 0.055) / 1.055) ** 2.4)
+    x = (lin @ np.array([0.4124, 0.3576, 0.1805])) / 0.95047
+    y = lin @ np.array([0.2126, 0.7152, 0.0722])
+    z = (lin @ np.array([0.0193, 0.1192, 0.9505])) / 1.08883
+    f = lambda t: np.where(t > 0.008856, np.cbrt(t), 7.787 * t + 16.0 / 116.0)
+    return 500.0 * (f(x) - f(y)), 200.0 * (f(y) - f(z))
+
+
 def measure(shot, bg):
-    a = np.asarray(Image.open(shot).convert("RGB")).astype(np.float64) / 255.0
-    b = np.asarray(Image.open(bg).convert("RGB")).astype(np.float64) / 255.0
-    if a.shape != b.shape:
+    ia = Image.open(shot).convert("RGB")
+    ib = Image.open(bg).convert("RGB")
+    if ia.size != ib.size:
         return None
-    mask = np.abs(a - b).max(-1) > 0.045
+    a = np.asarray(ia).astype(np.float64) / 255.0
+    # the film grain is new every frame: the mask comes from blurred copies (and is eroded by the blur's radius, so
+    # the statistics are of the figures' inside, not of their edges against the room); the colour from the sharp one
+    fa = np.asarray(ia.filter(ImageFilter.GaussianBlur(3))).astype(np.float64) / 255.0
+    fb = np.asarray(ib.filter(ImageFilter.GaussianBlur(3))).astype(np.float64) / 255.0
+    raw = (np.abs(fa - fb).max(-1) > 0.06).astype(np.uint8) * 255
+    mask = np.asarray(Image.fromarray(raw).filter(ImageFilter.MinFilter(5))) > 0
+    Image.fromarray((mask * 255).astype(np.uint8)).save(shot[:-4] + "_mask.png")
     n = int(mask.sum())
     if n < 500:
         return {"pixels": n}
@@ -59,6 +78,10 @@ def measure(shot, bg):
         "coloured": round(float(col.mean()), 4),
         "value_mean": round(float(v.mean()), 4),
     }
+    # colour variety: how far the crowd's pixels spread in the a*b* plane. A lamp that tints the whole crowd orange
+    # raises the saturation of a grey crowd too, but moves every pixel the same way: it does not raise this.
+    la, lb = lab_ab(a[mask])
+    out["ab_spread"] = round(float(math.sqrt(la.var() + lb.var())), 2)
     if col.sum() >= 50:
         hc = h[col]
         hist = np.histogram(hc, bins=12, range=(0, 360))[0] / float(len(hc))
@@ -95,8 +118,8 @@ def main():
             if "sat_mean" not in m:
                 print("  %-16s (crowd not found: %d pixels differ)" % (k, m["pixels"]))
                 continue
-            print("  %-16s sat mean %.3f median %.3f p90 %.3f | coloured %4.1f %% | hue bins %2d spread %5.1f deg | value %.3f | %d px"
-                  % (k, m["sat_mean"], m["sat_median"], m["sat_p90"], 100 * m["coloured"], m["hue_bins"], m["hue_spread"], m["value_mean"], m["pixels"]))
+            print("  %-16s sat mean %.3f median %.3f p90 %.3f | coloured %4.1f %% | hue bins %2d spread %5.1f deg | ab spread %5.2f | value %.3f | %d px"
+                  % (k, m["sat_mean"], m["sat_median"], m["sat_p90"], 100 * m["coloured"], m["hue_bins"], m["hue_spread"], m["ab_spread"], m["value_mean"], m["pixels"]))
     return 0
 
 
