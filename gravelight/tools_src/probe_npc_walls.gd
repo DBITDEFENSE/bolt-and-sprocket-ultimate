@@ -406,9 +406,9 @@ func _clearance_hit(at: Vector3) -> bool:
 
 
 ## Samples a nav path every 0.25 m and returns the first point where the walker (0.3 m round) would be in a wall.
-func path_clip(from: Vector3, to: Vector3) -> String:
+func path_clip(from: Vector3, to: Vector3, layers: int = 1) -> String:
 	var nm: RID = map.get_world_3d().navigation_map
-	var path: PackedVector3Array = NavigationServer3D.map_get_path(nm, from, to, true)
+	var path: PackedVector3Array = NavigationServer3D.map_get_path(nm, from, to, true, layers)
 	if path.size() < 2:
 		return ""
 	path.append(to)
@@ -431,7 +431,7 @@ func path_clip(from: Vector3, to: Vector3) -> String:
 func _static_checks() -> void:
 	var ss: Node = map.find_child("InnSurvivors", true, false)
 	if ss != null:
-		var cfg: Dictionary = InnSurvivors.load_cfg()
+		var cfg: Dictionary = InnSurvivors.load_cfg(InnSurvivors.data_path_for(map.map_id))   # (T-273: the map's own file; Map 0 resolves to the one it always read)
 		for row: Variant in cfg.get("survivors", []):
 			var r: Dictionary = row
 			var hide: Array = r.get("hide", [0, 0, 0])
@@ -442,7 +442,7 @@ func _static_checks() -> void:
 				var m: String = spot_issue(str(pair[0]), pair[1])
 				if m != "":
 					static_issues.append(m)
-			var clip: String = path_clip(h, po)
+			var clip: String = path_clip(h, po, int(cfg.get("nav_layers", 1)))   # (T-273: the layers the survivors walk on)
 			if clip != "":
 				static_issues.append("survivor %s %s" % [r["id"], clip])
 	_stand_checks()

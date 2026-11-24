@@ -74,7 +74,7 @@ func _ready() -> void:
 		add_child(s)
 		s.hp = float((cfg.get("ally", {}) as Dictionary).get("hidden_hp", 90.0))
 		survivors[s.sid] = s
-		PeopleBodies.warm_risen(s.sid, str(r.get("rise_variant", "villager")), bool(r.get("female", false)))   # (not in the tick they rise)
+		PeopleBodies.warm_risen(str(r.get("person", s.sid)), str(r.get("rise_variant", "villager")), bool(r.get("female", false)))   # (not in the tick they rise; T-273: a row's "person" body, else its id)
 	GLBus.door_opened.connect(_on_door_opened)
 	GLBus.weapon_fired.connect(_on_weapon_fired)
 
@@ -221,7 +221,7 @@ func _rise(s: InnSurvivor) -> void:
 		return
 	z.global_position = at
 	z.rotation.y = yaw
-	PeopleBodies.dress_risen(z, s.sid)   # T-092: the same person gets up
+	PeopleBodies.dress_risen(z, str(s.row.get("person", s.sid)))   # T-092: the same person gets up (T-273: in the body the row names)
 	z.rise_from_floor(float(ally().get("rise_getup_seconds", 2.4)))
 	s.risen_zombie = z
 	print("[survivors] %s rose" % s.sid)

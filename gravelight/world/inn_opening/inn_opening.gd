@@ -217,7 +217,7 @@ func _ready() -> void:
 		pb.enable_life()   # T-246: the patrons look up at the squad, start at a shot; outside, their breath shows
 		patrons[str(row["id"])] = pb
 		if str(row.get("fate", "")) in ["caught", "bitten"] and str(row.get("rise_variant", "")) != "":
-			PeopleBodies.warm_risen(str(row["id"]), str(row["rise_variant"]), bool(row.get("female", false)))   # (not in the tick they rise)
+			PeopleBodies.warm_risen(str(row.get("person", row["id"])), str(row["rise_variant"]), bool(row.get("female", false)))   # (not in the tick they rise; T-273: a row's "person", the people.json body it wears, else its id)
 		_st[str(row["id"])] = {"row": row, "stage": "idle", "pts": [], "i": 0, "exit": float(exits.get(str(row["id"]), 0.0)), "t0": 0.0}
 	GLBus.round_started.connect(_on_round_started)
 	if card_wanted(Campaign.active, cfg.get("title_card", {})):
@@ -541,11 +541,11 @@ func _step_patron(id: String, delta: float) -> void:
 				if row.has("unbar") and door != null and not door.is_open:
 					s["stage"] = "unbar"
 					pb.set_pose(&"push")
-					_face_point(pb, Vector3(pb.global_position.x, 0, -1.0))
+					_face_point(pb, _door_face(pb))
 				elif str(row.get("fate", "")) == "bitten":
 					s["stage"] = "hold"
 					pb.set_pose(&"push")
-					_face_point(pb, Vector3(pb.global_position.x, 0, -1.0))
+					_face_point(pb, _door_face(pb))
 				else:
 					s["stage"] = "wait"
 					pb.set_pose(&"panic")
@@ -642,6 +642,15 @@ func _follow(pb: PatronBody, s: Dictionary, speed: float, delta: float) -> bool:
 	return i >= pts.size()
 
 
+## Where a patron at the door faces while working it: Map 0's front door is in the taproom's north wall, so north
+## (the default). T-273: `front_door.face_door` true faces the door node itself (a door in any wall; Totenhafen's
+## cannery side door is in an east wall).
+func _door_face(pb: PatronBody) -> Vector3:
+	if door != null and bool((cfg.get("front_door", {}) as Dictionary).get("face_door", false)):
+		return door.global_position
+	return Vector3(pb.global_position.x, 0, -1.0)
+
+
 func _face_point(pb: PatronBody, p: Vector3) -> void:
 	var to: Vector3 = p - pb.global_position
 	if Vector2(to.x, to.z).length() > 0.01:
@@ -676,7 +685,7 @@ func _rise(id: String, s: Dictionary, pb: PatronBody) -> void:
 			return
 		z.global_position = pb.global_position
 		z.rotation.y = pb.rotation.y
-		PeopleBodies.dress_risen(z, id)   # T-092: the same person gets up
+		PeopleBodies.dress_risen(z, str(row.get("person", id)))   # T-092: the same person gets up (T-273: in the body the row names)
 		z.rise_from_floor(float(cfg.get("rise_getup_seconds", 2.4)), _barricade(str(row.get("rise_window", ""))))
 		risen[id] = z
 	pb.catchable = false
