@@ -11,7 +11,8 @@ var _reader: Label
 
 
 func _init() -> void:
-	super._init("Dossiers")
+	super._init("Characters")
+	subtitle = "Who the survivors are. Playing a character levels them up and unlocks the next page of their file."
 
 
 func build() -> void:
@@ -34,7 +35,7 @@ func build() -> void:
 		var hi: int = int(th[lvl])
 		frac = float(xp - lo) / float(maxi(1, hi - lo))
 		next_txt = "%d / %d XP to level %d" % [xp - lo, hi - lo, lvl + 1]
-	content.add_child(MenuKit.label("%s  ·  Dossier level %d  ·  %s" % [NAMES[_char], lvl, next_txt], 22, MenuKit.GOLD))
+	content.add_child(MenuKit.label("%s  ·  Character level %d  ·  %s" % [NAMES[_char], lvl, next_txt], 22, MenuKit.GOLD))
 	content.add_child(MenuKit.bar(frac, 520, MenuKit.VIOLET))
 	var split: HBoxContainer = HBoxContainer.new()
 	split.add_theme_constant_override("separation", 24)
@@ -48,7 +49,7 @@ func build() -> void:
 	split.add_child(_reader)
 	for page: Dictionary in ProfileSave.dossier_pages(StringName(_char)):
 		var open: bool = int(page["level"]) <= lvl
-		var title: String = "%d. %s" % [page["level"], page["title"]] if open else "%d. [locked: dossier level %d]" % [page["level"], page["level"]]
+		var title: String = "%d. %s" % [page["level"], page["title"]] if open else "%d. [locked: character level %d]" % [page["level"], page["level"]]
 		var b: Button = MenuKit.button(title, _show.bind(page, open), 18)
 		b.custom_minimum_size = Vector2(0, 36)
 		b.focus_entered.connect(_show.bind(page, open))
@@ -64,4 +65,4 @@ func _show(page: Dictionary, open: bool) -> void:
 	if open:
 		_reader.text = "%s\n\n%s" % [page["title"], page["text"]]
 	else:
-		_reader.text = ("Fight alongside Jakub to raise his dossier." if _char == "jakub" else "Play as %s to raise this dossier." % NAMES[_char])
+		_reader.text = ("Fight alongside Jakub to raise his level." if _char == "jakub" else "Play as %s to raise their level." % NAMES[_char])

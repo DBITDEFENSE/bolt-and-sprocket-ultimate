@@ -22,7 +22,7 @@ extends Node3D
 ## and no patron is mid-line; then the cue (a pounding at the window and the door, Kubiak's "What was that?") plays
 ## on every peer and round 1 starts `look.cue_lead` seconds later. The patrons chat at the tables meanwhile.
 ##
-## The title card (T-184): while that settled view runs, the opening is framed like a film's first shot without taking
+## The title card (T-184; since T-267 in the campaign only, `card_wanted`): while that settled view runs, the opening is framed like a film's first shot without taking
 ## anything from the player: the letterbox slides in, the HUD steps aside, the place / where / when card is typed in
 ## (data `title_card`), and all of it slides away at `until` or at the cue, whichever is first. The player keeps their
 ## hands, the camera and every timing; nothing here touches the patrons, the door or round 1.
@@ -80,6 +80,14 @@ static func should_play(map_id: StringName, round_number: int, current_round: in
 		return false
 	var r: int = int(c.get("round", 1))
 	return round_number == r and current_round == r
+
+
+## T-267 (the owner: "cutscenes are for the campaign"): the film framing of the first view (the letterbox, the HUD
+## stepping aside, the typed place card) belongs to the campaign's first map only. A Solo or Co-op match on the inn
+## starts with the HUD up and the map's plain intro banner, like every other map. The opening itself (the patrons,
+## the cue, round 1's timing) is the same either way.
+static func card_wanted(campaign_active: bool, title_card: Dictionary) -> bool:
+	return campaign_active and not title_card.is_empty()
 
 
 ## T-076: may the cue play (and round 1 start)? After `min_seconds` of settled view, once the player faces the door
@@ -198,7 +206,7 @@ func _ready() -> void:
 			PeopleBodies.warm_risen(str(row["id"]), str(row["rise_variant"]), bool(row.get("female", false)))   # (not in the tick they rise)
 		_st[str(row["id"])] = {"row": row, "stage": "idle", "pts": [], "i": 0, "exit": float(exits.get(str(row["id"]), 0.0)), "t0": 0.0}
 	GLBus.round_started.connect(_on_round_started)
-	if not (cfg.get("title_card", {}) as Dictionary).is_empty():
+	if card_wanted(Campaign.active, cfg.get("title_card", {})):
 		_card_t = 0.0
 
 

@@ -149,9 +149,9 @@ func test_main_menu_columns() -> void:
 	var mm: Control = (load("res://gravelight/ui/main_menu.tscn") as PackedScene).instantiate() as Control
 	add_child_autofree(mm)
 	await wait_frames(3)
-	var want: Dictionary = {"main": ["PLAY", "MUSTER", "ARCHIVE", "EXTRAS", "SETTINGS", "QUIT"],
-		"play": ["SOLO", "ONLINE", "CAMPAIGN", "BACK"],
-		"extras": ["CUTSCENES", "DOSSIERS", "SERVICE RECORD", "CHALLENGES", "CREDITS", "TEST RANGE", "BACK"]}
+	var want: Dictionary = {"main": ["PLAY", "LOADOUT", "COLLECTION", "EXTRAS", "SETTINGS", "QUIT"],
+		"play": ["SOLO", "CO-OP", "CAMPAIGN", "BACK"],
+		"extras": ["CUTSCENES", "CHARACTERS", "STATS", "CHALLENGES", "CREDITS", "SHOOTING RANGE", "BACK"]}
 	for col: String in want.keys():
 		mm.call("show_column", col, false)
 		await wait_frames(1)

@@ -223,7 +223,7 @@ func _build_map_page(page: Control) -> void:
 	var v: VBoxContainer = VBoxContainer.new()
 	v.add_theme_constant_override("separation", 10)
 	ph.add_child(v)
-	v.add_child(_ink_label("FIELD MAP", 30, ObjectivesView.LEDGER_RED, true))
+	v.add_child(_ink_label("MAP", 30, ObjectivesView.LEDGER_RED, true))
 	_map_info = _ink_label("", 20, ObjectivesView.LEDGER_INK)
 	_map_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	v.add_child(_map_info)
