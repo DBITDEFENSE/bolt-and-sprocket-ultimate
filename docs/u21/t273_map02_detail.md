@@ -45,3 +45,34 @@ Renders (WSL + Xvfb, Compatibility renderer, 1280x720), looked at: `docs/capture
 `04_boat_stage_noon`. At night the boat is a silhouette with its riding lamps against the sky; at noon the grey hull,
 the number, the bridge and the funnel read from the parapet. Seen and not mine: at noon the storm card on the north
 horizon reads as a black band (the T-259 day cycle's), and the Compatibility sea is pale.
+
+## 2. The catwalk ladders and the signal balcony's zip line
+
+| What | Where | Verified by |
+|---|---|---|
+| West catwalk ladder (iron rungs against the catwalk's edge, stayed to its underside) | foot `[-17.415, 0, 55.5]` on pier 0, head `[-19.0, 4.0, 55.5]`; line `[-17.415, 55.5]` | smoke_ladders: up and down, ends on the navmesh; a zombie on pier 0 came up it to a player on the catwalk in 9 s |
+| North catwalk ladder | foot `[15.0, 0, 35.585]` on the north apron, head `[15.0, 4.0, 34.0]` | smoke_ladders |
+| East catwalk ladder | foot `[49.415, 0, 72.0]` on the east apron, head `[51.0, 4.0, 72.0]` | smoke_ladders |
+| The zombies' climb links | `Ladder_CatwalkW/N/E` on the same lines, now ladder links (`line`, `bidirectional`, `drop`: one at a time up the rungs, they drop back down) | test_map02_detail, smoke_ladders |
+| The signal balcony | a grated platform x 46.8..50.4, z 38.15..40.65, 7 m up, outside a new door (x 47.6..49.6) in the signal tower's south wall; the window beside it is shorter (x 44..46.8). Rails on its three open sides; zone `G_SIGNAL` (a new zone box), a nav link through the door | test_map02_detail (balcony on the baked navmesh, in G_SIGNAL); smoke_ladders |
+| `SignalZip` | anchor `[48.6, 9.0, 40.8]` (2 m over the balcony, a step outside its south rail), cable to its post at `[40.0, 0, 49.6]` (2.75 m), set down at `[40.629, 0, 48.956]` on the east apron between the pump stair and the crane office: 12.3 m, 27 degrees, speed cap 7.5 m/s, a 3.2 s ride | smoke_ladders: nothing in a hanging rider's way, the bar reached from the balcony, the ride, the landing on the navmesh, the rider stands free; test_map02_detail: the slope, the brake, the set-down, the spawns (none within 3.5 m) and the tide's live cable (4.7 m off) |
+
+Choices:
+- **Doors.** The line lands in the Pen Hall; the tower is reached only through the Pen Hall (its door costs 2500 and
+  wants the power), so the line skips nothing and has no chain.
+- **Rails closed.** As on Map 0's tower (T-268) the catwalks' and the balcony's rails stay closed; the climb carries
+  a body over them.
+- **Moved links.** `Ladder_CatwalkE` sat at z 60, the foot of the east stair: it is at z 72 now, where the ladder is
+  drawn. `Ladder_CatwalkN` x 17 -> 15 and `Ladder_CatwalkW` z 60 -> 55.5: the tide's catwalk spawns stand at
+  `(20, 4, 34)` and `(-19, 4, 60)` (the old west head itself); every head is 4 m or more from a spawn now.
+- **One zip line, not two.** A line from a 4 m catwalk is 6.7 m long at 26 degrees: not worth a post. The balcony is
+  the only 7 m floor with open hall below it.
+- **The shelves** in the signal room moved west off the new door (`_dress_tower`).
+
+Cost (scene census, after item 1 -> after item 2): meshes 1233 -> 1241 (+8), triangles 395,587 -> 403,555 (+7,968;
+in shadow casters +6,468), lights unchanged (the post and arm lamps are emissive only), collision shapes 1288 ->
+1295 (+7: the balcony floor, three rails, the post, the wall's new pieces). The navmesh changed only in the signal
+tower (the door, the balcony) and under the new zip post.
+
+Renders, looked at: `docs/captures/t273/05_ladder_n_night` .. `12_ladder_w_noon` (each ladder from its floor, the
+balcony from the landing, down the line from the balcony, the door from inside the signal room).

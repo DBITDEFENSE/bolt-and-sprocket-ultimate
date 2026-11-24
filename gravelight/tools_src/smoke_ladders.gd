@@ -123,8 +123,8 @@ func _zip_path_hit(zip: ZipLine) -> String:
 		for hit: Dictionary in _p.get_world_3d().direct_space_state.intersect_shape(q, 6):
 			var col: Node = hit.get("collider")
 			var nm: String = String(col.name) if col != null else "?"
-			if nm.begins_with("Tower") or nm.begins_with("ZipPost"):
-				continue
+			if nm.begins_with("Tower") or nm.begins_with("ZipPost") or nm.begins_with("Rail_Balcony") or nm == "BalconyFloor":
+				continue   # (T-273: Totenhafen's signal balcony is the anchor's own platform, like Map 0's tower)
 			return "%s at %s" % [nm, str(at.snapped(Vector3(0.1, 0.1, 0.1)))]
 	return ""
 
@@ -311,6 +311,51 @@ func _zombies_and_the_tower(top: Vector3, landing: Vector3) -> void:
 	await _secs(0.5)
 
 
+## T-273: Totenhafen's catwalk ladders (up and down each, on the zombies' climb links' lines), the signal balcony's zip
+## line (the rider's way clear, the bar reached from the balcony, the ride, the landing on the east apron), and a
+## zombie that climbs the west catwalk's ladder to a player up there.
+func _map02_t273(links: Node) -> void:
+	GameState.open_zone(&"G_SIGNAL")
+	await _frames(3)
+	for side: String in ["W", "N", "E"]:
+		var up: LadderClimb = _ladder("Catwalk%s_Up" % side)
+		var down: LadderClimb = _ladder("Catwalk%s_Down" % side)
+		var link: NavigationLink3D = links.get_node_or_null("Ladder_Catwalk" + side) as NavigationLink3D if links != null else null
+		_check(up != null and down != null, "map02: the %s catwalk's two LadderClimbs are in the scene" % side)
+		_check(link != null and link.has_meta(ClimbLink.LINE) and up != null and (link.get_meta(ClimbLink.LINE) as Vector2).distance_to(up.line_pos()) < 0.05,
+			"map02: the %s catwalk's climb link is a ladder on the players' line" % side)
+		if up == null or down == null:
+			continue
+		_check(_on_nav(up.global_position, 0.6) and _on_nav(down.global_position, 0.6), "map02 %s: both ends stand on the navmesh" % side)
+		await _climb_and_check(up, "catwalk %s up" % side)
+		await _climb_and_check(down, "catwalk %s down" % side)
+	var zip: ZipLine = _zip("SignalZip")
+	_check(zip != null, "map02: the signal balcony's zip line is in the scene")
+	if zip != null:
+		var floor_y: float = 7.0
+		var m: Vector3 = zip.mount_pos(floor_y)
+		var stand: Vector3 = m + Vector3(0, 0, -0.55)   # back from the anchor toward the tower's door
+		await _ride_and_check(zip, stand)
+		var zone: String = String(ZoneVolume.zone_at(get_tree(), zip.to_pos + Vector3.UP * 0.6))
+		_check(zone == "D_PENHALL", "zip SignalZip: it lands in the Pen Hall, the zone the tower is reached through (%s)" % zone)
+		_check(String(ZoneVolume.zone_at(get_tree(), stand + Vector3.UP * 0.6)) == "G_SIGNAL", "zip SignalZip: the balcony is the signal tower's zone")
+	# a zombie climbs the west catwalk's ladder to a player on the catwalk
+	var lw: NavigationLink3D = links.get_node_or_null("Ladder_CatwalkW") as NavigationLink3D if links != null else null
+	if lw != null:
+		var dir: ZombieDirector = _map.get("director")
+		await _stand(Vector3(-19.0, 4.0, 63.0))
+		var z1: Zombie = _raise(lw.start_position + Vector3(2.0, 0, 3.0))
+		var climbed: bool = false
+		var t: float = 0.0
+		while z1 != null and t < 45.0 and not (climbed and absf(z1.global_position.y - 4.0) < 0.5 and z1.state != Zombie.State.CLIMB_LINK):
+			await _frames(6)
+			t += 0.1
+			climbed = climbed or z1.on_rungs(lw)
+		_check(climbed and z1 != null and absf(z1.global_position.y - 4.0) < 0.5, "map02: a zombie on pier 0 came up the west catwalk's ladder to the player (on the catwalk after %.0f s)" % t)
+		dir.kill_all(true)
+		await _secs(0.5)
+
+
 func _run() -> void:
 	await _load("res://gravelight/maps/map00_crossroads/map00.tscn")
 	# the watchtower (T-229, T-268): two ladders in stages, three zip lines from the top
@@ -378,6 +423,7 @@ func _run() -> void:
 		await _climb_and_check(edown, "escape hatch down")
 	var links2: Node = _map.get_node_or_null("ClimbLinks")
 	_check(links2 != null and links2.has_node("Ladder_EngineHatch"), "map02: the zombies' climb link for the hatch exists")
+	await _map02_t273(links2)
 	print("[ladders] RESULT %s (%d failed)" % ["PASS" if _fails.is_empty() else "FAIL", _fails.size()])
 	for f: String in _fails:
 		print("[ladders]   - " + f)

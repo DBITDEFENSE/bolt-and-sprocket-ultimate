@@ -62,6 +62,7 @@ const ZONE_BOXES: Array = [
 	["F_LOWERPENS", Vector3(32, -4.0, 50), Vector3(52, -0.3, 84)],
 	["F_LOWERPENS", Vector3(46, -4.0, 42), Vector3(52, 2.5, 50)],    # the pump stair
 	["G_SIGNAL", Vector3(29, 5.95, 33), Vector3(52, 12, 38)],
+	["G_SIGNAL", Vector3(46.6, 6.5, 38), Vector3(50.6, 10.3, 40.9)],   # T-273: the signal balcony
 ]
 ## Navigation links through doorways and across box seams: [from, to, zone whose layer gates the link].
 const LINKS: Array = [
@@ -85,6 +86,7 @@ const LINKS: Array = [
 	[Vector3(49, 0, 41.6), Vector3(49, 0, 42.4), "F_LOWERPENS"],
 	[Vector3(49, LY, 49.6), Vector3(49, LY, 50.4), "F_LOWERPENS"],
 	[Vector3(36.3, 5.82, 34), Vector3(37.6, 6.15, 34), "G_SIGNAL"],
+	[Vector3(48.6, TY, 37.3), Vector3(48.6, TY, 39.0), "G_SIGNAL"],   # T-273: through the balcony door
 ]
 
 ## Windows: [id, zone, floor pos on the wall line, inward yaw (Basis(UP, yaw) * +Z points into the room)].
@@ -168,6 +170,24 @@ const STOVES: Array = [["Workshop", Vector3(61.0, 0, 27.8), 90.0], ["WorkshopNW"
 ## other maps): [floor position against the wall, yaw so local -Z faces the quay]. On the harbourmaster's hut's
 ## south face, east of its window and sign, facing the spawn.
 const ARMORERS_BENCH: Array = [Vector3(16.3, 0, 17.0 + T * 0.5 + 0.01), 180.0]
+## T-273 (the map detail pass): the signal balcony, a grated platform outside a new door in the tower's south wall,
+## 7 m over the hall's east apron, closed by rails on its three open sides (x BALC_X0..BALC_X1, z 38.15..BALC_Z1),
+## and its zip line: [name, the cable's top (2 m over the balcony, a step outside its south rail), the landing post's
+## foot on the east apron]. The same numbers are in map02.json "ziplines" (test_map02_detail holds them together).
+const BALC_X0: float = 46.8
+const BALC_X1: float = 50.4
+const BALC_Z1: float = 40.65
+const BALC_DOOR_X0: float = 47.6
+const BALC_DOOR_X1: float = 49.6
+const ZIP_POST_H: float = 2.75
+const SIGNAL_ZIP: Array = ["SignalZip", Vector3(48.6, TY + 2.0, BALC_Z1 + 0.15), Vector3(40.0, 0.0, 49.6)]
+## T-273: the players' ladders at the zombies' three catwalk climb links: [name, the ladder's foot against the catwalk's
+## edge (Props.ladder's pos), yaw (local -Z away from the catwalk)]. map02.json "ladders" and "climb_links" put the body's
+## line 0.515 m out from pos (0.4 m off the rungs). The rails stay closed: the climb carries a body over them, as on
+## Map 0's tower (T-268).
+const CATWALK_LADDERS: Array = [
+	["W", Vector3(-17.93, 0.0, 55.5), -90.0], ["N", Vector3(15.0, 0.0, 35.07), 180.0], ["E", Vector3(49.93, 0.0, 72.0), 90.0],
+]
 ## Visibility groups (U09 s5, T-145; ViewCells): a static mesh, light, label or decal belongs to the first box that
 ## holds its centre (dressing built by a zone's _dress_* function carries that zone's group as meta "vis" and skips
 ## the boxes); anything in no box is "ALL" and always drawn. "DH" is the hall round U-1047's hatch and tower: the
@@ -846,8 +866,17 @@ func build_lowerpens() -> void:
 func build_tower() -> void:
 	box(geo, "TowerFloor", Vector3(41, TY - 0.3, 33), Vector3(52, TY, 38), "concrete")
 	wall_z("TowerW", 42.0, 33, 38, TY, TY + 4.0, [door(34, TY)], "concrete", [[-1, "paint_cream", 0.0, 0.012]])
-	wall_x("TowerS", 38.0, 42 - T * 0.5, 52 + T * 0.5, TY, TY + 4.0, [[44.0, 50.5, TY + 0.9, TY + 2.6]], "concrete", [[-1, "paint_cream", 0.0, 0.012]])
-	box(geo, "TowerGlass", Vector3(44, TY + 0.9, 37.9), Vector3(50.5, TY + 2.6, 38.1), "glass")
+	# T-273: the south window is shorter now (x 44..46.8) and a door beside it (x 47.6..49.6) gives onto the signal
+	# balcony over the hall, where the zip line leaves from (SIGNAL_ZIP)
+	wall_x("TowerS", 38.0, 42 - T * 0.5, 52 + T * 0.5, TY, TY + 4.0, [[44.0, 46.8, TY + 0.9, TY + 2.6], [BALC_DOOR_X0, BALC_DOOR_X1, TY, TY + DOOR_H]],
+		"concrete", [[-1, "paint_cream", 0.0, 0.012]])
+	box(geo, "TowerGlass", Vector3(44, TY + 0.9, 37.9), Vector3(46.8, TY + 2.6, 38.1), "glass")
+	box(geo, "BalconyFloor", Vector3(BALC_X0, TY - 0.2, 38.15), Vector3(BALC_X1, TY, BALC_Z1), "deck")
+	rail("Rail_BalconyW", Vector3(BALC_X0, TY, 38.15), Vector3(BALC_X0, TY, BALC_Z1))
+	rail("Rail_BalconyE", Vector3(BALC_X1, TY, 38.15), Vector3(BALC_X1, TY, BALC_Z1))
+	rail("Rail_BalconyS", Vector3(BALC_X0, TY, BALC_Z1), Vector3(BALC_X1, TY, BALC_Z1))
+	var zp: Vector3 = SIGNAL_ZIP[2]
+	box(geo, "ZipPost_SignalZip", zp + Vector3(-0.12, 0, -0.12), zp + Vector3(0.12, ZIP_POST_H + 0.15, 0.12), "metal")
 	box(geo, "TowerRoof", Vector3(41, TY + 4.0, 33), Vector3(52 + T * 0.5, TY + 4.3, 38 + T * 0.5), "concrete")
 	box(geo, "Teletype", Vector3(50.6, TY, 34.0), Vector3(51.8, TY + 1.0, 35.5), "metal")
 	box(geo, "Rack1", Vector3(50.6, TY, 37.0), Vector3(51.9, TY + 2.2, 37.8), "metal")
@@ -1353,6 +1382,7 @@ func build_dressing() -> void:
 	_tagged(_dress_u10_tower, "G")
 	_tagged(_dress_u10_lowerpens, "F")
 	_tagged(_dress_t273_sea, "A")      # T-273: the map detail pass (the patrol boat off the quay)
+	_tagged(_dress_t273_hall, "")      # T-273: the catwalk ladders, the signal balcony and its zip line (D by their boxes)
 	_dress_windows()
 	_dress_doors()
 	_dress_treads()
@@ -1970,13 +2000,13 @@ func _dress_tower() -> void:
 	DetailMap02.teletype(dress, Vector3(51.2, y, 34.75), 90.0)
 	Props.table_visual(dress, Vector3(46.0, y, 34.2), 2.2, 1.2, 0.85)
 	Props.chair(dress, Vector3(46.5, y, 35.3), 0.0)
-	Props.shelves(dress, Vector3(48.5, y, 37.75), 180.0, 1.6, 1.4, 0.3, 2, 9)
+	Props.shelves(dress, Vector3(45.2, y, 37.75), 180.0, 1.6, 1.4, 0.3, 2, 9)   # (T-273: moved west off the balcony door)
 	Props.fuse_box(dress, Vector3(42.17, y + 2.7, 36.6), -90.0)
-	# the big south window: frames and mullions in the glass
-	for mx: float in [45.6, 47.2, 48.8]:
+	# the south window: frames and a mullion in the glass (T-273: shorter, the balcony door beside it)
+	for mx: float in [45.4]:
 		B(Vector3(mx - 0.04, y + 0.9, 37.85), Vector3(mx + 0.04, y + 2.6, 38.15), "iron")
-	B(Vector3(43.9, y + 2.6, 37.85), Vector3(50.6, y + 2.72, 38.15), "iron")
-	B(Vector3(43.9, y + 0.78, 37.85), Vector3(50.6, y + 0.9, 38.15), "iron")
+	B(Vector3(43.9, y + 2.6, 37.85), Vector3(46.9, y + 2.72, 38.15), "iron")
+	B(Vector3(43.9, y + 0.78, 37.85), Vector3(46.9, y + 0.9, 38.15), "iron")
 	_label("SIGNALSTELLE", Vector3(42.17, y + 2.9, 35.0), 90.0, 22)
 	# lights: a powered pendant and a desk lamp, the rack's standby glow
 	pendant("G_SIGNAL", Vector3(47.0, y + 2.6, 35.5), y + 4.0, "enamel_green", 1.0)
@@ -3063,6 +3093,50 @@ func _dress_t273_sea() -> void:
 	# one mesh per material and shadow mode for the whole boat (the 22 m batching cells would cut it into some forty
 	# draw calls); _adopt_t273_batches hangs them in the quay's batch group once the batches exist
 	GenDetail.merge_children(dress.get_node("PatrolBoat") as Node3D)
+
+
+## T-273: the hall's new climbs. The three catwalk ladders (CATWALK_LADDERS: iron rung ladders against the catwalks'
+## edges, stayed to the deck's underside, a foot plate on the floor; the LadderClimbs and the climb links are
+## map02.json's) and the signal balcony's dressing: the door's frame and its rolled-up steel shutter, two beams under
+## the grating and two tie rods up to the tower's roof, the zip line's post and arm over the south rail with a marker
+## lamp (emissive, no light), the cable down to its landing post on the east apron, the post's stay and cap, a coil of
+## rope (SIGNAL_ZIP; the trolley is the ZipLine's own).
+func _dress_t273_hall() -> void:
+	for cl: Array in CATWALK_LADDERS:
+		var lp: Vector3 = cl[1]
+		var ly: float = float(cl[2])
+		Props.ladder(dress, lp, ly, CATY + 0.9, "iron")
+		var st: Node3D = Props.group(dress, "LadderStays", lp, ly)
+		for sx: float in [-0.2, 0.2]:
+			Props.block(st, Vector3(sx - 0.025, CATY - 0.42, -0.12), Vector3(sx + 0.025, CATY - 0.36, 0.09), "iron")
+			Props.block(st, Vector3(sx - 0.06, 0.0, -0.17), Vector3(sx + 0.06, 0.02, -0.06), "iron")
+	# the balcony: the door's jambs and lintel, the shutter rolled up in its box over the door
+	for jx: float in [BALC_DOOR_X0 - 0.06, BALC_DOOR_X1]:
+		B(Vector3(jx, TY, 37.83), Vector3(jx + 0.06, TY + DOOR_H, 38.17), "iron")
+	B(Vector3(BALC_DOOR_X0 - 0.06, TY + DOOR_H, 37.83), Vector3(BALC_DOOR_X1 + 0.06, TY + DOOR_H + 0.08, 38.17), "iron")
+	B(Vector3(BALC_DOOR_X0 - 0.15, TY + DOOR_H + 0.08, 38.15), Vector3(BALC_DOOR_X1 + 0.15, TY + DOOR_H + 0.42, 38.47), "grey_paint")
+	_noshadow(B(Vector3(BALC_DOOR_X0, TY + DOOR_H - 0.06, 38.17), Vector3(BALC_DOOR_X1, TY + DOOR_H + 0.08, 38.2), "black_paint", false))
+	for bx: float in [BALC_X0 + 0.25, BALC_X1 - 0.25]:
+		B(Vector3(bx - 0.08, TY - 0.45, 38.15), Vector3(bx + 0.08, TY - 0.2, BALC_Z1), "steel")
+		Props.strut(dress, Vector3(bx, TY + 4.0, 38.25), Vector3(bx, TY + 1.05, BALC_Z1 - 0.1), 0.035, "iron", true)
+	# the zip line: its post and arm, the marker lamp, the cable, the landing post's cap and stay, a coil of rope
+	var top: Vector3 = SIGNAL_ZIP[1]
+	var foot: Vector3 = SIGNAL_ZIP[2]
+	var post_top: Vector3 = foot + Vector3(0, ZIP_POST_H, 0)
+	var flat: Vector3 = Vector3(foot.x - top.x, 0, foot.z - top.z).normalized()
+	var side: Vector3 = Vector3(-flat.z, 0, flat.x)
+	var mast: Vector3 = Vector3(top.x, TY, BALC_Z1 - 0.03)
+	B(mast + Vector3(-0.05, 0, -0.05), mast + Vector3(0.05, top.y - TY + 0.3, 0.05), "iron")
+	Props.strut(dress, mast + Vector3(0, top.y - TY + 0.06, 0), top + Vector3(0, 0.06, 0), 0.06, "iron")
+	B(top + Vector3(-0.08, -0.1, -0.08), top + Vector3(0.08, 0.1, 0.08), "iron")
+	_noshadow(B(mast + Vector3(-0.06, top.y - TY + 0.3, -0.06), mast + Vector3(0.06, top.y - TY + 0.48, 0.06), "lamp_red_lit", false))
+	Props.cable(dress, top, post_top, 0.3, 0.022, 20, "iron")
+	B(post_top + Vector3(-0.09, -0.08, -0.09), post_top + Vector3(0.09, 0.08, 0.09), "iron")
+	var stay: Vector3 = foot + flat * 1.6
+	_noshadow(Props.strut(dress, post_top + Vector3(0, -0.2, 0), stay, 0.02, "iron"))
+	_noshadow(B(stay + Vector3(-0.1, 0, -0.1), stay + Vector3(0.1, 0.25, 0.1), "iron"))
+	_noshadow(B(foot + side * 0.1 + Vector3(-0.06, 2.0, -0.06), foot + side * 0.1 + Vector3(0.06, 2.18, 0.06), "lamp_red_lit", false))
+	Props.rope_coil(dress, foot + side * 0.45 - flat * 0.3, 0.14)
 
 
 ## T-273: the patrol boat's folded meshes into StaticBatches/VisGroup_A (the batch container the shadow proxies and
