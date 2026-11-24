@@ -13,11 +13,17 @@ extends Node3D
 ##            staying out is not a gamble you win;
 ##   CLEAR    the all-clear and its line; the round goes on as rounds do.
 ## Host decides (where, when, who is hurt); every peer sees the markers and the bursts from the mirrored calls.
+## T-271: the raid on other maps. The map's block may say `"shelter_roof": true`: anywhere with something solid overhead
+## (a ray up from head height, ROOF_RAY m, the world's colliders) is a shelter too, and no bomb is laid there: the
+## Kaue in Kaltenbrunn's open yard, the roofed half of Totenhafen's cannery. Map 0's block does not say it (its
+## shelters are its zones and the inn's box, as before).
 ## Bots: BotSetPieces asks `shelter_for(player)` (group "air_raid") and walks a bot outside to the nearest shelter point.
 
 signal finished
 
 enum Phase { IDLE, WARN, BOMBING, CLEAR }
+
+const ROOF_RAY: float = 60.0           # T-271: how far up a roof is looked for (shelter_roof)
 
 var cfg: Dictionary = {}               # sherman.json "raid"
 var map_cfg: Dictionary = {}           # the map's sherman_event block
@@ -63,7 +69,17 @@ static func is_sheltered_at(zone: StringName, p: Vector3, shelter_zones: Array, 
 
 func is_sheltered(p: Vector3) -> bool:
 	var z: StringName = ZoneVolume.zone_at(get_tree(), p + Vector3.UP * 0.6)
-	return is_sheltered_at(z, p, map_cfg.get("shelter_zones", []), map_cfg.get("inn_box", []))
+	if is_sheltered_at(z, p, map_cfg.get("shelter_zones", []), map_cfg.get("inn_box", [])):
+		return true
+	return bool(map_cfg.get("shelter_roof", false)) and roof_over(p)
+
+
+## T-271: something solid over `p` (the world's colliders, from head height up).
+func roof_over(p: Vector3) -> bool:
+	if not is_inside_tree():
+		return false
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(p + Vector3.UP * 2.2, p + Vector3.UP * ROOF_RAY, 1)
+	return not get_world_3d().direct_space_state.intersect_ray(q).is_empty()
 
 
 ## A bomb's damage to a player `d` metres from it (flat): the centre's player_damage down to player_damage_edge at
@@ -243,7 +259,9 @@ func _bomb_ok(p: Vector3, zones: Array, box: Array) -> bool:
 	if in_box_grown(p, box, 1.0):
 		return false
 	var z: StringName = ZoneVolume.zone_at(get_tree(), p + Vector3.UP * 0.6)
-	return zones.has(String(z))
+	if not zones.has(String(z)):
+		return false
+	return not (bool(map_cfg.get("shelter_roof", false)) and roof_over(p))   # T-271: never onto a roof that shelters
 
 
 ## A bomb on its way to `at` (host): the marker everywhere, the burst `telegraph` s later.

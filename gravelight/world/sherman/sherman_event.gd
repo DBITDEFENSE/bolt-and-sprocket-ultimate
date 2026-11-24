@@ -24,6 +24,11 @@ extends Node3D
 ## Host decides; a co-op client runs the same node as a puppet: the tank follows mirrored state, the dive bomber flies
 ## the same pass, the markers and bursts come mirrored. Rounds 30 and 40 are reserved (no Bellringer round, no Foreman
 ## on them). A map without the block has no event.
+## T-271 (the owner: "there's level design, there's things that happen throughout the rounds. That needs to be the case
+## for the other maps"): a map's block may say `"tank": false`: no Sherman (no road for one), the RAID ONLY. On its
+## stuka_round the dive bomber comes down on `stuka_target` (a landmark; left out: no dive bomber, the siren at once)
+## and the air raid follows. The block's own "raid" and "stuka" rows lie over sherman.json's (the banners: where to run
+## to on this map), "shelter_roof" makes any roof a shelter (AirRaid). Map 0's block has none of these keys.
 
 enum Phase { IDLE, ARRIVING, ASSAULT, ASSIST, LOST, STUKA, RAID, DONE }
 
@@ -36,6 +41,7 @@ var tank: ShermanTank = null
 var raid: AirRaid = null
 var plane: StukaPlane = null
 var hud: ShermanHud = null
+var has_tank: bool = true              # T-271: false = the raid only (the map block's "tank": false)
 var arrive_round: int = 30
 var stuka_round: int = 40
 var assist_until: int = 39
@@ -93,6 +99,21 @@ static func attach(map: Node) -> ShermanEvent:
 	return e
 
 
+## T-271: sherman.json's `key` block with the map block's own `key` rows laid over it (a map's own banners and numbers).
+static func merged(base: Dictionary, map_block: Dictionary, key: String) -> Dictionary:
+	var out: Dictionary = (base.get(key, {}) as Dictionary).duplicate()
+	var over: Variant = map_block.get(key, {})
+	if over is Dictionary:
+		for k: Variant in (over as Dictionary):
+			out[k] = (over as Dictionary)[k]
+	return out
+
+
+## T-271: does this map's block bring a tank? (`"tank": false` = the raid only.)
+static func block_has_tank(map_block: Dictionary) -> bool:
+	return bool(map_block.get("tank", true))
+
+
 ## The assault's size: count_base + count_per_extra_player for each player past the first.
 static func assault_count(players: int, a: Dictionary) -> int:
 	return int(a.get("count_base", 24)) + int(a.get("count_per_extra_player", 8)) * maxi(0, players - 1)
@@ -136,6 +157,7 @@ func _init() -> void:
 
 func _ready() -> void:
 	add_to_group(&"sherman_event")
+	has_tank = block_has_tank(map_cfg)
 	arrive_round = int(map_cfg.get("arrive_round", 30))
 	stuka_round = int(map_cfg.get("stuka_round", 40))
 	assist_until = mini(stuka_round - 1, arrive_round + int((cfg.get("assist", {}) as Dictionary).get("rounds", 9)))
@@ -143,7 +165,7 @@ func _ready() -> void:
 	hud = ShermanHud.new()
 	add_child(hud)
 	raid = AirRaid.new()
-	raid.cfg = cfg.get("raid", {})
+	raid.cfg = merged(cfg, map_cfg, "raid")
 	raid.map_cfg = map_cfg
 	raid.hud = hud
 	raid.host = not puppet
@@ -154,9 +176,10 @@ func _ready() -> void:
 	if not puppet:
 		GLBus.round_started.connect(_on_round_started)
 		GLBus.round_ended.connect(_on_round_ended)
-		RoundManager.reserve_round(arrive_round)
+		if has_tank:
+			RoundManager.reserve_round(arrive_round)
 		RoundManager.reserve_round(stuka_round)
-	GLConsole.register("sherman", _cmd, "sherman 30|assist|40|raid|hold|kill|drive|out|status: the Sherman event on the Inn (T-249, T-261)")
+	GLConsole.register("sherman", _cmd, "sherman 30|assist|40|raid|hold|kill|drive|out|status: the Sherman event (T-249, T-261; T-271: 40 and raid on a raid-only map)")
 
 
 func _exit_tree() -> void:
@@ -191,7 +214,7 @@ func at(seconds: float, fn: Callable) -> void:
 # ================================================================== the rounds
 
 func _on_round_started(r: int, special: bool) -> void:
-	if r == arrive_round or r == retry_round:
+	if has_tank and (r == arrive_round or r == retry_round):
 		if special:
 			retry_round = r + 1
 			return
@@ -661,11 +684,18 @@ func net_bar(on: bool) -> void:
 # ================================================================== round 40
 
 func begin_stuka() -> void:
-	var s: Dictionary = cfg.get("stuka", {})
-	phase = Phase.STUKA
+	var s: Dictionary = merged(cfg, map_cfg, "stuka")
 	t = 0.0
 	_sched.clear()
+	if not has_tank and not map_cfg.has("stuka_target"):
+		# T-271, the raid only and no landmark for a dive bomber: the siren at once
+		_begin_raid(0.5)
+		print("[sherman] round %d: the air raid (no tank on this map, no dive bomber)" % RoundManager.current_round)
+		return
+	phase = Phase.STUKA
 	var target: Vector3 = park_point() + Vector3.UP * 1.0
+	if map_cfg.has("stuka_target"):
+		target = ClimbLink._v3(map_cfg["stuka_target"])
 	if tank != null and is_instance_valid(tank):
 		# T-261: nobody drives it from here on: the driver is put out beside it now (the bomb is some eleven seconds
 		# away), and it stays where it stands for the dive
@@ -691,7 +721,7 @@ func net_stuka(target: Vector3, from_dir: Vector3) -> void:
 		plane.queue_free()
 	plane = StukaPlane.new()
 	add_child(plane)
-	plane.fly(target, from_dir, cfg.get("stuka", {}))
+	plane.fly(target, from_dir, merged(cfg, map_cfg, "stuka"))
 	plane.impact.connect(_on_stuka_impact)
 
 
@@ -712,7 +742,7 @@ func _tick_stuka() -> void:
 
 func _on_stuka_impact(pos: Vector3) -> void:
 	stuka_hit_at = pos
-	var rc: Dictionary = cfg.get("raid", {})
+	var rc: Dictionary = raid.cfg
 	AirRaid.burst_fx(get_tree(), pos, float(rc.get("radius", 6.5)), 1.0, 45.0)
 	if puppet:
 		return
@@ -721,8 +751,14 @@ func _on_stuka_impact(pos: Vector3) -> void:
 		if Net.replicating():
 			Net.mirror(tank, &"net_state", tank.net_state_args())
 	raid.hurt(pos)
-	print("[sherman] the dive bomber's bomb lands at %s: the Sherman brews up" % str(pos.snapped(Vector3.ONE * 0.1)))
-	at(float(rc.get("warn_after_stuka", 2.5)), func() -> void:
+	print("[sherman] the dive bomber's bomb lands at %s%s" % [str(pos.snapped(Vector3.ONE * 0.1)), ": the Sherman brews up" if has_tank else ""])
+	_begin_raid(float(rc.get("warn_after_stuka", 2.5)))
+
+
+## The air raid, `after` seconds from now (host).
+func _begin_raid(after: float) -> void:
+	var rc: Dictionary = raid.cfg
+	at(after, func() -> void:
 		phase = Phase.RAID
 		_banner(str(rc.get("warn_banner", "AIR RAID")), str(rc.get("warn_small", "GET INSIDE THE INN")))
 		raid.start())
@@ -731,7 +767,7 @@ func _on_stuka_impact(pos: Vector3) -> void:
 func _on_raid_finished() -> void:
 	if not puppet:
 		phase = Phase.DONE
-		_banner(str((cfg.get("raid", {}) as Dictionary).get("clear_banner", "ALL CLEAR")))
+		_banner(str(raid.cfg.get("clear_banner", "ALL CLEAR")))
 		print("[sherman] the raid is over")
 
 
@@ -777,6 +813,8 @@ func _post_dangers() -> void:
 
 func _cmd(a: PackedStringArray) -> String:
 	var what: String = a[0] if not a.is_empty() else "status"
+	if not has_tank and what in ["30", "arrive", "assist", "hold", "kill", "drive", "out"]:
+		return "No Sherman on this map (the raid only): sherman 40 | raid | status."
 	match what:
 		"30", "arrive":
 			if RoundManager.state == RoundManager.State.ROUND:
@@ -788,7 +826,7 @@ func _cmd(a: PackedStringArray) -> String:
 			force_assist()
 			return "The Sherman is parked and covering the yard."
 		"40", "stuka":
-			if tank == null or not is_instance_valid(tank):
+			if has_tank and (tank == null or not is_instance_valid(tank)):
 				force_assist()
 			if RoundManager.state == RoundManager.State.ROUND:
 				begin_stuka()
@@ -826,6 +864,8 @@ func _cmd(a: PackedStringArray) -> String:
 
 ## Dev / smoke: the tank parked at its place and covering the yard, now.
 func force_assist() -> void:
+	if not has_tank:
+		return
 	if tank == null or not is_instance_valid(tank) or tank.is_wreck():
 		_spawn_tank(park_point(), park_yaw())
 	tank.put_out()

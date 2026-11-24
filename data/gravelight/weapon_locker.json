@@ -23,6 +23,36 @@
       "at": [24.25, 0.0, 22.15],
       "yaw": 0.0,
       "where": "The stable's north-east corner: on the north wall between the bale stack and the east wall, north of the hayloft stair's foot, doors facing south. Behind Door_Stable from the taproom, 4 m left of the stable's north door."
+    },
+    "map01": {
+      "at": [12.02, 0.0, 4.5],
+      "yaw": 90.0,
+      "where": "T-271 Kaltenbrunn, the minehead: on the Armorer's Bench's own wall, 4.3 m north of the bench, doors facing east into the yard."
+    },
+    "map02": {
+      "at": [12.0, 0.0, 17.17],
+      "yaw": 0.0,
+      "where": "T-271 Totenhafen, the quay: on the wall the Armorer's Bench stands at, 4.3 m west of the bench, doors facing south."
+    },
+    "map04a": {
+      "at": [39.84, 0.0, 7.0],
+      "yaw": 270.0,
+      "where": "T-271 Thalbach, the Siedlung: the east wall of the start yard, doors facing west; the Armorer's Bench is on the north wall, 12 m away."
+    },
+    "map04b": {
+      "at": [4.75, 0.0, 0.17],
+      "yaw": 0.0,
+      "where": "T-271 der Kranich, the bomb bay: on the aft bulkhead, 8 m behind where the squad comes aboard, doors facing forward."
+    },
+    "map04c": {
+      "at": [13.84, 0.0, -14.0],
+      "yaw": 270.0,
+      "where": "T-271 Groom Lake, the wreck: on the east side of the crash site, 8 m from the wreck's crate, doors facing west."
+    },
+    "map04d": {
+      "at": [5.5, 0.0, 0.17],
+      "yaw": 0.0,
+      "where": "T-271 Mondlicht, reception: on the south wall right of the entrance, 6 m from the ammunition box, doors facing north into the room."
     }
   }
 }

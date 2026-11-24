@@ -7,6 +7,9 @@ extends Node3D
 ## apply the same state and show the same shots and lines; the zombies are the host's and replicate as usual.
 
 const DATA_PATH: String = "res://data/gravelight/map00_survivors.json"
+## T-271: per map, like InnOpening.data_path: empty = data/gravelight/<map prefix>_survivors.json for the map the node
+## stands in; a map without the file has no survivors.
+@export var data_path: String = ""
 
 var cfg: Dictionary = {}
 var survivors: Dictionary = {}   # id -> InnSurvivor
@@ -15,8 +18,16 @@ var _lure_t: float = 0.0
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 
-static func load_cfg() -> Dictionary:
-	return GLData.load_json(DATA_PATH)
+static func data_path_for(map_id: StringName) -> String:
+	var prefix: String = String(map_id).get_slice("_", 0)
+	return "res://data/gravelight/%s_survivors.json" % prefix if prefix != "" else DATA_PATH
+
+
+## The file's data ({} when the map has none). Without a path: Map 0's.
+static func load_cfg(path: String = DATA_PATH) -> Dictionary:
+	if not (ResourceLoader.exists(path) or FileAccess.file_exists(path)):
+		return {}
+	return GLData.load_json(path)
 
 
 ## Pure rules (unit-tested in test_inn_survivors.gd) ------------------------------------------------------------
@@ -51,8 +62,8 @@ static func rises_now(dead_t: float, round_on: bool, a: Dictionary) -> bool:
 # ================================================================== setup
 
 func _ready() -> void:
-	cfg = load_cfg()
 	var map: MapRoot = _map()
+	cfg = load_cfg(data_path if data_path != "" else data_path_for(map.map_id if map != null else &""))
 	if cfg.is_empty() or map == null or String(map.map_id) != str(cfg.get("map", "")):
 		set_physics_process(false)
 		return

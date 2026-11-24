@@ -92,5 +92,82 @@
       26.0
     ],
     "_doc": "T-240 the surface yards only (the navmesh is baked for a 0.5 m agent and the doors are 2 m, but the lift cage, the stairs and the galleries are no place for a horse): it comes in by the north gate (arrive; without it: the far side of these zones from the squad, on the yard's level) and never follows below ground (the siege rule)."
+  },
+  "horses": [
+    {
+      "name": "YardHorse",
+      "pos": [
+        37.65,
+        0.0,
+        19.0
+      ],
+      "yaw": -90.0,
+      "rail": [
+        38.9,
+        0.0,
+        19.0
+      ],
+      "rail_yaw": -90.0,
+      "zones": [
+        "A_MINEHEAD",
+        "B_RAILYARD"
+      ],
+      "look": "noriker",
+      "_doc": "T-271 the mine's cart horse (T-240's rideable horse, T-262's tack chest), tied at a hitching rail on the Minehead yard's east wall between the drums in the corner and the Rail Yard door (the door is 6 m south of the rail, the chest 4.5 m). yaw -90 = it faces east, toward the rail and the wall. zones: the two surface yards (the Rail Yard once its door is open); never the Kaue's doorways that lead below, the Administration or the barracks. The rail's collider is on the map-edge layer, the chest has none: the baked navmesh is untouched. Measured by probe_map_site and walked by smoke_map_detail."
+    }
+  ],
+  "sherman_event": {
+    "_doc": "T-271 Kaltenbrunn's round-40 set piece: THE RAID ONLY (ShermanEvent with \"tank\": false; AirRaid). No Sherman here: the yard's gate is one solid piece of the baked shell and the buried rail line ends at the Rail Yard's north wall, so a tank has no way in until the generator gives it one (docs/u21/t271_map_detail_base.md). Round 40: a dive bomber comes down the valley on the locomotive in the Rail Yard (stuka_target), then the siren and sixty seconds of bombs on the open yards (bomb_zones); every roof is a shelter (shelter_roof: the Kaue, the barracks' rooms, the lift house) and so is everything in shelter_zones (the Administration, the stairs, the mine). shelter_points: where a bot outside runs to. raid / stuka: this map's banners over sherman.json's.",
+    "tank": false,
+    "stuka_round": 40,
+    "stuka_target": [
+      52.5,
+      3.0,
+      33.0
+    ],
+    "stuka_from": [
+      300.0,
+      0.0,
+      -200.0
+    ],
+    "shelter_roof": true,
+    "shelter_zones": [
+      "C_ADMIN",
+      "M_STAIRS",
+      "F_CHAPEL",
+      "G_GENERATOR",
+      "H_LAB",
+      "I_CORE"
+    ],
+    "bomb_zones": [
+      "A_MINEHEAD",
+      "B_RAILYARD",
+      "D_BARRACKS",
+      "E_LIFT"
+    ],
+    "shelter_points": [
+      [
+        10.0,
+        0.0,
+        29.0
+      ],
+      [
+        -6.0,
+        0.0,
+        25.0
+      ],
+      [
+        10.0,
+        0.0,
+        38.0
+      ]
+    ],
+    "raid": {
+      "warn_small": "GET UNDER A ROOF: THE KAUE, THE BARRACKS, THE MINE",
+      "outside_text": "GET UNDER A ROOF"
+    },
+    "stuka": {
+      "banner_small": "A DIVE BOMBER IS COMING DOWN ON THE RAIL YARD"
+    }
   }
 }
