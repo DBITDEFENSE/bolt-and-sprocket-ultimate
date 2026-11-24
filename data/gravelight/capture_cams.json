@@ -17659,12 +17659,12 @@
         {
           "name": "launch_1_fuel",
           "pos": [
-            91.5,
+            121.0,
             0,
-            53.5
+            49.5
           ],
-          "yaw": -50.7,
-          "pitch": 15.4,
+          "yaw": 53.8,
+          "pitch": 20.1,
           "settle_s": 0.2,
           "note": "the launch, 9 s in: vapour off the rocket and the oxidiser trailer, the arm lowering",
           "do": [
@@ -17675,12 +17675,12 @@
         {
           "name": "launch_2_count",
           "pos": [
-            91.5,
+            121.0,
             0,
-            53.5
+            49.5
           ],
-          "yaw": -50.7,
-          "pitch": 15.4,
+          "yaw": 53.8,
+          "pitch": 20.1,
           "settle_s": 0.2,
           "note": "24 s in: the count, the arm down on its trailer",
           "do": [
@@ -17690,12 +17690,12 @@
         {
           "name": "launch_3_ignite",
           "pos": [
-            91.5,
+            121.0,
             0,
-            53.5
+            49.5
           ],
-          "yaw": -50.7,
-          "pitch": 15.4,
+          "yaw": 53.8,
+          "pitch": 11.9,
           "settle_s": 0.2,
           "note": "33 s in: the preliminary stage under the table",
           "do": [
@@ -17705,12 +17705,12 @@
         {
           "name": "launch_4_main",
           "pos": [
-            91.5,
+            121.0,
             0,
-            53.5
+            49.5
           ],
-          "yaw": -50.7,
-          "pitch": 15.4,
+          "yaw": 53.8,
+          "pitch": 11.9,
           "settle_s": 0.2,
           "note": "35 s in: the main stage, the smoke and snow thrown out from the table",
           "do": [
@@ -17720,12 +17720,12 @@
         {
           "name": "launch_5_lift",
           "pos": [
-            91.5,
+            121.0,
             0,
-            53.5
+            49.5
           ],
-          "yaw": -50.7,
-          "pitch": 15.4,
+          "yaw": 53.8,
+          "pitch": 24.6,
           "settle_s": 0.2,
           "note": "38 s in: off the table, rising on its jet",
           "do": [
@@ -17735,12 +17735,12 @@
         {
           "name": "launch_6_climb",
           "pos": [
-            91.5,
+            121.0,
             0,
-            53.5
+            49.5
           ],
-          "yaw": -50.7,
-          "pitch": 60.9,
+          "yaw": 53.4,
+          "pitch": 68.5,
           "settle_s": 0.2,
           "note": "41 s in: climbing, the trail under it",
           "do": [
@@ -17750,12 +17750,12 @@
         {
           "name": "launch_7_high",
           "pos": [
-            91.5,
+            121.0,
             0,
-            53.5
+            49.5
           ],
-          "yaw": -59.0,
-          "pitch": 79.3,
+          "yaw": 36.4,
+          "pitch": 85.2,
           "settle_s": 0.2,
           "note": "45 s in: high and pitching east",
           "do": [
@@ -17765,12 +17765,12 @@
         {
           "name": "launch_8_after",
           "pos": [
-            91.5,
+            121.0,
             0,
-            53.5
+            49.5
           ],
-          "yaw": -50.7,
-          "pitch": -1.7,
+          "yaw": 53.8,
+          "pitch": -2.2,
           "settle_s": 0.2,
           "note": "48 s in: the table empty and burning, the smoke hanging",
           "do": [

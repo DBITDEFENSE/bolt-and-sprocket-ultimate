@@ -238,8 +238,8 @@ static func perk_layout(shape: String, fp: Vector3) -> Dictionary:
 		"rocket":
 			# Rocket Man (T-276): a rocket stood on its fins, short enough for the firing-control dugout's 2.2 m
 			# ceiling: the sign across the nose's foot, the lamp globe on a bracket at the shoulder (not over the tip)
-			return {"sign": Vector3(0, 1.78, -0.5), "sign_size": Vector2(0.95, 0.26), "win": Vector3(0, 1.22, -0.47), "win_size": Vector2(0.38, 0.4),
-				"lamp": Vector3(0.4, 1.62, 0.0), "price": Vector3(0, 0.4, -0.47), "hatch": Vector3(0, 0.74, -0.47), "slot": Vector3(0.27, 0.98, -0.46)}
+			return {"sign": Vector3(0, 1.44, -0.5), "sign_size": Vector2(0.95, 0.24), "win": Vector3(0, 1.06, -0.47), "win_size": Vector2(0.3, 0.32),
+				"lamp": Vector3(0.42, 1.2, 0.0), "price": Vector3(0, 0.4, -0.47), "hatch": Vector3(0, 0.7, -0.47), "slot": Vector3(0.2, 0.9, -0.46)}
 	return {"sign": Vector3(0, fp.y + 0.28, fz), "sign_size": Vector2(fp.x + 0.2, 0.3), "win": Vector3(0, 1.45, fz - 0.02), "win_size": Vector2(0.5, 0.45),
 		"lamp": Vector3(0, fp.y + 0.1, 0), "price": Vector3(0, 0.55, fz - 0.02), "hatch": Vector3(0, 0.85, fz - 0.02), "slot": Vector3(0.3, 1.05, fz - 0.01)}
 
@@ -332,15 +332,18 @@ static func _rocket_cab(g: Node3D, fp: Vector3, en: String) -> void:
 	B(g, Vector3(-hx * 0.8, 0.0, -hz * 0.8), Vector3(hx * 0.8, 0.22, hz * 0.8), "iron")
 	C(g, Vector3(0, 0.27, 0), r * 0.92, 0.1, "char")
 	C(g, Vector3(0, 0.31 + (top - 0.31) * 0.5, 0), r, top - 0.31, en)
-	# the quarters: black panels on the drum, front-left / back-right low, front-right / back-left high
-	for q: Array in [[Vector3(-0.21, 0.62, -0.31), Vector3(0, 0, 45)], [Vector3(0.21, 0.62, 0.31), Vector3(0, 0, 45)],
-			[Vector3(0.21, 1.28, -0.31), Vector3(0, 0, 45)], [Vector3(-0.21, 1.28, 0.31), Vector3(0, 0, 45)]]:
-		var c: Vector3 = q[0]
-		OB(g, Vector3(c.x * 1.08, c.y, c.z * 1.08), Vector3(0.3, 0.6, 0.02), "black_paint", Vector3(0, rad_to_deg(atan2(c.x, c.z)) + 90.0, 0))
-	# the front panel (window, hatch, slot sit on it) and its chrome frame
-	B(g, Vector3(-0.3, 0.3, -r - 0.04), Vector3(0.3, 1.5, -r + 0.06), en)
-	B(g, Vector3(-0.32, 1.5, -r - 0.05), Vector3(0.32, 1.53, -r + 0.06), "chrome")
-	B(g, Vector3(-0.32, 0.27, -r - 0.05), Vector3(0.32, 0.3, -r + 0.06), "chrome")
+	# the quarters: black panels lying on the drum (tangent), front-left / back-right low, front-right / back-left
+	# high, clear of the front panel
+	for q: Array in [[-1.0, 0.62], [1.0, 1.08]]:
+		for back: float in [0.0, 1.0]:
+			var ang: float = deg_to_rad(float(q[0]) * 62.0 + back * 180.0)
+			var d: Vector3 = Vector3(sin(ang), 0.0, -cos(ang))
+			OB(g, d * (r + 0.008) + Vector3(0, float(q[1]), 0), Vector3(0.36, 0.44, 0.012), "black_paint", Vector3(0, rad_to_deg(atan2(d.x, d.z)), 0))
+
+	# a narrow front panel (window, hatch, slot sit on it; the drum's roundness and its quarters show either side)
+	B(g, Vector3(-0.21, 0.3, -r - 0.04), Vector3(0.21, 1.3, -r + 0.12), en)
+	B(g, Vector3(-0.23, 1.3, -r - 0.05), Vector3(0.23, 1.33, -r + 0.12), "chrome")
+	B(g, Vector3(-0.23, 0.27, -r - 0.05), Vector3(0.23, 0.3, -r + 0.12), "chrome")
 	# the nose: a cream cone in two parts, a dark tip
 	cone_part(g, Vector3(0, top, 0), r * 0.98, 0.48)
 	# four fins and the shoulder bracket for the lamp
@@ -348,7 +351,7 @@ static func _rocket_cab(g: Node3D, fp: Vector3, en: String) -> void:
 		var a: float = deg_to_rad(45.0 + 90.0 * f)
 		var d: Vector3 = Vector3(sin(a), 0, cos(a))
 		OB(g, d * (r + 0.12) + Vector3(0, 0.45, 0), Vector3(0.03, 0.62, 0.3), "black_paint" if f % 2 == 0 else "enamel:#e6e0cf", Vector3(0, rad_to_deg(a), 0))
-	B(g, Vector3(r - 0.04, 1.52, -0.03), Vector3(0.42, 1.56, 0.03), "brass")
+	B(g, Vector3(r - 0.04, 1.1, -0.03), Vector3(0.44, 1.14, 0.03), "brass")
 
 
 ## The rocket cabinet's nose: an ogive of stacked discs (so it batches with the rest), `h` tall, a dark tip.

@@ -88,6 +88,7 @@ const CRATE_STACKS: Array = [
 ## Lamps: [name, position, colour, energy, range, flicker amount (0 = steady)]. "Out" names get the outdoor tuning
 ## in gen_map00._lamp (no indoor gain). Only the table's floodlight (built in build_gameplay) asks for a shadow.
 const LAMPS: Array = [
+	["OutRktGateLamp", Vector3(59.55, 2.0, 37.88), Color(1.0, 0.66, 0.36), 2.6, 9.0, 0.15],   # (the renders: the gate and its price were black at night)
 	["OutRktTrackLamp", Vector3(68.0, 2.55, 42.65), Color(1.0, 0.66, 0.36), 3.2, 12.0, 0.18],
 	["OutRktHutLamp", Vector3(88.4, 2.15, HUT.end.y + 0.32), Color(1.0, 0.66, 0.36), 3.0, 11.0, 0.15],
 	["OutRktNetLampN", Vector3(97.5, 3.1, 28.5), Color(0.95, 0.78, 0.55), 2.6, 11.0, 0.0],
@@ -96,8 +97,8 @@ const LAMPS: Array = [
 	["OutRktMoonFill", Vector3(105.0, 7.0, 40.0), Color(0.5, 0.6, 0.85), 0.3, 30.0, 0.0],
 	["RktBunkerBulb", Vector3(117.5, 2.35, 26.0), Color(1.0, 0.84, 0.62), 1.2, 6.0, 0.0],
 ]
-const FLOOD_POS: Vector3 = Vector3(100.2, 6.2, 33.6)
-const FLOOD_AIM: Vector3 = Vector3(108.0, 5.5, 40.0)
+const FLOOD_POS: Vector3 = Vector3(100.2, 7.4, 33.6)
+const FLOOD_AIM: Vector3 = Vector3(108.0, 6.5, 40.0)
 
 
 # ================================================================== filters gen_map00 applies
@@ -378,7 +379,10 @@ static func _dress_track(d: Node3D) -> void:
 	# the trodden track and its two ruts, from inside the grounds through the gate into the clearing
 	Props._noshadow(Props.block(g, Vector3(57.5, 0.0, 38.3), Vector3(89.0, 0.014, 41.7), "snow_trodden"))
 	for rz: float in [38.9, 41.1]:
-		Props._noshadow(Props.block(g, Vector3(57.5, 0.0, rz - 0.22), Vector3(89.0, 0.02, rz + 0.22), "dirt"))
+		Props._noshadow(Props.block(g, Vector3(57.5, 0.0, rz - 0.15), Vector3(89.0, 0.02, rz + 0.15), "dirt"))
+	# a lantern on an arm off the north gatepost, on the grounds' side
+	Props.block(g, Vector3(GATE.x - 0.5, 2.38, GATE.z - GATE_W * 0.5 - 0.17), Vector3(GATE.x, 2.44, GATE.z - GATE_W * 0.5 - 0.07), "iron")
+	Props.lantern(g, Vector3(GATE.x - 0.45, 2.2, GATE.z - GATE_W * 0.5 - 0.12), 2.44)
 	# the gateposts and a board on a post: SPERRGEBIET
 	for gz: float in [GATE.z - GATE_W * 0.5 - 0.12, GATE.z + GATE_W * 0.5 + 0.12]:
 		Props.block(g, Vector3(GATE.x - 0.12, 0, gz - 0.12), Vector3(GATE.x + 0.12, 2.5, gz + 0.12), "beam")
@@ -574,14 +578,18 @@ static func _dress_bunker(d: Node3D) -> void:
 	var o: Rect2 = BUNKER_OUT
 	var i: Rect2 = BUNKER_IN
 	var h: float = BUNKER_H
-	# the sandbag faces outside: a battered face of packed bags (the sandbag surface on boxes) and the top two
-	# courses as single bags for the outline (all bags as spheres were 46 k shadow-casting triangles)
+	# outside: earth banked against the revetment (the renders: the sandbag surface on a big box read as a dark
+	# hedge) with snow along its top, and two courses of single bags on it for the outline (all bags as spheres were
+	# 46 k shadow-casting triangles)
 	for face: Array in [[Vector3(o.position.x - 0.12, 0, o.position.y - 0.12), Vector3(o.end.x + 0.12, h - 0.4, o.position.y + 0.3)],
 			[Vector3(o.position.x - 0.12, 0, o.end.y - 0.3), Vector3(o.end.x + 0.12, h - 0.4, o.end.y + 0.12)],
 			[Vector3(o.end.x - 0.3, 0, o.position.y), Vector3(o.end.x + 0.12, h - 0.4, o.end.y)],
 			[Vector3(o.position.x - 0.12, 0, o.position.y), Vector3(o.position.x + 0.3, h - 0.4, BUNKER_DOOR.x - 0.14)],
 			[Vector3(o.position.x - 0.12, 0, BUNKER_DOOR.y + 0.14), Vector3(o.position.x + 0.3, h - 0.4, o.end.y)]]:
-		Props.block(g, face[0], face[1], "sandbag")
+		Props.block(g, face[0], face[1], "dirt")
+		var fa: Vector3 = face[0]
+		var fb: Vector3 = face[1]
+		Props._noshadow(Props.block(g, Vector3(fa.x - 0.02, fb.y - 0.06, fa.z - 0.02), Vector3(fb.x + 0.02, fb.y + 0.03, fb.z + 0.02), "snow"))
 	for side: Array in [[Vector3(o.position.x, 0, o.position.y), Vector3(o.end.x, 0, o.position.y)], [Vector3(o.position.x, 0, o.end.y), Vector3(o.end.x, 0, o.end.y)],
 			[Vector3(o.end.x, 0, o.position.y), Vector3(o.end.x, 0, o.end.y)],
 			[Vector3(o.position.x, 0, o.position.y), Vector3(o.position.x, 0, BUNKER_DOOR.x - 0.1)], [Vector3(o.position.x, 0, BUNKER_DOOR.y + 0.1), Vector3(o.position.x, 0, o.end.y)]]:
@@ -848,9 +856,9 @@ static func build_gameplay(g: Object) -> void:
 	var fl: SpotLight3D = SpotLight3D.new()
 	fl.name = "OutRktFlood"
 	fl.light_color = Color(0.95, 0.9, 0.8)
-	fl.light_energy = 5.0
-	fl.spot_range = 26.0
-	fl.spot_angle = 24.0
+	fl.light_energy = 9.0   # (the renders: 5.0 left the rocket's upper half in the dark at night)
+	fl.spot_range = 28.0
+	fl.spot_angle = 32.0
 	fl.spot_attenuation = 1.2
 	fl.shadow_enabled = true
 	fl.light_volumetric_fog_energy = 0.4

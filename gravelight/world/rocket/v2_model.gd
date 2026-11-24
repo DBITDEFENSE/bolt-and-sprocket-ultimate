@@ -46,7 +46,7 @@ static func rocket() -> Node3D:
 			var p11: Vector3 = Vector3(cos(a1) * r1, y1, sin(a1) * r1)
 			var n0: Vector3 = Vector3(cos(a0), slope, sin(a0)).normalized()
 			var n1: Vector3 = Vector3(cos(a1), slope, sin(a1)).normalized()
-			for v: Array in [[p00, n0], [p10, n0], [p11, n1], [p00, n0], [p11, n1], [p01, n1]]:
+			for v: Array in [[p00, n0], [p11, n1], [p10, n0], [p00, n0], [p01, n1], [p11, n1]]:   # (clockwise from outside: Godot's front face)
 				st2.set_normal(v[1])
 				st2.add_vertex(v[0])
 	# the base: a dark ring round the nozzle's mouth
@@ -97,7 +97,7 @@ static func _fin(parent: Node3D, key: String) -> void:
 	for side: float in [-1.0, 1.0]:
 		var n: Vector3 = Vector3(0, 0, side)
 		for k: int in range(1, pts.size() - 1):
-			var tri: Array = [pts[0], pts[k], pts[k + 1]] if side > 0.0 else [pts[0], pts[k + 1], pts[k]]
+			var tri: Array = [pts[0], pts[k + 1], pts[k]] if side > 0.0 else [pts[0], pts[k], pts[k + 1]]   # (clockwise seen from that side)
 			for q: Vector2 in tri:
 				st.set_normal(n)
 				st.add_vertex(Vector3(q.x, q.y, side * t))
@@ -106,7 +106,7 @@ static func _fin(parent: Node3D, key: String) -> void:
 		var b: Vector2 = pts[(k2 + 1) % pts.size()]
 		var e: Vector2 = (b - a).normalized()
 		var n2: Vector3 = Vector3(e.y, -e.x, 0)
-		for q2: Vector3 in [Vector3(a.x, a.y, -t), Vector3(b.x, b.y, -t), Vector3(b.x, b.y, t), Vector3(a.x, a.y, -t), Vector3(b.x, b.y, t), Vector3(a.x, a.y, t)]:
+		for q2: Vector3 in [Vector3(a.x, a.y, -t), Vector3(b.x, b.y, t), Vector3(b.x, b.y, -t), Vector3(a.x, a.y, -t), Vector3(a.x, a.y, t), Vector3(b.x, b.y, t)]:
 			st.set_normal(n2)
 			st.add_vertex(q2)
 	var mi: MeshInstance3D = MeshInstance3D.new()
