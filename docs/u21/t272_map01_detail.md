@@ -152,7 +152,7 @@ footprints and their places; the deal moves the other eight (`perk_layout.json` 
 | `lab_hall_east` | H_LAB | (96, -12, 88.8), 180 | flush 1 | Packmule's old place |
 | `lab_south` | H_LAB | (64, -12, 97.2), 0 | flush 1 | Blastproof's old place |
 | `admin_upper` | C_ADMIN | (-0.83, 3.8, 29.0), 90 | near, flush 1 | new: the upper floor's east wall at the stair head's end |
-| `railyard_west` | B_RAILYARD | (40.8, 0, 19.0), -90 | outdoor, near, flush 1 | new: the Rail Yard's west wall north of its first door, 3.4 m from the ore-cart trap's track |
+| `railyard_west` | B_RAILYARD | (40.8, 0, 16.6), -90 | outdoor, near, flush 1 | new: the Rail Yard's west wall near its north end, 3.2 m from the ore-cart trap's track (first placed at z 19: `smoke_map_detail` found it 1.9 m through the wall from the yard horse's rail, inside its 2.5 m clearance; moved, re-probed clean, POIs refreshed) |
 | `mess_east` | D_BARRACKS | (32.0, 0, 32.8), 180 | flush 1 | new: the mess hall's north wall |
 | `lift_house` | E_LIFT | (20.81, 0, 54.2), -90 | flush -1 | new: the lift house's west wall, opposite the cage |
 | `stairs_foot` | M_STAIRS | (-4.82, -12, 56.5), 90 | flush 1 | new: the foot of the maintenance stairs |
@@ -293,6 +293,32 @@ ladder at noon (`b01`: stiles, rungs and stand-offs read, the railing over it, t
 (`b02`), the glass on the mess tables among the crockery (`b03`) and on the serving line (`b04`), the Administration's
 north window (`b05`: dark; the curtains barely read), the partition doorway (`b06`: the leaf stands in the dark radio
 room and does not read from the hall), the Rail Yard's perk spot with its machine flush on the wall north of the door
-(`b07`), the jars on Fasbender's bench (`b08`), the sacking at the bunk room's window (`b09`). What the frames changed:
+(`b07`, before the spot moved 2.4 m north), the jars on Fasbender's bench (`b08`), the sacking at the bunk room's window (`b09`). What the frames changed:
 the calendar stood on the corner of the Gewehr 43's chalk board (`b05`); it moved 2.6 m east, between the chalk and the
 window (not re-rendered).
+
+## Results (headless, this PC, 2026-11-24)
+
+- `check_scripts`: 1011 scripts, 0 failed.
+- Full GUT (on the commit before the last spot move): 2602 tests, 2600 passing, 1 risky (the known
+  `test_neural_lines_are_loudness_normalised`), 1 failing: `test_transitions.test_preload_next_is_idempotent_for_every_target`
+  ('Parameter "t" is null / "texture" is null', the known intermittent under load). After the move: `test_map01_detail`
+  (13) and `test_mapdata` (11) PASS again.
+- Smokes, all 0 script errors: `smoke_map01`, `smoke_map01_systems`, `smoke_map01_world` PASS; the new
+  `smoke_map01_sherman` (36), `smoke_map01_tower` (63), `smoke_map01_perks` (13), `smoke_map01_reactive` (16),
+  `smoke_map01_opening` (15) PASS; `smoke_weapon_locker`, `smoke_ladders`, `smoke_coop`, `smoke_sherman` (74) PASS.
+  `smoke_map_detail` FAILED once (121 checks, 1: the Rail Yard perk spot 1.9 m through the wall from the yard horse's
+  rail); the spot moved to z 16.6, then `smoke_map_detail -- --only=map01` (27) and `smoke_map01_perks` PASS.
+- Not run: the bot smokes, the campaign smoke, the full `smoke_map_detail` after the move (only its Map 1 part).
+
+## Not verified, open
+
+- Everything was seen only in the software Compatibility renderer under WSL; nothing on the owner's GPU.
+- Co-op: the Sherman on this map, the gate, the tower, the deal, the reactive pieces and the opening use the existing
+  mirrored machinery, but only `smoke_coop` (Map 0) was run.
+- Bots: they do not climb or ride (as on Map 0); not soaked on the deck. Bots with a Sherman parked in the forecourt:
+  only the danger discs (T-249's), not run.
+- The tank's assist from the forecourt sees only the north side of the yard (the hoist house, the gatehouse and the
+  winding house box it in).
+- The opening's miners are primitive bodies; their nine lines have no voice yet.
+- Survivors behind a door: not built (see section 5).

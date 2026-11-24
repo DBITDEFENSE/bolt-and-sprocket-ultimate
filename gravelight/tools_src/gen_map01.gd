@@ -147,8 +147,9 @@ const PERK_SPOTS: Array = [
 	["lab_south", "H_LAB", Vector3(64, DY, 97.2), 0.0, {"flush": 1}],
 	# the Administration's upper floor, on its east wall at the stair head's end (Reinholt's side of the partition)
 	["admin_upper", "C_ADMIN", Vector3(-0.83, 3.8, 29.0), 90.0, {"near": true, "flush": 1}],
-	# the Rail Yard's west wall north of its first door, 3.4 m from the ore-cart trap's track (under the snow)
-	["railyard_west", "B_RAILYARD", Vector3(40.8, 0, 19.0), -90.0, {"outdoor": true, "near": true, "flush": 1}],
+	# the Rail Yard's west wall near its north end, 3.2 m from the ore-cart trap's track (under the snow). (At z 19 it was
+	# 1.9 m through the wall from the yard horse's rail: smoke_map_detail keeps 2.5 m clear round the horse and its rail)
+	["railyard_west", "B_RAILYARD", Vector3(40.8, 0, 16.6), -90.0, {"outdoor": true, "near": true, "flush": 1}],
 	# the mess hall's north wall, east of Ironhide's old place
 	["mess_east", "D_BARRACKS", Vector3(32.0, 0, 32.8), 180.0, {"flush": 1}],
 	# the lift house's west wall, opposite the cage

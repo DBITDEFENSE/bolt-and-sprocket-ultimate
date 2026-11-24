@@ -16,7 +16,7 @@
     1304
   ],
   "baked_at": "2026-11-12T00:19:33",
-  "poi_signature": "3eda6554a4bf7afba3de899ec236e14d",
+  "poi_signature": "a450985941fc2cfa4536eb0cf2121824",
   "floors": [
     {
       "id": "vault",
@@ -860,7 +860,7 @@
       "pos": [
         40.8,
         0.0,
-        19.0
+        16.6
       ],
       "floor": 2,
       "label": "Ironhide Stout",
