@@ -1098,3 +1098,240 @@ static func fish_crate(parent: Node3D, pos: Vector3, yaw: float, seed_v: int) ->
 		g.add_child(f)
 		Props.ball(f, Vector3.ZERO, Vector3(0.07, 0.05, 0.26), "chrome_worn" if k % 3 != 2 else "frosted")
 	return g
+
+
+# ================================================================== T-273: the patrol boat moored off the quay
+
+## T-273 (the map detail pass: "a landmark under open sky for the dive bomber"): a Vorpostenboot, a requisitioned steam
+## trawler in navy grey, lying to two buoys off the quay, the thing the round-30 dive bomber comes down on. `pos` is the
+## waterline amidships; local -Z is the bow, +X starboard, y 0 the waterline. A lofted steel hull (a raised forecastle
+## with a sloped break, a cruiser stern with its transom), inner bulwarks and their cap, the decks; the bridge house,
+## the wheelhouse and its wings, the raked funnel, two masts with stays, shrouds and the aerial, an 8.8 cm gun in its
+## tub on the forecastle and a 2 cm on the stern, the fish hold's coaming, a winch, depth-charge rails, the ship's boat
+## on its davits, the hull number, riding lamps (emissive, no light), the anchor cable and the two buoys with their
+## lines, snow on the decks. The hull is one mesh per material (four); the rest are Props primitives the generator
+## batches. Returns the fire group (a kept child of `parent`, hidden, its own visibility "ALL" so the view cells leave
+## it alone): the ShermanEvent shows it when the bomb lands (map02.json sherman_event.stuka_hit_show).
+static func patrol_boat(parent: Node3D, pos: Vector3, yaw: float, length: float = 34.0, beam: float = 7.0) -> Node3D:
+	var g: Node3D = Props.group(parent, "PatrolBoat", pos, yaw)
+	var hl: float = length * 0.5
+	var hb: float = beam * 0.5
+	var draft: float = 3.2
+	var fc_u: float = 0.27            # the forecastle's break
+	var fc_y: float = 2.9             # the forecastle deck
+	var md_y: float = 1.3             # the main deck
+	var bw: float = 0.12              # the bulwark's thickness
+	var deck_y: Callable = func(u: float) -> float: return fc_y if u < fc_u else md_y
+	var sheer: Callable = func(u: float) -> float:
+		return md_y + 0.9 + (fc_y - md_y) * (1.0 - smoothstep(fc_u, fc_u + 0.04, u)) + 0.3 * (1.0 - smoothstep(0.0, 0.12, u)) + 0.2 * smoothstep(0.8, 1.0, u)
+	var half_b: Callable = func(u: float) -> float:
+		return maxf(0.04, hb * pow(smoothstep(0.0, 0.32, u), 0.55) * lerpf(1.0, 0.62, smoothstep(0.78, 1.0, u)))
+	# a point on the starboard side: u along (0 bow .. 1 stern), t down the side (0 the sheer .. 1 the keel)
+	var side_at: Callable = func(u: float, t: float) -> Vector3:
+		var s: float = sheer.call(u)
+		var y: float = lerpf(s, -draft, t)
+		var x: float = (half_b.call(u) as float) * cos(pow(t, 1.8) * PI * 0.5)
+		var z: float = -hl + u * length - 1.8 * clampf(1.0 - u / 0.1, 0.0, 1.0) * ((y + draft) / (s + draft))   # the raked stem
+		return Vector3(x, y, z)
+	var secs: int = 34
+	var outward: Callable = func(p: Vector3) -> Vector3: return Vector3(0.0, p.y, p.z)
+	var inward: Callable = func(p: Vector3) -> Vector3: return Vector3(p.x * 4.0, p.y, p.z)
+	var upward: Callable = func(p: Vector3) -> Vector3: return p - Vector3.UP
+	var tops: Array = []
+	var reds: Array = []
+	var greys: Array = []
+	var decks: Array = []
+	for side: float in [-1.0, 1.0]:
+		var l_top: Array = []
+		var l_red: Array = []
+		var l_in: Array = []
+		var l_cap: Array = []
+		for s2: int in secs + 1:
+			var u: float = float(s2) / float(secs)
+			var sh: float = sheer.call(u)
+			var tw: float = (sh + 0.35) / (sh + draft)   # the boot-top just under the waterline
+			var a_top: PackedVector3Array = []
+			var a_red: PackedVector3Array = []
+			for k: int in 6:
+				var p: Vector3 = side_at.call(u, tw * float(k) / 5.0)
+				a_top.append(Vector3(p.x * side, p.y, p.z))
+				var q: Vector3 = side_at.call(u, lerpf(tw, 1.0, float(k) / 5.0))
+				a_red.append(Vector3(q.x * side, q.y, q.z))
+			l_top.append(a_top)
+			l_red.append(a_red)
+			var e: Vector3 = side_at.call(u, 0.0)
+			var xi: float = maxf(0.0, e.x - bw)
+			var dy: float = deck_y.call(u)
+			l_in.append(PackedVector3Array([Vector3(xi * side, sh, e.z), Vector3(xi * side, minf(dy, sh - 0.05), e.z)]))
+			l_cap.append(PackedVector3Array([Vector3(e.x * side, sh, e.z), Vector3(xi * side, sh, e.z)]))
+		tops.append([strip(l_top, outward), Transform3D.IDENTITY])
+		reds.append([strip(l_red, outward), Transform3D.IDENTITY])
+		greys.append([strip(l_in, inward, true), Transform3D.IDENTITY])
+		greys.append([strip(l_cap, upward, true), Transform3D.IDENTITY])
+	# the decks: the forecastle's and the main deck's, inside the bulwarks
+	for part: Array in [[0.0, fc_u, fc_y], [fc_u - 0.03, 1.0, md_y]]:
+		var ld: Array = []
+		for s3: int in 13:
+			var u3: float = lerpf(float(part[0]), float(part[1]), float(s3) / 12.0)
+			var e3: Vector3 = side_at.call(u3, 0.0)
+			var xi3: float = maxf(0.02, e3.x - bw)
+			ld.append(PackedVector3Array([Vector3(-xi3, float(part[2]), e3.z), Vector3(xi3, float(part[2]), e3.z)]))
+		decks.append([strip(ld, upward, true), Transform3D.IDENTITY])
+	# the transom: a fan over the stern section, both sides, from the sheer to the boot-top
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var ring: Array = []
+	var shs: float = sheer.call(1.0)
+	var tws: float = (shs + 0.35) / (shs + draft)
+	for k2: int in 9:
+		ring.append(side_at.call(1.0, tws * float(k2) / 8.0))
+	var aft: Callable = func(p: Vector3) -> Vector3: return p - Vector3.BACK
+	var cz: float = (ring[0] as Vector3).z
+	var cmid: Vector3 = Vector3(0.0, lerpf(shs, -0.35, 0.5), cz)
+	for k3: int in 8:
+		var p0: Vector3 = ring[k3]
+		var p1: Vector3 = ring[k3 + 1]
+		_tri(st, cmid, p0, p1, aft)
+		_tri(st, cmid, Vector3(-p0.x, p0.y, p0.z), Vector3(-p1.x, p1.y, p1.z), aft)
+	_tri(st, cmid, ring[0], Vector3(-(ring[0] as Vector3).x, (ring[0] as Vector3).y, cz), aft)
+	_tri(st, cmid, ring[8], Vector3(-(ring[8] as Vector3).x, (ring[8] as Vector3).y, cz), aft)
+	st.generate_normals()
+	tops.append([st.commit(), Transform3D.IDENTITY])
+	surface(g, "HullTopsides", merged(tops, "m2_hull"), "m2_hull")
+	surface(g, "HullBottom", merged(reds, "m2_hull_red"), "m2_hull_red", false)
+	surface(g, "HullBulwarks", merged(greys, "grey_paint"), "grey_paint")
+	surface(g, "HullDecks", merged(decks, "m2_tread"), "m2_tread", false)
+	var zu: Callable = func(u: float) -> float: return -hl + u * length
+	# the forecastle's break: the bulkhead across, its door, two ladders up
+	var zb: float = zu.call(fc_u)
+	var bb: float = (half_b.call(fc_u) as float) - bw
+	Props.block(g, Vector3(-bb, md_y, zb - 0.08), Vector3(bb, fc_y, zb + 0.06), "grey_paint")
+	Props._noshadow(Props.block(g, Vector3(-0.45, md_y, zb + 0.06), Vector3(0.45, md_y + 1.45, zb + 0.08), "window_dark", false))
+	for lx: float in [-1.6, 1.6]:
+		Props.ladder(g, Vector3(lx, md_y, zb + 0.08), 180.0, fc_y - md_y + 0.9, "iron")
+	# the bridge house, the boat deck over it, the wheelhouse with its windows and wings, the searchlight
+	var hz0: float = zu.call(0.42)
+	var hz1: float = zu.call(0.58)
+	Props.block(g, Vector3(-2.3, md_y, hz0), Vector3(2.3, 3.5, hz1), "grey_paint")
+	Props.block(g, Vector3(-2.6, 3.5, hz0 - 0.25), Vector3(2.6, 3.64, hz1 + 0.2), "m2_tread")
+	for sx: float in [-1.0, 1.0]:
+		for pz: float in [hz0 + 1.0, hz0 + 2.4, hz1 - 1.0]:
+			Props._noshadow(Props.cyl(g, Vector3(sx * 2.31, 2.5, pz), 0.17, 0.03, "window_dark", Vector3(0, 0, 90)))
+		Props._noshadow(Props.block(g, Vector3(sx * 2.3 - 0.01, md_y, hz0 + 3.3), Vector3(sx * 2.3 + 0.01, md_y + 1.8, hz0 + 4.0), "window_dark", false))
+	var wz0: float = hz0 + 0.2
+	var wz1: float = hz0 + 3.4
+	Props.block(g, Vector3(-1.9, 3.64, wz0), Vector3(1.9, 5.6, wz1), "grey_paint")
+	Props.block(g, Vector3(-2.1, 5.6, wz0 - 0.2), Vector3(2.1, 5.74, wz1 + 0.15), "grey_paint")
+	for wx: float in [-1.25, 0.0, 1.25]:
+		Props._noshadow(Props.block(g, Vector3(wx - 0.5, 4.45, wz0 - 0.02), Vector3(wx + 0.5, 5.25, wz0 - 0.01), "window_dark", false))
+	for sx2: float in [-1.0, 1.0]:
+		for wz: float in [wz0 + 0.8, wz0 + 2.1]:
+			Props._noshadow(Props.block(g, Vector3(sx2 * 1.91 - 0.01, 4.45, wz - 0.45), Vector3(sx2 * 1.91 + 0.01, 5.25, wz + 0.45), "window_dark", false))
+		# the wing: a grating out to the side with its rail
+		Props.block(g, Vector3(minf(sx2 * 1.9, sx2 * 3.25), 3.6, wz0 - 0.1), Vector3(maxf(sx2 * 1.9, sx2 * 3.25), 3.66, wz0 + 1.3), "m2_tread")
+		for ry: float in [4.1, 4.62]:
+			Props._noshadow(Props.block(g, Vector3(sx2 * 3.22 - 0.025, ry, wz0 - 0.1), Vector3(sx2 * 3.22 + 0.025, ry + 0.04, wz0 + 1.3), "iron"))
+		Props._noshadow(Props.block(g, Vector3(sx2 * 3.22 - 0.03, 3.66, wz0 + 1.25), Vector3(sx2 * 3.22 + 0.03, 4.66, wz0 + 1.3), "iron"))
+	Props.cyl(g, Vector3(0, 5.95, wz0 + 0.9), 0.28, 0.4, "iron", Vector3(90, 0, 0))   # the searchlight
+	Props._noshadow(Props.cyl(g, Vector3(0, 5.95, wz0 + 0.69), 0.24, 0.02, "bulb_off", Vector3(90, 0, 0)))
+	# the funnel, raked aft, its black top and the steam pipe; two vents
+	var fz: float = hz1 - 1.2
+	Props.cyl(g, Vector3(0, 3.64 + 2.2, fz + 0.3), 0.85, 4.4, "grey_paint", Vector3(8, 0, 0))
+	Props.cyl(g, Vector3(0, 3.64 + 4.2, fz + 0.6), 0.88, 0.6, "loco_black", Vector3(8, 0, 0))
+	Props._noshadow(Props.cyl(g, Vector3(0.0, 3.64 + 2.6, fz + 1.2), 0.08, 5.0, "iron", Vector3(8, 0, 0)))
+	for vx: float in [-1.6, 1.6]:
+		Props.cyl(g, Vector3(vx, 4.2, fz + 0.4), 0.22, 1.1, "grey_paint")
+		Props.cyl(g, Vector3(vx, 4.85, fz + 0.25), 0.3, 0.35, "grey_paint", Vector3(70, 0, 0))
+	# the masts: the foremast on the forecastle with its yard and crow's nest, the mainmast aft with its gaff; stays,
+	# shrouds and the aerial between the mastheads
+	var fm: Vector3 = Vector3(0, fc_y, zu.call(0.2))
+	var mm: Vector3 = Vector3(0, md_y, zu.call(0.82))
+	Props.cyl(g, fm + Vector3(0, 5.0, 0), 0.14, 10.0, "grey_paint")
+	Props.cyl(g, fm + Vector3(0, 6.6, 0), 0.5, 0.9, "grey_paint")
+	Props.obox(g, fm + Vector3(0, 8.2, 0), Vector3(4.2, 0.12, 0.12), "grey_paint")
+	Props.cyl(g, mm + Vector3(0, 4.0, 0), 0.11, 8.0, "grey_paint")
+	Props.strut(g, mm + Vector3(0, 2.4, 0), mm + Vector3(0, 3.4, 3.2), 0.08, "grey_paint", true)
+	var stem: Vector3 = side_at.call(0.0, 0.0)
+	Props.cable(g, fm + Vector3(0, 9.9, 0), Vector3(0, stem.y + 0.1, stem.z + 0.2), 0.0, 0.015, 2, "iron")
+	Props.cable(g, mm + Vector3(0, 7.9, 0), Vector3(0, shs + 0.05, hl - 0.3), 0.0, 0.015, 2, "iron")
+	Props.cable(g, fm + Vector3(0, 9.7, 0), mm + Vector3(0, 7.7, 0), 0.35, 0.01, 10, "iron")
+	for sx3: float in [-1.0, 1.0]:
+		var e4: Vector3 = side_at.call(0.22, 0.0)
+		Props.cable(g, fm + Vector3(0, 8.0, 0), Vector3(sx3 * (e4.x - 0.1), e4.y, e4.z + 0.8), 0.0, 0.012, 2, "iron")
+		var e5: Vector3 = side_at.call(0.84, 0.0)
+		Props.cable(g, mm + Vector3(0, 6.5, 0), Vector3(sx3 * (e5.x - 0.1), e5.y, e5.z), 0.0, 0.012, 2, "iron")
+	# the 8.8 on the forecastle: the tub, the pedestal, the cradle, the shield and the barrel trained ahead
+	var gz: float = zu.call(0.12)
+	Props.cyl(g, Vector3(0, fc_y + 0.45, gz), 1.25, 0.9, "grey_paint")
+	Props._noshadow(Props.cyl(g, Vector3(0, fc_y + 0.905, gz), 1.12, 0.02, "m2_tread"))
+	Props.cyl(g, Vector3(0, fc_y + 1.25, gz), 0.32, 0.7, "grey_paint")
+	Props.block(g, Vector3(-0.35, fc_y + 1.55, gz - 0.5), Vector3(0.35, fc_y + 1.95, gz + 0.7), "grey_paint")
+	Props.obox(g, Vector3(0, fc_y + 1.95, gz - 0.62), Vector3(1.8, 1.2, 0.07), "grey_paint", Vector3(-8, 0, 0))
+	var bdir: Vector3 = Vector3(0, sin(deg_to_rad(12.0)), -cos(deg_to_rad(12.0)))
+	Props.cyl(g, Vector3(0, fc_y + 1.78, gz - 0.4) + bdir * 2.0, 0.075, 4.0, "grey_paint", Vector3(-78, 0, 0))
+	# the 2 cm on the stern, its pedestal and the barrel up at the sky
+	var sz: float = zu.call(0.9)
+	Props.cyl(g, Vector3(0, md_y + 0.45, sz), 0.2, 0.9, "grey_paint")
+	Props.block(g, Vector3(-0.2, md_y + 0.9, sz - 0.25), Vector3(0.2, md_y + 1.15, sz + 0.25), "grey_paint")
+	Props.cyl(g, Vector3(0, md_y + 1.6, sz - 0.5), 0.035, 1.6, "iron", Vector3(-40, 0, 0))
+	# the fish hold's coaming under its tarp, the winch, the depth-charge rails and their drums
+	var cz2: float = zu.call(0.34)
+	Props.block(g, Vector3(-1.4, md_y, cz2 - 1.1), Vector3(1.4, md_y + 0.45, cz2 + 1.1), "grey_paint")
+	Props.block(g, Vector3(-1.45, md_y + 0.45, cz2 - 1.15), Vector3(1.45, md_y + 0.5, cz2 + 1.15), "tarp")
+	Props.cyl(g, Vector3(0, md_y + 0.45, zu.call(0.39)), 0.35, 1.6, "iron", Vector3(0, 0, 90))
+	for rx: float in [-1.6, 1.6]:
+		Props.block(g, Vector3(rx - 0.05, md_y, zu.call(0.92)), Vector3(rx + 0.05, md_y + 0.1, hl - 0.4), "iron")
+		for k4: int in 3:
+			Props.cyl(g, Vector3(rx, md_y + 0.4, zu.call(0.93) + 0.75 * k4), 0.3, 0.6, "black_paint", Vector3(90, 0, 0))
+	# the ship's boat on its davits over the starboard quarter (out over the sea, away from the quay)
+	var bz: float = zu.call(0.7)
+	for dz: float in [-1.6, 1.6]:
+		Props.strut(g, Vector3(2.9, md_y + 0.9, bz + dz), Vector3(2.9, md_y + 2.9, bz + dz), 0.07, "grey_paint", true)
+		Props.strut(g, Vector3(2.9, md_y + 2.9, bz + dz), Vector3(3.6, md_y + 3.1, bz + dz), 0.07, "grey_paint", true)
+	Props.ball(g, Vector3(3.6, md_y + 1.9, bz), Vector3(1.3, 0.75, 4.2), "grey_paint")
+	Props.block(g, Vector3(3.05, md_y + 2.1, bz - 1.7), Vector3(4.15, md_y + 2.16, bz + 1.7), "tarp")
+	# the hull number on both bows, the riding lamps (red to port, green to starboard, white on the foremast)
+	for sx4: float in [-1.0, 1.0]:
+		var e6: Vector3 = side_at.call(0.1, 0.12)
+		Props.stencil(g, Vector3(sx4 * (e6.x + 0.03), e6.y, e6.z), -90.0 * sx4, "V 1507", 90, Color(0.86, 0.86, 0.82, 0.85), 0.006)
+	Props._noshadow(Props.block(g, Vector3(-2.75, 4.2, wz0 + 0.3), Vector3(-2.6, 4.4, wz0 + 0.5), "lamp_red_lit", false))
+	Props._noshadow(Props.block(g, Vector3(2.6, 4.2, wz0 + 0.3), Vector3(2.75, 4.4, wz0 + 0.5), "lantern_glass", false))
+	Props._noshadow(Props.block(g, fm + Vector3(-0.08, 7.3, -0.24), fm + Vector3(0.08, 7.5, -0.12), "lantern_glass", false))
+	# snow on the forecastle, the boat deck and the wheelhouse roof, a patch in the waist
+	Props._noshadow(Props.block(g, Vector3(-1.2, fc_y + 0.005, zu.call(0.15)), Vector3(1.4, fc_y + 0.05, zu.call(0.25)), "snow", false))
+	Props._noshadow(Props.block(g, Vector3(-2.4, 3.64, hz0), Vector3(2.4, 3.69, hz0 + 0.5), "snow", false))
+	Props._noshadow(Props.block(g, Vector3(-2.0, 5.74, wz0 - 0.1), Vector3(2.0, 5.8, wz1 + 0.05), "snow", false))
+	Props._noshadow(Props.block(g, Vector3(-1.5, md_y + 0.005, zu.call(0.6)), Vector3(-0.4, md_y + 0.04, zu.call(0.68)), "snow", false))
+	# the anchor at the port hawse and its cable out ahead; the lines to the two buoys, bow and stern
+	var hawse: Vector3 = side_at.call(0.04, 0.15)
+	Props.block(g, Vector3(-hawse.x - 0.05, hawse.y - 0.6, hawse.z - 0.1), Vector3(-hawse.x + 0.15, hawse.y + 0.1, hawse.z + 0.3), "iron")
+	Props.cable(g, Vector3(-hawse.x + 0.05, hawse.y - 0.2, hawse.z), Vector3(-hawse.x - 2.5, -0.6, hawse.z - 7.0), 0.4, 0.05, 8, "iron")
+	for b: Array in [[Vector3(0, 0, -hl - 9.0), Vector3(0, stem.y - 0.3, stem.z + 0.3)], [Vector3(-1.0, 0, hl + 8.0), Vector3(-0.8, shs - 0.2, hl - 0.2)]]:
+		var buoy: Vector3 = b[0]
+		Props.cyl(g, buoy + Vector3(0, 0.1, 0), 0.75, 1.3, "red_paint")
+		Props._noshadow(Props.cyl(g, buoy + Vector3(0, 0.8, 0), 0.3, 0.1, "iron"))
+		Props._noshadow(Props.block(g, buoy + Vector3(-0.04, 0.85, -0.04), buoy + Vector3(0.04, 1.15, 0.04), "iron"))
+		Props.cable(g, b[1] as Vector3, buoy + Vector3(0, 0.95, 0), 0.9, 0.04, 10, "rope")
+	# the fire the bomb starts: on the bridge, on the forecastle and in the waist; smoke; one light without a shadow
+	var fire: Node3D = Node3D.new()
+	fire.name = "MooredHullFire"
+	fire.position = pos
+	fire.rotation.y = deg_to_rad(yaw)
+	fire.visible = false
+	fire.set_meta("keep", true)
+	fire.set_meta("vis", "ALL")
+	parent.add_child(fire)
+	Props.flames(fire, Vector3(0, 3.7, hz0 + 1.6), 3.0, 4.0, 40)
+	Props.flames(fire, Vector3(0.4, fc_y + 0.3, zu.call(0.2)), 2.0, 2.4, 24)
+	Props.flames(fire, Vector3(-0.8, md_y + 0.3, zu.call(0.62)), 1.6, 1.8, 18)
+	Props.smoke(fire, Vector3(0, 9.0, hz0 + 1.0), 3.0, 16.0, 30)
+	var fl: OmniLight3D = OmniLight3D.new()
+	fl.name = "FireLight"
+	fl.position = Vector3(0, 6.0, hz0 + 1.6)
+	fl.light_color = Color(1.0, 0.5, 0.2)
+	fl.light_energy = 3.0
+	fl.omni_range = 30.0
+	fl.shadow_enabled = false
+	fl.light_volumetric_fog_energy = 1.5
+	fire.add_child(fl)
+	return fire

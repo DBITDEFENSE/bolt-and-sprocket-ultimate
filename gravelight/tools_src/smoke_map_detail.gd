@@ -384,6 +384,9 @@ func _raid(block: Dictionary) -> void:
 	raid.cfg["countdown"] = 3.0
 	raid.cfg["duration"] = 14.0
 	var roofless_bot_goal: Vector3 = Vector3.INF
+	for nm0: Variant in block.get("stuka_hit_show", []):
+		var hidden: Node3D = _map.find_child(str(nm0), true, false) as Node3D
+		_check(hidden != null and not hidden.is_visible_in_tree(), "%s waits hidden for the bomb" % str(nm0))
 	ev.call("_on_round_started", sr, false)
 	if block.has("stuka_target"):
 		_check(ev.phase == ShermanEvent.Phase.STUKA, "round %d: the dive bomber first" % sr)
@@ -391,6 +394,9 @@ func _raid(block: Dictionary) -> void:
 		_check(came, "the dive bomber is in the air")
 		var hit: bool = await _until(func() -> bool: return ev.stuka_hit_at.is_finite(), 40.0)
 		_check(hit and ev.stuka_hit_at.distance_to(ClimbLink._v3(block["stuka_target"])) < 8.0, "its bomb lands on the landmark (%s)" % str(ev.stuka_hit_at.snapped(Vector3.ONE * 0.1)))
+		for nm: Variant in block.get("stuka_hit_show", []):   # T-273: what the bomb sets alight shows (Totenhafen: the patrol boat burns)
+			var shown: Node3D = _map.find_child(str(nm), true, false) as Node3D
+			_check(shown != null and shown.is_visible_in_tree(), "the hit shows %s" % str(nm))
 	else:
 		_check(ev.phase != ShermanEvent.Phase.STUKA and ev.plane == null, "round %d: no dive bomber, the siren at once" % sr)
 	var warned: bool = await _until(func() -> bool: return raid.phase == AirRaid.Phase.WARN, 12.0)

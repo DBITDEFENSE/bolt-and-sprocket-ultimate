@@ -257,6 +257,7 @@ func _process(_delta: float) -> bool:
 	build_dressing()
 	var merged: int = merge_static_meshes()
 	print("merged %d static meshes into batches" % merged)
+	_adopt_t273_batches()
 	build_lights()
 	build_gameplay()
 	_prune(dress)
@@ -1351,6 +1352,7 @@ func build_dressing() -> void:
 	_tagged(_dress_u10_penhall, "")
 	_tagged(_dress_u10_tower, "G")
 	_tagged(_dress_u10_lowerpens, "F")
+	_tagged(_dress_t273_sea, "A")      # T-273: the map detail pass (the patrol boat off the quay)
 	_dress_windows()
 	_dress_doors()
 	_dress_treads()
@@ -3046,6 +3048,42 @@ func _dress_u10_penhall() -> void:
 		ic.add_to_group(&"m2_icicles", true)
 		i += 1
 	_fish_crate(Vector3(7.6, 0, 35.2), 60.0, 15480)
+
+
+## T-273 (the map detail pass): the patrol boat V 1507 lying to two buoys 20 m off the parapet, bow to the west, its
+## port side and number to the quay: the landmark under open sky that round 30's dive bomber comes down on
+## (map02.json sherman_event: stuka_target on its wheelhouse, stuka_hit_show its fire). Out of every visibility box but
+## tagged with the quay's group, so it is drawn only where the quay is (not from the boat's interior, the lower pens or
+## the tower). No collider: nobody reaches it (the parapet and the stages' kerb rails hold the quay).
+const PATROL_BOAT: Array = [Vector3(16.0, -2.0, -20.0), 90.0]
+
+
+func _dress_t273_sea() -> void:
+	DetailMap02.patrol_boat(dress, PATROL_BOAT[0], float(PATROL_BOAT[1]))
+	# one mesh per material and shadow mode for the whole boat (the 22 m batching cells would cut it into some forty
+	# draw calls); _adopt_t273_batches hangs them in the quay's batch group once the batches exist
+	GenDetail.merge_children(dress.get_node("PatrolBoat") as Node3D)
+
+
+## T-273: the patrol boat's folded meshes into StaticBatches/VisGroup_A (the batch container the shadow proxies and
+## the view cells already work on; T-266: no new container), in map space.
+func _adopt_t273_batches() -> void:
+	var boat: Node3D = dress.get_node_or_null("PatrolBoat") as Node3D
+	var vg: Node3D = map_root.get_node_or_null("StaticBatches/VisGroup_A") as Node3D
+	if boat == null or vg == null:
+		push_error("gen_map02: the patrol boat or VisGroup_A is missing")
+		return
+	var i: int = 0
+	for c: Node in boat.get_children():
+		var mi: MeshInstance3D = c as MeshInstance3D
+		if mi == null:
+			continue
+		var xf: Transform3D = boat.transform * mi.transform
+		boat.remove_child(mi)
+		mi.transform = xf
+		mi.name = "Batch_Boat_%d" % i
+		vg.add_child(mi)
+		i += 1
 
 
 ## The signal tower: rain streaking down the two embrasures' glass in front of the storm cards.

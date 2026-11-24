@@ -16864,6 +16864,19 @@
           "pitch": 0.7
         }
       ]
+    },
+    "t273": {
+      "_doc": "T-273: Totenhafen's map detail pass (docs/u21/t273_map02_detail.md): the patrol boat off the quay (night, noon, burning after the dive bomber's bomb), the catwalk ladders, the signal tower's zip line, the perk spots. Shot through tools/wsl_godot.sh only; saved under docs/captures/t273/.",
+      "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {"name": "boat_night", "pos": [14.0, 0.0, 3.0], "yaw": 0.0, "pitch": -2.0, "note": "the patrol boat from behind the parapet, 23 m", "do": ["callv:DayCycle:hold_hour:0:1"]},
+        {"name": "boat_wide_night", "pos": [5.0, 0.0, 5.0], "yaw": -32.0, "pitch": 0.0, "note": "the quay, the parapet and the boat beyond, the breakwater's cranes behind"},
+        {"name": "boat_fire_night", "pos": [14.0, 0.0, 3.0], "yaw": 0.0, "pitch": 2.0, "note": "after the bomb: the boat burning (ShermanEvent.show_hit_nodes)", "do": ["call:ShermanEvent:show_hit_nodes:2"]},
+        {"name": "boat_noon", "pos": [14.0, 0.0, 3.0], "yaw": 0.0, "pitch": -2.0, "note": "the boat at noon", "do": ["callv:DayCycle:hold_hour:12:1"]},
+        {"name": "boat_stage_noon", "pos": [27.5, 0.0, 1.0], "yaw": 40.0, "pitch": -6.0, "note": "from the parapet's east end, down onto the boat's decks"}
+      ]
     }
   }
 }
