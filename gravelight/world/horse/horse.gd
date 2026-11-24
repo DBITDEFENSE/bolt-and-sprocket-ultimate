@@ -1097,22 +1097,34 @@ func _update_rope() -> void:
 
 ## The hitching rail: two posts and a pole, a ring, a hay net and a bucket. Its collider is on the map-edge layer
 ## (players and bots are stopped, zombies and shots pass), so it never stands in a zombie's baked path.
-static func build_rail(parent: Node3D, at: Vector3, yaw_deg: float) -> Node3D:
+## T-274: `dress` (a horse row's "rail_dress", all optional, the defaults are the snowy carter's rail above): "snow"
+## false (no snow on the posts and the pole), "hay_net" false (a canvas nosebag on the post instead), "ice" false (the
+## bucket holds water, not ice), "wood" (the posts' and the pole's material keys, e.g. a sun-greyed rail).
+static func build_rail(parent: Node3D, at: Vector3, yaw_deg: float, dress: Dictionary = {}) -> Node3D:
+	var snow: bool = bool(dress.get("snow", true))
+	var post_key: String = str(dress.get("post", "beam"))
+	var pole_key: String = str(dress.get("pole", "pine"))
 	var g: Node3D = Node3D.new()
 	g.name = "HitchingRail"
 	parent.add_child(g)
 	g.position = at
 	g.rotation.y = deg_to_rad(yaw_deg)
 	for sx: float in [-1.1, 1.1]:
-		Props.block(g, Vector3(sx - 0.07, 0.0, -0.07), Vector3(sx + 0.07, 1.16, 0.07), "beam")
-		Props.block(g, Vector3(sx - 0.09, 1.16, -0.09), Vector3(sx + 0.09, 1.2, 0.09), "snow", false)
-	Props.cyl(g, Vector3(0, 1.02, 0), 0.055, 2.5, "pine", Vector3(0, 0, 90))
-	Props.block(g, Vector3(-1.2, 1.07, -0.05), Vector3(1.2, 1.09, 0.05), "snow", false)
+		Props.block(g, Vector3(sx - 0.07, 0.0, -0.07), Vector3(sx + 0.07, 1.16, 0.07), post_key)
+		if snow:
+			Props.block(g, Vector3(sx - 0.09, 1.16, -0.09), Vector3(sx + 0.09, 1.2, 0.09), "snow", false)
+	Props.cyl(g, Vector3(0, 1.02, 0), 0.055, 2.5, pole_key, Vector3(0, 0, 90))
+	if snow:
+		Props.block(g, Vector3(-1.2, 1.07, -0.05), Vector3(1.2, 1.09, 0.05), "snow", false)
 	Props.cyl(g, Vector3(0.0, 0.96, 0.0), 0.05, 0.02, "iron", Vector3(90, 0, 0))
-	Props.ball(g, Vector3(-0.72, 0.62, -0.12), Vector3(0.44, 0.56, 0.36), "hay")           # the hay net
-	Props.cable(g, Vector3(-0.72, 1.0, -0.02), Vector3(-0.72, 0.86, -0.1), 0.0, 0.012, 2, "rope")
+	if bool(dress.get("hay_net", true)):
+		Props.ball(g, Vector3(-0.72, 0.62, -0.12), Vector3(0.44, 0.56, 0.36), "hay")           # the hay net
+		Props.cable(g, Vector3(-0.72, 1.0, -0.02), Vector3(-0.72, 0.86, -0.1), 0.0, 0.012, 2, "rope")
+	else:   # a canvas nosebag hung on the near post
+		Props.cyl(g, Vector3(-1.1, 0.78, -0.13), 0.12, 0.3, "tarp")
+		Props.cable(g, Vector3(-1.1, 1.08, -0.07), Vector3(-1.1, 0.93, -0.13), 0.0, 0.01, 2, "leather")
 	Props.cyl(g, Vector3(0.78, 0.16, -0.38), 0.17, 0.32, "tin")                          # the water bucket
-	Props.cyl(g, Vector3(0.78, 0.3, -0.38), 0.15, 0.02, "ice")
+	Props.cyl(g, Vector3(0.78, 0.3, -0.38), 0.15, 0.02, "ice" if bool(dress.get("ice", true)) else "puddle")
 	var body: StaticBody3D = StaticBody3D.new()
 	body.name = "RailCollider"
 	body.collision_layer = LAYER_EDGE
@@ -1150,7 +1162,7 @@ static func spawn_all(root: Node3D, map_id: StringName) -> Array[Horse]:
 		if row.has("rail"):
 			h.rail_pos = ClimbLink._v3(row["rail"])
 			h.rail_yaw = float(row.get("rail_yaw", 0.0))
-			build_rail(holder, h.rail_pos, h.rail_yaw)
+			build_rail(holder, h.rail_pos, h.rail_yaw, row.get("rail_dress", {}))
 			if not HorseRules.upgrade_rows().is_empty():
 				h.tack = HorseTack.at_rail(holder, h)
 		h.position = h.home_pos

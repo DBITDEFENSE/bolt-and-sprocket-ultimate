@@ -10,6 +10,8 @@ extends "res://gravelight/tools_src/gen_map04_lib.gd"
 ## · G_PRUEFSTAND -60..0 × 110..150 · H_HALLE -70..30 × 150..215.
 
 const CATY: float = 12.0
+## T-274: where the two fixed ladders climb the catwalks' edges (the dead's climb links were already here, unseen)
+const CRANE_LADDER_Z: float = 190.0
 ## Where Skyhook Sekt goes in the wind tunnel (Phase 2 step 8; nothing is placed here yet): [pos, yaw].
 const SKYHOOK_SPOT: Array = [Vector3(1.0, 0.0, 104.0), -90.0]
 const CRANE_Y: float = 12.0
@@ -131,6 +133,20 @@ func setup_tables() -> void:
 		["packmule_porter", Vector3(-20.0, 0, 149.0), 0.0], ["blastproof_bock", Vector3(-40.0, 0, 149.0), 0.0],
 		# Ledger Lager (T-141): in the yardmaster's hut, on its far wall; the hut's south wall is the works' pay window (bank.json)
 		["ledger_lager", Vector3(3.6, 0, 57.45), 0.0],
+	]
+	# T-274: the perk deal (perk_layout.json maps.map04a): the nine machines are dealt onto these spots each match. The
+	# first nine are where the machines stood (the spot's back where the machine's back was); the rest are new.
+	perk_spots = [
+		spot_from_perk("siedlung", "second_wind"), spot_from_perk("bahnhof_shed", "ironhide_stout", {"ignore": ["WallBuy_m1_carbine"]}),   # (the carbine is on the Siedlung side of the wall)
+		spot_from_perk("kantine", "trigger_tonic"), ["kirchplatz", "", Vector3(5.4, 0, 99.0), 0.0, {"snap": true}],   # (where Twin Barrel stood, 0.6 m further from the tunnel door)
+		spot_from_perk("montage", "marathon_malt"), spot_from_perk("windkanal", "hawkeye_brandy"),
+		spot_from_perk("pruefstand_e", "packmule_porter"), spot_from_perk("pruefstand_w", "blastproof_bock"),
+		spot_from_perk("yardmaster", "ledger_lager"),
+		# the rail yard's west wall (a second spot one door from the start: Second Wind's), the church square's west wall,
+		# hall 1's west wall, the wind tunnel's control-room wall, and the Great Hangar's two long walls
+		["bahnhof_w", "", Vector3(0.75, 0, 42.5), -90.0, {}], ["kirchplatz_w", "", Vector3(0.75, 0, 76.0), -90.0, {}],
+		["montage_w", "", Vector3(-59.25, 0, 87.25), -90.0, {}], ["windkanal_w", "", Vector3(0.75, 0, 107.75), -90.0, {}],
+		["halle_w", "", Vector3(-69.25, 0, 186.25), -90.0, {}], ["halle_e", "", Vector3(29.25, 0, 195.0), 90.0, {}],
 	]
 	crates = [
 		["Cellar", Vector3(7, 0, 3.2), 180.0, true, [Vector3(7, 0, 6), Vector3(7, 0, 12), Vector3(14, 0, 14)]],
@@ -391,7 +407,9 @@ func _halle() -> void:
 		var s: String = str(side[2])
 		box(geo, "Catwalk" + s, Vector3(x0, CATY - 0.2, 171), Vector3(x1, CATY, 215), "deck")
 		ramp_z("Ramp_Catwalk" + s, x0, x1, 150.5, 171.0, 0.0, CATY)
-		rail("Rail_Catwalk" + s, Vector3(x1 if s == "W" else x0, CATY, 171), Vector3(x1 if s == "W" else x0, CATY, 215), 1.05)
+		# T-274: a gap in the catwalk's rail over its ladder (CRANE_LADDER_Z; map04a.json ladders / climb_links)
+		rail("Rail_Catwalk" + s, Vector3(x1 if s == "W" else x0, CATY, 171), Vector3(x1 if s == "W" else x0, CATY, CRANE_LADDER_Z - 0.6), 1.05)
+		rail("Rail_Catwalk" + s + "2", Vector3(x1 if s == "W" else x0, CATY, CRANE_LADDER_Z + 0.6), Vector3(x1 if s == "W" else x0, CATY, 215), 1.05)
 		rail("Rail_Ramp" + s, Vector3(x1 if s == "W" else x0, 0.2, 150.5), Vector3(x1 if s == "W" else x0, CATY + 0.2, 171), 1.05)
 		box(geo, "CraneRail" + s, Vector3(x0 + 1.5, CRANE_Y + 1.2, 152), Vector3(x0 + 2.0, CRANE_Y + 1.6, 213), "metal", false)
 	# the tool cage by the south-west corner (the ammo box's wall)
@@ -640,7 +658,16 @@ func _dress_halle() -> void:
 		var x1: float = float(side3[1])
 		var edge: float = x1 if str(side3[2]) == "W" else x0
 		var wall_x0: float = x0 if str(side3[2]) == "W" else x1
-		GenDetail.railing(g, Vector3(edge, CATY, 171.0), Vector3(edge, CATY, 214.8), 1.05, "iron")
+		GenDetail.railing(g, Vector3(edge, CATY, 171.0), Vector3(edge, CATY, CRANE_LADDER_Z - 0.6), 1.05, "iron")
+		GenDetail.railing(g, Vector3(edge, CATY, CRANE_LADDER_Z + 0.6), Vector3(edge, CATY, 214.8), 1.05, "iron")
+		# T-274: the fixed ladder up the catwalk's edge from the hangar floor (the players' LadderClimbs and the dead's
+		# climb link use it: map04a.json), its stiles carried on up as grab handles through the rail's gap
+		var ly: float = -90.0 if str(side3[2]) == "W" else 90.0
+		Props.ladder(g, Vector3(edge, 0, CRANE_LADDER_Z), ly, CATY, "steel")
+		var out: float = 1.0 if str(side3[2]) == "W" else -1.0
+		for sz: float in [-0.2, 0.2]:
+			Props.block(g, Vector3(edge + out * 0.09 - 0.025, CATY, CRANE_LADDER_Z + sz - 0.025), Vector3(edge + out * 0.14 + 0.025, CATY + 1.1, CRANE_LADDER_Z + sz + 0.025), "steel")
+			Props.block(g, Vector3(minf(edge, edge + out * 0.14) - 0.02, CATY + 1.07, CRANE_LADDER_Z + sz - 0.025), Vector3(maxf(edge, edge + out * 0.14) + 0.02, CATY + 1.12, CRANE_LADDER_Z + sz + 0.025), "steel")
 		var rr: Node3D = GenDetail.railing(g, Vector3(edge, 0.2, 150.5), Vector3(edge, CATY + 0.2, 171.0), 1.05, "iron", false)
 		rr.name = "RampRailing"
 		for kz: float in [173.0, 179.0, 185.0, 191.0, 197.0, 203.0, 209.0]:
@@ -1674,6 +1701,8 @@ func _finish_dressing() -> void:
 
 func merge_static_meshes() -> int:
 	_finish_dressing()
+	if not perk_spots.is_empty():
+		_spot_grid_build()   # T-274: the perk spots' audit sees the dressing before it is folded into batches
 	var pre: int = _premerge_dressing(40.0, 12.0)
 	return super.merge_static_meshes() + pre
 
@@ -1865,3 +1894,30 @@ func build_gameplay_extra() -> void:
 	# Jette's logbook (the side egg): a minimap note the first time each glider model or her hatch is seen
 	_node("res://gravelight/world/map04/sight_note.gd", "SightNote_Jette", {"targets": [NodePath("../Glider1"), NodePath("../Glider2"), NodePath("../Glider3"),
 		NodePath("../JetteHatch")], "labels": PackedStringArray(["Jette's glider model", "Jette's glider model", "Jette's glider model", "Jette's desk hatch"])}, Vector3.ZERO)
+	_reactive_t274()
+
+
+## T-274 (the map detail pass): the act's reactive dressing (Map 0's kit, gen_map04_lib.gd "reactive props"): door
+## leaves left ajar in the three open doorways without a leaf (the yardmaster's hut, the parish hall, the air-raid
+## cellar; the goods shed has its sliding door drawn), blackout curtains at the canteen's south window, the night shift's glasses and steins on the canteen
+## tables (they break when shot), loose papers by the three office desks (beside the Fernflug files, never on them),
+## on the hut's desk and on hall 1's floor, and water dripping in the air-raid cellar and the bunker.
+func _reactive_t274() -> void:
+	swing_door("HutDoor", Vector3(6.0 - T * 0.5, 0, 54.9), 90.0, 1.75)
+	swing_door("ParishDoor", Vector3(36.0, 0, 88.0 + T * 0.5), 180.0, 1.95)
+	swing_door("CellarDoor", Vector3(6.1, 0, 10.0 - T * 0.5), 0.0, 1.75, {"rest_deg": 35.0})
+	window_curtains("W_C_S", "cloth_navy")
+	shatter_set("CanteenT38", Vector3(-31.0, 0.8, 38.7), 0.0, [[Vector3(-0.55, 0, 0.12), "stein", 1.0], [Vector3(-0.3, 0, -0.22), "glass", 1.0],
+		[Vector3(0.15, 0, 0.18), "bottle_green", 1.0], [Vector3(0.42, 0, -0.1), "stein", 1.0], [Vector3(2.6, 0, 0.05), "glass", 1.0]])
+	shatter_set("CanteenT44", Vector3(-19.0, 0.8, 44.7), 0.0, [[Vector3(-0.4, 0, 0.1), "bottle_amber", 1.0], [Vector3(-0.15, 0, -0.2), "glass", 1.0],
+		[Vector3(0.3, 0, 0.2), "stein", 1.0], [Vector3(-3.4, 0, -0.05), "jar", 1.0], [Vector3(-3.1, 0, 0.2), "glass", 1.0]])
+	shatter_set("CanteenT50", Vector3(-26.0, 0.8, 50.7), 0.0, [[Vector3(-0.2, 0, 0.15), "stein", 1.0], [Vector3(0.1, 0, -0.18), "stein", 1.0],
+		[Vector3(0.45, 0, 0.05), "bottle_green", 1.1], [Vector3(4.2, 0, 0.1), "glass", 1.0]])
+	loose_papers("HutDesk", Vector3(1.4, 0.8, 56.5), 0.0, Vector3(1.5, 0, 1.5), 6, {"floor_drop": 0.8})
+	loose_papers("DeskE", Vector3(-14.4, 0, 104.1), 0.0, Vector3(2.0, 0, 1.0), 7)
+	loose_papers("DeskF", Vector3(41.0, 0, 119.7), 0.0, Vector3(1.6, 0, 1.0), 6)
+	loose_papers("DeskG", Vector3(-57.6, 0, 145.7), 0.0, Vector3(1.6, 0, 1.0), 6)
+	loose_papers("Montage", Vector3(-36.0, 0, 72.0), 0.0, Vector3(3.0, 0, 2.0), 8, {"mat_key": "paper"})
+	drip("Cellar1", Vector3(4.5, 2.97, 4.0), 2.97)
+	drip("Cellar2", Vector3(9.5, 2.97, 7.5), 2.97)
+	drip("Bunker", Vector3(-54.0, 3.97, 141.0), 3.97)

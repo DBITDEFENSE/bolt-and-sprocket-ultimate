@@ -55,6 +55,9 @@ var _flash_pos: Vector3 = Vector3(0, -1000, 0)
 var _fc: Node = null
 var _last_strafes: int = 0
 var _fighters: Array[Dictionary] = []
+## T-274: the act rounds a fighter has gone down on (fighters.downed: by the act's own clock)
+var downed: int = 0
+var _down_round: int = -1
 var _fighter_mesh: ArrayMesh = null
 var _fighter_mat: StandardMaterial3D = null
 var _glow_mat: StandardMaterial3D = null
@@ -595,6 +598,14 @@ func _tick_fighters(delta: float) -> void:
 		passes_left.remove_at(0)
 		spawn_pass(false)
 	var fcfg: Dictionary = cfg.get("fighters", {})
+	var dcfg: Dictionary = fcfg.get("downed", {})
+	var ar: int = _act_round()
+	var due: bool = false
+	for r: Variant in dcfg.get("act_rounds", []):   # (json numbers are floats: Array.has(int) would miss them)
+		due = due or int(r) == ar
+	if due and _down_round != ar and round_t >= float(dcfg.get("at_s", 45.0)):
+		_down_round = ar
+		spawn_downed()
 	for f: Dictionary in _fighters.duplicate():
 		f["t"] = float(f["t"]) + delta
 		var k: float = float(f["t"]) / float(f["dur"])
@@ -604,6 +615,8 @@ func _tick_fighters(delta: float) -> void:
 			_fighters.erase(f)
 			continue
 		var pos: Vector3 = (f["from"] as Vector3).lerp(f["to"] as Vector3, k)
+		if f.has("mid"):   # T-274: a fighter going down: alongside to `mid`, hit, then the long fall to `to`
+			pos = _downed_pos(f, k, delta)
 		node.global_position = pos
 		var snd: Variant = f.get("snd")
 		if snd != null and is_instance_valid(snd):
@@ -641,6 +654,82 @@ func spawn_pass(with_strafe: bool) -> void:
 			a = Vector3(x3, 180.0, WING_Z - 90.0)
 			b = Vector3(x3 + side * 30.0, -200.0, WING_Z - 160.0)
 	_spawn_pass_ab(a, b, with_strafe, kind)
+
+
+## T-274 (the map detail pass): a night fighter that comes up alongside and is shot down by the blisters' guns on
+## the act rounds in `fighters.downed.act_rounds` (the act's own clock), `at_s` into the round: it closes from aft
+## with its guns going, is hit abeam, bursts into flame, rolls over and falls away burning, a long trail of fire and
+## smoke down through the cloud deck, and a while later a dull boom comes up from below. Presentation only, every peer.
+func spawn_downed() -> void:
+	if _fighter_mesh == null or desert:
+		return
+	var dcfg: Dictionary = (cfg.get("fighters", {}) as Dictionary).get("downed", {})
+	var side: float = -1.0 if _rng.randf() < 0.5 else 1.0
+	var x: float = side * _rng.randf_range(110.0, 150.0)
+	var a: Vector3 = Vector3(x, -18.0, WING_Z - 300.0)
+	var mid: Vector3 = Vector3(x * 0.85, -6.0, WING_Z + 10.0)
+	var to: Vector3 = Vector3(x * 1.6, -420.0, WING_Z + 260.0)
+	_spawn_pass_ab(a, mid, true, 0)
+	var f: Dictionary = _fighters[_fighters.size() - 1]
+	f["mid"] = mid
+	f["to"] = to
+	f["hit_k"] = 0.35
+	f["dur"] = float(dcfg.get("seconds", 12.0))
+	f["hit"] = false
+	downed += 1
+	print("[sky] a fighter goes down (act round %d)" % _act_round())
+
+
+func _downed_pos(f: Dictionary, k: float, delta: float) -> Vector3:
+	var hk: float = float(f["hit_k"])
+	var node: Node3D = f["node"] as Node3D
+	if k < hk:
+		return (f["from"] as Vector3).lerp(f["mid"] as Vector3, k / hk)
+	if not bool(f["hit"]):
+		f["hit"] = true
+		_downed_hit(f)
+	var t: float = (k - hk) / (1.0 - hk)
+	var mid: Vector3 = f["mid"]
+	var to: Vector3 = f["to"]
+	var p: Vector3 = Vector3(lerpf(mid.x, to.x, t), lerpf(mid.y, to.y, t * t), lerpf(mid.z, to.z, sqrt(t)))
+	node.rotate_object_local(Vector3(0, 0, 1), delta * 2.4)
+	node.rotate_object_local(Vector3(1, 0, 0), -delta * 0.35)
+	return p
+
+
+func _downed_hit(f: Dictionary) -> void:
+	var node: Node3D = f["node"] as Node3D
+	var dcfg: Dictionary = (cfg.get("fighters", {}) as Dictionary).get("downed", {})
+	AudioDirector.play_3d(str(dcfg.get("hit_sound", "war_plane_down")), node.global_position, float(dcfg.get("hit_db", 6.0)))
+	var trail: CPUParticles3D = CPUParticles3D.new()
+	trail.name = "BurningTrail"
+	trail.amount = 90
+	trail.lifetime = 4.0
+	trail.local_coords = false
+	trail.gravity = Vector3(0, 1.5, 0)
+	trail.initial_velocity_min = 0.5
+	trail.initial_velocity_max = 2.0
+	trail.spread = 25.0
+	trail.scale_amount_min = 2.0
+	trail.scale_amount_max = 5.0
+	var q: QuadMesh = QuadMesh.new()
+	q.size = Vector2(1.0, 1.0)
+	trail.mesh = q
+	var m: StandardMaterial3D = _glow_mat.duplicate() as StandardMaterial3D
+	m.blend_mode = BaseMaterial3D.BLEND_MODE_MIX
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.vertex_color_use_as_albedo = true
+	trail.material_override = m
+	var g: Gradient = Gradient.new()
+	g.offsets = PackedFloat32Array([0.0, 0.18, 0.45, 1.0])
+	g.colors = PackedColorArray([Color(1.0, 0.75, 0.3, 1.0), Color(1.0, 0.35, 0.1, 0.9), Color(0.25, 0.22, 0.2, 0.6), Color(0.12, 0.11, 0.1, 0.0)])
+	trail.color_ramp = g
+	trail.position = Vector3(0, 0, 3.0)
+	node.add_child(trail)
+	var boom_after: float = float(dcfg.get("boom_after_s", 9.0))
+	var below: Vector3 = f["to"]
+	get_tree().create_timer(boom_after).timeout.connect(func() -> void:
+		AudioDirector.play_3d(str(dcfg.get("boom", "war_crash_boom")), below * Vector3(1, 0.25, 1), float(dcfg.get("boom_db", 0.0))))
 
 
 ## UPDATE 10 (T-156): a fighter strafing close over the wing walk: low past `near` from aft to fore, guns firing.

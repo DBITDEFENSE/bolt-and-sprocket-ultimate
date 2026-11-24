@@ -626,7 +626,8 @@
     "banner": "SCHEDULED MAINTENANCE",
     "vo_warn": "OPR_M4D_METEOR_WARN_01",
     "vo_start": "OPR_M4D_METEOR_01",
-    "vo_end": "OPR_M4D_METEOR_END_01"
+    "vo_end": "OPR_M4D_METEOR_END_01",
+    "capsule": {"after_s": 4.0, "tele_s": 2.4, "land_box": [-16.0, 68.0, 16.0, 92.0], "ammo_out": 3, "beacon_s": 60.0, "banner": "A SUPPLY CAPSULE CAME DOWN IN THE YARD", "_doc": "T-274: after each shower ends (after_s) a supply capsule comes down on the yard's open ground in land_box [x0, z0, x1, z1] (the ring and the streak tele_s ahead; the dead under it die, nobody living is hurt): the capsule lies in its crater with a beacon blinking beacon_s, ammo_out tins (AmmoDrop) round it. It follows the shower's own schedule; dev console: meteors capsule"}
   },
   "shaft_grate": {
     "_doc": "UPDATE 10 §3 (T-158, the Bar's row 14): the Account's floor vent over the dish's vacuum shaft, just inside the Account's one door (where the horde comes in). A lever (cost, like the other traps) opens the grate for open_seconds: zombies on it (radius_m) are drawn down the shaft (a kill with a long fall and the vent's roar), and a zombie the Lodestone flings onto the open grate drops too; players on it are thrown clear (push_mps) and take player_damage. cooldown s.",

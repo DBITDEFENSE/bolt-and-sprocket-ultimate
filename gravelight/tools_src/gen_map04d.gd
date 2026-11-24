@@ -104,6 +104,20 @@ func setup_tables() -> void:
 		# Ledger Lager (T-141): on the concourse's east wall between the Thompson and the store door; Accounts is opposite (bank.json)
 		["ledger_lager", Vector3(11.45, 0, 36.6), 90.0],
 	]
+	# T-274: the perk deal (perk_layout.json maps.map04d): the nine machines are dealt onto these spots each match; the
+	# first nine are where they stood (the spot's back where the machine's back was, then onto its wall)
+	perk_spots = [
+		spot_from_perk("reception", "second_wind"), spot_from_perk("concourse_w", "skyhook_sekt"),
+		spot_from_perk("concourse_e", "magpie_mead"), ["fulfil_w", "", Vector3(12.75, 0, 44.25), -90.0, {}],
+		spot_from_perk("fulfil_e", "trigger_tonic"), spot_from_perk("hall_w", "hawkeye_brandy"),
+		spot_from_perk("hall_e", "blastproof_bock"), spot_from_perk("core", "packmule_porter"),
+		spot_from_perk("accounts", "ledger_lager"),
+		# (Ironhide's barrel stood 5 cm into the concourse wall beside a window: fulfil_w is 5.75 m south on the same wall.)
+		# New, all inside the base (none out on the regolith): reception's west wall, the concourse's west wall at its north
+		# end, the hall's west wall at its south end, the core's west wall
+		["reception_w", "", Vector3(-11.25, 0, 13.5), -90.0, {}], ["concourse_n", "", Vector3(-11.25, 0, 48.75), -90.0, {}],
+		["hall_s", "", Vector3(12.75, 0, -4.25), -90.0, {}], ["core_w", "", Vector3(14.75, 0, -31.0), -90.0, {}],
+	]
 	crates = [
 		["Reception", Vector3(-7.0, 0, 18.0), 90.0, true, [Vector3(-7, 0, 14), Vector3(-4, 0, 12), Vector3(0, 0, 12)]],
 		["Concourse", Vector3(7.0, 0, 56.0), -90.0, false, [Vector3(7, 0, 52), Vector3(4, 0, 50), Vector3(0, 0, 50)]],
@@ -1300,6 +1314,7 @@ func build_gameplay_extra() -> void:
 		var dn: Node = gameplay.get_node_or_null(str(dd[0]))
 		if dn != null:
 			dn.set("art_style", &"steel")
+	_reactive_t274()   # T-274: the reactive dressing (below)
 	_u10_act4(table)   # UPDATE 10 §3 (T-158): the heaters, the mast, the pads, the hall's leap points, the shaft grate, the tag slot
 	_presentation()
 
@@ -1498,3 +1513,14 @@ func _u10_act4(table: Dictionary) -> void:
 		lev.set("grate_path", lev.get_path_to(grate))
 	# Pohl's tag slot on the console's dais (the favour's end: ExtraPerson "pohl")
 	_node("res://gravelight/world/map04/tag_slot.gd", "TagSlot", {"person_id": "pohl"}, Vector3(26.2, 0.0, -29.2), 90.0)
+
+
+
+## T-274 (the map detail pass): what moves inside the base. Loose papers on the floor behind the reception desk and in
+## the concourse that float up and drift down at the Moon's 1.62 m/s2 (LoosePapers `gravity`), grey regolith dust
+## trodden in at the yard airlock's inner door and at the store's.
+func _reactive_t274() -> void:
+	loose_papers("Reception", Vector3(8.5, 0, 16.4), 0.0, Vector3(3.0, 0, 1.0), 8, {"gravity": 1.62, "mat_key": "paper"})
+	loose_papers("Concourse", Vector3(-6.0, 0, 40.0), 0.0, Vector3(3.0, 0, 3.0), 7, {"gravity": 1.62})
+	dust_zone("YardLock", Vector3(0, 0, 57.5), Vector3(3.0, 0.5, 3.0), Color(0.58, 0.58, 0.6))
+	dust_zone("StoreLock", Vector3(28.0, 0, 57.5), Vector3(2.6, 0.5, 3.0), Color(0.58, 0.58, 0.6))

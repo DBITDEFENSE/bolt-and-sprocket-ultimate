@@ -16,7 +16,7 @@
     1036
   ],
   "baked_at": "2026-11-02T14:31:56",
-  "poi_signature": "ea9efc9e0308bfb3cecca7d6af1dd37f",
+  "poi_signature": "d4850f786faf63cc097705ae10e09219",
   "floors": [
     {
       "id": "surface",
@@ -851,11 +851,11 @@
       "id": "perk:Gameplay/Perk_blastproof_bock",
       "type": "perk",
       "pos": [
-        -20.8,
-        -6.0,
-        125.0
+        -50.25,
+        0.0,
+        -3.12
       ],
-      "floor": 1,
+      "floor": 0,
       "label": "Blastproof Bock",
       "price": 2000,
       "node_path": "Gameplay/Perk_blastproof_bock",
@@ -868,9 +868,9 @@
       "id": "perk:Gameplay/Perk_hawkeye_brandy",
       "type": "perk",
       "pos": [
-        20.8,
+        -13.52,
         0.0,
-        120.0
+        -22.5
       ],
       "floor": 0,
       "label": "Hawkeye Brandy",
@@ -885,9 +885,9 @@
       "id": "perk:Gameplay/Perk_ironhide_stout",
       "type": "perk",
       "pos": [
-        -59.2,
+        20.75,
         0.0,
-        44.0
+        107.0
       ],
       "floor": 0,
       "label": "Ironhide Stout",
@@ -902,11 +902,11 @@
       "id": "perk:Gameplay/Perk_ledger_lager",
       "type": "perk",
       "pos": [
-        54.0,
-        0.0,
-        99.45
+        -69.35,
+        -6.0,
+        170.0
       ],
-      "floor": 0,
+      "floor": 1,
       "label": "Ledger Lager",
       "price": 3000,
       "node_path": "Gameplay/Perk_ledger_lager",
@@ -919,11 +919,11 @@
       "id": "perk:Gameplay/Perk_magpie_mead",
       "type": "perk",
       "pos": [
-        20.8,
-        0.0,
-        86.0
+        -20.58,
+        -6.0,
+        165.0
       ],
-      "floor": 0,
+      "floor": 1,
       "label": "Magpie Mead",
       "price": 3000,
       "node_path": "Gameplay/Perk_magpie_mead",
@@ -936,11 +936,11 @@
       "id": "perk:Gameplay/Perk_packmule_porter",
       "type": "perk",
       "pos": [
-        -69.2,
-        -6.0,
-        170.0
+        54.0,
+        0.0,
+        99.4
       ],
-      "floor": 1,
+      "floor": 0,
       "label": "Packmule Porter",
       "price": 4000,
       "node_path": "Gameplay/Perk_packmule_porter",
@@ -953,9 +953,9 @@
       "id": "perk:Gameplay/Perk_second_wind",
       "type": "perk",
       "pos": [
-        -8.0,
+        -59.5,
         0.0,
-        -35.2
+        44.0
       ],
       "floor": 0,
       "label": "Second Wind Schnapps",
@@ -970,9 +970,9 @@
       "id": "perk:Gameplay/Perk_skyhook_sekt",
       "type": "perk",
       "pos": [
-        -20.8,
+        -62.0,
         -6.0,
-        165.0
+        136.5
       ],
       "floor": 1,
       "label": "Skyhook Sekt",
@@ -987,11 +987,11 @@
       "id": "perk:Gameplay/Perk_trigger_tonic",
       "type": "perk",
       "pos": [
-        -20.8,
-        0.0,
-        70.0
+        -20.6,
+        -6.0,
+        125.0
       ],
-      "floor": 0,
+      "floor": 1,
       "label": "Trigger Tonic",
       "price": 3000,
       "node_path": "Gameplay/Perk_trigger_tonic",
@@ -1004,11 +1004,11 @@
       "id": "perk:Gameplay/Perk_twin_barrel",
       "type": "perk",
       "pos": [
-        -57.2,
-        -6.0,
-        112.8
+        20.58,
+        0.0,
+        86.0
       ],
-      "floor": 1,
+      "floor": 0,
       "label": "Twin Barrel Bitters",
       "price": 2000,
       "node_path": "Gameplay/Perk_twin_barrel",

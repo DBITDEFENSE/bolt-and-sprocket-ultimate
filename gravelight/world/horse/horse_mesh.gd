@@ -38,6 +38,11 @@ const BARREL: Array = [
 const COAT: Color = Color(0.21, 0.115, 0.062)
 const COAT_DARK: Color = Color(0.055, 0.04, 0.035)
 const COAT_PALE: Color = Color(0.36, 0.25, 0.17)
+## T-274: other living coats by look (the same horse, the same black points and tack): [coat, the paler belly].
+## A look not listed here (and not "dead") wears the dark bay above.
+const COATS: Dictionary = {
+	"buckskin": [Color(0.5, 0.36, 0.2), Color(0.66, 0.52, 0.34)],   # Groom Lake's: a tan desert horse with black points
+}
 const WHITE: Color = Color(0.86, 0.83, 0.77)
 const HAIR: Color = Color(0.07, 0.054, 0.045)
 const DEAD_HIDE: Color = Color(0.2, 0.17, 0.15)
@@ -166,6 +171,8 @@ class _Builder:
 	var order: Array = []
 	var bone_ix: Dictionary = {}
 	var dead: bool = false
+	var coat: Color = HorseMesh.COAT
+	var coat_pale: Color = HorseMesh.COAT_PALE
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 	func surf(name: String) -> _Surf:
@@ -319,6 +326,9 @@ class _Builder:
 
 	func build(look: String) -> ArrayMesh:
 		dead = look == "dead"
+		if HorseMesh.COATS.has(look):
+			coat = (HorseMesh.COATS[look] as Array)[0]
+			coat_pale = (HorseMesh.COATS[look] as Array)[1]
 		rng.seed = 2407
 		var bl: Array = HorseMesh.bones()
 		for i: int in bl.size():
@@ -362,7 +372,7 @@ class _Builder:
 			return shade(HorseMesh.DEAD_HIDE.lerp(HorseMesh.DEAD_DARK, clampf((1.0 - p.y) * 0.5, 0.0, 0.6)), p, 0.16)
 		# dark bay: the belly and the flanks a shade paler, the top line dark
 		var k: float = clampf((1.25 - p.y) * 1.2, 0.0, 0.5)
-		return shade(HorseMesh.COAT.lerp(HorseMesh.COAT_PALE, k * 0.55), p)
+		return shade(coat.lerp(coat_pale, k * 0.55), p)
 
 	func _barrel() -> void:
 		var rings: Array = []
@@ -501,7 +511,7 @@ class _Builder:
 				if front > 0.8 and s > 0.03 and s < 0.5:
 					return HorseMesh.WHITE   # the blaze
 				if s > 0.5:
-					return shade(HorseMesh.COAT_DARK.lerp(HorseMesh.COAT_PALE, 0.25), p)   # the muzzle
+					return shade(HorseMesh.COAT_DARK.lerp(coat_pale, 0.25), p)   # the muzzle
 				return _coat(p)
 			rings.append(ring(c, Vector3.RIGHT, HorseMesh.HEAD_FRONT, hw, hd, 0.25, ["Head", 1.0], col))
 		var skip: Callable = Callable()

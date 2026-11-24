@@ -340,7 +340,8 @@
         {"act_round": 5, "below": "coast_in", "coast_s": 200.0, "coast_span": 900.0, "clouds": 0.6, "lights": "towns", "note": "the American coast (the bomb run)"},
         {"act_round": 6, "below": "land", "clouds": 0.7, "lights": "none", "note": "west, into the dark"}
       ],
-      "fighters": {"passes_per_round": 3, "first_s": 20.0, "window_s": 150.0, "seconds": 2.6, "guns_s": 0.9, "sound": "war_fighter_pass", "sound_db": 4.0, "guns": "war_fighter_mg", "guns_db": -2.0},
+      "fighters": {"passes_per_round": 3, "first_s": 20.0, "window_s": 150.0, "seconds": 2.6, "guns_s": 0.9, "sound": "war_fighter_pass", "sound_db": 4.0, "guns": "war_fighter_mg", "guns_db": -2.0,
+        "downed": {"act_rounds": [2, 5, 8], "at_s": 45.0, "seconds": 12.0, "boom_after_s": 9.0, "hit_sound": "war_plane_down", "hit_db": 6.0, "boom": "war_crash_boom", "boom_db": 0.0, "_doc": "T-274: on these ACT rounds (the flight's own clock, RoundManager.act_round) at_s into the round a night fighter comes up alongside, is shot down by the blisters' guns and falls away burning through the cloud deck; boom_after_s later the crash comes up from below. Presentation only (FlightSky.spawn_downed)"}},
       "london": {"beams": 6, "beam_length": 170.0, "beams_from_s": 12.0, "flak_from_s": 16.0, "flak_to_s": 29.5, "flak_every_s": 0.55, "violet_from_s": 24.0, "flak_sound": "kranich_flak"},
       "swing": {"max_deg": 10.0, "damping": 0.9},
       "shake": {"bank": 0.06}

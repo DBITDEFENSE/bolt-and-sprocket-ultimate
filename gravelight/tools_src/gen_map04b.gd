@@ -120,6 +120,22 @@ func setup_tables() -> void:
 		# Ledger Lager (T-141): on the forward bulkhead of the centre body, 5 m port of the Bordkasse (bank.json)
 		["ledger_lager", Vector3(-5.0, 0, 53.45), 0.0],
 	]
+	# T-274: the perk deal (perk_layout.json maps.map04b): the nine machines are dealt onto these spots each match; the
+	# first nine are where they stood (the spot's back where the machine's back was, then onto its wall)
+	perk_spots = [
+		# (Second Wind's place, 1 m clear of the bay doors' lever; Ironhide's and Marathon Malt's in the wings, centred
+		# between two ribs)
+		["bay_fwd", "", Vector3(7.0, 0, 22.8), 0.0, {"snap": true}], spot_from_perk("body_port", "skyhook_sekt"),
+		spot_from_perk("body_stbd", "trigger_tonic"), ["wing_port", "", Vector3(-23.0, 0, 44.6), 0.0, {"snap": true}],
+		["wing_stbd", "", Vector3(23.0, 0, 44.6), 0.0, {"snap": true}], spot_from_perk("engines", "blastproof_bock"),
+		spot_from_perk("kanzel", "hawkeye_brandy"), spot_from_perk("cockpit", "packmule_porter"),
+		spot_from_perk("bordkasse", "ledger_lager"),
+		# the bay's port wall between the racks' ends, each wing's far bay, the port engine room's outboard wall, the
+		# starboard gun room's inboard wall
+		["bay_port", "", Vector3(-8.25, 0, 14.5), -90.0, {}], ["wing_port_aft", "", Vector3(-45.25, 0, 31.75), 180.0, {}],
+		["wing_stbd_fwd", "", Vector3(16.75, 0, 42.25), 0.0, {}], ["engines_out", "", Vector3(-77.0, 0, 48.75), -90.0, {}],
+		["kanzel_in", "", Vector3(52.75, 0, 41.25), -90.0, {}],
+	]
 	crates = [["Galley", Vector3(-6.0, 0, 50.0), 90.0, true, [Vector3(-6, 0, 47), Vector3(-6, 0, 44), Vector3(0, 0, 44)]],
 		# T-156 (THE_BAR row 25): a second spot, the gun blisters' east wall: the drummer walks the crate across the wing
 		# T-219: yaw 90 (was -90: it faced the blister wall)
@@ -563,3 +579,29 @@ func _set_pieces_u10() -> void:
 			["GripStb1", Vector3(26.0, 0, 45.7), 0.0, stb], ["GripStb2", Vector3(34.0, 0, 45.7), 0.0, stb],
 			["GripStb3", Vector3(24.0, 0, 28.3), 180.0, stb], ["GripStb4", Vector3(36.0, 0, 28.3), 180.0, stb]]:
 		_node(W + "rail_grip.gd", str(g[0]), {"breach_path": NodePath("../" + (g[3] as Node).name)}, g[1], float(g[2]))
+	_reactive_t274()
+
+
+## T-274 (the map detail pass): loose papers (the bay's cargo manifests by the forward bulkhead, a crewman's letters
+## in the starboard crawlway) and two stashes of glass (a broken crate of bottles at the ramp seam, another in the
+## crawlway) that the decompressions take: when a breach pulls, the papers near it fly out through the hole and the
+## glass nearest it breaks (DecompReactive). The galley's glasses and jars on its counter break when shot.
+func _reactive_t274() -> void:
+	loose_papers("BayFwd", Vector3(-1.5, 0, 22.6), 0.0, Vector3(2.6, 0, 1.0), 8)
+	loose_papers("Crawlway", Vector3(34.5, 0, 41.0), 0.0, Vector3(2.4, 0, 2.2), 7)
+	shatter_set("RampStash", Vector3(6.5, 0, 1.6), 0.0, [[Vector3(-0.2, 0, 0.0), "bottle_green", 1.0], [Vector3(0.0, 0, 0.12), "bottle_amber", 1.0],
+		[Vector3(0.18, 0, -0.06), "bottle_green", 1.0], [Vector3(0.35, 0, 0.15), "jar", 1.0]])
+	shatter_set("CrawlStash", Vector3(27.5, 0, 42.2), 0.0, [[Vector3(-0.15, 0, 0.0), "bottle_amber", 1.0], [Vector3(0.05, 0, 0.1), "bottle_amber", 1.0],
+		[Vector3(0.2, 0, -0.08), "glass", 1.0]])
+	shatter_set("Galley", Vector3(-6.3, 1.0, 43.0), 0.0, [[Vector3(0, 0, -2.2), "glass", 1.0], [Vector3(0.05, 0, -1.9), "glass", 1.0],
+		[Vector3(0.1, 0, -1.5), "stein", 1.0], [Vector3(0, 0, 1.2), "jar", 1.0], [Vector3(0.05, 0, 1.5), "jar", 1.0], [Vector3(0, 0, 1.9), "bottle_amber", 1.0]])
+	for r: Array in [["DecompReactBay", "DecompBay", ["../Papers_BayFwd"], ["../Glass_RampStash"]],
+			["DecompReactStb", "DecompStarboard", ["../Papers_Crawlway"], ["../Glass_CrawlStash"]]]:
+		var paps: Array[NodePath] = []
+		for pp: String in r[2]:
+			paps.append(NodePath(pp))
+		var gls: Array[NodePath] = []
+		for gp: String in r[3]:
+			gls.append(NodePath(gp))
+		_reactive_node("res://gravelight/world/map04/decomp_reactive.gd", str(r[0]), {"breach": NodePath("../../Gameplay/" + str(r[1])),
+			"papers": paps, "glass": gls, "radius": 14.0}, Vector3.ZERO)

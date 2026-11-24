@@ -16,7 +16,7 @@
     588
   ],
   "baked_at": "2026-11-02T14:29:28",
-  "poi_signature": "9f3906802675c60fa8078ed30da3a36b",
+  "poi_signature": "fdc2290bc8e7ba96d7caa045be84b7da",
   "floors": [
     {
       "id": "deck",
@@ -737,9 +737,9 @@
       "id": "perk:Gameplay/Perk_blastproof_bock",
       "type": "perk",
       "pos": [
-        -60.0,
+        -8.27,
         0.0,
-        25.4
+        30.0
       ],
       "floor": 0,
       "label": "Blastproof Bock",
@@ -754,9 +754,9 @@
       "id": "perk:Gameplay/Perk_hawkeye_brandy",
       "type": "perk",
       "pos": [
-        56.0,
+        7.0,
         0.0,
-        56.6
+        23.42
       ],
       "floor": 0,
       "label": "Hawkeye Brandy",
@@ -771,9 +771,9 @@
       "id": "perk:Gameplay/Perk_ironhide_stout",
       "type": "perk",
       "pos": [
-        -24.0,
+        6.0,
         0.0,
-        44.6
+        73.13
       ],
       "floor": 0,
       "label": "Ironhide Stout",
@@ -788,9 +788,9 @@
       "id": "perk:Gameplay/Perk_ledger_lager",
       "type": "perk",
       "pos": [
-        -5.0,
+        52.53,
         0.0,
-        53.45
+        41.25
       ],
       "floor": 0,
       "label": "Ledger Lager",
@@ -805,9 +805,9 @@
       "id": "perk:Gameplay/Perk_marathon_malt",
       "type": "perk",
       "pos": [
-        24.0,
+        -45.25,
         0.0,
-        44.6
+        31.6
       ],
       "floor": 0,
       "label": "Marathon Malt",
@@ -822,9 +822,9 @@
       "id": "perk:Gameplay/Perk_packmule_porter",
       "type": "perk",
       "pos": [
-        6.0,
+        -60.0,
         0.0,
-        72.6
+        24.7
       ],
       "floor": 0,
       "label": "Packmule Porter",
@@ -839,9 +839,9 @@
       "id": "perk:Gameplay/Perk_second_wind",
       "type": "perk",
       "pos": [
-        6.0,
+        -5.0,
         0.0,
-        22.8
+        53.53
       ],
       "floor": 0,
       "label": "Second Wind Schnapps",
@@ -856,9 +856,9 @@
       "id": "perk:Gameplay/Perk_skyhook_sekt",
       "type": "perk",
       "pos": [
-        -7.8,
+        -77.25,
         0.0,
-        30.0
+        48.75
       ],
       "floor": 0,
       "label": "Skyhook Sekt",
@@ -873,9 +873,9 @@
       "id": "perk:Gameplay/Perk_trigger_tonic",
       "type": "perk",
       "pos": [
-        7.8,
+        56.0,
         0.0,
-        33.6
+        57.4
       ],
       "floor": 0,
       "label": "Trigger Tonic",

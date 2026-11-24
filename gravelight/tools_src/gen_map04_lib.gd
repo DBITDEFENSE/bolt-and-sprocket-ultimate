@@ -41,6 +41,9 @@ var ammo_boxes: Array = []            # [name, pos, yaw]
 var grounds: Array = []               # [zone, pos, min_round]
 var catwalks: Array = []              # [zone, pos, enabled]  (named Catwalk_<zone>_<i>, kind ground)
 var perks: Array = []                 # [perk, pos, yaw]
+## T-274 (opt-in; see "perk spots" at the end): the places the act's machines are dealt onto each match
+## (perk_layout.json, PerkShuffle / PerkLayout as on Map 0). Rows: [spot id, zone, floor position, yaw, flags].
+var perk_spots: Array = []
 var crates: Array = []                # [name, pos, yaw, can_start, route]
 var player_spawns: Array = []         # [pos, yaw]
 var power_switch: Dictionary = {}     # {name, label, pos, yaw, zone_order, config_table}
@@ -91,9 +94,12 @@ func _initialize() -> void:
 	for ab: Array in ammo_boxes:
 		var ah: Vector3 = Vector3(0.52, 0, 0.3) if absf(float(ab[2])) != 90.0 else Vector3(0.3, 0, 0.52)
 		box(geo, "NavBlock_Ammo_" + str(ab[0]), (ab[1] as Vector3) - ah, (ab[1] as Vector3) + ah + Vector3(0, 0.62, 0), "metal")
-	for p: Array in perks:
-		var pp: Vector3 = p[1]
-		box(geo, "NavBlock_Perk_" + str(p[0]), pp + Vector3(-0.7, 0, -0.5), pp + Vector3(0.7, 2.0, 0.5), "metal")
+	if perk_spots.is_empty():
+		for p: Array in perks:
+			var pp: Vector3 = p[1]
+			box(geo, "NavBlock_Perk_" + str(p[0]), pp + Vector3(-0.7, 0, -0.5), pp + Vector3(0.7, 2.0, 0.5), "metal")
+	else:
+		_perk_spot_blocks()
 	# T-141: the savings bank's counter, teller and safe (data/gravelight/bank.json "branches", nav_block): the navmesh goes round
 	var bank_rows: Dictionary = (JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/bank.json")) as Dictionary).get("branches", {})
 	for bk: Variant in bank_rows.keys():
@@ -142,6 +148,10 @@ func _process(_delta: float) -> bool:
 	if _frames < 3:
 		return false
 	bake_regions()
+	for n0: Node in _bake_only:   # T-274: colliders that only shape the navmesh (the perk spots' footprints)
+		n0.get_parent().remove_child(n0)
+		n0.free()
+	_bake_only.clear()
 	get_root().remove_child(map_root)
 	build_dressing()
 	var merged: int = merge_static_meshes()
@@ -149,6 +159,16 @@ func _process(_delta: float) -> bool:
 	build_lights()
 	build_gameplay()
 	build_gameplay_extra()
+	if not perk_spots.is_empty():
+		_spot_keep_build()
+		if OS.get_environment("GL_PERK_SURVEY") != "":
+			_survey_perk_spots()
+			map_root.free()
+			return true
+		if _audit_perk_spots() > 0 and OS.get_environment("GL_PERK_FORCE") == "":
+			push_error("gen_map04: a perk spot is blocked; the scene was NOT saved")
+			map_root.free()
+			return true
 	for n: Node in extra_root_nodes:
 		map_root.add_child(n)
 	_prune(dress)
@@ -527,6 +547,8 @@ func pendant(zone: String, p: Vector3, ceil_y: float, shade: String = "enamel_gr
 # ================================================================== batching
 
 func merge_static_meshes() -> int:
+	if not perk_spots.is_empty() and not _spot_grid_done:
+		_spot_grid_build()   # T-274: what is built and drawn, before the batching folds the drawing away
 	var groups: Dictionary = {}
 	var victims: Array[MeshInstance3D] = []
 	for holder: Node in [geo, dress]:
@@ -876,8 +898,11 @@ func build_gameplay() -> void:
 			"size": Vector3(float(d[9]), DOOR_H, 0.25), "requires_power": d[10]}, d[7], float(d[8]))
 	for b: Array in buys:
 		_node("res://gravelight/world/wall_buy.gd", "WallBuy_" + str(b[0]), {"weapon_id": StringName(b[0])}, b[1], float(b[2]))
-	for p: Array in perks:
-		_node("res://gravelight/world/perk_machine.gd", "Perk_" + str(p[0]), {"perk_id": StringName(p[0])}, p[1], float(p[2]))
+	if perk_spots.is_empty():
+		for p: Array in perks:
+			_node("res://gravelight/world/perk_machine.gd", "Perk_" + str(p[0]), {"perk_id": StringName(p[0])}, p[1], float(p[2]))
+	else:
+		_build_perk_spots()
 	var ci: int = 0
 	for c2: Array in crates:
 		_node("res://gravelight/world/mystery_crate.gd", "Crate_" + str(c2[0]), {"spot_index": ci, "can_start": c2[3], "spot_name": c2[0],
@@ -963,3 +988,499 @@ func tag_light_zones(cap: int = 6) -> Dictionary:
 			continue
 		counts[z] = int(counts.get(z, 0)) + 1
 	return counts
+
+
+# ================================================================== T-274: reactive props (an act calls these from
+# build_gameplay_extra). Map 0's reactive dressing (gravelight/world/reactive/, T-053) and LoosePapers: all built at
+# load from a few exported values, nothing collides, nothing touches the navmesh. Under one "Reactive" node on the root.
+
+var _reactive: Node3D = null
+
+
+func reactive_root() -> Node3D:
+	if _reactive == null:
+		_reactive = Node3D.new()
+		_reactive.name = "Reactive"
+		map_root.add_child(_reactive)
+	return _reactive
+
+
+func _reactive_node(script: String, n: String, props: Dictionary, pos: Vector3, yaw: float = 0.0, base: Node = null) -> Node3D:
+	var node: Node3D = (base if base != null else Node3D.new()) as Node3D
+	node.set_script(load(script))
+	node.name = n
+	for k: String in props.keys():
+		node.set(k, props[k])
+	node.position = pos
+	node.rotation.y = deg_to_rad(yaw)
+	reactive_root().add_child(node)
+	return node
+
+
+## A door leaf left ajar in an open doorway (SwingDoor): hinged at `hinge` (floor, on the jamb), the shut leaf along
+## local +X (yaw), opening toward local -Z; `width` the leaf.
+func swing_door(n: String, hinge: Vector3, yaw: float, width: float, props: Dictionary = {}) -> Node3D:
+	var p: Dictionary = {"width": width, "height": 2.15, "rest_deg": 55.0, "open_deg": 100.0, "zone_size": Vector3(width + 0.2, 2.0, 3.2),
+		"zone_center": Vector3(width * 0.5, 1.0, 0.0)}
+	p.merge(props, true)
+	return _reactive_node("res://gravelight/world/reactive/swing_door.gd", n, p, hinge, yaw)
+
+
+## Two curtain strips either side of a gameplay window (DraftCurtain, billowing harder as its boards go), hung from the
+## lintel on the room side.
+func window_curtains(window_id: String, mat_key: String = "cloth_navy") -> void:
+	for w: Array in windows:
+		if str(w[0]) != window_id:
+			continue
+		var b: Basis = Basis(Vector3.UP, deg_to_rad(float(w[3])))
+		var inward: Vector3 = b * Vector3(0, 0, 1)
+		var along: Vector3 = b * Vector3(1, 0, 0)
+		for s: float in [-1.0, 1.0]:
+			var p: Vector3 = (w[2] as Vector3) + along * s * 1.05 + inward * (T * 0.5 + 0.08) + Vector3(0, WTOP + 0.05, 0)
+			_reactive_node("res://gravelight/world/reactive/draft_curtain.gd", "Curtain_%s_%s" % [window_id, "L" if s < 0.0 else "R"],
+				{"height": WTOP - SILL + 0.4, "mat_key": mat_key, "window": NodePath("../../Gameplay/" + window_id)}, p, float(w[3]) + 180.0)
+		return
+	push_warning("gen_map04: no window %s for curtains" % window_id)
+
+
+## Glassware that breaks when shot or blasted (ShatterSet): items [[local base, kind, height scale], ...].
+func shatter_set(n: String, pos: Vector3, yaw: float, items: Array) -> Node3D:
+	return _reactive_node("res://gravelight/world/reactive/shatter_set.gd", "Glass_" + n, {"items": items}, pos, yaw)
+
+
+## Loose sheets on a floor or a desk top (LoosePapers).
+func loose_papers(n: String, pos: Vector3, yaw: float, size: Vector3, count: int, props: Dictionary = {}) -> Node3D:
+	var p: Dictionary = {"size": size, "count": count, "seed_value": hash(n) & 0xFFFF}
+	p.merge(props, true)
+	return _reactive_node("res://gravelight/world/map04/loose_papers.gd", "Papers_" + n, p, pos, yaw)
+
+
+## Water dripping from a ceiling at `pos` to the floor `height` below (DripPoint).
+func drip(n: String, pos: Vector3, height: float) -> Node3D:
+	return _reactive_node("res://gravelight/world/drip_point.gd", "Drip_" + n, {"height": height}, pos)
+
+
+## Dust (or chaff) that puffs up under feet (HayPuffZone with a tint): a box on the floor.
+func dust_zone(n: String, pos: Vector3, size: Vector3, tint: Color) -> Node3D:
+	return _reactive_node("res://gravelight/world/reactive/hay_puff_zone.gd", "Dust_" + n, {"size": size, "tint": tint}, pos, 0.0, Area3D.new())
+
+
+# ================================================================== T-274: perk spots (opt-in: an act fills perk_spots)
+# The perk deal of Map 0 (T-251, T-255) on the Map 4 acts: each act's machines are dealt onto its spots each match
+# from the match seed (PerkShuffle / PerkLayout, perk_layout.json "maps"), the spots left over show their filler crate
+# (PerkSpot). The scene is saved with the seed-0 deal. A spot keeps the widest machine's floor (the wagon) by the
+# deepest (the barrel); every spot is flush: its back edge on the wall (PERK_FLUSH_GAP off it), a shallower machine
+# and the crate stand back to that line (PerkSpot.stand_transform), the fine print hangs on the side with the walk.
+# Rows: [spot id, zone ("" = the zone box it stands in), floor position (the spot's centre), yaw (local -Z = the
+# front, into the room), flags]. Flags: "flush" (+1 / -1: the fine print's side; left out: the side with the walk),
+# "start" / "near" (left out: the start zone / a zone one door from it, from `adj`), "outdoor" (false on every act:
+# no snow on these four, and the acts stood their cabinets in the open before). The spots' footprints are cut out of
+# the navmesh (bake only: the machine or the crate on the spot has its own body); _audit_perk_spots checks every spot
+# against what is built and drawn and keeps the scene unsaved when one is blocked (GL_PERK_FORCE=1 saves anyway;
+# GL_PERK_SURVEY=1 prints the clear places on the act's walls instead of saving; GL_PERK_PROBE="x,y,z,yaw;..." probes).
+
+const PerkShuffleScript: GDScript = preload("res://gravelight/world/perk_shuffle.gd")
+const PERK_SPOT_W: float = 1.7
+const PERK_SPOT_D: float = 1.2
+const PERK_FRONT: float = 1.2
+const PERK_SIDE: float = 0.9
+const PERK_FLUSH_GAP: float = 0.1
+const NAV_SOLID_H: float = 1.6
+## Same as PerkMachine._shape_footprint and gen_map00's table (a --script run has no autoloads). Keep them in step.
+const MACHINE_FOOTPRINTS: Dictionary = {
+	"barrel": Vector3(1.2, 1.9, 1.2), "cabinet": Vector3(0.8, 2.3, 0.6), "crate": Vector3(1.0, 2.0, 0.65),
+	"twin": Vector3(1.2, 2.1, 0.6), "teardrop": Vector3(1.0, 2.4, 0.9), "periscope": Vector3(0.9, 1.8, 0.65),
+	"wagon": Vector3(1.7, 1.7, 0.85), "safe": Vector3(1.1, 1.9, 0.95), "coil": Vector3(0.8, 2.3, 0.6),
+	"register": Vector3(1.0, 2.2, 0.75), "glider": Vector3(0.8, 2.4, 0.7), "bandit": Vector3(0.9, 2.3, 0.65),
+}
+
+var _bake_only: Array[Node] = []
+var _spot_grid: Dictionary = {}
+var _spot_grid_done: bool = false
+var _spot_keep: Array = []
+var _spot_flush: Dictionary = {}   # spot id -> the resolved flush side
+var _perks_json: Dictionary = {}
+
+
+func _perk_shape(perk_id: String) -> String:
+	if _perks_json.is_empty():
+		_perks_json = (JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/perks.json")) as Dictionary).get("perks", {})
+	return str((_perks_json.get(perk_id, {}) as Dictionary).get("shape", "cabinet"))
+
+
+func _perk_cost(perk_id: String) -> int:
+	_perk_shape(perk_id)
+	return int((_perks_json.get(perk_id, {}) as Dictionary).get("cost", 0))
+
+
+## A spot row on the place where the act's machine `perk_id` stood before the deal (the `perks` table): the spot's back
+## edge where that machine's back was, so whatever is dealt here stands back on the same line.
+func spot_from_perk(id: String, perk_id: String, flags: Dictionary = {}) -> Array:
+	for p: Array in perks:
+		if str(p[0]) != perk_id:
+			continue
+		var fz: float = (MACHINE_FOOTPRINTS.get(_perk_shape(perk_id), Vector3(1.0, 2.0, 0.7)) as Vector3).z
+		var yaw: float = float(p[2])
+		var back: Vector3 = Basis(Vector3.UP, deg_to_rad(yaw)) * Vector3(0, 0, 1)
+		var pos: Vector3 = (p[1] as Vector3) - back * (PERK_SPOT_D * 0.5 - fz * 0.5)
+		var f2: Dictionary = flags.duplicate()
+		if not f2.has("snap"):
+			f2["snap"] = true   # most of the acts' machines stood half a metre off their wall: the spot goes back onto it
+		return [id, "", Vector3(snappedf(pos.x, 0.001), pos.y, snappedf(pos.z, 0.001)), yaw, f2]
+	push_error("gen_map04: no machine %s for spot %s" % [perk_id, id])
+	return [id, "", Vector3.ZERO, 0.0, flags]
+
+
+## A spot row on a wall: `face` is a point on the wall's face at floor height, `yaw` faces the room.
+func spot_on_wall(id: String, face: Vector3, yaw: float, flags: Dictionary = {}) -> Array:
+	var back: Vector3 = Basis(Vector3.UP, deg_to_rad(yaw)) * Vector3(0, 0, 1)
+	var pos: Vector3 = face - back * (PERK_SPOT_D * 0.5 + PERK_FLUSH_GAP)
+	return [id, "", Vector3(snappedf(pos.x, 0.001), face.y, snappedf(pos.z, 0.001)), yaw, flags]
+
+
+func _spot_zone(sp: Array) -> String:
+	return str(sp[1]) if str(sp[1]) != "" else zone_at((sp[2] as Vector3) + Vector3.UP * 0.5)
+
+
+func _spot_row(sp: Array) -> Dictionary:
+	var flags: Dictionary = sp[4]
+	var zone: String = _spot_zone(sp)
+	return {"id": str(sp[0]), "zone": zone, "outdoor": bool(flags.get("outdoor", false)),
+		"start": bool(flags.get("start", zone == start_zone)),
+		"near": bool(flags.get("near", (adj.get(start_zone, []) as Array).has(zone)))}
+
+
+func _spot_half(yaw: float) -> Vector3:
+	var turned: bool = absf(absf(wrapf(yaw, -180.0, 180.0)) - 90.0) < 1.0
+	return Vector3(PERK_SPOT_D * 0.5, 0, PERK_SPOT_W * 0.5) if turned else Vector3(PERK_SPOT_W * 0.5, 0, PERK_SPOT_D * 0.5)
+
+
+func _perk_spot_blocks() -> void:
+	_snap_spots()
+	for sp: Array in perk_spots:
+		var c: Vector3 = sp[2]
+		var half: Vector3 = _spot_half(float(sp[3]))
+		var b: Node3D = box(geo, "NavBlock_PerkSpot_" + str(sp[0]), c - half, c + half + Vector3(0, NAV_SOLID_H, 0), "metal")
+		if b != null:
+			_bake_only.append(b)
+
+
+## Spots flagged "snap" walk back (local +Z, 5 cm at a time, at most 1.2 m) until the deepest machine's back would
+## touch a collider, and stop PERK_FLUSH_GAP short of it. Left where they are when nothing is behind them.
+func _snap_spots() -> void:
+	_spot_grid_build()
+	_spot_grid_done = false   # (built again with the drawing before the batching)
+	for sp: Array in perk_spots:
+		if not bool((sp[4] as Dictionary).get("snap", false)):
+			continue
+		var yaw: float = float(sp[3])
+		var back: Vector3 = Basis(Vector3.UP, deg_to_rad(yaw)) * Vector3(0, 0, 1)
+		var p0: Vector3 = sp[2]
+		var moved: float = -1.0
+		var t: float = 0.0
+		while t <= 1.2:
+			var fp: AABB = _spot_boxes(p0 + back * t, yaw, 1)[0]
+			fp = AABB(fp.position + Vector3(0, 0.4, 0), fp.size - Vector3(0, 0.8, 0))   # (not the floor, not a lintel)
+			if not _spot_hits(fp, true).is_empty():
+				moved = maxf(0.0, t - 0.05 - PERK_FLUSH_GAP)
+				break
+			t += 0.05
+		if moved >= 0.0:
+			var p1: Vector3 = p0 + back * moved
+			sp[2] = Vector3(snappedf(p1.x, 0.001), p1.y, snappedf(p1.z, 0.001))
+			print("  perk spot %s snapped %.2f m back onto its wall" % [str(sp[0]), moved])
+		else:
+			print("  perk spot %s: no wall within 1.2 m behind it" % str(sp[0]))
+
+
+## The flush side of a spot: its flag, else the side whose walk is clear (+1 first).
+func _resolve_flush(sp: Array) -> int:
+	var flags: Dictionary = sp[4]
+	if flags.has("flush"):
+		return int(flags["flush"])
+	for s: int in [1, -1]:
+		if _spot_hits(_spot_boxes(sp[2], float(sp[3]), s)[2]).is_empty():
+			return s
+	return 1
+
+
+## The spots, and the act's machines stood on the seed-0 deal (PerkShuffle.assign with perk_layout.json's rules, the
+## same call PerkLayout makes each match).
+func _build_perk_spots() -> void:
+	var rows: Array = []
+	for sp: Array in perk_spots:
+		var r: Dictionary = _spot_row(sp)
+		var fl: int = int(_spot_flush.get(str(sp[0]), _resolve_flush(sp)))
+		_spot_flush[str(sp[0])] = fl
+		_node("res://gravelight/world/perk_spot.gd", "PerkSpot_" + str(sp[0]), {"spot_id": StringName(r["id"]), "zone_id": StringName(r["zone"]),
+			"outdoor": r["outdoor"], "start": r["start"], "near": r["near"], "flush": fl}, sp[2], float(sp[3]))
+		rows.append(r)
+	var rules: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/perk_layout.json"))
+	var key: String = map_id.get_slice("_", 0)
+	var want: Array = ((rules.get("maps", {}) as Dictionary).get(key, {}) as Dictionary).get("perks", [])
+	var prow: Array = []
+	for p: Array in perks:
+		if not want.has(str(p[0])):
+			push_error("gen_map04: %s is not in perk_layout.json maps.%s" % [str(p[0]), key])
+		prow.append({"id": str(p[0]), "cost": _perk_cost(str(p[0])), "shape": _perk_shape(str(p[0]))})
+	var deal: Dictionary = PerkShuffleScript.call("assign", 0, rows, prow, rules)
+	for pk: Dictionary in prow:
+		var sid: String = str(deal.get(pk["id"], ""))
+		var at: Array = []
+		for sp2: Array in perk_spots:
+			if str(sp2[0]) == sid:
+				at = sp2
+		if at.is_empty():
+			push_error("gen_map04: no spot dealt to %s" % pk["id"])
+			continue
+		var fpz: float = (MACHINE_FOOTPRINTS.get(str(pk["shape"]), Vector3(1.0, 2.0, 0.7)) as Vector3).z
+		var off: Vector3 = Basis(Vector3.UP, deg_to_rad(float(at[3]))) * Vector3(0, 0, maxf(0.0, (PERK_SPOT_D - fpz) * 0.5))
+		var mp: Vector3 = (at[2] as Vector3) + off
+		_node("res://gravelight/world/perk_machine.gd", "Perk_" + str(pk["id"]), {"perk_id": StringName(str(pk["id"]))},
+			Vector3(snappedf(mp.x, 0.001), mp.y, snappedf(mp.z, 0.001)), float(at[3]))
+	print("perk spots: %d, machines: %d (seed-0 deal: %s)" % [perk_spots.size(), prow.size(), str(deal)])
+
+
+# ---- the audit (gen_map00's, T-251 / T-255, on this base's tables)
+
+func _spot_grid_add(ab: AABB, n: String) -> void:
+	for gx: int in range(int(floor(ab.position.x / 2.0)), int(floor(ab.end.x / 2.0)) + 1):
+		for gz: int in range(int(floor(ab.position.z / 2.0)), int(floor(ab.end.z / 2.0)) + 1):
+			var k: Vector2i = Vector2i(gx, gz)
+			if not _spot_grid.has(k):
+				_spot_grid[k] = []
+			(_spot_grid[k] as Array).append([ab, n])
+
+
+func _spot_grid_build() -> void:
+	_spot_grid.clear()
+	_spot_grid_done = true
+	for b: Node in geo.find_children("*", "StaticBody3D", true, false):
+		if String(b.name).begins_with("NavBlock_PerkSpot_"):
+			continue
+		for c: Node in b.get_children():
+			var cs: CollisionShape3D = c as CollisionShape3D
+			if cs == null or not (cs.shape is BoxShape3D):
+				continue
+			var sz: Vector3 = (cs.shape as BoxShape3D).size
+			_spot_grid_add((_xform_to_root(b as Node3D) * cs.transform) * AABB(-sz * 0.5, sz), "col:" + String(b.name))
+	for n: Node in dress.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		if mi.mesh == null or not mi.visible:
+			continue
+		var ab: AABB = _xform_to_root(mi) * mi.get_aabb()
+		if ab.size.x > 60.0 or ab.size.z > 60.0 or ab.size.y > 30.0:
+			continue   # a shell, a sky, a ground sheet
+		if not (mi.mesh is PrimitiveMesh) and (ab.size.x > 6.0 or ab.size.z > 6.0):
+			continue   # a batch an act baked already (Groom Lake's DressingBaked): its box says nothing about one piece
+		_spot_grid_add(ab, "mesh:%s(%s)" % [mi.name, mi.get_parent().name])
+
+
+## What a machine must keep away from: [label, position, radius]. The gameplay nodes the base and the act placed, the
+## act's arms locker and horse (built at load from their json rows).
+func _spot_keep_build() -> void:
+	_spot_keep.clear()
+	var radii: Dictionary = {"door.gd": 2.3, "breach_door.gd": 2.3, "tunnel_hatch.gd": 2.3, "barricade.gd": 2.6, "zombie_spawn.gd": 1.4,
+		"player_spawn.gd": 1.5, "wall_buy.gd": 1.6, "ammo_box.gd": 1.7, "mystery_crate.gd": 2.2, "trap_lever.gd": 1.5,
+		"power_switch.gd": 1.8, "crucible.gd": 2.6, "armorers_bench.gd": 2.0}
+	for n: Node in gameplay.get_children():
+		var n3: Node3D = n as Node3D
+		if n3 == null or n3.get_script() == null or n3.position == Vector3.ZERO:
+			continue
+		var f: String = str((n3.get_script() as Script).resource_path.get_file())
+		if f in ["perk_machine.gd", "perk_spot.gd", "zone_volume.gd"]:
+			continue
+		_spot_keep.append([String(n3.name), n3.position, float(radii.get(f, 1.4))])
+	var key: String = map_id.get_slice("_", 0)
+	var lk: Dictionary = ((JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/weapon_locker.json")) as Dictionary).get("lockers", {}) as Dictionary).get(key, {})
+	if lk.has("at"):
+		_spot_keep.append(["the arms locker", _v3(lk["at"]), 2.2])
+	if json_table != "":
+		var mj: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/%s.json" % json_table))
+		for h: Variant in mj.get("horses", []):
+			var hd: Dictionary = h
+			for k: String in ["pos", "rail", "chest"]:
+				if hd.has(k):
+					_spot_keep.append(["the horse's " + k, _v3(hd[k]), 3.0])
+
+
+func _v3(a: Variant) -> Vector3:
+	var arr: Array = a
+	return Vector3(float(arr[0]), float(arr[1]), float(arr[2]))
+
+
+## The boxes a machine on a spot keeps (world AABBs; yaw a multiple of 90): [the footprint to the tallest cabinet's top,
+## the walk in front, the walk beside it (the fine print's side), the wall right behind it].
+func _spot_boxes(pos: Vector3, yaw: float, flush: int) -> Array:
+	var b: Basis = Basis(Vector3.UP, deg_to_rad(yaw))
+	var s: float = float(flush if flush != 0 else 1)
+	var rows: Array = [[Vector3(-PERK_SPOT_W * 0.5, 0.08, -PERK_SPOT_D * 0.5), Vector3(PERK_SPOT_W * 0.5, 2.45, PERK_SPOT_D * 0.5)],
+		[Vector3(-PERK_SPOT_W * 0.5, 0.08, -PERK_SPOT_D * 0.5 - PERK_FRONT), Vector3(PERK_SPOT_W * 0.5, 2.0, -PERK_SPOT_D * 0.5)],
+		[Vector3(s * PERK_SPOT_W * 0.5, 0.08, -PERK_SPOT_D * 0.5), Vector3(s * (PERK_SPOT_W * 0.5 + PERK_SIDE), 2.0, PERK_SPOT_D * 0.5 - 0.15)],
+		[Vector3(-0.3, 0.5, PERK_SPOT_D * 0.5 + 0.02), Vector3(0.3, 1.5, PERK_SPOT_D * 0.5 + 0.3)]]
+	var out: Array = []
+	for r: Array in rows:
+		var p0: Vector3 = pos + b * (r[0] as Vector3)
+		var p1: Vector3 = pos + b * (r[1] as Vector3)
+		out.append(AABB(p0.min(p1), (p1 - p0).abs()))
+	return out
+
+
+func _spot_hits(box_: AABB, colliders_only: bool = false) -> PackedStringArray:
+	var out: PackedStringArray = []
+	for gx: int in range(int(floor(box_.position.x / 2.0)), int(floor(box_.end.x / 2.0)) + 1):
+		for gz: int in range(int(floor(box_.position.z / 2.0)), int(floor(box_.end.z / 2.0)) + 1):
+			for e: Array in _spot_grid.get(Vector2i(gx, gz), []):
+				var ab: AABB = e[0]
+				if colliders_only and not str(e[1]).begins_with("col:"):
+					continue
+				if ab.intersects(box_) and ab.intersection(box_).get_volume() > 0.0005 and not out.has(str(e[1])):
+					out.append(str(e[1]))
+	return out
+
+
+## True when `p` is over the baked navmesh (a polygon of an enabled region within 0.6 m of its height).
+func _on_nav(p: Vector3) -> bool:
+	var holder: Node = map_root.get_node_or_null("Navigation")
+	if holder == null:
+		return false
+	for r: Node in holder.get_children():
+		var reg: NavigationRegion3D = r as NavigationRegion3D
+		if reg == null or reg.navigation_mesh == null or not reg.enabled:
+			continue
+		var nm: NavigationMesh = reg.navigation_mesh
+		var vs: PackedVector3Array = nm.get_vertices()
+		for i: int in nm.get_polygon_count():
+			var poly: PackedInt32Array = nm.get_polygon(i)
+			if absf(vs[poly[0]].y - p.y) > 0.6:
+				continue
+			var inside: bool = true
+			var sign_: float = 0.0
+			for k: int in poly.size():
+				var a: Vector3 = vs[poly[k]]
+				var b: Vector3 = vs[poly[(k + 1) % poly.size()]]
+				var cr: float = (b.x - a.x) * (p.z - a.z) - (b.z - a.z) * (p.x - a.x)
+				if absf(cr) < 1e-6:
+					continue
+				if sign_ == 0.0:
+					sign_ = signf(cr)
+				elif signf(cr) != sign_:
+					inside = false
+					break
+			if inside:
+				return true
+	return false
+
+
+## What is wrong with a spot ([] = nothing). `ignore`: keep rows the spot's flags waive (a wall-buy on the far side of
+## the spot's own wall: the keep radius is measured in plan).
+func _spot_problems(pos: Vector3, yaw: float, flush: int, fast: bool = false, ignore: Array = []) -> PackedStringArray:
+	var out: PackedStringArray = []
+	var boxes: Array = _spot_boxes(pos, yaw, flush)
+	var names: Array = ["the machine", "the walk in front", "the walk beside it"]
+	for i: int in 3:
+		var hits: PackedStringArray = _spot_hits(boxes[i])
+		if not hits.is_empty():
+			out.append("%s is in %s" % [names[i], ", ".join(hits)])
+			if fast:
+				return out
+	if _spot_hits(boxes[3], true).is_empty():
+		out.append("no wall behind it")
+		if fast:
+			return out
+	for k: Array in _spot_keep:
+		var kp: Vector3 = k[1]
+		if absf(kp.y - pos.y) > 2.0 or ignore.has(str(k[0])):
+			continue
+		var d: float = Vector2(kp.x - pos.x, kp.z - pos.z).length()
+		if d < float(k[2]):
+			out.append("%.1f m from %s (wants %.1f)" % [d, str(k[0]), float(k[2])])
+			if fast:
+				return out
+	var front: Vector3 = pos + Basis(Vector3.UP, deg_to_rad(yaw)) * Vector3(0, 0, -(PERK_SPOT_D * 0.5 + 0.7))
+	if not _on_nav(front):
+		out.append("the floor in front of it is not on the navmesh")
+	return out
+
+
+## Every spot against everything built and drawn, the other spots and the deal's own rules. One line per spot;
+## returns how many problems there are.
+func _audit_perk_spots() -> int:
+	var bad: int = 0
+	var ids: Dictionary = {}
+	var per_zone: Dictionary = {}
+	var near_n: int = 0
+	for sp: Array in perk_spots:
+		var id: String = str(sp[0])
+		var p: Vector3 = sp[2]
+		var fl: int = int(_spot_flush.get(id, _resolve_flush(sp)))
+		var probs: PackedStringArray = _spot_problems(p, float(sp[3]), fl, false, (sp[4] as Dictionary).get("ignore", []))
+		for sp2: Array in perk_spots:
+			var q: Vector3 = sp2[2]
+			var d2: float = Vector2(q.x - p.x, q.z - p.z).length()
+			if str(sp2[0]) != id and absf(q.y - p.y) < 2.0 and d2 < 2.4:
+				probs.append("%.1f m from spot %s" % [d2, str(sp2[0])])
+		if ids.has(id):
+			probs.append("its id is used twice")
+		ids[id] = true
+		var r: Dictionary = _spot_row(sp)
+		per_zone[r["zone"]] = int(per_zone.get(r["zone"], 0)) + 1
+		if bool(r["near"]):
+			near_n += 1
+		print("PERKSPOT_AUDIT %-16s %-15s flush %+d %s%s" % [id, str(r["zone"]), fl, "start " if r["start"] else ("near " if r["near"] else ""),
+			"clear" if probs.is_empty() else "BLOCKED: " + "; ".join(probs)])
+		if not probs.is_empty():
+			bad += 1
+	if near_n < 1:
+		print("PERKSPOT_AUDIT no spot one door from the start (Second Wind needs one)")
+		bad += 1
+	if perk_spots.size() <= perks.size():
+		print("PERKSPOT_AUDIT %d spots for %d machines (more spots than machines, or nothing is dealt)" % [perk_spots.size(), perks.size()])
+		bad += 1
+	print("PERKSPOT_AUDIT per zone: %s" % str(per_zone))
+	return bad
+
+
+## GL_PERK_SURVEY=1 (or a zone id): the clear places on the act's walls, per zone (at most 12 a zone, 3 m apart), as
+## "SURVEY <zone> <x> <y> <z> <yaw> <flush>" lines; with GL_PERK_PROBE="x,y,z,yaw;...": what is wrong at exactly those.
+func _survey_perk_spots() -> void:
+	if OS.get_environment("GL_PERK_PROBE") != "":
+		for row: String in OS.get_environment("GL_PERK_PROBE").split(";", false):
+			var v: PackedFloat64Array = row.split_floats(",")
+			if v.size() >= 4:
+				for s: int in [1, -1]:
+					var probs: PackedStringArray = _spot_problems(Vector3(v[0], v[1], v[2]), v[3], s)
+					print("PROBE %s flush %+d: %s" % [row, s, "clear" if probs.is_empty() else "; ".join(probs)])
+		return
+	var only: String = OS.get_environment("GL_PERK_SURVEY")
+	var seen: Dictionary = {}
+	for zb: Array in zone_boxes:
+		var zone: String = str(zb[0])
+		if only != "1" and only != zone:
+			continue
+		var lo: Vector3 = zb[1]
+		var hi: Vector3 = zb[2]
+		var y: float = lo.y + 1.0
+		var found: Array = seen.get(zone, [])
+		var x: float = lo.x + 0.75
+		while x < hi.x - 0.75:
+			var z: float = lo.z + 0.75
+			while z < hi.z - 0.75:
+				for yaw: float in [0.0, 90.0, 180.0, -90.0]:
+					if found.size() >= 12:
+						break
+					var p2: Vector3 = Vector3(x, y, z)
+					var far: bool = true
+					for f: Vector3 in found:
+						if f.distance_to(p2) < 3.0:
+							far = false
+					if not far:
+						continue
+					for s2: int in [1, -1]:
+						if _spot_problems(p2, yaw, s2, true).is_empty():
+							print("SURVEY %s %.2f %.2f %.2f %.0f %+d" % [zone, x, y, z, yaw, s2])
+							found.append(p2)
+							break
+				z += 0.25
+			x += 0.25
+		seen[zone] = found
