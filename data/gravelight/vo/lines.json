@@ -7483,6 +7483,141 @@
     "category": "INN_CAUGHT",
     "text": "[screaming] Franz! Get off! Get it off me!"
   },
+  "BAR_M1SURV_REVEAL_01": {
+    "speaker": "BAR",
+    "category": "SURV_REVEAL",
+    "text": "Boots! Living boots. God be thanked. I am Bartsch, the watchman. The keys are mine, the shame is mine: I left the gate."
+  },
+  "BAR_M1SURV_SCARED_01": {
+    "speaker": "BAR",
+    "category": "SURV_SCARED",
+    "text": "Every window of this house, they try. I hear them testing the boards like a man tests ice."
+  },
+  "BAR_M1SURV_SCARED_02": {
+    "speaker": "BAR",
+    "category": "SURV_SCARED",
+    "text": "I was at Verdun. I told myself nothing would ever frighten me again. I was a liar at twenty, too."
+  },
+  "BAR_M1SURV_FLINCH_01": {
+    "speaker": "BAR",
+    "category": "SURV_FLINCH",
+    "text": "[a flinch] Steady. Steady, old man."
+  },
+  "BAR_M1SURV_ARMED_01": {
+    "speaker": "BAR",
+    "category": "SURV_ARMED",
+    "text": "A rifle. Yes. Put me at the balcony window, I can see the whole yard from there."
+  },
+  "BAR_M1SURV_FIGHT_01": {
+    "speaker": "BAR",
+    "category": "SURV_FIGHT",
+    "text": "One in the yard, by the brazier. [a shot] Down."
+  },
+  "BAR_M1SURV_HURT_01": {
+    "speaker": "BAR",
+    "category": "SURV_HURT",
+    "text": "[pain] It had my arm. I am still here."
+  },
+  "BAR_M1SURV_DOWNED_01": {
+    "speaker": "BAR",
+    "category": "SURV_DOWNED",
+    "text": "[on the floor] Pull me up. I have kept this gate thirty years, I will not lie down on the job now."
+  },
+  "BAR_M1SURV_DEATH_01": {
+    "speaker": "BAR",
+    "category": "SURV_DEATH",
+    "text": "[weak] The keys... in my coat. The gate... the north gate..."
+  },
+  "LNZ_M1SURV_REVEAL_01": {
+    "speaker": "LNZ",
+    "category": "SURV_REVEAL",
+    "text": "Shut the door behind you. [a breath] I am sorry. Martha Lenz, the pay office. The Christmas packets are still on my desk."
+  },
+  "LNZ_M1SURV_SCARED_01": {
+    "speaker": "LNZ",
+    "category": "SURV_SCARED",
+    "text": "Forty-one men drew pay this week. I counted them out myself. I keep counting them now."
+  },
+  "LNZ_M1SURV_SCARED_02": {
+    "speaker": "LNZ",
+    "category": "SURV_SCARED",
+    "text": "If they get up the stairs, I want to be the one who sees them first. Is that strange?"
+  },
+  "LNZ_M1SURV_FLINCH_01": {
+    "speaker": "LNZ",
+    "category": "SURV_FLINCH",
+    "text": "[a gasp] The windows. Mind the windows."
+  },
+  "LNZ_M1SURV_ARMED_01": {
+    "speaker": "LNZ",
+    "category": "SURV_ARMED",
+    "text": "I have never fired one of these. Show me once. ...Once is enough. The north window."
+  },
+  "LNZ_M1SURV_FIGHT_01": {
+    "speaker": "LNZ",
+    "category": "SURV_FIGHT",
+    "text": "At the north window. I have it. [a shot] I have it."
+  },
+  "LNZ_M1SURV_HURT_01": {
+    "speaker": "LNZ",
+    "category": "SURV_HURT",
+    "text": "[pain] It tore my sleeve. And my arm. Go on, I can stand."
+  },
+  "LNZ_M1SURV_DOWNED_01": {
+    "speaker": "LNZ",
+    "category": "SURV_DOWNED",
+    "text": "[on the floor] My legs will not answer. Please. Lift me."
+  },
+  "LNZ_M1SURV_DEATH_01": {
+    "speaker": "LNZ",
+    "category": "SURV_DEATH",
+    "text": "[weak] The packets... give the men their pay..."
+  },
+  "SHR_M1SURV_REVEAL_01": {
+    "speaker": "SHR",
+    "category": "SURV_REVEAL",
+    "text": "Are you real? You are real. Hedda Schramm, the switchboard. Nobody answered on any line. Nobody."
+  },
+  "SHR_M1SURV_SCARED_01": {
+    "speaker": "SHR",
+    "category": "SURV_SCARED",
+    "text": "I keep hearing the switchboard buzz downstairs. There is nobody on the other end. There is nobody anywhere."
+  },
+  "SHR_M1SURV_SCARED_02": {
+    "speaker": "SHR",
+    "category": "SURV_SCARED",
+    "text": "My mother thinks I am safe here. That is the joke I keep telling myself."
+  },
+  "SHR_M1SURV_FLINCH_01": {
+    "speaker": "SHR",
+    "category": "SURV_FLINCH",
+    "text": "[a small scream] Sorry. Sorry. I am all right."
+  },
+  "SHR_M1SURV_ARMED_01": {
+    "speaker": "SHR",
+    "category": "SURV_ARMED",
+    "text": "I can shoot. My father took me for rabbits. Put me at the top of the stairs. Nothing comes up them."
+  },
+  "SHR_M1SURV_FIGHT_01": {
+    "speaker": "SHR",
+    "category": "SURV_FIGHT",
+    "text": "On the stairs! [a shot] It fell back down."
+  },
+  "SHR_M1SURV_HURT_01": {
+    "speaker": "SHR",
+    "category": "SURV_HURT",
+    "text": "[pain] It bit me. Oh God, it bit me. Keep shooting."
+  },
+  "SHR_M1SURV_DOWNED_01": {
+    "speaker": "SHR",
+    "category": "SURV_DOWNED",
+    "text": "[on the floor] I am down. I am down! Please, someone, please."
+  },
+  "SHR_M1SURV_DEATH_01": {
+    "speaker": "SHR",
+    "category": "SURV_DEATH",
+    "text": "[weak] Tell my mother... the lines were all down..."
+  },
   "GOR_M1_GATE_01": {
     "speaker": "GOR",
     "category": "INN_DOOR",

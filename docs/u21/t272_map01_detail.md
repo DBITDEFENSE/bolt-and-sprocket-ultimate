@@ -322,3 +322,65 @@ window (not re-rendered).
   winding house box it in).
 - The opening's miners are primitive bodies; their nine lines have no voice yet.
 - Survivors behind a door: not built (see section 5).
+
+## Additions after the merge
+
+### The opening's miners wear the project's person models
+
+Each patron row in `map01_opening.json` has a `person` key now (T-273's key: the body worn alive and when risen):
+Gorny `rother`, Kania `sobotta`, Pietsch `kubiak`, Mrozek `petersen`. No script change. The project has eleven
+modelled civilian men and reuses them across maps (`people_extra.json` does the same: Kaltenbrunn's hidden miners are
+rother, sobotta and petersen too, met deep in the mine much later; Totenhafen's opening uses rother and sobotta). A face
+of its own for each miner would need new person models. `smoke_map01_opening` now also checks that all four wear a
+modelled body (4 of 4) and that both risen wear their person's body (2 of 2): 17 checks, PASS. Seen:
+`docs/captures/t272/c00_kaue_miners_night_models.jpg` (Kubiak warming his hands at the stove, Rother and Petersen on
+the west bench, in their own clothes; the blockout bodies of `b00` are gone).
+
+### The survivors behind a door: the Administration
+
+`data/gravelight/map01_survivors.json` on the generalised `inn_survivors.gd` / `inn_survivor.gd` (the node
+`Gameplay/InnSurvivors`, empty `data_path`); no script change. The night watchman ran from his gatehouse to the
+Administration with the keys when the dead came over the wall (the opening's Kania asks where he is); two of the office
+staff were still upstairs. They locked the Administration's yard door (`door_a_c`, Door_Admin, 1000) and hid in the
+radio room upstairs. Opening that door reveals them, cowering and pleading; a player pays 750 to hand one a Kar98k and
+they take a post on the upper floor and shoot the dead they see. Downs, helping up, deaths and rises as on Map 0.
+
+| Survivor | Body (`person`) | Hides | Post |
+|---|---|---|---|
+| Paul Bartsch, the night watchman (60s), speaker BAR | wiesner | (-13.6, 3.8, 13.6) by the radio desk | (-1.0, 3.8, 14.0), the balcony window over the yard (facing east) |
+| Martha Lenz, the pay office's senior clerk (40s), LNZ | pohl | (-11.0, 3.8, 9.0) | (-8.0, 3.8, 9.3), the north window (the ledge the dead climb to) |
+| Hedda Schramm, the switchboard's relief typist (19), SHR | trudi | (-2.2, 3.8, 10.4) | (-9.0, 3.8, 18.6), the south room by the stair head |
+
+`nav_layers` 4 (T-273's key): Kaltenbrunn bakes a navigation layer per zone and the Administration is bit 3. The
+numbers (`ally`, `arm`, `squad_turn_line` INN_SURV_TURN: "one of the civvies upstairs") are Map 0's. Lines: 27 text
+lines (nine a survivor: reveal, two scared, flinch, armed, fight, hurt, downed, death) and three cast entries; no
+audio, listed under `missing` in `audio_manifest.json`. Faces: wiesner is also the hidden orderly on this map (T-143),
+pohl and trudi are the Inn's women who got away; the same reuse as above.
+
+Verified: `smoke_map01_survivors` (new, the steps of `smoke_map02_survivors`) PASS: hidden before the door, their spots
+on the navmesh, nothing solid on them, each in a modelled body; the door reveals them cowering with an arm prompt
+("Hold [F] to arm Paul Bartsch with a Kar98k [750]"); Frau Lenz's reveal line plays near them and she flinches at a
+shot; a zombie in the radio room kills Bartsch while hiding (3 swipes), who rises in his body after the turning
+warning; Lenz is armed for 750, walks to her post (0.0 m off in 1.4 s) and shoots a zombie on the upper floor; downed
+at 0 hp, helped up, she holds again. `test_map01_detail` `test_the_survivors_data`; `test_vo`, `test_inn_survivors`
+PASS. Not seen in a render (they are hidden until the door is bought; the capture tool does not buy doors).
+
+### Results of the additions (headless, 2026-11-24)
+
+`check_scripts` 1020 scripts, 0 failed. The full `smoke_map_detail` (the run missing after the Rail Yard perk spot
+moved): PASS, 125 checks, 0 failed. `smoke_map01`, `smoke_map01_opening` (17), `_perks` (13), `_reactive` (16),
+`_sherman` (36), `_survivors`, `_systems`, `_tower` (63), `_world` PASS, all 0 script errors. `test_map01_detail` (14),
+`test_vo`, `test_inn_survivors`, `test_map_detail` PASS. The full GUT was not re-run for the additions (data files, one
+generator line, a smoke and tests).
+
+### For DECISIONS.md (the additions)
+
+**T-272 additions (after the merge).** The opening's four miners wear the project's person models through the rows'
+`person` key (T-273's; alive and risen): rother, sobotta, kubiak, petersen, reused as people_extra.json reuses them (a
+face of their own would need new person models). Survivors behind a door on the generalised `inn_survivors.gd`
+(`map01_survivors.json`, no script change): the night watchman Bartsch and two office staff, Frau Lenz and Hedda
+Schramm, hidden in the Administration's upstairs radio room behind its yard door (`door_a_c`, 1000), armed for 750 to
+hold the balcony window, the north window and the stair head; person bodies wiesner, pohl, trudi; `nav_layers` 4 (the
+Administration's layer); 27 text lines and three cast entries, no audio (listed missing). Verified headless:
+`smoke_map01_survivors` and the extended `smoke_map01_opening` PASS, the full `smoke_map_detail` PASS (125 checks).
+The survivors were not rendered (hidden until the door is bought).

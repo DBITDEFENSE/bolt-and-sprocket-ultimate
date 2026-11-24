@@ -1,7 +1,8 @@
 extends Node
 ## T-272: Kaltenbrunn's round 1 opening, the night shift runs (data/gravelight/map01_opening.json; InnOpening,
 ## YardGate), headless, solo, silent, the map loaded the way a smoke drops it in (round 1 comes by itself):
-## the opening reads this map's file; the four miners are in the Waschkaue with the squad before round 1, under its roof;
+## the opening reads this map's file; the four miners are in the Waschkaue with the squad before round 1, under its roof,
+## each in a modelled person's body (the row's `person`; the risen wear it too);
 ## round 1 waits for the settled view and the cue (the intro lines and Gorny's "What was that?" first); round 1 starts:
 ## the opening runs; the miners run out of the doorways and through the squad's view (within 56 degrees of the
 ## spawn's forward: an 80 degree FOV at 16:9); the north gate swings open for
@@ -73,6 +74,11 @@ func _run() -> void:
 		if pb.visible and p.x > 4.0 and p.x < 16.0 and p.z > 26.0 and p.z < 31.85 and roof:
 			in_kaue += 1
 	_check(op.patrons.size() == 4 and in_kaue == 4, "the four miners are in the Waschkaue with the squad, under its roof (%d of %d)" % [in_kaue, op.patrons.size()])
+	var modelled: int = 0
+	for pb3: PatronBody in op.patrons.values():
+		if pb3.person != null:
+			modelled += 1
+	_check(modelled == 4, "every miner wears a modelled person's body, not the blockout (%d of 4)" % modelled)
 	_check(RoundManager.current_round == 0, "round 1 has not started yet")
 	var started: bool = await _until(func() -> bool: return RoundManager.current_round == 1, 40.0)
 	var waited: float = float(Time.get_ticks_msec() - t0) / 1000.0
@@ -120,6 +126,12 @@ func _run() -> void:
 			risen_ok += 1
 	_check(str(op.fates.get("pietsch", "")) == "risen" and str(op.fates.get("mrozek", "")) == "risen" and risen_ok == 2,
 		"Pietsch and Mrozek are caught in the south lane and rise as zombies on the yard's navmesh (%d of 2)" % risen_ok)
+	var dressed: int = 0
+	for id3: String in ["pietsch", "mrozek"]:
+		var z3: Zombie = op.risen.get(id3) as Zombie
+		if z3 != null and is_instance_valid(z3) and str(z3.get_meta("person", "")) != "":
+			dressed += 1
+	_check(dressed == 2, "the risen wear the same people's bodies (%d of 2)" % dressed)
 	_check(op.attackers.size() == 2, "two of the dead rose out of the snow for them (%d)" % op.attackers.size())
 	_check(op.slots_returned == 0 and op.riser_specs.is_empty() and op.attacker_specs.is_empty(), "every slot was used, none returned (%d returned)" % op.slots_returned)
 	_finish()
