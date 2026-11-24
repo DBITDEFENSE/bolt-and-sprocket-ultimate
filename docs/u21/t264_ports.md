@@ -21,7 +21,9 @@ All three from the repo root in Git Bash; each needs the Godot 4.7.2 export temp
 | macOS | `tools/build_macos.sh` | `build/ClaudeZombies_<version>_macos.zip` (holds `CLAUDE ZOMBIES.app`) |
 | Windows | `tools/build_windows.sh` (unchanged) | `build/ClaudeZombies_<version>.zip` |
 
-Measured here (BUILD_NUMBERS).
+Measured here, 2026-11-23, with nothing else exporting: Linux 2 min 12 s, binary 1.15 GB (the pack is inside it),
+tar.gz 873 MB. macOS 2 min 20 s, zip 901 MB (executable 171 MB for both architectures, pack 1.08 GB). Windows
+1 min 58 s, exe 1.19 GB, zip 882 MB.
 
 - **Linux executable bit.** Windows file systems have none. `build_linux.sh` writes the tar.gz with Python's
   `tarfile` and sets mode 0755 on the binary and `start.sh` itself, then reads the archive back and fails if the
@@ -136,7 +138,7 @@ First launch only (no saved graphics preset). A saved choice is never touched; `
 - `detect_preset` is still a pure static function (a fourth, optional argument `steam_deck`); `apple_tier`,
   `is_deck_adapter`, `detect_max_lines`, `effective_scale`, `handheld_frame_cap` are pure too and tested.
 - One log line at every start, e.g.
-  `[GLSettings] Linux 24.04 | 16 threads | llvmpipe (...) (type 4, 1.4.318) | vulkan forward_plus | render thread separate | window (1280, 800), screen (1280, 800) x1.00 ... | preset low, 3D limit 0`:
+  `[GLSettings] Linux 24.04 | 16 threads | llvmpipe (...) (type 4, 1.4.318) | vulkan forward_plus | render thread safe | window (1280, 800), screen (1280, 800) x1.00 ... | preset low, 3D limit 0`:
   ask a tester for it.
 
 ### Forward+ or Mobile on the Deck? Recommendation: stay on Forward+, measure first
@@ -209,7 +211,7 @@ Not fixed (listed for the owner / a follow-up):
 | --- | --- | --- |
 | macOS app name | `TERMS & CONDITIONS` was written into Info.plist unescaped: invalid XML, the app cannot start | `config/name.macos="CLAUDE ZOMBIES"` in `project.godot` (app, window title and user folder on macOS) |
 | Quit | Every exported (release) build crashed on the way out ("Pages in use exist at exit", "double free", exit 134 / 139; the Nov 8 Windows exe exits 127). Static caches of meshes / models outlive the rendering server | `ExitSweep` empties the scripts' static caches as the tree goes down. Linux build: exit 0 |
-| Case of paths | none wrong (11,000+ `res://` and relative paths checked) | `test_path_case.gd` keeps it so |
+| Case of paths | none wrong (every `res://` path and repo-relative path in scripts, scenes, resources, shaders and JSON: more than 10,000) | `test_path_case.gd` keeps it so |
 | GDExtension | one: `addons/webrtc` (webrtc-native 1.2.2), Windows + Linux x86_64 only: the Mac build had no online play | the macOS universal frameworks from the same release added (LFS), `.gdextension` extended. Unverified on a Mac |
 | Windows-only code in the shipped game | none that stops a start: no `OS.get_name()` branches, no registry, no `.exe` paths outside the dev launcher (not reachable from the game) | - |
 | Local-model bot (Ollama) | autostart only knew the Windows install path; HTTP to 127.0.0.1, async, falls back to the built-in planner | Unix / Homebrew / app-bundle paths added to `bots.json`. On Unix a missing binary still costs ~15 s of probing before it falls back (no stall, async) |
@@ -219,7 +221,7 @@ Not fixed (listed for the owner / a follow-up):
 | Networking | ENet direct IP (UDP 24785) and WebRTC + HTTPS lobbies; nothing platform-bound; packets are packed little-endian by Godot on every platform; no file paths with OS separators are sent | - |
 | `user://` | Linux `~/.local/share/godot/app_userdata/TERMS & CONDITIONS/`, macOS `~/Library/Application Support/Godot/app_userdata/CLAUDE ZOMBIES/`; all paths are forward-slash constants | - |
 | Window mode | default "borderless" = fullscreen. On macOS that is the native fullscreen Space (animates at each start); the system keeps a fullscreen app below the notch by default | not changed, not seen |
-| Shaders | Map 0 and the menu compile and draw on Vulkan Forward+ (Mesa lavapipe) with no shader error (SHADER_RESULT) | Metal cannot be tested here |
+| Shaders | the menu and all seven maps load and draw on Vulkan Forward+ (Mesa lavapipe) with no shader error in any log (section 7). lavapipe is not RADV: a driver-specific rejection on the Deck would not show here | Metal cannot be tested here |
 
 Left open on purpose (each is a decision or needs a device):
 
@@ -276,7 +278,30 @@ Windows build of the same commit (LAN page, port 24785 UDP).
 
 ## 7. Verified, and how
 
-VERIFIED_BLOCK
+Runs behind every line; logs under `.smoke_logs/t264/` (Windows) and in WSL `~/t264/` (not kept in the repo).
+"Earlier build" = the same code exported with the separate render thread on (section 2), before it was taken out.
+
+| What | Command (short) | Result |
+| --- | --- | --- |
+| Script check | `check_scripts.gd` | checked 977 scripts, 0 failed |
+| Unit tests | full GUT, twice | 2473 tests (13 new). First run: 2472 passing, 1 risky (the known `test_neural_lines_are_loudness_normalised`). Second run, on the final code with three other workers loading the PC: 2471 passing, the same risky one, and 1 failure in `test_npc_life.test_warm_hands_meet_under_the_chin` (an NPC idle pose after 4 simulated seconds; not code this task touches); run alone afterwards it passed 3 times of 3 |
+| Smokes (run twice, the second time on the final code) | `run_smokes.sh .smoke_logs/t264 menus` and `... map00` | `smoke_menus`, `smoke_menus_pad` (69 checks), `smoke_map00`, `smoke_map00_alive`, `smoke_map00_cellar_bay`, `smoke_map00_loop`: all PASS, 0 script errors |
+| Linux build as committed, headless boot (WSL, Ubuntu 24.04) | `./ClaudeZombies.x86_64 --headless --audio-driver Dummy --quit-after 120` | exit 0 in 6 to 12 s (the menu scene's first frame 1.6 to 3.0 s after start), 0 error lines |
+| Linux build as committed, Map 0 headless | `... -- --probe-campaign --solo --direct --seconds=30` | `RESULT PASS (alive at 30 s)`, exit 0, 0 error lines |
+| Linux build as committed, rendered menu | `xvfb-run -a -s "-screen 0 1280x800x24" ./ClaudeZombies.x86_64 --rendering-driver vulkan --audio-driver Dummy --resolution 1280x800 --quit-after 300` | `Vulkan 1.4.318 - Forward+ - llvmpipe`, `render thread safe`, first launch picked Low for the software GPU, the menu scene drew, exit 0 after 298 s (300 software-rendered frames), **0 error lines** |
+| Linux build as committed, Map 0 rendered on Vulkan | the same with `-- --probe-campaign --solo --direct --seconds=40 --set=graphics_preset:handheld` | Handheld preset in use (`gi=false ssil=false fog=low`), `RESULT PASS`, exit 0 after 160 s, **0 error lines**, no shader error |
+| Windows build as committed | `tools/build_windows.sh`, then the exe `--headless` | exports; menu boot exit 0; Map 0 probe `RESULT PASS`, exit 0, 0 error lines |
+| Linux build, rendered menu (earlier build, separate thread) | `xvfb-run ... --rendering-driver vulkan --resolution 1280x800 --quit-after 300` | `Vulkan 1.4.318 - Forward+ - llvmpipe`, first launch picked Low for the software GPU, the menu scene drew, exit 0 after 264 s (300 software-rendered frames), no shader error; the four error lines of section 2 |
+| Linux build, Map 0 rendered on Vulkan (earlier build) | `... -- --probe-campaign --solo --direct --seconds=40 --set=graphics_preset:handheld` | default thread (`--render-thread safe`): `RESULT PASS`, **0 error lines, exit 0**, 109 s. Separate thread: `RESULT PASS`, 4 texture errors, then the hang on quit |
+| Every map on Vulkan Forward+ (the Linux editor binary on this branch, lavapipe, one after another) | `tools/wsl_perf.sh <map> handheld` (perf_marks, `--quick`) | all seven maps (Crossroads, Kaltenbrunn, Totenhafen, Thalbach, der Kranich, Groom Lake, Mondlicht) loaded and ran their marks in 500 to 731 s each: **0 shader errors, 0 script errors**. Each log has the same two engine lines while the scene is torn down (`BUG, indexing did not unpair geometries from light`), which T-258's logs on master already show |
+| Quit | the runs above | exit 0 after the menu and after a match, Linux and Windows. Before `ExitSweep`: 134 / 139 (Linux), 127 / 139 (Windows) |
+| macOS archive | `tools/check_macos_build.py` | `RESULT: ok`: Info.plist parses (name CLAUDE ZOMBIES, identifier, version 0.0.1, minimum 11.00 for both architectures, high-resolution capable), executable mode 0755 with an x86_64 slice (87.6 MB) and an arm64 slice (83.3 MB), both ad-hoc signed with our identifier, pack 1.08 GB, the WebRTC framework inside with both slices ad-hoc signed, `_CodeSignature/CodeResources` present. **Not run.** |
+| Windows preset | `git diff master -- export_presets.cfg` | preset 0 and the Web preset untouched |
+| Feature override | an earlier Linux build's log | `render thread separate` printed by the build itself when its preset carried `cz_render_thread` |
+| ETC2 / ASTC re-import | `--import`, timed | 55 s, +370 MB of import cache, 325 `.import` files |
+
+Side effect to know: the match probe starts the owner's local Ollama server when it is installed and not running
+(the game's own autostart, unchanged); the later probes here ran with `--set=bot_local_ai:false`.
 
 ## 8. Not verified
 
@@ -289,7 +314,7 @@ VERIFIED_BLOCK
 - Apple silicon tiers and their 3D limits are estimates.
 - Whether the separate render thread hangs on quit on a real GPU (it did on the software one, Linux).
 - No rendered run of any Windows build (not allowed on this PC); the Windows export was booted and played headless.
-- Maps other than Map 0 were not loaded in the exported Linux build under Vulkan (OTHER_MAPS).
+- Maps other than Map 0 were not loaded in the exported Linux build under Vulkan the other six maps were loaded on Vulkan with the Linux editor binary instead, section 7.
 - Cross-platform co-op (Windows host, Linux or Mac client) was not played. The transport and packet code have
   nothing platform-specific by reading; that is not a played match.
 - 18-px "Largest" small text was not looked at for overflow.
