@@ -129,6 +129,55 @@ func _walk_to(want: Control) -> bool:
 	return _focus_owner() == want
 
 
+func _place() -> String:
+	var f: Control = _focus_owner()
+	return str(f.get_meta("map_id", "")) if f != null else ""
+
+
+## T-270: Solo's step 2, the war map, with the pad alone: A on a character, the D-pad left along the route (locked
+## places too), up to the Moon and down again, right back to the start, up to the top row, B twice to leave.
+func _walk_world() -> void:
+	var ok: bool = await _focus("Solo")
+	_check(ok, "the D-pad reaches Solo again")
+	await _pad(JOY_BUTTON_A)
+	await _secs(0.4)
+	await _pad(JOY_BUTTON_A)   # the character under the focus
+	await _secs(0.5)
+	var mc: MenuCharacter = _screen() as MenuCharacter
+	_check(mc != null and mc.world != null, "A on a character opens the war map")
+	if mc == null or mc.world == null:
+		return
+	var ids: PackedStringArray = WorldMap.order()
+	var walked: PackedStringArray = [_place()]
+	for i: int in ids.size() - 2:
+		await _pad(JOY_BUTTON_DPAD_LEFT)
+		walked.append(_place())
+	await _pad(JOY_BUTTON_DPAD_UP)   # Groom Lake: the Moon is above it
+	walked.append(_place())
+	_check(walked == ids, "D-pad left, then up to the Moon, walks the route in story order (%s)" % ", ".join(walked))
+	_check(_focus_owner() is Button and (_focus_owner() as Button).disabled, "a locked place takes the focus")
+	await _pad(JOY_BUTTON_A)
+	await _frames(4)
+	_check(_screen() == mc and get_tree().current_scene == _menu, "A on a locked place starts nothing")
+	for i: int in ids.size() - 1:
+		await _pad(JOY_BUTTON_DPAD_RIGHT)
+	_check(_place() == ids[0], "D-pad right walks back to the start (%s)" % _place())
+	await _pad(JOY_BUTTON_DPAD_UP)
+	_check(_focused().begins_with("Character:"), "D-pad up reaches the top row (%s)" % _focused())
+	await _pad(JOY_BUTTON_DPAD_RIGHT)
+	await _pad(JOY_BUTTON_DPAD_DOWN)
+	_check(_place() == ids[0], "D-pad down from the top row comes back to the place (%s)" % _place())
+	await _pad(JOY_BUTTON_DPAD_DOWN)
+	await _pad(JOY_BUTTON_DPAD_DOWN)
+	_check(_focused().begins_with("Easter Egg Mode"), "D-pad down reaches the row under the sheet (%s)" % _focused())
+	await _pad(JOY_BUTTON_B)
+	await _secs(0.4)
+	_check(_screen() == mc and mc.world == null, "B goes back to the characters")
+	await _pad(JOY_BUTTON_B)
+	await _secs(0.4)
+	_check(_screen() == null, "and B again closes the page")
+
+
 func _run() -> void:
 	_t0 = Time.get_ticks_msec()
 	_menu = (load(MENU) as PackedScene).instantiate() as Control
@@ -149,6 +198,7 @@ func _run() -> void:
 	await _secs(0.3)
 	_check(str(_menu.get("column")) == "play", "A on PLAY opens its column")
 	await _open_close("Solo", MenuCharacter)
+	await _walk_world()
 	var lobby: MenuLobby = await _open("Co-op", MenuLobby) as MenuLobby
 	if lobby != null:
 		# first visit: the name page. Its letter keys are there for a controller, and A on a key types

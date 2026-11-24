@@ -8,6 +8,7 @@ extends RefCounted
 ##                          left, a flash on the press, a quiet tick when the focus moves
 ##   zoom                   a picture inside a clipped frame leans in while its card has the focus (map cards)
 ##   pulse                  one short swell of a value just chosen
+##   glide                  a mark moves to another spot (the ring on the war map, T-270)
 ##   finish                 ends whatever is still running on a control at once (a second press skips the motion)
 ## Rules: nothing here ever blocks input (a control is usable from its first frame, faded or not); the longest path
 ## from a press to a settled screen is SCREEN_S + STAGGER_MAX_S, under a quarter of a second; and with the
@@ -216,6 +217,19 @@ static func zoom(pic: Control, on: bool, amount: float = 1.07) -> void:
 	var to: float = amount if (on and not r) else 1.0
 	var tw: Tween = _tween(pic, &"_menu_motion_zoom").set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	tw.tween_property(pic, "scale", Vector2(to, to), duration(0.22, r))
+
+
+## A mark moves to `to` (T-270: the ring on the war map travels to the place under the focus); with Reduce motion it
+## is simply there. `c` must sit in no container.
+static func glide(c: Control, to: Vector2, secs: float = 0.18) -> void:
+	if c == null:
+		return
+	if not c.is_inside_tree() or reduced():
+		_kill(c)
+		c.position = to
+		return
+	var tw: Tween = _tween(c).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tw.tween_property(c, "position", to, secs)
 
 
 ## One short swell (a value just changed, a card just chosen). `c` must sit in no container, or be a label whose

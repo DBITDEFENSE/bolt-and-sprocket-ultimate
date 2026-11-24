@@ -91,6 +91,51 @@ func _open_close(label: String, kind: GDScript) -> void:
 		_check(_screen() == null, "%s closes on ui_cancel" % label)
 
 
+func _place() -> String:
+	var f: Control = get_viewport().gui_get_focus_owner()
+	return str(f.get_meta("map_id", "")) if f != null else ""
+
+
+## T-270: Solo's step 2 is the war map. By actions only: accept on a character, then left walks the seven places in
+## story order (locked ones too), right walks back, up reaches the top row and down comes back, cancel twice leaves.
+func _walk_world() -> void:
+	var ok: bool = await _focus("Solo")
+	_check(ok, "focus reaches Solo again")
+	await _press(&"ui_accept")
+	await _secs(0.4)
+	await _press(&"ui_accept")   # the character under the focus
+	await _secs(0.5)
+	var mc: MenuCharacter = _screen() as MenuCharacter
+	_check(mc != null and mc.world != null, "accept on a character opens the war map")
+	if mc == null or mc.world == null:
+		return
+	var ids: PackedStringArray = WorldMap.order()
+	_check(_place() == ids[0], "the first open place has the focus (%s)" % _place())
+	var walked: PackedStringArray = [_place()]
+	for i: int in ids.size() - 1:
+		await _press(&"ui_left")
+		walked.append(_place())
+	_check(walked == ids, "ui_left walks the route in story order (%s)" % ", ".join(walked))
+	_check((mc.find_child("PlaceName", true, false) as Label).text == str(MapCards.row(ids[ids.size() - 1])["name"]), "the side panel follows the focus")
+	await _press(&"ui_left")
+	_check(_place() == ids[ids.size() - 1], "ui_left at the end of the road stays there")
+	await _press(&"ui_down")
+	_check(_place() == ids[ids.size() - 2], "ui_down from the Moon is Groom Lake (%s)" % _place())
+	for i: int in ids.size() - 2:
+		await _press(&"ui_right")
+	_check(_place() == ids[0], "ui_right walks back to the start (%s)" % _place())
+	await _press(&"ui_up")
+	_check(_focused().begins_with("Character:"), "ui_up leaves the sheet for the top row (%s)" % _focused())
+	await _press(&"ui_down")
+	_check(_place() == ids[0], "and ui_down comes back to the place (%s)" % _place())
+	await _press(&"ui_cancel")
+	await _secs(0.4)
+	_check(_screen() == mc and mc.world == null, "ui_cancel goes back to the characters")
+	await _press(&"ui_cancel")
+	await _secs(0.4)
+	_check(_screen() == null, "and ui_cancel again closes the page")
+
+
 func _run() -> void:
 	_t0 = Time.get_ticks_msec()
 	_menu = (load(MENU) as PackedScene).instantiate() as Control
@@ -108,6 +153,7 @@ func _run() -> void:
 	await _secs(0.3)
 	_check(str(_menu.get("column")) == "play", "ui_accept on PLAY opens its column")
 	await _open_close("Solo", MenuCharacter)
+	await _walk_world()
 	await _open_close("Co-op", MenuLobby)
 	await _open_close("Campaign", MenuCharacter)
 	await _press(&"ui_cancel")
