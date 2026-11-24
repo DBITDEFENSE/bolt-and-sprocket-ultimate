@@ -113,7 +113,7 @@
         "B_RAILYARD"
       ],
       "look": "noriker",
-      "_doc": "T-271 the mine's cart horse (T-240's rideable horse, T-262's tack chest), tied at a hitching rail on the Minehead yard's east wall between the drums in the corner and the Rail Yard door (the door is 6 m south of the rail, the chest 4.5 m). yaw -90 = it faces east, toward the rail and the wall. zones: the two surface yards (the Rail Yard once its door is open); never the Kaue's doorways that lead below, the Administration or the barracks. The rail's collider is on the map-edge layer, the chest has none: the baked navmesh is untouched. Measured by probe_map_site and walked by smoke_map_detail."
+      "_doc": "T-271 the mine's cart horse (T-240's rideable horse, T-262's tack chest), tied at a hitching rail on the Minehead yard's east wall between the drums in the corner and the Rail Yard door (the door is 6 m south of the rail, the chest 4.5 m). yaw -90 = it faces the rail and the wall (+x). zones: the two surface yards (the Rail Yard once its door is open); never the Kaue's doorways that lead below, the Administration or the barracks. The rail's collider is on the map-edge layer, the chest has none: the baked navmesh is untouched. Measured by probe_map_site and walked by smoke_map_detail."
     }
   ],
   "sherman_event": {

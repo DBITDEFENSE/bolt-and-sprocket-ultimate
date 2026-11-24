@@ -932,7 +932,7 @@ func stand_at(x: float, z: float, yaw_deg: float) -> void:
 
 func _start_home() -> void:
 	var map_rid: RID = get_world_3d().navigation_map
-	_path = NavigationServer3D.map_get_path(map_rid, global_position, home_pos, true)
+	_path = NavigationServer3D.map_get_path(map_rid, global_position, home_pos, true, home_layers())
 	_path_i = 0
 	if _path.size() < 2:
 		_path = PackedVector3Array([global_position, home_pos])
@@ -940,6 +940,31 @@ func _start_home() -> void:
 	_t = 0.0
 	_home_prog_t = 0.0
 	_home_prog_from = global_position
+
+
+## T-271: the navigation layers its way home may use. A map that bakes a navmesh region per zone on its own layer
+## (MapRoot.nav_zone_bits: Kaltenbrunn, Thalbach, Groom Lake) gives its zones' layers and the always-walkable ones:
+## on Groom Lake the lakebed is not on layer 1, and the path home ended at the wreck's side of the wall. A map
+## without per-zone layers (Map 0) keeps layer 1, as before.
+func home_layers() -> int:
+	var n: Node = get_parent()
+	while n != null and not (n is MapRoot):
+		n = n.get_parent()
+	return layers_for(zones, (n as MapRoot).nav_zone_bits, (n as MapRoot).nav_always_bits) if n != null else 1
+
+
+static func layers_for(zone_list: Array, zone_bits: Dictionary, always_bits: Array) -> int:
+	var mask: int = 0
+	for z: Variant in zone_list:
+		if zone_bits.has(str(z)):
+			mask |= 1 << (int(zone_bits[str(z)]) - 1)
+		elif zone_bits.has(StringName(str(z))):
+			mask |= 1 << (int(zone_bits[StringName(str(z))]) - 1)
+	if mask == 0:
+		return 1
+	for b: Variant in always_bits:
+		mask |= 1 << (int(b) - 1)
+	return mask
 
 
 func _tick_home(delta: float) -> void:

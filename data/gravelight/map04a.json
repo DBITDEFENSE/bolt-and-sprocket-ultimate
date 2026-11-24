@@ -529,7 +529,7 @@
         "D_KIRCHPLATZ"
       ],
       "look": "noriker",
-      "_doc": "T-271 a settler's cart horse (T-240, T-262's tack chest) tied at a rail on the Siedlung's south wall, between the ammunition box (5.4 m west of the chest) and the Bahnhof door (7 m east). yaw 180 = it faces south, toward the rail and the wall. zones: the open streets (the Siedlung, the Bahnhof and the Kirchplatz once their doors are open), never the works' halls. The rail's collider is on the map-edge layer, the chest has none: the baked navmesh is untouched."
+      "_doc": "T-271 a settler's cart horse (T-240, T-262's tack chest) tied at a rail on the Siedlung's south wall, between the ammunition box (5.4 m from the chest) and the Bahnhof door (7 m the other way). yaw 180 = it faces the rail and the wall (+z). zones: the open streets (the Siedlung, the Bahnhof and the Kirchplatz once their doors are open), never the works' halls. The rail's collider is on the map-edge layer, the chest has none: the baked navmesh is untouched."
     }
   ]
 }

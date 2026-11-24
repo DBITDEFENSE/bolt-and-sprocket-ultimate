@@ -329,11 +329,13 @@ func _sky() -> void:
 	await _frames(20)
 	_check(amb.flights.size() >= f0 + 2, "a bomber stream and a fighter pair are in the air (%d flights)" % amb.flights.size())
 	_check(int(amb.counts.get("bombers", 0)) >= 1 and int(amb.counts.get("fighters", 0)) >= 1 and int(amb.counts.get("mg", 0)) >= 1, "counted: %s" % str(amb.counts))
-	var high: bool = true
+	var low: float = INF
 	for fl: SkyFlight in amb.flights:
-		if is_instance_valid(fl) and fl.global_position.y < 60.0:
-			high = false
-	_check(high, "every flight is far over the works' roofs")
+		if is_instance_valid(fl):
+			for pl: Node3D in fl.planes:
+				if is_instance_valid(pl):
+					low = minf(low, pl.global_position.y)
+	_check(low > 30.0, "every flight is over the works' roofs (the hall's crane rails are at 15 m; the lowest flies at %.0f m)" % low)
 	_check(int(amb.counts.get("act1_bell", 0)) >= 0 and amb.cfg.has("act1"), "Thalbach's own act1 kinds are still there")
 
 
