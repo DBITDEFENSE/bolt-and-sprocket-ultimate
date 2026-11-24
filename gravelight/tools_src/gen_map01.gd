@@ -4516,7 +4516,7 @@ func build_reactive() -> void:
 		Vector3(12.0, 3.6, 39.0)))
 	# ---- paper: the pay office's December calendar on its north wall
 	r.add_child(_reactive("res://gravelight/world/paper_decor.gd", "Paper_calendar", {"kind": "calendar", "flat": false, "tilt_deg": -2.0},
-		Vector3(-12.6, 1.75, 8.15 + 0.03), 180.0))
+		Vector3(-10.0, 1.75, 8.15 + 0.03), 180.0))   # (between the Gewehr 43's chalk and the window: the first render had it on the chalk's corner)
 
 
 func _reactive(script_path: String, n: String, props: Dictionary, pos: Vector3, yaw: float = 0.0) -> Node3D:

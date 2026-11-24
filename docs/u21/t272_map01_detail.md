@@ -244,3 +244,55 @@ it is open. `test_vo` (every line baked or listed), `test_map_detail` (Kaltenbru
 the natural place is the Administration (`door_a_c`, 1000): two clerks and the night watchman (the KAN line asks where
 he is) hiding in the radio room upstairs, armed for 750 to hold the upstairs windows. Note that Kaltenbrunn already has
 T-143's hidden people (the shift boss Brzezina, the orderly, the switchboard operator) who trade, not fight.
+
+## Cost (the scene file, counted headless before and after: every MeshInstance3D, Light3D and collision shape)
+
+| | before (master) | after | added |
+|---|---|---|---|
+| triangles | 284,794 | 296,194 | +11,400 (the ladder's rungs, the two cables, the railing, the gate's leaves) |
+| of them in shadow-casting meshes | 167,176 | 174,712 | +7,536 |
+| mesh instances (about the static draw calls) | 866 | 897 | +31: the gate's two leaves (6), the curtain rods (6), the rest are new batch cells of the merged dressing (the north road's strips, the deck) |
+| lights | 207 | 210 | +3 (the ladder head's lantern, the two landing-post lanterns), none shadowed |
+| shadowed lights | 4 | 4 | 0 |
+| collision shapes | 477 | 503 | +26 (the railing's 12 bars, 4 frame feet, the collar, 2 zip posts, 14 perk-spot bake boxes off at runtime, the gateway's collider widened) |
+
+Built at load, not in the file: up to 6 filler crates on the free perk spots (each baked to a few meshes), 12 curtains
+(4 strips each, idle beyond 30 m), the 3 glass sets (one MultiMesh per glass material), the footprints' MultiMesh, 5
+drips, 7 sound players, the opening's 4 patrons (gone after round 1). Draw calls were not measured on a GPU (headless
+counts are zero); the Sherman's mesh is T-249's.
+
+## For DECISIONS.md (the main session writes it at the merge)
+
+**T-272: Kaltenbrunn's map detail pass (the geometry step).** Branch `claude/detail-map01`, notes
+`docs/u21/t272_map01_detail.md`. (1) The full round-30 Sherman event: the yard's north wall got a real gateway (x
+17.6..22.4) whose collider never moves; `YardGate`'s two leaves swing out for the tank and shut behind it; the tank
+comes up the rail terrace and the north road and parks in the forecourt facing the yard, so the assault rises in the
+squad's own zone (the Rail Yard was dropped: it sits behind a door many squads never buy); driving is kept to the
+forecourt; the campaign's exfil beacon moved beside the gateway; der Fuhrmann timed to the parking. The tank precedes
+the raid, it does not replace it: round 40 is the dive bomber on the tank and T-271's raid. `sherman_event.gd`
+`with_map_rows` (a block's own `arrival` / `assault` rows; Map 0 unchanged). (2) The headframe as the map's tower: the
+hoist house's roof (6 m, 10 m square) is a railed deck round the shaft collar, the frame's lowest braces start 2.4 m over
+it, one ladder up the west face for players and the dead (T-268's ladder links, `perch` 10: `climb_link.gd` lets a row
+widen `on_perch`, default unchanged), two zip lines from davits on the south legs into the yard (15.0 m / 21 degrees to
+the Rail Yard door, 13.1 m / 24 degrees to the Administration door; inside the yard, never chained; a higher deck was
+dropped: every line from it would leave the yard over a wall or skip a door). (3) The perk deal: 14 spots, 8 of 11
+machines dealt (Ledger Lager, Overclock Cordial and Skyhook Sekt belong where they stand), mapdata POIs refreshed. (4)
+Reactive props: glass on the mess tables, the serving line, Fasbender's bench and Reinholt's desk; curtains at the
+Administration's and the barracks' windows; the upstairs partition door ajar; footprints in both yards; drips in the
+Chapel, the vault ramps and the Core; wind at six windows; barracks creaks; a calendar. (5) A round-1 opening on the
+generalised `inn_opening.gd`: the night shift runs out of the Waschkaue, two through the north gate, two caught in front
+of the Kaue and risen; nine text lines and four cast entries, no audio (listed as missing). Survivors behind a door
+were not built. Costs: +11.4 k triangles, +31 mesh instances, +3 unshadowed lights, no shadowed light. Verified
+headless: five new smokes (`smoke_map01_sherman` 36, `_tower` 63, `_perks` 13, `_reactive` 16, `_opening` 15 checks),
+`test_map01_detail`; renders under WSL (`docs/captures/t272/`). Not seen on the owner's GPU; the opening's miners are
+primitive bodies; no co-op run of the new pieces.
+
+Second render pass (`t272_m01b`, `docs/captures/t272/b*.jpg`): the night shift in the Kaue before round 1 (`b00`: the
+miners are the opening's primitive bodies, blocky beside the modelled squad; a person model for them is open), the
+ladder at noon (`b01`: stiles, rungs and stand-offs read, the railing over it, the lantern post), the gate at noon
+(`b02`), the glass on the mess tables among the crockery (`b03`) and on the serving line (`b04`), the Administration's
+north window (`b05`: dark; the curtains barely read), the partition doorway (`b06`: the leaf stands in the dark radio
+room and does not read from the hall), the Rail Yard's perk spot with its machine flush on the wall north of the door
+(`b07`), the jars on Fasbender's bench (`b08`), the sacking at the bunk room's window (`b09`). What the frames changed:
+the calendar stood on the corner of the Gewehr 43's chalk board (`b05`); it moved 2.6 m east, between the chalk and the
+window (not re-rendered).

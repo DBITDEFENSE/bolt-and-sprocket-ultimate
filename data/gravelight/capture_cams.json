@@ -17025,30 +17025,6 @@
           "note": "on the deck at noon"
         },
         {
-          "name": "ladder_noon",
-          "pos": [
-            11.0,
-            0.0,
-            15.0
-          ],
-          "yaw": -90.0,
-          "pitch": 22.0,
-          "settle_s": 4.0,
-          "note": "the ladder up the hoist house's west face at noon, 4 m off: stiles, rungs, stand-offs, the lantern post at its head"
-        },
-        {
-          "name": "gate_in_noon",
-          "pos": [
-            20.0,
-            0.0,
-            8.6
-          ],
-          "yaw": 0.0,
-          "pitch": 6.0,
-          "settle_s": 4.0,
-          "note": "the north gate from the forecourt at noon"
-        },
-        {
           "name": "tank_in_gate_night",
           "pos": [
             24.2,
@@ -17063,6 +17039,140 @@
             "callv:DayCycle:hold_hour:0:1",
             "call:ShermanEvent:begin_arrival:17.0"
           ]
+        }
+      ]
+    },
+    "t272_m01b": {
+      "_doc": "T-272 second pass: the opening's miners in the Kaue, the ladder and the gate at noon, the reactive props and a perk spot. Shot through tools/wsl_godot.sh only; saved under docs/captures/t272/.",
+      "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+      "bots": 0,
+      "settle_s": 6.0,
+      "cams": [
+        {
+          "name": "kaue_miners_night",
+          "pos": [
+            12.0,
+            0.0,
+            29.5
+          ],
+          "yaw": 90.0,
+          "pitch": -5.0,
+          "settle_s": 4.0,
+          "note": "the night shift on the Kaue's west bench before round 1 (the opening's patrons)",
+          "do": [
+            "callv:DayCycle:hold_hour:0:1"
+          ]
+        },
+        {
+          "name": "ladder_noon",
+          "pos": [
+            11.0,
+            0.0,
+            15.0
+          ],
+          "yaw": -90.0,
+          "pitch": 22.0,
+          "settle_s": 4.0,
+          "note": "the ladder up the hoist house's west face at noon, 4 m off: stiles, rungs, stand-offs, the lantern post at its head",
+          "do": [
+            "callv:DayCycle:hold_hour:12:1"
+          ]
+        },
+        {
+          "name": "gate_in_noon",
+          "pos": [
+            20.0,
+            0.0,
+            8.6
+          ],
+          "yaw": 0.0,
+          "pitch": 6.0,
+          "settle_s": 4.0,
+          "note": "the north gate from the forecourt at noon"
+        },
+        {
+          "name": "mess_glass_noon",
+          "pos": [
+            20.0,
+            0.0,
+            40.4
+          ],
+          "yaw": 0.0,
+          "pitch": -18.0,
+          "settle_s": 4.0,
+          "note": "the glass on the mess tables (Glass_Mess) among the crockery"
+        },
+        {
+          "name": "serving_line_noon",
+          "pos": [
+            34.0,
+            0.0,
+            42.5
+          ],
+          "yaw": 180.0,
+          "pitch": -12.0,
+          "settle_s": 4.0,
+          "note": "the bottles on the serving line's counter"
+        },
+        {
+          "name": "admin_curtains_noon",
+          "pos": [
+            -8.0,
+            0.0,
+            12.0
+          ],
+          "yaw": 0.0,
+          "pitch": 6.0,
+          "settle_s": 4.0,
+          "note": "the curtains at the Administration's north window"
+        },
+        {
+          "name": "partition_door_noon",
+          "pos": [
+            -9.0,
+            3.8,
+            19.5
+          ],
+          "yaw": 0.0,
+          "pitch": -4.0,
+          "settle_s": 4.0,
+          "note": "the upstairs partition's door left ajar"
+        },
+        {
+          "name": "railyard_spot_noon",
+          "pos": [
+            46.5,
+            0.0,
+            20.0
+          ],
+          "yaw": 90.0,
+          "pitch": -6.0,
+          "settle_s": 4.0,
+          "note": "the Rail Yard's perk spot on its west wall (a machine or its crate)"
+        },
+        {
+          "name": "lab_glass_noon",
+          "pos": [
+            72.0,
+            -12.0,
+            85.8
+          ],
+          "yaw": 0.0,
+          "pitch": -20.0,
+          "settle_s": 4.0,
+          "note": "the jars and glasses on Fasbender's bench"
+        },
+        {
+          "name": "barracks_curtains_noon",
+          "pos": [
+            -2.0,
+            0.0,
+            43.5
+          ],
+          "yaw": 180.0,
+          "pitch": 4.0,
+          "settle_s": 4.0,
+          "note": "the sacking curtains at the bunk room's south window"
         }
       ]
     }
