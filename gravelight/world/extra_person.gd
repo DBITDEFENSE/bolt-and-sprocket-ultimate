@@ -611,6 +611,10 @@ func _say_id(line: String, at: Vector3, display: String) -> void:
 	var text: String = GLVO.strip_tags(str(rec.get("text", "")))
 	var dur: float = GLVO.duration_for(text, GLVO.rules)
 	var path: String = GLVO.audio_path(StringName(line))
+	GLVO.when_ready(path, _voice_line.bind(line, at, display, text, dur, path))   # T-265: when its file is in memory
+
+
+func _voice_line(line: String, at: Vector3, display: String, text: String, dur: float, path: String) -> void:
 	if path != "":
 		var stream: AudioStream = GLVO.load_stream(path)
 		if stream != null:

@@ -73,6 +73,21 @@ var _streams: Dictionary = {}        # file path -> AudioStream (or null when mi
 ## as each first speaks (warm_speaker): a bot's bark no longer loads its file in the frame it starts.
 var warm: StreamWarm = StreamWarm.new()
 var _warmed: Dictionary = {}         # speaker -> true
+## T-265: a line whose file is not in memory yet starts when a loader thread has brought it (a frame or a few
+## later; LOAD_WAIT_MAX_S at most, then it is loaded on the spot as before) instead of loading it in the frame
+## that starts it: 4 to 12 ms on this desktop for every line heard for the first time (the story voices, every
+## speaker's first line, the people), and there are 2,681 of them. The line's subtitle, its signal and its place
+## in the queue all wait with it. Off where there are no loader threads (the web: StreamWarm.enabled) and in a
+## headless run (the unit tests and the smokes step the voice's clock by hand and expect a line to start in the
+## call that plays it; a line that waits on a thread starts by the wall clock): perf_marks --vo-async and the
+## unit tests switch it on there.
+var async_start: bool = DisplayServer.get_name() != "headless"
+const LOAD_WAIT_MAX_S: float = 0.5
+var _load_asked: Dictionary = {}     # file path -> the msec a loader thread was asked for it
+## Counters (the measuring tools, the tests): lines whose start waited for a loader thread, files loaded in the
+## frame that needed them.
+var late_starts: int = 0
+var sync_loads: int = 0
 var _story_2d: AudioStreamPlayer
 var _player_2d: AudioStreamPlayer
 var _player_3d: AudioStreamPlayer3D
@@ -542,6 +557,56 @@ func voice_test_report() -> String:
 	return out
 
 
+## T-265: is `path` in memory (or as near as it will get), so that load_stream costs nothing now? When it is
+## not, a loader thread is asked for it (once) and this is false until the thread is done or LOAD_WAIT_MAX_S have
+## passed. True at once for "", a cached file, a file with no imported resource (those load from the raw file,
+## as before) and wherever background loading is off.
+func stream_ready(path: String) -> bool:
+	if path == "" or _streams.has(path) or not async_start or not StreamWarm.enabled:
+		return true
+	if not ResourceLoader.exists(path) or ResourceLoader.has_cached(path):
+		return true
+	var st: int = ResourceLoader.load_threaded_get_status(path)
+	if st == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
+		if not _load_asked.has(path):
+			_load_asked[path] = Time.get_ticks_msec()   # (the warm-up asked for it: wait for that one)
+		return Time.get_ticks_msec() - int(_load_asked[path]) > int(LOAD_WAIT_MAX_S * 1000.0)
+	if st == ResourceLoader.THREAD_LOAD_LOADED or st == ResourceLoader.THREAD_LOAD_FAILED:
+		return true
+	if _load_asked.has(path) or ResourceLoader.load_threaded_request(path) != OK:
+		return true   # (asked before and taken by someone else, or the request failed: the plain load it is)
+	_load_asked[path] = Time.get_ticks_msec()
+	return false
+
+
+## T-265: calls `then` once `path` is in memory: now when it is (always so in a headless run and on the web), else
+## in the frame a loader thread has brought it. For the world's own speakers (the teller, the people, the
+## survivors, the pilot), who build their own player: their line, subtitle and all, starts a few frames late
+## the first time it is heard instead of loading its file in the frame that speaks it. A caller freed
+## meanwhile is skipped.
+func when_ready(path: String, then: Callable) -> void:
+	if stream_ready(path):
+		then.call()
+		return
+	late_starts += 1
+	_waiting.append([path, then])
+
+
+var _waiting: Array = []   # [path, Callable]: world lines waiting for their file
+
+
+func _tick_waiting() -> void:
+	var i: int = 0
+	while i < _waiting.size():
+		var w: Array = _waiting[i]
+		if not stream_ready(str(w[0])):
+			i += 1
+			continue
+		_waiting.remove_at(i)
+		if (w[1] as Callable).is_valid():
+			(w[1] as Callable).call()
+
+
 ## Loads (and caches) a baked voice file; works with or without the editor import step.
 func load_stream(path: String) -> AudioStream:
 	if path == "":
@@ -551,7 +616,13 @@ func load_stream(path: String) -> AudioStream:
 	var stream: AudioStream = null
 	var pt: int = BotProf.t()
 	if ResourceLoader.exists(path):
-		stream = load(path) as AudioStream
+		if ResourceLoader.load_threaded_get_status(path) == ResourceLoader.THREAD_LOAD_LOADED:
+			stream = ResourceLoader.load_threaded_get(path) as AudioStream   # a loader thread brought it (T-265)
+		else:
+			if not ResourceLoader.has_cached(path):
+				sync_loads += 1
+			stream = load(path) as AudioStream
+		_load_asked.erase(path)
 	if stream == null and FileAccess.file_exists(path):
 		if path.ends_with(".ogg"):
 			stream = AudioStreamOggVorbis.load_from_file(path)
@@ -890,6 +961,16 @@ func _next_part(group: StringName) -> void:
 	var dur: float = duration_for(text, rules)
 	var pid: int = (item["part_pids"] as Array)[int(item["part"])]
 	var path: String = audio_path(item["id"], int(item["part"]) if parts.size() > 1 else -1)
+	if not stream_ready(path):
+		# T-265: its file is on its way from a loader thread: this part starts when it is there (advance() asks
+		# again next frame; the item stays the channel's current one meanwhile)
+		if not item.has("load_wait"):
+			item["load_wait"] = true
+			late_starts += 1
+		item["part"] = int(item["part"]) - 1
+		item["end"] = _now
+		return
+	item.erase("load_wait")
 	var stream: AudioStream = load_stream(path)
 	warm_speaker(speaker)   # T-237: the rest of this speaker's lines load in the background from here on
 	if voice_test:
@@ -1057,6 +1138,8 @@ func advance(delta: float) -> void:
 
 func _process(delta: float) -> void:
 	advance(delta)
+	if not _waiting.is_empty():
+		_tick_waiting()
 	if warm.busy():
 		warm.tick()
 

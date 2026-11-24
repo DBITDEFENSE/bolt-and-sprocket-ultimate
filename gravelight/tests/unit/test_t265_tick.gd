@@ -177,3 +177,83 @@ func test_the_bank_is_loaded_ahead_but_for_the_beds() -> void:
 	assert_false(AudioDirector.warm_wanted("Ambience", true), "the map's bed starts with the map")
 	assert_false(AudioDirector.warm_wanted("Music", true))
 
+
+## A story line with an imported file that nothing has loaded yet ("" when this checkout has none left).
+func _unloaded_line() -> String:
+	for id: String in GLVO.lines.keys():
+		var rec: Dictionary = GLVO.lines[id]
+		if str(rec.get("speaker", "")) != "OPR" or rec.has("exchange"):
+			continue
+		var path: String = GLVO.audio_path(StringName(id))
+		if path != "" and ResourceLoader.exists(path) and not ResourceLoader.has_cached(path) and not GLVO._streams.has(path) \
+				and ResourceLoader.load_threaded_get_status(path) == ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
+			return id
+	return ""
+
+
+func test_a_line_waits_for_its_file_and_starts_without_loading_it_in_the_frame() -> void:
+	GLVO.reset_match()
+	var id: String = _unloaded_line()
+	if id == "":
+		pass_test("no unloaded Operator line with an imported file in this run")
+		return
+	var was: bool = GLVO.async_start
+	var was_w: bool = StreamWarm.enabled
+	GLVO.async_start = true
+	StreamWarm.enabled = true
+	var late0: int = GLVO.late_starts
+	var sync0: int = GLVO.sync_loads
+	watch_signals(GLBus)
+	assert_true(GLVO.play_local(StringName(id)), "accepted")
+	assert_eq(GLVO.current_line(GLVO.GROUP_STORY), StringName(id), "it is the channel's line at once")
+	assert_eq(get_signal_emit_count(GLBus, "vo_line_started"), 0, "but it has not started: its file is on a loader thread")
+	assert_eq(GLVO.late_starts, late0 + 1)
+	var guard: int = 0
+	while get_signal_emit_count(GLBus, "vo_line_started") == 0 and guard < 240:
+		await get_tree().process_frame
+		guard += 1
+	GLVO.async_start = was
+	StreamWarm.enabled = was_w
+	assert_eq(get_signal_emit_count(GLBus, "vo_line_started"), 1, "it starts once the file is there")
+	assert_eq(GLVO.sync_loads, sync0, "and nothing was loaded on the main thread")
+	assert_eq(GLVO.late_starts, late0 + 1, "counted once however many frames it waited")
+	GLVO.stop_all()
+	GLVO.reset_match()
+
+
+func test_with_the_switch_off_a_line_starts_in_the_call() -> void:
+	GLVO.reset_match()
+	var was: bool = GLVO.async_start
+	GLVO.async_start = false
+	assert_true(GLVO.stream_ready("res://gravelight/audio/vo/opr/_no_such_line.ogg"))
+	watch_signals(GLBus)
+	assert_true(GLVO.play(&"OPR_ROUND_START_02"))
+	assert_eq(get_signal_emit_count(GLBus, "vo_line_started"), 1, "as the tests and the smokes expect")
+	GLVO.async_start = was
+	GLVO.stop_all()
+	GLVO.reset_match()
+
+
+func test_a_world_line_is_called_when_its_file_is_there() -> void:
+	var was: bool = GLVO.async_start
+	var was_w: bool = StreamWarm.enabled
+	var calls: Array = []
+	GLVO.async_start = false
+	GLVO.when_ready("res://gravelight/audio/vo/opr/_no_such_line.ogg", func() -> void: calls.append("now"))
+	assert_eq(calls, ["now"], "the switch off (a headless run): called in the call")
+	var id: String = _unloaded_line()
+	if id == "":
+		GLVO.async_start = was
+		pass_test("no unloaded line left to wait for")
+		return
+	GLVO.async_start = true
+	StreamWarm.enabled = true
+	GLVO.when_ready(GLVO.audio_path(StringName(id)), func() -> void: calls.append("later"))
+	assert_eq(calls, ["now"], "its file is not in memory: not yet")
+	var guard: int = 0
+	while calls.size() < 2 and guard < 240:
+		await get_tree().process_frame
+		guard += 1
+	GLVO.async_start = was
+	StreamWarm.enabled = was_w
+	assert_eq(calls, ["now", "later"], "called once a loader thread has brought it")
