@@ -1254,7 +1254,7 @@ static func _on_edge(a: Vector2, b: Vector2) -> bool:
 
 
 ## `segments` ([a, b] axis-aligned, 2D) with the spans across the spawn pockets cut out of those on the edge line.
-static func _cut_pockets(segments: Array) -> Array:
+static func _cut_pockets(segments: Array, gate: bool = true) -> Array:
 	var out: Array = []
 	var pockets: Array[Rect2] = edge_pockets()
 	for s: Array in segments:
@@ -1265,7 +1265,7 @@ static func _cut_pockets(segments: Array) -> Array:
 			continue
 		var along_x: bool = a.y == b.y
 		var cuts: Array = []
-		for r: Rect2 in pockets:
+		for r: Rect2 in pockets + (MapRocketGen.fence_cuts() if gate else [] as Array[Rect2]):   # (T-276: and the rocket site's gate in the east fence)
 			if along_x:
 				if a.y <= r.end.y + 0.01 and a.y >= r.position.y - 0.01:
 					cuts.append([r.position.x, r.end.x])
@@ -1327,6 +1327,7 @@ func build_grounds() -> void:
 	for sd: Array in OUT_SOLIDS:
 		_solid(str(sd[0]), sd[1], sd[2], float(sd[3]))
 	build_bank_shed()
+	MapRocketGen.build_geometry(self)   # T-276: the V2 site east of the grounds (gen_map00_rocket.gd)
 	# the crash site's cargo, thrown out of the hold (Landscape scattered_cargo, seed 77, round (37, 15)): the same
 	# draws, so each crate's collider sits under its drawing
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
@@ -1411,7 +1412,7 @@ func _carve_beyond_edge() -> void:
 			rects.append(Rect2(cur, strip.position.y, endv - cur, strip.size.y))
 		else:
 			rects.append(Rect2(strip.position.x, cur, strip.size.x, endv - cur))
-	for r3: Rect2 in rects:
+	for r3: Rect2 in MapRocketGen.trim_carve(rects):   # T-276: the forest track and the launch site stay walkable
 		if r3.size.x < 0.05 or r3.size.y < 0.05:
 			continue
 		var ob: NavigationObstacle3D = NavigationObstacle3D.new()
@@ -1988,6 +1989,7 @@ func build_dressing() -> void:
 	_dress_carters_road()
 	_dress_yard()
 	_dress_grounds()
+	MapRocketGen.build_dressing(self)   # T-276
 	_dress_wreck()
 	_dress_polish()
 	_dress_lighting()
@@ -3867,7 +3869,7 @@ func _dress_grounds() -> void:
 		var f: Array = segs[i]
 		var a: Vector2 = f[0]
 		var b: Vector2 = f[1]
-		Props.fence(g, Vector3(a.x, 0, a.y), Vector3(b.x, 0, b.y), 30 + i, not _on_edge(a, b))   # T-125: the roadside fence blocks to 2.3 m
+		Props.fence(g, Vector3(a.x, 0, a.y), Vector3(b.x, 0, b.y), 30 + MapRocketGen.fence_seed(f, _cut_pockets(OUT_FENCES, false), i), not _on_edge(a, b))   # T-125: the roadside fence blocks to 2.3 m
 	# a rail down in the snow at each broken bay of the edge fence
 	var pr: RandomNumberGenerator = RandomNumberGenerator.new()
 	pr.seed = 84
@@ -4002,7 +4004,9 @@ func _tree_line(g: Node3D) -> void:
 						skip = true
 				if not skip:
 					if rng.randf() < 0.12:
-						Props.dead_tree(g, Vector3(p.x, 0, p.y), 2000 + xf.size(), rng.randf_range(6.0, 9.0))
+						var dh: float = rng.randf_range(6.0, 9.0)
+						if not MapRocketGen.in_tree_gap(p):   # T-276: (the same draws: the rest of the line stays put)
+							Props.dead_tree(g, Vector3(p.x, 0, p.y), 2000 + xf.size(), dh)
 					else:
 						var hgt: float = rng.randf_range(8.0, 14.0) * (1.0 if row == 0 else 1.15)
 						var sc: Vector3 = Vector3(hgt * rng.randf_range(0.36, 0.46), hgt, hgt * rng.randf_range(0.36, 0.46))
@@ -4017,7 +4021,10 @@ func _tree_line(g: Node3D) -> void:
 	urng.seed = 2084
 	for x0: Transform3D in xf:
 		var ux: Transform3D = Landscape.uniform_tree_xform(x0)
-		if Landscape.is_birch(x0.origin):
+		var gap: bool = MapRocketGen.in_tree_gap(Vector2(x0.origin.x, x0.origin.z))   # T-276
+		if gap:
+			pass
+		elif Landscape.is_birch(x0.origin):
 			rows.birches.append(ux)
 		else:
 			rows.spruces.append(ux)
@@ -4031,6 +4038,8 @@ func _tree_line(g: Node3D) -> void:
 				rows.bushes.append(Transform3D(Basis(Vector3.UP, urng.randf() * TAU).scaled(Vector3(s, s, s)), bp - Vector3(0, 0.05, 0)))
 			else:
 				rows.rocks.append(Transform3D(Basis(Vector3.UP, urng.randf() * TAU).scaled(Vector3(s, s * 0.7, s)), bp - Vector3(0, 0.2, 0)))
+	rows.bushes.assign(rows.bushes.filter(func(b: Transform3D) -> bool: return not MapRocketGen.in_tree_gap(Vector2(b.origin.x, b.origin.z))))   # T-276
+	rows.rocks.assign(rows.rocks.filter(func(b: Transform3D) -> bool: return not MapRocketGen.in_tree_gap(Vector2(b.origin.x, b.origin.z))))
 	g.add_child(rows)
 	print("grounds: %d edge spruces" % xf.size())
 
@@ -5474,6 +5483,7 @@ func build_gameplay() -> void:
 	map_root.set("quest_files", PackedStringArray(["res://data/gravelight/quests/map00_radio.json"]))
 	map_root.set("intro_text", "GASTHAUS ZUM KREUZWEG\n23 December 1944 · 9 km northwest of Kaltenbrunn")
 	map_root.set("drop_bounds", Rect2(OUT_MIN, OUT_MAX - OUT_MIN))   # drops from a kill beyond the edge land inside it (T-084)
+	map_root.set("drop_extra", [MapRocketGen.TRACK, MapRocketGen.SITE] as Array[Rect2])   # T-276: and those on the rocket site stay there
 	gameplay = Node3D.new()
 	gameplay.name = "Gameplay"
 	map_root.add_child(gameplay)
@@ -5629,6 +5639,7 @@ func build_gameplay() -> void:
 			"tag": &"radio_note", "item_id": StringName(str(n[1])), "note_text": n[2], "numeral": n[3]})
 		note.position = n[4]
 		gameplay.add_child(note)
+	MapRocketGen.build_gameplay(self)   # T-276: the rocket site's gate, zones, spawns, wall-buy, lamps and the launch
 
 
 ## T-080: a field spawn a player out on the grounds can see from within this far is not used (ZombieSpawn.hide_from_m;

@@ -124,7 +124,9 @@
         "CELLAR": "Helvetia Cellar",
         "LAGERKELLER": "The Lagering Vault",
         "MASCHINENRAUM": "The Dynamo Room",
-        "OLD_CELLAR": "The Old Cellar"
+        "OLD_CELLAR": "The Old Cellar",
+        "FORSTWEG": "The Forest Track",
+        "STELLUNG": "The Launch Site"
       }
     },
     "map01_kaltenbrunn": {

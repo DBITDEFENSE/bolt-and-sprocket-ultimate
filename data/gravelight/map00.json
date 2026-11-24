@@ -485,5 +485,36 @@
       0.0,
       -320.0
     ]
+  },
+  "rocket_launch": {
+    "_doc": "T-276 the V2 at the forest clearing east of the grounds (RocketLaunch, gravelight/world/rocket/rocket_launch.gd; the site is MapRocketGen in gen_map00_rocket.gd). A launch on round first_round and then every `every` rounds, delay s into the round, whether or not the site is open (it is seen over the trees from everywhere). The timeline in seconds from the siren: arm_down_at (the erector lowers, arm_down_seconds), count_at (ten counted), ignite_at (preliminary stage), main_at (main stage: the blast and the fire), liftoff_at; the rocket is gone gone_after s after lift-off or once vanish_m along its path. Main stage, host: zombies within kill_radius die, within throw_radius are thrown (throw_speed, throw_land_damage), players within player_radius take up to player_damage (falloff to 25 %, halved with Blastproof or Rocket Man); fire is a FirePatch on the table. rearm_delay s into the next round a new rocket is raised over erect_seconds.",
+    "first_round": 6,
+    "every": 5,
+    "delay": 20.0,
+    "arm_down_at": 6.0,
+    "arm_down_seconds": 9.0,
+    "count_at": 22.0,
+    "ignite_at": 32.0,
+    "main_at": 34.0,
+    "liftoff_at": 35.0,
+    "gone_after": 34.0,
+    "vanish_m": 380.0,
+    "kill_radius": 6.0,
+    "throw_radius": 13.0,
+    "throw_speed": 9.0,
+    "throw_land_damage": 60.0,
+    "player_radius": 7.0,
+    "player_damage": 45.0,
+    "shake": 1.2,
+    "shake_radius": 70.0,
+    "count_radius": 60.0,
+    "fire": {"patch_radius": 5.5, "patch_seconds": 7.0, "patch_player_dps": 16.0, "patch_zombie_burn_frac": 0.5},
+    "rearm_delay": 15.0,
+    "erect_seconds": 24.0,
+    "siren_sound": "a1_siren",
+    "roar_sound": "m4d_vent_roar",
+    "ignite_sound": "m4d_pad_launch",
+    "banner": "V2 LAUNCH AT THE FOREST CLEARING",
+    "banner_small": "Stand clear of the firing table"
   }
 }

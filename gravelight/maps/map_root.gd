@@ -25,6 +25,9 @@ extends Node3D
 ## The play space's footprint on the ground (x, z; T-084, Map 0's edge wall): drops from a kill beyond it (a
 ## zombie shot in its spawn pocket through the invisible edge) are pulled inside it. Zero size = no edge.
 @export var drop_bounds: Rect2 = Rect2()
+## T-276: more play space outside drop_bounds (Map 0's rocket site east of the edge): a drop inside one of these
+## rects (grown by the margin) stays where it fell.
+@export var drop_extra: Array[Rect2] = []
 
 ## T-265: scripts nothing names but the code that loads them by path the first time play needs one: the dog tags
 ## a kill drops, the local player's status overlay. A script's first load compiles it on the main thread (14 ms
@@ -48,6 +51,12 @@ func clamp_inside(p: Vector3, margin: float = 1.5) -> Vector3:
 	var q: Vector3 = p
 	q.x = clampf(q.x, drop_bounds.position.x + margin, drop_bounds.end.x - margin)
 	q.z = clampf(q.z, drop_bounds.position.y + margin, drop_bounds.end.y - margin)
+	for r: Rect2 in drop_extra:   # T-276: the nearest of the play space's rects
+		var e: Vector3 = p
+		e.x = clampf(e.x, r.position.x + margin, r.end.x - margin)
+		e.z = clampf(e.z, r.position.y + margin, r.end.y - margin)
+		if e.distance_squared_to(p) < q.distance_squared_to(p):
+			q = e
 	return q
 
 

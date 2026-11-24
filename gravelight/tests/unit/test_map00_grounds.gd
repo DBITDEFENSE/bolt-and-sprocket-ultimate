@@ -81,7 +81,7 @@ func test_edge_layer_pockets_and_the_barn() -> void:
 		var beyond: float = maxf(maxf(lo.x - p.x, p.x - hi.x), maxf(lo.y - p.z, p.z - hi.y))
 		assert_true(beyond >= 3.0 and beyond <= 6.0, "%s stands %.1f m beyond the edge" % [sp.name, beyond])
 	assert_eq(n_edge, 13)
-	assert_eq(n_gates, 13, "one gate per pocket")
+	assert_eq(n_gates, 13 + MapRocketGen.pockets().size(), "one gate per pocket (T-276: and one per pocket of the rocket site)")
 	assert_eq(Rect2(map.get("drop_bounds")), Rect2(-20, -30, 80, 94))
 	# the barn: Door 4 and the great doors stay where they were, the west wall's fittings moved with it
 	assert_almost_eq((map.find_child("Door_Yard", true, false) as Node3D).position, Vector3(8, 0, 34), Vector3(0.01, 0.01, 0.01))
@@ -117,7 +117,8 @@ func test_navmesh_loft_stair_and_pockets() -> void:
 	var synced: bool = false
 	for i: int in 40:
 		await wait_physics_frames(3)
-		if NavigationServer3D.map_get_closest_point(map_rid, floor_pt).distance_to(floor_pt) < 1.0:
+		# (T-276: the bigger bake can take longer than the first frames; asking before the first sync logs an error)
+		if NavigationServer3D.map_get_iteration_id(map_rid) > 0 and NavigationServer3D.map_get_closest_point(map_rid, floor_pt).distance_to(floor_pt) < 1.0:
 			synced = true
 			break
 	assert_true(synced, "the navigation map synced with the stable's floor on it")
