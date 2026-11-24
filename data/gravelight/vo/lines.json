@@ -7633,6 +7633,46 @@
     "category": "INN_SURV_TURN",
     "text": "Upstairs. The civilian is turning. Do not wait for them to look at you. [quietly] You will not shoot if they look at you."
   },
+  "BOL_M2_OPEN_INTRO_01": {
+    "speaker": "BOL",
+    "category": "M2_OPEN_INTRO",
+    "text": "[behind the cannery's side door, muffled] Break's over, children. The Hafenmeister wants the last pallet on the quay before the tide turns."
+  },
+  "TEW_M2_OPEN_INTRO_01": {
+    "speaker": "TEW",
+    "category": "M2_OPEN_INTRO",
+    "text": "[muffled, through the door] In this cold? Let him carry it himself. My hands won't close round a tin any more."
+  },
+  "RAH_M2_OPEN_INTRO_01": {
+    "speaker": "RAH",
+    "category": "M2_OPEN_INTRO",
+    "text": "[muffled, through the door] Did you hear it again? Out by the pens. Like somebody singing under the water."
+  },
+  "RAH_M2_OPEN_CUE_01": {
+    "speaker": "RAH",
+    "category": "M2_OPEN_CUE",
+    "text": "[muffled, sharp] What was that? Someone's at the windows. Someone's at the door!"
+  },
+  "BOL_M2_OPEN_RUN_01": {
+    "speaker": "BOL",
+    "category": "M2_OPEN_RUN",
+    "text": "Out! Out the side door, down the sea stairs to the boats! Go!"
+  },
+  "TEW_M2_OPEN_RUN_01": {
+    "speaker": "TEW",
+    "category": "M2_OPEN_RUN",
+    "text": "Don't look at them! Don't look, just run!"
+  },
+  "RAH_M2_OPEN_CAUGHT_01": {
+    "speaker": "RAH",
+    "category": "M2_OPEN_CAUGHT",
+    "text": "Get off me! It's got my coat... it's got my coat!"
+  },
+  "BOL_M2_OPEN_LAST_01": {
+    "speaker": "BOL",
+    "category": "M2_OPEN_RUN",
+    "text": "Run, Anni! Don't stop for us, run!"
+  },
   "KAH_SURV_REVEAL_01": {
     "speaker": "KAH",
     "category": "SURV_REVEAL",

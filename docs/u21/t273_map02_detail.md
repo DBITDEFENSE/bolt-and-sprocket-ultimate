@@ -223,3 +223,37 @@ line; a shot makes one flinch; a zombie in the cage killed Kahlke, who warned an
 1000, walked to his post (0.0 m off) and hit a zombie in the workshop; downed at 0 hp and helped up.
 `test_map02_detail.test_the_sailors_in_the_torpedo_store`. Cost: nothing drawn until the door opens; two procedural
 bodies after.
+
+## 7. Added after the merge: the round-1 opening, "the night shift runs"
+
+`data/gravelight/map02_opening.json`, and in gen_map02 a side door in the cannery's east wall onto the quay
+(`SIDE_DOOR_Z` 2.6: x 0, z 1.8..3.4, a frame and a "NACHTSCHICHT" sign on the quay face), its leaf and bar
+(`InnFrontDoor` "CannerySideDoor", the bar on the cannery's side) and an `InnOpening` node.
+
+**The 1000 door is never skipped.** The doorway is filled for good with an invisible collider
+(`CannerySideDoorBlock`, baked into the navmesh like the wall it replaces). The opening's patrons have no colliders and
+pass through; nobody else ever does, before, during or after the opening. The leaf swings shut behind them and is
+never barred again (`bar_at` past `end_by`: nobody is left inside to drop the bar). The navmesh and the POIs are
+unchanged (no minimap rebake needed).
+
+The beats: three of the cannery's night shift (Hein Boldt the foreman, Ole Rahn a stevedore, Anni Tews a packer) are
+heard through the side door before round 1 (three intro lines: the cold, the Hafenmeister's pallet, "somebody
+singing under the water" out by the pens); the look gate waits for the player to face the door (7 to 9.5 s); the
+pounding at the windows and the door and Rahn's "What was that?" are the cue; round 1 starts. Boldt unbars the door and
+holds it; Rahn and Tews run out for the sea stairs at the parapet's west end. Two of the dead rise on the quay by the
+stairs' head (`[2.2, 0, 2.2]`, `[3.6, 0, 1.6]`): one catches Rahn two steps out of the door, the other Boldt as he
+comes out last; both fall and rise as dockworkers on the quay. Tews gets down the stairs and away west along the beach
+under the cannery's wall. Round accounting is Map 0's: 4 of round 1's slots (two risers, two attackers). No title card
+(Map 2 is never a campaign's first map; a campaign arrival cancels the opening), no flare (no hearth on a quay). Eight
+text lines (`BOL_/TEW_/RAH_M2_OPEN_*`, not baked), the three cast in `voice_cast.json`.
+
+Script change (shared, data-driven, default unchanged): `inn_opening.gd` `front_door.face_door`: a patron working the
+door faces the door node (Totenhafen's door is in an east wall); without it, north, as on Map 0. A test holds that
+Map 0's file does not set it.
+
+Verified: `smoke_map02_opening` (new) PASS, 20 checks: the file found by the map's id, three patrons in the cannery,
+the door shut and barred, the doorway's collider; the intro lines and the cue before round 1, round 1 at 11.1 s (not
+before look.min_seconds), four slots taken; the door unbarred and opened; a player body pushed west into the open
+doorway from the quay stopped at x 0.50 (the wall's face is at 0.15: never inside); Tews escaped, Boldt and Rahn rose
+on the quay, both attackers rose, the leaf shut. `test_map02_detail.test_the_night_shift_opening`. The tide is not
+touched (round 1 is before its `min_round` 3).

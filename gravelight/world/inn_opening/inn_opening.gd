@@ -541,11 +541,11 @@ func _step_patron(id: String, delta: float) -> void:
 				if row.has("unbar") and door != null and not door.is_open:
 					s["stage"] = "unbar"
 					pb.set_pose(&"push")
-					_face_point(pb, Vector3(pb.global_position.x, 0, -1.0))
+					_face_point(pb, _door_face(pb))
 				elif str(row.get("fate", "")) == "bitten":
 					s["stage"] = "hold"
 					pb.set_pose(&"push")
-					_face_point(pb, Vector3(pb.global_position.x, 0, -1.0))
+					_face_point(pb, _door_face(pb))
 				else:
 					s["stage"] = "wait"
 					pb.set_pose(&"panic")
@@ -640,6 +640,15 @@ func _follow(pb: PatronBody, s: Dictionary, speed: float, delta: float) -> bool:
 		break
 	s["i"] = i
 	return i >= pts.size()
+
+
+## Where a patron at the door faces while working it: Map 0's front door is in the taproom's north wall, so north
+## (the default). T-273: `front_door.face_door` true faces the door node itself (a door in any wall; Totenhafen's
+## cannery side door is in an east wall).
+func _door_face(pb: PatronBody) -> Vector3:
+	if door != null and bool((cfg.get("front_door", {}) as Dictionary).get("face_door", false)):
+		return door.global_position
+	return Vector3(pb.global_position.x, 0, -1.0)
 
 
 func _face_point(pb: PatronBody, p: Vector3) -> void:

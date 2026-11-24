@@ -365,3 +365,42 @@ func test_the_sailors_in_the_torpedo_store() -> void:
 	assert_ne(sq, "INN_SURV_TURN", "the squad's warning is this map's (not 'upstairs')")
 	for sp: String in ["DUT", "PEG", "DEA", "WRN"]:
 		assert_true(lines.has("%s_%s_01" % [sp, sq]), "%s warns when a sailor turns" % sp)
+
+
+# ================================================================== 6. the round-1 opening
+
+func test_the_night_shift_opening() -> void:
+	var c: Dictionary = InnOpening.load_cfg(InnOpening.data_path_for(&"map02_totenhafen"))
+	assert_false(c.is_empty(), "map02_opening.json is found by the map's id")
+	assert_eq(str(c.get("map", "")), "map02_totenhafen")
+	assert_eq(int(c.get("round", 0)), 1)
+	var fd: Dictionary = c["front_door"]
+	assert_true(bool(fd.get("face_door", false)), "a patron at the door faces the door (it is in an east wall)")
+	assert_false(bool((InnOpening.load_cfg()["front_door"] as Dictionary).get("face_door", false)), "Map 0's opening keeps the default (north)")
+	var door: Node3D = _scene().find_child(str(fd["node"]), true, false) as Node3D
+	assert_not_null(door, "the side door's node is in the scene")
+	assert_not_null(_scene().find_child("InnOpening", true, false), "and the opening's")
+	var blk: Node3D = _scene().find_child("CannerySideDoorBlock", true, false) as Node3D
+	assert_true(blk is StaticBody3D and door != null and Vector2(blk.position.x - door.position.x, blk.position.z - door.position.z).length() < 0.05,
+		"the doorway is filled with a collider for good (the 1000 door is never skipped)")
+	assert_false(_on_nav(Vector3(0.0, 0.0, door.position.z if door != null else 2.6)), "no navmesh through the doorway")
+	assert_gt(float(fd["bar_at"]), float(c["end_by"]), "never barred again (nobody is left inside to drop the bar)")
+	var lines: Dictionary = GLData.load_json("res://data/gravelight/vo/lines.json")
+	var missing: Dictionary = GLData.load_json("res://data/gravelight/vo/audio_manifest.json").get("missing", {})
+	for ln: Dictionary in c["lines"]:
+		assert_true(lines.has(str(ln["id"])) and missing.has(str(ln["id"])), "%s is a line (not baked)" % ln["id"])
+	assert_true(lines.has(str((c["look"]["cue_line"] as Dictionary)["id"])), "the cue line")
+	var fates: Dictionary = {}
+	for r: Dictionary in c["patrons"]:
+		fates[str(r["fate"])] = int(fates.get(str(r["fate"]), 0)) + 1
+		assert_eq(_zone(_v3(r["start"]) + Vector3.UP * 0.6), "B_CANNERY", "%s starts in the cannery" % r["id"])
+		var out: Array = r.get("outside", [])
+		assert_gt(_v3(out[0]).x, 0.3, "%s's way out starts on the quay side of the wall" % r["id"])
+		if str(r["fate"]) == "caught":
+			assert_eq(_zone(_v3(out[out.size() - 1]) + Vector3.UP * 0.6), "A_QUAY", "%s is caught on the quay (rises in the squad's zone)" % r["id"])
+			assert_eq(str(r.get("rise_variant", "")), "dockworker", "%s rises as a dockworker" % r["id"])
+	assert_eq(int(fates.get("caught", 0)), 2, "two are caught")
+	assert_eq(int(fates.get("escape", 0)), 1, "one gets away")
+	assert_eq(InnOpening.riser_ids(c).size() + (c["attackers"] as Array).size(), 4, "four of round 1's slots")
+	for a: Dictionary in c["attackers"]:
+		assert_true(_on_nav(_v3(a["pos"])), "an attacker rises on the quay's navmesh at %s" % str(a["pos"]))

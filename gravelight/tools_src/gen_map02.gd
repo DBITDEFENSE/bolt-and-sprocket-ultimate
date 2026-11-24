@@ -150,6 +150,7 @@ const MAT_RULES: Array = [
 ]
 ## Greybox visuals replaced by dressing (colliders stay).
 const HIDE: Array = [
+	"CannerySideDoorBlock",
 	"Rail*", "Cutter", "Hut", "Conveyor", "GutLine*", "Brine*", "Cradle*", "Lathe", "Cage*", "Pump*", "Desk*",
 	"Diesel*", "CraneLeg*", "CraneOffice*", "Pallet*", "NavBlock*", "Stage", "HullSide*", "HullFloor", "HullKeel", "Bulkhead*",
 	"CT_*", "Bow*", "Stern*", "SeaGrille", "Curtain", "Switchboard", "Teletype*", "Rack*", "Cot*", "Stove*",
@@ -174,6 +175,8 @@ const ARMORERS_BENCH: Array = [Vector3(16.3, 0, 17.0 + T * 0.5 + 0.01), 180.0]
 ## 7 m over the hall's east apron, closed by rails on its three open sides (x BALC_X0..BALC_X1, z 38.15..BALC_Z1),
 ## and its zip line: [name, the cable's top (2 m over the balcony, a step outside its south rail), the landing post's
 ## foot on the east apron]. The same numbers are in map02.json "ziplines" (test_map02_detail holds them together).
+## T-273: the cannery's side door onto the quay (z of its middle on the east wall x 0; the round-1 opening's door).
+const SIDE_DOOR_Z: float = 2.6
 const BALC_X0: float = 46.8
 const BALC_X1: float = 50.4
 const BALC_Z1: float = 40.65
@@ -709,7 +712,12 @@ func build_cannery() -> void:
 	var lw: Array = [["limewash", 0.0, 0.012]]
 	wall_x("CanN", 0.0, -30 - T * 0.5, 0 + T * 0.5, 0, 6.0, [win(-22, 0)], "concrete", [[1, "limewash", 0.0, 0.012]])
 	wall_z("CanW", -30.0, 0, 30, 0, 6.0, [win(12, 0), win(24, 0)], "concrete", [[1, "limewash", 0.0, 0.012]])
-	wall_z("CanE", 0.0, 0, 30, 0, 6.0, [door(15, 0)], "concrete", [[-1, "limewash", 0.0, 0.012]])
+	# T-273: the cannery's side door onto the quay (the round-1 opening's: the night shift runs out of it). Its doorway
+	# is filled for good with an invisible collider (CannerySideDoorBlock, baked into the navmesh like the wall): the
+	# leaf is the InnFrontDoor's and swings, nobody but the opening's patrons (no colliders) ever passes, so the
+	# cannery's 1000 door is never skipped
+	wall_z("CanE", 0.0, 0, 30, 0, 6.0, [door(15, 0), door(SIDE_DOOR_Z, 0, 1.6)], "concrete", [[-1, "limewash", 0.0, 0.012]])
+	box(geo, "CannerySideDoorBlock", Vector3(-T * 0.5, 0, SIDE_DOOR_Z - 0.8), Vector3(T * 0.5, DOOR_H, SIDE_DOOR_Z + 0.8), "wall")
 	box(geo, "CanneryRoof", Vector3(-30 - T * 0.5, 6.0, 0), Vector3(T * 0.5, 6.3, 30), "roof")
 	# the infirmary partition (NW corner)
 	wall_z("InfE", -20.0, 0, 10, 0, 3.2, [door(6, 0, 1.8)], "planks")
@@ -2890,6 +2898,10 @@ func build_gameplay() -> void:
 	_build_perk_deal(perks)
 	# T-273: the sailors in the torpedo store (InnSurvivors reads data/gravelight/map02_survivors.json by the map's id)
 	_node("res://gravelight/world/inn_opening/inn_survivors.gd", "InnSurvivors", {}, Vector3.ZERO, 0.0)
+	# T-273: the round-1 opening (InnOpening reads data/gravelight/map02_opening.json): the side door's leaf and bar
+	# (InnFrontDoor: local +Z into the cannery, the bar on the cannery's side) and the opening's node beside it
+	_node("res://gravelight/world/inn_opening/inn_front_door.gd", "CannerySideDoor", {"width": 1.6, "height": DOOR_H, "wall": T}, Vector3(0.0, 0, SIDE_DOOR_Z), -90.0)
+	_node("res://gravelight/world/inn_opening/inn_opening.gd", "InnOpening", {}, Vector3.ZERO, 0.0)
 
 
 ## T-273: the perk spots (PerkSpot: the filler crate shows while no machine stands on it) and the seven machines on
@@ -3258,6 +3270,12 @@ func _dress_t273_hall() -> void:
 	_noshadow(B(stay + Vector3(-0.1, 0, -0.1), stay + Vector3(0.1, 0.25, 0.1), "iron"))
 	_noshadow(B(foot + side * 0.1 + Vector3(-0.06, 2.0, -0.06), foot + side * 0.1 + Vector3(0.06, 2.18, 0.06), "lamp_red_lit", false))
 	Props.rope_coil(dress, foot + side * 0.45 - flat * 0.3, 0.14)
+	# T-273: the cannery side door's frame on the quay face (jambs, lintel, a step) and the night shift's painted sign
+	for jz: float in [SIDE_DOOR_Z - 0.86, SIDE_DOOR_Z + 0.8]:
+		B(Vector3(T * 0.5, 0, jz), Vector3(T * 0.5 + 0.06, DOOR_H + 0.06, jz + 0.06), "beam")
+	B(Vector3(T * 0.5, DOOR_H, SIDE_DOOR_Z - 0.86), Vector3(T * 0.5 + 0.06, DOOR_H + 0.12, SIDE_DOOR_Z + 0.86), "beam")
+	B(Vector3(T * 0.5, 0, SIDE_DOOR_Z - 0.9), Vector3(T * 0.5 + 0.35, 0.08, SIDE_DOOR_Z + 0.9), "pier_concrete")
+	_label("NACHTSCHICHT", Vector3(T * 0.5 + 0.02, DOOR_H + 0.32, SIDE_DOOR_Z), 90.0, 22)
 	# T-273: the rod of the infirmary window's curtains (build_reactive hangs them)
 	_noshadow(B(Vector3(-23.3, WTOP + 0.15, T * 0.5 + 0.06), Vector3(-20.7, WTOP + 0.18, T * 0.5 + 0.1), "iron"))
 
