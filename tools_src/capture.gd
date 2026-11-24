@@ -40,6 +40,10 @@ var _min_frames: int = 0
 ## (RenderTune.set_off; saved under <label>_before/), then with them on (<label>/): the pairs for
 ## `tools/compare_shots.py <label>_before <label> --set=<set>`.
 var _ab: bool = false
+## `--t266-aba`: the same, and a third shot with the passes off again (<label>_again/): the control for a living
+## map. Under software rendering the shots of a pair are a minute of game time apart; when "before" and "again"
+## differ from each other as much as from "after", the map moved, not the passes.
+var _aba: bool = false
 
 
 func _ready() -> void:
@@ -57,8 +61,9 @@ func _ready() -> void:
 			_label = a.substr(8)
 		elif a == "--open-after":   # U12 launcher "Look test": open the folder when the tour ends
 			_open_after = true
-		elif a == "--t266-ab":
+		elif a == "--t266-ab" or a == "--t266-aba":
 			_ab = true
+			_aba = a == "--t266-aba"
 		elif a.begins_with("--frames="):
 			_min_frames = int(a.substr(9))
 		elif a.begins_with("--preset=") and GLSettings.PRESETS.has(a.substr(9)):
@@ -106,6 +111,15 @@ func _shot(name: String) -> void:
 	img.save_png(path)
 	_saved.append(path)
 	print("[capture] ", path)
+	if _aba and _scene is MapRoot:
+		RenderTune.set_off(_scene, RenderTune.FEATURES.duplicate())
+		for i: int in maxi(3, _min_frames):
+			await get_tree().process_frame
+		await RenderingServer.frame_post_draw
+		var again_dir: String = _out.rstrip("/") + "_again"
+		DirAccess.make_dir_recursive_absolute(again_dir)
+		get_viewport().get_texture().get_image().save_png(again_dir.path_join(name + ".png"))
+		RenderTune.set_off(_scene, PackedStringArray())
 
 
 func _run() -> void:

@@ -397,3 +397,118 @@ static func _tree(n: Node, depth: int) -> void:
 	print("[tree] %s%s <%s>%s" % ["  ".repeat(depth), n.name, n.get_class(), extra])
 	for c: Node in n.get_children():
 		_tree(c, depth + 1)
+
+
+## `--props`: the prop meshes PropShadows gave a shadow child, the big ones first (what a new or missing shadow in a
+## before / after capture may come from).
+static func props(map: Node) -> void:
+	var rows: Array = []
+	for n: Node in _walk(map):
+		if not (n is MeshInstance3D) or not n.has_meta(&"prop_shadow_base"):
+			continue
+		var mi: MeshInstance3D = n as MeshInstance3D
+		var kinds: Dictionary = {}
+		for si: int in mi.mesh.get_surface_count():
+			var m: Material = mi.get_active_material(si)
+			var k: String = "-"
+			if m is BaseMaterial3D:
+				k = "std cull %d transp %d depth %d" % [(m as BaseMaterial3D).cull_mode, (m as BaseMaterial3D).transparency, (m as BaseMaterial3D).depth_draw_mode]
+			elif m is ShaderMaterial and (m as ShaderMaterial).shader != null:
+				k = "shader " + (m as ShaderMaterial).shader.resource_path.get_file()
+			kinds[k] = int(kinds.get(k, 0)) + 1
+		rows.append([(mi.global_transform * mi.get_aabb()).get_longest_axis_size(), "%s surf %d was cast %d layers %d range %.0f-%.0f vis %s | %s" % [str(map.get_path_to(mi)), mi.mesh.get_surface_count(),
+			int(mi.get_meta(&"prop_shadow_base")), mi.layers, mi.visibility_range_begin, mi.visibility_range_end, str(mi.is_visible_in_tree()), str(kinds)]])
+	rows.sort_custom(func(a: Array, b: Array) -> bool: return float(a[0]) > float(b[0]))
+	print("[props] %d prop meshes with a shadow child" % rows.size())
+	for r: Array in rows.slice(0, 30):
+		print("[props]   %.1f m %s" % [r[0], r[1]])
+
+
+## `--batches`: the generators' batches by container, shadow setting and material (cull mode), with the biggest of
+## each kind: what ShadowProxies has to reproduce.
+static func batches(map: Node) -> void:
+	var kinds: Dictionary = {}
+	for h: String in ShadowProxies.HOLDERS:
+		var holder: Node = map.get_node_or_null(NodePath(h))
+		if holder == null:
+			continue
+		for c: Node in holder.find_children("*", "MeshInstance3D", true, false):
+			var mi: MeshInstance3D = c as MeshInstance3D
+			if mi.mesh == null or str(mi.name).begins_with("ShadowProxy"):
+				continue
+			var m: Material = mi.material_override if mi.material_override != null else mi.get_active_material(0)
+			var mk: String = "-"
+			if m is BaseMaterial3D:
+				mk = "std cull %d transp %d depth %d blend %d dfade %d" % [(m as BaseMaterial3D).cull_mode, (m as BaseMaterial3D).transparency, (m as BaseMaterial3D).depth_draw_mode,
+					(m as BaseMaterial3D).blend_mode, (m as BaseMaterial3D).distance_fade_mode]
+			elif m is ShaderMaterial and (m as ShaderMaterial).shader != null:
+				mk = "shader %s cull %d" % [(m as ShaderMaterial).shader.resource_path.get_file(), ShadowProxies.shader_cull((m as ShaderMaterial).shader)]
+			var cast: int = int(mi.get_meta("shadow_proxied", mi.cast_shadow))
+			var k: String = "%s | cast %d | %s | det %s | vis %s" % [h, cast, mk, "neg" if mi.global_transform.basis.determinant() < 0.0 else "pos", str(mi.visible)]
+			if not kinds.has(k):
+				kinds[k] = [0, 0.0, ""]
+			kinds[k][0] = int(kinds[k][0]) + 1
+			var side: float = (mi.global_transform * mi.get_aabb()).get_longest_axis_size()
+			if side > float(kinds[k][1]):
+				kinds[k][1] = side
+				kinds[k][2] = str(mi.name) + " at " + str((mi.global_transform * mi.get_aabb()).get_center().snapped(Vector3.ONE))
+	var keys: Array = kinds.keys()
+	keys.sort()
+	for k: String in keys:
+		print("[batches] %4d  %s  (largest %.0f m: %s)" % [kinds[k][0], k, kinds[k][1], kinds[k][2]])
+
+
+## `--proxy-check`: per batch container, the triangles and the bounds of the batches ShadowProxies merged against
+## those of the proxies it made (they must be equal: a proxy that lost or moved geometry loses or moves a shadow).
+static func proxy_check(map: Node) -> void:
+	for h: String in ShadowProxies.HOLDERS:
+		var holder: Node3D = map.get_node_or_null(NodePath(h)) as Node3D
+		if holder == null:
+			continue
+		var groups: Array = [holder]
+		for c: Node in holder.get_children():
+			if c.has_meta("vis_group") and not (c is MeshInstance3D):
+				groups.append(c)
+		for g: Node3D in groups:
+			var vt: int = 0
+			var pt: int = 0
+			var vbox: AABB = AABB()
+			var pbox: AABB = AABB()
+			var vn: int = 0
+			var pn: int = 0
+			for c: Node in g.get_children():
+				var mi: MeshInstance3D = c as MeshInstance3D
+				if mi == null or mi.mesh == null:
+					continue
+				var box: AABB = mi.global_transform * mi.get_aabb()
+				var tris: int = mi.mesh.get_faces().size() / 3
+				if str(mi.name).begins_with("ShadowProxy"):
+					pt += tris
+					pbox = box if pn == 0 else pbox.merge(box)
+					pn += 1
+				elif mi.has_meta("shadow_proxied"):
+					vt += tris
+					vbox = box if vn == 0 else vbox.merge(box)
+					vn += 1
+			if vn > 0 or pn > 0:
+				print("[proxy-check] %s: %d batches %d triangles, bounds %s size %s | %d proxies %d triangles, bounds %s size %s%s" % [str(map.get_path_to(g)), vn, vt,
+					str(vbox.position.snapped(Vector3.ONE * 0.1)), str(vbox.size.snapped(Vector3.ONE * 0.1)), pn, pt, str(pbox.position.snapped(Vector3.ONE * 0.1)), str(pbox.size.snapped(Vector3.ONE * 0.1)),
+					"" if vt == pt and vbox.position.is_equal_approx(pbox.position) and vbox.size.is_equal_approx(pbox.size) else "   <-- DIFFERENT"])
+	var props: int = 0
+	var bad: int = 0
+	for n: Node in _walk(map):
+		if not (n is MeshInstance3D) or not n.has_meta(&"prop_shadow_base"):
+			continue
+		var mi: MeshInstance3D = n as MeshInstance3D
+		var child: MeshInstance3D = mi.get_node_or_null("ShadowProp") as MeshInstance3D
+		var want: int = 0
+		for si: int in mi.mesh.get_surface_count():
+			if PropShadows.surface_cull(mi.get_active_material(si)) >= 0:
+				var a: Array = mi.mesh.surface_get_arrays(si)
+				var ind: Variant = a[Mesh.ARRAY_INDEX]
+				want += ((ind as PackedInt32Array).size() if ind is PackedInt32Array and not (ind as PackedInt32Array).is_empty() else (a[Mesh.ARRAY_VERTEX] as PackedVector3Array).size()) / 3
+		props += 1
+		if child == null or child.mesh.get_faces().size() / 3 != want:
+			bad += 1
+			print("[proxy-check] prop %s: %d casting triangles, its shadow child %d   <-- DIFFERENT" % [str(map.get_path_to(mi)), want, child.mesh.get_faces().size() / 3 if child != null else -1])
+	print("[proxy-check] props: %d with a shadow child, %d differ" % [props, bad])

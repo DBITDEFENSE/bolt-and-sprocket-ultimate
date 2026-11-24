@@ -249,6 +249,12 @@ func _process(delta: float) -> void:
 			for ta: String in OS.get_cmdline_user_args():
 				if ta.begins_with("--tree="):
 					PerfViews.tree(_map, ta.substr(7))
+			if "--batches" in OS.get_cmdline_user_args():
+				PerfViews.batches(_map)
+			if "--proxy-check" in OS.get_cmdline_user_args():
+				PerfViews.proxy_check(_map)
+			if "--props" in OS.get_cmdline_user_args():
+				PerfViews.props(_map)
 			if "--casters" in OS.get_cmdline_user_args():
 				PerfViews.casters(_map)
 			if _hour >= 0.0 and DayCycle.of(_map) != null:
