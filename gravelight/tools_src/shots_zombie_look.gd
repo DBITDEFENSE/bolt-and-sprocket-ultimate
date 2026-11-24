@@ -401,8 +401,8 @@ func _gallery_scene() -> void:
 		dc.call("hold_hour", 12.0)
 		await _skip(1.5)
 	var centre: Vector3 = Vector3(12.0, 0.0, -14.0)
-	var cam: Vector3 = Vector3(5.6, 1.5, -14.0)
-	_look(cam, centre + Vector3(0, 1.0, 0), 60.0)
+	var cam: Vector3 = Vector3(7.2, 1.45, -14.0)
+	_look(cam, centre + Vector3(0, 0.95, 0), 76.0)
 	var listing: Array = []
 	var page: int = 0
 	for start: int in range(0, names.size(), 8):
