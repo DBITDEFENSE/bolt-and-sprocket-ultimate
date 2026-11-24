@@ -28,7 +28,8 @@ extends Node
 ## `--round=N` sets the round (15 by default); the hitch report ends with the 1 % low, a census of what the round
 ## left lying about (corpses, ragdoll bones, rigid bodies, decals) and the planner bot's ask counts.
 ## `--ab=no_piece_warm` leaves the zombies' severed pieces to be cut in the frame that first needs each (the
-## before of ZombieBody.warm_pieces, docs/perf/movement_perf_2026-11.md). `--seed=N` seeds the global random
+## before of ZombieBody.warm_pieces, docs/perf/movement_perf_2026-11.md). `--ab=no_view_lod` (T-265) animates the
+## zombies by distance only (the before of the camera's-view rate). `--seed=N` seeds the global random
 ## number generator before the map loads (a `--live` round then starts from the same rolls; it still plays out
 ## differently run to run, the loader threads' timing is not seeded).
 ## T-265 (the scripts' cost per tick): `--tank` parks the round-30 Sherman and lets it cover the yard (ShermanEvent
@@ -73,6 +74,7 @@ var _gap_proc: PackedInt32Array = []
 var _gap_worst: Array = []   # [us, text]: the longest gaps after the physics scripts, with what the servers did
 var _nav_iter: int = -1      # the navigation map's iteration (it counts the map's rebuilds)
 var _nav_syncs: int = 0
+var _gap_skip: int = 0       # the probe's own tree walk inside the current gap (taken off it)
 ## --hitch: wall microseconds per frame, the scripts' microseconds per physics tick, the worst ticks [us, text]
 var _wall: PackedInt32Array = []
 var _wall_prev: int = 0
@@ -135,6 +137,8 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	BotProf.on = _hitch
 	BotProf.reset()
+	if "no_view_lod" in _ab:   # T-265: the zombies animated by distance only, as before the camera's view counted
+		(load("res://gravelight/enemies/zombie.gd") as GDScript).set("view_lod", false)
 	if "no_piece_warm" in _ab:   # (set through the script object: this tool also runs on a build without the switch)
 		(load("res://gravelight/enemies/zombie_body.gd") as GDScript).set("piece_warm", false)
 	for a: String in OS.get_cmdline_user_args():
@@ -250,6 +254,7 @@ func _process(delta: float) -> void:
 					var ts0: int = Time.get_ticks_usec()
 					_probe_scan()
 					_skip_us += Time.get_ticks_usec() - ts0   # the probe's own tree walk is not the game's cost
+					_gap_skip += Time.get_ticks_usec() - ts0
 			if "--ts" in OS.get_cmdline_user_args() and _t > 15.0 and _t - delta <= 15.0:
 				_print_timestamps()
 			if "--mm-bench" in OS.get_cmdline_user_args() and _t > 16.0 and _t - delta <= 16.0:
@@ -462,6 +467,8 @@ func probe_tick(physics: bool, delta: float) -> void:
 		if physics and _proc_end != 0:
 			_gap_proc.append(g0 - _proc_end)
 		elif not physics and _phys_end != 0:
+			g0 -= _gap_skip
+			_gap_skip = 0
 			_gap_phys.append(g0 - _phys_end)
 			var it: int = NavigationServer3D.map_get_iteration_id(get_viewport().world_3d.navigation_map)
 			var synced: bool = _nav_iter >= 0 and it != _nav_iter
@@ -635,6 +642,15 @@ func _report_hitch() -> void:
 	for pl: Node in _all_nodes():
 		if pl is BotPlanner:
 			print("[hitch] " + (pl as BotPlanner).status_line())
+	if "--diag" in OS.get_cmdline_user_args():
+		_diag()
+	var zs: GDScript = load("res://gravelight/enemies/zombie.gd") as GDScript
+	if zs.get("anim_steps") != null:   # T-265's work counters (since the map loaded), per frame of the whole run
+		var fr: float = float(maxi(1, Engine.get_process_frames()))
+		var af: float = float(maxi(1, int(zs.get("active_frames"))))
+		print("[hitch] work counted (whole run, %d frames): zombie animation steps %d (%.1f a frame, %.0f %% of the %d zombie-frames; %.0f %% of those out of view), ticks with foot rays %d (%.1f a frame, %.0f %%)" % [
+			Engine.get_process_frames(), int(zs.get("anim_steps")), int(zs.get("anim_steps")) / fr, 100.0 * int(zs.get("anim_steps")) / af, int(af),
+			100.0 * int(zs.get("out_frames")) / af, int(zs.get("foot_ray_ticks")), int(zs.get("foot_ray_ticks")) / fr, 100.0 * int(zs.get("foot_ray_ticks")) / af])
 	var t: Array = dist(_tick_tot)
 	print("[hitch] scripts per physics tick ms: mean %.2f p50 %.2f p95 %.2f p99 %.2f worst %.2f | over 4 ms %d, over 8 ms %d, over 16.7 ms %d" % [
 		t[0], t[1], t[2], t[3], t[4], over(_tick_tot, 4.0), over(_tick_tot, 8.0), over(_tick_tot, 16.7)])
@@ -675,6 +691,44 @@ func _report_hitch() -> void:
 		for b: BotBrain in _map.squad.brains:
 			print("[hitch] brain %s: %.3f ms/tick, think %.3f ms each (%d thinks), action %s" % [b.player.name, b.ms_per_frame(), b.us_think / 1000.0 / float(maxi(1, b.thinks)), b.thinks, b.action])
 	print("[hitch] nodes %d, orphans %d" % [int(Performance.get_monitor(Performance.OBJECT_NODE_COUNT)), int(Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT))])
+
+
+## `--diag` (T-265): what a whole-map search costs here (find_children by class, as several scripts make at run
+## time), and which animation players and trees are running, by the node they sit under.
+func _diag() -> void:
+	var t0: int = Time.get_ticks_usec()
+	var n: int = 0
+	for i: int in 5:
+		n = _map.find_children("*", "Interactable", true, false).size()
+	var t1: int = Time.get_ticks_usec()
+	for i: int in 5:
+		get_tree().get_nodes_in_group(&"players")
+	print("[diag] find_children(\"*\", \"Interactable\") over the map: %.2f ms each (%d found, %d nodes in the tree)" % [(t1 - t0) / 5000.0, n, int(Performance.get_monitor(Performance.OBJECT_NODE_COUNT))])
+	var by: Dictionary = {}
+	for node: Node in _all_nodes():
+		var on: bool = false
+		var what: String = node.get_class()
+		if node is AnimationPlayer:
+			on = (node as AnimationPlayer).is_playing() and (node as AnimationPlayer).active
+		elif node is AnimationTree:
+			on = (node as AnimationTree).active
+		elif node is GPUParticles3D:
+			on = (node as GPUParticles3D).emitting
+		elif node is AudioStreamPlayer3D:
+			on = (node as AudioStreamPlayer3D).playing
+		else:
+			continue
+		if not on:
+			continue
+		var top: Node = node
+		while top.get_parent() != null and top.get_parent() != _map and top.get_parent() != get_tree().root:
+			top = top.get_parent()
+		var key: String = "%s under %s" % [what, top.name]
+		by[key] = int(by.get(key, 0)) + 1
+	var keys: Array = by.keys()
+	keys.sort()
+	for k: String in keys:
+		print("[diag]   running: %s x%d" % [k, by[k]])
 
 
 ## The probe's own loop: a child node, so it runs in both the process and the physics step.

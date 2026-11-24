@@ -5,7 +5,9 @@
 # Scenarios: m0 m1 m2 m4a m4b m4c m4d (round 15, 24 zombies kept alive, 3 bots + Jakub + the map's companion),
 #   m0r30 (round 30, the Sherman parked and firing), m0r35, m0noon (the day held at noon), m0corpses (four of the
 #   24 killed and replaced every second), m0live (the round runs), m0boss (a live Foreman round), m0live30 (a live
-#   round 30 for 60 s: the Sherman's arrival and the assault). tools/tick_perf_table.py <dir> prints the medians.
+#   round 30 for 60 s: the Sherman's arrival and the assault), m0play (a live round 15 for 60 s with the player's
+#   own survivor played by the agent, training the horde round the map: a moving camera with the horde behind it).
+#   tools/tick_perf_table.py <dir> prints the medians.
 # The probe walks the whole tree (--probe-all) and the random numbers are seeded (--seed=7).
 # On Windows the run starts at High priority (TICK_PERF_PRIO=normal turns that off).
 cd "$(dirname "$0")/.."
@@ -30,6 +32,7 @@ case "$SC" in
 	m0live30) F="--map=map00_crossroads --live --round=30 --secs=60" ;;
 	m0corpses) F="--map=map00_crossroads --corpses" ;;
 	m0boss) F="--map=map00_crossroads --live --boss" ;;
+	m0play) F="--map=map00_crossroads --live --botmode --secs=60" ;;
 	m0noon) F="--map=map00_crossroads --hour=12" ;;
 	*) echo "unknown scenario $SC"; exit 2 ;;
 esac
