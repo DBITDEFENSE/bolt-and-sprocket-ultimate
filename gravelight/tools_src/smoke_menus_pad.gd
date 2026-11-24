@@ -149,7 +149,7 @@ func _run() -> void:
 	await _secs(0.3)
 	_check(str(_menu.get("column")) == "play", "A on PLAY opens its column")
 	await _open_close("Solo", MenuCharacter)
-	var lobby: MenuLobby = await _open("Online", MenuLobby) as MenuLobby
+	var lobby: MenuLobby = await _open("Co-op", MenuLobby) as MenuLobby
 	if lobby != null:
 		# first visit: the name page. Its letter keys are there for a controller, and A on a key types
 		_check(str(lobby.get("_page")) == "name", "ONLINE asks for a name first (%s)" % str(lobby.get("_page")))
@@ -215,13 +215,13 @@ func _run() -> void:
 		await _frames(4)
 		_check(at > 0 and MenuKit.focusables(lobby.content).find(_focus_owner()) == at and _focused() == before,
 			"a rebuild keeps the focus on the same control (%s, place %d)" % [before, at])
-		await _close("Online")
+		await _close("Co-op")
 	await _open_close("Campaign", MenuCharacter)
 	await _pad(JOY_BUTTON_B)
 	await _secs(0.3)
 	_check(str(_menu.get("column")) == "main", "B goes back to the main column")
-	await _open_close("Muster", MenuMuster)
-	await _open_close("Archive", MenuArchive)
+	await _open_close("Loadout", MenuMuster)
+	await _open_close("Collection", MenuArchive)
 
 	# ---- SETTINGS: tabs with RB, the rebinding wait left without a keyboard
 	var st: MenuSettings = await _open("Settings", MenuSettings) as MenuSettings
@@ -263,8 +263,8 @@ func _run() -> void:
 	await _pad(JOY_BUTTON_A)
 	await _secs(0.3)
 	_check(str(_menu.get("column")) == "extras", "A on EXTRAS opens its column")
-	await _open_close("Dossiers", MenuDossiers)
-	for pair: Array in [["Service Record", MenuStats], ["Challenges", MenuChallenges], ["Credits", MenuCredits]]:
+	await _open_close("Characters", MenuDossiers)
+	for pair: Array in [["Stats", MenuStats], ["Challenges", MenuChallenges], ["Credits", MenuCredits]]:
 		var page: MenuScreen = await _open(str(pair[0]), pair[1] as GDScript)
 		if page == null:
 			continue
