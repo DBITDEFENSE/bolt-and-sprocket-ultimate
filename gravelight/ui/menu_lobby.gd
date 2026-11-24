@@ -130,6 +130,11 @@ func build() -> void:
 			_build_home()
 
 
+## T-264: MenuScreen.rebuild keeps the focus's place while the lobby page is the same (the list refreshes every 5 s).
+func page_key() -> String:
+	return _page
+
+
 func _go(page: String) -> void:
 	_page = page
 	_status = ""
@@ -147,6 +152,8 @@ func _build_name() -> void:
 	_name_field = _line_edit(Lobbies.display_name() if Lobbies.has_display_name() else "", "your name", 24)
 	_name_field.text_submitted.connect(func(_t: String) -> void: _save_name())
 	content.add_child(MenuKit.row("Display name", _name_field, 220))
+	if MenuKit.wants_pad_keys():   # T-264: a controller types the name here (or OK with it empty: "Player")
+		content.add_child(MenuKit.pad_keys(_name_field, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
 	content.add_child(MenuKit.button("OK", _save_name, 26, "ui_confirm"))
 	if Lobbies.has_display_name():
 		content.add_child(MenuKit.button("Back", _go.bind("home"), 22, "ui_back"))
@@ -218,6 +225,8 @@ func _build_join() -> void:
 	_code_field = _line_edit("", "e.g. KXMRTA", 6)
 	_code_field.text_submitted.connect(func(_t: String) -> void: _join_code())
 	content.add_child(MenuKit.row("Join code", _code_field, 220))
+	if MenuKit.wants_pad_keys():   # T-264: the code's own letters (no I / O), typed with a controller
+		content.add_child(MenuKit.pad_keys(_code_field, LobbyService.CODE_ALPHABET, 12))
 	content.add_child(MenuKit.button("Join", _join_code, 26, "ui_confirm"))
 	content.add_child(MenuKit.button("Back", _go.bind("home"), 22, "ui_back"))
 
@@ -331,6 +340,8 @@ func _build_lan() -> void:
 	_ip = _line_edit(str(GLSettings.values.get("last_join_ip", "127.0.0.1")), "host address, e.g. 192.168.1.20", 64)
 	_ip.text_submitted.connect(func(_t: String) -> void: _join_lan())
 	content.add_child(MenuKit.row("Join address", _ip, 220))
+	if MenuKit.wants_pad_keys():   # T-264: an IPv4 address (and :port) typed with a controller
+		content.add_child(MenuKit.pad_keys(_ip, "1234567890.:", 12))
 	content.add_child(MenuKit.button("Join", _join_lan, 26, "ui_confirm"))
 	content.add_child(MenuKit.button("Back", _go.bind("home"), 22, "ui_back"))
 

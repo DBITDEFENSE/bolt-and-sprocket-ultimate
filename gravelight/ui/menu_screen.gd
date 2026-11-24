@@ -12,6 +12,8 @@ var _title: String = ""
 var _scroll: ScrollContainer
 var _page_root: Control = null
 var _closing: bool = false
+var _built_key: String = ""   # T-264: page_key() at the last build
+const STICK_SCROLL_PX_S: float = 1100.0   # T-264: the right stick scrolls the page (a long text has nothing to focus)
 
 
 func _init(title: String = "") -> void:
@@ -65,6 +67,7 @@ func _ready() -> void:
 	content.add_theme_constant_override("separation", 10)
 	scroll.add_child(content)
 	build()
+	_built_key = page_key()
 	MenuKit.focus_first.call_deferred(content)
 	_scroll = scroll
 	_page_root = margin
@@ -81,8 +84,36 @@ func _settle_scroll() -> void:
 		return
 	_scroll.scroll_vertical = 0
 	var f: Control = get_viewport().gui_get_focus_owner()
-	if f != null and _scroll.is_ancestor_of(f):
+	# T-264: a bare spacer at the foot of a text page (Credits, the Service Record) holds the focus only so a
+	# controller has something to stand on: the page opens at its top, and the right stick scrolls it
+	if f != null and _scroll.is_ancestor_of(f) and f.get_class() != "Control":
 		_scroll.ensure_control_visible(f)
+
+
+## T-264: the right stick scrolls the page (any connected pad): pages of text have no control to walk down.
+func _process(delta: float) -> void:
+	if _closing or not is_instance_valid(_scroll) or not is_visible_in_tree():
+		return
+	var v: float = 0.0
+	var pads: Array[int] = Input.get_connected_joypads()
+	if pads.is_empty():
+		pads = [0]
+	for dev: int in pads:
+		var a: float = Input.get_joy_axis(dev, JOY_AXIS_RIGHT_Y)
+		if absf(a) > absf(v):
+			v = a
+	if absf(v) < 0.25:
+		return
+	for ch: Node in get_children():
+		if ch is MenuScreen:
+			return   # a page open over this one scrolls instead
+	_scroll.scroll_vertical += int(v * STICK_SCROLL_PX_S * delta)
+
+
+## Override (T-264): the sub-page shown now ("" = the screen has one page). rebuild() keeps the focused control's
+## place only while this stays the same; a new sub-page starts at its first control.
+func page_key() -> String:
+	return ""
 
 
 ## Override: fill `content`.
@@ -118,10 +149,49 @@ func _unhandled_input(event: InputEvent) -> void:
 		close()
 
 
-## Removes and rebuilds the page content (after a change).
+## Removes and rebuilds the page content (after a change). T-264: the focus keeps its place (the same control in
+## order, the same scroll) while the sub-page is the same: a controller player is not thrown back to the top by
+## every toggle or by the lobby list's refresh. Focus that sits outside the content (the Back button, a tab, a page
+## open over this one) is left where it is.
 func rebuild() -> void:
+	var f: Control = get_viewport().gui_get_focus_owner() if is_inside_tree() else null
+	var idx: int = -1
+	var kind: String = ""
+	if f != null and content.is_ancestor_of(f):
+		idx = MenuKit.focusables(content).find(f)
+		kind = f.get_class()
+	var outside: bool = f != null and idx < 0
+	var scroll_at: int = _scroll.scroll_vertical if is_instance_valid(_scroll) else 0
 	for c: Node in content.get_children():
 		content.remove_child(c)
 		c.queue_free()
 	build()
-	MenuKit.focus_first.call_deferred(content)
+	var same_page: bool = page_key() == _built_key
+	_built_key = page_key()
+	if outside:
+		return
+	if idx >= 0 and same_page:
+		_refocus.call_deferred(idx, kind, scroll_at)
+	else:
+		MenuKit.focus_first.call_deferred(content)
+
+
+func _refocus(idx: int, kind: String, scroll_at: int) -> void:
+	var list: Array[Control] = MenuKit.focusables(content)
+	if list.is_empty():
+		return
+	var c: Control = list[mini(idx, list.size() - 1)]
+	if c.get_class() != kind:
+		MenuKit.focus_first(content)
+		return
+	if is_instance_valid(_scroll):
+		_scroll.follow_focus = false   # grab_focus would scroll before the new layout has its sizes
+	c.grab_focus()
+	if is_instance_valid(_scroll):
+		await get_tree().process_frame
+		if not is_instance_valid(_scroll):
+			return
+		_scroll.follow_focus = true
+		_scroll.scroll_vertical = scroll_at
+		if is_instance_valid(c) and c.is_inside_tree():
+			_scroll.ensure_control_visible(c)

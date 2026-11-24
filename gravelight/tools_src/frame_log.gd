@@ -17,9 +17,11 @@ var _spikes: int = 0
 
 func _ready() -> void:
 	process_priority = 1000   # last, so the frame's work is measured
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://logs"))
+	# T-264: an exported build has no res:// folder to write to (and a Mac app's working directory is /): user://logs
+	var dir: String = "user://logs" if OS.has_feature("template") else "res://logs"
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir))
 	var stamp: String = Time.get_datetime_string_from_system().replace(":", "").replace("-", "").replace("T", "_")
-	var path: String = ProjectSettings.globalize_path("res://logs/frame_log_%s.csv" % stamp)
+	var path: String = ProjectSettings.globalize_path("%s/frame_log_%s.csv" % [dir, stamp])
 	_f = FileAccess.open(path, FileAccess.WRITE)
 	if _f == null:
 		push_warning("frame_log: can't write " + path)

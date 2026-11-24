@@ -110,14 +110,15 @@ func _pick_voice(who: String, prof: Dictionary) -> String:
 	var best: String = ""
 	for kw: Variant in prof.get("kw", []):
 		for v: Dictionary in voices:
-			if str(v.get("name", "")).to_lower().contains(str(kw)) or str(v.get("language", "")).to_lower() == str(kw):
+			if str(v.get("name", "")).to_lower().contains(str(kw)) or str(v.get("language", "")).to_lower().replace("_", "-") == str(kw):   # T-264: "en_US" is "en-us"
 				best = str(v["id"])
 				break
 		if best != "":
 			break
 	if best == "" and not voices.is_empty():
 		best = str(voices[0]["id"])
-	_voice_cache[who] = best
+	if not voices.is_empty():   # T-264: Linux's speech service can list its voices late; an empty list is asked again
+		_voice_cache[who] = best
 	return best
 
 

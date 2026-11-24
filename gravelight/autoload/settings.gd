@@ -132,6 +132,7 @@ var _grain_rect: ColorRect
 
 
 func _ready() -> void:
+	ensure_pad_ui_actions()
 	load_settings()
 	if not _had_preset and DisplayServer.get_name() != "headless":
 		var picked: String = auto_detect_preset()   # T-139: first launch picks low / medium / high / web from the GPU
@@ -160,6 +161,38 @@ func _ready() -> void:
 	_build_overlays()
 	_overlay.visible = false   # Gravelight only: see activate() (T-024)
 	get_tree().node_added.connect(_on_node_added)
+
+
+## T-264: the engine's own menu actions answer to the keyboard only in this project (ui_accept: Enter / Space,
+## ui_cancel: Escape; the D-pad and the stick do move the focus), so a controller could walk every menu and press
+## nothing. A confirms and B goes back, on every pad, in every mode of the game; Space is jump and Escape is pause
+## in the same way, so nothing new can be pressed by accident in a match. Returns how many bindings it added.
+static func ensure_pad_ui_actions() -> int:
+	var added: int = 0
+	for pair: Array in [[&"ui_accept", JOY_BUTTON_A], [&"ui_cancel", JOY_BUTTON_B]]:
+		var action: StringName = pair[0]
+		if not InputMap.has_action(action):
+			continue
+		var has_pad: bool = false
+		for ev: InputEvent in InputMap.action_get_events(action):
+			if ev is InputEventJoypadButton:
+				has_pad = true
+		if has_pad:
+			continue
+		var jb: InputEventJoypadButton = InputEventJoypadButton.new()
+		jb.device = -1   # every controller
+		jb.button_index = pair[1] as JoyButton
+		InputMap.action_add_event(action, jb)
+		added += 1
+	return added
+
+
+## T-264: the static caches are emptied while the servers still live (ExitSweep: a release build crashed on the
+## way out). Autoloads leave the tree only when the game quits.
+func _exit_tree() -> void:
+	var swept: Array = ExitSweep.run()
+	if DisplayServer.get_name() != "headless" or OS.has_feature("template"):
+		print("[GLSettings] exit: %d scripts' static caches emptied (%d variables, %d nodes freed)" % swept)
 
 
 func load_settings() -> void:

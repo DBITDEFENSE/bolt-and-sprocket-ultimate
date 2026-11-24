@@ -199,7 +199,7 @@ func _controls() -> void:
 	content.add_child(MenuKit.row("Sprint", MenuKit.options(PackedStringArray(["Hold", "Toggle"]), scur,
 		func(i: int) -> void: GLSettings.set_value("sprint_mode", sprint_modes[i]))))
 	content.add_child(MenuKit.switch_row("Prone (hold Crouch)", bool(GLSettings.values.get("prone_enabled", false)), _setter("prone_enabled")))
-	content.add_child(MenuKit.help("Select a binding, then press the new key / button. Esc cancels."))
+	content.add_child(MenuKit.help("Select a binding, then press the new key / button. Esc cancels; so does waiting %d seconds (a controller has no Esc)." % int(REBIND_WAIT_S)))
 	content.add_child(MenuKit.section("Bindings"))
 	_wait_label = MenuKit.label("", 20, MenuKit.GOLD)
 	content.add_child(_wait_label)
@@ -259,10 +259,32 @@ func _reset_bindings() -> void:
 	rebuild()
 
 
+## T-264: a controller cannot press Esc, and while a controller binding is awaited every button is a candidate:
+## the wait ends by itself after REBIND_WAIT_S; while a keyboard binding is awaited, pad B cancels too.
+const REBIND_WAIT_S: float = 6.0
+var _wait_started_ms: int = 0
+var _wait_seen: StringName = &""
+
+
+func _process(delta: float) -> void:
+	super._process(delta)
+	if _waiting_action == &"":
+		_wait_seen = &""
+		return
+	if _wait_seen != _waiting_action:
+		_wait_seen = _waiting_action
+		_wait_started_ms = Time.get_ticks_msec()
+	elif Time.get_ticks_msec() - _wait_started_ms > int(REBIND_WAIT_S * 1000.0):
+		_waiting_action = &""
+		if is_instance_valid(_wait_label):
+			_wait_label.text = "Cancelled."
+
+
 func _input(event: InputEvent) -> void:
 	if _waiting_action == &"":
 		return
-	if event is InputEventKey and (event as InputEventKey).physical_keycode == KEY_ESCAPE and event.is_pressed():
+	var pad_b: bool = not _waiting_pad and event is InputEventJoypadButton and (event as InputEventJoypadButton).button_index == JOY_BUTTON_B
+	if (event is InputEventKey and (event as InputEventKey).physical_keycode == KEY_ESCAPE and event.is_pressed()) or (pad_b and event.is_pressed()):
 		_waiting_action = &""
 		_wait_label.text = "Cancelled."
 		get_viewport().set_input_as_handled()
@@ -316,10 +338,11 @@ func _video() -> void:
 	content.add_child(MenuKit.row("Aspect", MenuKit.options(PackedStringArray(["Keep 16:9", "Fill screen"]), acur,
 		func(i: int) -> void: GLSettings.set_value("aspect", aspects[i]))))
 	content.add_child(MenuKit.help("Fill screen uses the whole of a 21:9 or 32:9 monitor (the HUD keeps to its edges); Keep 16:9 shows black bars at the sides."))
-	var fs: bool = DisplayServer.get_name() != "headless" and DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
+	var fs: bool = DisplayServer.get_name() != "headless" and DisplayServer.window_get_mode() in [DisplayServer.WINDOW_MODE_FULLSCREEN, DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN]
+	# T-264: the switch writes the shared window mode (core Settings), so it is kept for the next launch and the
+	# hub's own settings page shows the same thing (before, the next start put the window back)
 	content.add_child(MenuKit.switch_row("Fullscreen", fs, func(on: bool) -> void:
-		if DisplayServer.get_name() != "headless":
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if on else DisplayServer.WINDOW_MODE_WINDOWED)))
+		Settings.set_value("windowMode", "borderless" if on else "windowed")))
 
 
 ## T-133: the graphics block. A preset fills in every setting below it; change any one and the preset reads Custom.

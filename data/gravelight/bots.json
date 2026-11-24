@@ -84,6 +84,10 @@
     "autostart_ollama": true,
     "ollama_paths": [
       "{LOCALAPPDATA}/Programs/Ollama/ollama.exe",
+      "/usr/local/bin/ollama",
+      "/opt/homebrew/bin/ollama",
+      "/usr/bin/ollama",
+      "/Applications/Ollama.app/Contents/Resources/ollama",
       "ollama"
     ],
     "max_options": 9,
