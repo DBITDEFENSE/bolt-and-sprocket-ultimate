@@ -31,8 +31,8 @@ const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 ## alcove, the twelve machine footprints out of the vault, and one footprint box on each of the 17 perk spots
 ## (PERK_SPOTS) all over the map.
 const NAV_FP: Dictionary = {
-	"Navigation": "d26ff6f50e100350255008aa3ca31fbc3e45db9f",   # 2026-11-23 (T-268: the watchtower rebuilt in two stages, 4.8 m decks, three zip posts; T-255's was 439b89...)
-	"NavigationBreachOpen": "279f80348ff60e4115c64a34b3c2a7917dd65f27",
+	"Navigation": "19e80fb4f3bf60322d4dcb10d9fc3b1c5619141b",   # 2026-11-24 (T-275: the landing's ladder opening, the top's hatch and the upper ladder inside the tower; T-268's was d26ff6...)
+	"NavigationBreachOpen": "34629c08b7934aefb611db42bc2cf9453408acfb",
 }
 ## Library-prop triangles within CAM_RADIUS of any capture camera (data/gravelight/capture_cams.json).
 const CAM_RADIUS: float = 12.0

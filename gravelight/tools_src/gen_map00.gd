@@ -46,13 +46,29 @@ const TOWER_X: float = 5.4
 const TOWER_Z: float = 45.0
 ## T-268 (the owner: "make the watchtower like more badass, make it taller ... 3 zip lines that go to 3 different spots
 ## on the map"): two stages. The landing (TOWER_DECK, where the old deck was) and the top platform (TOWER_TOP), both
-## TOWER_HALF * 2 square behind a closed parapet; a ladder up the north face to the landing, a second one up the east
-## face to the top; three zip lines from brackets on the roof posts 2 m over the top platform (ZIP_LINES).
+## TOWER_HALF * 2 square behind a parapet; a ladder up the north face to the landing, a second one inside the tower
+## from the landing up through a hatch in the top's floor (T-275); three zip lines from brackets on the roof posts
+## 2 m over the top platform (ZIP_LINES).
 const TOWER_DECK: float = 6.2       # the landing's top (the first stage)
 const TOWER_TOP: float = 12.0       # the top platform's top (the second stage)
 const TOWER_HALF: float = 2.4       # the decks' half width (4.8 m: room for the squad; inside the rail the walkable square is far over the 4 m2 the bake keeps, T-106)
 const TOWER_LEG: float = 2.1        # the legs' offset from the centre
-const TOWER_LADDER2_Z: float = 45.9 # the upper ladder's line on the east face (z)
+## T-275 (the owner: "the guard tower looks good but it needs work on the ladder placement"): the lower ladder arrives
+## through an opening in the landing's north parapet (TOWER_GAP_HALF either side of the ladder's line), its stiles
+## carried on as hand holds; the upper ladder stands INSIDE the tower, on the landing, and goes up through a hatch in
+## the top platform's floor against its east parapet (TOWER_HATCH_*: between the joists at x 6.4 and 7.4, clear of
+## the legs, the bracing, the zip mounts in the north-east, north-west and south-west corners and the searchlight).
+## The upper ladder's back is on the hatch's south edge: the climber hangs over the hatch facing south and steps off
+## over the ladder's head onto the platform south of it (a guard rail closes the hatch's north and west sides, the
+## parapet its east side); a body shot on it is pushed north, away from the step-off, so it falls inside the tower
+## onto the landing. Both heads' numbers are in map00.json "ladders" / "climb_links" (test_ladders_data).
+const TOWER_GAP_HALF: float = 0.5   # the landing's north opening: 1.0 m wide, centred on the lower ladder (x = TOWER_X)
+const TOWER_HATCH_X0: float = 6.45  # the top platform's hatch (x 6.45..7.3, z 44.65..45.6); its east edge is the parapet
+const TOWER_HATCH_X1: float = 7.3
+const TOWER_HATCH_Z0: float = 44.65
+const TOWER_HATCH_Z1: float = 45.6  # the upper ladder's back (its stiles stand 0.09..0.14 north of it)
+const TOWER_LADDER2_X: float = 6.875 # the upper ladder's centre (x); its line is (6.875, 45.085)
+const TOWER_HOLD_H: float = 1.0     # the ladders' stiles carry on this far over the floor they arrive on (hand holds)
 ## The zip lines: [name, the cable's top (a bracket on an iron arm off a roof post, TOWER_TOP + 2, a step outside the
 ## parapet so the rider mounts half a metre back up the line, on the deck), the landing post's foot]. The cable
 ## ends ZIP_POST_H up its post. The same numbers are in map00.json "ziplines" (test_ladders_data holds them together).
@@ -917,19 +933,38 @@ func build_yard() -> void:
 	box(geo, "YardCart", Vector3(27.0, 0, 37.0), Vector3(29.6, 1.1, 39.2), "furniture", true, false)
 	box(geo, "YardTrough", Vector3(30.5, 0, 44.0), Vector3(33.5, 0.7, 45.0), "furniture", true, false)
 	# T-229 / T-268: the watchtower (TOWER_*): four legs up to the top platform, the two deck slabs, three collider bars
-	# round each deck's edge (a closed rail: the climbs and the zombies' links carry over it, nobody walks off), and the
-	# three zip lines' landing posts
+	# round each deck's edge (nobody walks off; T-275: the landing's is open 1 m for the lower ladder, the top's slab is
+	# cut round the upper ladder's hatch), and the three zip lines' landing posts
 	for lx: float in [TOWER_X - TOWER_LEG, TOWER_X + TOWER_LEG]:
 		for lz: float in [TOWER_Z - TOWER_LEG, TOWER_Z + TOWER_LEG]:
 			box(geo, "TowerLeg", Vector3(lx - 0.13, 0, lz - 0.13), Vector3(lx + 0.13, TOWER_TOP - 0.2, lz + 0.13), "beam")
 	for deck_y: float in [TOWER_DECK, TOWER_TOP]:
-		box(geo, "TowerDeck", Vector3(TOWER_X - TOWER_HALF, deck_y - 0.2, TOWER_Z - TOWER_HALF), Vector3(TOWER_X + TOWER_HALF, deck_y, TOWER_Z + TOWER_HALF), "planks")
+		for dr: Rect2 in _tower_floor_rects(deck_y):   # (T-275: the top's slab is cut round the hatch)
+			box(geo, "TowerDeck", Vector3(dr.position.x, deck_y - 0.2, dr.position.y), Vector3(dr.end.x, deck_y, dr.end.y), "planks")
 		var tc: Array = [Vector3(TOWER_X - TOWER_HALF + 0.05, 0, TOWER_Z - TOWER_HALF + 0.05), Vector3(TOWER_X + TOWER_HALF - 0.05, 0, TOWER_Z - TOWER_HALF + 0.05),
 			Vector3(TOWER_X + TOWER_HALF - 0.05, 0, TOWER_Z + TOWER_HALF - 0.05), Vector3(TOWER_X - TOWER_HALF + 0.05, 0, TOWER_Z + TOWER_HALF - 0.05)]
 		for k: int in 4:
-			for r: Array in [[0.06, 0.06, 0.12], [0.55, 0.035, 0.04], [1.05, 0.07, 0.07]]:   # [centre height over the deck, width, height]
-				var hy: float = deck_y + float(r[0])
-				bar(geo, "TowerRail", tc[k] + Vector3(0, hy, 0), tc[(k + 1) % 4] + Vector3(0, hy, 0), float(r[1]), float(r[2]), "beam")
+			var runs: Array = [[tc[k], tc[(k + 1) % 4]]]
+			if deck_y == TOWER_DECK and k == 0:   # T-275: the landing's north side opens for the lower ladder
+				runs = [[tc[0], Vector3(TOWER_X - TOWER_GAP_HALF, 0, tc[0].z)], [Vector3(TOWER_X + TOWER_GAP_HALF, 0, tc[0].z), tc[1]]]
+			for run: Array in runs:
+				for r: Array in [[0.06, 0.06, 0.12], [0.55, 0.035, 0.04], [1.05, 0.07, 0.07]]:   # [centre height over the deck, width, height]
+					var hy: float = deck_y + float(r[0])
+					bar(geo, "TowerRail", (run[0] as Vector3) + Vector3(0, hy, 0), (run[1] as Vector3) + Vector3(0, hy, 0), float(r[1]), float(r[2]), "beam")
+	# T-275: the hatch's guard rail on the top platform (north and west sides; the parapet is its east side, the upper
+	# ladder's head its open south side), the upper ladder's stiles (the landing to the hand holds over the top: two
+	# poles 0.35 m apart, so nobody walks between them or past them into the hatch) and the lower ladder's hand holds
+	# in the landing's opening (likewise: nobody walks off the landing through the opening)
+	var hx0: float = TOWER_HATCH_X0 - 0.03
+	var hz0: float = TOWER_HATCH_Z0 - 0.03
+	for r2: Array in [[0.06, 0.06, 0.12], [0.55, 0.035, 0.04], [1.05, 0.07, 0.07]]:
+		var hy2: float = TOWER_TOP + float(r2[0])
+		bar(geo, "TowerHatchRail", Vector3(hx0, hy2, hz0), Vector3(TOWER_HATCH_X1 + 0.02, hy2, hz0), float(r2[1]), float(r2[2]), "beam")
+		bar(geo, "TowerHatchRail", Vector3(hx0, hy2, hz0), Vector3(hx0, hy2, TOWER_HATCH_Z1), float(r2[1]), float(r2[2]), "beam")
+	for sx: float in [-0.2, 0.2]:
+		box(geo, "TowerLadderStile", Vector3(TOWER_LADDER2_X + sx - 0.025, TOWER_DECK, TOWER_HATCH_Z1 - 0.14), Vector3(TOWER_LADDER2_X + sx + 0.025, TOWER_TOP + TOWER_HOLD_H, TOWER_HATCH_Z1 - 0.09), "beam", true, false)
+		var l1z: float = TOWER_Z - TOWER_HALF - 0.02
+		box(geo, "TowerLadderStile", Vector3(TOWER_X + sx - 0.025, TOWER_DECK, l1z - 0.14), Vector3(TOWER_X + sx + 0.025, TOWER_DECK + TOWER_HOLD_H, l1z - 0.09), "beam", true, false)
 	for zl: Array in ZIP_LINES:
 		var zp: Vector3 = zl[2]
 		box(geo, "ZipPost_" + str(zl[0]), zp + Vector3(-0.12, 0, -0.12), zp + Vector3(0.12, ZIP_POST_H + 0.15, 0.12), "beam")
@@ -940,8 +975,9 @@ func build_yard() -> void:
 ## height (nobody walks through a brace, on the ground or on the landing) with ring beams; the landing at TOWER_DECK
 ## and the top platform at TOWER_TOP, both boarded behind a parapet on the rail bars with a plank cap and sandbags on
 ## the field sides; four roof posts under a gable roof with its snow; a mast
-## over the ridge with a pennant and a red lamp; the ladder up the north face to the landing and a second up the east
-## face to the top (the LadderClimbs stand at their feet and heads); lanterns at the foot, on the landing and under
+## over the ridge with a pennant and a red lamp; the ladder up the north face to the landing through an opening in its
+## parapet and a second inside the tower from the landing up through a hatch in the top's floor (T-275; the
+## LadderClimbs stand at their feet and heads); lanterns at the foot, on the landing and under
 ## the roof; the searchlight on the roof's east gable (its light is _tower_lights'); and the three zip lines
 ## (ZIP_LINES): a bracket and a marker lantern on a roof post, the cable down to its landing post with a stay, a
 ## lantern, a snow cap, a coil of rope and the trodden snow where you land (the trolleys are the ZipLines' own).
@@ -985,7 +1021,8 @@ func _dress_tower(g: Node3D) -> void:
 		for j: int in 5:   # the joists' ends showing under the edge
 			var jx: float = cx - h + 0.4 + j * (2.0 * h - 0.8) / 4.0
 			Props._noshadow(Props.block(g, Vector3(jx - 0.05, dy - 0.3, cz - h - 0.06), Vector3(jx + 0.05, dy - 0.2, cz + h + 0.06), "beam"))
-		Props.block(g, Vector3(cx - h, dy, cz - h), Vector3(cx + h, dy + 0.012, cz + h), "floorboards")
+		for fr: Rect2 in _tower_floor_rects(dy):
+			Props.block(g, Vector3(fr.position.x, dy, fr.position.y), Vector3(fr.end.x, dy + 0.012, fr.end.y), "floorboards")
 		_tower_parapet(g, dy)
 	# the top: roof posts at the corners, the plates, the gable roof, the mast with its pennant and red lamp
 	for px: float in [cx - h + 0.1, cx + h - 0.1]:
@@ -1001,12 +1038,19 @@ func _dress_tower(g: Node3D) -> void:
 	Props._noshadow(Props.block(g, Vector3(cx - 0.09, d2 + 6.8, cz - 0.09), Vector3(cx + 0.09, d2 + 6.86, cz + 0.09), "iron"))
 	Props._noshadow(Props.block(g, Vector3(cx - 0.09, d2 + 6.86, cz - 0.09), Vector3(cx + 0.09, d2 + 7.1, cz + 0.09), "lamp_red_lit", false))
 	Props._noshadow(Props.block(g, Vector3(cx - 0.12, d2 + 7.1, cz - 0.12), Vector3(cx + 0.12, d2 + 7.14, cz + 0.12), "iron"))
-	# the ladders: the north face up to the landing, the east face from the landing up to the top (stand-offs to the legs)
-	Props.ladder(g, Vector3(cx, 0, cz - h - 0.02), 0.0, d1 + 0.9, "beam")
-	Props.ladder(g, Vector3(cx + h + 0.02, d1, TOWER_LADDER2_Z), -90.0, d2 - d1 + 0.9, "beam")
-	for sy: float in [d1 + 2.3, d1 + 4.2]:
-		for sz: float in [-0.2, 0.2]:
-			Props._noshadow(Props.block(g, Vector3(cx + lg, sy, TOWER_LADDER2_Z + sz - 0.02), Vector3(cx + h + 0.12, sy + 0.04, TOWER_LADDER2_Z + sz + 0.02), "iron"))
+	# the ladders (T-275): the north face up to the landing, arriving in the parapet's opening; inside the tower from
+	# the landing up through the top platform's hatch. Rungs up to the floor each arrives on, the stiles carried on
+	# TOWER_HOLD_H over it as hand holds and bent over onto that floor.
+	_tower_ladder(g, Vector3(cx, 0, cz - h - 0.02), d1)
+	_tower_ladder(g, Vector3(TOWER_LADDER2_X, d1, TOWER_HATCH_Z1), d2 - d1)
+	for sx2: float in [-0.2, 0.2]:   # the upper ladder's cleats to the hatch's trimmer, under the top's boards
+		Props._noshadow(Props.block(g, Vector3(TOWER_LADDER2_X + sx2 - 0.035, d2 - 0.36, TOWER_HATCH_Z1 - 0.15), Vector3(TOWER_LADDER2_X + sx2 + 0.035, d2 - 0.3, TOWER_HATCH_Z1), "iron"))
+	# the hatch (T-275): its trimmers under the boards (between the joists at x 6.4 and 7.4) and the guard rail's
+	# posts (its rails are the colliders' own meshes, build_geometry)
+	for tz: float in [TOWER_HATCH_Z0 - 0.1, TOWER_HATCH_Z1]:
+		Props.block(g, Vector3(TOWER_HATCH_X0, d2 - 0.3, tz), Vector3(TOWER_HATCH_X1 + 0.05, d2 - 0.2, tz + 0.1), "beam")
+	for hp: Vector3 in [Vector3(TOWER_HATCH_X0 - 0.03, 0, TOWER_HATCH_Z0 - 0.03), Vector3(TOWER_HATCH_X0 - 0.03, 0, TOWER_HATCH_Z1 - 0.05), Vector3(TOWER_HATCH_X1 - 0.12, 0, TOWER_HATCH_Z0 - 0.03)]:
+		Props.block(g, Vector3(hp.x - 0.045, d2, hp.z - 0.045), Vector3(hp.x + 0.045, d2 + 1.12, hp.z + 0.045), "beam")
 	# lanterns: three down the yard-side (north-east) corner, one on the field (south-west) corner, one under the roof
 	for lan: Array in [[1.0, 2.3], [1.0, d1 - 0.9], [1.0, d2 - 0.9], [-1.0, d1 - 0.9]]:   # an iron arm off the corner, a lantern hung on it (_tower_lights)
 		var sgn: float = float(lan[0])
@@ -1066,7 +1110,23 @@ func _dress_tower(g: Node3D) -> void:
 		Props._noshadow(Props.obox(g, land + Vector3(0, 0.006, 0), Vector3(1.8, 0.012, 2.4), "snow_trodden", Vector3(0, rad_to_deg(atan2(flat.x, flat.z)), 0)))
 
 
-## One deck's boarded parapet: two boards between the rail bars each side, a plank cap on the top bar.
+## A deck's floor in plan (x, z rectangles): the whole square, or (T-275) the top platform's four pieces round the
+## hatch. The slab colliders and the floorboards both use it.
+func _tower_floor_rects(dy: float) -> Array[Rect2]:
+	var x0: float = TOWER_X - TOWER_HALF
+	var x1: float = TOWER_X + TOWER_HALF
+	var z0: float = TOWER_Z - TOWER_HALF
+	var z1: float = TOWER_Z + TOWER_HALF
+	if dy != TOWER_TOP:
+		return [Rect2(x0, z0, x1 - x0, z1 - z0)]
+	return [Rect2(x0, z0, x1 - x0, TOWER_HATCH_Z0 - z0), Rect2(x0, TOWER_HATCH_Z1, x1 - x0, z1 - TOWER_HATCH_Z1),
+		Rect2(x0, TOWER_HATCH_Z0, TOWER_HATCH_X0 - x0, TOWER_HATCH_Z1 - TOWER_HATCH_Z0),
+		Rect2(TOWER_HATCH_X1, TOWER_HATCH_Z0, x1 - TOWER_HATCH_X1, TOWER_HATCH_Z1 - TOWER_HATCH_Z0)]
+
+
+## One deck's boarded parapet: two boards between the rail bars each side, a plank cap on the top bar. T-275: the
+## landing's north side is cut for the lower ladder's opening (TOWER_GAP_HALF either side of x = TOWER_X), a post
+## closing each end.
 func _tower_parapet(g: Node3D, dy: float) -> void:
 	var cx: float = TOWER_X
 	var cz: float = TOWER_Z
@@ -1075,13 +1135,42 @@ func _tower_parapet(g: Node3D, dy: float) -> void:
 		var n: Vector3 = [Vector3(0, 0, -1), Vector3(1, 0, 0), Vector3(0, 0, 1), Vector3(-1, 0, 0)][side]   # outward
 		var t: Vector3 = Vector3(n.z, 0, -n.x)
 		var c: Vector3 = Vector3(cx, 0, cz) + n * (h - 0.03)
+		var gap: bool = side == 0 and dy == TOWER_DECK   # (on the north side t is -X: u = cx - x)
 		for by: Array in [[0.18, 0.5], [0.62, 0.95]]:
-			var a3: Vector3 = c - t * (h - 0.06) + Vector3(0, dy + float(by[0]), 0) - n * 0.02
-			var b3: Vector3 = c + t * (h - 0.06) + Vector3(0, dy + float(by[1]), 0) + n * 0.02
-			Props.block(g, Vector3(minf(a3.x, b3.x), a3.y, minf(a3.z, b3.z)), Vector3(maxf(a3.x, b3.x), b3.y, maxf(a3.z, b3.z)), "planks")
-		var a4: Vector3 = c - t * (h + 0.02) + Vector3(0, dy + 1.09, 0) - n * 0.08
-		var b4: Vector3 = c + t * (h + 0.02) + Vector3(0, dy + 1.14, 0) + n * 0.06
-		Props.block(g, Vector3(minf(a4.x, b4.x), a4.y, minf(a4.z, b4.z)), Vector3(maxf(a4.x, b4.x), b4.y, maxf(a4.z, b4.z)), "beam")
+			for run: Vector2 in _parapet_runs(h - 0.06, gap):
+				var a3: Vector3 = c + t * run.x + Vector3(0, dy + float(by[0]), 0) - n * 0.02
+				var b3: Vector3 = c + t * run.y + Vector3(0, dy + float(by[1]), 0) + n * 0.02
+				Props.block(g, Vector3(minf(a3.x, b3.x), a3.y, minf(a3.z, b3.z)), Vector3(maxf(a3.x, b3.x), b3.y, maxf(a3.z, b3.z)), "planks")
+		for run2: Vector2 in _parapet_runs(h + 0.02, gap):
+			var a4: Vector3 = c + t * run2.x + Vector3(0, dy + 1.09, 0) - n * 0.08
+			var b4: Vector3 = c + t * run2.y + Vector3(0, dy + 1.14, 0) + n * 0.06
+			Props.block(g, Vector3(minf(a4.x, b4.x), a4.y, minf(a4.z, b4.z)), Vector3(maxf(a4.x, b4.x), b4.y, maxf(a4.z, b4.z)), "beam")
+		if gap:
+			for px: float in [cx - TOWER_GAP_HALF, cx + TOWER_GAP_HALF]:   # a post closing each end of the opening
+				var po: float = -0.045 if px < cx else 0.045
+				Props.block(g, Vector3(px + po - 0.045, dy, c.z - 0.045), Vector3(px + po + 0.045, dy + 1.14, c.z + 0.045), "beam")
+
+
+## T-275: one of the tower's ladders (Props.ladder's frame at yaw 0: `pos` at its back, the climber on its north side,
+## the floor it arrives on to its south), `rise` from its foot to that floor: rungs up to the floor, then the stiles
+## carried on TOWER_HOLD_H as hand holds and bent over onto the floor at its edge (the climber steps through between
+## them). Their colliders are build_geometry's (TowerLadderStile).
+func _tower_ladder(g: Node3D, pos: Vector3, rise: float) -> void:
+	Props.ladder(g, pos, 0.0, rise, "beam")
+	var top: float = pos.y + rise + TOWER_HOLD_H
+	for sx: float in [-0.2, 0.2]:
+		var x: float = pos.x + sx
+		Props.block(g, Vector3(x - 0.025, pos.y + rise, pos.z - 0.14), Vector3(x + 0.025, top, pos.z - 0.09), "beam")   # the stile, on up
+		Props.block(g, Vector3(x - 0.025, top - 0.05, pos.z - 0.14), Vector3(x + 0.025, top, pos.z + 0.07), "beam")    # over the edge
+		Props.block(g, Vector3(x - 0.025, pos.y + rise, pos.z + 0.02), Vector3(x + 0.025, top - 0.05, pos.z + 0.07), "beam")   # down onto the floor
+		Props._noshadow(Props.block(g, Vector3(x - 0.035, pos.y + rise + 0.02, pos.z - 0.15), Vector3(x + 0.035, pos.y + rise + 0.08, pos.z + 0.08), "iron"))   # its strap at the floor
+
+
+## The stretches of a parapet side along its run (-half..half), cut at the lower ladder's opening when `gap`.
+func _parapet_runs(half: float, gap: bool) -> Array[Vector2]:
+	if not gap:
+		return [Vector2(-half, half)]
+	return [Vector2(-half, -TOWER_GAP_HALF), Vector2(TOWER_GAP_HALF, half)]
 
 
 ## T-268: the tower's lights. Oil lanterns that always burn (three down the yard-side corner, one on the field
