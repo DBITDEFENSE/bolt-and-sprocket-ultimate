@@ -364,3 +364,23 @@ shot; a zombie in the radio room kills Bartsch while hiding (3 swipes), who rise
 warning; Lenz is armed for 750, walks to her post (0.0 m off in 1.4 s) and shoots a zombie on the upper floor; downed
 at 0 hp, helped up, she holds again. `test_map01_detail` `test_the_survivors_data`; `test_vo`, `test_inn_survivors`
 PASS. Not seen in a render (they are hidden until the door is bought; the capture tool does not buy doors).
+
+### Results of the additions (headless, 2026-11-24)
+
+`check_scripts` 1020 scripts, 0 failed. The full `smoke_map_detail` (the run missing after the Rail Yard perk spot
+moved): PASS, 125 checks, 0 failed. `smoke_map01`, `smoke_map01_opening` (17), `_perks` (13), `_reactive` (16),
+`_sherman` (36), `_survivors`, `_systems`, `_tower` (63), `_world` PASS, all 0 script errors. `test_map01_detail` (14),
+`test_vo`, `test_inn_survivors`, `test_map_detail` PASS. The full GUT was not re-run for the additions (data files, one
+generator line, a smoke and tests).
+
+### For DECISIONS.md (the additions)
+
+**T-272 additions (after the merge).** The opening's four miners wear the project's person models through the rows'
+`person` key (T-273's; alive and risen): rother, sobotta, kubiak, petersen, reused as people_extra.json reuses them (a
+face of their own would need new person models). Survivors behind a door on the generalised `inn_survivors.gd`
+(`map01_survivors.json`, no script change): the night watchman Bartsch and two office staff, Frau Lenz and Hedda
+Schramm, hidden in the Administration's upstairs radio room behind its yard door (`door_a_c`, 1000), armed for 750 to
+hold the balcony window, the north window and the stair head; person bodies wiesner, pohl, trudi; `nav_layers` 4 (the
+Administration's layer); 27 text lines and three cast entries, no audio (listed missing). Verified headless:
+`smoke_map01_survivors` and the extended `smoke_map01_opening` PASS, the full `smoke_map_detail` PASS (125 checks).
+The survivors were not rendered (hidden until the door is bought).
