@@ -16883,7 +16883,12 @@
         {"name": "balcony_line_night", "pos": [48.9, 7.0, 39.9], "yaw": 137.0, "pitch": -22.0, "note": "down the zip line from the balcony"},
         {"name": "tower_door_night", "pos": [46.6, 7.0, 34.8], "yaw": -152.0, "pitch": 4.0, "note": "the balcony door from inside the signal room"},
         {"name": "balcony_noon", "pos": [40.6, 0.0, 51.0], "yaw": -36.0, "pitch": 24.0, "note": "the balcony at noon", "do": ["callv:DayCycle:hold_hour:12:1"]},
-        {"name": "ladder_w_noon", "pos": [-15.0, 0.0, 51.5], "yaw": 140.0, "pitch": 10.0, "note": "the west ladder at noon"}
+        {"name": "ladder_w_noon", "pos": [-15.0, 0.0, 51.5], "yaw": 140.0, "pitch": 10.0, "note": "the west ladder at noon"},
+        {"name": "perk_quay_noon", "pos": [6.0, 0.0, 9.0], "yaw": 90.0, "pitch": -4.0, "note": "the quay's perk spot on the cannery's outside wall (a machine or its crate, by the match's deal)"},
+        {"name": "hut_door_noon", "pos": [22.0, 0.0, 13.6], "yaw": 90.0, "pitch": -4.0, "note": "the harbourmaster's hut's door left ajar"},
+        {"name": "perk_pier0_night", "pos": [-15.5, 0.0, 74.0], "yaw": 90.0, "pitch": 0.0, "note": "the pier 0 perk spot under the west catwalk", "do": ["callv:DayCycle:hold_hour:0:1"]},
+        {"name": "perk_apron_night", "pos": [18.0, 0.0, 38.6], "yaw": 0.0, "pitch": 4.0, "note": "the north apron's perk spot under the catwalk"},
+        {"name": "infirmary_night", "pos": [-16.5, 0.0, 6.0], "yaw": 90.0, "pitch": -2.0, "note": "the cannery infirmary's east door left ajar, the curtains beyond"}
       ]
     }
   }
