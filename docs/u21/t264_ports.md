@@ -343,3 +343,30 @@ Side effect to know: the match probe starts the owner's local Ollama server when
 - T-266 (render load): Handheld leans on the shadow budget's Low tier and Low detail range; if occlusion culling
   lands, the Deck benefits most. `project.godot`: my lines are one block at the end of `[rendering]` plus one line
   under `config/name`.
+
+## 11. After the menu rework was merged (T-267, master c4750c39)
+
+`git merge master` into this branch; one conflict, `gravelight/ui/menu_screen.gd`. Both tasks had changed
+`rebuild()`: the menu rework added `rebuild(keep_focus, animate)` (the focused control is found again by its name)
+and `focus_target`; this task had the place-in-order restore. Kept both: a page that asks with `keep_focus` or
+names a `focus_target` gets the rework's behaviour; every other rebuild of the same sub-page (the lobby list's
+5 s refresh, a graphics choice in Settings) keeps the focus's place in order and the scroll; focus outside the
+content is left alone. The rewritten Loadout and survivor / map pages call `rebuild(true)` themselves, so nothing
+of this task had to be redone in them. The pad smoke follows the new names (Co-op, Loadout, Collection,
+Characters, Stats).
+
+Run again on the merged code:
+
+| What | Result |
+| --- | --- |
+| `check_scripts.gd` | checked 983 scripts, 0 failed |
+| Full GUT | 2499 tests, 2498 passing, 1 risky (the known one) |
+| `smoke_menus`, `smoke_menus_pad`, `smoke_match_start` | PASS, PASS (10 screens by pad only), PASS (41 checks) |
+| The loading clips in the Linux build | the pack holds all four `assets/video/loading/*.ogv`; `LoadingClips` lists the folder inside the pack (`[loading] clip load_03_mine_town.ogv` in a headless Solo load, `[loading] clip load_02_taproom_barricade.ogv` in the rendered one) |
+| Linux build (merged), headless | menu boot exit 0 in 8 s; Solo load with its clip `RESULT PASS`, exit 0; Map 0 direct `RESULT PASS`, exit 0; 0 error lines in all three |
+| Linux build (merged), Solo load rendered on Vulkan (WSL, lavapipe, 1280x800, Handheld) | the loading screen played its clip (`map00_crossroads loaded after 2.20 s (clip playing)`), the match started, `RESULT PASS`, exit 0, **0 error lines** |
+| macOS and Windows builds (merged) | macOS: `check_macos_build.py` `RESULT: ok`, zip 917 MB (still not run on a Mac). Windows: exports, zip 898 MB; the exe headless: menu boot exit 0, Solo load with its clip `RESULT PASS`, exit 0, 0 error lines. Linux tar.gz 889 MB |
+
+One thing in the clip code for its owner: `LoadingClips.list()` falls back to probing `load_01.ogv` ... `load_24.ogv`
+when a folder cannot be listed, but the shipped clips are named `load_01_inn_crossroads.ogv` and so on. The folder
+does list inside the Linux pack, so the fallback is not needed today; if it ever is, it will find nothing.
