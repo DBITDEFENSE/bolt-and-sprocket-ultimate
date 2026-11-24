@@ -31,6 +31,8 @@ extends Node3D
 ## to on this map), "shelter_roof" makes any roof a shelter (AirRaid). Map 0's block has none of these keys.
 ## T-273: `stuka_hit_show` (names of hidden nodes under the map) are shown where the dive bomber's bomb lands, on every
 ## peer (Totenhafen: the moored patrol boat's fire). Left out: nothing is shown (Map 0, Kaltenbrunn).
+## T-272: a block may also carry its own "arrival" and "assault" rows (with_map_rows: Kaltenbrunn's tank comes up the
+## north road through the yard's gate, not the carters' road). Map 0's has neither.
 
 enum Phase { IDLE, ARRIVING, ASSAULT, ASSIST, LOST, STUKA, RAID, DONE }
 
@@ -111,6 +113,21 @@ static func merged(base: Dictionary, map_block: Dictionary, key: String) -> Dict
 	return out
 
 
+## T-272: the table with the map block's own "arrival" and "assault" rows laid over sherman.json's (where the tank comes
+## from on this map: its banners). A copy; the shared table is never changed. A block without them (Map 0's) gets the
+## table as it is.
+static func with_map_rows(base: Dictionary, map_block: Dictionary) -> Dictionary:
+	var out: Dictionary = base
+	var copied: bool = false
+	for key: String in ["arrival", "assault"]:
+		if map_block.get(key) is Dictionary:
+			if not copied:
+				out = base.duplicate()
+				copied = true
+			out[key] = merged(base, map_block, key)
+	return out
+
+
 ## T-271: does this map's block bring a tank? (`"tank": false` = the raid only.)
 static func block_has_tank(map_block: Dictionary) -> bool:
 	return bool(map_block.get("tank", true))
@@ -159,6 +176,7 @@ func _init() -> void:
 
 func _ready() -> void:
 	add_to_group(&"sherman_event")
+	cfg = with_map_rows(cfg, map_cfg)
 	has_tank = block_has_tank(map_cfg)
 	arrive_round = int(map_cfg.get("arrive_round", 30))
 	stuka_round = int(map_cfg.get("stuka_round", 40))

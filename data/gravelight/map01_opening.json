@@ -1,0 +1,563 @@
+{
+ "_doc": "T-272 Kaltenbrunn's round 1 opening, 'the shift runs' (inn_opening.gd reads it: data_path_for(map01_kaltenbrunn); the same machinery as Map 0's map00_opening.json, which documents every key). The night shift has come up and is changing in the Waschkaue when the squad's sled pulls in beside it (the sled is drawn at the Kaue's east wall): four miners sit on the benches and stand at the stove with the squad. When round 1 begins (a match that starts on Kaltenbrunn; never a campaign arrival, which comes in from the inn) the dead hit the yard's windows; the miners run out of the Kaue's two doorways. Gorny and Kania make the north gate (YardGate swings open for them between gate.open_at and gate.close_at, then shuts; the gateway's collider never moves) and run off up the north road. Pietsch and Mrozek are caught in the yard's south lane in front of the Kaue by two of the dead rising out of the snow, and rise as zombies of round 1 a few seconds after they fall (their slots and the attackers' come off round 1's queue, so the round's size is unchanged). No front door (the Kaue's doorways are open): the patrons leave from the end of their route at their exit time. The look: the squad spawns facing north out of the doorways; round 1 waits for look.min_seconds of settled view facing the south lane, then the cue (boards slammed at the yard's windows, Gorny's line). Every position is in the Minehead yard on its navmesh (the risers rise where they fall). Lines: text in vo/lines.json (GOR, KAN, PIE, MRO; no audio is baked: the subtitle shows).",
+ "map": "map01_kaltenbrunn",
+ "round": 1,
+ "gate": {
+  "_doc": "T-272: yard_gate.gd opens the north gate while this opening runs, from open_at to close_at (s after round 1 starts)",
+  "open_at": 6.5,
+  "close_at": 15.0
+ },
+ "run_speed": 3.4,
+ "fall_seconds": 0.7,
+ "rise_after": 6.0,
+ "rise_getup_seconds": 2.4,
+ "end_by": 45.0,
+ "patrons": [
+  {
+   "id": "gorny",
+   "name": "Wilhelm Gorny",
+   "display": "GORNY",
+   "speaker": "GOR",
+   "role": "a hewer of the night shift, the oldest of them (50s)",
+   "look": {
+    "jacket": [
+     0.24,
+     0.22,
+     0.2
+    ],
+    "trousers": [
+     0.2,
+     0.19,
+     0.18
+    ],
+    "skin": [
+     0.78,
+     0.62,
+     0.52
+    ],
+    "head": [
+     0.3,
+     0.3,
+     0.3
+    ],
+    "headgear": "cap",
+    "build": 1.06,
+    "skirt": false,
+    "apron": false,
+    "scarf": [
+     0.3,
+     0.26,
+     0.2
+    ]
+   },
+   "start": [
+    4.55,
+    0.0,
+    28.6
+   ],
+   "yaw": -90.0,
+   "pose": "sit",
+   "depart": 1.0,
+   "speed": 3.2,
+   "route": [
+    [
+     6.0,
+     0.0,
+     27.4
+    ],
+    [
+     6.8,
+     0.0,
+     25.4
+    ],
+    [
+     12.4,
+     0.0,
+     21.4
+    ],
+    [
+     13.4,
+     0.0,
+     12.0
+    ],
+    [
+     16.4,
+     0.0,
+     6.2
+    ],
+    [
+     19.3,
+     0.0,
+     2.2
+    ]
+   ],
+   "outside": [
+    [
+     19.6,
+     0.0,
+     0.4
+    ],
+    [
+     19.6,
+     0.0,
+     -2.0
+    ],
+    [
+     18.4,
+     0.0,
+     -8.0
+    ],
+    [
+     13.0,
+     0.0,
+     -13.0
+    ],
+    [
+     6.0,
+     0.0,
+     -20.0
+    ]
+   ],
+   "fate": "escape"
+  },
+  {
+   "id": "kania",
+   "name": "Jozef Kania",
+   "display": "KANIA",
+   "speaker": "KAN",
+   "role": "a young hauler of the night shift (19)",
+   "look": {
+    "jacket": [
+     0.3,
+     0.26,
+     0.22
+    ],
+    "trousers": [
+     0.22,
+     0.21,
+     0.2
+    ],
+    "skin": [
+     0.86,
+     0.7,
+     0.6
+    ],
+    "head": [
+     0.42,
+     0.32,
+     0.2
+    ],
+    "headgear": "none",
+    "build": 0.96,
+    "skirt": false,
+    "apron": false
+   },
+   "start": [
+    15.45,
+    0.0,
+    28.4
+   ],
+   "yaw": 90.0,
+   "pose": "sit",
+   "depart": 0.6,
+   "speed": 3.7,
+   "route": [
+    [
+     14.3,
+     0.0,
+     27.2
+    ],
+    [
+     13.2,
+     0.0,
+     25.4
+    ],
+    [
+     17.0,
+     0.0,
+     23.6
+    ],
+    [
+     26.0,
+     0.0,
+     21.6
+    ],
+    [
+     26.6,
+     0.0,
+     12.0
+    ],
+    [
+     26.4,
+     0.0,
+     6.0
+    ],
+    [
+     20.8,
+     0.0,
+     2.2
+    ]
+   ],
+   "outside": [
+    [
+     20.4,
+     0.0,
+     0.4
+    ],
+    [
+     20.4,
+     0.0,
+     -2.0
+    ],
+    [
+     21.6,
+     0.0,
+     -8.0
+    ],
+    [
+     30.0,
+     0.0,
+     -12.5
+    ],
+    [
+     42.0,
+     0.0,
+     -15.5
+    ]
+   ],
+   "fate": "escape"
+  },
+  {
+   "id": "pietsch",
+   "name": "Franz Pietsch",
+   "display": "PIETSCH",
+   "speaker": "PIE",
+   "role": "a timberman of the night shift (40s), warming his hands at the stove",
+   "look": {
+    "jacket": [
+     0.2,
+     0.2,
+     0.22
+    ],
+    "trousers": [
+     0.18,
+     0.18,
+     0.2
+    ],
+    "skin": [
+     0.82,
+     0.66,
+     0.56
+    ],
+    "head": [
+     0.18,
+     0.15,
+     0.12
+    ],
+    "headgear": "cap",
+    "build": 1.1,
+    "skirt": false,
+    "apron": false
+   },
+   "start": [
+    9.4,
+    0.0,
+    29.5
+   ],
+   "yaw": 180.0,
+   "pose": "work",
+   "depart": 1.4,
+   "speed": 3.0,
+   "route": [
+    [
+     8.4,
+     0.0,
+     27.6
+    ],
+    [
+     8.0,
+     0.0,
+     25.4
+    ],
+    [
+     9.6,
+     0.0,
+     23.4
+    ]
+   ],
+   "outside": [
+    [
+     11.0,
+     0.0,
+     21.6
+    ]
+   ],
+   "fate": "caught",
+   "struggle": 2.4,
+   "rise_variant": "villager",
+   "female": false
+  },
+  {
+   "id": "mrozek",
+   "name": "Karl Mrozek",
+   "display": "MROZEK",
+   "speaker": "MRO",
+   "role": "a shot-firer of the night shift (30s)",
+   "look": {
+    "jacket": [
+     0.28,
+     0.24,
+     0.18
+    ],
+    "trousers": [
+     0.2,
+     0.2,
+     0.19
+    ],
+    "skin": [
+     0.8,
+     0.64,
+     0.54
+    ],
+    "head": [
+     0.22,
+     0.18,
+     0.14
+    ],
+    "headgear": "cap",
+    "build": 1.0,
+    "skirt": false,
+    "apron": false,
+    "scarf": [
+     0.34,
+     0.2,
+     0.16
+    ]
+   },
+   "start": [
+    4.55,
+    0.0,
+    30.6
+   ],
+   "yaw": -90.0,
+   "pose": "sit",
+   "depart": 1.8,
+   "speed": 3.1,
+   "route": [
+    [
+     6.2,
+     0.0,
+     29.0
+    ],
+    [
+     12.4,
+     0.0,
+     27.6
+    ],
+    [
+     13.6,
+     0.0,
+     25.4
+    ]
+   ],
+   "outside": [
+    [
+     14.6,
+     0.0,
+     22.0
+    ]
+   ],
+   "fate": "caught",
+   "struggle": 2.2,
+   "rise_variant": "villager",
+   "female": false
+  }
+ ],
+ "attackers": [
+  {
+   "prey": "pietsch",
+   "at": 5.4,
+   "pos": [
+    8.6,
+    0.0,
+    20.2
+   ],
+   "then_window": ""
+  },
+  {
+   "prey": "mrozek",
+   "at": 6.2,
+   "pos": [
+    17.6,
+    0.0,
+    23.0
+   ],
+   "then_window": ""
+  }
+ ],
+ "lines": [
+  {
+   "intro": true,
+   "at": 0.4,
+   "id": "GOR_M1_ARRIVE_01",
+   "who": "gorny"
+  },
+  {
+   "intro": true,
+   "at": 6.8,
+   "id": "KAN_M1_CHAT_01",
+   "who": "kania"
+  },
+  {
+   "intro": true,
+   "at": 11.5,
+   "id": "MRO_M1_CHAT_01",
+   "who": "mrozek"
+  },
+  {
+   "at": 0.3,
+   "id": "KAN_M1_SCREAM_01",
+   "who": "kania"
+  },
+  {
+   "at": 1.8,
+   "id": "GOR_M1_FLEE_01",
+   "who": "gorny"
+  },
+  {
+   "at": 6.9,
+   "id": "PIE_M1_CAUGHT_01",
+   "who": "pietsch"
+  },
+  {
+   "at": 8.2,
+   "id": "MRO_M1_CAUGHT_01",
+   "who": "mrozek"
+  },
+  {
+   "at": 10.6,
+   "id": "GOR_M1_GATE_01",
+   "who": "gorny"
+  }
+ ],
+ "sfx": [
+  {
+   "at": 0.0,
+   "key": "board_slam",
+   "pos": [
+    8.0,
+    1.4,
+    0.2
+   ],
+   "db": 2.0
+  },
+  {
+   "at": 0.3,
+   "key": "board_slam",
+   "pos": [
+    0.2,
+    1.4,
+    4.0
+   ],
+   "db": 2.0
+  },
+  {
+   "at": 0.8,
+   "key": "board_slam",
+   "pos": [
+    39.8,
+    1.4,
+    7.0
+   ],
+   "db": 0.0
+  },
+  {
+   "at": 1.2,
+   "key": "board_slam",
+   "pos": [
+    32.0,
+    1.4,
+    0.2
+   ],
+   "db": 0.0
+  },
+  {
+   "at": 6.5,
+   "key": "amb_wind_gust",
+   "pos": [
+    20.0,
+    1.6,
+    0.0
+   ],
+   "db": 2.0
+  },
+  {
+   "at": 15.0,
+   "key": "board_slam",
+   "pos": [
+    20.0,
+    1.2,
+    -0.4
+   ],
+   "db": 3.0
+  }
+ ],
+ "look": {
+  "min_seconds": 9.0,
+  "max_seconds": 10.5,
+  "cone_deg": 55.0,
+  "look_at": [
+   12.0,
+   1.4,
+   21.0
+  ],
+  "frame_cap": 0.1,
+  "cue_lead": 1.6,
+  "interrupt_after": 2.5,
+  "cue_sfx": [
+   {
+    "key": "board_slam",
+    "pos": [
+     0.2,
+     1.4,
+     4.0
+    ],
+    "db": 3.0
+   },
+   {
+    "key": "board_slam",
+    "pos": [
+     8.0,
+     1.4,
+     0.2
+    ],
+    "db": 4.0,
+    "delay": 0.45
+   },
+   {
+    "key": "board_slam",
+    "pos": [
+     8.0,
+     1.4,
+     0.2
+    ],
+    "db": 2.0,
+    "delay": 0.95
+   }
+  ],
+  "cue_line": {
+   "id": "GOR_M1_WINDOW_01",
+   "who": "gorny"
+  }
+ },
+ "title_card": {
+  "_doc": "T-272: shown in the campaign only (InnOpening.card_wanted), the map's intro_text's words",
+  "title": "SALZBERGWERK KALTENBRUNN",
+  "subtitle": "the Waschkaue, Schacht II  ·  Upper Silesia",
+  "time": "23 December 1944  ·  night",
+  "bars_at": 0.0,
+  "at": 1.0,
+  "hold": 5.8,
+  "until": 8.2
+ }
+}

@@ -111660,6 +111660,15 @@
   }
  },
  "missing": {
+  "GOR_M1_ARRIVE_01": "T-272: Kaltenbrunn's round 1 opening (the night shift), awaits a voice bake (no outside services in the map detail pass); the subtitle shows",
+  "KAN_M1_CHAT_01": "T-272: Kaltenbrunn's round 1 opening (the night shift), awaits a voice bake (no outside services in the map detail pass); the subtitle shows",
+  "MRO_M1_CHAT_01": "T-272: Kaltenbrunn's round 1 opening (the night shift), awaits a voice bake (no outside services in the map detail pass); the subtitle shows",
+  "GOR_M1_WINDOW_01": "T-272: Kaltenbrunn's round 1 opening (the night shift), awaits a voice bake (no outside services in the map detail pass); the subtitle shows",
+  "KAN_M1_SCREAM_01": "T-272: Kaltenbrunn's round 1 opening (the night shift), awaits a voice bake (no outside services in the map detail pass); the subtitle shows",
+  "GOR_M1_FLEE_01": "T-272: Kaltenbrunn's round 1 opening (the night shift), awaits a voice bake (no outside services in the map detail pass); the subtitle shows",
+  "PIE_M1_CAUGHT_01": "T-272: Kaltenbrunn's round 1 opening (the night shift), awaits a voice bake (no outside services in the map detail pass); the subtitle shows",
+  "MRO_M1_CAUGHT_01": "T-272: Kaltenbrunn's round 1 opening (the night shift), awaits a voice bake (no outside services in the map detail pass); the subtitle shows",
+  "GOR_M1_GATE_01": "T-272: Kaltenbrunn's round 1 opening (the night shift), awaits a voice bake (no outside services in the map detail pass); the subtitle shows",
   "DEA_GL1_01": "U11 T-191: new LAZARUS line, awaits the ElevenLabs bake (T-193 / T-201); no OneCore voice for Russian or German",
   "DUT_GL1_02": "U11 T-191: new LAZARUS line, awaits the ElevenLabs bake (T-193 / T-201); no OneCore voice for Russian or German",
   "LSL_REC_DRUMMER_01": "no speech: stage direction only ([faint giggle under the drum])",

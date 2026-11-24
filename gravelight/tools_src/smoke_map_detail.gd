@@ -6,8 +6,8 @@ extends Node
 ##     the chest stand on the floor, clear of colliders, on no zombie layer; the navmesh brings a player from the
 ##     spawn to its side; Use mounts; ridden across open ground it moves, stays in its zones and on its level; the
 ##     rider gets down onto the navmesh; a piece of tack is sold at the chest; left alone it walks back to its rail.
-##   The raid only (every map but Map 0 whose "sherman_event" block says "tank": false: Kaltenbrunn round 40,
-##     Totenhafen round 30): no tank and no round held for one, the raid's round is reserved; the console refuses
+##   The raid only (every map but Map 0 whose "sherman_event" block says "tank": false: Totenhafen round 30; T-272
+##     gave Kaltenbrunn the whole event, walked by smoke_map01_sherman): no tank and no round held for one, the raid's round is reserved; the console refuses
 ##     the tank's commands; each shelter point is a shelter and the navmesh reaches it from the open; open ground
 ##     is not a shelter; the round's start brings the dive bomber (where the block names its target) and then the
 ##     warning with this map's own words; bombs fall, every one on open ground in a bomb zone and never on a roof;
@@ -437,4 +437,5 @@ func _opening() -> void:
 	_check(op != null and op.data_path == "" and not op.cfg.is_empty() and str(op.cfg.get("map", "")) == "map00_crossroads", "Map 0's opening found its file by the map's id")
 	_check(op != null and op.phase != InnOpening.Phase.CANCELLED and (op.cfg.get("patrons", []) as Array).size() > 0, "and it is not cancelled (%d patrons)" % ((op.cfg.get("patrons", []) as Array).size() if op != null else 0))
 	_check(sv != null and not sv.cfg.is_empty() and sv.survivors.size() == (sv.cfg.get("survivors", []) as Array).size() and sv.survivors.size() > 0, "Map 0's survivors found theirs (%d upstairs)" % (sv.survivors.size() if sv != null else 0))
-	_check(InnOpening.data_path_for(&"map01_kaltenbrunn") == "res://data/gravelight/map01_opening.json" and InnOpening.load_cfg(InnOpening.data_path_for(&"map01_kaltenbrunn")).is_empty(), "a map without an opening file has none")
+	# (T-272: Kaltenbrunn has its own opening now, smoke_map01_opening; Totenhafen is a map without one)
+	_check(InnOpening.data_path_for(&"map02_totenhafen") == "res://data/gravelight/map02_opening.json" and InnOpening.load_cfg(InnOpening.data_path_for(&"map02_totenhafen")).is_empty(), "a map without an opening file has none")

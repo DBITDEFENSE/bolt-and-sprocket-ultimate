@@ -122,6 +122,47 @@ const MACHINE_FOOTPRINTS: Dictionary = {
 	"wagon": Vector3(1.7, 1.7, 0.85), "safe": Vector3(1.1, 1.9, 0.95), "coil": Vector3(0.8, 2.3, 0.6),
 	"register": Vector3(1.0, 2.2, 0.75), "glider": Vector3(0.8, 2.4, 0.7), "bandit": Vector3(0.9, 2.3, 0.65),
 }
+## T-272 (the perk deal, T-251's, on this map): PERK_SPOTS are the places a dealt machine may stand; each match the host
+## deals PERK_DEALT onto them from the match seed (PerkShuffle / PerkLayout, data/gravelight/perk_layout.json "map01") and
+## the spots left over show their filler crate (PerkSpot). The scene is saved with the seed-0 deal. Three machines are
+## NOT dealt: they belong where they stand (PERKS): Ledger Lager is the pay office's own cabinet beside Fenske's desk
+## (T-141), Overclock Cordial is wired into the Generator Hall's switchgear (T-034), Skyhook Sekt is the cabinet the
+## installers set up in the Core Vault (T-226). [spot id, zone, floor position, yaw (local -Z faces the room), flags]:
+## "outdoor" (under the snow: only perk_layout.json's outdoor shapes), "near" (one bought door from the Minehead yard:
+## where Second Wind may stand), "flush" (the back on the wall, the fine print on that local side). Every origin is
+## 0.65 m out from its wall's face (the deepest machine's back 0.05 m off it; PerkSpot.stand_transform moves a shallower
+## cabinet back to the same line). The first eight are where the dealt machines stood before T-272 (the ids keep the
+## deal stable); the other six were measured on the running map (every one: the wall 0.65 m behind, nothing solid in
+## the 1.7 x 1.2 m footprint, the front on the navmesh, no door, window or spawn within 2.4 m).
+const PERK_DEALT: Array = ["second_wind", "ironhide_stout", "marathon_malt", "twin_barrel", "trigger_tonic", "hawkeye_brandy",
+	"packmule_porter", "blastproof_bock"]
+const PERK_SPOTS: Array = [
+	["pay_office", "C_ADMIN", Vector3(-15.2, 0, 14), -90.0, {"near": true, "flush": -1}],
+	["mess_west", "D_BARRACKS", Vector3(24, 0, 32.8), 180.0, {"flush": 1}],
+	["chapel_nw", "F_CHAPEL", Vector3(2, DY, 60.8), 180.0, {"flush": 1}],
+	["chapel_ne", "F_CHAPEL", Vector3(34, DY, 60.8), 180.0, {"flush": -1}],
+	["gen_south", "G_GENERATOR", Vector3(68, DY, 81.2), 0.0, {"flush": 1}],
+	["lab_hall_west", "H_LAB", Vector3(55, DY, 88.8), 180.0, {"flush": 1}],
+	["lab_hall_east", "H_LAB", Vector3(96, DY, 88.8), 180.0, {"flush": 1}],
+	["lab_south", "H_LAB", Vector3(64, DY, 97.2), 0.0, {"flush": 1}],
+	# the Administration's upper floor, on its east wall at the stair head's end (Reinholt's side of the partition)
+	["admin_upper", "C_ADMIN", Vector3(-0.83, 3.8, 29.0), 90.0, {"near": true, "flush": 1}],
+	# the Rail Yard's west wall near its north end, 3.2 m from the ore-cart trap's track (under the snow). (At z 19 it was
+	# 1.9 m through the wall from the yard horse's rail: smoke_map_detail keeps 2.5 m clear round the horse and its rail)
+	["railyard_west", "B_RAILYARD", Vector3(40.8, 0, 16.6), -90.0, {"outdoor": true, "near": true, "flush": 1}],
+	# the mess hall's north wall, east of Ironhide's old place
+	["mess_east", "D_BARRACKS", Vector3(32.0, 0, 32.8), 180.0, {"flush": 1}],
+	# the lift house's west wall, opposite the cage
+	["lift_house", "E_LIFT", Vector3(20.81, 0, 54.2), -90.0, {"flush": -1}],
+	# the foot of the maintenance stairs, on the stair house's east wall
+	["stairs_foot", "M_STAIRS", Vector3(-4.82, DY, 56.5), 90.0, {"flush": 1}],
+	# the Generator Hall's north wall east of the switchgear
+	["gen_north", "G_GENERATOR", Vector3(70.0, DY, 60.8), 180.0, {"flush": 1}],
+]
+const PERK_SPOT_W: float = 1.7     # the widest machine (the Packmule wagon) ...
+const PERK_SPOT_D: float = 1.2     # ... by the deepest (the Ironhide barrel): the floor every spot keeps (baked)
+const PerkShuffleScript: Script = preload("res://gravelight/world/perk_shuffle.gd")
+
 ## T-226: the Core Vault's solid dressing (hidden colliders drawn by _dress_core): the installers' bench and crates in the
 ## east wall's south corner, the cable drums by the G ramp door, oil drums in the north-east corner. [name, min, max].
 const CORE_PROPS: Array = [
@@ -274,6 +315,34 @@ const KAUE_PROPS: Array = [
 ## At the gatehouse, against its east face north of the Kar98k corner, clear of the shelf by its door.
 const ARMORERS_BENCH: Array = [Vector3(12.01, 0, 8.8), -90.0]
 
+## T-272: the north gate's opening in the yard wall (the brick pillars' inner faces; the pillars are _dress_yard's) and
+## the plane its leaves hang in (inside the Gate collider, z -0.55..-0.15).
+const GATE_X0: float = 17.6
+const GATE_X1: float = 22.4
+const GATE_Z: float = -0.45
+const GATE_H: float = 3.6
+
+## T-272: the headframe as the map's tower. The hoist house's flat roof (TowerBase, x 15..25, z 10..20, 6 m up) is the
+## deck: an iron railing round its edge (three collider bars, closed all round as on Map 0's tower: the climbs and the
+## zip mounts carry over it), colliders for the frame's four feet and the shaft collar in its middle (a 2.1 m walk all
+## round), one ladder up the west face for the players and the dead (map01.json ladders / climb_links), and two zip
+## lines from davit arms on the frame's south legs down into the yard (ZIP_LINES; map01.json ziplines).
+const HF_X0: float = 15.0
+const HF_X1: float = 25.0
+const HF_Z0: float = 10.0
+const HF_Z1: float = 20.0
+const HF_DECK: float = 6.0
+const HF_FOOT: float = 0.38          # the frame feet's half width (pads and colliders)
+const HF_BRACE_Y: float = 8.4        # the frame's lowest braces start here: 2.4 m over the deck, over every head
+const HF_LADDER: Vector3 = Vector3(14.86, 0.0, 15.0)   # Props.ladder's foot on the west face (the cornice's outer face is x 14.88)
+## The zip lines: [name, the cable's top (a bracket on a davit off a south leg, HF_DECK + 2, a step outside the railing),
+## the landing post's foot]. The cable's low end is ZIP_POST_H up the post; the rider is set down 0.9 m short of it.
+const ZIP_POST_H: float = 2.75
+const ZIP_LINES: Array = [
+	["EastZip", Vector3(25.25, HF_DECK + 2.0, 18.3), Vector3(36.4, 0.0, 26.8)],   # down the east lane to the Rail Yard door's corner
+	["WestZip", Vector3(14.75, HF_DECK + 2.0, 18.3), Vector3(3.6, 0.0, 22.6)],    # down the west lane to the Administration door
+]
+
 ## Greybox colour keys -> material library keys (world/materials.gd).
 const MAT_MAP: Dictionary = {
 	"wall": "stucco", "brick": "brick", "concrete": "concrete", "salt": "halite", "rock": "rock_dark", "snow": "snow",
@@ -308,6 +377,7 @@ const HIDE: Array = [
 	"Confessional", "Turbine", "Catwalk", "Tank", "NurseryBed", "AdminStairs", "FlightA", "FlightB", "FlightC",
 	"NavBlock_Ammo*", "NavBlock_ArmorersBench", "NavBlock_Perk*", "CoreProp*", "KaueProp*", "KaueRoof", "NavBlock_Kaue*",
 	"Prop_*", "AdminStairString*", "DaisSkirt",   # T-239: the solid dressing's colliders; the stair strings are drawn as panelled walls
+	"HFRail*",   # T-272: the headframe deck's railing bars (drawn by _dress_headframe_deck)
 ]
 const SODIUM: Color = Color(1.0, 0.66, 0.36)
 const INCAND: Color = Color(1.0, 0.78, 0.55)
@@ -376,6 +446,7 @@ func _process(_delta: float) -> bool:
 	build_lights()
 	build_landscape()
 	build_gameplay()
+	build_reactive()
 	_prune(dress)
 	_prune(geo)
 	_own(map_root)
@@ -686,18 +757,22 @@ func build_surface() -> void:
 	box(geo, "GroundS2", Vector3(30, -0.5, 46), Vector3(46, 0, 58), "snow")
 	box(geo, "GroundS3", Vector3(46, -0.5, 46), Vector3(62, 0, 52), "snow")
 	# A_MINEHEAD yard walls (4 m brick, open sky)
+	# T-272: the north gate is a real gateway now (GATE_X0..GATE_X1, the pillars' inner faces), for the round-30 Sherman
+	# (map01.json sherman_event). Its collider (Gate) stays shut across it for ever, so nobody leaves the yard and the bake
+	# is the same with the leaves open or shut; the leaves are YardGate's drawing (_build_yard_gate, yard_gate.gd)
 	room("Yard", 0, 40, 0, 32, 0, 4.0, {
-		"n": [win(8, 0), win(32, 0)],
+		"n": [win(8, 0), win(32, 0), [GATE_X0, GATE_X1, 0.0, 4.0]],
 		"w": [win(4, 0), door(25, 0)],
 		"e": [win(7, 0), door(25, 0)],
 	}, "brick", false)
-	box(geo, "Gate", Vector3(18, 0, -0.6), Vector3(22, 4.5, -0.3), "metal")
+	box(geo, "Gate", Vector3(GATE_X0 - 0.1, 0, -0.55), Vector3(GATE_X1 + 0.1, 4.5, -0.15), "metal")
 	box(geo, "Gatehouse", Vector3(4, 0, 4), Vector3(12, 3.5, 10), "brick")
 	box(geo, "CoalShed", Vector3(28, 0, 4), Vector3(38, 3.0, 10), "brick")
 	box(geo, "TowerBase", Vector3(15, 0, 10), Vector3(25, 6, 20), "concrete")
 	for corner: Vector2 in [Vector2(15.5, 10.5), Vector2(24.5, 10.5), Vector2(15.5, 19.5), Vector2(24.5, 19.5)]:
 		box(geo, "TowerLeg", Vector3(corner.x - 0.4, 6, corner.y - 0.4), Vector3(corner.x + 0.4, 28, corner.y + 0.4), "metal", false)
 	box(geo, "TowerHead", Vector3(15, 26, 10), Vector3(25, 29, 20), "metal", false)
+	build_headframe_deck()
 	box(geo, "SnowMound1", Vector3(35, 0, 1), Vector3(39, 0.4, 5), "snow", false)
 	box(geo, "SnowMound2", Vector3(1, 0, 27), Vector3(3.7, 0.4, 31), "snow", false)   # (short of the Kaue's west wall, T-225)
 	build_kaue()
@@ -768,6 +843,28 @@ func build_surface() -> void:
 	box(geo, "LiftFloorE", Vector3(27, -0.5, 49), Vector3(30, 0, 53), "concrete")
 	# drifts outside the yard for silhouette
 	box(geo, "Drift", Vector3(-30, 0, -10), Vector3(-20, 1.2, 0), "snow", false)
+
+
+## T-272: the headframe deck's colliders (HF_*): the railing's three bars on each edge (drawn by _dress_headframe_deck),
+## the frame's four feet up to over head height, the shaft collar, and the zip lines' landing posts.
+func build_headframe_deck() -> void:
+	var y: float = HF_DECK
+	var c: Array = [Vector3(HF_X0 + 0.05, 0, HF_Z0 + 0.05), Vector3(HF_X1 - 0.05, 0, HF_Z0 + 0.05), Vector3(HF_X1 - 0.05, 0, HF_Z1 - 0.05), Vector3(HF_X0 + 0.05, 0, HF_Z1 - 0.05)]
+	for k: int in 4:
+		var a: Vector3 = c[k]
+		var b: Vector3 = c[(k + 1) % 4]
+		for r: Array in [[0.06, 0.06, 0.12], [0.55, 0.04, 0.04], [1.05, 0.06, 0.07]]:   # [centre height over the deck, width, height]
+			var hy: float = y + float(r[0])
+			var hw: float = float(r[1]) * 0.5
+			var hh: float = float(r[2]) * 0.5
+			box(geo, "HFRail_%d%s" % [k, ["L", "M", "T"][int(r[0] * 2.0)]], Vector3(minf(a.x, b.x) - hw, hy - hh, minf(a.z, b.z) - hw), Vector3(maxf(a.x, b.x) + hw, hy + hh, maxf(a.z, b.z) + hw), "metal")
+	for fx: float in [15.5, 24.5]:
+		for fz: float in [10.5, 19.5]:
+			box(geo, "Prop_A_FrameFoot_%s%s" % ["W" if fx < 20.0 else "E", "N" if fz < 15.0 else "S"], Vector3(fx - HF_FOOT, y, fz - HF_FOOT), Vector3(fx + HF_FOOT, HF_BRACE_Y, fz + HF_FOOT), "metal")
+	box(geo, "Prop_A_ShaftCollar", Vector3(17.2, y, 12.2), Vector3(22.8, y + 0.5, 17.8), "metal")
+	for zl: Array in ZIP_LINES:
+		var zp: Vector3 = zl[2]
+		box(geo, "ZipPost_" + str(zl[0]), zp + Vector3(-0.12, 0, -0.12), zp + Vector3(0.12, ZIP_POST_H + 0.15, 0.12), "metal")
 
 
 # ================================================================== maintenance stairs + lift shaft
@@ -967,11 +1064,21 @@ func build_yard_prop_blocks() -> void:
 func build_perk_blocks() -> void:
 	var pdata: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/perks.json"))["perks"]
 	for pk: Array in PERKS:
+		if PERK_DEALT.has(str(pk[0])):
+			continue   # T-272: a dealt machine's floor is its spot's (below), whichever spot it stands on
 		var fp: Vector3 = MACHINE_FOOTPRINTS.get(str((pdata[str(pk[0])] as Dictionary).get("shape", "cabinet")), Vector3(1.0, 2.0, 0.7))
 		if absf(float(pk[2])) == 90.0:
 			fp = Vector3(fp.z, fp.y, fp.x)
 		var c: Vector3 = pk[1]
 		box(geo, "NavBlock_Perk_" + str(pk[0]), c - Vector3(fp.x * 0.5, 0, fp.z * 0.5), c + Vector3(fp.x * 0.5, minf(fp.y, 1.6), fp.z * 0.5), "metal")
+	# T-272: every perk spot's floor (PERK_SPOT_W x PERK_SPOT_D), baked whichever machine or crate stands on it; bake only
+	# (MapRoot clears its layer: the machine's or the crate's own body is what stops you)
+	for sp: Array in PERK_SPOTS:
+		var w: float = PERK_SPOT_W if absf(float(sp[3])) != 90.0 else PERK_SPOT_D
+		var d: float = PERK_SPOT_D if absf(float(sp[3])) != 90.0 else PERK_SPOT_W
+		var c2: Vector3 = sp[2]
+		var nb: Node3D = box(geo, "NavBlock_PerkSpot_" + str(sp[0]), c2 - Vector3(w * 0.5, 0, d * 0.5), c2 + Vector3(w * 0.5, 1.6, d * 0.5), "metal")
+		nb.add_to_group(&"bake_only", true)
 
 
 ## T-226: the Core Vault's solid dressing (CORE_PROPS), baked.
@@ -1246,6 +1353,7 @@ func build_dressing() -> void:
 	_dress_ground()
 	_dress_yard()
 	_dress_headframe()
+	_dress_headframe_deck()
 	_dress_hoist_house()
 	_dress_yard_south()
 	_dress_admin()
@@ -1302,7 +1410,12 @@ func _coping_and_wire(a: Vector3, b: Vector3, out: Vector3, wire: bool) -> void:
 
 
 func _dress_yard() -> void:
-	_coping_and_wire(Vector3(0, 0, 0), Vector3(40, 0, 0), Vector3(0, 0, -1), true)
+	_coping_and_wire(Vector3(0, 0, 0), Vector3(GATE_X0, 0, 0), Vector3(0, 0, -1), true)   # (T-272: not over the gateway)
+	_coping_and_wire(Vector3(GATE_X1, 0, 0), Vector3(40, 0, 0), Vector3(0, 0, -1), true)
+	# T-272: the north road to the gate, trodden through the snow from the rail line's terrace (the way the Sherman comes)
+	for rs: Array in [[Vector3(20.3, 0.004, -6.4), Vector3(3.4, 0.012, 12.6), 0.0], [Vector3(26.5, 0.004, -13.0), Vector3(3.4, 0.012, 12.0), 100.3],
+			[Vector3(39.0, 0.004, -15.5), Vector3(3.4, 0.012, 15.0), 102.1], [Vector3(47.0, 0.004, -20.5), Vector3(3.4, 0.012, 8.0), 164.0]]:
+		_noshadow(OB(rs[0], rs[1], "snow_trodden", Vector3(0, float(rs[2]), 0)))
 	_coping_and_wire(Vector3(40, 0, 0), Vector3(40, 0, 14), Vector3(1, 0, 0), true)
 	_coping_and_wire(Vector3(40, 0, 14), Vector3(40, 0, 48), Vector3(1, 0, 0), false)
 	_coping_and_wire(Vector3(0, 0, 0), Vector3(0, 0, 8), Vector3(-1, 0, 0), true)
@@ -1775,10 +1888,16 @@ func _dress_headframe() -> void:
 		var bp: Vector2 = base[i]
 		var tp: Vector2 = top[i]
 		Props.strut(dress, Vector3(bp.x, y0, bp.y), Vector3(tp.x, y1, tp.y), 0.55, "iron")
-		B(Vector3(bp.x - 0.6, y0, bp.y - 0.6), Vector3(bp.x + 0.6, y0 + 0.3, bp.y + 0.6), "concrete")
+		# (T-272: the pads are the feet's colliders' size, HF_FOOT; at 1.2 m they reached past the roof's edge and into the walk)
+		B(Vector3(bp.x - HF_FOOT, y0, bp.y - HF_FOOT), Vector3(bp.x + HF_FOOT, y0 + 0.3, bp.y + HF_FOOT), "concrete")
 	for t: int in tiers + 1:
 		var f: float = float(t) / float(tiers)
 		var y: float = lerpf(y0, y1, f)
+		if t == 0:
+			# T-272: the roof is a deck now. No ring beam lying across it, and the lowest tier's cross-bracing starts on a
+			# ring at HF_BRACE_Y, 2.4 m over the deck (nobody walks or shoots through a brace, as on Map 0's tower)
+			f = (HF_BRACE_Y - y0) / (y1 - y0)
+			y = HF_BRACE_Y
 		for i2: int in 4:
 			var a: Vector2 = (base[i2] as Vector2).lerp(top[i2], f)
 			var b: Vector2 = (base[(i2 + 1) % 4] as Vector2).lerp(top[(i2 + 1) % 4], f)
@@ -1831,6 +1950,69 @@ func _dress_headframe() -> void:
 	flood("A_MINEHEAD", Vector3(36.0, 4.6, 0.45), Vector3(31.0, 0.0, 16.0), 22.0, 3.0, 45.0)
 	for fp: Vector3 in [Vector3(4.0, 4.12, 0.3), Vector3(36.0, 4.12, 0.3)]:
 		Props.strut(dress, fp, fp + Vector3(0, 0.45, 0.1), 0.08, "iron")
+
+
+## T-272: the headframe deck. An iron railing on the roof's edge over its collider bars (posts, a top rail, a knee rail and
+## a toe plate, snow on the top rail), the ladder up the west face on stand-offs with a lantern on a post at its head, the
+## frame's ring at HF_BRACE_Y, and the two zip lines (ZIP_LINES): a davit off a south leg with the cable's bracket and a
+## marker lamp, the cable down to its landing post with a stay, a snow cap, a lantern, a coil of rope and trodden snow
+## where you land (the trolleys are the ZipLines' own). Visual only: the colliders are build_headframe_deck's.
+func _dress_headframe_deck() -> void:
+	var y: float = HF_DECK
+	var c: Array = [Vector3(HF_X0 + 0.05, 0, HF_Z0 + 0.05), Vector3(HF_X1 - 0.05, 0, HF_Z0 + 0.05), Vector3(HF_X1 - 0.05, 0, HF_Z1 - 0.05), Vector3(HF_X0 + 0.05, 0, HF_Z1 - 0.05)]
+	for k: int in 4:
+		var a: Vector3 = c[k]
+		var b: Vector3 = c[(k + 1) % 4]
+		var lo: Vector3 = Vector3(minf(a.x, b.x), 0, minf(a.z, b.z))
+		var hi: Vector3 = Vector3(maxf(a.x, b.x), 0, maxf(a.z, b.z))
+		B(lo + Vector3(-0.025, y + 1.02, -0.025), hi + Vector3(0.025, y + 1.08, 0.025), "iron")   # the top rail
+		B(lo + Vector3(-0.015, y + 0.53, -0.015), hi + Vector3(0.015, y + 0.57, 0.015), "iron")   # the knee rail
+		B(lo + Vector3(-0.01, y, -0.01), hi + Vector3(0.01, y + 0.14, 0.01), "iron")   # the toe plate
+		_noshadow(B(lo + Vector3(-0.03, y + 1.08, -0.03), hi + Vector3(0.03, y + 1.11, 0.03), "snow", false))
+		var n: int = int(ceil(a.distance_to(b) / 1.25))
+		for j: int in n:   # the posts (the corner one is the next side's first)
+			var p: Vector3 = a.lerp(b, float(j) / float(n))
+			B(p + Vector3(-0.025, y, -0.025), p + Vector3(0.025, y + 1.08, 0.025), "iron")
+	# the ladder up the west face to the deck, its stiles carried 0.9 m over the deck to hold on to, stand-offs to the wall
+	Props.ladder(dress, HF_LADDER, 90.0, HF_DECK + 0.9, "iron")
+	for sy: float in [0.9, 2.5, 4.1, 5.3]:
+		for sz: float in [-0.2, 0.2]:
+			_noshadow(B(Vector3(HF_LADDER.x - 0.14, sy, HF_LADDER.z + sz - 0.02), Vector3(HF_X0 - 0.06, sy + 0.05, HF_LADDER.z + sz + 0.02), "iron"))
+	# the lantern at the ladder's head: a post on the railing, an arm out over the ladder
+	var lp: Vector3 = Vector3(HF_X0 + 0.08, y, HF_LADDER.z + 0.7)
+	B(lp + Vector3(-0.03, 0, -0.03), lp + Vector3(0.03, 2.25, 0.03), "iron")
+	_noshadow(B(Vector3(HF_X0 - 0.4, y + 2.19, lp.z - 0.015), Vector3(lp.x + 0.03, y + 2.22, lp.z + 0.015), "iron"))
+	var lan: Vector3 = Vector3(HF_X0 - 0.35, y + 1.95, lp.z)
+	_noshadow(B(lan + Vector3(-0.08, -0.12, -0.08), lan + Vector3(0.08, 0.12, 0.08), "lantern_glass", false))
+	_noshadow(B(lan + Vector3(-0.1, 0.12, -0.1), lan + Vector3(0.1, 0.16, 0.1), "iron"))
+	lamp(lan, Color(1.0, 0.66, 0.36), 1.6, 9.0, 0.08)
+	# the zip lines
+	for zl: Array in ZIP_LINES:
+		var top: Vector3 = zl[1]
+		var foot: Vector3 = zl[2]
+		var post_top: Vector3 = foot + Vector3(0, ZIP_POST_H, 0)
+		var flat: Vector3 = Vector3(foot.x - top.x, 0, foot.z - top.z).normalized()
+		var side: Vector3 = Vector3(-flat.z, 0, flat.x)
+		var leg: Vector3 = Vector3(24.5 if top.x > 20.0 else 15.5, HF_BRACE_Y + 0.3, 19.5)   # the south leg it hangs from
+		Props.strut(dress, leg, top + Vector3(0, 0.06, 0), 0.08, "iron")   # the davit (all of it over head height on the deck)
+		_noshadow(Props.strut(dress, leg + Vector3(0, 0.9, 0), top + Vector3(0, 0.08, 0), 0.03, "iron"))   # its tie up to the leg
+		B(top + Vector3(-0.08, -0.1, -0.08), top + Vector3(0.08, 0.1, 0.08), "iron")
+		_noshadow(B(top + Vector3(-0.05, 0.1, -0.05), top + Vector3(0.05, 0.4, 0.05), "iron"))
+		_noshadow(B(top + Vector3(-0.06, 0.16, -0.06), top + Vector3(0.06, 0.34, 0.06), "lantern_glass", false))   # its marker lamp
+		Props.cable(dress, top, post_top, 0.3, 0.022, 16, "iron")
+		B(post_top + Vector3(-0.09, -0.08, -0.09), post_top + Vector3(0.09, 0.08, 0.09), "iron")
+		var stay: Vector3 = foot + flat * 1.6
+		_noshadow(Props.strut(dress, post_top + Vector3(0, -0.2, 0), stay, 0.02, "iron"))   # the stay to its ground anchor, in line with the pull
+		_noshadow(B(stay + Vector3(-0.1, 0, -0.1), stay + Vector3(0.1, 0.25, 0.1), "iron"))
+		_noshadow(B(foot + Vector3(-0.14, ZIP_POST_H + 0.15, -0.14), foot + Vector3(0.14, ZIP_POST_H + 0.22, 0.14), "snow", false))
+		var pl: Vector3 = foot + side * 0.2 + Vector3(0, 2.1, 0)   # a lantern hung on the post, so the landing reads at night
+		_noshadow(B(foot + side * 0.1 + Vector3(-0.015, 2.3, -0.015), foot + side * 0.24 + Vector3(0.015, 2.33, 0.015), "iron"))
+		_noshadow(B(pl + Vector3(-0.07, -0.11, -0.07), pl + Vector3(0.07, 0.11, 0.07), "lantern_glass", false))
+		_noshadow(B(pl + Vector3(-0.08, 0.11, -0.08), pl + Vector3(0.08, 0.14, 0.08), "iron"))
+		lamp(pl - flat * 0.25, Color(1.0, 0.62, 0.32), 1.6, 6.5, 0.08)
+		Props.rope_coil(dress, foot + side * 0.45 - flat * 0.3, 0.14)
+		var land: Vector3 = foot - flat * 0.9
+		_noshadow(OB(land + Vector3(0, 0.006, 0), Vector3(1.8, 0.012, 2.4), "snow_trodden", Vector3(0, rad_to_deg(atan2(flat.x, flat.z)), 0)))
 
 
 func _dress_admin() -> void:
@@ -4149,9 +4331,21 @@ func build_gameplay() -> void:
 		bl.position = (b[1] as Vector3) + Basis(Vector3.UP, deg_to_rad(float(b[2]))) * Vector3(0, 0.75, -0.5)
 		gameplay.add_child(bl)
 
-	# perk machines (PERKS; their footprints are baked, build_perk_blocks)
+	# perk machines (PERKS; their footprints are baked, build_perk_blocks). T-272: the dealt ones stand on their spot of
+	# the seed-0 deal (PerkLayout deals them again at every match's start); the three that belong where they are stay
+	build_perk_spots()
+	var deal: Dictionary = _seed0_deal()
+	var pdata: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/perks.json"))["perks"]
 	for p: Array in PERKS:
-		_node("res://gravelight/world/perk_machine.gd", "Perk_" + str(p[0]), {"perk_id": StringName(p[0])}, p[1], float(p[2]))
+		var at: Vector3 = p[1]
+		var yaw: float = float(p[2])
+		if deal.has(str(p[0])):
+			for sp: Array in PERK_SPOTS:
+				if str(sp[0]) == str(deal[str(p[0])]):
+					var depth: float = (MACHINE_FOOTPRINTS.get(str((pdata[str(p[0])] as Dictionary).get("shape", "cabinet")), Vector3(1.0, 2.0, 0.7)) as Vector3).z
+					yaw = float(sp[3])
+					at = (sp[2] as Vector3) + Basis(Vector3.UP, deg_to_rad(yaw)) * Vector3(0, 0, maxf(0.0, (PERK_SPOT_D - depth) * 0.5))
+		_node("res://gravelight/world/perk_machine.gd", "Perk_" + str(p[0]), {"perk_id": StringName(p[0])}, at, yaw)
 
 	# crate spots: [name, pos, yaw, can_start]
 	var crates: Array = [
@@ -4187,6 +4381,9 @@ func build_gameplay() -> void:
 	for ab2: Array in AMMO_BOXES:
 		_node("res://gravelight/world/ammo_box.gd", "AmmoBox_" + str(ab2[0]), {"box_name": str(ab2[0]).to_snake_case()}, ab2[1], float(ab2[2]))
 	_node("res://gravelight/world/armorers_bench.gd", "ArmorersBench", {}, ARMORERS_BENCH[0], float(ARMORERS_BENCH[1]))
+	_build_yard_gate()
+	# T-272: round 1's opening, the night shift runs (InnOpening reads data/gravelight/map01_opening.json for this map)
+	_node("res://gravelight/world/inn_opening/inn_opening.gd", "InnOpening", {}, Vector3.ZERO)
 	build_quest_objects()
 	# power-on burst points (G and F ground)
 	for bp: Vector3 in [Vector3(50, DY, 64), Vector3(78, DY, 79), Vector3(0, DY, 88), Vector3(24, DY, 88)]:
@@ -4195,6 +4392,167 @@ func build_gameplay() -> void:
 		m.position = bp
 		m.add_to_group(&"power_burst_points", true)
 		gameplay.add_child(m)
+
+
+## T-272: the north gate's two leaves (YardGate, yard_gate.gd swings them for the Sherman). Each leaf hangs on a pivot at
+## its pillar's inner face: an iron frame (stiles, three rails, two diagonal braces), vertical boards, a snow line on the
+## top rail, a hasp and chain where they meet. Not in Dressing (the batches would freeze it); no collider (Gate is the
+## gateway's); each leaf baked to one mesh per material.
+func _build_yard_gate() -> void:
+	var g: Node3D = _node("res://gravelight/maps/map01_kaltenbrunn/yard_gate.gd", "YardGate", {}, Vector3((GATE_X0 + GATE_X1) * 0.5, 0, GATE_Z), 0.0)
+	var half: float = (GATE_X1 - GATE_X0) * 0.5
+	for side: float in [-1.0, 1.0]:
+		var pv: Node3D = Node3D.new()
+		pv.name = "LeafW" if side < 0.0 else "LeafE"
+		pv.position = Vector3(side * half, 0, 0)
+		g.add_child(pv)
+		var s: float = -side   # the leaf runs from its hinge toward the middle
+		var w: float = half - 0.02
+		var lo: float = 0.08
+		var hi: float = GATE_H
+		for sx: Array in [[0.03, 0.13], [w - 0.1, w]]:   # the stiles
+			Props.block(pv, Vector3(s * float(sx[0]), lo, -0.05), Vector3(s * float(sx[1]), hi, 0.05), "iron")
+		for ry: float in [lo + 0.07, 1.85, hi - 0.06]:   # the rails
+			Props.block(pv, Vector3(s * 0.03, ry - 0.06, -0.045), Vector3(s * w, ry + 0.06, 0.045), "iron")
+		Props.block(pv, Vector3(s * 0.13, lo + 0.13, -0.03), Vector3(s * (w - 0.1), hi - 0.12, 0.03), "planks")   # the boards
+		for br: Array in [[lo + 0.13, 1.79], [1.91, hi - 0.12]]:   # the diagonal braces, from the hinge's foot up to the free stile
+			for fz2: float in [-0.04, 0.04]:
+				Props.strut(pv, Vector3(s * 0.13, float(br[0]) + 0.05, fz2), Vector3(s * (w - 0.1), float(br[1]) - 0.05, fz2), 0.06, "iron")
+		for hy: float in [0.6, hi - 0.6]:   # the hinge straps
+			Props.block(pv, Vector3(s * 0.0, hy - 0.05, -0.065), Vector3(s * 0.7, hy + 0.05, 0.065), "iron")
+		Props.block(pv, Vector3(s * 0.03, hi, -0.06), Vector3(s * w, hi + 0.05, 0.06), "snow", false)
+	# the hasp and a hanging chain on the yard side of the east leaf's free stile (it swings with that leaf)
+	var le: Node3D = g.get_node("LeafE") as Node3D
+	Props._noshadow(Props.block(le, Vector3(-half + 0.02, 1.15, 0.05), Vector3(-half + 0.3, 1.25, 0.08), "iron"))
+	for c: int in 4:
+		Props._noshadow(Props.obox(le, Vector3(-half + 0.24, 1.08 - c * 0.075, 0.09), Vector3(0.05, 0.07, 0.015), "iron", Vector3(0, 0, 90.0 * float(c % 2))))
+	for leaf: String in ["LeafW", "LeafE"]:   # one mesh per material a leaf (it swings as one piece): 3 draw calls, not 20
+		_bake_local(g.get_node(leaf) as Node3D, false)
+
+
+## T-272: the parts that react (T-053's kit, gravelight/world/reactive/), as runtime nodes under "Reactive" (they build their
+## art at load, so the scene holds only their settings): glassware that breaks when shot (the mess tables and the serving
+## line, Fasbender's bench, Reinholt's desk), curtains that move in the draught of their window (the Administration's
+## three, sacking in the barracks' three), the door in the Administration's upstairs partition left ajar (it swings for
+## anyone who comes through), footprints in the open snow of the two yards, water dripping from the Salt Chapel's dome,
+## the vault ramps and the Core, the wind through the windows, the barracks' timbers creaking, a paper (the
+## December calendar in the pay office). Nothing here collides or touches
+## the navmesh.
+func build_reactive() -> void:
+	var r: Node3D = Node3D.new()
+	r.name = "Reactive"
+	map_root.add_child(r)
+	# ---- glass: [base (world), kind, height scale]
+	var mess: Array = []
+	var old_cups: Array[Vector3] = []   # the crockery _dress_barracks drew (its own rng, seed 33): the glass keeps off it
+	var r33: RandomNumberGenerator = RandomNumberGenerator.new()
+	r33.seed = 33
+	for i0: int in 3:
+		for k0: int in 6:
+			old_cups.append(Vector3(12.0 + i0 * 8.0 + 0.5 + r33.randf() * 4.0, 0.8, 37.2 + r33.randf() * 1.1))
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 272
+	for i: int in 3:
+		var x0: float = 12.0 + i * 8.0
+		var placed: int = 0
+		var tries: int = 0
+		while placed < 5 and tries < 60:
+			tries += 1
+			var gp: Vector3 = Vector3(x0 + 0.35 + rng.randf() * 4.3, 0.8, 37.25 + rng.randf() * 1.0)
+			var clear: bool = true
+			for oc: Vector3 in old_cups:
+				clear = clear and Vector2(oc.x - gp.x, oc.z - gp.z).length() > 0.16
+			for it: Array in mess:
+				clear = clear and Vector2((it[0] as Vector3).x - gp.x, (it[0] as Vector3).z - gp.z).length() > 0.16
+			if clear:
+				mess.append([gp, "stein" if placed % 2 == 0 else "glass", 1.0])
+				placed += 1
+	for bx: float in [35.9, 36.25, 36.6, 37.3, 37.65]:
+		mess.append([Vector3(bx, 1.0, 45.15), "bottle_green" if bx < 37.0 else "bottle_amber", 1.0])
+	var lab: Array = []
+	for jx: float in [70.5, 70.85, 71.2, 72.3, 72.65, 73.0, 73.4]:
+		lab.append([Vector3(jx, DY + 1.02, 83.35), "jar" if jx < 72.0 else "glass", 1.15 if jx < 72.0 else 1.3])
+	var office: Array = [[Vector3(-5.2, 4.58, 25.8), "bottle_amber", 1.0], [Vector3(-5.25, 4.58, 26.15), "glass", 1.0], [Vector3(-5.1, 4.58, 26.3), "glass", 1.0]]
+	for gs: Array in [["Mess", mess], ["Lab", lab], ["Office", office]]:
+		r.add_child(_reactive("res://gravelight/world/reactive/shatter_set.gd", "Glass_" + str(gs[0]), {"items": gs[1]}, Vector3.ZERO))
+	# ---- curtains: [window id, floor point on the wall line, inward yaw, material]
+	for cw: Array in [["W_C_N", Vector3(-8, 0, 8), 0.0, "cloth_green"], ["W_C_UN", Vector3(-8, 3.8, 8), 0.0, "cloth_green"],
+			["W_C_BAL", Vector3(0, 3.8, 14), -90.0, "cloth_green"], ["W_D_W", Vector3(-16, 0, 39), 90.0, "tarp"],
+			["W_D_S1", Vector3(-2, 0, 46), 180.0, "tarp"], ["W_D_S2", Vector3(14, 0, 46), 180.0, "tarp"]]:
+		var wb: Basis = Basis(Vector3.UP, deg_to_rad(float(cw[2])))
+		var wp: Vector3 = cw[1]
+		for cx: float in [-1.05, 1.05]:
+			var dc: Node3D = _reactive("res://gravelight/world/reactive/draft_curtain.gd", "DraftCurtain_%s_%s" % [cw[0], "L" if cx < 0.0 else "R"], {
+				"height": WTOP - SILL + 0.4, "mat_key": cw[3], "window": NodePath("../../Gameplay/" + str(cw[0]))},
+				wp + wb * Vector3(cx, WTOP + 0.05, T * 0.5 + 0.1), float(cw[2]) + 180.0)
+			r.add_child(dc)
+		var rod: Node3D = Props.group(r, "CurtainRod_" + str(cw[0]), wp, float(cw[2]))
+		Props._noshadow(Props.block(rod, Vector3(-1.35, WTOP + 0.15, T * 0.5 + 0.07), Vector3(1.35, WTOP + 0.18, T * 0.5 + 0.11), "iron"))
+	# ---- the upstairs partition's door, ajar into the radio room (the doorway x -9.8..-8.2 in the wall at z 16)
+	r.add_child(_reactive("res://gravelight/world/reactive/swing_door.gd", "PartitionDoor", {"width": 1.55, "height": 2.15,
+		"rest_deg": 65.0, "open_deg": 100.0, "flip": false}, Vector3(-9.8, 3.8, 16.0 - T * 0.5), 0.0))
+	# ---- footprints in the open snow: the Minehead yard and the Rail Yard (not under the Kaue's roof, not in the sheds)
+	r.add_child(_reactive("res://gravelight/world/reactive/snow_footprints.gd", "SnowFootprints", {
+		"areas": [AABB(Vector3(0.15, -1, 0.15), Vector3(39.7, 3, 31.7)), AABB(Vector3(40.15, -1, 14.15), Vector3(19.7, 3, 33.7))] as Array[AABB],
+		"holes": [AABB(Vector3(KAUE_X0, -2, KAUE_Z0), Vector3(KAUE_X1 - KAUE_X0, 4, KAUE_ZW - KAUE_Z0)), AABB(Vector3(4, -2, 4), Vector3(8, 4, 6)),
+			AABB(Vector3(28, -2, 4), Vector3(10, 4, 6)), AABB(Vector3(15, -2, 10), Vector3(10, 4, 10))] as Array[AABB]}, Vector3.ZERO))
+	# ---- drips: the salt dome over the Chapel's nave, the vault ramps' rock, the Core
+	# [point under the ceiling, the floor's height below it]: the Chapel's east aisle (the dome at y 2), the F and G vault
+	# ramps (their rock roofs at y -9, the ramp's floor where the drop lands), the Core's west side (its roof at y -6),
+	# the H corridor (its roof at y -14.5)
+	for dp: Array in [[Vector3(37.4, 1.95, 74.0), DY], [Vector3(20.0, -9.05, 96.0), DY - 6.0 * (96.0 - 90.0) / 11.0],
+			[Vector3(44.5, -9.05, 92.0), DY - 6.0 * (92.0 - 82.0) / 19.0], [Vector3(25.0, CY + 11.95, 124.0), CY],
+			[Vector3(60.0, CY + 3.45, 115.0), CY]]:
+		var dpos: Vector3 = dp[0]
+		var drip: Node3D = _reactive("res://gravelight/world/drip_point.gd", "Drip_%d" % r.get_child_count(), {"height": dpos.y - float(dp[1]), "volume_db": -6.0}, dpos)
+		r.add_child(drip)
+	# ---- the wind through the windows that have a room behind them (louder in gusts and as the boards go)
+	for ww: Array in [["W_C_N", Vector3(-8, 1.5, 8.4)], ["W_C_UN", Vector3(-8, 5.3, 8.4)], ["W_D_W", Vector3(-15.6, 1.5, 39)],
+			["W_D_S1", Vector3(-2, 1.5, 45.6)], ["W_D_S2", Vector3(14, 1.5, 45.6)], ["W_E", Vector3(29.6, 1.5, 51)]]:
+		r.add_child(_reactive("res://gravelight/world/reactive/audio_zone.gd", "WindHowl_" + str(ww[0]), {
+			"sound": "wind_howl", "mode": "loop", "volume_db": -15.0, "wind_db": 7.0, "broken_db": 8.0,
+			"window": NodePath("../../Gameplay/" + str(ww[0])), "max_distance": 11.0}, ww[1]))
+	r.add_child(_reactive("res://gravelight/world/reactive/audio_zone.gd", "BarracksCreaks", {
+		"sound": "stable_creak", "mode": "random", "volume_db": -4.0, "interval": Vector2(14.0, 34.0), "spread": Vector3(20.0, 1.0, 5.0)},
+		Vector3(12.0, 3.6, 39.0)))
+	# ---- paper: the pay office's December calendar on its north wall
+	r.add_child(_reactive("res://gravelight/world/paper_decor.gd", "Paper_calendar", {"kind": "calendar", "flat": false, "tilt_deg": -2.0},
+		Vector3(-10.0, 1.75, 8.15 + 0.03), 180.0))   # (between the Gewehr 43's chalk and the window: the first render had it on the chalk's corner)
+
+
+func _reactive(script_path: String, n: String, props: Dictionary, pos: Vector3, yaw: float = 0.0) -> Node3D:
+	var node: Node3D = Area3D.new() if script_path.ends_with("hay_puff_zone.gd") else Node3D.new()
+	node.set_script(load(script_path))
+	node.name = n
+	for k: String in props.keys():
+		node.set(k, props[k])
+	node.position = pos
+	node.rotation.y = deg_to_rad(yaw)
+	return node
+
+
+## T-272: the perk spots (PerkSpot nodes, group perk_spots: MapRoot attaches a PerkLayout when a map has them).
+func build_perk_spots() -> void:
+	for sp: Array in PERK_SPOTS:
+		var fl: Dictionary = sp[4]
+		_node("res://gravelight/world/perk_spot.gd", "PerkSpot_" + str(sp[0]), {"spot_id": StringName(sp[0]), "zone_id": StringName(sp[1]),
+			"outdoor": bool(fl.get("outdoor", false)), "start": bool(fl.get("start", false)), "near": bool(fl.get("near", false)),
+			"flush": int(fl.get("flush", 0))}, sp[2], float(sp[3]))
+
+
+## The seed-0 deal of the map's row onto PERK_SPOTS under perk_layout.json's rules: the call PerkLayout makes each match.
+func _seed0_deal() -> Dictionary:
+	var rules: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/perk_layout.json"))
+	var pdata: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/gravelight/perks.json"))["perks"]
+	var spots: Array = []
+	for sp: Array in PERK_SPOTS:
+		var fl: Dictionary = sp[4]
+		spots.append({"id": str(sp[0]), "zone": str(sp[1]), "outdoor": bool(fl.get("outdoor", false)), "start": bool(fl.get("start", false)), "near": bool(fl.get("near", false))})
+	var perks: Array = []
+	for id: String in ((rules.get("maps", {}) as Dictionary).get("map01", {}) as Dictionary).get("perks", []):
+		var d: Dictionary = pdata.get(id, {})
+		perks.append({"id": id, "cost": int(d.get("cost", 0)), "shape": str(d.get("shape", "cabinet"))})
+	return PerkShuffleScript.call("assign", 0, spots, perks, rules)
 
 
 ## Art for a BlastDoor (it uses a child named "Visual" instead of its greybox, and slides it up to open).

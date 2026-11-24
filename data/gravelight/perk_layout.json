@@ -34,6 +34,11 @@
       "_doc": "T-274: Mondlicht's nine machines onto its perk spots (gen_map04d.gd perk_spots).",
       "perks": ["second_wind", "skyhook_sekt", "magpie_mead", "ironhide_stout", "trigger_tonic", "hawkeye_brandy", "blastproof_bock",
         "packmule_porter", "ledger_lager"]
+    },
+    "map01": {
+      "_doc": "T-272 Kaltenbrunn: eight of its eleven machines are dealt onto its fourteen spots (gen_map01 PERK_SPOTS). Not dealt, they stand where they belong: Ledger Lager (the pay office's own cabinet), Overclock Cordial (wired into the generator's switchgear), Skyhook Sekt (set up in the Core Vault by the installers).",
+      "perks": ["second_wind", "ironhide_stout", "marathon_malt", "twin_barrel", "trigger_tonic", "hawkeye_brandy", "packmule_porter",
+        "blastproof_bock"]
     }
   }
 }
