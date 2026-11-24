@@ -322,3 +322,16 @@ window (not re-rendered).
   winding house box it in).
 - The opening's miners are primitive bodies; their nine lines have no voice yet.
 - Survivors behind a door: not built (see section 5).
+
+## Additions after the merge
+
+### The opening's miners wear the project's person models
+
+Each patron row in `map01_opening.json` has a `person` key now (T-273's key: the body worn alive and when risen):
+Gorny `rother`, Kania `sobotta`, Pietsch `kubiak`, Mrozek `petersen`. No script change. The project has eleven
+modelled civilian men and reuses them across maps (`people_extra.json` does the same: Kaltenbrunn's hidden miners are
+rother, sobotta and petersen too, met deep in the mine much later; Totenhafen's opening uses rother and sobotta). A face
+of its own for each miner would need new person models. `smoke_map01_opening` now also checks that all four wear a
+modelled body (4 of 4) and that both risen wear their person's body (2 of 2): 17 checks, PASS. Seen:
+`docs/captures/t272/c00_kaue_miners_night_models.jpg` (Kubiak warming his hands at the stove, Rother and Petersen on
+the west bench, in their own clothes; the blockout bodies of `b00` are gone).

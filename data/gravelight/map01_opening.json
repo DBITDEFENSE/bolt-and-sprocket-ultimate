@@ -1,5 +1,5 @@
 {
- "_doc": "T-272 Kaltenbrunn's round 1 opening, 'the shift runs' (inn_opening.gd reads it: data_path_for(map01_kaltenbrunn); the same machinery as Map 0's map00_opening.json, which documents every key). The night shift has come up and is changing in the Waschkaue when the squad's sled pulls in beside it (the sled is drawn at the Kaue's east wall): four miners sit on the benches and stand at the stove with the squad. When round 1 begins (a match that starts on Kaltenbrunn; never a campaign arrival, which comes in from the inn) the dead hit the yard's windows; the miners run out of the Kaue's two doorways. Gorny and Kania make the north gate (YardGate swings open for them between gate.open_at and gate.close_at, then shuts; the gateway's collider never moves) and run off up the north road. Pietsch and Mrozek are caught in the yard's south lane in front of the Kaue by two of the dead rising out of the snow, and rise as zombies of round 1 a few seconds after they fall (their slots and the attackers' come off round 1's queue, so the round's size is unchanged). No front door (the Kaue's doorways are open): the patrons leave from the end of their route at their exit time. The look: the squad spawns facing north out of the doorways; round 1 waits for look.min_seconds of settled view facing the south lane, then the cue (boards slammed at the yard's windows, Gorny's line). Every position is in the Minehead yard on its navmesh (the risers rise where they fall). Lines: text in vo/lines.json (GOR, KAN, PIE, MRO; no audio is baked: the subtitle shows).",
+ "_doc": "T-272 Kaltenbrunn's round 1 opening, 'the shift runs' (inn_opening.gd reads it: data_path_for(map01_kaltenbrunn); the same machinery as Map 0's map00_opening.json, which documents every key). The night shift has come up and is changing in the Waschkaue when the squad's sled pulls in beside it (the sled is drawn at the Kaue's east wall): four miners sit on the benches and stand at the stove with the squad. When round 1 begins (a match that starts on Kaltenbrunn; never a campaign arrival, which comes in from the inn) the dead hit the yard's windows; the miners run out of the Kaue's two doorways. Gorny and Kania make the north gate (YardGate swings open for them between gate.open_at and gate.close_at, then shuts; the gateway's collider never moves) and run off up the north road. Pietsch and Mrozek are caught in the yard's south lane in front of the Kaue by two of the dead rising out of the snow, and rise as zombies of round 1 a few seconds after they fall (their slots and the attackers' come off round 1's queue, so the round's size is unchanged). No front door (the Kaue's doorways are open): the patrons leave from the end of their route at their exit time. The look: the squad spawns facing north out of the doorways; round 1 waits for look.min_seconds of settled view facing the south lane, then the cue (boards slammed at the yard's windows, Gorny's line). Every position is in the Minehead yard on its navmesh (the risers rise where they fall). Lines: text in vo/lines.json (GOR, KAN, PIE, MRO; no audio is baked: the subtitle shows). Bodies (T-272 addition): each row's `person` is a modelled person of art/people.json (rother, sobotta, kubiak, petersen), worn alive and when risen (T-273's key); the project reuses its eleven civilian men across maps, as people_extra.json does.",
  "map": "map01_kaltenbrunn",
  "round": 1,
  "gate": {
@@ -15,6 +15,7 @@
  "patrons": [
   {
    "id": "gorny",
+   "person": "rother",
    "name": "Wilhelm Gorny",
    "display": "GORNY",
    "speaker": "GOR",
@@ -122,6 +123,7 @@
   },
   {
    "id": "kania",
+   "person": "sobotta",
    "name": "Jozef Kania",
    "display": "KANIA",
    "speaker": "KAN",
@@ -229,6 +231,7 @@
   },
   {
    "id": "pietsch",
+   "person": "kubiak",
    "name": "Franz Pietsch",
    "display": "PIETSCH",
    "speaker": "PIE",
@@ -299,6 +302,7 @@
   },
   {
    "id": "mrozek",
+   "person": "petersen",
    "name": "Karl Mrozek",
    "display": "MROZEK",
    "speaker": "MRO",
