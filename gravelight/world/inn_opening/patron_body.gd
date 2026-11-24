@@ -328,11 +328,22 @@ func _process(delta: float) -> void:
 			pose = &"dead"
 	_flinch = move_toward(_flinch, 0.0, delta * 1.2)
 	_kick = move_toward(_kick, 0.0, delta * 6.0)
-	for k: StringName in [&"sit", &"lean", &"work", &"panic", &"run", &"push", &"struggle", &"clutch", &"cower", &"aim"]:
-		var want: float = 1.0 if pose == k else 0.0
-		_blend[k] = move_toward(float(_blend.get(k, 1.0 if pose == k else 0.0)), want, delta * 5.0)
+	# (T-265: the ten pose weights are only stepped while one of them is still on its way: a body that has held
+	# its pose for a fifth of a second has nothing to blend, and thirteen of them did this every frame)
+	blend_frames += 1
+	if _blend_pose != pose or not _blend_done or aim_upper_only:
+		blend_steps += 1
+		_blend_pose = pose
+		_blend_done = true
+		for k: StringName in BLEND_POSES:
+			var want: float = 1.0 if pose == k else 0.0
+			var w: float = move_toward(float(_blend.get(k, want)), want, delta * 5.0)
+			_blend[k] = w
+			if w != want:
+				_blend_done = false
 	if aim_upper_only:
 		_blend[&"aim"] = maxf(float(_blend[&"aim"]), aim_weight)
+		_blend_done = false   # (the weight this lifts is eased back by the loop above once the aim is let go)
 	# T-139: the zombies' animation LOD (anim.json lod): the limbs are posed every frame within full_m of the camera,
 	# every 2nd frame to half_m, every 4th beyond, with the time they skipped (the state above runs every frame).
 	_pose_acc += delta
@@ -346,6 +357,11 @@ func _process(delta: float) -> void:
 
 var _pose_acc: float = 0.0
 var _pose_skip: int = 0
+const BLEND_POSES: Array[StringName] = [&"sit", &"lean", &"work", &"panic", &"run", &"push", &"struggle", &"clutch", &"cower", &"aim"]
+var _blend_pose: StringName = &""
+static var blend_frames: int = 0   # frames of every visible body / frames that stepped the weights (the measuring tools)
+static var blend_steps: int = 0
+var _blend_done: bool = false
 static var _lod: Dictionary = {}
 
 

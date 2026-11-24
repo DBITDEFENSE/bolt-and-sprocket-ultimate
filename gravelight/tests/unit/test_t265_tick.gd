@@ -311,3 +311,31 @@ func test_a_column_nobody_looks_at_sleeps_and_catches_up() -> void:
 	assert_almost_eq(float(col._state[0]["k"]), fposmod(k1 + 2.5 / 40.0, 1.0), 0.0001, "looked at again: where it would have walked to")
 	assert_true((col.bodies[0].get_node("AP") as AnimationPlayer).active)
 
+
+func test_a_patrons_pose_weights_rest_once_they_have_arrived() -> void:
+	var pb: PatronBody = PatronBody.new()
+	add_child_autofree(pb)
+	pb.setup({"id": "pohl", "person": "pohl", "pose": "stand"})
+	pb.set_process(false)
+	pb.pose = &"sit"
+	for i: int in 30:
+		pb._process(1.0 / 60.0)
+	assert_eq(float(pb._blend[&"sit"]), 1.0)
+	assert_true(pb._blend_done, "arrived: nothing left to step")
+	pb.pose = &"cower"
+	pb._process(1.0 / 60.0)
+	assert_false(pb._blend_done, "a new pose is blended to")
+	assert_almost_eq(float(pb._blend[&"cower"]), 5.0 / 60.0, 0.0001, "at the same rate as before")
+	assert_almost_eq(float(pb._blend[&"sit"]), 1.0 - 5.0 / 60.0, 0.0001)
+	for i: int in 30:
+		pb._process(1.0 / 60.0)
+	assert_eq(float(pb._blend[&"cower"]), 1.0)
+	assert_eq(float(pb._blend[&"sit"]), 0.0)
+	pb.aim_upper_only = true
+	pb.aim_weight = 0.7
+	pb._process(1.0 / 60.0)
+	assert_almost_eq(float(pb._blend[&"aim"]), 0.7, 0.0001, "an upper-body aim lifts its weight")
+	pb.aim_upper_only = false
+	for i: int in 30:
+		pb._process(1.0 / 60.0)
+	assert_eq(float(pb._blend[&"aim"]), 0.0, "and it eases back once the aim is let go")
