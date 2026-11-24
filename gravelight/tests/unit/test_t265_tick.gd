@@ -121,4 +121,5 @@ func test_the_roof_share_arrives() -> void:
 
 func test_the_named_rates() -> void:
 	assert_eq(BotLocomotion.NAV_LOOK_S, 0.2, "a walking bot asks the navmesh under it five times a second")
+	assert_eq(CoopHud.ROWS_EVERY_S, 0.1, "the squad panel's rows are gathered ten times a second")
 	assert_eq(Zombie.VIEW_OUT_DIV, 4)
