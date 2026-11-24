@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://q27ugb5yyxc"
 path.s3tc="res://.godot/imported/Fabric031_orm.png-260bae7ba000a475862ca8664938c6be.s3tc.ctex"
+path.etc2="res://.godot/imported/Fabric031_orm.png-260bae7ba000a475862ca8664938c6be.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/ambientcg/fabric-031/textures/Fabric031_orm.png"
-dest_files=["res://.godot/imported/Fabric031_orm.png-260bae7ba000a475862ca8664938c6be.s3tc.ctex"]
+dest_files=["res://.godot/imported/Fabric031_orm.png-260bae7ba000a475862ca8664938c6be.s3tc.ctex", "res://.godot/imported/Fabric031_orm.png-260bae7ba000a475862ca8664938c6be.etc2.ctex"]
 
 [params]
 

@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bckuymtkvbn6p"
 path.s3tc="res://.godot/imported/brown_mud_dry_albedo.png-57b7450a2e5b8c30310f2f9c405cc222.s3tc.ctex"
+path.etc2="res://.godot/imported/brown_mud_dry_albedo.png-57b7450a2e5b8c30310f2f9c405cc222.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/brown-mud-dry/textures/brown_mud_dry_albedo.png"
-dest_files=["res://.godot/imported/brown_mud_dry_albedo.png-57b7450a2e5b8c30310f2f9c405cc222.s3tc.ctex"]
+dest_files=["res://.godot/imported/brown_mud_dry_albedo.png-57b7450a2e5b8c30310f2f9c405cc222.s3tc.ctex", "res://.godot/imported/brown_mud_dry_albedo.png-57b7450a2e5b8c30310f2f9c405cc222.etc2.ctex"]
 
 [params]
 

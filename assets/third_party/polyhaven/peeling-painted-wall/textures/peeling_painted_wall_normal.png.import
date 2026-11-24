@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cq6x5eirv85k3"
 path.s3tc="res://.godot/imported/peeling_painted_wall_normal.png-1f2034d960e59fe1708755027d194d41.s3tc.ctex"
+path.etc2="res://.godot/imported/peeling_painted_wall_normal.png-1f2034d960e59fe1708755027d194d41.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/peeling-painted-wall/textures/peeling_painted_wall_normal.png"
-dest_files=["res://.godot/imported/peeling_painted_wall_normal.png-1f2034d960e59fe1708755027d194d41.s3tc.ctex"]
+dest_files=["res://.godot/imported/peeling_painted_wall_normal.png-1f2034d960e59fe1708755027d194d41.s3tc.ctex", "res://.godot/imported/peeling_painted_wall_normal.png-1f2034d960e59fe1708755027d194d41.etc2.ctex"]
 
 [params]
 

@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://xqvnvhdeyts"
 path.s3tc="res://.godot/imported/reed_roof_04_normal.png-d544053ee05b0556b4a60fde1e967129.s3tc.ctex"
+path.etc2="res://.godot/imported/reed_roof_04_normal.png-d544053ee05b0556b4a60fde1e967129.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/reed-roof-04/textures/reed_roof_04_normal.png"
-dest_files=["res://.godot/imported/reed_roof_04_normal.png-d544053ee05b0556b4a60fde1e967129.s3tc.ctex"]
+dest_files=["res://.godot/imported/reed_roof_04_normal.png-d544053ee05b0556b4a60fde1e967129.s3tc.ctex", "res://.godot/imported/reed_roof_04_normal.png-d544053ee05b0556b4a60fde1e967129.etc2.ctex"]
 
 [params]
 

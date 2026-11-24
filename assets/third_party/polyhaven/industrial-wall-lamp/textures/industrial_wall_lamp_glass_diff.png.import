@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dm11j2pcn1t08"
 path.s3tc="res://.godot/imported/industrial_wall_lamp_glass_diff.png-3c1fba192df91378b68590b916a2f73f.s3tc.ctex"
+path.etc2="res://.godot/imported/industrial_wall_lamp_glass_diff.png-3c1fba192df91378b68590b916a2f73f.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/industrial-wall-lamp/textures/industrial_wall_lamp_glass_diff.png"
-dest_files=["res://.godot/imported/industrial_wall_lamp_glass_diff.png-3c1fba192df91378b68590b916a2f73f.s3tc.ctex"]
+dest_files=["res://.godot/imported/industrial_wall_lamp_glass_diff.png-3c1fba192df91378b68590b916a2f73f.s3tc.ctex", "res://.godot/imported/industrial_wall_lamp_glass_diff.png-3c1fba192df91378b68590b916a2f73f.etc2.ctex"]
 
 [params]
 

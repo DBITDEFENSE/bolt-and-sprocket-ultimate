@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bm4t4n4702ljr"
 path.s3tc="res://.godot/imported/painted_wooden_chair_02_nor_gl.png-006dd3ef5181e07cfe70f47a343828db.s3tc.ctex"
+path.etc2="res://.godot/imported/painted_wooden_chair_02_nor_gl.png-006dd3ef5181e07cfe70f47a343828db.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/painted-wooden-chair-02/textures/painted_wooden_chair_02_nor_gl.png"
-dest_files=["res://.godot/imported/painted_wooden_chair_02_nor_gl.png-006dd3ef5181e07cfe70f47a343828db.s3tc.ctex"]
+dest_files=["res://.godot/imported/painted_wooden_chair_02_nor_gl.png-006dd3ef5181e07cfe70f47a343828db.s3tc.ctex", "res://.godot/imported/painted_wooden_chair_02_nor_gl.png-006dd3ef5181e07cfe70f47a343828db.etc2.ctex"]
 
 [params]
 

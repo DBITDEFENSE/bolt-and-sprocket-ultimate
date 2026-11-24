@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://b1mgxfprsvjs"
 path.s3tc="res://.godot/imported/vintage_suitcase_01_diff.png-9d991dee41e654c61fa0991412b4f36d.s3tc.ctex"
+path.etc2="res://.godot/imported/vintage_suitcase_01_diff.png-9d991dee41e654c61fa0991412b4f36d.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/vintage-suitcase/textures/vintage_suitcase_01_diff.png"
-dest_files=["res://.godot/imported/vintage_suitcase_01_diff.png-9d991dee41e654c61fa0991412b4f36d.s3tc.ctex"]
+dest_files=["res://.godot/imported/vintage_suitcase_01_diff.png-9d991dee41e654c61fa0991412b4f36d.s3tc.ctex", "res://.godot/imported/vintage_suitcase_01_diff.png-9d991dee41e654c61fa0991412b4f36d.etc2.ctex"]
 
 [params]
 

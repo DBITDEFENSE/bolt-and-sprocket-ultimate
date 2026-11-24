@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bwckl88icy3m1"
 path.s3tc="res://.godot/imported/box_profile_metal_sheet_albedo.png-3ee1c94eacc8b2ad9b39eae4092f8219.s3tc.ctex"
+path.etc2="res://.godot/imported/box_profile_metal_sheet_albedo.png-3ee1c94eacc8b2ad9b39eae4092f8219.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/box-profile-metal-sheet/textures/box_profile_metal_sheet_albedo.png"
-dest_files=["res://.godot/imported/box_profile_metal_sheet_albedo.png-3ee1c94eacc8b2ad9b39eae4092f8219.s3tc.ctex"]
+dest_files=["res://.godot/imported/box_profile_metal_sheet_albedo.png-3ee1c94eacc8b2ad9b39eae4092f8219.s3tc.ctex", "res://.godot/imported/box_profile_metal_sheet_albedo.png-3ee1c94eacc8b2ad9b39eae4092f8219.etc2.ctex"]
 
 [params]
 

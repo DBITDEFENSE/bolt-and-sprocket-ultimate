@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bcy5kch6a43hy"
 path.s3tc="res://.godot/imported/factory_brick_albedo.png-a2b019814f8f53a03f4dbc2fdf7664d3.s3tc.ctex"
+path.etc2="res://.godot/imported/factory_brick_albedo.png-a2b019814f8f53a03f4dbc2fdf7664d3.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/factory-brick/textures/factory_brick_albedo.png"
-dest_files=["res://.godot/imported/factory_brick_albedo.png-a2b019814f8f53a03f4dbc2fdf7664d3.s3tc.ctex"]
+dest_files=["res://.godot/imported/factory_brick_albedo.png-a2b019814f8f53a03f4dbc2fdf7664d3.s3tc.ctex", "res://.godot/imported/factory_brick_albedo.png-a2b019814f8f53a03f4dbc2fdf7664d3.etc2.ctex"]
 
 [params]
 

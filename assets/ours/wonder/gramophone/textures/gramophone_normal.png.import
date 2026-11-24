@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dgeqrttoch8yy"
 path.s3tc="res://.godot/imported/gramophone_normal.png-b759713e0321ca6ffa5c482fbbe135e0.s3tc.ctex"
+path.etc2="res://.godot/imported/gramophone_normal.png-b759713e0321ca6ffa5c482fbbe135e0.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/ours/wonder/gramophone/textures/gramophone_normal.png"
-dest_files=["res://.godot/imported/gramophone_normal.png-b759713e0321ca6ffa5c482fbbe135e0.s3tc.ctex"]
+dest_files=["res://.godot/imported/gramophone_normal.png-b759713e0321ca6ffa5c482fbbe135e0.s3tc.ctex", "res://.godot/imported/gramophone_normal.png-b759713e0321ca6ffa5c482fbbe135e0.etc2.ctex"]
 
 [params]
 

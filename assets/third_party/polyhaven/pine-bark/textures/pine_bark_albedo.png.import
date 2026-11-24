@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cacyuui0e3mvh"
 path.s3tc="res://.godot/imported/pine_bark_albedo.png-b2c59e254e8472b20df262c69b38e2af.s3tc.ctex"
+path.etc2="res://.godot/imported/pine_bark_albedo.png-b2c59e254e8472b20df262c69b38e2af.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/pine-bark/textures/pine_bark_albedo.png"
-dest_files=["res://.godot/imported/pine_bark_albedo.png-b2c59e254e8472b20df262c69b38e2af.s3tc.ctex"]
+dest_files=["res://.godot/imported/pine_bark_albedo.png-b2c59e254e8472b20df262c69b38e2af.s3tc.ctex", "res://.godot/imported/pine_bark_albedo.png-b2c59e254e8472b20df262c69b38e2af.etc2.ctex"]
 
 [params]
 

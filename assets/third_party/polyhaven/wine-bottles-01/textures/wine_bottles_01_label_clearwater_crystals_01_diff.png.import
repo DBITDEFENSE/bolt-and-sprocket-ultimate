@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://2onu7mktn4wq"
 path.s3tc="res://.godot/imported/wine_bottles_01_label_clearwater_crystals_01_diff.png-29d3a35c0e4dd284aa5f62d84efe8a56.s3tc.ctex"
+path.etc2="res://.godot/imported/wine_bottles_01_label_clearwater_crystals_01_diff.png-29d3a35c0e4dd284aa5f62d84efe8a56.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/wine-bottles-01/textures/wine_bottles_01_label_clearwater_crystals_01_diff.png"
-dest_files=["res://.godot/imported/wine_bottles_01_label_clearwater_crystals_01_diff.png-29d3a35c0e4dd284aa5f62d84efe8a56.s3tc.ctex"]
+dest_files=["res://.godot/imported/wine_bottles_01_label_clearwater_crystals_01_diff.png-29d3a35c0e4dd284aa5f62d84efe8a56.s3tc.ctex", "res://.godot/imported/wine_bottles_01_label_clearwater_crystals_01_diff.png-29d3a35c0e4dd284aa5f62d84efe8a56.etc2.ctex"]
 
 [params]
 

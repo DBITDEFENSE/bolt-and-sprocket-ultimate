@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://co6yq5xk8nuag"
 path.s3tc="res://.godot/imported/totenglocke_orm.png-2f6c19c03002479de9bcfa1906e86462.s3tc.ctex"
+path.etc2="res://.godot/imported/totenglocke_orm.png-2f6c19c03002479de9bcfa1906e86462.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/ours/wonder/totenglocke/textures/totenglocke_orm.png"
-dest_files=["res://.godot/imported/totenglocke_orm.png-2f6c19c03002479de9bcfa1906e86462.s3tc.ctex"]
+dest_files=["res://.godot/imported/totenglocke_orm.png-2f6c19c03002479de9bcfa1906e86462.s3tc.ctex", "res://.godot/imported/totenglocke_orm.png-2f6c19c03002479de9bcfa1906e86462.etc2.ctex"]
 
 [params]
 

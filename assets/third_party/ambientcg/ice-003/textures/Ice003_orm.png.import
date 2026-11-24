@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bih8cav88nyju"
 path.s3tc="res://.godot/imported/Ice003_orm.png-db09fac52b79b0394f3759472265d762.s3tc.ctex"
+path.etc2="res://.godot/imported/Ice003_orm.png-db09fac52b79b0394f3759472265d762.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/ambientcg/ice-003/textures/Ice003_orm.png"
-dest_files=["res://.godot/imported/Ice003_orm.png-db09fac52b79b0394f3759472265d762.s3tc.ctex"]
+dest_files=["res://.godot/imported/Ice003_orm.png-db09fac52b79b0394f3759472265d762.s3tc.ctex", "res://.godot/imported/Ice003_orm.png-db09fac52b79b0394f3759472265d762.etc2.ctex"]
 
 [params]
 

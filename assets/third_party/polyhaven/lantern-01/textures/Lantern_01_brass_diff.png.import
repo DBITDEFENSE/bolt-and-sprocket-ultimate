@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://b1d4xvdktevpd"
 path.s3tc="res://.godot/imported/Lantern_01_brass_diff.png-e8cdb3fc46593d01d5a1b5a4d219ec91.s3tc.ctex"
+path.etc2="res://.godot/imported/Lantern_01_brass_diff.png-e8cdb3fc46593d01d5a1b5a4d219ec91.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/lantern-01/textures/Lantern_01_brass_diff.png"
-dest_files=["res://.godot/imported/Lantern_01_brass_diff.png-e8cdb3fc46593d01d5a1b5a4d219ec91.s3tc.ctex"]
+dest_files=["res://.godot/imported/Lantern_01_brass_diff.png-e8cdb3fc46593d01d5a1b5a4d219ec91.s3tc.ctex", "res://.godot/imported/Lantern_01_brass_diff.png-e8cdb3fc46593d01d5a1b5a4d219ec91.etc2.ctex"]
 
 [params]
 

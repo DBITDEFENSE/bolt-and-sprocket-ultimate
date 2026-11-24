@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cuci6h2gxup4b"
 path.s3tc="res://.godot/imported/WoodSiding012_normal.png-f348398da731efb7490139bef971dd7f.s3tc.ctex"
+path.etc2="res://.godot/imported/WoodSiding012_normal.png-f348398da731efb7490139bef971dd7f.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/ambientcg/wood-siding-012/textures/WoodSiding012_normal.png"
-dest_files=["res://.godot/imported/WoodSiding012_normal.png-f348398da731efb7490139bef971dd7f.s3tc.ctex"]
+dest_files=["res://.godot/imported/WoodSiding012_normal.png-f348398da731efb7490139bef971dd7f.s3tc.ctex", "res://.godot/imported/WoodSiding012_normal.png-f348398da731efb7490139bef971dd7f.etc2.ctex"]
 
 [params]
 

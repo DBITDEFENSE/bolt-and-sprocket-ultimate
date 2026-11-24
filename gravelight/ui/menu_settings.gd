@@ -327,9 +327,9 @@ func _graphics() -> void:
 	var g: Node = GLSettings
 	content.add_child(MenuKit.section("Graphics"))
 	var order: PackedStringArray = GLSettings.preset_order(GLSettings.is_compat())   # T-139: + "Browser" on the web
-	var names: PackedStringArray = ["Low", "Medium", "High", "Ultra"]
-	if order.size() > 4:
-		names.append("Browser")
+	var names: PackedStringArray = []
+	for pn: String in order:   # T-264: the labels follow the order (Handheld joined the desktop presets)
+		names.append(str(GLSettings.PRESET_LABELS.get(pn, pn.capitalize())))
 	names.append("Custom")
 	var now: String = GLSettings.matching_preset(_gfx_values())
 	var pi: int = order.find(now)
@@ -338,10 +338,18 @@ func _graphics() -> void:
 			GLSettings.set_preset(order[i])
 			rebuild())))
 	content.add_child(MenuKit.help(detected_line()))
-	content.add_child(MenuKit.help("Low and Medium render below full resolution and upscale it; High is full quality; Ultra adds 4x MSAA with TAA, 8K shadows, the best AO, fog and level of detail (a fast GPU: RTX 3080 and up)."))
+	content.add_child(MenuKit.help("Low and Medium render below full resolution and upscale it; Handheld is for a small 800-line screen (full resolution, light effects); High is full quality; Ultra adds 4x MSAA with TAA, 8K shadows, the best AO, fog and level of detail (a fast GPU: RTX 3080 and up)."))
 	_choice("Anti-aliasing", "gfx_aa", GLSettings.AA_MODES, ["Off", "FXAA (cheap, soft)", "SMAA (sharp)", "MSAA 2x", "MSAA 4x", "MSAA 8x", "TAA (smoothest, softer in motion)", "MSAA 4x + TAA (best)"])
 	content.add_child(MenuKit.row("Render scale", MenuKit.slider(50, 100, 5, float(g.call("gfx", "gfx_scale")) * 100.0, func(v: float) -> void:
 		GLSettings.set_value("gfx_scale", v / 100.0), "%d%%")))
+	# T-264: the 3D picture's height limit (Retina, 4K and 5K panels): not part of a preset, so a preset keeps it
+	var lines: PackedInt32Array = GLSettings.MAX_LINES_STEPS
+	var line_names: PackedStringArray = []
+	for ln: int in lines:
+		line_names.append("Off" if ln == 0 else "%d lines" % ln)
+	content.add_child(MenuKit.row("3D resolution limit", MenuKit.options(line_names, maxi(0, lines.find(int(GLSettings.values.get("gfx_max_lines", 0)))),
+		func(i: int) -> void: GLSettings.set_value("gfx_max_lines", lines[i]))))
+	content.add_child(MenuKit.help("On a very sharp screen (a Retina laptop, 4K, 5K) the 3D picture is drawn at most this high and upscaled; menus and the HUD stay at full sharpness. Lower it if the frame rate drops in fullscreen."))
 	_choice("Upscaler", "gfx_upscaler", GLSettings.UPSCALERS, ["Bilinear", "AMD FSR 1", "AMD FSR 2 (also anti-aliases)"])
 	content.add_child(MenuKit.row("Sharpening (FSR)", MenuKit.slider(0.0, 2.0, 0.1, 2.0 - float(GLSettings.values.get("gfx_sharpness", 0.4)), func(v: float) -> void:
 		GLSettings.set_value("gfx_sharpness", 2.0 - v))))
@@ -360,9 +368,9 @@ func _graphics() -> void:
 	content.add_child(MenuKit.section("Frame rate"))
 	# vsync and the frame cap live in the shared Settings (core/settings.gd): every mode of the game uses them
 	content.add_child(MenuKit.switch_row("V-Sync", bool(Settings.values.get("vsync", true)), func(on: bool) -> void: Settings.set_value("vsync", on)))
-	var caps: Array = [0, 60, 120, 144, 165, 240, 360]
+	var caps: Array = [0, 30, 40, 45, 60, 90, 120, 144, 165, 240, 360]   # T-264: 30 / 40 / 45 / 90 for handheld panels
 	var ccur: int = maxi(0, caps.find(int(Settings.values.get("maxFps", 0))))
-	content.add_child(MenuKit.row("Frame cap", MenuKit.options(PackedStringArray(["Off", "60", "120", "144", "165", "240", "360"]), ccur,
+	content.add_child(MenuKit.row("Frame cap", MenuKit.options(PackedStringArray(["Off", "30", "40", "45", "60", "90", "120", "144", "165", "240", "360"]), ccur,
 		func(i: int) -> void: Settings.set_value("maxFps", caps[i]))))
 	content.add_child(MenuKit.help("With V-Sync on the game runs at your screen's refresh rate. V-Sync off with a frame cap at your refresh rate gives the least input lag."))
 

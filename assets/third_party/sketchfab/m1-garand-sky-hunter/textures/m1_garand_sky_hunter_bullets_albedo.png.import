@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://b8lkuy5acfy1f"
 path.s3tc="res://.godot/imported/m1_garand_sky_hunter_bullets_albedo.png-563f9dd494494b61feb7009da8686b22.s3tc.ctex"
+path.etc2="res://.godot/imported/m1_garand_sky_hunter_bullets_albedo.png-563f9dd494494b61feb7009da8686b22.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/sketchfab/m1-garand-sky-hunter/textures/m1_garand_sky_hunter_bullets_albedo.png"
-dest_files=["res://.godot/imported/m1_garand_sky_hunter_bullets_albedo.png-563f9dd494494b61feb7009da8686b22.s3tc.ctex"]
+dest_files=["res://.godot/imported/m1_garand_sky_hunter_bullets_albedo.png-563f9dd494494b61feb7009da8686b22.s3tc.ctex", "res://.godot/imported/m1_garand_sky_hunter_bullets_albedo.png-563f9dd494494b61feb7009da8686b22.etc2.ctex"]
 
 [params]
 

@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://xeg2kt0cueuq"
 path.s3tc="res://.godot/imported/green_metal_rust_albedo.png-aec8bf7531f2f67e8e4f0b87cfb6d742.s3tc.ctex"
+path.etc2="res://.godot/imported/green_metal_rust_albedo.png-aec8bf7531f2f67e8e4f0b87cfb6d742.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/green-metal-rust/textures/green_metal_rust_albedo.png"
-dest_files=["res://.godot/imported/green_metal_rust_albedo.png-aec8bf7531f2f67e8e4f0b87cfb6d742.s3tc.ctex"]
+dest_files=["res://.godot/imported/green_metal_rust_albedo.png-aec8bf7531f2f67e8e4f0b87cfb6d742.s3tc.ctex", "res://.godot/imported/green_metal_rust_albedo.png-aec8bf7531f2f67e8e4f0b87cfb6d742.etc2.ctex"]
 
 [params]
 

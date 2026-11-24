@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://b6u54iw1kcnrr"
 path.s3tc="res://.godot/imported/hanging_industrial_lamp_emissive.png-9f27b195630a59cd852c5f7461073988.s3tc.ctex"
+path.etc2="res://.godot/imported/hanging_industrial_lamp_emissive.png-9f27b195630a59cd852c5f7461073988.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/hanging-industrial-lamp/textures/hanging_industrial_lamp_emissive.png"
-dest_files=["res://.godot/imported/hanging_industrial_lamp_emissive.png-9f27b195630a59cd852c5f7461073988.s3tc.ctex"]
+dest_files=["res://.godot/imported/hanging_industrial_lamp_emissive.png-9f27b195630a59cd852c5f7461073988.s3tc.ctex", "res://.godot/imported/hanging_industrial_lamp_emissive.png-9f27b195630a59cd852c5f7461073988.etc2.ctex"]
 
 [params]
 

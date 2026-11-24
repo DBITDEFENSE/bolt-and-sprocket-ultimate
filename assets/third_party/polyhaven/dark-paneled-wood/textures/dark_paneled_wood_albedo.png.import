@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://clpkk6db7eci8"
 path.s3tc="res://.godot/imported/dark_paneled_wood_albedo.png-94d431a05dc1401af3581960aa7a0669.s3tc.ctex"
+path.etc2="res://.godot/imported/dark_paneled_wood_albedo.png-94d431a05dc1401af3581960aa7a0669.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/dark-paneled-wood/textures/dark_paneled_wood_albedo.png"
-dest_files=["res://.godot/imported/dark_paneled_wood_albedo.png-94d431a05dc1401af3581960aa7a0669.s3tc.ctex"]
+dest_files=["res://.godot/imported/dark_paneled_wood_albedo.png-94d431a05dc1401af3581960aa7a0669.s3tc.ctex", "res://.godot/imported/dark_paneled_wood_albedo.png-94d431a05dc1401af3581960aa7a0669.etc2.ctex"]
 
 [params]
 

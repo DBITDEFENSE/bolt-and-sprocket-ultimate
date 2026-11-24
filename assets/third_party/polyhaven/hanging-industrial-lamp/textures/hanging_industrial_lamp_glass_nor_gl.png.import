@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://duspj52m8ddvq"
 path.s3tc="res://.godot/imported/hanging_industrial_lamp_glass_nor_gl.png-668705b7efbfd70e6ee019121d81dc03.s3tc.ctex"
+path.etc2="res://.godot/imported/hanging_industrial_lamp_glass_nor_gl.png-668705b7efbfd70e6ee019121d81dc03.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/hanging-industrial-lamp/textures/hanging_industrial_lamp_glass_nor_gl.png"
-dest_files=["res://.godot/imported/hanging_industrial_lamp_glass_nor_gl.png-668705b7efbfd70e6ee019121d81dc03.s3tc.ctex"]
+dest_files=["res://.godot/imported/hanging_industrial_lamp_glass_nor_gl.png-668705b7efbfd70e6ee019121d81dc03.s3tc.ctex", "res://.godot/imported/hanging_industrial_lamp_glass_nor_gl.png-668705b7efbfd70e6ee019121d81dc03.etc2.ctex"]
 
 [params]
 

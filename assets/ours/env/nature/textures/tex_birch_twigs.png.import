@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://chhbt7xh2cxm5"
 path.s3tc="res://.godot/imported/tex_birch_twigs.png-4cbd94b66f4a44ba16b4b9d4641e7af3.s3tc.ctex"
+path.etc2="res://.godot/imported/tex_birch_twigs.png-4cbd94b66f4a44ba16b4b9d4641e7af3.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/ours/env/nature/textures/tex_birch_twigs.png"
-dest_files=["res://.godot/imported/tex_birch_twigs.png-4cbd94b66f4a44ba16b4b9d4641e7af3.s3tc.ctex"]
+dest_files=["res://.godot/imported/tex_birch_twigs.png-4cbd94b66f4a44ba16b4b9d4641e7af3.s3tc.ctex", "res://.godot/imported/tex_birch_twigs.png-4cbd94b66f4a44ba16b4b9d4641e7af3.etc2.ctex"]
 
 [params]
 

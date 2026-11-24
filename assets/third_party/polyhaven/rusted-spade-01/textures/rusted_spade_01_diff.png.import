@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://ckbs57xbwevxp"
 path.s3tc="res://.godot/imported/rusted_spade_01_diff.png-deb8bef1e3f8eae659b1d9f70e851cd9.s3tc.ctex"
+path.etc2="res://.godot/imported/rusted_spade_01_diff.png-deb8bef1e3f8eae659b1d9f70e851cd9.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/rusted-spade-01/textures/rusted_spade_01_diff.png"
-dest_files=["res://.godot/imported/rusted_spade_01_diff.png-deb8bef1e3f8eae659b1d9f70e851cd9.s3tc.ctex"]
+dest_files=["res://.godot/imported/rusted_spade_01_diff.png-deb8bef1e3f8eae659b1d9f70e851cd9.s3tc.ctex", "res://.godot/imported/rusted_spade_01_diff.png-deb8bef1e3f8eae659b1d9f70e851cd9.etc2.ctex"]
 
 [params]
 

@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://vgxn8dy2tjyl"
 path.s3tc="res://.godot/imported/pine_bark_normal.png-72f9c5795a79bf7acaea0ade65bc1842.s3tc.ctex"
+path.etc2="res://.godot/imported/pine_bark_normal.png-72f9c5795a79bf7acaea0ade65bc1842.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/pine-bark/textures/pine_bark_normal.png"
-dest_files=["res://.godot/imported/pine_bark_normal.png-72f9c5795a79bf7acaea0ade65bc1842.s3tc.ctex"]
+dest_files=["res://.godot/imported/pine_bark_normal.png-72f9c5795a79bf7acaea0ade65bc1842.s3tc.ctex", "res://.godot/imported/pine_bark_normal.png-72f9c5795a79bf7acaea0ade65bc1842.etc2.ctex"]
 
 [params]
 

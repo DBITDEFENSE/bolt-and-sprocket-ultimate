@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://2ccjxu3gve6c"
 path.s3tc="res://.godot/imported/terrazzo_tiles_orm.png-3c3f8c60b58e9bea5a38355124f871a4.s3tc.ctex"
+path.etc2="res://.godot/imported/terrazzo_tiles_orm.png-3c3f8c60b58e9bea5a38355124f871a4.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/terrazzo-tiles/textures/terrazzo_tiles_orm.png"
-dest_files=["res://.godot/imported/terrazzo_tiles_orm.png-3c3f8c60b58e9bea5a38355124f871a4.s3tc.ctex"]
+dest_files=["res://.godot/imported/terrazzo_tiles_orm.png-3c3f8c60b58e9bea5a38355124f871a4.s3tc.ctex", "res://.godot/imported/terrazzo_tiles_orm.png-3c3f8c60b58e9bea5a38355124f871a4.etc2.ctex"]
 
 [params]
 

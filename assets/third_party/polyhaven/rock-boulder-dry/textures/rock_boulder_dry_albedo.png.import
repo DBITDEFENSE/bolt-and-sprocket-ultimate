@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://daj2obto53l1t"
 path.s3tc="res://.godot/imported/rock_boulder_dry_albedo.png-7503aff87c356545b2360e3eee4f6400.s3tc.ctex"
+path.etc2="res://.godot/imported/rock_boulder_dry_albedo.png-7503aff87c356545b2360e3eee4f6400.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/rock-boulder-dry/textures/rock_boulder_dry_albedo.png"
-dest_files=["res://.godot/imported/rock_boulder_dry_albedo.png-7503aff87c356545b2360e3eee4f6400.s3tc.ctex"]
+dest_files=["res://.godot/imported/rock_boulder_dry_albedo.png-7503aff87c356545b2360e3eee4f6400.s3tc.ctex", "res://.godot/imported/rock_boulder_dry_albedo.png-7503aff87c356545b2360e3eee4f6400.etc2.ctex"]
 
 [params]
 

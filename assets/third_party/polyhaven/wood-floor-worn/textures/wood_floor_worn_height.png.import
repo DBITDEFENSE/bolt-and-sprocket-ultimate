@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://jgdbpt28wufk"
 path.s3tc="res://.godot/imported/wood_floor_worn_height.png-95cd19df10d3a799d787da3182f06766.s3tc.ctex"
+path.etc2="res://.godot/imported/wood_floor_worn_height.png-95cd19df10d3a799d787da3182f06766.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/wood-floor-worn/textures/wood_floor_worn_height.png"
-dest_files=["res://.godot/imported/wood_floor_worn_height.png-95cd19df10d3a799d787da3182f06766.s3tc.ctex"]
+dest_files=["res://.godot/imported/wood_floor_worn_height.png-95cd19df10d3a799d787da3182f06766.s3tc.ctex", "res://.godot/imported/wood_floor_worn_height.png-95cd19df10d3a799d787da3182f06766.etc2.ctex"]
 
 [params]
 

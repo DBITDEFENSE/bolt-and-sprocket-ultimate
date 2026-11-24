@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://8eaikkndadaw"
 path.s3tc="res://.godot/imported/moon_track_01_orm.png-07dd1c9e52b238d4ebf9b9c7a2a0f211.s3tc.ctex"
+path.etc2="res://.godot/imported/moon_track_01_orm.png-07dd1c9e52b238d4ebf9b9c7a2a0f211.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/third_party/polyhaven/moon-track-01/textures/moon_track_01_orm.png"
-dest_files=["res://.godot/imported/moon_track_01_orm.png-07dd1c9e52b238d4ebf9b9c7a2a0f211.s3tc.ctex"]
+dest_files=["res://.godot/imported/moon_track_01_orm.png-07dd1c9e52b238d4ebf9b9c7a2a0f211.s3tc.ctex", "res://.godot/imported/moon_track_01_orm.png-07dd1c9e52b238d4ebf9b9c7a2a0f211.etc2.ctex"]
 
 [params]
 
