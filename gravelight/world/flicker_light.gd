@@ -55,4 +55,6 @@ static func wobble(t: float, amt: float, gutter_threshold: float, gutter_depth: 
 
 func _process(delta: float) -> void:
 	_t += delta * speed * _speed_k
+	if not is_visible_in_tree():
+		return   # T-265: a lamp a room's cell has switched off flickers for nobody (its time still runs)
 	light_energy = base_energy * wobble(_t, amount * _amount_k, _gutter_threshold, _gutter_depth)
