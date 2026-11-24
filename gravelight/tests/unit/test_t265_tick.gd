@@ -257,3 +257,57 @@ func test_a_world_line_is_called_when_its_file_is_there() -> void:
 	GLVO.async_start = was
 	StreamWarm.enabled = was_w
 	assert_eq(calls, ["now", "later"], "called once a loader thread has brought it")
+
+
+# ------------------------------------------------------------------ bigger things out of view
+
+func test_a_ball_is_out_of_view_only_when_all_of_it_is() -> void:
+	var fwd: Vector3 = Vector3.FORWARD
+	var cone: float = Zombie.view_cone_cos(75.0, 16.0 / 9.0)   # a half-angle of about 67 degrees
+	assert_true(Zombie.sphere_out_of_view(Vector3(0, 0, 50), 10.0, fwd, cone), "behind")
+	assert_false(Zombie.sphere_out_of_view(Vector3(0, 0, -50), 10.0, fwd, cone), "ahead")
+	assert_false(Zombie.sphere_out_of_view(Vector3(60, 0, -20), 12.0, fwd, cone), "its middle is 72 degrees off, its near edge inside the cone")
+	assert_true(Zombie.sphere_out_of_view(Vector3(60, 0, -20), 1.0, fwd, cone), "a small one there is out")
+	assert_false(Zombie.sphere_out_of_view(Vector3(0, 0, 8), 6.0, fwd, cone), "behind, but the camera stands within reach of it")
+
+
+func test_a_lane_is_unseen_only_when_every_stretch_of_it_is() -> void:
+	var fwd: Vector3 = Vector3.FORWARD
+	var cone: float = Zombie.view_cone_cos(75.0, 16.0 / 9.0)
+	assert_true(RisenColumn.lane_unseen(Vector3(-70, 0, 50), Vector3(70, 0, 50), 5.0, fwd, cone), "a lane behind the camera")
+	assert_false(RisenColumn.lane_unseen(Vector3(-70, 0, -50), Vector3(70, 0, -50), 5.0, fwd, cone), "a lane ahead")
+	assert_false(RisenColumn.lane_unseen(Vector3(60, 0, 80), Vector3(60, 0, -80), 5.0, fwd, cone), "a lane along the side: its far end is ahead")
+	assert_false(RisenColumn.lane_unseen(Vector3(-70, 0, 4), Vector3(70, 0, 4), 5.0, fwd, cone), "a lane that passes the camera's shoulder")
+
+
+func test_a_column_nobody_looks_at_sleeps_and_catches_up() -> void:
+	var host: Node3D = Node3D.new()
+	add_child_autofree(host)
+	var col: RisenColumn = RisenColumn.make({"from": Vector3(-20, 0, -60), "to": Vector3(20, 0, -60), "count": 2, "ground": "flat", "speed": [1.0, 1.0]})
+	host.add_child(col)
+	col.set_process(false)   # (stepped by hand)
+	Zombie._vl_frame = -1
+	col._process(0.5)
+	assert_eq(col.placed_frames, 1, "no camera: placed, as before")
+	var cam: Camera3D = Camera3D.new()
+	host.add_child(cam)
+	cam.make_current()
+	Zombie._vl_frame = -1
+	var k0: float = float(col._state[0]["k"])
+	col._process(0.5)   # the camera looks down -Z at it
+	assert_eq(col.placed_frames, 2)
+	assert_almost_eq(float(col._state[0]["k"]), fposmod(k0 + 0.5 / 40.0, 1.0), 0.0001)
+	cam.rotation.y = PI   # it turns its back
+	Zombie._vl_frame = -1
+	var k1: float = float(col._state[0]["k"])
+	col._process(1.0)
+	col._process(1.0)
+	assert_eq(col.slept_frames, 2, "not looked at: not placed")
+	assert_eq(float(col._state[0]["k"]), k1)
+	assert_false((col.bodies[0].get_node("AP") as AnimationPlayer).active, "and its walkers' animation rests")
+	cam.rotation.y = 0.0
+	Zombie._vl_frame = -1
+	col._process(0.5)
+	assert_almost_eq(float(col._state[0]["k"]), fposmod(k1 + 2.5 / 40.0, 1.0), 0.0001, "looked at again: where it would have walked to")
+	assert_true((col.bodies[0].get_node("AP") as AnimationPlayer).active)
+

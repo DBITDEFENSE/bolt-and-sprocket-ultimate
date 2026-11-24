@@ -609,9 +609,9 @@ const VIEW_MARGIN_RAD: float = 0.17 # the view cone is the screen's corner angle
 static var _vl_frame: int = -1
 static var _vl_vp: Viewport = null
 static var _vl_has: bool = false
-static var _vl_pos: Vector3 = Vector3.ZERO
-static var _vl_fwd: Vector3 = Vector3.FORWARD
-static var _vl_cos: float = 0.0
+static var vl_pos: Vector3 = Vector3.ZERO
+static var vl_fwd: Vector3 = Vector3.FORWARD
+static var vl_cos: float = 0.0
 var _out_of_view: bool = false
 ## Work counters for the measuring tools (perf_marks): animation steps and ticks with foot rays, all zombies.
 static var anim_steps: int = 0
@@ -647,21 +647,34 @@ static func anim_div(d2: float, full_m: float, half_m: float, out: bool) -> int:
 	return 1
 
 
+## Pure: is a ball of `radius` at `to` (from the camera) wholly outside the view cone, and not round the camera?
+## For things bigger than a body (a column of walkers, a horse).
+static func sphere_out_of_view(to: Vector3, radius: float, fwd: Vector3, cone_cos: float, near_m: float = VIEW_NEAR_M) -> bool:
+	var d: float = to.length()
+	if d <= radius + near_m:
+		return false
+	return acos(clampf(to.dot(fwd) / d, -1.0, 1.0)) - asin(clampf(radius / d, 0.0, 1.0)) > acos(clampf(cone_cos, -1.0, 1.0))
+
+
 ## The local camera of this body's viewport, read once a frame for the whole horde: true when there is one
-## (_vl_pos, _vl_fwd and _vl_cos then hold its place, its axis and its cone).
+## (vl_pos, vl_fwd and vl_cos then hold its place, its axis and its cone).
 func _vl_camera() -> bool:
+	return view_camera(get_viewport())
+
+
+## The same for any node's viewport (the landscape's walkers, the horse).
+static func view_camera(vp: Viewport) -> bool:
 	var f: int = Engine.get_process_frames()
-	var vp: Viewport = get_viewport()
 	if f != _vl_frame or vp != _vl_vp:
 		_vl_frame = f
 		_vl_vp = vp
 		var cam: Camera3D = vp.get_camera_3d() if vp != null else null
 		_vl_has = cam != null and cam.is_inside_tree()
 		if _vl_has:
-			_vl_pos = cam.global_position
-			_vl_fwd = -cam.global_basis.z.normalized()
+			vl_pos = cam.global_position
+			vl_fwd = -cam.global_basis.z.normalized()
 			var size: Vector2 = vp.get_visible_rect().size
-			_vl_cos = view_cone_cos(cam.fov, size.x / maxf(1.0, size.y))
+			vl_cos = view_cone_cos(cam.fov, size.x / maxf(1.0, size.y))
 	return _vl_has
 
 
@@ -675,9 +688,9 @@ func _process(delta: float) -> void:
 	var d2: float = global_position.distance_squared_to(target.global_position) if target != null else 0.0
 	_out_of_view = false
 	if view_lod and _vl_camera():
-		var to: Vector3 = global_position + Vector3.UP - _vl_pos
+		var to: Vector3 = global_position + Vector3.UP - vl_pos
 		d2 = to.length_squared()
-		_out_of_view = out_of_view(to, _vl_fwd, _vl_cos)
+		_out_of_view = out_of_view(to, vl_fwd, vl_cos)
 	var lod: Dictionary = _anim["lod"]
 	var half_m: float = float(lod["half_m"]) * anim_lod_scale
 	var full_m: float = float(lod["full_m"]) * anim_lod_scale

@@ -425,7 +425,12 @@ func _on_node_added(n: Node) -> void:
 		_built_now += 1
 		if _built_names.size() < 8 and (n.get_script() != null or n is VisualInstance3D or n is AudioStreamPlayer3D or n is CollisionObject3D):
 			var sc: Script = n.get_script() as Script
-			_built_names.append("%s%s" % [n.name, ("(" + sc.resource_path.get_file() + ")") if sc != null else "<" + n.get_class() + ">"])
+			var holder: Node = n.get_parent()   # the nearest scripted node above it says whose it is
+			while holder != null and holder.get_script() == null and holder.get_parent() != null:
+				holder = holder.get_parent()
+			var hs: Script = holder.get_script() as Script if holder != null else null
+			_built_names.append("%s%s in %s" % [n.name, ("(" + sc.resource_path.get_file() + ")") if sc != null else "<" + n.get_class() + ">",
+				(str(holder.name) + "(" + hs.resource_path.get_file() + ")") if hs != null else "-"])
 	if _phase == 2 and _added.size() < 40 and (n is VisualInstance3D or n is CanvasItem or n.get_script() != null):
 		var s: Script = n.get_script() as Script
 		var what: String = ""
@@ -688,6 +693,14 @@ func _report_hitch() -> void:
 		print("[hitch] work counted: voice lines whose start waited for a loader thread %d, voice files loaded in the frame that needed them %d, sound files loaded in the frame that played them %d (async voice %s)" % [
 			int(GLVO.get("late_starts")), int(GLVO.get("sync_loads")), int(AudioDirector.get("sync_loads")), str(GLVO.get("async_start"))])
 		print("[hitch]   sounds loaded in their frame (name@physics frame; the window began at frame %d): %s" % [_win_frame, ", ".join(AudioDirector.get("sync_log") as PackedStringArray)])
+	var pbs: GDScript = load("res://gravelight/world/inn_opening/patron_body.gd") as GDScript
+	if pbs.get("blend_frames") != null and int(pbs.get("blend_frames")) > 0:
+		print("[hitch] work counted: the people's pose weights were stepped in %d of %d body-frames" % [int(pbs.get("blend_steps")), int(pbs.get("blend_frames"))])
+	for cn: Node in _all_nodes():
+		if cn is Horse and cn.get("rig_frames") != null and int(cn.get("rig_frames")) > 0:
+			print("[hitch] work counted: the horse's rig was posed in %d of %d frames" % [int(cn.get("rig_ticks")), int(cn.get("rig_frames"))])
+		if cn is RisenColumn and cn.get("placed_frames") != null:
+			print("[hitch] work counted: the column of the Returned (%d walkers) was placed in %d frames and slept, unseen, in %d" % [(cn as RisenColumn).bodies.size(), int(cn.get("placed_frames")), int(cn.get("slept_frames"))])
 	var dc: DayCycle = DayCycle.of(_map)
 	if dc != null and dc.get("full_frames") != null:
 		print("[hitch] work counted: the day wrote its values in %d frames and found nothing to write in %d" % [int(dc.get("full_frames")), int(dc.get("skipped_frames"))])
