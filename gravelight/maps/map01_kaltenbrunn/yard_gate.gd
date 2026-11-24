@@ -7,6 +7,7 @@ extends Node3D
 ## once it is through they swing shut behind it. Drawing only: the gateway's collider (Geometry/Gate) never moves, so
 ## nobody walks out of the yard and the navmesh is the same with the gate open or shut; the tank's scripted drive goes
 ## through colliders. Runs on every peer from the tank it sees (a client's tank is the host's puppet).
+## The round-1 opening (InnOpening with map01_opening.json) opens it the same way for the miners who run out.
 
 @export var swing_deg: float = 90.0
 @export var open_m: float = 16.0      # a driving tank this close (flat) opens the gate
@@ -27,8 +28,15 @@ func _ready() -> void:
 	_e = get_node_or_null("LeafE") as Node3D
 
 
-## True when a Sherman is driving up to it or is still in the gateway.
+## True when a Sherman is driving up to it or is still in the gateway, or while the round-1 opening's miners run out
+## through it (map01_opening.json "gate": open_at .. close_at seconds into the opening).
 func want_open() -> bool:
+	for o: Node in get_tree().get_nodes_in_group(&"inn_opening"):
+		var op: InnOpening = o as InnOpening
+		if op != null and op.phase == InnOpening.Phase.RUNNING and op.cfg.get("gate") is Dictionary:
+			var g: Dictionary = op.cfg["gate"]
+			if op.t >= float(g.get("open_at", 0.0)) and op.t < float(g.get("close_at", 0.0)):
+				return true
 	for n: Node in get_tree().get_nodes_in_group(&"sherman"):
 		var tk: ShermanTank = n as ShermanTank
 		if tk == null or not is_instance_valid(tk) or tk.is_wreck():

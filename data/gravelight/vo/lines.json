@@ -7443,6 +7443,51 @@
     "category": "INN_FALL",
     "text": "[weak] Tell my mother... I was nearly home. Nearly home."
   },
+  "GOR_M1_ARRIVE_01": {
+    "speaker": "GOR",
+    "category": "INN_CHAT",
+    "text": "You came up the road on a sled? From the inn? Then you passed nobody. [a breath] Sit by the stove. The cage brought us up an hour ago, and nobody has rung for the next shift."
+  },
+  "KAN_M1_CHAT_01": {
+    "speaker": "KAN",
+    "category": "INN_CHAT",
+    "text": "Herr Gorny, who let them in at the gate? The watchman is not in his house, and his lamp is out."
+  },
+  "MRO_M1_CHAT_01": {
+    "speaker": "MRO",
+    "category": "INN_CHAT",
+    "text": "There is a noise down the shaft. Like singing. Do not tell me it is the wind, Wilhelm. The wind does not sing in the salt."
+  },
+  "GOR_M1_WINDOW_01": {
+    "speaker": "GOR",
+    "category": "INN_WINDOW",
+    "text": "What was that? ...At the windows. Something is at every window of the yard."
+  },
+  "KAN_M1_SCREAM_01": {
+    "speaker": "KAN",
+    "category": "INN_SCREAM",
+    "text": "[a scream] Over the wall! They are coming over the wall, and they are walking wrong!"
+  },
+  "GOR_M1_FLEE_01": {
+    "speaker": "GOR",
+    "category": "INN_FLEE",
+    "text": "The north gate! Everybody, the gate! Leave the baskets, leave everything!"
+  },
+  "PIE_M1_CAUGHT_01": {
+    "speaker": "PIE",
+    "category": "INN_CAUGHT",
+    "text": "[screaming] It has my coat! Karl! Karl, it has me!"
+  },
+  "MRO_M1_CAUGHT_01": {
+    "speaker": "MRO",
+    "category": "INN_CAUGHT",
+    "text": "[screaming] Franz! Get off! Get it off me!"
+  },
+  "GOR_M1_GATE_01": {
+    "speaker": "GOR",
+    "category": "INN_DOOR",
+    "text": "Pull, Jozef, pull! [shouting] Shut it behind us! Shut it!"
+  },
   "DUT_INN_RISE_01": {
     "speaker": "DUT",
     "category": "INN_RISE",

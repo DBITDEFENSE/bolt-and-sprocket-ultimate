@@ -206,3 +206,41 @@ on a collider's top, none inside one, a shot piece of each breaks; 12 curtains e
 inside the room, off the wall, over the floor; the partition door swings from 65 to 100 degrees for the player walking
 through; the yards take prints and the Kaue does not, 7 prints from a walk; every drip under a ceiling and falling its
 height onto a floor; the six wind zones find their windows.
+
+## 5. The round-1 opening: the night shift runs
+
+`data/gravelight/map01_opening.json`, read by the generalised `inn_opening.gd` (T-271's `data_path_for`; the node
+`Gameplay/InnOpening` with an empty `data_path`). No script of the opening was changed.
+
+The night shift has come up and is changing in the Waschkaue when the squad's sled pulls in (the sled is drawn at the
+Kaue's east wall): four miners on the benches and at the stove, in the room with the squad. Round 1 is held for the
+settled view (9..10.5 s) facing the south lane, then the cue (boards slammed at the yard's windows, Gorny: "What was
+that? ...At the windows."). When round 1 starts the miners run out of the two doorways: Gorny and Kania up the west and
+east lanes to the north gate (YardGate opens for them from 6.5 to 15 s: the opening's own `gate` row, read by
+`yard_gate.gd`) and off up the north road; Pietsch and Mrozek are caught in the south lane 7..9 m in front of the
+spawn by two of the dead rising out of the snow ((8.6, 0, 20.2) and (17.6, 0, 23.0)) and rise as zombies of round 1
+where they fell, (11.0, 0, 21.6) and (14.6, 0, 22.0), on the navmesh. Their two slots and the attackers' two come off
+round 1's queue (the round's size is unchanged, as on Map 0). No front door (the Kaue's doorways are open), no flare,
+no squad line on a rise (the squad's INN_RISE lines name Map 0's people). The title card (campaign only) reads
+"SALZBERGWERK KALTENBRUNN / the Waschkaue, Schacht II · Upper Silesia / 23 December 1944 · night". A campaign arrival
+from the inn never plays it (as on Map 0: `Campaign.arriving`); it plays when a match starts on Kaltenbrunn.
+
+Lines: nine new text lines in `vo/lines.json` (GOR_M1_*, KAN_M1_*, MRO_M1_*, PIE_M1_*; the existing INN_* categories)
+and four speakers in `voice_cast.json` (GOR, KAN, PIE, MRO: descriptions for a later voice pass). No audio was made
+(no outside services): the nine are listed in `audio_manifest.json` `missing` with that reason; the subtitles show.
+The patrons wear the opening's primitive bodies with their colours (there is no modelled miner in `art/people.json`).
+
+Verified (headless): `smoke_map01_opening` (new, 15 checks) PASS: the file read by the map's id; the four miners in the
+Kaue under its roof before round 1; round 1 waited 10.9 s of settled view and the cue; two intro lines first; four
+slots off the queue; every miner runs through the squad's starting view (within 56 degrees of its forward); the gate
+opens for them and shuts; Gorny and Kania through the gateway and gone; Pietsch and Mrozek risen on the yard's navmesh
+in A_MINEHEAD; two attackers rose; no slot returned. `test_map01_detail` `test_the_opening_data`: the starts in the
+Kaue, the caught fall on the navmesh in the south lane, the escapees cross z 0 inside the gateway, the attackers rise
+on the navmesh, every line and the cue's line exist, the speakers are in the cast, the escapees reach the gate while
+it is open. `test_vo` (every line baked or listed), `test_map_detail` (Kaltenbrunn no longer "has no opening") PASS.
+
+**Survivors behind a door: not built** (time). The generalised `inn_survivors.gd` would take a
+`data/gravelight/map01_survivors.json` (a `reveal_door` id and survivors with hide / post places and eight lines each);
+the natural place is the Administration (`door_a_c`, 1000): two clerks and the night watchman (the KAN line asks where
+he is) hiding in the radio room upstairs, armed for 750 to hold the upstairs windows. Note that Kaltenbrunn already has
+T-143's hidden people (the shift boss Brzezina, the orderly, the switchboard operator) who trade, not fight.

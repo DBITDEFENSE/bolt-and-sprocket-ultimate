@@ -284,7 +284,8 @@ func test_opening_and_survivors_read_their_file_by_map() -> void:
 	assert_eq(str(InnOpening.load_cfg().get("map", "")), "map00_crossroads")
 	assert_eq(str(InnSurvivors.load_cfg().get("map", "")), "map00_crossroads")
 	for id: StringName in [&"map01_kaltenbrunn", &"map02_totenhafen", &"map04a_thalbach", &"map04b_kranich", &"map04c_groomlake", &"map04d_mondlicht"]:
-		assert_eq(InnOpening.load_cfg(InnOpening.data_path_for(id)), {}, "%s has no opening file yet: no opening" % id)
+		if id != &"map01_kaltenbrunn":   # (T-272: Kaltenbrunn's opening, test_map01_detail)
+			assert_eq(InnOpening.load_cfg(InnOpening.data_path_for(id)), {}, "%s has no opening file yet: no opening" % id)
 		assert_eq(InnSurvivors.load_cfg(InnSurvivors.data_path_for(id)), {}, "%s has no survivors file yet" % id)
 	var op: InnOpening = InnOpening.new()
 	assert_eq(op.data_path, "", "the node's own path is empty: it asks its map")

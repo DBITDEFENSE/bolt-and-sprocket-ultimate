@@ -4381,6 +4381,8 @@ func build_gameplay() -> void:
 		_node("res://gravelight/world/ammo_box.gd", "AmmoBox_" + str(ab2[0]), {"box_name": str(ab2[0]).to_snake_case()}, ab2[1], float(ab2[2]))
 	_node("res://gravelight/world/armorers_bench.gd", "ArmorersBench", {}, ARMORERS_BENCH[0], float(ARMORERS_BENCH[1]))
 	_build_yard_gate()
+	# T-272: round 1's opening, the night shift runs (InnOpening reads data/gravelight/map01_opening.json for this map)
+	_node("res://gravelight/world/inn_opening/inn_opening.gd", "InnOpening", {}, Vector3.ZERO)
 	build_quest_objects()
 	# power-on burst points (G and F ground)
 	for bp: Vector3 in [Vector3(50, DY, 64), Vector3(78, DY, 79), Vector3(0, DY, 88), Vector3(24, DY, 88)]:

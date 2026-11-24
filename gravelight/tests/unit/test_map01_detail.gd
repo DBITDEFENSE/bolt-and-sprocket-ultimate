@@ -393,3 +393,50 @@ func test_the_deals_rules_over_many_seeds() -> void:
 			assert_lte(int(per_zone[z]), int(rules["max_per_zone"]), "seed %d: at most two in %s" % [seed_v, z])
 	assert_gte(sw_spots.size(), 2, "Second Wind has more than one place (%s)" % str(sw_spots.keys()))
 	assert_eq(used.size(), (rows[0] as Array).size(), "every spot gets a machine on some seed")
+
+
+# ================================================================== the round-1 opening
+
+func test_the_opening_data() -> void:
+	var c: Dictionary = InnOpening.load_cfg(InnOpening.data_path_for(&"map01_kaltenbrunn"))
+	assert_false(c.is_empty(), "Kaltenbrunn has its opening file")
+	assert_eq(str(c["map"]), "map01_kaltenbrunn")
+	assert_eq(int(c["round"]), 1)
+	assert_true(_scene.find_child("InnOpening", true, false) != null, "the scene has the opening's node (its data_path empty: it asks its map)")
+	var cast: Dictionary = GLData.load_json("res://data/gravelight/vo/voice_cast.json")["cast"]
+	var lines: Dictionary = GLData.load_json("res://data/gravelight/vo/lines.json")
+	var ids: Array = []
+	for row: Dictionary in c["patrons"]:
+		ids.append(str(row["id"]))
+		assert_true(cast.has(str(row["speaker"])), "%s's speaker %s is in the cast" % [row["id"], row["speaker"]])
+		var st: Vector3 = _v3(row["start"])
+		assert_true(st.x > 4.0 and st.x < 16.0 and st.z > 26.0 and st.z < 31.85, "%s starts in the Waschkaue" % row["id"])
+		var last: Vector3 = _v3((row["outside"] as Array).back())
+		if str(row["fate"]) == "caught":
+			assert_true(_on_navmesh(_scene, last), "%s falls (and rises) on the yard's navmesh" % row["id"])
+			assert_true(last.z > 20.0 and last.z < 26.0, "%s is caught in the south lane, in front of the Kaue" % row["id"])
+		else:
+			assert_eq(str(row["fate"]), "escape")
+			var crossed: bool = false
+			var pts: Array = (row["route"] as Array) + (row["outside"] as Array)
+			for k: int in pts.size() - 1:
+				var a: Vector3 = _v3(pts[k])
+				var b: Vector3 = _v3(pts[k + 1])
+				if a.z > 0.0 and b.z <= 0.0:
+					var f: float = a.z / (a.z - b.z)
+					var x: float = lerpf(a.x, b.x, f)
+					crossed = x > GATE_X0 + 0.3 and x < GATE_X1 - 0.3
+			assert_true(crossed, "%s leaves the yard through the gateway" % row["id"])
+	assert_eq(InnOpening.riser_ids(c).size(), 2, "two rise")
+	for a2: Dictionary in c["attackers"]:
+		assert_true(ids.has(str(a2["prey"])), "an attacker's prey is a patron")
+		assert_true(_on_navmesh(_scene, _v3(a2["pos"])), "the attacker rises on the yard's navmesh at %s" % str(a2["pos"]))
+	for ln: Dictionary in c["lines"]:
+		assert_true(lines.has(str(ln["id"])), "line %s exists" % ln["id"])
+		assert_true(ids.has(str(ln["who"])))
+	assert_true(lines.has(str(c["look"]["cue_line"]["id"])), "the cue's line exists")
+	var g: Dictionary = c["gate"]
+	var exits: Dictionary = InnOpening.exit_times(c)
+	for id: String in ["gorny", "kania"]:
+		assert_true(float(exits[id]) >= float(g["open_at"]) - 0.5 and float(exits[id]) < float(g["close_at"]) - 2.0, "%s reaches the gate while it is open (%.1f s)" % [id, float(exits[id])])
+	assert_false(c.has("squad_line"), "no squad line on a rise (the squad's INN_RISE lines name Map 0's people)")
