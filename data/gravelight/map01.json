@@ -46,9 +46,9 @@
     "round": 30,
     "target": "map02_totenhafen",
     "position": [
-      20.0,
+      24.4,
       0.0,
-      2.2
+      2.4
     ],
     "yaw": 180.0,
     "zone": "A_MINEHEAD",
@@ -71,7 +71,13 @@
     {
       "round": 30,
       "boss": "totenross_fuhrmann",
-      "count": 1
+      "count": 1,
+      "arrival": {
+        "hooves_at": 20.0,
+        "scream_at": 23.0,
+        "spawn_at": 25.0
+      },
+      "_doc": "T-272: der Fuhrmann leads the round-30 horde that hits the Sherman (sherman_event): heard as the tank parks in the forecourt (about 19 s after the round starts), in by the north gate behind it as the dead go for it"
     }
   ],
   "round_boss_arena": {
@@ -117,9 +123,63 @@
     }
   ],
   "sherman_event": {
-    "_doc": "T-271 Kaltenbrunn's round-40 set piece: THE RAID ONLY (ShermanEvent with \"tank\": false; AirRaid). No Sherman here: the yard's gate is one solid piece of the baked shell and the buried rail line ends at the Rail Yard's north wall, so a tank has no way in until the generator gives it one (docs/u21/t271_map_detail_base.md). Round 40: a dive bomber comes down the valley on the locomotive in the Rail Yard (stuka_target), then the siren and sixty seconds of bombs on the open yards (bomb_zones); every roof is a shelter (shelter_roof: the Kaue, the barracks' rooms, the lift house) and so is everything in shelter_zones (the Administration, the stairs, the mine). shelter_points: where a bot outside runs to. raid / stuka: this map's banners over sherman.json's.",
-    "tank": false,
+    "_doc": "T-272 Kaltenbrunn's Sherman (sherman.json; ShermanEvent): THE FULL EVENT, as on the Inn. Round 30: it comes up out of the valley along the buried rail line's terrace, turns west along the north road and in through the yard's north gate (YardGate swings open for it and shuts behind it; the gateway's collider never moves) and parks in the forecourt between the gate and the headframe, facing the yard (route; park and park_yaw are its last point and leg). The dead rise round it in the Minehead yard (assault_zones: the squad's own zone, open from round 1, so the fight is always reachable) and go for it; der Fuhrmann comes in by the gate as it parks (round_bosses' arrival). If it holds it covers the yard for rounds 31..39. Round 40: the dive bomber comes down the valley on it (stuka_target is only for a match where both tanks were lost: the locomotive), then the raid: bombs on the open yards (bomb_zones), every roof a shelter (shelter_roof) and so is everything in shelter_zones. Before T-272 this block was the raid only (\"tank\": false): there was no way in.",
+    "arrive_round": 30,
     "stuka_round": 40,
+    "route": [
+      [
+        48.0,
+        0.0,
+        -24.0
+      ],
+      [
+        46.0,
+        0.0,
+        -17.0
+      ],
+      [
+        32.0,
+        0.0,
+        -14.0
+      ],
+      [
+        21.0,
+        0.0,
+        -12.0
+      ],
+      [
+        20.0,
+        0.0,
+        4.4
+      ]
+    ],
+    "_doc_route": "T-272 the shelf north of the yard is flat at y 0 (KaltenTerrain SHELF_MIN z -25): from the rail line's head (the terrace comes up out of the valley there) along the trodden north road between the drifts (x 2..18 and 23..37 at z -7..-1) and straight south through the gateway (x 17.6..22.4; the hull is 2.62 m wide). Parked: centre (20, 0, 4.4) facing south, hull z 1.4..7.3, 2.7 m clear of the hoist house, the lanes either side of it 6 m and more (probe_map_site --route).",
+    "arrival": {
+      "banner": "ARMOUR AT THE NORTH GATE",
+      "banner_small": "A SHERMAN IS COMING UP OUT OF THE VALLEY"
+    },
+    "assault_zones": [
+      "A_MINEHEAD"
+    ],
+    "drive_zones": [
+      "A_MINEHEAD"
+    ],
+    "drive_boxes": [
+      [
+        15.2,
+        0.4,
+        24.8,
+        9.7
+      ]
+    ],
+    "drive_no_go": [
+      [
+        24.4,
+        2.4,
+        1.0
+      ]
+    ],
+    "_doc_drive": "T-272 where a player may drive it here: the forecourt in front of the hoist house only (x 15.2..24.8, the hoist house's own width, so a hull left anywhere in it, or its wreck after round 40, never stands in the 3 m lanes past the gatehouse and the winding house; z 0.4..9.7, between the north wall and the hoist house). Room to turn on the spot (a 6.5 m circle) and lay the gun on the yard; never the yard's lanes, the Kaue or the rail yard. The disc keeps the campaign's exfil beacon by the gate clear.",
     "stuka_target": [
       52.5,
       3.0,
@@ -165,9 +225,6 @@
     "raid": {
       "warn_small": "GET UNDER A ROOF: THE KAUE, THE BARRACKS, THE MINE",
       "outside_text": "GET UNDER A ROOF"
-    },
-    "stuka": {
-      "banner_small": "A DIVE BOMBER IS COMING DOWN ON THE RAIL YARD"
     }
   }
 }

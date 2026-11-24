@@ -28,8 +28,11 @@ func test_on_the_inn_only() -> void:
 	assert_eq(int(b["stuka_round"]), 40, "the dive bomber and the raid on round 40")
 	for m: StringName in [&"map04a_thalbach", &"map04b_kranich", &"map04c_groomlake", &"map04d_mondlicht", &"test_range"]:
 		assert_true(ShermanEvent.block_for(m).is_empty(), "%s: no Sherman" % m)
-	for m2: StringName in [&"map01_kaltenbrunn", &"map02_totenhafen"]:   # T-271: the raid only (test_map_detail)
+	for m2: StringName in [&"map02_totenhafen"]:   # T-271: the raid only (test_map_detail)
 		assert_false(ShermanEvent.block_has_tank(ShermanEvent.block_for(m2)), "%s: no Sherman (the raid only)" % m2)
+	# T-272: Kaltenbrunn has the whole event now (through the yard's north gate; test_map01_detail)
+	var k1: Dictionary = ShermanEvent.block_for(&"map01_kaltenbrunn")
+	assert_true(ShermanEvent.block_has_tank(k1) and int(k1["arrive_round"]) == 30 and int(k1["stuka_round"]) == 40, "Kaltenbrunn: the Sherman on 30, the dive bomber on 40")
 	var c: Dictionary = _cfg()
 	for k: String in ["tank", "arrival", "assault", "fire_zombie", "assist", "stuka", "raid"]:
 		assert_true(c.has(k), "sherman.json has %s" % k)
@@ -52,9 +55,18 @@ func test_fuhrmann_resolution() -> void:
 	var parked_at: float = float(a["drive_at"]) + drive_s
 	assert_gt(float(arr.get("spawn_at", 6.0)), parked_at - 3.0, "the horse comes in as the tank parks (%.1f s; parked by ~%.1f s)" % [float(arr.get("spawn_at", 6.0)), parked_at])
 	assert_lt(float(arr.get("spawn_at", 6.0)), parked_at + float(a["assault_after_park"]) + 2.0, "and before the assault is well on")
-	# Kaltenbrunn's round-30 horse keeps its own beats (no Sherman there)
+	# T-272: on Kaltenbrunn too der Fuhrmann comes in as its tank parks (its route is longer: through the north gate)
+	var k_route: PackedVector3Array = PackedVector3Array()
+	for p2: Variant in ShermanEvent.block_for(&"map01_kaltenbrunn")["route"]:
+		k_route.append(Vector3(float(p2[0]), float(p2[1]), float(p2[2])))
+	var k_parked: float = float(a["drive_at"]) + ShermanEvent.route_length(k_route) / float(_cfg()["tank"]["drive_speed"])
 	for r2: Dictionary in HorseRound.rows_for(&"map01_kaltenbrunn"):
-		assert_false(r2.has("arrival"), "Kaltenbrunn's rows keep the block's arrival")
+		if int(r2["round"]) == 30:
+			var k_spawn: float = float((r2.get("arrival", {}) as Dictionary).get("spawn_at", 6.0))
+			assert_gt(k_spawn, k_parked - 3.0, "Kaltenbrunn: the horse comes in as the tank parks (%.1f s; parked by ~%.1f s)" % [k_spawn, k_parked])
+			assert_lt(k_spawn, k_parked + float(a["assault_after_park"]) + 2.0, "Kaltenbrunn: and before the assault is well on")
+		else:
+			assert_false(r2.has("arrival"), "Kaltenbrunn's round-20 horse keeps the block's arrival")
 	var blk: Dictionary = HorseBoss.block_of("totenross_fuhrmann")
 	assert_eq(float((blk["arrival"] as Dictionary)["spawn_at"]), 6.0, "the boss block itself is unchanged")
 

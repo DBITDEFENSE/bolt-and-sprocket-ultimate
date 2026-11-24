@@ -1,8 +1,8 @@
 extends GutTest
 ## T-271: Map 0's match systems on the other six maps, the data rows. An arms locker on every map (each row measured
 ## on its scene file like Map 0's); a rideable horse with a rail where the setting allows (Kaltenbrunn, Thalbach,
-## Groom Lake; not the aircraft, the pens or the Moon); the raid-only set piece on Kaltenbrunn (round 40) and
-## Totenhafen (round 30) with Map 0's block and behaviour untouched; the opening and the survivors read their file
+## Groom Lake; not the aircraft, the pens or the Moon); the raid-only set piece on Totenhafen (round 30; T-272 gave
+## Kaltenbrunn the full Sherman event, test_map01_detail) with Map 0's block and behaviour untouched; the opening and the survivors read their file
 ## by map; three of Map 0's sky-war kinds on Thalbach; Groom Lake's day stays off, and why.
 ## The running maps are walked by smoke_map_detail and smoke_weapon_locker.
 
@@ -17,7 +17,8 @@ const SCENES: Dictionary = {
 }
 const HORSE_MAPS: Array = ["map01", "map04a", "map04c"]
 const NO_HORSE_MAPS: Array = ["map02", "map04b", "map04d"]
-const RAID_MAPS: Dictionary = {"map01": 40, "map02": 30}
+const RAID_MAPS: Dictionary = {"map01": 40, "map02": 30}   # the raid's round (its zones are checked on the scene)
+const RAID_ONLY_MAPS: Dictionary = {"map02": 30}            # T-272: Kaltenbrunn has the tank too now
 
 
 static func _json(key: String) -> Dictionary:
@@ -153,11 +154,11 @@ func test_the_way_home_uses_the_zones_layers() -> void:
 # ================================================================== the raid only
 
 func test_raid_only_blocks() -> void:
-	for key: String in RAID_MAPS:
+	for key: String in RAID_ONLY_MAPS:
 		var b: Dictionary = _json(key).get("sherman_event", {})
 		assert_false(b.is_empty(), "%s has the block" % key)
 		assert_false(ShermanEvent.block_has_tank(b), "%s: no tank" % key)
-		assert_eq(int(b["stuka_round"]), int(RAID_MAPS[key]), key)
+		assert_eq(int(b["stuka_round"]), int(RAID_ONLY_MAPS[key]), key)
 		assert_false(b.has("route") or b.has("drive_zones") or b.has("barrier"), "%s: nothing of the tank's" % key)
 		assert_true(bool(b["shelter_roof"]), "%s: any roof shelters" % key)
 		assert_gte((b["shelter_points"] as Array).size(), 2, "%s: places for the bots" % key)
@@ -171,7 +172,8 @@ func test_raid_only_blocks() -> void:
 		assert_eq(float(raid["duration"]), float(ShermanEvent.table()["raid"]["duration"]), key)
 		if b.has("stuka_target"):
 			assert_false(str(ShermanEvent.merged(ShermanEvent.table(), b, "stuka")["banner_small"]).contains("SHERMAN"), "%s: the dive bomber's banner does not name a tank" % key)
-	assert_true(_json("map01")["sherman_event"].has("stuka_target"), "Kaltenbrunn: the dive bomber has a landmark")
+	assert_true(_json("map01")["sherman_event"].has("stuka_target"), "Kaltenbrunn: the dive bomber has a landmark (if both its tanks were lost)")
+	assert_eq(int(_json("map01")["sherman_event"]["stuka_round"]), int(RAID_MAPS["map01"]), "Kaltenbrunn: the raid on round 40")
 	assert_false(_json("map02")["sherman_event"].has("stuka_target"), "Totenhafen: no dive bomber")
 	assert_ne(int(_json("map02")["sherman_event"]["stuka_round"]), int(_json("map02")["exfil"]["round"]), "Totenhafen: not on the campaign's exfil round")
 	for row: Dictionary in _json("map01")["round_bosses"]:

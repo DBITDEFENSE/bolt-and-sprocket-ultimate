@@ -274,6 +274,13 @@ const KAUE_PROPS: Array = [
 ## At the gatehouse, against its east face north of the Kar98k corner, clear of the shelf by its door.
 const ARMORERS_BENCH: Array = [Vector3(12.01, 0, 8.8), -90.0]
 
+## T-272: the north gate's opening in the yard wall (the brick pillars' inner faces; the pillars are _dress_yard's) and
+## the plane its leaves hang in (inside the Gate collider, z -0.55..-0.15).
+const GATE_X0: float = 17.6
+const GATE_X1: float = 22.4
+const GATE_Z: float = -0.45
+const GATE_H: float = 3.6
+
 ## Greybox colour keys -> material library keys (world/materials.gd).
 const MAT_MAP: Dictionary = {
 	"wall": "stucco", "brick": "brick", "concrete": "concrete", "salt": "halite", "rock": "rock_dark", "snow": "snow",
@@ -686,12 +693,15 @@ func build_surface() -> void:
 	box(geo, "GroundS2", Vector3(30, -0.5, 46), Vector3(46, 0, 58), "snow")
 	box(geo, "GroundS3", Vector3(46, -0.5, 46), Vector3(62, 0, 52), "snow")
 	# A_MINEHEAD yard walls (4 m brick, open sky)
+	# T-272: the north gate is a real gateway now (GATE_X0..GATE_X1, the pillars' inner faces), for the round-30 Sherman
+	# (map01.json sherman_event). Its collider (Gate) stays shut across it for ever, so nobody leaves the yard and the bake
+	# is the same with the leaves open or shut; the leaves are YardGate's drawing (_build_yard_gate, yard_gate.gd)
 	room("Yard", 0, 40, 0, 32, 0, 4.0, {
-		"n": [win(8, 0), win(32, 0)],
+		"n": [win(8, 0), win(32, 0), [GATE_X0, GATE_X1, 0.0, 4.0]],
 		"w": [win(4, 0), door(25, 0)],
 		"e": [win(7, 0), door(25, 0)],
 	}, "brick", false)
-	box(geo, "Gate", Vector3(18, 0, -0.6), Vector3(22, 4.5, -0.3), "metal")
+	box(geo, "Gate", Vector3(GATE_X0 - 0.1, 0, -0.55), Vector3(GATE_X1 + 0.1, 4.5, -0.15), "metal")
 	box(geo, "Gatehouse", Vector3(4, 0, 4), Vector3(12, 3.5, 10), "brick")
 	box(geo, "CoalShed", Vector3(28, 0, 4), Vector3(38, 3.0, 10), "brick")
 	box(geo, "TowerBase", Vector3(15, 0, 10), Vector3(25, 6, 20), "concrete")
@@ -1302,7 +1312,12 @@ func _coping_and_wire(a: Vector3, b: Vector3, out: Vector3, wire: bool) -> void:
 
 
 func _dress_yard() -> void:
-	_coping_and_wire(Vector3(0, 0, 0), Vector3(40, 0, 0), Vector3(0, 0, -1), true)
+	_coping_and_wire(Vector3(0, 0, 0), Vector3(GATE_X0, 0, 0), Vector3(0, 0, -1), true)   # (T-272: not over the gateway)
+	_coping_and_wire(Vector3(GATE_X1, 0, 0), Vector3(40, 0, 0), Vector3(0, 0, -1), true)
+	# T-272: the north road to the gate, trodden through the snow from the rail line's terrace (the way the Sherman comes)
+	for rs: Array in [[Vector3(20.3, 0.004, -6.4), Vector3(3.4, 0.012, 12.6), 0.0], [Vector3(26.5, 0.004, -13.0), Vector3(3.4, 0.012, 12.0), 100.3],
+			[Vector3(39.0, 0.004, -15.5), Vector3(3.4, 0.012, 15.0), 102.1], [Vector3(47.0, 0.004, -20.5), Vector3(3.4, 0.012, 8.0), 164.0]]:
+		_noshadow(OB(rs[0], rs[1], "snow_trodden", Vector3(0, float(rs[2]), 0)))
 	_coping_and_wire(Vector3(40, 0, 0), Vector3(40, 0, 14), Vector3(1, 0, 0), true)
 	_coping_and_wire(Vector3(40, 0, 14), Vector3(40, 0, 48), Vector3(1, 0, 0), false)
 	_coping_and_wire(Vector3(0, 0, 0), Vector3(0, 0, 8), Vector3(-1, 0, 0), true)
@@ -4187,6 +4202,7 @@ func build_gameplay() -> void:
 	for ab2: Array in AMMO_BOXES:
 		_node("res://gravelight/world/ammo_box.gd", "AmmoBox_" + str(ab2[0]), {"box_name": str(ab2[0]).to_snake_case()}, ab2[1], float(ab2[2]))
 	_node("res://gravelight/world/armorers_bench.gd", "ArmorersBench", {}, ARMORERS_BENCH[0], float(ARMORERS_BENCH[1]))
+	_build_yard_gate()
 	build_quest_objects()
 	# power-on burst points (G and F ground)
 	for bp: Vector3 in [Vector3(50, DY, 64), Vector3(78, DY, 79), Vector3(0, DY, 88), Vector3(24, DY, 88)]:
@@ -4195,6 +4211,42 @@ func build_gameplay() -> void:
 		m.position = bp
 		m.add_to_group(&"power_burst_points", true)
 		gameplay.add_child(m)
+
+
+## T-272: the north gate's two leaves (YardGate, yard_gate.gd swings them for the Sherman). Each leaf hangs on a pivot at
+## its pillar's inner face: an iron frame (stiles, three rails, two diagonal braces), vertical boards, a snow line on the
+## top rail, a hasp and chain where they meet. Not in Dressing (the batches would freeze it); no collider (Gate is the
+## gateway's); each leaf baked to one mesh per material.
+func _build_yard_gate() -> void:
+	var g: Node3D = _node("res://gravelight/maps/map01_kaltenbrunn/yard_gate.gd", "YardGate", {}, Vector3((GATE_X0 + GATE_X1) * 0.5, 0, GATE_Z), 0.0)
+	var half: float = (GATE_X1 - GATE_X0) * 0.5
+	for side: float in [-1.0, 1.0]:
+		var pv: Node3D = Node3D.new()
+		pv.name = "LeafW" if side < 0.0 else "LeafE"
+		pv.position = Vector3(side * half, 0, 0)
+		g.add_child(pv)
+		var s: float = -side   # the leaf runs from its hinge toward the middle
+		var w: float = half - 0.02
+		var lo: float = 0.08
+		var hi: float = GATE_H
+		for sx: Array in [[0.03, 0.13], [w - 0.1, w]]:   # the stiles
+			Props.block(pv, Vector3(s * float(sx[0]), lo, -0.05), Vector3(s * float(sx[1]), hi, 0.05), "iron")
+		for ry: float in [lo + 0.07, 1.85, hi - 0.06]:   # the rails
+			Props.block(pv, Vector3(s * 0.03, ry - 0.06, -0.045), Vector3(s * w, ry + 0.06, 0.045), "iron")
+		Props.block(pv, Vector3(s * 0.13, lo + 0.13, -0.03), Vector3(s * (w - 0.1), hi - 0.12, 0.03), "planks")   # the boards
+		for br: Array in [[lo + 0.13, 1.79], [1.91, hi - 0.12]]:   # the diagonal braces, from the hinge's foot up to the free stile
+			for fz2: float in [-0.04, 0.04]:
+				Props.strut(pv, Vector3(s * 0.13, float(br[0]) + 0.05, fz2), Vector3(s * (w - 0.1), float(br[1]) - 0.05, fz2), 0.06, "iron")
+		for hy: float in [0.6, hi - 0.6]:   # the hinge straps
+			Props.block(pv, Vector3(s * 0.0, hy - 0.05, -0.065), Vector3(s * 0.7, hy + 0.05, 0.065), "iron")
+		Props.block(pv, Vector3(s * 0.03, hi, -0.06), Vector3(s * w, hi + 0.05, 0.06), "snow", false)
+	# the hasp and a hanging chain on the yard side of the east leaf's free stile (it swings with that leaf)
+	var le: Node3D = g.get_node("LeafE") as Node3D
+	Props._noshadow(Props.block(le, Vector3(-half + 0.02, 1.15, 0.05), Vector3(-half + 0.3, 1.25, 0.08), "iron"))
+	for c: int in 4:
+		Props._noshadow(Props.obox(le, Vector3(-half + 0.24, 1.08 - c * 0.075, 0.09), Vector3(0.05, 0.07, 0.015), "iron", Vector3(0, 0, 90.0 * float(c % 2))))
+	for leaf: String in ["LeafW", "LeafE"]:   # one mesh per material a leaf (it swings as one piece): 3 draw calls, not 20
+		_bake_local(g.get_node(leaf) as Node3D, false)
 
 
 ## Art for a BlastDoor (it uses a child named "Visual" instead of its greybox, and slides it up to open).
