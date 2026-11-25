@@ -1,0 +1,9 @@
+Title: GRAVELIGHT explosion sound layers (T-280): crack, far rumble, debris patter, small pop
+Author: GRAVELIGHT project (in-house, synthesized by Claude Code for Devin Blair)
+Source: this repository (gravelight/tools_src/gen_audio_blast.py, gen_audio.py's DSP core; no recordings, no samples)
+License: Ours (original work, in-house)
+Credit line: none needed
+Format: WAV (mono, generated)
+Downloaded: n/a (made 2026-11-25)
+Files used: blast_crack_01..03.wav, blast_rumble_far_01..03.wav, blast_debris_01..03.wav, blast_pop_01..02.wav
+Game use: layered over the callers' booms by BlastFx (data/gravelight/audio.json keys blast_crack, blast_rumble_far, blast_debris, blast_pop)

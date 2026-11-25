@@ -6398,6 +6398,65 @@
       ],
       "bus": "SFX",
       "attenuation": "world"
+    },
+    "blast_crack": {
+      "files": [
+        "res://gravelight/audio/sfx/blast/blast_crack_01.wav",
+        "res://gravelight/audio/sfx/blast/blast_crack_02.wav",
+        "res://gravelight/audio/sfx/blast/blast_crack_03.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        0.9,
+        1.1
+      ],
+      "max_voices": 4,
+      "bus": "SFX",
+      "attenuation": "loud"
+    },
+    "blast_debris": {
+      "files": [
+        "res://gravelight/audio/sfx/blast/blast_debris_01.wav",
+        "res://gravelight/audio/sfx/blast/blast_debris_02.wav",
+        "res://gravelight/audio/sfx/blast/blast_debris_03.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        0.9,
+        1.1
+      ],
+      "max_voices": 3,
+      "bus": "SFX",
+      "attenuation": "world"
+    },
+    "blast_pop": {
+      "files": [
+        "res://gravelight/audio/sfx/blast/blast_pop_01.wav",
+        "res://gravelight/audio/sfx/blast/blast_pop_02.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        0.92,
+        1.08
+      ],
+      "max_voices": 2,
+      "bus": "SFX",
+      "attenuation": "world"
+    },
+    "blast_rumble_far": {
+      "files": [
+        "res://gravelight/audio/sfx/blast/blast_rumble_far_01.wav",
+        "res://gravelight/audio/sfx/blast/blast_rumble_far_02.wav",
+        "res://gravelight/audio/sfx/blast/blast_rumble_far_03.wav"
+      ],
+      "volume_db": 0.0,
+      "pitch": [
+        0.88,
+        1.06
+      ],
+      "max_voices": 3,
+      "bus": "SFX",
+      "attenuation": "loud"
     }
   }
 }

@@ -27,7 +27,7 @@ extends Node3D
 
 const IMPACTS: int = 48
 const TRACERS: int = 48
-const BLASTS: int = 4
+const BLASTS: int = BlastFx.SLOTS   # T-280: the blast pool lives in BlastFx (blast)
 const STATICS: int = 4
 const STATIC_LIFE: float = 0.42
 const STATIC_TEAL: Color = Color(0.25, 0.85, 0.8)
@@ -88,13 +88,10 @@ var _tracer_fly: Array[Dictionary] = []
 ## T-128: [core, glow] materials per tracer look (normal / upgraded), additive.
 var _tracer_mats: Dictionary = {}
 var _tracer_cfg: Dictionary = {}
-var _blasts: Array[Node3D] = []
-var _blast_life: Array[float] = []
 var _statics: Array[Node3D] = []
 var _static_life: Array[float] = []
 var _ni: int = 0
 var _nt: int = 0
-var _nx: int = 0
 var _ns: int = 0
 var _holes: Dictionary = {}            # surface -> MultiMesh (persistent holes; "" = the plain mark)
 var _hole_next: Dictionary = {}        # surface -> next slot
@@ -109,6 +106,7 @@ var flash: FlashPool
 var casings: CasingPool
 var impact_fx: ImpactFx
 var gore: GoreFx
+var blast: BlastFx                       # T-280: every explosion (explosion())
 var _shatters: Array[Node3D] = []
 var _shatter_life: PackedFloat32Array = PackedFloat32Array()
 var _nsh: int = 0
@@ -175,29 +173,13 @@ func _ready() -> void:
 		GLBus.match_started.connect(_on_match_started)
 	_build_dirt()
 	_build_tracers()
-	var fire_mat: StandardMaterial3D = StandardMaterial3D.new()
-	fire_mat.albedo_color = Color(1.0, 0.55, 0.2, 0.8)
-	fire_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	fire_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	blast = BlastFx.new()
+	blast.name = "Blasts"
+	blast.setup(vfx.get("blast", {}), _dirt_meshes)
+	add_child(blast)
 	var sphere: SphereMesh = SphereMesh.new()
 	sphere.radius = 1.0
 	sphere.height = 2.0
-	for i: int in BLASTS:
-		var root: Node3D = Node3D.new()
-		var ball: MeshInstance3D = MeshInstance3D.new()
-		ball.mesh = sphere
-		ball.material_override = fire_mat.duplicate()
-		ball.name = "Ball"
-		root.add_child(ball)
-		var light: OmniLight3D = OmniLight3D.new()
-		light.name = "Light"
-		light.light_color = Color(1.0, 0.6, 0.3)
-		light.omni_range = 12.0
-		root.add_child(light)
-		root.hide()
-		add_child(root)
-		_blasts.append(root)
-		_blast_life.append(0.0)
 	# Overclock Cordial's static burst: a flat ring that races out to the burst radius, a core flash, sparks
 	# and a violet light (WEAPONS.md section 20.2 "a teal-violet ring pulse").
 	var ring_mat: StandardMaterial3D = StandardMaterial3D.new()
@@ -276,17 +258,6 @@ func _process(delta: float) -> void:
 			if _impact_life[i] <= 0.0:
 				_impacts[i].hide()
 	_tick_tracers(delta)
-	for i: int in BLASTS:
-		if _blast_life[i] > 0.0:
-			_blast_life[i] -= delta
-			var k: float = clampf(_blast_life[i] / 0.45, 0.0, 1.0)
-			var ball: MeshInstance3D = _blasts[i].get_node("Ball")
-			var r: float = float(_blasts[i].get_meta("radius", 3.0)) * lerpf(0.55, 0.15, k)
-			ball.scale = Vector3.ONE * r
-			(ball.material_override as StandardMaterial3D).albedo_color.a = k * 0.8
-			(_blasts[i].get_node("Light") as OmniLight3D).light_energy = k * 6.0
-			if _blast_life[i] <= 0.0:
-				_blasts[i].hide()
 	for i: int in STATICS:
 		if _static_life[i] > 0.0:
 			_static_life[i] -= delta
@@ -610,15 +581,16 @@ func _tick_tracers(delta: float) -> void:
 		node.show()
 
 
-func explosion(pos: Vector3, radius: float) -> void:
+## An explosion at `pos` with the damage radius `radius` (presentation only: the damage is the caller's). T-280:
+## BlastFx draws and sounds it (flash, light, fireball rolling into smoke, the ground thrown up, debris, sparks and
+## embers, the dust ring, camera shake, a near flash and blur, a crack, a late far rumble and a debris patter),
+## pooled and prewarmed. `kind` picks the look: "small" (a pop), "grenade", "shell", "bomb" (vfx.json blast.kinds);
+## "" (the old two-argument call) picks it from the radius. A blast big enough leaves a scorch mark.
+func explosion(pos: Vector3, radius: float, kind: String = "") -> void:
 	if radius >= SCORCH_MIN_RADIUS:
 		scorch(pos, radius)
-	var b: Node3D = _blasts[_nx]
-	_blast_life[_nx] = 0.45
-	_nx = (_nx + 1) % BLASTS
-	b.set_meta("radius", radius)
-	b.global_position = pos
-	b.show()
+	if blast != null:
+		blast.blast(pos, radius, kind, quality(), particles_k())
 
 
 ## Overclock Cordial's static burst at `pos`, racing out to `radius` (WEAPONS.md section 20.2).
@@ -726,7 +698,10 @@ func persistent_hole_count() -> int:
 
 
 func _build_scorches() -> void:
-	var tex: ImageTexture = _scorch_texture()
+	# T-280: the soot mark is a drawn texture (gen_blast_textures.py: a black heart, burnt spokes, a ragged rim)
+	var tex: Texture2D = load(BlastFx.TEX_DIR + "blast_scorch.png") as Texture2D
+	if tex == null:
+		tex = _scorch_texture()
 	for i: int in SCORCHES:
 		var d: Decal = Decal.new()
 		d.name = "Scorch"
@@ -746,10 +721,11 @@ func _build_scorches() -> void:
 func scorch(pos: Vector3, radius: float) -> void:
 	var d: Decal = _scorches[_nsc]
 	_nsc = (_nsc + 1) % SCORCHES
-	var w: float = clampf(radius * 0.9, 1.2, 4.0)
+	var w: float = clampf(radius * 0.9, 1.2, 4.0) * randf_range(0.9, 1.15)
 	d.size = Vector3(w, 2.4, w)
 	d.global_position = pos + Vector3(0, 0.6, 0)
 	d.rotation = Vector3(0, randf() * TAU, 0)
+	d.modulate = Color(1, 1, 1, clampf(0.75 + radius * 0.04, 0.75, 0.95))
 	d.show()
 
 
@@ -775,6 +751,8 @@ func clear_marks() -> void:
 	_snow_alive = 0
 	for d: Decal in _scorches:
 		d.hide()
+	if blast != null:
+		blast.clear()
 	for i: int in IMPACTS:
 		_impact_life[i] = 0.0
 		_impacts[i].hide()
@@ -782,6 +760,8 @@ func clear_marks() -> void:
 
 func _on_match_started(_map_id: StringName) -> void:
 	clear_marks()
+	if blast != null:
+		blast.warm()   # T-280: the blast's shaders compile while the map loads, not on the first grenade
 	_attach_atmosphere.call_deferred()   # T-095: the map is in the tree by then (MapRoot._ready emits match_started)
 
 
