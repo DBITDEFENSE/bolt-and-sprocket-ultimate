@@ -1,6 +1,6 @@
 extends Node
 ## T-280: what an explosion costs the frame it goes off in, headless. Map 0 at round 15, the player alone (god mode,
-## no bots, no Jakub: less noise), 24 zombies spawned and left to close in on the player so they stand in a pack.
+## no bots, no Jakub: less noise), 24 zombies spawned and set down in a 5 x 5 block 8 m in front of the player.
 ## Then, in turn: one blast at the pack's middle, a pause, six blasts in the same frame around the pack's middle, a
 ## pause; `--reps=N` times (3 by default). Run it with the engine flag `--fixed-fps 60` before the `--` (as
 ## tools/bot_perf.sh does): every frame is one physics tick + one process step with no sleep, so a frame's wall time
@@ -28,6 +28,7 @@ var _events: Array = []              # [{name, frame, call_us}]
 var _next_t: float = 0.0
 var _step: int = 0
 var _done: bool = false
+var _packed: bool = false
 
 
 func _ready() -> void:
@@ -75,7 +76,10 @@ func _process(delta: float) -> void:
 				(_map.get_node("ZombieDirector") as ZombieDirector).debug_spawn(24)
 		1:
 			_keep_alive()
-			if _t > 16.0:   # they have walked in and stand round the player
+			if _t > 6.0 and not _packed:   # stood in a pack 8 m in front of the player (they then walk in on him)
+				_packed = true
+				_pack()
+			if _t > 9.0:
 				_phase = 3
 				_next_t = _t + 2.0
 				print("[bench] pack formed: %d zombies, spread %.1f m" % [_map.director.active_zombies().size(), _spread()])
@@ -101,6 +105,20 @@ func _keep_alive() -> void:
 		return
 	for z: Zombie in _map.director.active_zombies():
 		z.hp = maxf(z.hp, 1.0e9)
+
+
+func _pack() -> void:
+	var p: Player = _map.player
+	var fwd: Vector3 = -p.global_basis.z
+	fwd.y = 0.0
+	fwd = fwd.normalized() if fwd.length_squared() > 0.01 else Vector3.FORWARD
+	var c: Vector3 = p.global_position + fwd * 8.0
+	var i: int = 0
+	for z: Zombie in _map.director.active_zombies():
+		var off: Vector3 = Vector3((i % 5) - 2.0, 0.0, (i / 5) - 2.0) * 1.2
+		z.global_position = c + off + Vector3.UP * 0.1
+		z.velocity = Vector3.ZERO
+		i += 1
 
 
 func _centre() -> Vector3:

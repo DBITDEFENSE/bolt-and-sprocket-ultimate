@@ -35,6 +35,8 @@ const GROUND_PARTS: PackedStringArray = ["Spray", "Skirt", "Debris"]
 ## Surface (Effects.surface_of) -> the dirt kind thrown up (Effects.dirt_burst's kinds).
 const DIRT_OF: Dictionary = {"snow": "snow", "earth": "earth", "hay": "earth", "mud": "earth", "grass": "earth",
 	"cloth": "earth", "wood": "stone", "stone": "stone", "metal": "stone", "plaster": "stone", "glass": "stone"}
+## The puff emitters' heat (the shader's instance uniform; fixed per emitter).
+const HEAT: Dictionary = {"Fire": 1.0, "Smoke": 0.35, "Spray": 0.0, "Skirt": 0.0}
 ## Dirt kind -> [thrown dirt colour, dust colour].
 const DUST: Dictionary = {
 	"snow": [Color(0.86, 0.89, 0.94), Color(0.82, 0.85, 0.9, 0.55)],
@@ -52,11 +54,13 @@ var _life: PackedFloat32Array = PackedFloat32Array()    # how long the slot stay
 var _flash_t: PackedFloat32Array = PackedFloat32Array() # the flash's length
 var _ring_t: PackedFloat32Array = PackedFloat32Array()
 var _born: PackedInt32Array = PackedInt32Array()        # blast serial (the oldest slot is reused)
+var _look: PackedStringArray = PackedStringArray()      # slot -> the per-blast uniforms it holds ("<dirt>|<burn>"): unchanged = not set again
 var _light_of: PackedInt32Array = PackedInt32Array()    # slot -> light or -1
 var _lights: Array[OmniLight3D] = []
 var _light_slot: PackedInt32Array = PackedInt32Array()  # light -> slot or -1
 var _light_peak: PackedFloat32Array = PackedFloat32Array()
 var _dirt_mesh: Dictionary = {}          # dirt kind -> Mesh (the debris chunks)
+var _dirt_of: Dictionary = {}            # collider instance id -> dirt kind (cleared each match)
 var _serial: int = 0
 var _live: int = 0
 var _pend_key: PackedStringArray = PackedStringArray()
@@ -137,10 +141,10 @@ func setup(c: Dictionary, dirt_meshes: Dictionary) -> void:
 				_:
 					p.draw_pass_1 = puff_mesh
 			# every instance uniform this emitter will ever take, set now (the first set of a key allocates)
-			if p.draw_pass_1 == puff_mesh:
-				p.set_instance_shader_parameter(&"tint", Color(0.13, 0.12, 0.11, 1.0))
-				p.set_instance_shader_parameter(&"heat", 0.0)
-				p.set_instance_shader_parameter(&"burn", 0.2)
+			if p.draw_pass_1 == puff_mesh:   # heat never changes per emitter; tint and burn are set per blast when they differ
+				p.set_instance_shader_parameter(&"tint", Color(0.11, 0.1, 0.09, 1.0) if nm == "Fire" else Color(0.13, 0.12, 0.11, 1.0))
+				p.set_instance_shader_parameter(&"heat", float(HEAT.get(nm, 0.0)))
+				p.set_instance_shader_parameter(&"burn", 0.06 if nm == "Smoke" else 0.2)
 			p.hide()
 			root.add_child(p)
 			ems[nm] = p
@@ -175,6 +179,7 @@ func setup(c: Dictionary, dirt_meshes: Dictionary) -> void:
 		_flash_t.append(0.1)
 		_ring_t.append(0.5)
 		_born.append(0)
+		_look.append("")
 		_light_of.append(-1)
 	for i: int in LIGHTS:
 		var l: OmniLight3D = OmniLight3D.new()
@@ -378,8 +383,9 @@ static func kind_for(radius: float) -> String:
 func kind_row(kind: String, radius: float) -> Dictionary:
 	var kinds: Dictionary = cfg.get("kinds", {})
 	var k: String = kind if kinds.has(kind) else kind_for(radius)
-	var row: Dictionary = (kinds.get(k, {}) as Dictionary).duplicate()
-	row["kind"] = k
+	var row: Dictionary = kinds.get(k, {})
+	if not row.has("kind"):
+		row["kind"] = k   # once per row (the table is the loaded data, read-only otherwise)
 	return row
 
 
@@ -411,7 +417,14 @@ func blast(pos: Vector3, radius: float, kind: String, quality: Dictionary, parti
 		if not hit.is_empty():
 			ground = true
 			ground_y = (hit["position"] as Vector3).y
-			dirt = str(DIRT_OF.get(Effects.surface_of(hit.get("collider"), hit["position"], hit["normal"], space), "stone"))
+			var col: Object = hit.get("collider")
+			var cid: int = col.get_instance_id() if col != null else 0
+			if _dirt_of.has(cid):   # the map's colliders stand still: what one is made of is asked once a match
+				dirt = _dirt_of[cid]
+			else:
+				dirt = str(DIRT_OF.get(Effects.surface_of(col, hit["position"], hit["normal"], space), "stone"))
+				if _dirt_of.size() < 256:
+					_dirt_of[cid] = dirt
 			stats["ground"] = int(stats["ground"]) + 1
 	var ratio: float = clampf(particles * float(row.get("count_k", 1.0)), 0.05, 1.0)
 	var low: bool = particles < 0.6
@@ -422,6 +435,10 @@ func blast(pos: Vector3, radius: float, kind: String, quality: Dictionary, parti
 	root.show()
 	var cols: Array = DUST.get(dirt, DUST["earth"])
 	var parts: Dictionary = row.get("parts", {})
+	var burn: float = float(row.get("burn", 0.18))
+	var look: String = "%s|%s|%.3f" % [dirt, ground, burn]
+	var relook: bool = _look[i] != look
+	_look[i] = look
 	for nm: String in EMITTERS:
 		var p: GPUParticles3D = ems[nm]
 		var on: bool = bool(parts.get(nm, true))
@@ -433,28 +450,24 @@ func blast(pos: Vector3, radius: float, kind: String, quality: Dictionary, parti
 			p.emitting = false
 			p.hide()
 			continue
-		p.amount_ratio = ratio
-		p.speed_scale = speed
-		match nm:
-			"Fire":
-				p.set_instance_shader_parameter(&"tint", Color(0.11, 0.1, 0.09, 1.0))
-				p.set_instance_shader_parameter(&"heat", 1.0)
-				p.set_instance_shader_parameter(&"burn", float(row.get("burn", 0.18)))
-			"Smoke":
-				var sc: Color = Color(0.13, 0.12, 0.11, 1.0).lerp(cols[1] as Color, 0.25 if ground else 0.0)
-				p.set_instance_shader_parameter(&"tint", Color(sc, float(row.get("smoke_alpha", 1.0))))
-				p.set_instance_shader_parameter(&"heat", 0.35)
-				p.set_instance_shader_parameter(&"burn", 0.06)
-			"Spray":
-				p.set_instance_shader_parameter(&"tint", cols[0] as Color)
-				p.set_instance_shader_parameter(&"heat", 0.0)
-			"Skirt":
-				p.set_instance_shader_parameter(&"tint", cols[1] as Color)
-				p.set_instance_shader_parameter(&"heat", 0.0)
-			"Debris":
-				var mesh: Mesh = _dirt_mesh.get(dirt, _dirt_mesh.get("earth"))
-				if p.draw_pass_1 != mesh:
-					p.draw_pass_1 = mesh
+		if p.amount_ratio != ratio:
+			p.amount_ratio = ratio
+		if p.speed_scale != speed:
+			p.speed_scale = speed
+		if relook:
+			match nm:
+				"Fire":
+					p.set_instance_shader_parameter(&"burn", burn)
+				"Smoke":
+					p.set_instance_shader_parameter(&"tint", Color(0.13, 0.12, 0.11, 1.0).lerp(cols[1] as Color, 0.25 if ground else 0.0))
+				"Spray":
+					p.set_instance_shader_parameter(&"tint", cols[0] as Color)
+				"Skirt":
+					p.set_instance_shader_parameter(&"tint", cols[1] as Color)
+				"Debris":
+					var mesh: Mesh = _dirt_mesh.get(dirt, _dirt_mesh.get("earth"))
+					if p.draw_pass_1 != mesh:
+						p.draw_pass_1 = mesh
 		if GROUND_PARTS.has(nm):
 			p.position = Vector3(0, (ground_y - pos.y) / s + 0.1, 0)
 		else:
@@ -779,5 +792,6 @@ func clear() -> void:
 		_slots[i].hide()
 	_pend_t.fill(-1.0)
 	_npend = 0
+	_dirt_of.clear()
 	if screen != null:
 		screen.clear()
