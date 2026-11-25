@@ -255,15 +255,32 @@ func _driving(ev: ShermanEvent) -> void:
 	var seated: bool = await _until(func() -> bool: return tk.seat == ShermanTank.Seat.SEATED, 3.0, _cull_horde)
 	_check(seated and tk.driver == p, "the player climbs in")
 	var outside: Array = [0]
+	var cam_in_wall: Array = [0, 99.0]
 	var keep_in: Callable = func() -> void:
 		_cull_horde()
 		if not _in_box(tk.global_transform):
 			outside[0] = int(outside[0]) + 1
+		# T-278: the orbit camera in the walled forecourt: never inside a wall (the spring arm)
+		if tk.cam != null and is_instance_valid(tk.cam) and tk.cam.blend >= 0.999:
+			var sq: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
+			var sph: SphereShape3D = SphereShape3D.new()
+			sph.radius = 0.12
+			sq.shape = sph
+			sq.transform = Transform3D(Basis.IDENTITY, tk.cam.global_position)
+			sq.collision_mask = TankCamera.MASK_ARM
+			if not tk.get_world_3d().direct_space_state.intersect_shape(sq, 1).is_empty():
+				cam_in_wall[0] = int(cam_in_wall[0]) + 1
+			cam_in_wall[1] = minf(float(cam_in_wall[1]), tk.cam.dist_shown)
+	_check(tk.cam != null and get_viewport().get_camera_3d() == tk.cam and p.carry_sight, "T-278: the driver's view is the tank's orbit camera")
+	# the view swung round the forecourt while it drives: walls behind the camera on every side
+	var swing: Callable = func() -> void:
+		keep_in.call()
+		p.rotation.y += 0.04
 	# forward at the hoist house, then back at the gate: refused both ways inside the forecourt
 	for way: Array in [[1.0, "the hoist house"], [-1.0, "the gate"]]:
 		var r0: int = tk.refusals
 		tk.input_override = Vector3(0, float(way[0]), 0)
-		var stopped: bool = await _until(func() -> bool: return tk.refusals > r0 and absf(tk.speed) < 0.05, 12.0, keep_in)
+		var stopped: bool = await _until(func() -> bool: return tk.refusals > r0 and absf(tk.speed) < 0.05, 12.0, swing)
 		print("[m1sherman] note: stopped at %s heading %.0f" % [str(tk.global_position.snapped(Vector3.ONE * 0.01)), rad_to_deg(tk.rotation.y)])
 		tk.input_override = Vector3(0, 0, 0)
 		var bow: Vector3 = tk.global_transform * Vector3(0, 0, ShermanRules.HULL_BOW if float(way[0]) > 0.0 else ShermanRules.HULL_STERN)
@@ -280,9 +297,12 @@ func _driving(ev: ShermanEvent) -> void:
 	print("[m1sherman] note: pivot from %s" % str(tk.global_position.snapped(Vector3.ONE * 0.01)))
 	_check(absf(wrapf(tk.rotation.y - yaw0, -PI, PI)) > 0.5, "a pivot on the spot (%.0f degrees in 2 s)" % rad_to_deg(absf(wrapf(tk.rotation.y - yaw0, -PI, PI))))
 	_check(int(outside[0]) == 0, "never a frame with the hull outside the forecourt's box (%d)" % int(outside[0]))
+	_check(int(cam_in_wall[0]) == 0, "T-278: the orbit camera never inside a wall in the forecourt (%d frames; the boom down to %.1f m at the closest)" % [int(cam_in_wall[0]), float(cam_in_wall[1])])
 	tk.dismount_wanted = true
 	var out: bool = await _until(func() -> bool: return tk.driver == null, 3.0, _cull_horde)
 	await get_tree().physics_frame
+	await get_tree().process_frame
+	_check(p.camera.current and get_viewport().get_camera_3d() == p.camera and not p.carry_sight and p.carry_look_mult == 1.0, "T-278: out of the tank, the player's own camera again")
 	_check(out and p.carry == null and not tk.near_hull(p.global_position, 0.2) and _nav_gap(p.global_position) < 1.2, "the driver climbs out beside the hull, on walkable ground")
 	tk.park_at(ev.park_point(), ev.park_yaw())
 

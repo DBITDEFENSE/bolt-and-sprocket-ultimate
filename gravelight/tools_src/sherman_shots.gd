@@ -5,6 +5,9 @@ extends Node3D
 ##          air raid (the warning on the HUD, the bombs' shadows and rings, a burst), the dive bomber in its dive over
 ##          the yard, the wreck burning. One map load (~8 min under WSL's software GL).
 ##   --dir=<name>: write under docs/captures/<name>/<label> (T-253 uses u19_models).
+##   --drive: T-278, the driven tank's third-person view on the Inn (a player climbs in): the orbit at its shortest,
+##          middle and longest boom, the turret lagging a swung view (the gun marker apart from the reticle), laid,
+##          the gunner's sight, a shell fired, a wall behind (the spring arm). Use with --dir=t278 --label=<label>.
 ##   sh tools/wsl_godot.sh --res=1920x1080 --path . res://gravelight/tools_src/sherman_shots.tscn -- --label=<label> [--map] [--only=a,b]
 ## Never with a window on the owner's PC (WSL / Xvfb only).
 
@@ -35,6 +38,7 @@ const TURN: Array = [
 var _out: String = ""
 var _only: PackedStringArray = []
 var _map_mode: bool = false
+var _drive_mode: bool = false
 var _cam: Camera3D
 
 
@@ -50,9 +54,13 @@ func _ready() -> void:
 			dir = a.substr(6)   # T-253: docs/captures/<dir>/<label>
 		elif a == "--map":
 			_map_mode = true
+		elif a == "--drive":
+			_drive_mode = true
 	_out = ProjectSettings.globalize_path("res://").path_join("docs/captures").path_join(dir).path_join(label)
 	DirAccess.make_dir_recursive_absolute(_out)
-	if _map_mode:
+	if _drive_mode:
+		_run_drive.call_deferred()
+	elif _map_mode:
 		_run_map.call_deferred()
 	else:
 		_run_turn.call_deferred()
@@ -296,6 +304,123 @@ func _run_map() -> void:
 		await _shoot("inn_raid")
 	print("RESULT sherman_shots: done")
 	get_tree().quit()
+
+
+# ================================================================== T-278: the driven view
+
+func _run_drive() -> void:
+	GameState.bot_count = 0
+	GameState.god_mode = true
+	var map: Node3D = (load(MAP0) as PackedScene).instantiate() as Node3D
+	get_tree().root.add_child.call_deferred(map)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	get_tree().current_scene = map
+	var root: MapRoot = map as MapRoot
+	var t: float = 0.0
+	while (root.player == null or not root.player.is_inside_tree()) and t < 60.0:
+		await get_tree().process_frame
+		t += get_process_delta_time()
+	var w: float = 0.0
+	while w < 14.0:
+		await get_tree().process_frame
+		w += get_process_delta_time()
+	GameState.god_mode = true
+	var p: Player = root.player
+	p.set_process_unhandled_input(false)
+	root.director.kill_all(true)
+	RoundManager.stop()
+	for z: String in ["YARD", "GROUNDS", "STABLE"]:
+		GameState.open_zone(StringName(z))
+	var ev: ShermanEvent = map.get_node_or_null("ShermanEvent") as ShermanEvent
+	if ev == null:
+		print("RESULT sherman_shots: no ShermanEvent on map00")
+		get_tree().quit()
+		return
+	ev.force_assist()
+	var tk: ShermanTank = ev.tank
+	for i: int in 30:
+		await get_tree().physics_frame
+	p.global_position = tk.global_transform * Vector3(2.6, 0.05, 0.5)
+	tk.use.interact(p)
+	var t1: float = 0.0
+	while (tk.seat != ShermanTank.Seat.SEATED or tk.cam == null or tk.cam.blend < 1.0) and t1 < 5.0:
+		await get_tree().process_frame
+		t1 += get_process_delta_time()
+	var cam: TankCamera = tk.cam
+	if cam == null:
+		print("RESULT sherman_shots: no tank camera")
+		get_tree().quit()
+		return
+	# back down the road a little, so the open ground is round it
+	tk.input_override = Vector3(0, -1, 0)
+	await _secs(3.0)
+	tk.input_override = Vector3(0, 0, 0)
+	await _secs(1.0)
+	# the view along the hull, toward the yard's gate and the inn, a little down
+	p.rotation.y = tk.rotation.y + deg_to_rad(18.0)
+	p.set_look_pitch(deg_to_rad(-9.0))
+	await _secs(3.5)
+	for sh: Array in [["drive_orbit_9", 9.0], ["drive_orbit_5", 5.0], ["drive_orbit_16", 16.0]]:
+		if _want(str(sh[0])):
+			cam.dist = float(sh[1])
+			await _secs(1.2)
+			await _shoot(str(sh[0]))
+	cam.dist = 9.0
+	# the view swung off the gun: the turret lags, the gun marker apart from the reticle; then laid
+	if _want("drive_lag") or _want("drive_laid"):
+		p.rotation.y += deg_to_rad(70.0)
+		p.set_look_pitch(deg_to_rad(-12.0))
+		await _secs(0.7)
+		if _want("drive_lag"):
+			await _shoot("drive_lag")
+		var t2: float = 0.0
+		while not cam.gun_on_aim(1.0) and t2 < 6.0:
+			await get_tree().process_frame
+			t2 += get_process_delta_time()
+		await _secs(0.3)
+		if _want("drive_laid"):
+			await _shoot("drive_laid")
+	# the gunner's sight
+	if _want("drive_sniper"):
+		cam.set_sniper(true)
+		await _secs(1.5)
+		await _shoot("drive_sniper")
+		cam.set_sniper(false)
+		await _secs(0.5)
+	# a shell (the reload arc starts round the reticle)
+	if _want("drive_fire"):
+		var t3: float = 0.0
+		while tk._gun_t > 0.0 and t3 < 8.0:
+			await get_tree().process_frame
+			t3 += get_process_delta_time()
+		tk.fire_wanted = true
+		var t4: float = 0.0
+		while tk.driver_shells < 1 and t4 < 2.0:
+			await get_tree().process_frame
+			t4 += get_process_delta_time()
+		await _frames(2)
+		await _shoot("drive_fire")
+		await _secs(2.0)
+		await _shoot("drive_reload")
+	# the view turned to put the inn's wall behind the camera: the spring arm brings it in
+	if _want("drive_wall"):
+		var to_inn: Vector3 = Vector3(18.0, 0.0, 30.0) - tk.global_position
+		p.rotation.y = atan2(to_inn.x, to_inn.z)   # looking away from the inn: the camera between the tank and it
+		p.set_look_pitch(deg_to_rad(-6.0))
+		cam.dist = 16.0
+		await _secs(2.0)
+		print("[sherman_shots] drive_wall: boom %.1f of %.1f m" % [cam.dist_shown, cam.dist])
+		await _shoot("drive_wall")
+	print("RESULT sherman_shots: done (drive)")
+	get_tree().quit()
+
+
+func _secs(s_: float) -> void:
+	var t: float = 0.0
+	while t < s_:
+		await get_tree().process_frame
+		t += get_process_delta_time()
 
 
 func _frames(n: int) -> void:

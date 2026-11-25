@@ -161,6 +161,12 @@ var carry_roll: float = 0.0               # radians of camera roll (the reach, t
 var carry_fov: float = 0.0                # degrees added to the FOV (the rush of the line)
 var carry_fire: bool = false             # T-240: the carrier lets the rider shoot (a horse at a walk or a trot); off with every begin_carry / end_carry
 var carry_spread: float = 0.0             # T-262: degrees the carrier adds to the weapon cone (a horse by its gait); 0 with every begin_carry / end_carry
+## T-278: a carrier with a view of its own (the driven Sherman's orbit camera). The look input (mouse, stick, with the
+## player's sensitivity and invert-Y) still turns this body's yaw and pitch; the carrier reads them (look_angles).
+## All three are back to their defaults with every begin_carry / end_carry.
+var carry_look_mult: float = 1.0          # scales the look input (a zoomed sight turns slower)
+var carry_pitch_lim: Vector2 = Vector2(deg_to_rad(-88.0), deg_to_rad(88.0))   # the view pitch's range (radians, min / max)
+var carry_sight: bool = false             # the carrier draws its own sight: the HUD's crosshair is off
 var mantles: int = 0                     # mantles / vaults started this match (tools)
 var _mv: Dictionary = {}
 var _sprint_toggled: bool = false        # Toggle sprint mode: on until cancelled / you stop moving forward
@@ -315,7 +321,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event is InputEventMouseButton and event.is_pressed():
 		var mb: InputEventMouseButton = event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_WHEEL_UP or mb.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			_wheel_swap = true
+			if carry != null and is_instance_valid(carry) and carry.has_method(&"carry_wheel"):
+				carry.call(&"carry_wheel", 1 if mb.button_index == MOUSE_BUTTON_WHEEL_UP else -1)   # T-278: the tank's zoom
+			else:
+				_wheel_swap = true
 		elif Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
@@ -349,10 +358,11 @@ func _process(delta: float) -> void:
 func _apply_look(rel: Vector2) -> void:
 	if sprinting:
 		rel *= float(_mv.get("sprint_turn_mult", 1.0))   # a little heavier to turn at a run
+	rel *= carry_look_mult   # T-278: 1 unless a carrier's zoomed sight asks for less
 	rotate_y(-rel.x)
 	var inv: float = -1.0 if bool(GLSettings.values.get("invert_y", false)) else 1.0
 	var before: float = _pitch
-	_pitch = clampf(_pitch - rel.y * inv, deg_to_rad(-88.0), deg_to_rad(88.0))
+	_pitch = clampf(_pitch - rel.y * inv, carry_pitch_lim.x, carry_pitch_lim.y)
 	if _pitch < before and _rc_pool.x > 0.0:
 		_rc_pool.x = maxf(0.0, _rc_pool.x - (before - _pitch))   # pulling down already paid back that much recoil
 
@@ -412,6 +422,8 @@ func _gather_intent() -> Dictionary:
 		slot = 2
 	var swap: bool = Input.is_action_just_pressed(&"swap_weapon") or _wheel_swap
 	_wheel_swap = false
+	if carry != null and is_instance_valid(carry) and carry.has_method(&"carry_wheel"):
+		swap = false   # T-278: the carrier takes the swap key (the tank's zoom steps)
 	# On a pad, X is both reload and use: it reloads only when nothing is in front of you.
 	var reload: bool = Input.is_action_just_pressed(&"reload") and (interact_target == null or not Input.is_action_pressed(&"interact"))
 	var intent: Dictionary = {
@@ -1186,6 +1198,7 @@ func begin_carry(by: Node) -> void:
 	carry_pitch = 0.0
 	carry_roll = 0.0
 	carry_fov = 0.0
+	_reset_carry_view()
 
 
 func end_carry(by: Node) -> void:
@@ -1200,6 +1213,7 @@ func end_carry(by: Node) -> void:
 	carry_pitch = 0.0
 	carry_roll = 0.0
 	carry_fov = 0.0
+	_reset_carry_view()
 	if head != null:
 		head.position.z = 0.0
 	velocity = Vector3.ZERO
@@ -1207,6 +1221,23 @@ func end_carry(by: Node) -> void:
 	_floor_y = global_position.y
 	if weapons != null:
 		weapons.set_hands(&"")
+
+
+func _reset_carry_view() -> void:
+	carry_look_mult = 1.0
+	carry_pitch_lim = Vector2(deg_to_rad(-88.0), deg_to_rad(88.0))
+	carry_sight = false
+
+
+## T-278: the view's pitch (radians, up is positive) and the body's world yaw: what the mouse and the stick have
+## turned. A carrier with its own camera (the Sherman's orbit) reads them.
+func look_angles() -> Vector2:
+	return Vector2(_pitch, global_rotation.y)
+
+
+## T-278: sets the view pitch (clamped to the carrier's range), e.g. when a sight with other limits takes over.
+func set_look_pitch(pitch: float) -> void:
+	_pitch = clampf(pitch, carry_pitch_lim.x, carry_pitch_lim.y)
 
 
 ## A landing's head dip and footfall after a scripted drop (the zip line's end, the last rung).

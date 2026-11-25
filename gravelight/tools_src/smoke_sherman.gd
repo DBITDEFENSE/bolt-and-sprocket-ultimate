@@ -320,6 +320,7 @@ func _round40(ev: ShermanEvent) -> void:
 	await _until(func() -> bool: return RoundManager.current_round == 40 and RoundManager.state == RoundManager.State.ROUND, 8.0)
 	_check(ev.phase == ShermanEvent.Phase.STUKA, "round 40: the dive bomber")
 	_check(tk.driver == null and _p().carry == null and tk.forced_off == off0 + 1 and not tk.near_hull(_p().global_position, 0.2), "the driver is put out beside the tank as the dive bomber comes")
+	_check(_view_restored(_p(), ev, tk), "T-278: and their own view is back")
 	_check(not tk.drivable and not tk.can_use(_p()) and tk.prompt_for(_p()) == "", "and nobody climbs in after")
 	_place(_p(), Vector3(10.0, 0.05, 9.0))   # in the taproom for the dive
 	var flying: bool = await _until(func() -> bool: return ev.plane != null and is_instance_valid(ev.plane), 4.0)
@@ -390,6 +391,65 @@ func _round40(ev: ShermanEvent) -> void:
 # ================================================================== T-261: a player drives it
 
 ## Kept zombies (the drive's own: spared by _cull_horde) risen at `pts`.
+## T-278: the player's own view is back: their camera current, no tank camera left, the look's scale and range as
+## before, the HUD's crosshair on, the tank's sight down.
+func _view_restored(p: Player, ev: ShermanEvent, tk: ShermanTank) -> bool:
+	var ok: bool = p.camera.current and get_viewport().get_camera_3d() == p.camera and (tk.cam == null or not is_instance_valid(tk.cam))
+	ok = ok and p.carry_look_mult == 1.0 and not p.carry_sight and absf(p.carry_pitch_lim.y - deg_to_rad(88.0)) < 0.001
+	ok = ok and (p.camera.cull_mask & WeaponHolder.VM_LAYER) != 0 and not ev.hud.sight.visible
+	if not ok:
+		print("[sherman] view: current %s vp %s cam %s mult %.2f sight %s lim %.2f hud %s" % [p.camera.current, get_viewport().get_camera_3d(), tk.cam, p.carry_look_mult, p.carry_sight, p.carry_pitch_lim.y, ev.hud.sight.visible])
+	return ok
+
+
+## T-278: the orbit camera's screen centre lays the turret (at its own rate: it lags), the gun marker follows the
+## laid gun, the wheel zooms the boom and goes into and out of the gunner's sight.
+func _cam_aim(ev: ShermanEvent, tk: ShermanTank, p: Player, cam: TankCamera) -> void:
+	var aim0: Variant = tk.aim_override
+	tk.aim_override = null
+	# the view swung 110 degrees from where the gun points, 18 m out on the ground: the screen centre meets it there
+	var tf: Vector3 = -tk.gun.global_basis.z
+	tf.y = 0.0
+	var pt: Vector3 = tk.global_position + tf.normalized().rotated(Vector3.UP, deg_to_rad(110.0)) * 18.0
+	var to: Vector3 = pt - cam.global_position
+	p.rotation.y = atan2(-to.x, -to.z)
+	p.set_look_pitch(-0.16)
+	await get_tree().physics_frame
+	await get_tree().process_frame
+	await get_tree().physics_frame
+	var lay: Vector2 = ShermanTank.lay_for(tk.gun.global_position, tk.global_rotation.y, cam.aim_point)
+	var lag: float = absf(wrapf(tk.lay_target().x - tk.turret.rotation.y, -PI, PI))
+	_check(tk._view_point(p) == cam.aim_point and absf(wrapf(tk.lay_target().x - lay.x, -PI, PI)) < 0.05 and cam.aim_point.distance_to(cam.global_position) > cam.dist_shown,
+		"the screen centre is the aim point and the turret is sent to it (%.0f m out)" % tk.gun.global_position.distance_to(cam.aim_point))
+	_check(lag > deg_to_rad(20.0) and not cam.gun_on_aim(1.0), "the turret lags the view as it comes round (%.0f degrees to go)" % rad_to_deg(lag))
+	var laid: bool = await _until(func() -> bool: return cam.gun_on_aim(1.0), 8.0, _cull_horde)
+	await get_tree().process_frame
+	var mk: Vector2 = cam.marker_screen()
+	var mid: Vector2 = get_viewport().get_visible_rect().size * 0.5
+	_check(laid and ev.hud.sight.on_aim and mk.is_finite() and mk.distance_to(mid) < 40.0,
+		"at the turret's own rate the gun comes onto it; the gun marker meets the reticle (%.0f px off the centre)" % (mk.distance_to(mid) if mk.is_finite() else -1.0))
+	# the wheel: the boom out and in, past the shortest into the gunner's sight, out again
+	for n: int in 10:
+		tk.carry_wheel(-1)
+	await _until(func() -> bool: return false, 0.6, _cull_horde)
+	var far_d: float = cam.global_position.distance_to(cam._pivot())
+	_check(cam.dist == 16.0 and far_d <= 16.05, "the wheel out: the boom to %.1f m (%.1f m shown)" % [cam.dist, far_d])
+	for n2: int in 12:
+		tk.carry_wheel(1)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var base_fov: float = GLSettings.get_f("fov")
+	_check(cam.sniper and cam.fov < base_fov / 2.5 and p.carry_look_mult < 0.6 and cam.global_position.distance_to(tk.gun.global_position) < 1.0,
+		"the wheel all the way in: the gunner's sight at the mantlet (FOV %.0f, the look x%.2f)" % [cam.fov, p.carry_look_mult])
+	tk.carry_wheel(-1)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_check(not cam.sniper and cam.dist == 5.0 and p.carry_look_mult == 1.0 and absf(cam.fov - base_fov) < 0.5, "the wheel out leaves the sight for the shortest boom")
+	cam.dist = TankCamera.clamp_dist(9.0, cam.cfg)
+	p.set_look_pitch(-0.1)
+	tk.aim_override = aim0
+
+
 func _spawn_kept(pts: Array) -> Array[Zombie]:
 	var before: Array[Zombie] = _dir().active_zombies().duplicate()
 	_dir().spawn_burst(pts, pts.size())
@@ -437,11 +497,21 @@ func _drive(ev: ShermanEvent, tk: ShermanTank) -> void:
 	_check(tk.drivable and tk.can_use(p) and tk.prompt_for(p).contains("climb into"), "parked: the prompt at the hull ('%s')" % tk.prompt_for(p))
 	_check(p.call("_probe_interactable") == tk.use, "the player's Use ray finds the hull")
 	_check(bot == null or not tk.can_use(bot), "a bot does not climb in")
+	var fov_fp: float = p.camera.fov
+	var mask_fp: int = p.camera.cull_mask
 	tk.use.interact(p)
 	var seated: bool = await _until(func() -> bool: return tk.seat == ShermanTank.Seat.SEATED, 3.0, _cull_horde)
 	await get_tree().physics_frame
 	_check(seated and tk.driver == p and p.carry == tk and p.global_position.distance_to(tk.seat_feet()) < 0.3, "the player climbs in: in the hatch, carried by the tank")
 	_check(tk.prompt_for(p) == "" and (bot == null or not tk.can_use(bot)) and tk.simulates(), "one driver at a time; this machine moves the hull")
+	# T-278: the driver sees the tank from the orbit camera
+	var cam: TankCamera = tk.cam
+	await _until(func() -> bool: return cam != null and cam.blend >= 0.999, 1.5, _cull_horde)
+	_check(cam != null and get_viewport().get_camera_3d() == cam and not p.camera.current and (cam.cull_mask & WeaponHolder.VM_LAYER) == 0 and p.carry_sight and cam.blend >= 0.999,
+		"T-278: the view is the tank's orbit camera, blended in over the climb (the viewmodel and hands not drawn, the HUD's crosshair off)")
+	var boom: float = cam.global_position.distance_to(cam._pivot()) if cam != null else 0.0
+	_check(cam != null and boom >= 4.9 and boom <= 16.1 and cam.global_position.y > tk.global_position.y + 1.5 and ev.hud.sight.visible,
+		"behind and above the tank on its boom (%.1f m, %.1f m up), the tank's sight up" % [boom, cam.global_position.y - tk.global_position.y if cam != null else 0.0])
 	# backwards down the road
 	var p0: Vector3 = tk.global_position
 	tk.input_override = Vector3(0, -1, 0)
@@ -461,11 +531,14 @@ func _drive(ev: ShermanEvent, tk: ShermanTank) -> void:
 	tk.input_override = Vector3(0, -1, 0)
 	await _until(func() -> bool: return false, 3.0, _cull_horde)
 	var yaw0: float = tk.rotation.y
+	var view0: Basis = cam.global_basis
 	tk.input_override = Vector3(1, 0, 0)
 	await _until(func() -> bool: return false, 2.0, _cull_horde)
 	var turned: float = absf(wrapf(tk.rotation.y - yaw0, -PI, PI))
 	_check(turned > 0.7 and absf(tk.speed) < 0.1, "tank steering: a pivot turn on the spot (%.0f degrees in 2 s)" % rad_to_deg(turned))
+	_check(cam.global_basis.is_equal_approx(view0), "the orbit stays where the player looks while the hull turns under it")
 	tk.input_override = Vector3(0, 0, 0)
+	await _cam_aim(ev, tk, p, cam)
 	# the 75 mm from the driver's seat, on the dead in the meadow; the reload
 	# (a place in the meadow the gun has a clear line to, 12 m or more off, wherever the hull now points)
 	var spot: Vector3 = Vector3(36.0, 0.0, 58.0)
@@ -555,8 +628,13 @@ func _drive(ev: ShermanEvent, tk: ShermanTank) -> void:
 	_check(mobbed and struck and tk.hp < hp0 and not tk.is_wreck(), "the dead that come for the driver beat on the hull instead (%d swipes, %d -> %d)" % [tk.swipes_taken - sw0, int(hp0), int(tk.hp)])
 	# out again: Use (or jump): set down beside the hull, free to move
 	tk.dismount_wanted = true
+	var blending: bool = await _until(func() -> bool: return is_instance_valid(cam) and cam.leaving and cam.blend > 0.05 and cam.blend < 0.95, 1.0, _cull_horde)
+	_check(blending, "T-278: climbing out blends back to the player's own camera")
 	var out: bool = await _until(func() -> bool: return tk.driver == null, 3.0, _cull_horde)
 	await get_tree().physics_frame
+	await get_tree().process_frame
+	_check(_view_restored(p, ev, tk) and p.camera.cull_mask == mask_fp and absf(p.camera.fov - fov_fp) < 1.0,
+		"out of the tank everything is as it was: the player's camera (FOV %.0f, was %.0f), the viewmodel drawn, their sensitivity, the HUD's crosshair" % [p.camera.fov, fov_fp])
 	var nav: Vector3 = NavigationServer3D.map_get_closest_point(_map.get_world_3d().navigation_map, p.global_position)
 	_check(out and p.carry == null and not tk.near_hull(p.global_position, 0.2) and ShermanRules.hull_dist(tk.global_transform, p.global_position) < 4.5 and absf(p.global_position.y - tk.global_position.y) < 0.6 and nav.distance_to(p.global_position) < 1.2,
 		"the driver climbs out: beside the hull (%.1f m from it), on walkable ground" % ShermanRules.hull_dist(tk.global_transform, p.global_position))
@@ -573,6 +651,8 @@ func _drive(ev: ShermanEvent, tk: ShermanTank) -> void:
 	_check(tk.bails == 1 and tk.driver == null and p.carry == null and not tk.is_wreck() and tk.lock_t > 5.0 and not tk.can_use(p) and tk.prompt_for(p).contains("repairs"),
 		"at its last health the driver is put out and the hatch stays shut ('%s'); it is not wrecked" % tk.prompt_for(p))
 	_check(not tk.near_hull(p.global_position, 0.2) and absf(p.global_position.y - tk.global_position.y) < 0.6, "the driver is set down beside it")
+	await get_tree().process_frame
+	_check(_view_restored(p, ev, tk), "T-278: put out, the player's own camera at once and everything restored")
 	var hp1: float = tk.hp
 	await _until(func() -> bool: return false, 1.0, _cull_horde)
 	_check(tk.hp > hp1 + 50.0, "the crew repairs it (%d -> %d in a second)" % [int(hp1), int(tk.hp)])

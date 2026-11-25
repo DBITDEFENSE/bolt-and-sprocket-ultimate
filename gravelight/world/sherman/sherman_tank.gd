@@ -17,6 +17,11 @@ extends Node3D
 ##                with the view, fires the 75 mm (fire) and the machine gun (aim), climbs out with Use or jump. One at
 ##                a time; the gunner stands down while a player has the guns. The host decides who is in and what a
 ##                shell does; the driver's own machine moves the hull (the horse's pattern, T-240) and tells the host.
+## T-278 (the owner, 2026-11-25: "the view on the tank sucks, make it more third person wot style"): the driver sees
+## the tank from a third-person orbit camera (TankCamera, the driver's machine only): the view, not the hull, turns it;
+## the screen centre is the aim point the turret and the gun are laid on at their own rates; the gun marker
+## (ShermanHud) shows where the gun is laid, which is where the shell goes; the wheel zooms the boom and past its
+## shortest enters the gunner's sight (also the sprint key).
 
 signal wrecked
 signal bailed                          # the dead drove the driver out (outside the assault): the crew repairs
@@ -46,6 +51,7 @@ var seat: Seat = Seat.NONE
 var lock_t: float = 0.0                # seconds the hatch stays shut after the dead drove the driver out
 var use: ShermanUse = null
 var hud: ShermanHud = null
+var cam: TankCamera = null             # T-278: the driver's orbit camera (on the driver's machine only)
 var input_override: Variant = null     # smokes: Vector3(steer, throttle, 0) instead of the driver's keys
 var aim_override: Variant = null       # smokes: the world point the driver looks at
 var fire_wanted: bool = false          # smokes: the driver's trigger (the 75 mm)
@@ -150,8 +156,10 @@ func _exit_tree() -> void:
 			p.end_carry(self)
 			if p.weapons != null:
 				p.weapons.set_hands(&"")
+		_cam_end(0.0)
 		if hud != null and is_instance_valid(hud):
 			hud.set_drive("")
+			hud.set_sight(null)
 
 
 # ================================================================== the model
@@ -512,12 +520,23 @@ func _aim_step(delta: float) -> void:
 
 ## Lays the turret and the gun on a world point.
 func aim_world(p: Vector3) -> void:
-	var o: Vector3 = gun.global_position
-	var d: Vector3 = p - o
+	var lay: Vector2 = lay_for(gun.global_position, global_rotation.y, p)
+	_turret_yaw_target = lay.x
+	_gun_pitch_target = lay.y
+
+
+## The turret's yaw on the hull and the gun's pitch (radians) that lay a gun at `gun_at` on `p`, the hull heading
+## `hull_yaw`; the pitch within the gun's stops (-10..+25 degrees).
+static func lay_for(gun_at: Vector3, hull_yaw: float, p: Vector3) -> Vector2:
+	var d: Vector3 = p - gun_at
 	var world_yaw: float = atan2(-d.x, -d.z)
-	_turret_yaw_target = wrapf(world_yaw - global_rotation.y, -PI, PI)
 	var flat: float = Vector2(d.x, d.z).length()
-	_gun_pitch_target = clampf(atan2(d.y, maxf(0.1, flat)), deg_to_rad(-10.0), deg_to_rad(25.0))
+	return Vector2(wrapf(world_yaw - hull_yaw, -PI, PI), clampf(atan2(d.y, maxf(0.1, flat)), deg_to_rad(-10.0), deg_to_rad(25.0)))
+
+
+## T-278: the turret's and the gun's targets now (the lay asked for; the turret and the gun follow at their rates).
+func lay_target() -> Vector2:
+	return Vector2(_turret_yaw_target, _gun_pitch_target)
 
 
 func aim_home() -> void:
@@ -1024,6 +1043,7 @@ func _board(p: Player) -> void:
 			p.weapons.hands_shoulder = 0.0
 			p.weapons.hand_r = Transform3D(Horse.HAND_R_BASIS, LadderClimb.HANDS_DOWN_R + Vector3.DOWN * 0.6)
 			p.weapons.hand_l = Transform3D(Horse.HAND_L_BASIS, LadderClimb.HANDS_DOWN_L + Vector3.DOWN * 0.6)
+		_cam_begin(p)
 	AudioDirector.play_3d("sherman_clang", global_transform * Vector3(0.4, 2.7, 0.0), -8.0)
 
 
@@ -1042,6 +1062,9 @@ func _leave(to: Vector3, forced: bool) -> void:
 		seat = Seat.OUT
 		_seat_t = 0.0
 		_from = driver.global_position
+		_cam_end(float(dcfg.get("dismount_s", 0.6)))
+		if hud != null and is_instance_valid(hud):
+			hud.set_sight(null)
 
 
 func _finish_exit() -> void:
@@ -1052,9 +1075,11 @@ func _finish_exit() -> void:
 	_mg_on = false
 	if p == null or not is_instance_valid(p):
 		return
+	_cam_end(0.0)
 	if p.is_local:
 		if hud != null and is_instance_valid(hud):
 			hud.set_drive("")
+			hud.set_sight(null)
 		if p.carry == self:
 			p.prompt_text = ""
 			p.global_position = _to
@@ -1152,6 +1177,9 @@ func _driver_step(delta: float) -> void:
 		seat = Seat.NONE
 		speed = 0.0
 		_mg_on = false
+		_cam_end(0.0)
+		if hud != null and is_instance_valid(hud):
+			hud.set_sight(null)
 		return
 	_seat_t += delta
 	_bump_t = maxf(0.0, _bump_t - delta)
@@ -1222,6 +1250,9 @@ func _drive_local(p: Player, delta: float) -> void:
 			want_off = true
 	_step_drive(throttle, st, delta)
 	aim_world(aim_override if aim_override is Vector3 else _view_point(p))
+	if cam != null and is_instance_valid(cam):
+		cam.tick_physics()
+		cam.gun_point = gun_line_point()   # the gun marker: where the shell would go now
 	p.global_position = seat_feet()
 	p.velocity = Vector3.ZERO
 	p.carry_pitch = body.rotation.x * 0.6   # the hull's rock when it starts, stops and fires
@@ -1246,11 +1277,12 @@ func _drive_local(p: Player, delta: float) -> void:
 			_send_t = float(dcfg.get("net_send_s", 0.1))
 			Net.session.request_call(self, &"net_by_drive_state", [global_position, rotation.y, _turret_yaw_target, _gun_pitch_target, speed])
 	# what the keys do is said for the first seconds of the first few drives; the gun's state all the time
-	p.prompt_text = "[%s] drive   [%s] 75 mm   [%s] machine gun   hold [%s] or [%s] to climb out" % [
-		"move", Interactable.prompt_key(&"fire"), Interactable.prompt_key(&"ads"), Interactable.prompt_key(&"interact"),
-		Interactable.prompt_key(&"jump")] if _seat_t < float(dcfg.get("help_s", 8.0)) and drives <= 3 else ""
+	p.prompt_text = "[%s] drive   [%s] 75 mm   [%s] machine gun   [wheel] zoom   [%s] gunner's sight   hold [%s] or [%s] to climb out" % [
+		"move", Interactable.prompt_key(&"fire"), Interactable.prompt_key(&"ads"), Interactable.prompt_key(&"sprint"),
+		Interactable.prompt_key(&"interact"), Interactable.prompt_key(&"jump")] if _seat_t < float(dcfg.get("help_s", 8.0)) and drives <= 3 else ""
 	if hud != null and is_instance_valid(hud):
 		hud.set_drive("75 MM READY" if _gun_t <= 0.0 else "75 MM LOADING %.1f" % _gun_t, ShermanRules.reload_frac(_gun_t, reload))
+		hud.set_sight(cam if cam != null and is_instance_valid(cam) and not cam.leaving else null, ShermanRules.reload_frac(_gun_t, reload))
 	if want_off:
 		dismount_wanted = false
 		_use_released = false   # one request: a client waits a round trip for the host's answer
@@ -1258,8 +1290,11 @@ func _drive_local(p: Player, delta: float) -> void:
 		p.use_interactable(use)   # the host decides (and mirrors it); solo runs it here
 
 
-## The point the driver looks at: where the view first meets the world, out to gun_range.
+## The point the driver looks at: the orbit camera's screen centre (T-278), or, without it, where the first-person
+## view first meets the world, out to gun_range.
 func _view_point(p: Player) -> Vector3:
+	if cam != null and is_instance_valid(cam) and not cam.leaving:
+		return cam.aim_point
 	var from: Vector3 = p.camera.global_position
 	var to: Vector3 = from - p.camera.global_basis.z * float(dcfg.get("gun_range", 60.0))
 	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, to, MASK_LOS)
@@ -1508,6 +1543,31 @@ func _mob_step(dir: ZombieDirector) -> void:
 				best_s = s
 				best = ap
 		z.prey = best
+
+
+## T-278: the driver's machine: the orbit camera, blended in from their own over the climb.
+func _cam_begin(p: Player) -> void:
+	_cam_end(0.0)
+	cam = TankCamera.new()
+	add_child(cam)
+	cam.begin(self, p, dcfg, float(dcfg.get("mount_s", 0.9)))
+
+
+## T-278: back to the player's own camera over `seconds` (0: at once). Their camera, look and HUD are restored.
+func _cam_end(seconds: float) -> void:
+	if cam == null:
+		return
+	var c: TankCamera = cam
+	if seconds <= 0.0:
+		cam = null
+	if is_instance_valid(c) and not c.is_queued_for_deletion():
+		c.end(seconds)
+
+
+## T-278: a wheel notch from the driver (Player._unhandled_input): +1 in, -1 out.
+func carry_wheel(notch: int) -> void:
+	if cam != null and is_instance_valid(cam) and seat == Seat.SEATED:
+		cam.wheel(notch)
 
 
 ## The Use point on the hull (the Player's interaction ray finds its area; a co-op client's use runs on the host).
