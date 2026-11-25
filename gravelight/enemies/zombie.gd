@@ -3726,6 +3726,10 @@ func _lock_feet(clip: String, time: float, dt: float, cfg: Dictionary) -> void:
 
 
 const _TURN_STATES: Array = [State.CHASE, State.TO_WINDOW]
+## T-281: the per-frame state tests' lists, built once (an inline list is a new array at every call)
+const _MOVING_STATES: Array = [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW]
+const _IK_STATES: Array = [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW, State.TEAR, State.ATTACK, State.STAGGER]
+const _LOOK_STATES: Array = [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW, State.TEAR, State.ATTACK]
 const _TURN_TREE_STATES: Array = ["Locomotion", "Turn"]
 
 
@@ -3739,9 +3743,10 @@ func _animate(dt: float) -> void:
 	if state == State.INACTIVE or _tree == null or _ragdoll != null:
 		return   # a ragdolling corpse: the physics bodies drive the bones (ZombieRagdoll.sync)
 	anim_steps += 1
-	ZombieBody.update_cracks(RoundManager.current_round, float(GLData.table("enemies").get("visual", {}).get("crack_energy", 2.6)))
+	if RoundManager.current_round != ZombieBody._crack_round:   # (T-281: the table is read only when the round changed)
+		ZombieBody.update_cracks(RoundManager.current_round, float(GLData.table("enemies").get("visual", {}).get("crack_energy", 2.6)))
 	var spd: float = Vector2(velocity.x, velocity.z).length()
-	var moving_state: bool = state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW]
+	var moving_state: bool = state in _MOVING_STATES
 	var can_turn: bool = _can_recorded_turn()
 	if not can_turn: _turn_motion.cancel()
 	if _turn_motion.active:
@@ -3762,15 +3767,15 @@ func _animate(dt: float) -> void:
 		var want_turn: float = turn_norm * (lean / 0.18 if spd > below else 1.0)
 		if spd <= below and ZombieClips.recorded_turns_enabled(): want_turn = 0.0
 		_loco_turn = move_toward(_loco_turn, want_turn if absf(turn_norm) > 0.15 else 0.0, dt * 5.0)
-		_tree.set("parameters/SM/Locomotion/Anim/blend_position", Vector2(_loco_x, _loco_turn))
+		_tree.set(&"parameters/SM/Locomotion/Anim/blend_position", Vector2(_loco_x, _loco_turn))
 		# the clip's root motion is in rig space: the height scale on the pivot stretches every stride by that much
 		var scale: float = maxf(spd, 0.15) / maxf(0.1, _loco_speed * _pivot.scale.y) if _loco_x > 0.01 else 1.0
-		_tree.set("parameters/SM/Locomotion/TimeScale/scale", scale)
+		_tree.set(&"parameters/SM/Locomotion/TimeScale/scale", scale)
 	elif _tree_state == "Crawl":
 		var cx: float = clampf(spd / float(_cfg["crawler_speed"]), 0.0, 1.0)
-		_tree.set("parameters/SM/Crawl/Anim/blend_position", cx)
+		_tree.set(&"parameters/SM/Crawl/Anim/blend_position", cx)
 		var cs: float = maxf(spd, 0.1) / (float(_anim["gait"]["crawl"]["speed"]) * _pivot.scale.y) if cx > 0.05 else 1.0
-		_tree.set("parameters/SM/Crawl/TimeScale/scale", cs)
+		_tree.set(&"parameters/SM/Crawl/TimeScale/scale", cs)
 	_turn_rate = move_toward(_turn_rate, 0.0, dt * 8.0)
 	if _flinch > 0.0:
 		_flinch = maxf(0.0, _flinch - dt)
@@ -3783,7 +3788,7 @@ func _animate(dt: float) -> void:
 			_tree.set("parameters/SM/Attack/TimeSeek/seek_request", recorded_hit)
 			_tree.set("parameters/SM/Attack/TimeScale/scale", 1.0)
 	_tree.advance(dt)
-	var turn_time: float = _playback.get_current_play_position() if String(_playback.get_current_node()) == "Turn" else 0.0
+	var turn_time: float = _playback.get_current_play_position() if _playback.get_current_node() == &"Turn" else 0.0
 	_pivot.rotation.y = _turn_motion.advance(rotation.y, turn_time, dt, can_turn and _tree_state == "Turn")
 	if state == State.DEAD and _tree_state == "Death" and ZombieClips.visual_clip(_death_clip).begins_with("mco_"):
 		# The corpse presentation follows the recorded fall before physics takes over. The pooled
@@ -3813,7 +3818,7 @@ func _animate(dt: float) -> void:
 		_modifier.lock_on = false
 	# Use the evaluated state's clock, including seeks, idle blends and resumes after
 	# attacks. A separate integrated clock drifts away from the feet on those paths.
-	if _tree_state == "Locomotion" and String(_playback.get_current_node()) == "Locomotion" and _loco_x > 0.5:
+	if _tree_state == "Locomotion" and _playback.get_current_node() == &"Locomotion" and _loco_x > 0.5:
 		var phase: float = fposmod(_playback.get_current_play_position() / _cycle_len, 1.0)
 		if _step_phase_valid:
 			for event: Dictionary in ZombieClips.footstep_events(_loco_clip):
@@ -3864,7 +3869,7 @@ func _update_senses(delta: float) -> void:
 	var la: Dictionary = _anim["look_at"]
 	# (T-265: no foot rays for a body the camera does not see: four rays a tick each, and the weight eases back in
 	# over a quarter of a second once it is in view again)
-	var ik_on: bool = d <= float(fi["range_m"]) and not _out_of_view and is_on_floor() and state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW, State.TEAR, State.ATTACK, State.STAGGER] and not is_crawler
+	var ik_on: bool = d <= float(fi["range_m"]) and not _out_of_view and is_on_floor() and state in _IK_STATES and not is_crawler
 	_modifier.active = d <= float(fi["off_m"]) or _modifier.springs_active()
 	if ik_on:
 		foot_ray_ticks += 1
@@ -3898,7 +3903,7 @@ func _update_senses(delta: float) -> void:
 		_modifier.ik_weight = move_toward(_modifier.ik_weight, 1.0, delta * 4.0)
 	else:
 		_modifier.ik_weight = move_toward(_modifier.ik_weight, 0.0, delta * 4.0)
-	var look_on: bool = target != null and d <= float(la["range_m"]) and (state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW, State.TEAR, State.ATTACK] or _emerge_head_out()) and not is_severed("Head")
+	var look_on: bool = target != null and d <= float(la["range_m"]) and (state in _LOOK_STATES or _emerge_head_out()) and not is_severed("Head")
 	if look_on:
 		_look_target.global_position = target.global_position + Vector3.UP * 1.6
 	_look.active = look_on

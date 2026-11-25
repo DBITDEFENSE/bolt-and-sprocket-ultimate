@@ -1426,7 +1426,7 @@ func _flip_add(key: String, us: int) -> void:
 func _report_flip() -> void:
 	if _flip == "":
 		return
-	print("[flip] %s: on = as built%s, off = switched off; ms (mean / p50 / p95 / p99), samples" % [_flip, "" if _flip != "t281" else " (Zombie.t281_opt true)"])
+	print("[flip] %s: %s; ms (mean / p50 / p95 / p99), samples" % [_flip, "on = as built (Zombie.t281_opt true), off = the T-281 changes off" if _flip == "t281" else "on = the diagnostic applied, off = as built"])
 	for key: String in ["frame", "scripts per physics tick", "scripts per process frame", "zombie.gd phys", "zombie.gd proc", "bot_brain.gd phys", "after physics scripts", "after process scripts"]:
 		var parts: PackedStringArray = []
 		for side: String in ["on", "off"]:
