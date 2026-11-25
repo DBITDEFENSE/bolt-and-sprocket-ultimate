@@ -213,6 +213,7 @@ func _process(_delta: float) -> bool:
 		push_error("gen_map00: a perk spot is blocked; the scene was NOT saved")
 		map_root.free()
 		return true
+	MapRocketGen.bake_dressing(self)   # T-279: the V2 site's dressing as one mesh per material (after the audits)
 	var merged: int = merge_static_meshes()
 	print("merged %d static meshes into batches" % merged)
 	build_environment()

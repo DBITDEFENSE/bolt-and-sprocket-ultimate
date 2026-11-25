@@ -156,6 +156,14 @@ static func erector_arm() -> Node3D:
 	# a ladder up the rails' back
 	Props.ladder(parts, Vector3(-0.3, 0.2, 0.0), -90.0, ARM_LENGTH - 1.0, key)
 	# the pivot boss at the hinge
-	Props.cyl(parts, Vector3(-0.1, 0.0, 0), 0.22, zr * 2.0 + 0.3, "steel", Vector3(90, 0, 0))
+	Props.cyl(parts, Vector3(-0.1, 0.0, 0), 0.22, zr * 2.0 + 0.3, "rust", Vector3(90, 0, 0))
+	# T-279: riveted gusset plates where the braces meet the rails, rust at the joints and grime down the rails
+	for sz4: float in [-zr, zr]:
+		var y3: float = 0.6
+		while y3 < ARM_LENGTH - 0.8:
+			Props.block(parts, Vector3(0.02, y3 - 0.12, sz4 - 0.105), Vector3(0.3, y3 + 0.12, sz4 - 0.095) if sz4 < 0.0 else Vector3(0.3, y3 + 0.12, sz4 + 0.105), "steel")
+			Props.block(parts, Vector3(-0.23, y3 - 0.08, sz4 - 0.11), Vector3(-0.21, y3 + 0.08, sz4 + 0.11), "rust")
+			y3 += 1.8
+		Props.block(parts, Vector3(-0.225, 0.2, sz4 - 0.104), Vector3(-0.2, ARM_LENGTH - 0.2, sz4 + 0.104), "grime")
 	Props.bake(parts)
 	return root
