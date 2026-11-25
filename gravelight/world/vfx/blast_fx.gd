@@ -426,8 +426,9 @@ func blast(pos: Vector3, radius: float, kind: String, quality: Dictionary, parti
 				if _dirt_of.size() < 256:
 					_dirt_of[cid] = dirt
 			stats["ground"] = int(stats["ground"]) + 1
-	var ratio: float = clampf(particles * float(row.get("count_k", 1.0)), 0.05, 1.0)
-	var low: bool = particles < 0.6
+	var pk: float = preset_k()
+	var ratio: float = clampf(particles * pk * float(row.get("count_k", 1.0)), 0.05, 1.0)
+	var low: bool = particles * pk < 0.6
 	var speed: float = float(row.get("speed", 1.0)) * (float(cfg.get("low_speed_k", 1.3)) if low else 1.0)
 	root.position = pos   # Effects sits at the origin, unrotated
 	root.rotation = Vector3(0, randf() * TAU, 0)
@@ -520,6 +521,12 @@ func blast(pos: Vector3, radius: float, kind: String, quality: Dictionary, parti
 	set_process(true)
 
 
+## The graphics preset's share of the particles (vfx.json blast.preset_k: Low, the handheld and the web preset throw
+## fewer on top of the VFX quality's own share; High and Ultra 1).
+func preset_k() -> float:
+	return float((cfg.get("preset_k", {}) as Dictionary).get(str(GLSettings.values.get("graphics_preset", "high")), 1.0))
+
+
 ## The free slot, else the oldest.
 func _take_slot() -> int:
 	var best: int = 0
@@ -539,6 +546,8 @@ func _take_slot() -> int:
 
 func _light(slot: int, at: Vector3, row: Dictionary, quality: Dictionary) -> void:
 	var budget: int = clampi(int(quality.get("blast_lights", cfg.get("lights", 3))), 0, LIGHTS)
+	var preset: String = str(GLSettings.values.get("graphics_preset", "high"))
+	budget = mini(budget, int((cfg.get("preset_lights", {}) as Dictionary).get(preset, LIGHTS)))
 	if budget <= 0 or float(row.get("light", 1.0)) <= 0.0:
 		return
 	var li: int = -1

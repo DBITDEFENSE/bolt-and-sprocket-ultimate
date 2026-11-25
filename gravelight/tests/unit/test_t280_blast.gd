@@ -6,13 +6,16 @@ extends GutTest
 var _quality: Variant
 var _shake: Variant
 var _reduce: Variant
+var _preset: Variant
 
 
 func before_each() -> void:
 	_quality = GLSettings.values.get("vfx_quality", "high")
 	_shake = GLSettings.values.get("screen_shake", 1.0)
 	_reduce = GLSettings.values.get("reduce_motion", false)
+	_preset = GLSettings.values.get("graphics_preset", "high")
 	GLSettings.values["vfx_quality"] = "high"
+	GLSettings.values["graphics_preset"] = "high"
 	Effects.blast.clear()
 
 
@@ -20,6 +23,7 @@ func after_each() -> void:
 	GLSettings.values["vfx_quality"] = _quality
 	GLSettings.values["screen_shake"] = _shake
 	GLSettings.values["reduce_motion"] = _reduce
+	GLSettings.values["graphics_preset"] = _preset
 	Effects.blast.clear()
 	Effects.clear_marks()
 
@@ -220,3 +224,17 @@ func test_the_sound_layers_by_distance() -> void:
 		due = maxf(due, t)
 	assert_almost_eq(due, 120.0 / BlastFx.SPEED_OF_SOUND, 0.01, "it arrives at the speed of sound")
 	b.clear()
+
+
+func test_the_graphics_preset_thins_them_too() -> void:
+	Effects.explosion(Vector3.ZERO, 4.5, "shell")
+	var hi: float = float(Effects.blast.last["ratio"])
+	GLSettings.values["graphics_preset"] = "low"
+	assert_lt(Effects.blast.preset_k(), 1.0)
+	Effects.blast.clear()
+	for i: int in 4:
+		Effects.explosion(Vector3(i * 3.0, 0.3, 0), 4.5, "shell")
+	assert_lt(float(Effects.blast.last["ratio"]), hi, "the Low preset throws fewer particles at the same VFX quality")
+	assert_eq(Effects.blast.lights_alive(), 1, "and keeps one blast light")
+	GLSettings.values["graphics_preset"] = "ultra"
+	assert_eq(Effects.blast.preset_k(), 1.0)
