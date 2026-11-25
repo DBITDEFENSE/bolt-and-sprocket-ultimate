@@ -1426,11 +1426,19 @@ func _flip_add(key: String, us: int) -> void:
 func _report_flip() -> void:
 	if _flip == "":
 		return
-	print("[flip] %s: %s; ms (mean / p50 / p95 / p99), samples" % [_flip, "on = as built (Zombie.t281_opt true), off = the T-281 changes off" if _flip == "t281" else "on = the diagnostic applied, off = as built"])
+	print("[flip] %s: %s; ms" % [_flip, "on = as built (Zombie.t281_opt true), off = the T-281 changes off" if _flip == "t281" else "on = the diagnostic applied, off = as built"])
+	print("[flip]   columns: mean / p50 / p95 / p99 / 1%% worst (the mean of the slowest hundredth) / max, then the samples")
 	for key: String in ["frame", "scripts per physics tick", "scripts per process frame", "zombie.gd phys", "zombie.gd proc", "bot_brain.gd phys", "after physics scripts", "after process scripts"]:
 		var parts: PackedStringArray = []
 		for side: String in ["on", "off"]:
 			var samples: PackedInt32Array = PackedInt32Array(_flip_s.get(key + "/" + side, []) as Array)
 			var d: Array = dist(samples)
-			parts.append("%s %.3f / %.3f / %.3f / %.3f (%d)" % [side, d[0], d[1], d[2], d[3], samples.size()])
+			var srt: PackedInt32Array = samples.duplicate()
+			srt.sort()
+			var ln: int = maxi(1, srt.size() / 100)
+			var low: float = 0.0
+			for li: int in mini(ln, srt.size()):
+				low += float(srt[srt.size() - 1 - li])
+			low = low / float(ln) / 1000.0
+			parts.append("%s %.3f / %.3f / %.3f / %.3f / %.3f / %.3f (%d)" % [side, d[0], d[1], d[2], d[3], low, d[4], samples.size()])
 		print("[flip]   %-28s %s" % [key, " | ".join(parts)])
