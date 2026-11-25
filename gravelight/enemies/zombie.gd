@@ -32,6 +32,9 @@ const GRAVITY: float = 18.0   # the 1 g fallback; live: GameState.g_zombie() (wo
 
 ## Shared per-physics-frame repath budget, reset by the director.
 static var repath_budget: int = 6
+## T-281 (docs/perf/t281_zombie_count_2026-11.md): the horde-size optimisations on (the default). Off, every one of
+## them does what it did before, for the before / after from one build (perf_marks --flip=t281, --ab=t281_off).
+static var t281_opt: bool = true
 
 var enemy_id: StringName = &"ganger"
 var state: State = State.INACTIVE
@@ -213,6 +216,8 @@ static func kind_config(kind: StringName) -> Dictionary:
 
 func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
 	_contact_lock.reset()
+	_foot_ray_from = [Vector3.INF, Vector3.INF]
+	_toe_ray_from = [Vector3.INF, Vector3.INF]
 	var tiers: Dictionary = GLData.table("enemies")["tiers"]
 	var jitter: float = float(GLData.table("enemies")["speed_jitter"])
 	net_died = false
@@ -401,9 +406,20 @@ func marke_hitbox() -> Hitbox:
 func _marke_layers(on: bool) -> void:
 	for site: StringName in _marke_hb.keys():
 		var live: bool = on and site == marke_site and not _marke_lost
-		(_marke_hb[site] as Hitbox).collision_layer = Hitbox.LAYER_HITBOX if live else 0
+		_weak_box_live(_marke_hb[site] as Hitbox, live)
 	for ws: StringName in _wound_hb.keys():   # T-192
-		(_wound_hb[ws] as Hitbox).collision_layer = Hitbox.LAYER_HITBOX if on and ws == marke_site else 0
+		_weak_box_live(_wound_hb[ws] as Hitbox, on and ws == marke_site)
+
+
+## T-281: a weak-point box (the Marke's two sites, the four wound sites) that is not this body's live one has no
+## collision layer, so no ray or area can ever find it; it also leaves the physics space (process off: the
+## CollisionObject's default disable mode removes it), where it was moved with its bone every animation step for
+## nothing. Five of a zombie's eighteen boxes. `t281_opt` false: it stays in the space, as before.
+func _weak_box_live(hb: Hitbox, live: bool) -> void:
+	hb.collision_layer = Hitbox.LAYER_HITBOX if live else 0
+	var mode: Node.ProcessMode = Node.PROCESS_MODE_DISABLED if (t281_opt and not live) else Node.PROCESS_MODE_INHERIT
+	if hb.process_mode != mode:
+		hb.process_mode = mode
 
 
 ## The marked hand is gone with the arm: no weak point left, the glint goes with the piece.
@@ -2006,7 +2022,37 @@ func _halt(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, 0.0, 30.0 * delta)
 	velocity.z = move_toward(velocity.z, 0.0, 30.0 * delta)
 	_apply_gravity(delta)
+	if _at_rest():
+		halt_skips += 1
+		return
+	_rest_tick = REST_REFRESH_TICKS
 	move_and_slide()
+	_rest_from = global_position if get_position_delta().length_squared() < 1.0e-10 else Vector3.INF
+
+
+## T-281: a halted body at rest needs no move_and_slide. A zombie that stands (queued at a window, tearing the
+## boards, staggered, getting up, waiting at a ladder) asked the physics engine every tick to slide it nowhere: the
+## floor snap pressed it into the ground it already stood on and it came back where it was (0.03-0.05 ms a call, a
+## quarter of the horde at the windows in a full round). It is skipped while nothing could move the body: no
+## velocity left on the flat, on the floor (the gravity step found it and the step off another zombie's head did not
+## fire), not on a moving floor, not moved by anyone since its last real slide, and that slide itself moved it by
+## nothing. Every REST_REFRESH_TICKS-th tick slides for real all the same, so the floor contact and the slide's
+## collisions stay fresh. `t281_opt` false: every tick slides, as before.
+const REST_REFRESH_TICKS: int = 10
+var _rest_from: Vector3 = Vector3.INF   # where the last real slide left the body when it moved it by nothing
+var _rest_tick: int = 0
+static var halt_skips: int = 0          # skipped slides (perf_marks counts them)
+
+
+func _at_rest() -> bool:
+	if not t281_opt or _rest_from != global_position:
+		return false
+	if velocity.x != 0.0 or velocity.z != 0.0 or velocity.y > 0.0 or not is_on_floor():
+		return false
+	if get_platform_velocity() != Vector3.ZERO:
+		return false
+	_rest_tick -= 1
+	return _rest_tick > 0
 
 
 func _apply_gravity(delta: float) -> void:
@@ -2614,6 +2660,7 @@ func _build_body() -> void:
 		mhb.position = ms[1]
 		mhb.collision_layer = 0
 		at.add_child(mhb)
+		_weak_box_live(mhb, false)
 		_marke_hb[site] = mhb
 		var gl: MeshInstance3D = MeshInstance3D.new()
 		gl.name = "MarkeGlint"
@@ -2636,6 +2683,7 @@ func _build_body() -> void:
 		whb.position = wsd[1]
 		whb.collision_layer = 0
 		wat.add_child(whb)
+		_weak_box_live(whb, false)
 		_wound_hb[ws] = whb
 		var wm: MeshInstance3D = MeshInstance3D.new()
 		wm.name = "Wound"
@@ -3797,6 +3845,17 @@ func _animate(dt: float) -> void:
 
 
 ## Foot IK rays, look-at target and the per-distance modifier gates (physics step).
+## T-281: the foot rays' last start points and hits per foot (world space), and how near a new start point must be
+## to the last one to meet the same ground (5 mm; the toe's point 1 cm). The ground under a foot that moved less is
+## the same ground: the map's colliders do not move under a zombie's feet. Reset with each spawn.
+const FOOT_RAY_SAME_M2: float = 0.005 * 0.005
+var _foot_ray_from: Array[Vector3] = [Vector3.INF, Vector3.INF]
+var _toe_ray_from: Array[Vector3] = [Vector3.INF, Vector3.INF]
+var _foot_hit: Array[Vector3] = [Vector3.INF, Vector3.INF]
+var _toe_hit: Array[Vector3] = [Vector3.INF, Vector3.INF]
+static var foot_ray_reuses: int = 0   # feet whose rays were kept (perf_marks counts them)
+
+
 func _update_senses(delta: float) -> void:
 	if state == State.INACTIVE or state == State.DEAD or not has_rig():
 		return
@@ -3819,14 +3878,23 @@ func _update_senses(delta: float) -> void:
 			var foot_g: Vector3 = _skel.to_global(_skel.get_bone_global_pose(fidx).origin)
 			var from: Vector3 = Vector3(foot_g.x, global_position.y + float(fi["ray_up"]), foot_g.z)
 			var to: Vector3 = Vector3(foot_g.x, global_position.y - float(fi["ray_down"]), foot_g.z)
-			var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, to, LAYER_WORLD, [get_rid()])
-			var hit: Dictionary = space.intersect_ray(q)
-			_modifier.foot_ground_y[i] = (_skel.to_local(hit["position"] as Vector3).y) if not hit.is_empty() else NAN
-			# the ground under the toe too: the foot is tilted by the rise between the two (ZombieBodyModifier)
 			var toe_g: Vector3 = _skel.to_global(_skel.get_bone_global_pose(fidx) * Vector3(0, -0.06, -0.15))
-			var tq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(Vector3(toe_g.x, from.y, toe_g.z), Vector3(toe_g.x, to.y, toe_g.z), LAYER_WORLD, [get_rid()])
-			var toe_hit: Dictionary = space.intersect_ray(tq)
-			_modifier.toe_ground_y[i] = (_skel.to_local(toe_hit["position"] as Vector3).y) if not toe_hit.is_empty() else NAN
+			# T-281: a foot that has not moved since its last rays (a body standing at a window, tearing, waiting)
+			# meets the same ground: the two hits are kept and only taken into the skeleton's frame again
+			if t281_opt and _foot_ray_from[i].distance_squared_to(from) < FOOT_RAY_SAME_M2 and _toe_ray_from[i].distance_squared_to(toe_g) < FOOT_RAY_SAME_M2 * 4.0:
+				foot_ray_reuses += 1
+			else:
+				var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, to, LAYER_WORLD, [get_rid()])
+				var hit: Dictionary = space.intersect_ray(q)
+				_foot_hit[i] = (hit["position"] as Vector3) if not hit.is_empty() else Vector3.INF
+				# the ground under the toe too: the foot is tilted by the rise between the two (ZombieBodyModifier)
+				var tq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(Vector3(toe_g.x, from.y, toe_g.z), Vector3(toe_g.x, to.y, toe_g.z), LAYER_WORLD, [get_rid()])
+				var toe_hit: Dictionary = space.intersect_ray(tq)
+				_toe_hit[i] = (toe_hit["position"] as Vector3) if not toe_hit.is_empty() else Vector3.INF
+				_foot_ray_from[i] = from
+				_toe_ray_from[i] = toe_g
+			_modifier.foot_ground_y[i] = _skel.to_local(_foot_hit[i]).y if _foot_hit[i] != Vector3.INF else NAN
+			_modifier.toe_ground_y[i] = _skel.to_local(_toe_hit[i]).y if _toe_hit[i] != Vector3.INF else NAN
 		_modifier.ik_weight = move_toward(_modifier.ik_weight, 1.0, delta * 4.0)
 	else:
 		_modifier.ik_weight = move_toward(_modifier.ik_weight, 0.0, delta * 4.0)
