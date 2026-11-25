@@ -57,6 +57,16 @@ extends Node
 ## probe's walk from the tree's root, not the map (the autoloads and the HUD layers outside the map count too), and
 ## the hitch report then splits the frame's time outside the scripts into the gap after the physics scripts (the
 ## physics and navigation servers' step) and the gap after the process scripts (animation, skeletons, audio, draw).
+## T-281 (the lag that grows with the zombie count): `--zombies=N` keeps N zombies up instead of 24 (the pool grows
+## for the bench when N is over its 32), `--mix=high` makes the horde a late round's: run / sprint tiers, every 5th a
+## crawler, every 6th a burning fire zombie of the Sherman's round (its light, flames and burst; the burst kills it),
+## `--kills=K` kills K of them a second spread over the second (a ragdoll and the death's listeners each, every
+## damage kind in turn) and the bench puts the dead back so N stay up. The report gains a `[t281]` line: deaths,
+## ragdolls built, the navigation and physics servers' counts, and the zombies' share per zombie. `--flip=<name>`
+## switches one thing off and on every second inside the one run (the first 15 frames after each switch are not
+## counted) and reports the frame, the scripts and the two gaps for each side apart: an A/B from one map load whose
+## two sides share the machine's load second by second. Names: `t281` (Zombie.t281_opt, this task's changes) and the
+## diagnostic `z_no_zcollide`, `z_no_avoid`, `z_no_dead_areas`.
 
 const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 const SPIKE_MS: float = 40.0
@@ -136,6 +146,19 @@ var _ab_steps: Array = []    # the features switched on at each step after "befo
 var _states: Array = []      # [{tag, off: PackedStringArray, rows}]: every view is counted in each of them
 var _state_i: int = 0
 var _view_settle: int = 9
+## T-281: `--zombies=N`, `--mix=high`, `--kills=K` (see the header)
+var _zcount: int = 24
+var _mix: String = ""
+var _kill_rate: float = 0.0
+var _kill_acc: float = 0.0
+var _kill_i: int = 0
+var _refill_t: float = 0.0
+var _deaths: int = 0
+var _spawned: int = 0
+var _flip: String = ""           # `--flip=<name>`
+var _flip_on: bool = true        # the side being run now (on = the thing as built)
+var _flip_f: int = 0             # frames since the last switch
+var _flip_s: Dictionary = {}     # "<key>/<on|off>" -> Array of microseconds
 
 
 func _ready() -> void:
@@ -174,6 +197,14 @@ func _ready() -> void:
 			var spec: String = a.substr(10) if a.begins_with("--t266-ab=") else "proxies+props+occlusion+sun+lights"   # steps a:b, features in a step a+b
 			for st: String in spec.split(":", false):
 				_ab_steps.append(st.split("+", false))
+		elif a.begins_with("--zombies="):
+			_zcount = maxi(0, int(a.substr(10)))
+		elif a.begins_with("--mix="):
+			_mix = a.substr(6)
+		elif a.begins_with("--flip="):
+			_flip = a.substr(7)
+		elif a.begins_with("--kills="):
+			_kill_rate = maxf(0.0, float(a.substr(8)))
 		elif a.begins_with("--views="):
 			_views_on = true
 			_views = PerfViews.load_views(a.substr(8).split(","))
@@ -194,6 +225,8 @@ func _ready() -> void:
 	for a: String in OS.get_cmdline_user_args():
 		if a.begins_with("--seed="):
 			seed(int(a.substr(7)))
+	if "t281_off" in _ab:   # T-281: the horde-size optimisations off (the before, same build)
+		(load("res://gravelight/enemies/zombie.gd") as GDScript).set("t281_opt", false)
 	if "--ab=t237_off" in OS.get_cmdline_user_args():   # T-237: the "before" side (the optimisations off, same build)
 		BotProf.opt = false
 		StreamWarm.enabled = false
@@ -258,7 +291,10 @@ func _process(delta: float) -> void:
 				_phase = 2
 				if not _live:
 					RoundManager.stop()
-					(_map.get_node("ZombieDirector") as ZombieDirector).debug_spawn(24)
+					_spawn_horde(_zcount)
+					GLBus.enemy_killed_at.connect(func(_e: StringName, _p: Vector3, _b: int) -> void:
+						if _t > 9.0 and _t < _t_end:
+							_deaths += 1)
 				if "--tank" in OS.get_cmdline_user_args() and _map.get_node_or_null(^"ShermanEvent") is ShermanEvent:
 					(_map.get_node(^"ShermanEvent") as ShermanEvent).force_assist()
 				if _pos.size() >= 3:
@@ -303,6 +339,19 @@ func _process(delta: float) -> void:
 				if _hitch:   # T-237: the squad stays up too (24 zombies nobody can kill put every bot down in 15 s)
 					for bp: Node in get_tree().get_nodes_in_group(&"bots"):
 						(bp as Player).bot_damage_mult = 0.0
+				if _kill_rate > 0.0 and _t > 9.0:
+					_kill_step(delta)
+				if _flip != "" and _t > 9.0:
+					_flip_step()
+				if _census_done and ("z_no_zcollide" in _ab or "z_no_avoid" in _ab or "z_no_dead_areas" in _ab):
+					_ab_zombies()
+				if _t > 6.0 and (_kill_rate > 0.0 or _mix != ""):
+					_refill_t -= delta
+					if _refill_t <= 0.0:   # the dead (killed, or a fire zombie's burst) are put back so N stay up
+						_refill_t = 0.25
+						var up: int = _map.director.active_zombies().size()
+						if up < _zcount:
+							_spawn_horde(_zcount - up)
 				if "--corpses" in OS.get_cmdline_user_args() and _t > 9.0:
 					_kill_t -= delta
 					if _kill_t <= 0.0:
@@ -340,6 +389,7 @@ func _process(delta: float) -> void:
 					var wn: int = Time.get_ticks_usec()
 					if _wall_prev != 0:
 						_wall.append(maxi(0, wn - _wall_prev - _skip_us))
+						_flip_add("frame", maxi(0, wn - _wall_prev - _skip_us))
 					_wall_prev = wn
 					_skip_us = 0
 			if (_quick and _samples.size() >= QUICK_FRAMES) or (not _quick and _t >= _t_end):
@@ -570,10 +620,12 @@ func probe_tick(physics: bool, delta: float) -> void:
 		var g0: int = Time.get_ticks_usec()
 		if physics and _proc_end != 0:
 			_gap_proc.append(g0 - _proc_end)
+			_flip_add("after process scripts", g0 - _proc_end)
 		elif not physics and _phys_end != 0:
 			g0 -= _gap_skip
 			_gap_skip = 0
 			_gap_phys.append(g0 - _phys_end)
+			_flip_add("after physics scripts", g0 - _phys_end)
 			var it: int = NavigationServer3D.map_get_iteration_id(get_viewport().world_3d.navigation_map)
 			var synced: bool = _nav_iter >= 0 and it != _nav_iter
 			if synced:
@@ -630,8 +682,13 @@ func probe_tick(physics: bool, delta: float) -> void:
 		_proc_end = Time.get_ticks_usec()
 	if not physics:
 		_proc_tot.append(tick_us)
+		_flip_add("scripts per process frame", tick_us)
+		_flip_add("zombie.gd proc", int(tick_parts.get("zombie.gd", 0)))
 		return
 	_tick_tot.append(tick_us)
+	_flip_add("scripts per physics tick", tick_us)
+	_flip_add("zombie.gd phys", int(tick_parts.get("zombie.gd", 0)))
+	_flip_add("bot_brain.gd phys", int(tick_parts.get("bot_brain.gd", 0)))
 	if _worst.size() >= 14 and tick_us <= int(_worst[_worst.size() - 1][0]):
 		return
 	var keys: Array = tick_parts.keys()
@@ -782,6 +839,8 @@ func _report_hitch() -> void:
 		print("[hitch] work counted (whole run, %d frames): zombie animation steps %d (%.1f a frame, %.0f %% of the %d zombie-frames; %.0f %% of those out of view), ticks with foot rays %d (%.1f a frame, %.0f %%)" % [
 			Engine.get_process_frames(), int(zs.get("anim_steps")), int(zs.get("anim_steps")) / fr, 100.0 * int(zs.get("anim_steps")) / af, int(af),
 			100.0 * int(zs.get("out_frames")) / af, int(zs.get("foot_ray_ticks")), int(zs.get("foot_ray_ticks")) / fr, 100.0 * int(zs.get("foot_ray_ticks")) / af])
+	_report_t281()
+	_report_flip()
 	var t: Array = dist(_tick_tot)
 	print("[hitch] scripts per physics tick ms: mean %.2f p50 %.2f p95 %.2f p99 %.2f worst %.2f | over 4 ms %d, over 8 ms %d, over 16.7 ms %d" % [
 		t[0], t[1], t[2], t[3], t[4], over(_tick_tot, 4.0), over(_tick_tot, 8.0), over(_tick_tot, 16.7)])
@@ -1181,3 +1240,197 @@ func _cheap_pixels() -> void:
 		env.ssr_enabled = false
 		env.volumetric_fog_enabled = false
 		env.glow_enabled = false
+
+
+# ================================================================== T-281: the horde's size
+
+## Puts `n` more zombies up at the director's spawns (as `debug_spawn`), growing the pool first if it has too few
+## free bodies; with `--mix=high` the specs are a late round's (see the header).
+func _spawn_horde(n: int) -> void:
+	var dir: ZombieDirector = _map.get_node("ZombieDirector") as ZombieDirector
+	var free: Array = dir.get("_free")
+	var pool: Array = dir.get("_pool")
+	# the pool is grown once, before the window, with room for the dead still lying (so no body is built in the window)
+	var want: int = n if _spawned > 0 else n + (24 if _kill_rate > 0.0 or _mix != "" else 0)
+	while free.size() < want:
+		var z: Zombie = Zombie.new()
+		z.name = "ZombieX%02d" % pool.size()
+		z.director = dir
+		z.net_id = pool.size()
+		dir.add_child(z)
+		pool.append(z)
+		free.append(z)
+	if _mix == "":
+		dir.debug_spawn(n)
+		_spawned += n
+		return
+	var fire_cfg: Dictionary = (GLData.load_json("res://data/gravelight/sherman.json") as Dictionary).get("fire_zombie", {})
+	for i: int in n:
+		var sp: ZombieSpawn = dir.call("_choose_spawn") as ZombieSpawn
+		if sp == null or free.is_empty():
+			return
+		RoundManager.to_spawn += 1
+		var spec: Dictionary = RoundManager.take_spawn()
+		spec["variant"] = dir.call("_pick_variant")
+		var k: int = _spawned
+		_spawned += 1
+		spec["tier"] = [&"run", &"sprint", &"jog", &"run", &"sprint"][k % 5]
+		if k % 5 == 4:
+			spec["crawler"] = true
+		var z2: Zombie = free.pop_back()
+		z2.activate(spec, sp, dir.call("_any_player") as Player)
+		if k % 6 == 5 and not fire_cfg.is_empty():
+			FireZombie.make(z2, fire_cfg, null, true)
+
+
+## `--kills=K`: K kills a second, spread over the second, each with another damage kind and hit part.
+func _kill_step(delta: float) -> void:
+	_kill_acc += _kill_rate * delta
+	while _kill_acc >= 1.0:
+		_kill_acc -= 1.0
+		var live_z: Array = _map.director.active_zombies()
+		if live_z.is_empty():
+			return
+		var kz: Zombie = live_z[_kill_i % live_z.size()]
+		var ki: int = _kill_i % 4
+		_kill_i += 1
+		kz.hp = 1.0
+		kz.take_damage(50.0, [&"head", &"torso", &"arms", &"legs"][ki], &"", _map.player.player_id, &"explosive" if ki == 1 else &"bullet")
+
+
+func _report_t281() -> void:
+	var zs: Array = _map.director.active_zombies()
+	var agents: int = int(Performance.get_monitor(Performance.NAVIGATION_AGENT_COUNT))
+	print("[t281] zombies %d (asked %d, mix %s, kills %.1f/s), deaths in the window %d, nav agents %d, nav maps %d, physics active %d, islands %d, pairs %d" % [
+		zs.size(), _zcount, _mix if _mix != "" else "-", _kill_rate, _deaths, agents,
+		int(Performance.get_monitor(Performance.NAVIGATION_ACTIVE_MAPS)), int(Performance.get_monitor(Performance.PHYSICS_3D_ACTIVE_OBJECTS)),
+		int(Performance.get_monitor(Performance.PHYSICS_3D_ISLAND_COUNT)), int(Performance.get_monitor(Performance.PHYSICS_3D_COLLISION_PAIRS))])
+	# what one zombie hands the renderer (counted from the tree: the render side's CPU cost per body, not timed here)
+	var geo: int = 0
+	var surf: int = 0
+	var skinned: int = 0
+	var casters: int = 0
+	var cast_surf: int = 0
+	var lights: int = 0
+	var shadow_lights: int = 0
+	var particles: int = 0
+	var areas: int = 0
+	var areas_live: int = 0
+	var mats: Dictionary = {}
+	for z: Zombie in zs:
+		var stack: Array[Node] = [z]
+		while not stack.is_empty():
+			var n: Node = stack.pop_back()
+			for c: Node in n.get_children():
+				stack.append(c)
+			if n is Area3D:
+				areas += 1
+				if (n as Area3D).collision_layer != 0:
+					areas_live += 1
+			if n is Light3D and (n as Light3D).is_visible_in_tree():
+				lights += 1
+				if (n as Light3D).shadow_enabled:
+					shadow_lights += 1
+			if n is GPUParticles3D and (n as GPUParticles3D).emitting:
+				particles += 1
+			var mi: MeshInstance3D = n as MeshInstance3D
+			if mi == null or mi.mesh == null or not mi.is_visible_in_tree():
+				continue
+			geo += 1
+			var sc: int = mi.mesh.get_surface_count()
+			surf += sc
+			if mi.skin != null:
+				skinned += 1
+			if mi.cast_shadow != GeometryInstance3D.SHADOW_CASTING_SETTING_OFF:
+				casters += 1
+				cast_surf += sc
+			for si: int in sc:
+				var m: Material = mi.get_active_material(si)
+				if m != null:
+					mats[m.get_instance_id()] = true
+	var zsc: GDScript = load("res://gravelight/enemies/zombie.gd") as GDScript
+	if zsc.get("halt_skips") != null:
+		print("[t281] work counted (whole run): halted slides skipped at rest %d, feet whose two rays were kept %d (t281_opt %s)" % [int(zsc.get("halt_skips")), int(zsc.get("foot_ray_reuses")), str(zsc.get("t281_opt"))])
+	var rgs: GDScript = load("res://gravelight/enemies/zombie_ragdoll.gd") as GDScript
+	if rgs.get("built") != null:
+		print("[t281] work counted (whole run): ragdoll rigs built new %d, taken from the kept ones %d" % [int(rgs.get("built")), int(rgs.get("reused"))])
+	var nz: float = float(maxi(1, zs.size()))
+	print("[t281] per zombie (of %d up): visible meshes %.1f, surfaces %.1f (draw calls in the colour pass), skinned %.2f, shadow casters %.1f with %.1f surfaces (draw calls in every shadow view they stand in), lights %.2f (%.2f shadowed), particle systems %.2f, areas %.1f (%.1f with a layer); %d distinct materials over the horde" % [
+		zs.size(), geo / nz, surf / nz, skinned / nz, casters / nz, cast_surf / nz, lights / nz, shadow_lights / nz, particles / nz, areas / nz, areas_live / nz, mats.size()])
+
+
+## T-281 diagnosis only (they change what the zombies do; never for a before / after): `--ab=z_no_zcollide` (the
+## zombies' bodies do not collide with each other), `z_no_avoid` (no avoidance: each walks its own path velocity),
+## `z_no_dead_areas` (the hitboxes without a collision layer taken out of the physics space). Kept each frame:
+## the zombie's own code sets these again on state changes.
+var _z_areas: Dictionary = {}
+
+
+func _ab_zombies() -> void:
+	for z: Zombie in _map.director.active_zombies():
+		if "z_no_zcollide" in _ab:
+			z.collision_mask &= ~Zombie.LAYER_ZBODY
+		if "z_no_avoid" in _ab:
+			var ag: NavigationAgent3D = z.get("_agent") as NavigationAgent3D
+			if ag != null and ag.avoidance_enabled:
+				ag.avoidance_enabled = false
+		if "z_no_dead_areas" in _ab:
+			if not _z_areas.has(z):
+				_z_areas[z] = z.find_children("*", "Area3D", true, false)
+			for c: Node in _z_areas[z]:
+				var ar: Area3D = c as Area3D
+				var want: Node.ProcessMode = Node.PROCESS_MODE_DISABLED if ar.collision_layer == 0 else Node.PROCESS_MODE_INHERIT
+				if ar.process_mode != want:
+					ar.process_mode = want
+
+
+## `--flip=<name>`: one side a second, the first 15 frames after a switch left out (the change settling).
+func _flip_step() -> void:
+	_flip_f += 1
+	if _flip_f >= 60:
+		_flip_f = 0
+		_flip_on = not _flip_on
+		_flip_apply()
+
+
+func _flip_apply() -> void:
+	match _flip:
+		"t281":
+			Zombie.t281_opt = _flip_on
+		"z_no_zcollide", "z_no_avoid", "z_no_dead_areas":
+			if _flip_on:
+				if not _ab.has(_flip):
+					_ab.append(_flip)
+			else:
+				if _ab.has(_flip):
+					_ab.remove_at(_ab.find(_flip))
+				for z: Zombie in _map.director.active_zombies():   # back as built
+					if _flip == "z_no_zcollide":
+						z.collision_mask |= Zombie.LAYER_ZBODY
+					elif _flip == "z_no_avoid" and z.state == Zombie.State.CHASE:
+						(z.get("_agent") as NavigationAgent3D).avoidance_enabled = true
+					elif _flip == "z_no_dead_areas" and _z_areas.has(z):
+						for c: Node in _z_areas[z]:
+							(c as Area3D).process_mode = Node.PROCESS_MODE_INHERIT
+
+
+func _flip_add(key: String, us: int) -> void:
+	if _flip == "" or _flip_f < 15 or not (_t > 9.0 and _t < _t_end):
+		return
+	var k: String = key + ("/on" if _flip_on else "/off")
+	if not _flip_s.has(k):
+		_flip_s[k] = []   # (a plain Array: a packed one taken out of the dictionary is a copy)
+	(_flip_s[k] as Array).append(us)
+
+
+func _report_flip() -> void:
+	if _flip == "":
+		return
+	print("[flip] %s: on = as built%s, off = switched off; ms (mean / p50 / p95 / p99), samples" % [_flip, "" if _flip != "t281" else " (Zombie.t281_opt true)"])
+	for key: String in ["frame", "scripts per physics tick", "scripts per process frame", "zombie.gd phys", "zombie.gd proc", "bot_brain.gd phys", "after physics scripts", "after process scripts"]:
+		var parts: PackedStringArray = []
+		for side: String in ["on", "off"]:
+			var samples: PackedInt32Array = PackedInt32Array(_flip_s.get(key + "/" + side, []) as Array)
+			var d: Array = dist(samples)
+			parts.append("%s %.3f / %.3f / %.3f / %.3f (%d)" % [side, d[0], d[1], d[2], d[3], samples.size()])
+		print("[flip]   %-28s %s" % [key, " | ".join(parts)])
