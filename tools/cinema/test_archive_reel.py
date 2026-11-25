@@ -183,6 +183,21 @@ class RenderTests(unittest.TestCase):
                 self.assertEqual(decode_errors(os.path.join(a, "staub", "shot_%02d%s.ogv" % (n, suffix))), "",
                                  "shot %d%s decodes cleanly" % (n, suffix))
 
+    def test_prune_drops_a_shot_whose_raw_clip_was_deleted(self):
+        raw, out = os.path.join(self.tmp, "raw_prune"), os.path.join(self.tmp, "built_prune")
+        shutil.copytree(self.raw, raw)
+        args = ["build", "--raw", raw, "--out", out, "--size", SIZE, "--web-size", WEB, "--scene", "staub"]
+        self.assertEqual(ar.main(args), 0)
+        gone = ar.find_raw(os.path.join(raw, "staub"), 8, "")
+        os.remove(gone)
+        self.assertEqual(ar.main(args), 0)
+        self.assertTrue(os.path.exists(os.path.join(out, "staub", "shot_08.ogv")), "without --prune a built clip stays")
+        self.assertEqual(ar.main(args + ["--prune"]), 0)
+        for f in ("shot_08.ogv", "shot_08_720.ogv"):
+            self.assertFalse(os.path.exists(os.path.join(out, "staub", f)), f + " is pruned")
+        self.assertTrue(os.path.exists(os.path.join(out, "staub", "shot_01.ogv")), "other shots stay")
+        self.assertNotIn("shot_08", ar.load_json(os.path.join(out, "staub", "build.json")))
+
     def test_reel_is_deterministic(self):
         a, b = os.path.join(self.tmp, "reel"), os.path.join(self.tmp, "reel_b")
         for out in (a, b):

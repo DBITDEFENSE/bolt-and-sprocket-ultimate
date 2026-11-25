@@ -110,3 +110,14 @@ func test_carve_trim() -> void:
 		assert_false(p.intersects(Rect2(3, 3, 2, 2)))
 	assert_almost_eq(area, 96.0, 0.01, "r minus the hole")
 	assert_eq(MapRocketGen.subtract(r, Rect2(20, 20, 1, 1)), [r] as Array[Rect2], "no overlap: unchanged")
+
+
+func test_a_countdown_left_from_a_short_launch_round_never_carries_over() -> void:
+	var l: RocketLaunch = RocketLaunch.new()   # not in the tree: only the round rule runs
+	l.cfg = {"first_round": 6, "every": 5, "delay": 20.0}
+	l._on_round_started(6, false)
+	assert_almost_eq(l._pending_start, 20.0, 0.001, "round 6 starts the delay")
+	l._pending_start = 5.0   # round 6 ended with 5 s left
+	l._on_round_started(7, false)
+	assert_lt(l._pending_start, 0.0, "round 7 is not a launch round: the leftover countdown is dropped")
+	l.free()

@@ -2,7 +2,7 @@
 
 ## 2026-11-24: photoreal cutscenes, the tower's ladders, the V2 site. All merged; these want your eyes or a decision.
 - [ ] **Watch the three history cutscenes** (start a new campaign, or the Archive). They are Higgsfield footage made from the in-engine scenes. Say if any shot should go back to the 3D version.
-- [ ] **Decide: Fourth Day shot 12** (the young soldiers' faces) has small period cap stars the AI added twice despite the no-insignia rule. Keep it, or delete `assets/user_supplied/cutscenes/fourth_day/shot_12.mp4`, run `python -I tools/cinema/archive_reel.py build` and the in-engine shot plays there instead.
+- [ ] **Decide: Fourth Day shot 12** (the young soldiers' faces) has small period cap stars the AI added twice despite the no-insignia rule. Keep it, or delete `assets/user_supplied/cutscenes/fourth_day/shot_12.mp4`, run `python -I tools/cinema/archive_reel.py build --scene fourth_day --prune` (deletes the built shot_12 reel too) and the in-engine shot plays there instead.
 - [ ] **Confirm the Higgsfield licence**: `assets/user_supplied/cutscenes/*/LICENSE.txt` still says the plan's commercial-use terms are to be confirmed by you (T-209). Until then the reels are for development and private builds.
 - [ ] **Climb the watchtower** both ways (Map 0 yard) and say if the opening and the hatch feel right. Zombies still hop over a ladder's head instead of stepping.
 - [ ] **Open the Forest Track** (Map 0, east fence, 1500), buy **Rocket Man** in the dugout, and try a rocket jump with a frag. Then reach round 6 and watch the launch. Only seen in software renders; the rocket's black quarters read weakly at noon.

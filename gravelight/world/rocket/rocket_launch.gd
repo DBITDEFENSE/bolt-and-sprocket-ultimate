@@ -170,7 +170,9 @@ func _build_rocket_on_table() -> void:
 func _on_round_started(r: int, _special: bool) -> void:
 	if phase == Phase.READY and is_launch_round(r, cfg):
 		_pending_start = float(cfg.get("delay", 20.0))
-	elif phase == Phase.GONE:
+		return
+	_pending_start = -1.0   # a launch round that ended inside the delay must not launch in the next round
+	if phase == Phase.GONE:
 		_pending_rearm = float(cfg.get("rearm_delay", 15.0))
 
 

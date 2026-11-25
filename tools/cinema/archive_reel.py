@@ -618,9 +618,20 @@ def build(args):
         for shot in sc["shots"]:
             for suffix in ("", "_gore"):
                 src = find_raw(sdir, shot["n"], suffix) if os.path.isdir(sdir) else None
-                if src is None:
-                    continue
                 key = shot_name(shot["n"]) + suffix
+                if src is None:
+                    # --prune: a shot built from a raw clip that is gone loses its built reel too, so the in-engine
+                    # shot plays there again. Opt-in: raw clips are git-ignored, a fresh checkout has none.
+                    if getattr(args, "prune", False) and os.path.isdir(sdir) and key in record:
+                        for o in (key + ".ogv", key + "_720.ogv"):
+                            for side in ("", ".uid", ".import"):
+                                fp = os.path.join(odir, o + side)
+                                if os.path.exists(fp):
+                                    os.remove(fp)
+                        del record[key]
+                        changed = True
+                        print("archive_reel: %s/%s removed (no raw clip)" % (scene, key))
+                    continue
                 stamp = hashlib.sha1(json.dumps([TOOL_VERSION, encoder_name(), sha1_file(src), ref_tag, t, w, h, web_h, shot["span"]],
                                                 sort_keys=True).encode("utf-8")).hexdigest()
                 outs = [os.path.join(odir, key + ".ogv"), os.path.join(odir, key + "_720.ogv")]
@@ -984,6 +995,7 @@ def main(argv=None):
     b = sub.add_parser("build")
     b.add_argument("--scene")
     b.add_argument("--force", action="store_true")
+    b.add_argument("--prune", action="store_true", help="delete built reels whose raw clip was deleted")
     b.add_argument("--raw")
     b.add_argument("--out")
     b.add_argument("--size")
