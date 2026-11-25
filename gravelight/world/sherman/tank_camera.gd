@@ -307,12 +307,11 @@ func _aim_ray(xf: Transform3D) -> Vector3:
 	return from + dirv * reach
 
 
-## True when the gun is laid within `tol_deg` of the aim point (seen from the gun).
+## True when the barrel points within `tol_deg` of the aim point (whatever its line meets first).
 func gun_on_aim(tol_deg: float) -> bool:
-	if tank == null or not is_instance_valid(tank) or not gun_point.is_finite():
+	if tank == null or not is_instance_valid(tank):
 		return false
-	var g: Vector3 = tank.gun.global_position
-	return rad_to_deg((aim_point - g).normalized().angle_to((gun_point - g).normalized())) <= tol_deg
+	return tank.aimed_at(aim_point, tol_deg)
 
 
 ## The gun marker's place on screen, or Vector2.INF when it is behind the camera or unknown.

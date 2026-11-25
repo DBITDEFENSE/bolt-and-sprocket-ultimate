@@ -406,6 +406,7 @@ func _view_restored(p: Player, ev: ShermanEvent, tk: ShermanTank) -> bool:
 ## laid gun, the wheel zooms the boom and goes into and out of the gunner's sight.
 func _cam_aim(ev: ShermanEvent, tk: ShermanTank, p: Player, cam: TankCamera) -> void:
 	var aim0: Variant = tk.aim_override
+	var look0: Vector2 = p.look_angles()
 	tk.aim_override = null
 	# the view swung 110 degrees from where the gun points, 18 m out on the ground: the screen centre meets it there
 	var tf: Vector3 = -tk.gun.global_basis.z
@@ -446,7 +447,10 @@ func _cam_aim(ev: ShermanEvent, tk: ShermanTank, p: Player, cam: TankCamera) -> 
 	await get_tree().process_frame
 	_check(not cam.sniper and cam.dist == 5.0 and p.carry_look_mult == 1.0 and absf(cam.fov - base_fov) < 0.5, "the wheel out leaves the sight for the shortest boom")
 	cam.dist = TankCamera.clamp_dist(9.0, cam.cfg)
-	p.set_look_pitch(-0.1)
+	# the view back where it was and the gun on it again, so the T-261 checks after this start as they always did
+	p.rotation.y = look0.y
+	p.set_look_pitch(look0.x)
+	await _until(func() -> bool: return cam.gun_on_aim(1.0), 6.0, _cull_horde)
 	tk.aim_override = aim0
 
 
