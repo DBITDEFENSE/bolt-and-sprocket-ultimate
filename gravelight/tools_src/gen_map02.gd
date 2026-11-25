@@ -1436,6 +1436,8 @@ func build_dressing() -> void:
 	_dress_light()
 	_tagged(_dress_t180, "")   # T-180: what the fitted colliders and the bulkheads look like
 	_fit_colliders()           # T-180: after every piece of dressing exists, before the batches merge it
+	for nf: Node in dress.find_children("*", "MeshInstance3D", true, false):
+		nf.remove_meta("t282_no_fit")   # T-282: the fit's skip mark is a generation-time note, not saved
 
 
 ## Runs a dressing function and marks every top-level node it added under Dressing with meta "vis" = `g` (the
@@ -3443,7 +3445,7 @@ func _art_points(holder: Node, bb: AABB, own_only: bool) -> Array:
 	var out: Array = []
 	for n: Node in holder.find_children("*", "MeshInstance3D", true, false):
 		var mi: MeshInstance3D = n as MeshInstance3D
-		if mi.mesh == null or not mi.visible:
+		if mi.mesh == null or not mi.visible or mi.has_meta("t282_no_fit"):
 			continue
 		var xf: Transform3D = _xform_to_root(mi)
 		var ab: AABB = xf * mi.mesh.get_aabb()
