@@ -1,5 +1,15 @@
 # NEEDS DEVIN
 
+## 2026-11-24: photoreal cutscenes, the tower's ladders, the V2 site. All merged; these want your eyes or a decision.
+- [ ] **Watch the three history cutscenes** (start a new campaign, or the Archive). They are Higgsfield footage made from the in-engine scenes. Say if any shot should go back to the 3D version.
+- [ ] **Decide: Fourth Day shot 12** (the young soldiers' faces) has small period cap stars the AI added twice despite the no-insignia rule. Keep it, or delete `assets/user_supplied/cutscenes/fourth_day/shot_12.mp4`, run `python -I tools/cinema/archive_reel.py build` and the in-engine shot plays there instead.
+- [ ] **Confirm the Higgsfield licence**: `assets/user_supplied/cutscenes/*/LICENSE.txt` still says the plan's commercial-use terms are to be confirmed by you (T-209). Until then the reels are for development and private builds.
+- [ ] **Climb the watchtower** both ways (Map 0 yard) and say if the opening and the hatch feel right. Zombies still hop over a ladder's head instead of stepping.
+- [ ] **Open the Forest Track** (Map 0, east fence, 1500), buy **Rocket Man** in the dugout, and try a rocket jump with a frag. Then reach round 6 and watch the launch. Only seen in software renders; the rocket's black quarters read weakly at noon.
+- [ ] **Decide:** a voice line for the launch siren (none exists; banners carry the warning now).
+
+Short, phone-readable. Nothing here blocks the build.
+
 ## 2026-11-22: voices, the day, the tank, the horse, the locker. All merged; these want your eyes or a decision.
 - [ ] **Play a match past round 7 on the Inn** and look at the day on your GPU (sunrise round 7, noon round 13). It was only seen in software renders; the exposure and the sun in the fog may need a pass. The numbers are in `data/gravelight/day_cycle.json`.
 - [ ] **Decide:** should der Kranich, Groom Lake and Mondlicht get the day too? They are off because each has a story time of day.

@@ -92,9 +92,22 @@ static func markers() -> Array[Dictionary]:
 
 
 ## The zone ids of `md` that count as open ground: a bounding box over `frac` of the map's world rect.
+## A map's open-ground zones named in ui.json minimap.open_zones (T-276: Map 0 grew east past the area rule), else [].
+static func open_zone_ids(md: MapData) -> Array:
+	if md == null:
+		return []
+	var oz: Dictionary = (MenuKit.cfg().get("minimap", {}) as Dictionary).get("open_zones", {})
+	return (oz.get(String(md.map_id), []) as Array).duplicate()
+
+
 static func big_zones(md: MapData, frac: float) -> Dictionary:
 	var out: Dictionary = {}
 	if md == null:
+		return out
+	var named: Array = open_zone_ids(md)
+	if not named.is_empty():
+		for id: Variant in named:
+			out[str(id)] = true
 		return out
 	var total: float = maxf(1.0, md.world_rect.get_area())
 	for z: Dictionary in md.zones:

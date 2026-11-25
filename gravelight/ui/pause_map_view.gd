@@ -318,7 +318,10 @@ static func built_rect(md: MapData, max_frac: float = 0.4) -> Rect2:
 	var total: float = maxf(1.0, md.world_rect.get_area())
 	var out: Rect2 = Rect2()
 	var any: bool = false
+	var open: Array = Minimap.open_zone_ids(md)   # named open ground never counts as built (T-276)
 	for z: Dictionary in md.zones:
+		if open.has(str(z.get("id", ""))):
+			continue
 		var r: Rect2 = Rect2()
 		var first: bool = true
 		for poly: Variant in z.get("polys", []):

@@ -1,30 +1,32 @@
-# Morning report: 2026-11-22 (voices, the day, the tank, the horse, the locker)
+# Morning report: 2026-11-24 (cutscenes, the tower's ladders, the V2 site, the map detail pass)
 
-**All five asks are on master and pushed.** Nothing was seen on your screen: the day was checked in software
-renders, the rest headless. Full unit suite on master: 2,460 tests, 2,459 passing, 1 risky (the known one).
+**Everything is on master and pushed.** Nothing was shown on your screen: pictures came from software renders under
+WSL, everything else ran headless. Full unit suite on the final master: 2,649 tests, 2,648 passing, 1 risky (the known one); check_scripts 1,029 scripts, 0 failed.
 
-## 1. Voices (T-260)
-- The ElevenLabs bake is finished: 2,349 new takes (the rest of The Fine Print, all of Bolt & Sprocket).
-- Six lines have no take: they are stage directions with no words (a scream, a giggle, a hum, a whisper).
-- Nobody has listened to the new takes.
+## 1. The cutscenes are photoreal (T-277)
+- The three history cutscenes (Lazarus Saturday, Fourth Day, Staub) now play as real-looking film in the campaign.
+- How: each of the 49 shots was recorded in-engine, then Higgsfield (Seedance 2.5, video edit) re-rendered it as
+  live-action footage, keeping the same camera, timing and layout. Colour, with a light film grain.
+- Every shot was checked against its recording. 10 were redone (lettering kept from the game, modern lane
+  markings on a 1930 road, mannequin-like soldiers). Cost: about 1,580 credits; about 940 left.
+- The 3D versions are still there (`engine:` in the Archive). Pictures: `.smoke_logs/reel_wire/` (not committed).
+- The loading screen clips now play through (up to 20 s) instead of cutting at 3 s.
 
-## 2. The day (T-259)
-- One round is one hour, a day is 24 rounds. Round 1 is the night as it was. The sun rises in round 7, noon is
-  round 13, sunset round 19, night again from round 21.
-- On: the Inn, Kaltenbrunn, Totenhafen, Thalbach. Off: der Kranich, Groom Lake, Mondlicht (each has a story hour).
-- Cellars, the mine and the vault stay dark. Pictures: `docs/captures/day_cycle/`.
+## 2. The watchtower's ladders (T-275)
+- The lower ladder now comes up through an opening in the landing's rail; the upper one moved inside the tower and
+  goes through a hatch in the top floor with a guard rail. Zombies climb the same way.
+- Before/after pictures: `docs/captures/t275/`.
 
-## 3. The Sherman (T-261)
-- It fights in the round-30 assault (it never fired there before) and uses its 75 mm: reload 6.5 s.
-- You can drive it: hold Use at the hull. Throttle and steer as on the horse, the view lays the turret, fire is
-  the 75 mm, aim holds the machine gun. It drives the grounds round the yard, not the yard itself.
+## 3. The V2 site and Rocket Man (T-276)
+- Map 0 is bigger: a gate in the east fence ("The Forest Track", 1500) leads through the woods to a V2 firing site.
+- The rocket launches on round 6 and every 5th round after: siren, countdown, a blast that kills zombies near the
+  table, lift-off. Stand back: up to 45 damage within 7 m.
+- **Rocket Man** (2500, in the firing dugout): your explosives hit 1.3x harder and wider, never hurt you, and a
+  close blast throws you (rocket jump, about 1 m up). Upgrades add stagger, then fire, then more damage.
+- Also there: an STG-44 wall-buy (1200) and an ammo box. Pictures: `docs/captures/t276/`.
 
-## 4. The horse (T-262)
-- You can fire, aim and reload at a gallop. The stride swings the view and opens the cone.
-- Tack at a chest by the hitching rail: Studded Shoes 1,500, Trooper's Saddle 2,000, Carter's Barding 2,500.
+## 4. Maps 1-6 brought up to Map 0 (T-271..T-274)
+- Kaltenbrunn, Totenhafen and the Fernflug acts got Map 0's kind of detail: new props, ladders and zip lines,
+  round events (the tank through the gate, a dive bomber on the boat), perk deals, survivors and openings.
 
-## 5. The arms locker (T-263)
-- In the Inn's stable, north-east corner. Hold Use: store the gun in your hands (500 Scrip), take it back free.
-- One gun per player, per match. It survives a bleed-out. Map 0 only so far.
-
-Details and what is not verified: `docs/DECISIONS.md` T-259 to T-263; your list is in `morning/NEEDS_DEVIN.md`.
+Details and what is not verified: `docs/DECISIONS.md` T-271 to T-277. Your list: `morning/NEEDS_DEVIN.md`.
