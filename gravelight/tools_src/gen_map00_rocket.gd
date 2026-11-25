@@ -372,6 +372,7 @@ static func build_dressing(g: Object) -> void:
 	_dress_hut(d)
 	_dress_yard(d)
 	_forest(d)
+	MapRocketDetail.build(g, d)   # T-279: the second detail pass (gen_map00_rocket_detail.gd)
 
 
 static func _dress_track(d: Node3D) -> void:
@@ -547,27 +548,65 @@ static func _net(d: Node3D, c: Vector3) -> void:
 	for sx: float in [-4.6, 4.6]:
 		for sz: float in [-2.7, 2.7]:
 			Props.cyl(g, Vector3(sx, 1.85, sz), 0.07, 3.7, "beam")
-	# the net: a ridge at 4.3 m, eaves at 3.6 m, three panels a side; a few tufts of garnish (scrim)
-	for side: float in [-1.0, 1.0]:
-		for k: int in 3:
-			var cx: float = -3.1 + k * 3.1
-			var pz: float = side * 1.45
-			var mi: MeshInstance3D = Props.obox(g, Vector3(cx, 3.95, pz), Vector3(3.25, 0.03, 3.0), "net", Vector3(side * -13.5, 0, 0))
-			mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
-	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
-	rng.seed = int(c.z * 13.0)
-	for i: int in 18:
-		var p: Vector3 = Vector3(rng.randf_range(-4.4, 4.4), 0.0, rng.randf_range(-2.6, 2.6))
-		p.y = 4.3 - absf(p.z) * 0.24 - 0.05
-		Props._noshadow(Props.ball(g, p, Vector3(rng.randf_range(0.5, 0.9), 0.14, rng.randf_range(0.4, 0.8)), "tarp" if i % 3 != 0 else "pine"))
-	for i2: int in 7:
-		var p2: Vector3 = Vector3(rng.randf_range(-4.2, 4.2), 0.0, rng.randf_range(-2.4, 2.4))
-		p2.y = 4.3 - absf(p2.z) * 0.24 + 0.04
-		Props._noshadow(Props.ball(g, p2, Vector3(rng.randf_range(0.8, 1.4), 0.08, rng.randf_range(0.6, 1.0)), "snow"))
-	# guy ropes to pegs
+	# T-279: top rails between the poles, the net draped over them (net_canopy), guy ropes to pegs
+	for sz3: float in [-2.7, 2.7]:
+		Props.block(g, Vector3(-4.6, 3.66, sz3 - 0.04), Vector3(4.6, 3.72, sz3 + 0.04), "beam")
+	net_canopy(g, Vector3.ZERO, Vector2(4.7, 2.8), 4.25, int(c.z * 13.0))
 	for sx2: float in [-4.6, 4.6]:
 		for sz2: float in [-2.7, 2.7]:
 			Props.cable(g, Vector3(sx2, 3.65, sz2), Vector3(sx2 * 1.25, 0.05, sz2 * 1.5), 0.0, 0.01, 1, "rope")
+
+
+## T-279: a camouflage net draped over poles: panels of net that sag from a ridge `top` m up toward the edges and
+## hang a short skirt down each side, scrim and cut spruce boughs worked into it, a little snow lying on it. The
+## T-276 net was six flat boards and read as a dark roof in the renders. `half` = its half size (x, z) round `c`.
+static func net_canopy(g: Node3D, c: Vector3, half: Vector2, top: float, seed_v: int) -> void:
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = seed_v
+	# (the first renders: big flat panels in one material read as a dark roof from below. Small mottled patches of
+	# net, scrim and cut boughs at jittered heights and tilts, with gaps the sky shows through, read as a net.)
+	var keys: Array[String] = ["net", "tarp", "olive_drab", "net", "pine"]
+	var cell: float = 0.8
+	var nx: int = maxi(2, int(round(half.x * 2.0 / cell)))
+	var nz: int = maxi(2, int(round(half.y * 2.0 / cell)))
+	var cw: float = half.x * 2.0 / float(nx)
+	var cd: float = half.y * 2.0 / float(nz)
+	for i: int in nx:
+		for k: int in nz:
+			if rng.randf() < 0.14:
+				continue   # a hole
+			var px: float = -half.x + (i + 0.5) * cw
+			var pz: float = -half.y + (k + 0.5) * cd
+			var fall: float = 0.7 * absf(pz) / half.y + 0.3 * pow(absf(px) / half.x, 2.0)
+			var tilt_x: float = rad_to_deg(atan2(0.7 / half.y, 1.0)) * signf(pz)   # (+X rotation lowers the +z edge)
+			var mi: MeshInstance3D = Props.obox(g, c + Vector3(px + rng.randf_range(-0.1, 0.1), top - fall + rng.randf_range(-0.16, 0.16), pz + rng.randf_range(-0.1, 0.1)),
+				Vector3(cw * rng.randf_range(1.0, 1.3), 0.03, cd * rng.randf_range(1.0, 1.3)), keys[rng.randi() % keys.size()],
+				Vector3(tilt_x + rng.randf_range(-12.0, 12.0), rng.randf_range(-20.0, 20.0), rng.randf_range(-12.0, 12.0)))
+			mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	# the skirt: ragged lengths of net and scrim hanging down every side
+	for side: float in [-1.0, 1.0]:
+		for i2: int in nx:
+			var px2: float = -half.x + (i2 + 0.5) * cw
+			var drop: float = rng.randf_range(0.3, 1.0)
+			Props._noshadow(Props.obox(g, c + Vector3(px2, top - 1.0 - drop * 0.5, side * (half.y + 0.03)), Vector3(cw * 1.05, drop, 0.02), keys[rng.randi() % 3],
+				Vector3(side * rng.randf_range(4.0, 14.0), 0, rng.randf_range(-6.0, 6.0))))
+		for k2: int in nz:
+			var pz2: float = -half.y + (k2 + 0.5) * cd
+			var drop2: float = rng.randf_range(0.3, 0.9)
+			var fall2: float = 0.7 * absf(pz2) / half.y + 0.3
+			Props._noshadow(Props.obox(g, c + Vector3(side * (half.x + 0.03), top - fall2 - drop2 * 0.5, pz2), Vector3(0.02, drop2, cd * 1.05), keys[rng.randi() % 3],
+				Vector3(rng.randf_range(-6.0, 6.0), 0, side * -rng.randf_range(4.0, 14.0))))
+	# boughs worked into it and hanging off its edges, snow lying on the ridge
+	var n: int = int(half.x * half.y * 2.6)
+	for i3: int in n:
+		var p: Vector3 = Vector3(rng.randf_range(-half.x, half.x), 0.0, rng.randf_range(-half.y, half.y))
+		p.y = top - 0.7 * absf(p.z) / half.y - 0.3 * pow(absf(p.x) / half.x, 2.0) + rng.randf_range(-0.05, 0.12)
+		var mi2: MeshInstance3D = MapRocketDetail.lowball(g, c + p, Vector3(rng.randf_range(0.7, 1.4), rng.randf_range(0.16, 0.3), rng.randf_range(0.4, 0.8)), "pine" if i3 % 3 != 0 else "tarp")
+		mi2.rotation.y = rng.randf() * TAU
+	for i4: int in int(n / 3.0) + 2:
+		var p2: Vector3 = Vector3(rng.randf_range(-half.x * 0.85, half.x * 0.85), 0.0, rng.randf_range(-half.y * 0.45, half.y * 0.45))
+		p2.y = top - 0.7 * absf(p2.z) / half.y - 0.3 * pow(absf(p2.x) / half.x, 2.0) + 0.1
+		MapRocketDetail.lowball(g, c + p2, Vector3(rng.randf_range(0.8, 1.6), 0.08, rng.randf_range(0.5, 0.9)), "snow")
 
 
 ## The firing-control dugout: sandbag revetments on a timber frame, a log roof under earth and snow, the doorway
@@ -586,9 +625,12 @@ static func _dress_bunker(d: Node3D) -> void:
 			[Vector3(o.end.x - 0.3, 0, o.position.y), Vector3(o.end.x + 0.12, h - 0.4, o.end.y)],
 			[Vector3(o.position.x - 0.12, 0, o.position.y), Vector3(o.position.x + 0.3, h - 0.4, BUNKER_DOOR.x - 0.14)],
 			[Vector3(o.position.x - 0.12, 0, BUNKER_DOOR.y + 0.14), Vector3(o.position.x + 0.3, h - 0.4, o.end.y)]]:
-		Props.block(g, face[0], face[1], "dirt")
 		var fa: Vector3 = face[0]
 		var fb: Vector3 = face[1]
+		Props.block(g, fa, fb, "dirt")
+		# T-279: the bank's face under old snow (the renders: the earth surface read as a dark brick wall up close),
+		# frozen earth showing at the foot, a cap of fresh snow
+		Props._noshadow(Props.block(g, Vector3(fa.x - 0.03, fa.y + 0.35, fa.z - 0.03), Vector3(fb.x + 0.03, fb.y - 0.02, fb.z + 0.03), "snow_trodden"))
 		Props._noshadow(Props.block(g, Vector3(fa.x - 0.02, fb.y - 0.06, fa.z - 0.02), Vector3(fb.x + 0.02, fb.y + 0.03, fb.z + 0.02), "snow"))
 	for side: Array in [[Vector3(o.position.x, 0, o.position.y), Vector3(o.end.x, 0, o.position.y)], [Vector3(o.position.x, 0, o.end.y), Vector3(o.end.x, 0, o.end.y)],
 			[Vector3(o.end.x, 0, o.position.y), Vector3(o.end.x, 0, o.end.y)],
@@ -702,11 +744,8 @@ static func _dress_yard(d: Node3D) -> void:
 				for iz: int in nz:
 					Props.crate(cg, Vector3(-sz.x * 0.5 + 0.55 + ix * 1.1, iy * 1.0, -sz.z * 0.5 + 0.55 + iz * 1.1), 0.98, float((ix * 7 + iy * 3 + iz * 5) % 4) * 2.0)
 		Props._noshadow(Props.ball(cg, Vector3(0, sz.y + 0.02, 0), Vector3(sz.x * 0.9, 0.1, sz.z * 0.9), "snow"))
-	# drums of alcohol by the fuel trailer, a tipped one; a fire extinguisher cart's bottle by the table
-	for dp: Vector3 in [Vector3(91.6, 0, 52.4), Vector3(92.3, 0, 52.6), Vector3(91.9, 0, 53.2), Vector3(92.7, 0, 53.4)]:
-		Props.oil_drum(g, dp, "olive_drab")
-	Props.oil_drum(g, Vector3(93.6, 0, 52.2), "olive_drab", true)
-	Props.cyl(g, Vector3(103.5, 0.55, 36.2), 0.13, 1.1, "red_paint")
+	# (T-279: the drums of alcohol and the extinguisher stood out in the walk with no collider; MapRocketDetail sets
+	# them along the wire and at the table's foot)
 	# the stumps of the felled spruces
 	for st: Array in STUMPS:
 		var sp: Vector3 = st[0]
@@ -736,6 +775,7 @@ static func _forest(d: Node3D) -> void:
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = 276
 	var keep: Array[Rect2] = [TRACK.grow(0.6), SITE.grow(0.6)]
+	keep.append_array(MapRocketDetail.forest_keep())   # T-279: the trench, the guard post, the telephone poles
 	for pk: Rect2 in pockets():
 		keep.append(pk.grow(1.0))
 	# the grounds' own edge (x 60) and its tree line stay as they are: start the new trees 8 m past it
@@ -787,6 +827,15 @@ static func _dist_to_rects(p: Vector2, rects: Array) -> float:
 		var dz: float = maxf(maxf(r.position.y - p.y, 0.0), p.y - r.end.y)
 		best = minf(best, sqrt(dx * dx + dz * dz))
 	return best
+
+
+## T-279: called by gen_map00 after its audits (the perk spots' and the wall-buys' look at every drawn mesh, so the
+## site's dressing is merged only once they have passed) and before merge_static_meshes.
+static func bake_dressing(g: Object) -> void:
+	var dress: Node3D = g.get("dress")
+	var d: Node3D = dress.get_node_or_null("RocketSite") as Node3D
+	if d != null:
+		print("rocket site: %d meshes merged by material" % MapRocketDetail.bake_site(d))
 
 
 # ================================================================== gameplay
