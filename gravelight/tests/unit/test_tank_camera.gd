@@ -173,9 +173,17 @@ func test_rig_and_restore_on_exit() -> void:
 	assert_lt(tk.cam.fov, base_fov / 2.5, "narrower than the orbit")
 	assert_lt(p.carry_look_mult, 0.5, "the look slowed in the sight")
 	assert_lt(tk.cam.global_position.distance_to(tk.gun.global_position), 1.0, "at the mantlet")
+	assert_false(tk._gun_mesh.visible, "the barrel is not drawn across the sight (this machine)")
 	tk.carry_wheel(-1)
 	assert_false(tk.cam.sniper, "the wheel out leaves it")
 	assert_eq(p.carry_look_mult, 1.0)
+	assert_true(tk._gun_mesh.visible, "the barrel drawn again")
+	# the sight key (sprint) gives the boom its length from before
+	tk.cam.dist = 12.0
+	tk.cam.set_sniper(true)
+	assert_eq(tk.cam.dist, 5.0)
+	tk.cam.set_sniper(false, true)
+	assert_eq(tk.cam.dist, 12.0, "out of the sight by its key: the boom as it was")
 	# climbing out: blended back, then everything as it was
 	tk.carry_wheel(1)
 	tk.carry_wheel(1)

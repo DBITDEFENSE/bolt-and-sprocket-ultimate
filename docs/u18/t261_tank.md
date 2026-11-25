@@ -256,3 +256,33 @@ everywhere (one per shell every 11 s plus the machine gun); it is 14 now (12.6 b
 - A zombie already in its swing at the driver when they climb in can still land it (the hatch is about 2 m from
   the ground beside the hull, close to a zombie's reach): not measured.
 - A boss can still hit the driver in the hatch (a charge, a stomp): untested.
+
+## 9. T-278: the third-person view (2026-11-25)
+
+The owner: "the view on the tank sucks, make it more third person wot style". The driver no longer looks out of the
+hatch in first person; `TankCamera` (`gravelight/world/sherman/tank_camera.gd`, made by `ShermanTank._cam_begin` on
+the driver's own machine only) gives a World of Tanks style view. Numbers in `sherman.json` "drive" `cam_*` /
+`sniper_*`; no gameplay number changed (speeds, turret 40 deg/s, gun 12 deg/s, reload, damage, hitboxes, navmesh).
+
+| What | How |
+|---|---|
+| Orbit | a boom round a pivot 1.9 m over the turret ring; the player's own look (mouse, right stick, their sensitivity and invert-Y) turns it, the hull never does; pitch -55..+18 deg |
+| Zoom | mouse wheel 1.5 m a notch, 5..16 m (starts at 9); Tab / pad Y steps 6, 9, 14 m |
+| Spring arm | a 0.3 m sphere cast from the pivot (world, barricades, doors): in at once, out again at 12 m/s |
+| Aim | the screen centre's ray (the world, or one of the dead within 0.6 m of it) is the point the turret and the gun are laid on, at their own rates: the turret lags the view |
+| Gun marker | where the barrel's line meets the world or the dead now (`gun_line_point`, the shell's own line): a diamond, amber, green within 1 deg of the reticle |
+| Reload | an arc round the reticle (amber filling, a green ring when loaded); the old bottom line stays |
+| Gunner's sight | the wheel in past 5 m, or the sprint key (Shift / pad L3): the camera at the mantlet, the player's FOV narrowed x4, the look slowed by the views' ratio times the ADS sensitivity, the barrel's model hidden on this machine; the wheel out leaves it at the shortest boom, the key again gives back the boom's length from before |
+| Blend | from the player's eye to the orbit over the climb in (0.9 s), back over the climb out (0.6 s); put out (down, a bail, the dive bomber, a wreck) is at once |
+| Restore | the player's camera current again, their look scale and pitch range, the HUD's crosshair; their FOV and the viewmodel are never touched (the orbit camera leaves render layer 20, the viewmodel's, out) |
+
+Fire is still the 75 mm and aim (right mouse / left trigger) still the coaxial gun; the sight has its own key because
+aim is taken. Co-op: the camera is local; the client still reports the turret's and gun's targets (now laid from the
+orbit's aim point) to the host as before; bots and the gunner AI are unchanged. Player gained three generic carry
+fields (`carry_look_mult`, `carry_pitch_lim`, `carry_sight`, reset with every begin/end_carry) and a `carry_wheel`
+hook, which the horse and ladders do not use. Works on every map whose tank is drivable (the Inn; Kaltenbrunn's
+forecourt, where the smoke checks the camera never ends inside a wall); Totenhafen's block has no tank ("tank": false, its dive bomber hits the patrol boat).
+
+Tests: `test_tank_camera` (6 tests: config, boom clamp and wheel, sight toggle, orbit independent of the hull, aim to
+turret target, the rig with a player and the restore on exit and on being put out); `smoke_sherman` and
+`smoke_map01_sherman` drive with it. Captures: `docs/captures/t278/view/` (`sherman_shots.tscn -- --drive`).

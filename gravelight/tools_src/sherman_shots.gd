@@ -386,7 +386,7 @@ func _run_drive() -> void:
 		cam.set_sniper(true)
 		await _secs(1.5)
 		await _shoot("drive_sniper")
-		cam.set_sniper(false)
+		cam.set_sniper(false, true)
 		await _secs(0.5)
 	# a shell (the reload arc starts round the reticle)
 	if _want("drive_fire"):
@@ -397,10 +397,9 @@ func _run_drive() -> void:
 		tk.fire_wanted = true
 		var t4: float = 0.0
 		while tk.driver_shells < 1 and t4 < 2.0:
-			await get_tree().process_frame
-			t4 += get_process_delta_time()
-		await _frames(2)
-		await _shoot("drive_fire")
+			await get_tree().physics_frame
+			t4 += get_physics_process_delta_time()
+		await _shoot("drive_fire")   # (the frame the shell leaves: the flash)
 		await _secs(2.0)
 		await _shoot("drive_reload")
 	# the view turned to put the inn's wall behind the camera: the spring arm brings it in

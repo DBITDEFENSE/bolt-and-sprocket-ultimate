@@ -185,19 +185,21 @@ class TankSight extends Control:
 		draw_circle(c, 2.6 * u, INK)
 		draw_circle(c, 1.5 * u, LIGHT)
 		# the reload round it
-		var rr: float = r + 7.0 * u
-		draw_arc(c, rr, 0.0, TAU, 48, INK, 5.0 * u, true)
+		var rr: float = r + 9.0 * u
+		draw_arc(c, rr, 0.0, TAU, 56, INK, 7.0 * u, true)
 		if loaded >= 1.0:
-			draw_arc(c, rr, 0.0, TAU, 48, GREEN, 2.6 * u, true)
-		elif loaded > 0.001:
-			draw_arc(c, rr, -PI * 0.5, -PI * 0.5 + TAU * loaded, 48, AMBER, 2.6 * u, true)
+			draw_arc(c, rr, 0.0, TAU, 56, GREEN, 3.6 * u, true)
+		else:
+			draw_arc(c, rr, 0.0, TAU, 56, Color(LIGHT, 0.22), 3.6 * u, true)   # what is still to load, faint
+			if loaded > 0.001:
+				draw_arc(c, rr, -PI * 0.5, -PI * 0.5 + TAU * loaded, 56, AMBER, 3.6 * u, true)
 		# the range to the aim point, from the gun
 		var f: Font = get_theme_default_font()
 		if f != null:
 			var txt: String = "%d m" % int(round(cam.tank.gun.global_position.distance_to(cam.aim_point)))
 			var fs: int = int(15.0 * u)
 			var tw: float = f.get_string_size(txt, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
-			var at: Vector2 = c + Vector2(-tw * 0.5, rr + 22.0 * u)
+			var at: Vector2 = c + Vector2(-tw * 0.5, rr + 24.0 * u)
 			draw_string_outline(f, at, txt, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, int(4.0 * u), INK)
 			draw_string(f, at, txt, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, LIGHT)
 		# the gun marker

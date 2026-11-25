@@ -29,6 +29,7 @@ var leaving: bool = false
 var aim_point: Vector3 = Vector3.ZERO  # where the screen centre meets the world
 var gun_point: Vector3 = Vector3.INF   # where the gun is laid (ShermanTank.gun_line_point), for the marker
 var _blend_s: float = 0.9
+var _dist_before: float = 9.0          # the boom's length when the sight was entered (the sight key gives it back)
 var _piv_prev: Vector3 = Vector3.INF
 var _piv_cur: Vector3 = Vector3.INF
 
@@ -162,18 +163,27 @@ func release() -> void:
 		player.set_look_pitch(clampf(player.look_angles().x, deg_to_rad(-30.0), deg_to_rad(20.0)))
 		if player.camera != null and player.is_inside_tree():
 			player.camera.make_current()
+	if tank != null and is_instance_valid(tank):
+		tank.show_gun(true)
 	current = false
 	player = null
 	tank = null
 	queue_free()
 
 
-func set_sniper(on: bool) -> void:
+## The gunner's sight on or off. `back`: leaving it gives the boom its length from before (the sight key); the
+## wheel leaves it at the shortest boom instead.
+func set_sniper(on: bool, back: bool = false) -> void:
 	if on == sniper:
 		return
 	sniper = on
 	if on:
+		_dist_before = dist
 		dist = clamp_dist(float(cfg.get("cam_dist_min", 5.0)), cfg)
+	elif back:
+		dist = clamp_dist(_dist_before, cfg)
+	if tank != null and is_instance_valid(tank):
+		tank.show_gun(not on)   # (this machine only: the barrel would fill the sight)
 	_apply_limits()
 
 
@@ -229,7 +239,7 @@ func update_view(delta: float) -> void:
 		return
 	if not leaving and GameState.phase == GameState.Phase.PLAYING and not GameState.input_blocked:
 		if Input.is_action_just_pressed(&"sprint"):
-			set_sniper(not sniper)
+			set_sniper(not sniper, true)
 		if Input.is_action_just_pressed(&"swap_weapon"):
 			set_sniper(false)
 			dist = next_preset(dist, cfg)

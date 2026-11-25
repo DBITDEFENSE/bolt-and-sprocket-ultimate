@@ -571,6 +571,12 @@ func laid_on(p: Vector3, tol_deg: float) -> bool:
 	return rad_to_deg(absf(a.angle_to(b))) <= tol_deg
 
 
+## T-278: the barrel's model shown or hidden on this machine (the driver's gunner's sight hides it).
+func show_gun(on: bool) -> void:
+	if _gun_mesh != null:
+		_gun_mesh.visible = on
+
+
 func muzzle() -> Vector3:
 	return gun.global_transform * Vector3(0, 0, -ShermanMesh.GUN_LEN - 0.05)
 
