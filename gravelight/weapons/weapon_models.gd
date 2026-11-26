@@ -2013,8 +2013,9 @@ func _w_frag() -> void:
 		var r: MeshInstance3D = ring(0.029, 0.031, Vector3.ZERO, "olive", "x")
 		r.rotation_degrees = Vector3(0, j * 45, 90)
 	tube(0.01, 0.01, 0.02, Vector3(0, 0.04, 0), "steel", "y")
-	box(Vector3(0.01, 0.07, 0.004), Vector3(0.02, 0.02, 0), "steel", Vector3(0, 0, -10))
-	ring(0.008, 0.011, Vector3(-0.012, 0.05, 0), "steel", "z")
+	# T-288: the spoon (flies off at the throw) and the pin's ring (pulled at the cook) are parts of their own
+	box(Vector3(0.01, 0.07, 0.004), Vector3.ZERO, "steel", Vector3(0, 0, -10), group("Spoon", Vector3(0.02, 0.02, 0)))
+	ring(0.008, 0.011, Vector3.ZERO, "steel", "z", group("Pin", Vector3(-0.012, 0.05, 0)))
 	meta("none", 0.08)
 
 

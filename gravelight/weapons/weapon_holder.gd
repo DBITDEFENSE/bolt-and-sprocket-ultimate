@@ -307,6 +307,11 @@ func is_busy() -> bool:
 	return _swap_t > 0.0 or _melee_t > 0.0
 
 
+## T-288: holding a cooked grenade (the pose flag PF_COOK carries it to the other peers).
+func is_cooking() -> bool:
+	return _cooking
+
+
 func cook_left() -> float:
 	if not _cooking:
 		return -1.0
@@ -557,6 +562,7 @@ func enter_last_stand() -> void:
 	_burst_left = 0
 	_cooking = false
 	_melee_t = 0.0
+	_throw_anim_reset()
 	_melee_hit_pending = false
 	ads_t = 0.0
 	var pistol: WeaponInstance = null
@@ -601,6 +607,7 @@ func in_last_stand() -> bool:
 func clear_for_spectate() -> void:
 	_cancel_reload()
 	_cooking = false
+	_throw_anim_reset()
 	slots.clear()
 	grenades = 0
 	tactical_id = &""
@@ -675,6 +682,7 @@ func apply_carry(d: Dictionary) -> void:
 	_cancel_reload()
 	_last_stand_stash = {}
 	_cooking = false
+	_throw_anim_reset()
 	apply_net(d)
 	if slots.is_empty():
 		_set_start_loadout()
@@ -716,6 +724,9 @@ func _throw_tactical() -> void:
 	g.global_position = cam.global_position - cam.global_basis.z * 0.7
 	g.linear_velocity = -cam.global_basis.z * float(t["throw_speed"]) + Vector3.UP * 2.5
 	g.add_collision_exception_with(player)
+	if throw_anim:
+		_throw_t = 0.25   # T-288: the follow-through only (the lure leaves on the press, as before); it blocks nothing
+		_throw_released(g.global_position, tactical_id)
 	if Net.is_client() and Net.session != null:
 		# The lure has to exist where the zombies are simulated: the host throws the real one (D-068).
 		g.visual_only = true
@@ -1562,6 +1573,7 @@ func _tick_grenade(delta: float, held: bool) -> void:
 		grenades -= 1
 		_cancel_reload()
 		AudioDirector.play_2d("grenade_pin", -4.0)
+		_throw_anim_start()
 
 
 func _throw(cfg: Dictionary) -> void:
@@ -1575,7 +1587,121 @@ func _throw(cfg: Dictionary) -> void:
 	g.linear_velocity = -cam.global_basis.z * float(cfg["throw_speed"]) + Vector3.UP * 3.0 + player.velocity * 0.5
 	g.add_collision_exception_with(player)
 	_throw_t = 0.25
-	_report_fire(4, &"frag", cam.global_position, cam.global_position - cam.global_basis.z)
+	_throw_released(g.global_position, &"frag")
+	# (the throw's origin is the spawn point now, its end along the throw: a remote body puts its hand there; T-288)
+	_report_fire(4, &"frag", g.global_position, g.global_position + g.linear_velocity.normalized())
+
+
+# ---------------------------------------------------------------- T-288: the throw, animated
+# Presentation only: the grenade still leaves on the release of the button, from the same point at the same speed
+# (_throw above); the cook still starts on the press. The left arm is animated round those two moments:
+#   the press:   the grenade comes up to the gun hand, which pulls the pin (the ring drops away), then the arm
+#                draws back and holds the grenade up by the head (the cook pose; it trembles as the fuse runs down);
+#   the release: the hand is put ON the spawn point's spot in the viewmodel (vm_target: the same ray from the eye) and
+#                the grenade leaves it there; the spoon flies off; the arm follows through forward and down and comes
+#                back to the gun in the existing 0.25 s (_throw_t), which never blocked anything and still does not.
+# The Siren Gramophone (the tactical) gets the same follow-through. Per-frame work only while cooking or throwing.
+# `throw_anim` false: the old two-pose snap (the before, for A/B and tests).
+static var throw_anim: bool = OS.get_environment("CZ_T288_OFF") == ""
+const PIN_S: float = 0.2            # the pin pull, from the press
+const DRAW_S: float = 0.22          # then the draw back into the cook pose
+const THROW_S: float = 0.25         # the follow-through (the existing _throw_t)
+const POSE_PIN: Vector3 = Vector3(0.035, -0.13, -0.3)       # the grenade at the gun hand's knuckles
+const POSE_PIN_ROT: Vector3 = Vector3(0.35, -0.5, 0.15)
+const POSE_BACK: Vector3 = Vector3(-0.13, 0.03, -0.29)      # drawn back up by the head, the cook (top left of the view)
+const POSE_BACK_ROT: Vector3 = Vector3(0.85, 0.55, 0.45)
+const FOLLOW_OFF: Vector3 = Vector3(0.12, -0.24, -0.04)     # where the follow-through ends, from the release point
+var _rel_pos: Vector3 = Vector3(0.0, -0.06, -0.45)          # the release point in rig space (set at each release)
+var _throw_kind: StringName = &"frag"
+var _pin_pulled: bool = false
+## Read by the tools and tests: the last release, in rig space, and when it happened.
+var last_release_rig: Vector3 = Vector3.INF
+var last_release_msec: int = -1
+
+
+func _throw_anim_start() -> void:
+	_pin_pulled = false
+	_throw_kind = &"frag"
+	_set_prop_part("Pin", true)
+	_set_prop_part("Spoon", true)
+
+
+func _throw_anim_reset() -> void:
+	_throw_t = 0.0
+	_pin_pulled = false
+	if _frag_prop != null:
+		_frag_prop.hide()
+
+
+func _set_prop_part(part: String, on: bool) -> void:
+	if _frag_prop == null:
+		return
+	var n: Node3D = _frag_prop.get_node_or_null(part) as Node3D
+	if n != null:
+		n.visible = on
+
+
+## The release: where the hand must be (the spawn point's spot in the viewmodel), the spoon off the grenade.
+func _throw_released(spawn_world: Vector3, kind: StringName) -> void:
+	_throw_kind = kind
+	_rel_pos = vm_target(spawn_world) if _rig != null else _rel_pos
+	last_release_rig = _rel_pos
+	last_release_msec = Time.get_ticks_msec()
+	if kind == &"frag" and _frag_prop != null and _frag_prop.visible and throw_anim and player != null and player.is_local:
+		var spoon: Node3D = _frag_prop.get_node_or_null("Spoon") as Node3D
+		if spoon != null and spoon.visible:
+			_spawn_debris(spoon, Vector3(1.4, 2.2, 0.4), false)
+			spoon.visible = false
+
+
+## Pure: the left hand's place in rig space at a moment of the throw. `cook_t` seconds since the press while cooking
+## (`cooking` true), else `throw_left` seconds left of the follow-through from `rel`; `gun` is where the hand rests
+## on the gun. Returns [position, euler].
+static func throw_pose(cooking: bool, cook_t: float, throw_left: float, rel: Vector3, gun: Vector3) -> Array:
+	if cooking:
+		if cook_t < PIN_S:
+			var a: float = smoothstep(0.0, 1.0, cook_t / PIN_S)
+			return [gun.lerp(POSE_PIN, a), Vector3.ZERO.lerp(POSE_PIN_ROT, a)]
+		var b: float = smoothstep(0.0, 1.0, clampf((cook_t - PIN_S) / DRAW_S, 0.0, 1.0))
+		return [POSE_PIN.lerp(POSE_BACK, b), POSE_PIN_ROT.lerp(POSE_BACK_ROT, b)]
+	var q: float = 1.0 - clampf(throw_left / THROW_S, 0.0, 1.0)   # 0 at the release, 1 when the gun has the hand back
+	var end: Vector3 = rel + FOLLOW_OFF
+	if q < 0.5:
+		var c: float = 1.0 - pow(1.0 - q / 0.5, 2.0)   # fast out of the release, slowing at the end of the swing
+		return [rel.lerp(end, c), Vector3(0.6, 0.2, 0.0).lerp(Vector3(-0.3, -0.4, -0.5), c)]
+	var d: float = smoothstep(0.0, 1.0, (q - 0.5) / 0.5)
+	return [end.lerp(gun, d), Vector3(-0.3, -0.4, -0.5).lerp(Vector3.ZERO, d)]
+
+
+func _throw_hand(delta: float) -> Transform3D:
+	var gun: Vector3 = Vector3(-0.2, -0.35, -0.2)
+	if _model != null and _model.has_node("LeftHand"):
+		gun = (_vm.transform * _gun.transform * _model.transform) * (_model.get_node("LeftHand") as Node3D).position
+	if not _cooking:
+		_throw_t = maxf(0.0, _throw_t - delta)
+	var pose: Array = throw_pose(_cooking, _cook_t, _throw_t, _rel_pos, gun)
+	var pos: Vector3 = pose[0]
+	var rot: Vector3 = pose[1]
+	if _cooking and _cook_t > PIN_S + DRAW_S:
+		# holding a live grenade: a tremor that grows as the fuse runs down (the last 1.5 s)
+		var left: float = cook_left()
+		var k: float = 0.002 + 0.006 * clampf(1.0 - left / 1.5, 0.0, 1.0)
+		pos += Vector3(sin(_cook_t * 37.0), sin(_cook_t * 29.0 + 1.3), 0.0) * k
+	if _cooking and not _pin_pulled and _cook_t >= PIN_S * 0.6:
+		# the gun hand's thumb hooks the ring: it drops away
+		_pin_pulled = true
+		var pin: Node3D = _frag_prop.get_node_or_null("Pin") as Node3D if _frag_prop != null else null
+		if pin != null and pin.visible and player != null and player.is_local:
+			_spawn_debris(pin, Vector3(0.6, 0.4, 0.3), false)
+		_set_prop_part("Pin", false)
+	var lh: Transform3D = Transform3D(Basis.from_euler(rot), pos)
+	var released: bool = not _cooking
+	if _frag_prop != null:
+		# the grenade is in the hand until the release frame; from then on the real one flies (a tactical's follow-
+		# through is an empty hand: the lure left on the press, as before)
+		_frag_prop.visible = _throw_kind == &"frag" and not released
+		_frag_prop.transform = lh * Transform3D(Basis(), Vector3(-0.01, 0.03, -0.03))
+	return lh
 
 
 # ---------------------------------------------------------------- viewmodel
@@ -2386,13 +2512,16 @@ func _animate(delta: float, sprinting: bool) -> void:
 				_pose_arm(_hand_r, _arm_r, _forearm_r, _vm.transform * _gun.transform * _model.transform * grip, SHOULDER_R, 1.0, _grip_r_radius)
 		# support hand: on the gun, carrying a reload prop, or holding the grenade
 		var lh: Transform3D
-		if _cooking or _throw_t > 0.0:
+		if (_cooking or _throw_t > 0.0) and not throw_anim:
 			_throw_t = maxf(0.0, _throw_t - delta)
 			var back: float = 1.0 if _cooking else _throw_t / 0.25
 			# cooking: the grenade is held up on the left, then the arm snaps forward on the throw
 			lh = Transform3D(Basis.from_euler(Vector3(0.5, 0.35, 0.25)), Vector3(lerpf(-0.05, -0.095, back), lerpf(-0.02, -0.07, back), lerpf(-0.5, -0.26, back)))
 			_frag_prop.show()
 			_frag_prop.transform = lh * Transform3D(Basis(), Vector3(-0.01, 0.03, -0.03))
+			_hand_l.visible = true
+		elif _cooking or _throw_t > 0.0:
+			lh = _throw_hand(delta)
 			_hand_l.visible = true
 		else:
 			_frag_prop.hide()

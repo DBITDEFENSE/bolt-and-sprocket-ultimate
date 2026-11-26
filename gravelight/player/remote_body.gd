@@ -660,6 +660,52 @@ func refresh_weapon() -> void:
 	set_weapon(id)
 
 
+# ---------------------------------------------------------------- T-288: the third-person throw
+# A bot's or a remote player's throw: the release (fire kind 4) puts the left hand on the release point (the spawn
+# point the thrower sends) and swings it through forward and down, back to the gun in the existing 0.4 s. A remote
+# player who is cooking (the pose flag PF_COOK, a spare bit of the flags byte: an older peer ignores it) holds the arm
+# drawn back with the grenade in the fist. Bots throw on the spot (no cook), so theirs is the follow-through alone.
+const COOK_HAND: Vector3 = Vector3(-0.3, 0.78, 0.14)       # chest space: by the head, a little behind
+const FOLLOW_HAND: Vector3 = Vector3(-0.02, 0.3, -0.5)     # chest space: where the swing ends, low in front
+var _throw_rel: Vector3 = Vector3.INF
+var _cook_b: float = 0.0
+var _frag: Node3D = null
+
+
+## Pure: the left hand (world) at `q` (0 the release .. 1 back on the gun at `gun`) of a throw released at `rel`
+## (world; INF = no point sent: a raised point by the head), for a body whose chest frame is `chest`, `k` its size.
+static func throw_hand(chest: Transform3D, rel: Vector3, q: float, gun: Vector3, k: float = 1.0) -> Vector3:
+	var start: Vector3 = chest * (Vector3(-0.15, 0.7, -0.35) * Vector3(k, 1.0, k))
+	if rel.is_finite():
+		# the arm's reach from the shoulder: a point further off (an eye-origin from an older peer, a long lean) is
+		# pulled in along the same line
+		var sh: Vector3 = chest * Vector3(-0.2 * k, 0.5, 0.0)
+		var reach: float = (UPPER + FORE) * k * 0.98
+		start = sh + (rel - sh).limit_length(reach)
+	var end: Vector3 = chest * (FOLLOW_HAND * Vector3(k, 1.0, k))
+	q = clampf(q, 0.0, 1.0)
+	if q < 0.45:
+		return start.lerp(end, 1.0 - pow(1.0 - q / 0.45, 2.0))
+	return end.lerp(gun, smoothstep(0.0, 1.0, (q - 0.45) / 0.55))
+
+
+## The grenade in the left fist while cooking (built on the first cook; hidden otherwise).
+func _place_frag(hand_world: Vector3) -> void:
+	var show: bool = _cook_b > 0.5 and _throw_t <= 0.0 and visible
+	if not show:
+		if _frag != null:
+			_frag.visible = false
+		return
+	if _frag == null:
+		_frag = WeaponModels.build(&"frag")
+		var pin: Node3D = _frag.get_node_or_null("Pin") as Node3D
+		if pin != null:
+			pin.visible = false   # pulled: the pin went at the press
+		add_child(_frag)
+	_frag.visible = true
+	_frag.global_position = hand_world + global_basis * Vector3(0.0, 0.03, -0.04)
+
+
 ## kind: 0 bullet, 1 projectile, 2 stream, 3 melee, 4 throw.
 func fire(kind: int, weapon_id: StringName, origin: Vector3, end: Vector3) -> void:
 	if not visible:
@@ -672,6 +718,9 @@ func fire(kind: int, weapon_id: StringName, origin: Vector3, end: Vector3) -> vo
 			return
 		4:
 			_throw_t = 0.4
+			# T-288: the hand starts its follow-through from the release point (the origin is the spawn point now; an
+			# older peer's origin was its eye: clamped to the arm's reach either way)
+			_throw_rel = origin if WeaponHolder.throw_anim else Vector3.INF
 			AudioDirector.play_3d("grenade_pin", global_position + Vector3.UP * 1.3, -6.0)
 			return
 	if weapon_id != &"" and weapon_id != _weapon_id:
@@ -832,6 +881,7 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 	var crouch: bool = (flags & NetMatch.PF_CROUCH) != 0 and not downed
 	var sprint: bool = (flags & NetMatch.PF_SPRINT) != 0 and not downed
 	var reloading: bool = (flags & NetMatch.PF_RELOAD) != 0 and not downed
+	var cooking: bool = (flags & NetMatch.PF_COOK) != 0 and not downed and WeaponHolder.throw_anim and not (get_parent() is Soldier)   # T-288 (a Soldier uses 128 for NF_REVIVE)
 	var ads_on: bool = (flags & NetMatch.PF_ADS) != 0 and not downed and not sprint and not reloading
 	var moving: bool = speed > 0.3
 	_since_shot += delta
@@ -867,6 +917,7 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 	_recoil = move_toward(_recoil, 0.0, delta * 9.0)
 	_melee_t = maxf(0.0, _melee_t - delta)
 	_throw_t = maxf(0.0, _throw_t - delta)
+	_cook_b = move_toward(_cook_b, 1.0 if cooking and _throw_t <= 0.0 else 0.0, delta * 6.0)
 	if _flash_t > 0.0:
 		_flash_t -= delta
 		if _flash_t <= 0.0:
@@ -1009,11 +1060,16 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 			support += back_dir * slide
 		hb = [on_gun[3], on_gun[1]]
 	# how much each hand is on the gun (the actions below take them off it)
-	var on_l: float = (1.0 - low) * (1.0 - sling) * (1.0 - _reload_b) * (1.0 if _throw_t <= 0.0 and _down_b < 0.5 else 0.0)
+	var on_l: float = (1.0 - low) * (1.0 - sling) * (1.0 - _reload_b) * (1.0 if _throw_t <= 0.0 and _down_b < 0.5 and _cook_b < 0.05 else 0.0)
 	var on_r: float = (1.0 - low * (1.0 - b_watch)) * (1.0 - sling) * (1.0 if _down_b < 0.5 else 0.0)
-	if _throw_t > 0.0:
+	if _throw_t > 0.0 and WeaponHolder.throw_anim:
+		support = throw_hand(_chest.global_transform, _throw_rel, 1.0 - _throw_t / 0.4, support, s_k())
+	elif _throw_t > 0.0:
 		var k: float = sin(_throw_t / 0.4 * PI)
 		support = _chest.global_transform * Vector3(-0.25, 0.55 + 0.3 * k, -0.2 - 0.3 * k)
+	elif _cook_b > 0.0:
+		# T-288: a remote player cooking a grenade: the arm drawn back by the head, the grenade in the fist
+		support = support.lerp(_chest.global_transform * (COOK_HAND * Vector3(s_k(), 1.0, s_k())), smoothstep(0.0, 1.0, _cook_b))
 	var right: Vector3 = grip
 	var left: Vector3 = support
 	if _reload_b > 0.0:
@@ -1100,6 +1156,8 @@ func update_pose(delta: float, speed: float, pitch: float, flags: int) -> void:
 		_place(_limbs["upper_" + s2] as MeshInstance3D, sh, elbow)
 		_place(_limbs["fore_" + s2] as MeshInstance3D, elbow, hand)
 		(_joints["hand_" + s2] as MeshInstance3D).position = hand
+		if side2 == 0:
+			_place_frag(_pivot.global_transform * hand)
 	_update_props(b_drink, b_write, b_rep, b_tap)
 	if person != null:
 		var pt: int = BotProf.t()
