@@ -281,6 +281,17 @@ func _kill_one(at: Vector3, rng_seed: int) -> Zombie:
 	return z
 
 
+## The same, retried with the next seeds until the death is one that pops the head (a head kill whose death clip is
+## the head snap does not pop it; the clip is a roll).
+func _kill_popping(at: Vector3, rng_seed: int) -> Zombie:
+	for k: int in 30:
+		var z: Zombie = _kill_one(at, rng_seed + k * 101)
+		if bool(z.get("_head_popped")):
+			return z
+		z.free()
+	return null
+
+
 func test_a_kill_pays_and_counts_in_its_frame_and_only_the_gore_follows() -> void:
 	GLSettings.values["gore"] = "low"   # severs without the blood spray (no Effects singletons needed)
 	var results: Dictionary = {}
@@ -291,7 +302,10 @@ func test_a_kill_pays_and_counts_in_its_frame_and_only_the_gore_follows() -> voi
 		Zombie.t283_death = on
 		Economy.reset([1])
 		var killed0: int = kills[0]
-		var z: Zombie = _kill_one(Vector3(2.0 if on else -2.0, 0, 0), 21)
+		var z: Zombie = _kill_popping(Vector3(2.0 if on else -2.0, 0, 0), 21)
+		assert_not_null(z, "a head-popping death found")
+		if z == null:
+			return
 		var pay: int = Economy.get_scrip(1)
 		assert_gt(pay, 0, "paid in the frame of the hit")
 		assert_eq(z.state, Zombie.State.DEAD, "dead in the frame of the hit")
@@ -324,7 +338,11 @@ func test_the_death_queue_drains_a_few_a_frame_from_the_next_frame_and_drops_a_b
 	Zombie.drain_death_fx(1000)
 	var zs: Array[Zombie] = []
 	for i: int in 6:
-		zs.append(_kill_one(Vector3(i * 1.5, 0, 3), 30 + i))
+		var zk: Zombie = _kill_popping(Vector3(i * 1.5, 0, 3), 30 + i)
+		assert_not_null(zk)
+		if zk == null:
+			return
+		zs.append(zk)
 	var queued: int = Zombie.pending_death_fx()
 	assert_gt(queued, 6, "a groan and a head pop each")
 	assert_eq(Zombie.drain_death_fx(), 0, "nothing in the frame of the deaths")
