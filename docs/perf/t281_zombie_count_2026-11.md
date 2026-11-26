@@ -301,6 +301,8 @@ All headless, in `.wt/locker` on `claude/zombie-perf`; logs under `.smoke_logs/t
 
 ## The rendered benchmark for the owner's GPU (not run: needs the owner's OK)
 
+(Phase 2 has its own command, covering Jolt and the T-283 switches, at the end of "Phase 2 (T-283)" below.)
+
 `perf_marks` without `--hitch` is the T-070 / T-258 bench: it loads the map, sets round 15, puts the horde up, samples
 the frames from 9 s to 24 s, prints `[perf] in play: avg FPS ..., worst frame ..., 1% low ...` and the pause map's
 cost, then quits. `--zombies=N` works there too. From a Windows prompt in the main checkout, running this branch's
@@ -316,3 +318,314 @@ findstr /C:"in play" logs\t281_z*.log
 `%%a`. Add `--breakdown` for the CPU / GPU split and the draw calls; `--map=map01_kaltenbrunn` for the other map. The
 preset is the plain Ultra preset, not the owner's saved individual settings (perf_marks uses its own settings file).
 Each run opens a window for about 40 s (off-screen at -4000,-4000).
+
+## Phase 2 (T-283): getting under the frame budget
+
+The owner, 2026-11-25: "the more zombies the more lag i get find the cause and fix it. game should never go under 60
+fps". Branch `claude/zombie-perf-2`, cut from master `4953db33` (phase 1 merged). Not merged, not pushed. The aim set
+for it: 48 zombies under 10 ms of game thread headless (quiet-machine equivalent), 24 well under 8.
+
+Everything here is headless again; the PC was shared with three other workers (GUT runs, smokes, WSL renders) all
+session. The claims rest on A/B pairs from one map load (`perf_marks --flip`, one second a side), on interleaved
+separate runs where a flip is impossible (the physics engine is a project setting), and on counts.
+
+### In short
+
+- **Jolt physics is the big lever, and it holds.** `physics/3d/physics_engine="Jolt Physics"` in `project.godot`.
+  Map 0, interleaved runs on the busy machine of the afternoon: the frame's median **-20 %** at 24 zombies (12.4 ->
+  9.9 ms) and **-19 %** at 48 (16.2 -> 13.2), the 1 % worst nearly halved (36.5 -> 20.2, 41.9 -> 22.5 ms); the
+  zombies' physics scripts -24 to -37 %, the server step after them -30 %, the bots -9 %. The superlinear part phase 1 found (the physics step on Map
+  0's packed window crowd) shrinks with it, and so does the hitboxes' share: all 18 areas of every zombie out of the
+  physics space save 1.4 ms at 48 under Godot Physics and 0.3 ms under Jolt. Full GUT suite and the 16 movement / physics smokes pass under it (details under "Jolt").
+- **The skeleton runs only when the animation steps** (`Zombie.t283_skel`). A zombie animated every 2nd or 4th frame
+  (far, or out of view) held its pose in between, but its skeleton still re-ran the foot IK, the springs and the
+  look-at and moved its 14 bone attachments and 18 hitbox areas to the same place every frame. Now the skeleton is
+  in MANUAL mode and `_animate` advances it with the step's time. Hitboxes sit on the drawn pose in every frame
+  (tested); near zombies are unchanged (tested: the same zones hit in every frame).
+- **The owner's distance LOD**: full rate within 12 m of the camera, half to 30 m, a quarter beyond (was 15 / 35),
+  and foot rays only in the tick before a frame that steps the animation. With the skeleton change: Map 0 at 48,
+  in-run flip under Jolt, the frame's median **-6.4 %** (14.30 -> 13.39 ms), the gap after the process scripts
+  (skeletons, attachments) -19 %, the zombies' process step -13 %.
+- **A grenade into a pack (item 7, the lead's addition).** The frame that kills 22-24 zombies: Godot Physics
+  41.4-42.5 ms -> 17.6-24.1 ms, Jolt 31.8-35.2 -> 19.4-21.5 ms; inside the kill calls 0.9-1.0 ms a death -> 0.35.
+  The kill, the pay, the kill signals, the round's count and every random roll that decides an outcome stay in the
+  hit's frame; the head pop, the loose limb and the death groan go into a queue drained four a frame from the next
+  frame on; at most three ragdolls start in one tick; the HUD shows one Scrip pop a frame; `Citations.fire` stopped
+  asking the disk on every kill.
+- **The flat base is not 11 ms.** Phase 1's 11 ms was the intercept of its line; at 0 zombies (Jolt, bots idle, the
+  map's people, lamps, HUD) the frame is 4.5 ms here, with nothing over 0.4 ms but the bots (1.5 ms for four).
+  Nothing in it is worth slicing at the price of a behaviour change (lever 4).
+- **The render thread**: shipped builds and the launcher run the renderer on the game's thread; only `Play.bat`
+  passes `--render-thread separate`. Recommendation under "The render thread".
+- **Before / after, all of phase 2 together** (the final sweep, phase 1's after against phase 2's, three interleaved
+  runs a case, a lighter evening load): Map 0's frame median **-5 to -12 %** (48 zombies 13.74 -> 12.07 ms, 24:
+  10.69 -> 9.47), the zombies' own script cost per zombie **-14 to -37 %** on both maps (48 on Map 0: 0.093 -> 0.072 ms),
+  Kaltenbrunn -6 to -35 % (but there Jolt kept fewer bodies up at 32 and 48, see "Jolt"). The gains are smaller in
+  this sweep than in the afternoon's A/B because the machine was quieter: the fixed costs weigh more.
+- **The aim is met on Kaltenbrunn and not quite on Map 0.** 48 zombies on Map 0 cost 12.1 ms of game thread here,
+  about 10-12 ms on a quiet machine (aim: under 10); 24 cost 9.5 ms here, 7.7-9.5 quiet (aim: well under 8).
+  Kaltenbrunn: 48 asked (38 up) 8.3 ms, about 9 ms for 45 up by the per-zombie cost; 24: 7.5 ms. What is left at 48 on Map 0 (p50): the zombies' tick 1.9 ms,
+  their animation 1.5, skeletons and attachments 1.6, the physics and navigation step 1.1, four bot brains 1.9,
+  everything else 2.9. With the renderer on its own thread (lever 6) that is a 60 FPS frame on this CPU with room to
+  spare; on one thread the renderer's ~3.8 ms (T-258) comes on top.
+
+### The levers, measured
+
+| # | Lever | What was done | Measured (Map 0, this machine) | Kept |
+|---|---|---|---|---|
+| 1 | Animation LOD by distance, in view | `anim.json lod.t283`: full within 12 m, half to 30 m, a quarter beyond (`Zombie.t283_lod`); foot rays only before a frame that steps (`t283_rays`) | part of the t283 flip below; distribution at 48 (Jolt): 42-45 % of zombie-frames full, 51-55 % half, 3-4 % out of view | yes |
+| 2 | Bone attachments and hitbox areas | the skeleton in MANUAL mode, advanced by `_animate` (`t283_skel`): attachments and hitboxes move only when the pose changes. Diagnostic `--flip=z_no_areas` (every hitbox out of the space): Godot Physics -1.4 ms (-8 %) at 48, Jolt -0.3 ms (-2 %): with Jolt, merging or replacing the 18 areas would buy at most 0.3 ms, so it was not done | t283 flip at 48: Godot Physics frame p50 18.18 -> 17.56 (-3.4 %), gap after process 2.68 -> 2.13; Jolt 14.30 -> 13.39 (-6.4 %), gap 2.39 -> 1.94, zombie process 2.29 -> 2.00 | yes |
+| 3 | Jolt physics | `project.godot` `physics/3d/physics_engine="Jolt Physics"` | 24: 12.43 -> 9.92 ms p50 (-20 %); 48: 16.20 -> 13.16 (-19 %); 1 % worst 36.5 -> 20.2 and 41.9 -> 22.5 (3 interleaved runs a side) | yes, see "Jolt" |
+| 4 | The flat base | profiled at 0 zombies | 4.5 ms p50: bots 1.48 (loco 0.77 incl. their own slide 0.36, pose 0.61 a tick), patrons 0.38, VO manager 0.20 (the voice warm-up), the column of the Returned 0.16, 75 flicker lamps 0.13, minimap 0.12, faces 0.10, the rest under 0.1 each | nothing changed: every item is already rated by view (T-265 / T-237) or is a think whose slicing would change the bots' choices |
+| 5 | The crowd's physics step | layers and masks read: the body collides with world, players, other zombies and doors only; the 13 live hitboxes are monitorable areas with no mask and no monitoring; the 5 dead ones out of the space since phase 1. The superlinear cost was Godot Physics' broadphase testing every moved hitbox AABB against the crowd's bodies; Jolt filters by layer before the pair test | with Jolt: the server step 1.75 -> 1.17 ms at 48 (p50) | nothing changed beyond Jolt |
+| 6 | The render thread | read only (no window) | - | recommendation below |
+| 7 | A grenade into a pack | the death-path queue and ragdoll budget (`t283_death`), HUD pop, Citations | the kill frame halved (table under "Item 7") | yes |
+
+Every saving is switchable: `Zombie.t283_opt` (all of phase 2's zombie work, `CZ_T283_OFF=1`, `--ab=t283_off`),
+`t283_skel`, `t283_rays`, `t283_lod`, `t283_death` (`perf_marks --flip=t283|t283_skel|t283_rays|t283_lod`,
+`bench_blast_deaths --defer=on|off|flip`). Jolt is switched back by `physics/3d/physics_engine="GodotPhysics3D"`
+(an `override.cfg` beside `project.godot` does it without an edit).
+
+### Jolt
+
+**Verdict: switched on (`project.godot`), behaviour held in everything that was checked.**
+
+How it was A/B'd: a second project folder (`.wt/locker_jolt`) whose every entry is a junction to the worktree's and
+whose only own file is a `project.godot` with the other engine; `tools/zombie_count_bench.sh` takes `--project=<dir>`
+for a side, `tools/run_smokes.sh` takes `SMOKE_PROJECT=<dir>`. (An `override.cfg` next to the executable is not read
+by a non-exported run; one beside `project.godot` is, which is what the owner's rendered A/B uses.)
+
+**What it buys** (Map 0, three interleaved runs a side, both sides with phase 2's zombie changes; medians, ms):
+
+| Zombies | Frame p50 GP -> Jolt | 1 % worst | Max (smallest of the runs) | zombie.gd physics | zombie.gd process | bots | after the physics scripts | after the process scripts |
+|---|---|---|---|---|---|---|---|---|
+| 24 | 12.43 -> 9.92 (-20 %) | 36.5 -> 20.2 | 32.9 -> 25.6 | 1.80 -> 1.38 | 0.83 -> 1.01 | 2.08 -> 1.90 | 1.10 -> 0.77 | 1.23 -> 1.29 |
+| 48 | 16.20 -> 13.16 (-19 %) | 41.9 -> 22.5 | 26.0 -> 23.5 | 3.71 -> 2.34 | 1.80 -> 1.85 | 2.37 -> 2.24 | 1.75 -> 1.17 | 1.86 -> 2.02 |
+
+The rest of the scripts (the relief squad's soldiers, the player, everything that slides or casts rays) fell from
+4.47 to 3.22 ms at 24. With Jolt the hitbox areas stop mattering: all 18 of each zombie out of the space buys -1.4 ms
+at 48 under Godot Physics and -0.3 ms under Jolt (`--flip=z_no_areas`).
+
+**Behaviour checks under Jolt** (the same branch, `.wt/locker_jolt`):
+
+- Full GUT suite: 265 scripts, 2670 tests, 2661 passing, 1 risky (the known `test_neural_lines_are_loudness_normalised`),
+  8 failing, none of them Jolt's: 5 were an older copy of this task's own test (fixed since: the "off" side of the
+  zone test ran the modifier pass several times per test frame, and a Marke from an earlier test file) and 3 were
+  phase 1's ragdoll-rig tests, which fail in a full run under Godot Physics too (a `_live` entry freed by an earlier
+  test file; fixed in the test). Godot Physics full run for comparison: 2663 passing, the same 3 + the same old copy
+  + `test_movement_perf`'s known thread-timing intermittent.
+- Smokes, all PASS with 0 script errors: `smoke_map00`, `smoke_map00_alive`, `smoke_map00_cellar_bay`,
+  `smoke_map00_loop` (stairs, the cellar's doors, the lever, the Crucible, the perk machines, the window barricades),
+  `smoke_coop`, `smoke_ladders`, `smoke_horse` (116 checks), `smoke_horse_boss` (81), `smoke_sherman` (87),
+  `smoke_map01_sherman` (39), `smoke_squads`, `smoke_zombie_anim`, `smoke_kielholer`, `smoke_sail`,
+  `smoke_rocket_launch` (23), and `smoke_bots_shop_m0` PASS on the second run (the first: "no squad bot did 'bench'", the known intermittent of PROGRESS / DECISIONS that phase 1 saw fail under Godot Physics with and without its changes; Godot Physics run beside it: PASS). No Jolt warning in any log (the engine prints one for every
+  unsupported setting it meets); `smoke_ladders` logs three "Parameter material is null" render errors that T-264
+  saw on Godot Physics builds too.
+- What the checks cover: character movement on stairs and slopes (the map00 paths through the inn and the cellar,
+  the bots' walks), ladders (both watchtower ladders, the bots and the player), ragdolls (every kill in the smokes
+  and the bench, `test_zombie_ragdoll_*`, phase 1's rig reuse), rays through glass, fences and areas (the weapon,
+  hitbox and line-of-sight unit tests, the bots' shots in the smokes, this task's zone test under both engines),
+  area overlaps (traps, perk machines, doors, the Crucible, the horse's and the tank's mount areas in their smokes).
+- One difference seen, in Jolt's favour: in the 48-zombie bench under Godot Physics a third to half of the horde
+  spawned together at one spawn point climbed into the sky for the first 10-15 s (bodies at y = 160-380 m; the rate,
+  about 15 m/s, is what `_step_up`'s 0.25 m a tick gives a blocked body that keeps finding a floor on the pile: the
+  likely cause, not traced), out of view
+  and so animated at the quarter rate; under Jolt none did (`[t283] states` lines, `perf_marks`). So the Godot
+  Physics numbers of this bench (phase 1's too) are flattered by a share of the horde being up in the air, and the
+  Jolt gain is if anything understated.
+- The other side of the same artifact, against Jolt: on Kaltenbrunn a batch of 32-48 bodies set down at once on the
+  same spawn points made Jolt push some of them down through the ground; they fell below -30 m and the existing rule
+  put them back in the round's queue (`Zombie.recycled_why`: 7 "fell" of 48 in one run, none under Godot Physics,
+  which instead threw them up). So Kaltenbrunn's after side had 25 of 32 and 38 of 48 up. A recycled zombie comes
+  back through a spawn later, so a round is not shorted, only delayed for that body. No smoke (they spawn the real
+  way, one at a time) and no real round showed it; whether two zombies rising on one spot in a real round can do it
+  under Jolt was not tested. A follow-up worth having either way: spread the bench's (and the dev console's)
+  `debug_spawn` over the spawns and the ticks.
+
+Not checked under Jolt: the web build (the Compatibility renderer in the browser; Godot's web templates carry Jolt, not
+run), Totenhafen, the Fernflug acts, a networked co-op client, anything rendered (a ragdoll's look, a body's feet on
+a slope on screen).
+
+### Item 7: the frame a grenade kills a pack
+
+The explosion worker (T-280) measured a full `Explosion.detonate` on a 24-zombie pack at 17-58 ms for six blasts with
+its own effects code at 0.1-1.6 ms: the rest is the zombies dying. The bench is a copy of T-280's
+`bench_explosions.gd` (their branch untouched): `gravelight/tools_src/bench_blast_deaths.tscn -- --mode=kill
+--reps=N --defer=on|off|flip` (Map 0, round 15, the player alone in god mode, 24 zombies set down in a 5 x 5 block
+8 m in front of him, one blast at the middle then six blasts around it, with the frag's numbers; `--mode=deaths`
+kills the same block by `take_damage` without a blast). Changed from theirs: every event meets a fresh packed 24 (the
+pool grown to 150 so the corpses of earlier events do not starve it, the refill two seconds before the event, not in
+its frame: their deferred refill of up to 24 `activate()` calls landed in the measured frame and was 10-17 ms of it),
+BotProf sections along the death path, every GLBus kill / damage / Scrip listener timed on its own, and the frame
+split into its process step, the gap after it and the next tick.
+
+**Where a death's time went** (in the kill call, per death, Godot Physics, loaded machine; 0.9-1.0 ms each):
+the kill listeners 0.32 (`vo_manager` 0.12 with a 4 ms voice load once headless; `FirstHints` 0.12: it fired the
+"boss_killed" citation check on every kill and `Citations.defs()` asked the disk for each citation's guard file;
+`profile_save` 0.05), the gore 0.28 (the head pop and the blast's loose limb: a severed piece built each), the pay
+0.17 (of it the HUD's "+65" label and tween 0.08-0.13), the ragdoll start later 0.15, the groan and the wound 0.05
+each, the rest under 0.05. A grenade that kills 24 put all of that in one frame; their ragdolls then all reached their
+key pose in the same later tick.
+
+**What changed** (`Zombie.t283_death`, on): the head pop's presentation, the blast's loose limb and the death groan
+are queued (`_queue_death_fx`) and drained `FX_PER_FRAME` = 4 a frame from the next frame on by the first active
+zombie's `_process`; an entry whose body went back to the pool is dropped (`_life`). Decided in the hit's frame as
+before: the kill, the pay, both kill signals, the round's count, the body and hitboxes leaving play, the death clip,
+`_head_popped` (the co-op event carries it) and every random roll (which limb comes off is rolled in the hit's
+frame, only the cutting waits). At most `RAGDOLLS_PER_TICK` = 3 ragdolls start in one physics tick; the others play
+their death clip one tick more. The HUD keeps one "+N" pop a frame for the frame's sum (the total changes at once;
+a visible difference: one "+1560" instead of 24 overlapping "+65"s). `Citations.fire` matches the event before the
+guard (the same citations in the same order).
+
+**Before / after, the frame of the blast** (`--defer=flip`: alternate pairs of events off and on in one run, 24 up
+each time; ms, the loaded machine, two runs side by side):
+
+| Physics | Kills | Off: frame / in the calls | On: frame / in the calls |
+|---|---|---|---|
+| Godot Physics | 22-24 (six blasts) | 41.5 / 23.9, 42.5 / 23.9, 41.4 / 23.5 | 17.6 / 8.6, 22.8 / 9.2, 24.1 / 10.2 |
+| Godot Physics | 15-18 (one blast) | 36.6 / 17.8, 39.1 / 20.1, 31.6 / 13.8 | 19.8 / 6.6, 19.3 / 6.0, 21.1 / 5.0 (11-18 kills) |
+| Jolt | 22-23 (six blasts) | 34.1 / 19.6, 35.2 / 20.2, 31.8 / 18.4 | 19.4 / 8.4, 21.5 / 8.4, 20.5 / 7.1 |
+| Jolt | 17-19 (one blast) | 33.0 / 18.1, 31.9 / 16.1, 34.8 / 15.9 | 19.7 / 7.4, 18.2 / 5.9, 18.5 / 5.5 |
+
+The worst of the next 30 frames (where the queue drains and the ragdolls start): off 12.6-16.1 ms, on 9.5-17.1 ms
+(the median frame before the blasts was 6.5-18 ms on this machine). The frame of the blast is still about 10 ms over
+its neighbours: the kill listeners left (profile challenges, power-up drops, quests, the horror layer, about 0.15 ms
+a kill), the wound decal of the killing hit, the deaths' first animation steps (the death clips with the recorded
+fall's velocity bookkeeping, 0.03 ms a corpse a frame) and the blast's own presentation (T-280's).
+
+### The render thread (lever 6)
+
+What the feature tag does: `project.godot` has `rendering/driver/threads/thread_model.cz_render_thread=2`. A setting
+with a feature suffix applies only in a build whose export preset lists that custom feature. The Windows, Linux and
+macOS presets carry `cz_direct`, none carries `cz_render_thread` (T-264 took it out again after the Linux build hung
+on quit under WSL's software Vulkan). So:
+
+| How the game is started | Render thread |
+|---|---|
+| `Play.bat` | separate (`--render-thread separate`, T-258); `Play.bat safe` = one thread |
+| the launcher (`launcher/src/manager.js` `play()`) | **one thread**: it passes `--path`, `--log-file`, the driver, fullscreen and the user's extra arguments (empty by default), not `--render-thread` |
+| an exported build (Windows / Linux / macOS) | one thread, unless started with `--render-thread separate` (`start.sh fast`) |
+
+So a new player who starts the game from the launcher pays the renderer's CPU work (T-258: about 3.8 ms on Map 0) on
+the game's thread, after the game's tick; T-258 measured 66 -> 92 FPS on the owner's PC from the separate thread
+alone.
+
+Is it safe for our scripts (read, not run)? The separate thread queues every RenderingServer call; what can go wrong
+is a script that needs an answer from the renderer (the call waits for the render thread: a stall, not a bug) or
+touches rendering resources from another thread. Read:
+
+- Per-frame getters that would stall: none in game code. `RenderingServer.get_rendering_info` is only in
+  `menu_scene.gd` (a debug overlay), `shader_get_parameter_default` only when DayCycle and LookMaterials collect their
+  materials at load, `get_video_adapter_*` at start and in the settings menu.
+- `Texture2D.get_image()` (a read back from the GPU texture): `look_materials.gd`, `weapon_shader.gd`, `arms.gd`,
+  `zombie_body.gd`, at load or the first use of a kit; a stall each, once. `menu_scene.gd` reads the viewport's
+  image for a menu snapshot (once).
+- Threads: `zombie_body.gd` builds ArrayMeshes on WorkerThreadPool tasks (`_dressed_job`, `_piece_job`); mesh
+  creation from a worker is supported in both thread models (the server queues it). Everything else on threads is
+  ResourceLoader threaded loading (StreamWarm, VO, the loading screen), which the engine handles.
+- Known from T-258 / T-264: 3-14 `_texture_2d_update: image is null or empty` errors while a map loads (no visible
+  effect found), one `finalize can only be called from the render thread` at exit, and the WSL Linux build that never
+  exited after a match (software GPU).
+
+**Recommendation:** (1) the launcher should start the game the way `Play.bat` does: `--render-thread separate` by
+default, with a "safe mode" switch that leaves it out (one line in `play()` plus a setting). (2) Before that, the
+owner checks T-264's open question on his PC: after quitting a match started with `Play.bat`, is a Godot process left
+in Task Manager? If none is, also add `cz_render_thread` to the Windows preset's custom features (one word), and to
+Linux after a clean quit on a Deck. Not changed here: the launcher and the export presets are outside this task, and
+the quit check needs the owner's screen.
+
+### Before / after
+
+`tools/zombie_count_bench.sh final_m0 "8 16 24 32 48" m0 3 "--ab=t283_off --project=../locker_gp" "--secs=20"` and the
+same for `m1`, run side by side: A = phase 1's after (Godot Physics from `.wt/locker_gp`, `Zombie.t283_opt` off), B =
+this branch as built (Jolt, every T-283 change on); for every repeat and count the A run then the B run. ms a frame
+of the game thread with no renderer, 60 fixed frames a second; each value is the median of the three runs' own
+values; "up" is how many zombies stood at the end (asked in the first column).
+
+| Map | Zombies (up A / B) | Before: p50 / 1 % worst / max | After: p50 / 1 % worst / max | p50 change | Zombie scripts per zombie, ms | Runs |
+|---|---|---|---|---|---|---|
+| Map 0 | 8 (8 / 8) | 7.51 / 13.30 / 16.15 | 6.93 / 13.18 / 15.50 | -8 % | 0.145 -> 0.095 | 3 |
+| Map 0 | 16 (16 / 16) | 9.26 / 15.45 / 19.00 | 8.18 / 14.08 / 15.99 | -12 % | 0.118 -> 0.102 | 3 |
+| Map 0 | 24 (24 / 24) | 10.69 / 20.38 / 25.08 | 9.47 / 16.67 / 20.88 | -11 % | 0.110 -> 0.093 | 3 |
+| Map 0 | 32 (32 / 32) | 11.20 / 19.11 / 21.26 | 10.67 / 17.10 / 20.12 | -5 % | 0.099 -> 0.085 | 3 |
+| Map 0 | 48 (48 / 48) | 13.74 / 23.62 / 25.46 | 12.07 / 21.16 / 24.55 | -12 % | 0.093 -> 0.072 | 3 |
+| Kaltenbrunn | 8 (8 / 8) | 5.63 / 11.23 / 14.29 | 5.55 / 10.87 / 14.28 | -1 % | 0.114 -> 0.072 | 3 |
+| Kaltenbrunn | 16 (15 / 16) | 6.69 / 12.63 / 14.23 | 5.89 / 11.47 / 14.68 | -12 % | 0.102 -> 0.079 | 3 |
+| Kaltenbrunn | 24 (22 / 24) | 7.97 / 13.95 / 16.91 | 7.51 / 12.79 / 14.48 | -6 % | 0.104 -> 0.075 | 3 |
+| Kaltenbrunn | 32 (31 / 25) | 9.27 / 15.92 / 16.67 | 7.50 / 13.55 / 15.09 | -19 % * | 0.103 -> 0.076 | 3 |
+| Kaltenbrunn | 48 (45 / 38) | 12.74 / 20.23 / 21.93 | 8.25 / 15.10 / 17.59 | -35 % * | 0.110 -> 0.074 | 3 |
+
+\* fewer bodies up on the after side (see "Jolt": a batch of 32-48 spawned at once, some dropped through
+Kaltenbrunn's ground and were put back by the y < -30 m rule); compare the per-zombie column there.
+
+The parts at 48 on Map 0 (p50, before -> after): the zombies' physics scripts 2.67 -> 1.90, their process step 1.77
+-> 1.54, the bots 1.92 -> 1.93, the physics and navigation step 1.43 -> 1.08, skeletons and attachments 1.70 -> 1.57,
+everything else 3.45 -> 2.85. The load: the same phase-1 build's 48-zombie frame read 26.3 ms in phase 1's sweep and
+13.7 here, so this evening's machine was about half as busy; against T-256's quiet 24-zombie frame (8.7 ms, an older
+and slower build) the before side's 10.7 is at most 1.23 times a quiet machine's. The 1 % worst and the max are still
+mostly the machine's (single ticks of other processes).
+
+The parts of T-283 one at a time (Map 0, 48, Jolt, one in-run flip each, p50): the skeleton 13.43 -> 13.07 ms
+(-2.7 %; the gap after the process scripts 2.34 -> 2.00), the 12 / 30 m LOD 14.48 -> 14.25 (-1.6 %; the zombies'
+process step 2.23 -> 2.02, the gap 2.08 -> 1.92), the foot-ray rule within the noise (12.53 -> 12.62: at the inn
+nearly every zombie is within 12 m and at the full rate, so its rays are all needed; it pays where the horde is far).
+
+### Checks run
+
+All headless, in `.wt/locker` on `claude/zombie-perf-2` (Jolt in `project.godot` from `cc98cebb` on) and its two junction
+copies (`.wt/locker_jolt`, `.wt/locker_gp`); logs under `.smoke_logs/t283/` (git-ignored).
+
+- **Script check**: 1036 scripts, 0 failed.
+- **Full GUT suite on the branch head with Jolt**: 2673 tests, 2671 passing, 1 risky (the known
+  `test_neural_lines_are_loudness_normalised`), 1 failing: this task's own item-7 test, whose head-kill death clip is
+  a roll that a full suite reaches with a different generator state (fixed in `9c52f09e`: it picks a head-popping
+  death; then `-gselect=zombie` 85 of 85 and `test_t283_zombie_perf` 9 of 9, twice). Earlier full runs: under Jolt
+  before the fixes 2661 / 2670 (the 8 failures listed under "Jolt"), under Godot Physics 2663 / 2670.
+- **`test_t283_zombie_perf`** (new, 9 tests): the same zones hit by a 9 x 15 grid of rays in every frame of a walk,
+  near (full rate) and at 20 m (half rate), switch on and off; the modifier pass runs once a frame near and only in
+  the animated frames at the half rate; every hitbox on its bone's drawn pose in every frame, in the node and in the
+  physics server, moving exactly in the frames the animation steps; a ragdoll keeps the skeleton running every frame;
+  the foot-ray rule; the LOD distances on and off; a kill pays, signals and leaves play in its frame with the gore one
+  frame or more later (the same pay and kill count as switched off); the queue drains four a frame from the next
+  frame and drops a body that went back to the pool; at most three ragdolls a tick. `test_t281_zombie_count`'s rig
+  tests no longer fail in a full run (a rig an earlier test file freed was still listed).
+- **Smokes under Jolt**: see "Jolt" (16 PASS, `smoke_bots_shop_m0` on its second run).
+- **Benches**: the final sweep (30 runs a map), the Jolt A/B (12), the T-283 flips (Godot Physics 1, Jolt 2, the
+  parts 3, `z_no_areas` 1 + 2), the horde state census (5), the blast bench (11 runs, 6 diagnostic).
+
+### What is not verified
+
+- Anything rendered: no window was opened. No frame rate on a GPU, no look at far zombies at the half rate, at the
+  skeleton that holds between steps, at a head that pops a frame or two after the kill, at the HUD's summed Scrip pop,
+  or at Jolt's ragdolls and feet on screen. The rendered command above is for the owner.
+- A quiet machine: every millisecond here is this PC's under three other workers' load; the "quiet-equivalent"
+  figures divide by the load factor estimated from T-256's quiet 24-zombie frame, an estimate.
+- Jolt on the web build, Totenhafen, the Fernflug acts and a networked co-op client.
+- The 1 % worst and max columns: on this machine mostly other processes' stolen time.
+- The skeleton change on a co-op puppet (the same `_process` path; not run with a client).
+
+### The rendered benchmark for the owner's GPU, phase 2 (not run: needs the owner's OK)
+
+The same bench as phase 1's (`perf_marks` without `--hitch`: Map 0, round 15, the horde up, frames sampled from 9 s
+to 24 s, one `[perf] in play: avg FPS ..., worst frame ..., 1% low ...` line). Phase 2's after is the branch as built
+(Jolt, phase 1 and phase 2 on); its before is phase 1's after (Godot Physics, phase 2 off). Jolt is a project
+setting, so the before side runs with an `override.cfg` beside the worktree's `project.godot` that names Godot
+Physics, written before those runs and deleted after. From a Windows prompt in the main checkout (off-screen,
+silent, Ultra, the renderer on its own thread as `Play.bat` starts it; eight runs of about 40 s, each opens a window
+at -4000,-4000):
+
+```
+cd /d C:\Users\Devin\PROJECTS\bolt-and-sprocket-ultimate
+set G=tools\dl_godot\Godot_v4.7.2-stable_win64_console.exe
+set A=--audio-driver Dummy --position -4000,-4000 --resolution 1920x1080 --render-thread separate --path .wt\locker res://gravelight/tools_src/perf_marks.tscn -- --preset=ultra --no-marks
+for %m in (map00_crossroads map01_kaltenbrunn) do for %z in (24 48) do %G% %A% --map=%m --zombies=%z --ab=none > logs\t283_%m_z%z_after.log 2>&1
+(echo [physics]& echo 3d/physics_engine="GodotPhysics3D")> .wt\locker\override.cfg
+for %m in (map00_crossroads map01_kaltenbrunn) do for %z in (24 48) do %G% %A% --map=%m --zombies=%z --ab=t283_off > logs\t283_%m_z%z_before.log 2>&1
+del .wt\locker\override.cfg
+findstr /C:"in play" /C:"physics engine" logs\t283_*.log
+```
+
+In a .bat file write `%%m` and `%%z`. The `physics engine` line of each log says which engine ran (`Jolt Physics` after,
+`GodotPhysics3D` before). `--ab=t281_off,t283_off` with the override is the master of before phase 1. Leave out
+`--render-thread separate` for the way the launcher and the exports start the game today (one thread). Add
+`--breakdown` for the CPU / GPU split and the draw calls.
