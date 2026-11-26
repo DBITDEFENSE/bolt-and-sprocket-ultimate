@@ -629,3 +629,94 @@ In a .bat file write `%%m` and `%%z`. The `physics engine` line of each log says
 `GodotPhysics3D` before). `--ab=t281_off,t283_off` with the override is the master of before phase 1. Leave out
 `--render-thread separate` for the way the launcher and the exports start the game today (one thread). Add
 `--breakdown` for the CPU / GPU split and the draw calls.
+
+## Jolt back (T-291, 2026-11-26)
+
+Jolt was rolled back the day after T-283 because the player could not climb `smoke_move_feel`'s 0.18 m x 0.30 m
+staircase under it. Branch `claude/jolt-stepup`, `project.godot` on `Jolt Physics` again.
+
+**The cause.** On those stairs the tread (0.30 m) is shorter than the player's capsule is wide (0.70 m). The step-up
+(`Player.step_up_spot`) lifts the capsule 0.4 m, moves its middle 5 cm past the edge it walked into and sets it down;
+the round bottom then meets the NEXT step's nose before it reaches this step's tread. Exact geometry puts that
+contact at 45.6 deg, 0.4 deg inside the player's 46 deg floor limit: Godot Physics reports exactly that (normal y
+0.6996 against cos 46 = 0.6947) and the step was taken, by that 0.4 deg. Jolt rounds every box's edges by its
+collision margin (`physics/jolt_physics_3d/collisions/collision_margin_fraction` 0.08 of the shortest half extent,
+at most the shape's 0.04 m margin) and reports 46.3 deg (0.6907): every step refused. Check: with that fraction at 0
+(sharp edges) the old code climbs under Jolt again, but walks the stairs at 2.52 m/s with stalls and fails the
+60 % speed check, so the setting is not the fix (and the margin is what keeps Jolt's convex tests cheap).
+
+**The fix** (`Player.step_up_spot`, `_over_nose`, `_nose_advance`; switch `Player.t291_steps`, env `CZ_T291_OFF=1`),
+the same on both engines:
+
+1. A nose met ahead under the capsule's round bottom with a normal less than 0.05 over the floor limit: the capsule
+   moves on by the 1-3 cm (at most 10) that make that contact read as floor with 0.05 to spare and is set down again
+   (on a sphere the contact's flat part is the middle's distance over the radius). If the step above blocks that at
+   the raised height, it rolls over the nose along the nose's tangent from where it rests. A real slope stays steep
+   after the move and is refused, as before. A nose that already read as floor keeps the old spot when neither way
+   holds.
+2. A nose ridden up that lifts the body off the floor in the same move that runs it into the next riser still allows
+   the step up (before, it waited a tick and restarted from standstill: the 0.2 s stalls Godot Physics had on the
+   walk).
+3. Jolt sometimes reports the riser a nose is pressed against only as `get_wall_normal()` (met in its depenetration,
+   no slide collision for it): the step-up then walks into that normal.
+
+Step height (0.4 m), speeds, `floor_max_angle` and every movement.json value are unchanged.
+
+**`smoke_move_feel`, both engines, this branch:** walk up the staircase 3.96 m/s Jolt, 3.89 Godot Physics (master on
+Godot Physics: 2.81 with stalls and 3 airborne ticks); sprint 5.41 / 5.41 (master 5.41); stairs down, kerbs, ramps,
+corners, doorways: the same distances and tick counts on both, eye moves within 6 mm, slowest speeds within
+0.13 m/s. RESULT PASS on both.
+
+**Stair sweep** (a probe, not committed: 25 staircases, rises 0.15-0.25 m, treads 0.25-0.45 m, as overlapping boxes
+and as one trimesh, walked and sprinted from 2 m out; 100 climbs per engine):
+
+| | Godot Physics, master | Jolt, master | Godot Physics, T-291 | Jolt, T-291 |
+|---|---|---|---|---|
+| climbed | 76 | 65 | 92 | 92 |
+| climbed with a stall (speed 0 on the way) | 16 | 11 | 0 | 0 |
+| more than one airborne tick | 11 | 7 | 0 | 0 |
+
+The 8 left are the same on both engines: 0.25 m rises on 0.25-0.28 m treads (42-45 deg), whose next step is out of
+a 0.4 m step's reach. Of the 92 climbed on both, 70 at the same speed to the hundredth, the rest within 0.9 m/s
+(where a step lands against the tick). Master under Godot Physics also failed every 0.35 m tread with rises of
+0.18-0.22 m; those climb now.
+
+**The horde bench, Godot Physics (A) against Jolt (B)**, this branch on both sides, Map 0, interleaved, three runs a
+side (`BENCH_DIR=t291 tools/zombie_count_bench.sh jolt_ab "24 48" m0 3 "--project=<copy with GodotPhysics3D> --ab=none"
+"--ab=none"`), medians, ms a frame of the game thread, no renderer; the PC shared with two other sessions' smokes:
+
+| Zombies | Frame mean A -> B | p50 (median run) | 1 % worst | zombies' physics scripts | physics step (gap after physics) | animation / skeletons (gap after process) |
+|---|---|---|---|---|---|---|
+| 24 | 8.89 -> 7.37 (-17 %) | 8.78 -> 7.14 (-19 %) | 15.48 -> 14.14 | 1.57 -> 1.02 (-35 %) | 0.72 -> 0.52 (-28 %) | 0.95 -> 0.93 |
+| 48 | 10.53 -> 10.23 (-3 %) | 10.48 -> 9.96 (-5 %) | 19.26 -> 17.98 | 2.24 -> 1.78 (-21 %) | 1.14 -> 0.80 (-30 %) | 1.10 -> 1.38 |
+
+The 48 row is not like for like, in Godot Physics' favour, as T-283 found: under Godot Physics the bench's batch of
+48 set down at once threw 40-47 of them 300-380 m into the sky (`[t283] states at 10 s`: out of view 40-47, mean
+distance 311-367 m), where they animate at a quarter rate; under Jolt all 48 stood on the ground near the inn (out
+of view 0-1, 16 m) and by 25 s twice as many were inside chasing (24-25 against 8-13). So Jolt's 48 does more
+animation and AI work for less frame; the physics parts are the fair comparison, and they hold T-283's gain
+(scripts -21 to -35 %, step -28 to -30 %). The batch spawn is the bench's own (`debug_spawn`); real rounds spawn one
+at a time.
+
+**Checks under both engines** (Godot Physics through a second project folder whose entries are junctions to the
+worktree and whose `project.godot` names `GodotPhysics3D`): full GUT 2706 tests, 2705 passing, 1 risky (the known
+`test_neural_lines_are_loudness_normalised`) on both (Jolt: one of two full runs had one failure in
+`test_t283_zombie_perf.test_a_kill_pays_and_counts_in_its_frame_and_only_the_gore_follows`, an extra kill signal from
+another zombie in its four waited frames; the file passes alone 2 of 2 on each engine and the second full run was
+clean); `test_move_feel`'s new stair test fails with `CZ_T291_OFF=1` on both engines and passes without. Smokes, 0
+script errors in every log: move_feel, ladders, horse, horse_boss, sherman, map01_sherman, coop, squads, zombie_anim,
+map00, map00_alive, map00_cellar_bay, map00_loop, map02_world, kielholer, sail, map04a_world, map04b_world,
+rocket_launch, ammo_box, polish, interact, feel PASS on both; bots_shop_m0 FAIL on both ("no squad bot did 'bench'":
+the bots picked the Crucible instead of the armourer's bench), and also with `CZ_T291_OFF=1` under Godot Physics, so
+master's behaviour; bots never use the step assist (movement.json `step.bots` false).
+
+**Other engine-specific assumptions, read:** the bots (`BotLocomotion.wall_ahead`: a sphere `cast_motion`, only
+whether it hits), the zombies (`_step_up`: two `test_move` yes/no checks; floor limit 50 deg, so the 45.6-46.3 deg
+noses are floor for them on either engine; push and stacking normals with 0.5 / 0.6 thresholds), ladders and zip
+lines (scripted positions, no physics query), the horse (plain `move_and_slide`, 40 deg), the tank's ground following
+(rays: face normals, the same on both), ragdolls (PhysicalBone3D pin and cone joints; smoke_zombie_anim, the map00
+smokes), the T-283 death queue (no physics query). Nothing else reads a shape-cast normal against a threshold close
+to where Jolt's rounded edges differ. Jolt's other settings stay at their defaults:
+`motion_queries/use_enhanced_internal_edge_removal` (on) already keeps seams between floor pieces from snagging
+`move_and_slide`; `active_edge_threshold` concerns trimesh internal edges and changes nothing here (the trimesh
+stairs climb the same on both engines).
