@@ -57,6 +57,40 @@ Run order: `sh tools/trailer/record.sh teaser_m0 --stride=2`, `TRAILER_RES=1920x
   a light unsharp, film grain, letterbox 2.35:1) instead.
 - **Prompt words**: a first text-to-video prompt with "horror" and "blood" was rejected by the filter (not charged);
   the teaser's prompts say "suspense film", "pale gaunt figures with grey skin" and leave gore words out.
-- **video_edit vs omni_reference**: the dark empty places (crossroads, inn, taproom, window, gate, tower) re-render
-  well in `video_edit`; the figure shots (the face, the horde, the boards, the lunge) stayed mannequin-like (the
-  T-277 failure mode) and were redone in `omni_reference` with the source clip as the reference.
+- **video_edit, omni_reference, text-to-video**: all twelve recorded shots went through `video_edit` first. Only the
+  taproom (the swinging lantern) and the torn window (the figure outside) came back reading as film; the night
+  exteriors stayed a re-lit game, and the figures (the face, the horde, the boards, the lunge) stayed mannequins (the
+  T-277 failure mode). `omni_reference` with the recording as the reference kept the game look too (rejected). The
+  other ten shots are text-to-video takes written from the same shot (the game's places and events described:
+  the crossroads with crows on the wire, the inn, the radio on the high shelf, the open gate with its lantern, the
+  watchtower's searchlight, the forest track with the silhouette, the violet-eyed face, the horde in the field, hands
+  through the boards, the lunge), plus the breath shot that never had a recording. So the teaser is mostly generated
+  footage in the game's world rather than a re-render of it; the recordings and every take are kept in build/.
+- **Rule check** (frames of every take, source over result): no lettering, signs, flags, insignia or symbols in any
+  kept take (the radio's dial is plain); no modern objects or road markings; clothes plain and ragged; nobody is
+  Jakub; no Cousin appears in the teaser (they appear in the gameplay cut as the game's own porcelain-doll bosses).
+- **Credits**: 443 of the 550 budget (964 -> 521): video_edit 224, omni_reference 60 (rejected), text-to-video 156,
+  one filtered request free.
+
+## Teaser (66.8 s, letterboxed 2.35:1)
+
+Card "Silesia. Winter, 1944." / crossroads, crows on the wire / the inn / the taproom, a lantern swinging / the radio /
+the breath in the cold / the open gate / the torn window, a figure outside / card "The dead are keeping count." /
+the forest track, a silhouette at the treeline (+ "Something at the treeline has learned your name.") / the
+watchtower's searchlight / the build: horde, eyes, boards, horde, lunge, eyes, boards, horde, lunge / hard cut to black /
+GRAVELIGHT / black / the eyes, one last sting / "The fence will not hold." Sound: wind and a low drone, a far bell,
+creaks, radio static, a whisper, a heartbeat that speeds from 52 to 120, a string cluster and a riser under the horde's
+groans, silence, the title boom, the scream sting.
+
+## Gameplay trailer (86 s, 120 BPM)
+
+Cold open (tick bed): the U-boat pen, the Kaltenbrunn yard horde, the dead at the inn's window. Music A (the drop at
+8 s, "HOLD THE INN"): firing the Thompson at the taproom window (the real HUD), the squad in the yard ("NEVER ALONE"),
+the MG42 at Kaltenbrunn (HUD), a grenade into a pack, a 75 mm-sized shell in slow motion ("BRING EVERYTHING"), a bomb,
+the Sherman driven in its orbit view ("TAKE THE STEEL"), its 75 mm firing, alongside the rolling tank, the Rocket Man
+machine, the V2 from ignition to climb ("WATCH THE SKY"), its lift-off from the track mouth. Music B (the drop at 40 s):
+the horse at a gallop and from the saddle ("RIDE"), the watchtower zip line, the Kaltenbrunn headframe zip line, the
+Sherman rolling through Kaltenbrunn's gate, the dead on the U-boat pier, the pen from the tower, der Kranich's wing in
+the golden hour ("FOUR FRONTS. ONE NIGHT THAT NEVER ENDS."), the bomb bay, a casing falling to a violet flash, the Earth
+over the Moon, a meteor, das Totenross rearing, the Cousins in the taproom. Montage of half-second cuts, black,
+GRAVELIGHT (solo or co-op, four maps, round after round), "Every round is a signature."

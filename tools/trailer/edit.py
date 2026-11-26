@@ -105,7 +105,7 @@ def build(edit: list, audio_wav: str, out_1080: str, out_720: str, work: str):
     silent = os.path.join(work, "joined.mp4")
     run(["ffmpeg", "-y", "-v", "error", "-f", "concat", "-safe", "0", "-i", lst, "-c", "copy", silent])
     run(["ffmpeg", "-y", "-v", "error", "-i", silent, "-i", audio_wav, "-map", "0:v", "-map", "1:a", "-c:v", "libx264",
-         "-preset", "slow", "-crf", "17", "-pix_fmt", "yuv420p", "-profile:v", "high", "-c:a", "aac", "-b:a", "256k",
+         "-preset", "slow", "-crf", "17", "-maxrate", "16M", "-bufsize", "32M", "-pix_fmt", "yuv420p", "-profile:v", "high", "-c:a", "aac", "-b:a", "256k",
          "-shortest", "-movflags", "+faststart", out_1080])
     run(["ffmpeg", "-y", "-v", "error", "-i", out_1080, "-vf", "scale=1280:720:flags=lanczos", "-c:v", "libx264",
          "-preset", "slow", "-crf", "19", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", out_720])
