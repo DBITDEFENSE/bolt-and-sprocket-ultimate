@@ -1,0 +1,69 @@
+{
+ "_doc": "T-285: the teaser's Higgsfield prompts. Each source shot (build/trailers/src/teaser_m0/<shot>.mp4, recorded by clip_trailer.gd) is re-rendered by Seedance 2.5 in video_edit mode at 480p with the source as the video reference (camera, move, timing and layout kept). prompt = wrapper + shot + rules. make_prompts() in make_trailers.py builds the final strings; the T-277 wrapper is reused word for word.",
+ "model": "seedance_2_5",
+ "mode": "video_edit",
+ "resolution": "480p",
+ "wrapper": "Re-render this video as hyperrealistic live-action film footage. Keep exactly the same camera position, camera move, framing and timing, the same layout of every building, object and person, the same people in the same places doing the same actions; only replace the simple game graphics with real-world faces, cloth, materials, weather and light. The scene: ",
+ "rules": " A slow-burning suspense film, photographic realism, 35mm film look, cold moonlit blue-grey night with warm amber lamp light, deep shadows, subtle grain. Rural Central Europe in winter in the early 1940s: only period objects, wood, stone, iron and wool; no modern objects, no cars, no asphalt, no painted road markings, no electric street lights. No text, letters, numbers, signs, flags, insignia, emblems, symbols or logos anywhere in frame. Every person is fictional.",
+ "shots": {
+  "t01_crossroads": "Night at a lonely snowy crossroads in the countryside. A rough split-rail fence, a dark fir forest, wooden telegraph poles with sagging wires and a few crows sitting on the wire, light snow falling, a pale searchlight beam far off in the cloudy sky. A frozen unpaved dirt road with ruts. Nobody in sight. Cold, still, ominous.",
+  "t02_inn_front": "A lonely old two-storey timber-framed country inn seen across a snowy unpaved yard at night, a few small windows glowing warm amber, a stone chimney, a wooden fence, snow falling, dark fir forest behind. Empty and silent; something is wrong.",
+  "t03_taproom": "The empty taproom of an old country inn at night: worn wooden tables and chairs, a long wooden bar counter, low beams; an oil lamp hanging from a ceiling beam swings slowly on its chain, its warm light sliding across the walls. Nobody there. Dust hangs in the air.",
+  "t04_radio": "Inside a dark old inn at night, looking up at a high wooden shelf under the beams; on top of it an old wooden 1940s valve radio set, its round dial glowing faint amber and flickering with static; small lamps glow on the wall. The dial face is plain, with no numbers or markings.",
+  "t05_window_torn": "Inside a dark inn at night, looking at a window whose wooden boards have been torn away, splintered planks hanging, snow drifting in; outside in the snow, far off in the dark, a gaunt motionless figure in ragged clothes stands facing the window, its face in shadow.",
+  "t06_gate_open": "Looking up at a heavy wooden farmyard gate standing open at night, its posts capped with snow, one oil lamp burning on a post, black fir trees beyond against a cloudy night sky, snow falling, nobody there.",
+  "t07_breath": "Close-up of a weary man's face in the freezing night, a worn plain wool greatcoat with the collar up, his breath steaming in the cold air, eyes watchful, listening; faint warm lamp light from one side, darkness behind him.",
+  "t08_searchlight": "From a snowy farmyard at night, looking up at a tall old wooden watchtower with lamps on its ladder, dark fir trees around, low clouds; snow falling.",
+  "t09_treeline": "A forest track at night running between dark fir woods, two old wheel ruts in the deep snow, an oil lamp on a wooden post; at the far end, at the treeline, a gaunt human silhouette stands motionless, watching. Cold mist, falling snow, faint moonlight, a pale searchlight beam in the sky.",
+  "t10_eye": "Extreme close-up of a gaunt pale face in the dark: grey cold skin, sunken cheeks, its eyes glowing with a cold violet light; snowflakes drift past. Unsettling and still.",
+  "t11_horde_field": "A camera low at snow level at night: a crowd of gaunt pale figures with grey skin in plain ragged civilian and work clothes shambling through deep snow across an open field straight toward the camera, a few eyes glowing violet, dark fir forest behind them, snow falling.",
+  "t12_boards": "Inside a dark old inn at night by a broken window: gaunt pale figures with grey skin in plain ragged clothes climb in through the torn boards toward the camera; moonlight outside, a wall clock and an oil lamp on the wall.",
+  "t13_lunge": "Point of view at night in deep snow by a wooden fence: gaunt pale figures with grey skin and glowing violet eyes, in plain ragged clothes, run straight at the camera out of the darkness, the nearest one lunging into the lens."
+ },
+ "_nsfw_note": "Seedance's filter rejected a first t2v prompt with 'horror' and 'blood' in it (not charged); the rules say suspense film and leave gore words out.",
+ "clothing_rule": " Clothes are plain and ragged: no uniforms with badges, no armbands, no caps with emblems.",
+ "omni_wrapper": "Live-action film footage, shot on 35mm film, completely photographic and real, with real actors in practical makeup. Follow the reference video for the camera position, camera move, framing, timing and the movement of every figure, but replace its simple game look entirely with real people, real cloth, real snow and real light. The scene: ",
+ "omni": {
+  "t10_eye": "Extreme close-up at night of a gaunt man in heavy pale makeup: grey cold skin, sunken cheeks, cracked lips, his eyes glowing with a cold violet light in the darkness, snowflakes drifting past, a boarded window glowing behind him out of focus. He slowly leans toward the camera. Unsettling, still, quiet.",
+  "t11_horde_field": "A camera low at snow level on a winter night in an open field before a dark fir forest: a crowd of gaunt people in heavy pale makeup, grey skin, in plain ragged civilian and work clothes, shamble and stagger through deep snow toward the camera, a few of them with eyes glowing violet, snow falling, cold blue moonlight.",
+  "t12_boards": "Inside a dark old country inn at night beside a broken boarded window: gaunt people in heavy pale makeup, grey skin, plain ragged clothes, climb in through the torn wooden boards and stagger toward the camera; moonlight and snow outside, a wall clock and an oil lamp on the plaster wall.",
+  "t13_lunge": "Point of view on a winter night in deep snow by a wooden fence, dark firs and a searchlight beam behind: gaunt people in heavy pale makeup with grey skin and glowing violet eyes, plain ragged clothes, rush straight at the camera out of the dark, the nearest one lunging into the lens."
+ },
+ "t2v": {
+  "_doc": "Text-to-video (Seedance 2.5 t2v, 480p) for the shots whose video_edit stayed game-like, and the breath shot that has no in-engine source. The prompts as sent.",
+  "t07_breath": "Cinematic close-up of a tired man in his thirties outdoors on a freezing winter night in the 1940s countryside. He wears a plain worn wool greatcoat with the collar turned up. His breath forms slow clouds of vapour in the cold air. His eyes shift to the side, alert, listening. Soft warm lantern light from the left, dark night behind him, a few snowflakes drifting. Moody suspense film, photographic realism, 35mm film look, muted cold colours, subtle grain, slow push in. Plain clothing with no badges, no text and no logos.",
+  "t10_eye": "Extreme close-up in darkness of a gaunt man's face in heavy pale stage makeup: grey cracked skin, sunken cheeks, his eyes glowing a cold violet. He slowly turns his head toward the camera and stares. Snowflakes drift past; a boarded window glows warm and out of focus behind him. Slow push in. Moody suspense film, photographic realism, 35mm film look, muted cold colours, subtle grain. Early 1940s rural Central Europe in winter. Plain clothing with no badges, no armbands, no uniforms, no text and no logos.",
+  "t11_horde_field": "A low camera at snow level on a winter night in an open field before a dark fir forest: a crowd of gaunt people in heavy pale stage makeup, grey skin, plain ragged 1940s civilian and work clothes, shamble slowly through deep snow straight toward the camera, a few with faint violet glowing eyes. Snow falling, cold blue moonlight, slow push in. Moody suspense film, photographic realism, 35mm film look, muted cold colours, subtle grain. Early 1940s rural Central Europe in winter. Plain clothing with no badges, no armbands, no uniforms, no text and no logos.",
+  "t12_boards": "Inside a dark old country inn at night, close on a window nailed shut with rough wooden boards: grey bony hands push through the gaps between the planks, clawing and prying the boards loose; behind them in the moonlight, shapes of people crowd outside in the snow; an oil lamp glows on the plaster wall. Handheld, tense. Moody suspense film, photographic realism, 35mm film look, muted cold colours, subtle grain. Early 1940s rural Central Europe in winter. No text and no logos.",
+  "t13_lunge": "Night, deep snow beside an old wooden fence, dark firs and a distant searchlight beam: gaunt people in heavy pale stage makeup with violet glowing eyes and plain ragged clothes run out of the darkness straight at the camera; the nearest lunges into the lens. Handheld, fast. Moody suspense film, photographic realism, 35mm film look, muted cold colours, subtle grain. Early 1940s rural Central Europe in winter. Plain clothing with no badges, no armbands, no uniforms, no text and no logos.",
+  "t01_crossroads": "Night at a lonely snowy crossroads in the countryside: a rough split-rail fence, a dark fir forest, leaning wooden telegraph poles with sagging wires and a few black crows sitting on the wire, light snow falling, a pale searchlight beam far off in the cloudy sky, a frozen unpaved dirt road with ruts. Nobody in sight. Very slow push in. Moody suspense film, photographic realism, 35mm film look, muted cold colours, subtle grain. Early 1940s rural Central Europe in winter; no cars, no asphalt, no road markings. No text, no signs, no logos.",
+  "t02_inn_front": "A lonely old two-storey timber-framed country inn at night seen across a snowy yard, a few small shuttered windows glowing warm amber, a big stone chimney, a wooden fence, dark fir forest behind, snow falling, silent and empty. Very slow push in. Moody suspense film, photographic realism, 35mm film look, muted cold colours, subtle grain. Early 1940s rural Central Europe in winter; only period objects, no cars, no electric street lights. No text, no signs, no logos.",
+  "t04_radio": "Close on an old wooden 1940s valve radio set standing on a high wooden shelf in a dark country inn at night; its plain round dial without any numbers glows amber and flickers, a thin haze of dust drifts through the lamplight. Slow push in. Moody suspense film, photographic realism, 35mm film look, muted cold colours with warm lamp light, subtle grain. No text, no letters, no numbers, no logos.",
+  "t06_gate_open": "Looking up at a heavy wooden farmyard gate standing wide open at night, snow on its posts, an oil lantern burning on one post, black fir trees and low clouds beyond, snow falling, nobody there. Slow push in. Moody suspense film, photographic realism, 35mm film look, muted cold colours, subtle grain. Early 1940s rural Central Europe in winter. No text, no signs, no logos.",
+  "t08_searchlight": "From a snowy farmyard at night, looking up at a tall old timber watchtower on four braced legs, a ladder with small lamps, dark fir trees around, low clouds lit by a searchlight on top that slowly sweeps its beam across the falling snow. Slow tilt up. Moody suspense film, photographic realism, 35mm film look, muted cold colours, subtle grain. Early 1940s rural Central Europe in winter. No text, no flags, no signs, no logos.",
+  "t09_treeline": "A forest track at night between dark fir woods, deep snow with two old wheel ruts, an oil lamp on a wooden post at the side; far away at the end of the track, at the treeline, a gaunt human silhouette stands motionless, watching. Cold mist, falling snow, faint moonlight, a pale searchlight beam sweeping the clouds. Slow push in. Moody suspense film, photographic realism, 35mm film look, muted cold colours, subtle grain. Early 1940s rural Central Europe in winter. No text, no signs, no logos."
+ },
+ "used": {
+  "video_edit": [
+   "t03_taproom",
+   "t05_window_torn"
+  ],
+  "t2v": [
+   "t01_crossroads",
+   "t02_inn_front",
+   "t04_radio",
+   "t06_gate_open",
+   "t07_breath",
+   "t08_searchlight",
+   "t09_treeline",
+   "t10_eye",
+   "t11_horde_field",
+   "t12_boards",
+   "t13_lunge"
+  ],
+  "rejected": {
+   "video_edit": "t01, t02, t04, t06, t08, t09, t10, t11, t12, t13: stayed game-like (mannequin figures, flat CG)",
+   "omni_reference": "t10, t11, t12, t13: the video reference kept the game look"
+  }
+ }
+}
