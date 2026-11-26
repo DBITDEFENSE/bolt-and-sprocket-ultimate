@@ -119,7 +119,7 @@
   "knockdown": {"kinds": ["explosive"], "weapons": ["glass_shard"], "min_fraction": 0.08, "down_seconds": 0.9, "getup_seconds": 1.0},
   "foot_ik": {"range_m": 15.0, "off_m": 25.0, "ray_up": 0.5, "ray_down": 0.9, "max_hip_drop": 0.32, "blend": 12.0, "max_foot_tilt_deg": 35.0, "tilt_step_limit_m": 0.12},
   "look_at": {"range_m": 25.0, "cone_deg": 60.0, "smooth_s": 0.2},
-  "lod": {"full_m": 15.0, "half_m": 35.0, "ik_off_m": 25.0},
+  "lod": {"full_m": 15.0, "half_m": 35.0, "ik_off_m": 25.0, "t283": {"full_m": 12.0, "half_m": 30.0}},
   "attack": {
     "lunge_tiers": ["jog", "run"],
     "grab_tiers": ["sprint"],

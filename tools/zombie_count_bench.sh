@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 # T-281: the frame's cost against the horde's size. Headless perf_marks --hitch runs (60 fixed frames a second, no
 # window, silent), A/B interleaved: for every repeat, every map and every count, the A side then the B side.
+# T-283: BENCH_DIR=<dir> writes under .smoke_logs/<dir>/ (default t281); a side's `--project=<folder>` runs it there.
 #   tools/zombie_count_bench.sh <tag> "<counts>" "<maps>" <repeats> "<A flags>" "<B flags>" [extra perf_marks flags]
 #     counts: e.g. "8 16 24 32 48"; maps: m0 (Map 0) m1 (Kaltenbrunn); A/B flags e.g. "--ab=t281_off" and ""
 #     (an empty B runs only the A side). -> .smoke_logs/t281/<tag>/<map>_z<N>_<A|B>_<repeat>.log
@@ -16,7 +17,7 @@ REPS="${4:-1}"
 AF="${5:-}"
 BF="${6:-__none__}"
 shift 6 2>/dev/null || shift $#
-OUT=".smoke_logs/t281/$TAG"
+OUT=".smoke_logs/${BENCH_DIR:-t281}/$TAG"
 mkdir -p "$OUT"
 HIGH=0
 case "$(uname -s 2>/dev/null)" in
@@ -24,11 +25,23 @@ case "$(uname -s 2>/dev/null)" in
 esac
 one() {   # one run: <log> <map flag> <count> <side flags...>
 	LOG="$1"; MF="$2"; N="$3"; shift 3
+	# T-283: a side flag `--project=<dir>` runs that side from another project folder (the same files through
+	# junctions, another project.godot: e.g. .wt/locker_jolt with physics/3d/physics_engine="Jolt Physics")
+	PROJ="."
+	ARGS=""
+	for a in "$@"; do
+		case "$a" in
+			--project=*) PROJ="${a#--project=}" ;;
+			*) ARGS="$ARGS $a" ;;
+		esac
+	done
+	# shellcheck disable=SC2086
+	set -- $ARGS
 	if [ "$HIGH" = 1 ]; then
-		cmd //c start "" //b //high //wait "$(cygpath -w "$GODOT")" --headless --audio-driver Dummy --fixed-fps 60 --path . \
+		cmd //c start "" //b //high //wait "$(cygpath -w "$GODOT")" --headless --audio-driver Dummy --fixed-fps 60 --path "$PROJ" \
 			res://gravelight/tools_src/perf_marks.tscn -- --preset=low --hitch --no-marks --probe-all --vo-async --seed=7 --secs=20 $MF --zombies=$N "$@" > "$LOG" 2>&1
 	else
-		"$GODOT" --headless --audio-driver Dummy --fixed-fps 60 --path . res://gravelight/tools_src/perf_marks.tscn -- \
+		"$GODOT" --headless --audio-driver Dummy --fixed-fps 60 --path "$PROJ" res://gravelight/tools_src/perf_marks.tscn -- \
 			--preset=low --hitch --no-marks --probe-all --vo-async --seed=7 --secs=20 $MF --zombies=$N "$@" > "$LOG" 2>&1
 	fi
 	echo "== $(basename "$LOG") $(grep -E '^\[hitch\] frame wall' "$LOG" | cut -c1-80)"

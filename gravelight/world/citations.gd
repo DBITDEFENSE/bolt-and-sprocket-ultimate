@@ -89,6 +89,13 @@ static func award(id: String) -> bool:
 ## An event happened: earns every citation it answers. Returns the ids earned now.
 static func fire(event: String, info: Dictionary = {}) -> PackedStringArray:
 	var got: PackedStringArray = []
+	if Zombie.t283_opt and Zombie.t283_death:
+		# T-283: the event first, then the guard: available() asks the disk for a file, and every zombie's death fires
+		# "boss_killed" (FirstHints), 0.1 ms a kill for nothing. The same citations in the same order are earned.
+		for c2: Dictionary in all_defs():
+			if matches(c2, event, info) and available(c2) and award(str(c2["id"])):
+				got.append(str(c2["id"]))
+		return got
 	for c: Dictionary in defs():
 		if matches(c, event, info) and award(str(c["id"])):
 			got.append(str(c["id"]))
