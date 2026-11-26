@@ -28,6 +28,11 @@ const EYE_STAND: float = 1.62
 const EYE_CROUCH: float = 1.0
 const INTERACT_RANGE: float = 2.3
 const STRIDE: float = 2.1                  # metres per footstep (sprint stretches it a little)
+const STEP_NOSE_MARGIN: float = 0.05   # T-291: a stair nose under the capsule is taken once its normal's y is this far over the floor limit
+const STEP_NOSE_MAX: float = 0.1       # T-291: and only if that is at most this much farther on
+## T-291: the step assist's stair rules (a nose met at the floor limit, a step up after a nose lifted the body off the
+## floor). Off (env CZ_T291_OFF=1) = the T-236 step assist as it was, for A/B runs.
+static var t291_steps: bool = OS.get_environment("CZ_T291_OFF") == ""
 const HEARTBEAT_BELOW: float = 0.35        # health fraction that starts the heartbeat loop
 ## Footstep surface by collider name (lower-case substring). First match wins; see _floor_surface().
 const METAL_HINTS: PackedStringArray = ["lift", "cage", "grate", "catwalk", "deck", "boxcar", "locomotive", "fuselage", "turbine"]
@@ -862,10 +867,11 @@ func _step_assist(wish: Vector3, pre_h: Vector3) -> void:
 	var want: Vector3 = wish.normalized() if wish.length_squared() > 0.01 else (_slide_dir if sliding else Vector3.ZERO)
 	var from: Vector3 = global_position
 	var to: Vector3 = Vector3.INF
-	if is_on_floor():
-		if is_on_wall() and want != Vector3.ZERO:
-			to = step_up_spot(want, max_h, float(S.get("min_facing", 0.5)))
-	elif velocity.y <= 0.0 and pre_h.length_squared() > 0.09:
+	# (the body stood on the floor when the tick began: a stair nose it rode up can lift it off the floor in the same
+	# move that runs it into the next riser; that is still a step up, T-291)
+	if is_on_wall() and want != Vector3.ZERO and (is_on_floor() or t291_steps):
+		to = step_up_spot(want, max_h, float(S.get("min_facing", 0.5)))
+	if not to.is_finite() and not is_on_floor() and velocity.y <= 0.0 and pre_h.length_squared() > 0.09:
 		to = step_down_spot(pre_h.normalized(), max_h)
 	if not to.is_finite():
 		return
@@ -908,12 +914,45 @@ func step_up_spot(want: Vector3, max_h: float, min_facing: float) -> Vector3:
 		return Vector3.INF                          # a wall, not a step
 	t.origin += fwd
 	var down: KinematicCollision3D = KinematicCollision3D.new()
-	if not test_move(t, Vector3.DOWN * max_h, down) or down.get_normal().y < cos_floor or not _step_surface(down.get_collider()):
+	if not test_move(t, Vector3.DOWN * max_h, down) or not _step_surface(down.get_collider()):
 		return Vector3.INF
+	if not t291_steps and down.get_normal().y < cos_floor:
+		return Vector3.INF
+	if t291_steps and down.get_normal().y < minf(0.99, cos_floor + STEP_NOSE_MARGIN):
+		# T-291. Stairs whose tread is shorter than the capsule is wide (0.18 x 0.30): set down just past this step's
+		# edge, the capsule's round bottom meets the NEXT step's nose first, at an angle right on the floor limit
+		# (45.6 deg exact; Godot Physics reports that, 0.4 deg inside the 46 limit; Jolt rounds box edges by its
+		# collision margin and reports 46.3, outside it, so it refused every step). Under the round of the capsule
+		# the contact turns flatter the nearer the middle comes to the nose: move on by just enough that it reads as
+		# floor with STEP_NOSE_MARGIN to spare and set down again, on either engine. A slope stays steep and is
+		# refused; a nose that was already floor keeps the first spot if the second try finds nothing better.
+		var more: float = _nose_advance(down.get_normal(), into, cos_floor)
+		var t2: Transform3D = t
+		t2.origin += into * more
+		var down2: KinematicCollision3D = KinematicCollision3D.new()
+		if more > 0.0 and not test_move(t, into * more) and test_move(t2, Vector3.DOWN * max_h, down2) \
+				and down2.get_normal().y >= cos_floor and _step_surface(down2.get_collider()):
+			t = t2
+			down = down2
+		elif down.get_normal().y < cos_floor:
+			return Vector3.INF
 	var land: Vector3 = t.origin + down.get_travel()
 	if land.y - global_position.y < -0.02:
 		return Vector3.INF                          # (level is fine: a seam between two floor pieces that snagged the capsule)
 	return land
+
+
+## How much farther along `into` the capsule must go for an edge met ahead of its middle, under its round bottom,
+## to read as floor with STEP_NOSE_MARGIN to spare (T-291), or 0 when the contact is not an edge ahead (behind or
+## to the side, or already flat) or more than STEP_NOSE_MAX away. For a sphere of radius r on an edge the contact
+## normal's flat part is the middle's distance to the edge over r.
+func _nose_advance(n: Vector3, into: Vector3, cos_floor: float) -> float:
+	var flat: Vector3 = Vector3(n.x, 0.0, n.z)
+	if n.y <= 0.0 or flat.length_squared() < 0.0001 or flat.normalized().dot(into) > -0.7:
+		return 0.0
+	var want_y: float = minf(0.99, cos_floor + STEP_NOSE_MARGIN)
+	var more: float = _capsule.radius * (flat.length() / n.length() - sqrt(1.0 - want_y * want_y))
+	return more if more > 0.0 and more <= STEP_NOSE_MAX else 0.0
 
 
 ## Where a step down off the edge the feet just left would put them (at most max_h lower), or Vector3.INF. The
