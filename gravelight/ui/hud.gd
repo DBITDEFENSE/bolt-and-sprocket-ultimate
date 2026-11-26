@@ -363,7 +363,7 @@ func _process(delta: float) -> void:
 	_crosshair.fov = player.camera.fov if player.camera != null else 80.0
 	_crosshair.speed = Vector2(player.velocity.x, player.velocity.z).length()
 	_crosshair.target_alpha = 0.0 if (player.weapons.ads_t >= 0.5 or player.sprinting or player.mantling) else 1.0
-	_crosshair.visible = not player.downed
+	_crosshair.visible = not player.downed and not player.carry_sight   # T-278: the driven tank draws its own sight
 	_scope.visible = player.weapons.scoped() and not player.downed
 	# vignette: hurt + low health pulse
 	var hurt: float = 1.0 - player.health_fraction()
