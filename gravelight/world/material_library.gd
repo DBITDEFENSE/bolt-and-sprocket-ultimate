@@ -56,7 +56,11 @@ static func texture_path(key: String, map: String) -> String:
 	var e: Dictionary = entry(key)
 	if e.is_empty() or not MAPS.has(map):
 		return ""
-	return "%s%s/textures/%s_%s.png" % [TEX_ROOT, str(e.get("set", "")), str(e.get("id", "")), map]
+	# T-287: a set may be a full res:// folder (our own textures under assets/ours/textures/), else it is under TEX_ROOT
+	var set_dir: String = str(e.get("set", ""))
+	if not set_dir.begins_with("res://"):
+		set_dir = TEX_ROOT + set_dir
+	return "%s/textures/%s_%s.png" % [set_dir, str(e.get("id", "")), map]
 
 
 static func texture(key: String, map: String) -> Texture2D:

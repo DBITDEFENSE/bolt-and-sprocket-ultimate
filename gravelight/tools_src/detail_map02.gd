@@ -43,6 +43,12 @@ void fragment() {
 
 static var _drip_mat: ShaderMaterial = null
 
+## T-287: the UV-mapped plating materials (data/gravelight/materials.json) the U-boats' lofted sides and bottom wear
+## instead of the triplanar key type_vii is given, and where the boot-top falls in the topsides' v (the plating
+## texture's tile is 5.0 m of girth: four strakes, the salt and scum band at its foot).
+const PLATE_KEYS: Dictionary = {"m2_hull": "m2_hull_plate", "rust": "m2_hull_wreck_plate", "m2_hull_red": "m2_hull_red_plate"}
+const PLATE_BOOT_V: float = 5.0
+
 
 # ================================================================== lofting
 
@@ -56,14 +62,21 @@ static var _drip_mat: ShaderMaterial = null
 ## outside you saw through the near side to the inner face of the far one, and into whatever stood inside.
 ## A strip with walls facing both ways (the tower's outer and inner skin) is built as one strip in one order: the
 ## bigger outward area wins the vote and the inner skin faces in.
-static func strip(lines: Array, axis_c: Callable, flat: bool = false) -> ArrayMesh:
+## T-287: `uvs` (optional) holds one PackedVector2Array per section, parallel to `lines`: the strip then carries those
+## UVs and tangents (for a UV-mapped material such as the U-boats' plating); without it the mesh has neither, as
+## before (the triplanar library materials need none).
+static func strip(lines: Array, axis_c: Callable, flat: bool = false, uvs: Array = []) -> ArrayMesh:
 	var tris: PackedVector3Array = []
+	var tri_uv: PackedVector2Array = []
+	var with_uv: bool = uvs.size() == lines.size()
 	var vote: float = 0.0
 	for s: int in lines.size() - 1:
 		var a: PackedVector3Array = lines[s]
 		var b: PackedVector3Array = lines[s + 1]
+		var ua: PackedVector2Array = uvs[s] if with_uv else PackedVector2Array()
+		var ub: PackedVector2Array = uvs[s + 1] if with_uv else PackedVector2Array()
 		for i: int in a.size() - 1:
-			for t: Array in [[a[i], a[i + 1], b[i + 1]], [a[i], b[i + 1], b[i]]]:
+			for t: Array in [[a[i], a[i + 1], b[i + 1], 0, 1, 3], [a[i], b[i + 1], b[i], 0, 3, 2]]:
 				var p0: Vector3 = t[0]
 				var p1: Vector3 = t[1]
 				var p2: Vector3 = t[2]
@@ -73,15 +86,21 @@ static func strip(lines: Array, axis_c: Callable, flat: bool = false) -> ArrayMe
 				var c: Vector3 = (p0 + p1 + p2) / 3.0
 				vote += n.dot((c - (axis_c.call(c) as Vector3)).normalized())
 				tris.append_array([p0, p1, p2])
+				if with_uv:
+					var quad: Array = [ua[i], ua[i + 1], ub[i], ub[i + 1]]   # a_i, a_i+1, b_i, b_i+1
+					tri_uv.append_array([quad[t[3]], quad[t[4]], quad[t[5]]])
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	if not flat:
 		st.set_smooth_group(0)
 	for k: int in range(0, tris.size(), 3):
-		st.add_vertex(tris[k])
-		st.add_vertex(tris[k + 1] if vote >= 0.0 else tris[k + 2])
-		st.add_vertex(tris[k + 2] if vote >= 0.0 else tris[k + 1])
+		for j: int in ([0, 1, 2] if vote >= 0.0 else [0, 2, 1]):
+			if with_uv:
+				st.set_uv(tri_uv[k + j])
+			st.add_vertex(tris[k + j])
 	st.generate_normals()
+	if with_uv:
+		st.generate_tangents()
 	return st.commit()
 
 
@@ -184,29 +203,42 @@ static func type_vii(g: Node3D, length: float, boot: float, k_hull: String = "m2
 	var up_l: Array = []
 	var lo: Array = []
 	var deck: Array = []
+	# T-287: UVs for the plating (u = metres along the hull; v = girth down from the deck edge, the topsides'
+	# normalised so the boot-top is at PLATE_BOOT_V in every section, so the strakes taper toward the ends as real
+	# shell plating does; below the boot-top v is metres of girth under it, the same on both sides)
+	var uv_top: Array = []
+	var uv_lo: Array = []
 	for s: int in secs + 1:
 		var u: float = float(s) / float(secs)
 		u = u * u * (3.0 - 2.0 * u) * 0.35 + u * 0.65   # more sections at the bow and stern, where it curves
 		var z: float = u * length
 		var half: PackedVector3Array = vii_half(u, m, _hold(z, hold_to))
+		var gth: PackedFloat32Array = _girth(half)
 		var r: PackedVector3Array = []
 		var l: PackedVector3Array = []
+		var tuv: PackedVector2Array = []
 		for i: int in split + 1:
 			r.append(Vector3(half[i].x, half[i].y - 0.02, z))
 			l.append(Vector3(-half[i].x, half[i].y - 0.02, z))
+			tuv.append(Vector2(z, gth[i] / maxf(gth[split], 0.01) * PLATE_BOOT_V))
 		up_r.append(r)
 		up_l.append(l)
+		uv_top.append(tuv)
 		var b: PackedVector3Array = []
+		var buv: PackedVector2Array = []
 		for i2: int in range(split, m):
 			b.append(Vector3(half[i2].x, half[i2].y - 0.02, z))
+			buv.append(Vector2(z, gth[i2] - gth[split]))
 		for i3: int in range(m - 2, split - 1, -1):
 			b.append(Vector3(-half[i3].x, half[i3].y - 0.02, z))
+			buv.append(Vector2(z, gth[i3] - gth[split]))
 		lo.append(b)
+		uv_lo.append(buv)
 		deck.append(PackedVector3Array([Vector3(-half[0].x, -0.02, z), Vector3(half[0].x, -0.02, z)]))
 	var axis: Callable = func(p: Vector3) -> Vector3: return Vector3(0.0, minf(p.y, -2.0) if absf(p.x) < 0.3 else -2.0, p.z)
-	surface(g, "HullTop_R", strip(up_r, axis), k_hull)
-	surface(g, "HullTop_L", strip(up_l, axis), k_hull)
-	surface(g, "HullBottom", strip(lo, axis), k_red)
+	surface(g, "HullTop_R", strip(up_r, axis, false, uv_top), plate_key(k_hull))
+	surface(g, "HullTop_L", strip(up_l, axis, false, uv_top), plate_key(k_hull))
+	surface(g, "HullBottom", strip(lo, axis, false, uv_lo), plate_key(k_red))
 	var deck_up: Callable = func(p: Vector3) -> Vector3: return p - Vector3.UP
 	surface(g, "DeckCasing", strip(deck, deck_up, true), k_hull)
 	# bow and stern ends: the end section closed from the deck edge to the keel (the casing's bluff bow, the stern
@@ -290,6 +322,20 @@ static func _shoulder_x(half: PackedVector3Array, y: float) -> float:
 		if y <= a.y and y >= b.y:
 			return lerpf(a.x, b.x, (a.y - y) / maxf(a.y - b.y, 1e-6))
 	return half[4].x
+
+
+## T-287: the cumulative length along a half-section's points (deck edge first), metres.
+static func _girth(half: PackedVector3Array) -> PackedFloat32Array:
+	var out: PackedFloat32Array = [0.0]
+	for i: int in range(1, half.size()):
+		out.append(out[i - 1] + half[i].distance_to(half[i - 1]))
+	return out
+
+
+## T-287: the UV-mapped plating key for a hull key (the lofted sides and bottom carry UVs; the boxes, caps and the
+## casing keep the triplanar key they were given). An unknown key is its own.
+static func plate_key(k: String) -> String:
+	return str(PLATE_KEYS.get(k, k))
 
 
 ## How much the hull must hold the interior box at local z (1 up to `hold_to`, easing out over the next 5 m).
