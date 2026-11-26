@@ -36,6 +36,21 @@ static var repath_budget: int = 6
 ## them does what it did before, for the before / after from one build (perf_marks --flip=t281, --ab=t281_off; any
 ## other scene, a smoke: the environment variable CZ_T281_OFF=1).
 static var t281_opt: bool = OS.get_environment("CZ_T281_OFF") == ""
+## T-283 (phase 2, same notes): the second set, on by default; off (perf_marks --flip=t283, --ab=t283_off, or the
+## environment variable CZ_T283_OFF=1) every one does what it did before. Each part has its own switch for the A/B
+## of that part alone (perf_marks --flip=t283_skel / t283_rays / t283_lod):
+##   t283_skel: the skeleton runs its modifiers (foot IK, springs, look-at) and moves its bone attachments (the
+##     hitboxes, the gear) only in the frames the zombie's animation steps (Skeleton3D MANUAL + advance), not in
+##     every frame: a body animated every 2nd or 4th frame (far, or out of view) held its pose in the frames between
+##     but its skeleton still redid the IK and moved the 14 attachments and 18 hitbox areas to the same place;
+##   t283_rays: the foot rays of such a body are cast only in the tick before a frame that steps its animation (the
+##     only frames that read them now);
+##   t283_lod: the distance LOD the owner asked for: full rate within 12 m of the camera, half to 30 m, a quarter
+##     beyond (was 15 / 35; anim.json lod.t283).
+static var t283_opt: bool = OS.get_environment("CZ_T283_OFF") == ""
+static var t283_skel: bool = true
+static var t283_rays: bool = true
+static var t283_lod: bool = true
 
 var enemy_id: StringName = &"ganger"
 var state: State = State.INACTIVE
@@ -709,6 +724,8 @@ func _process(delta: float) -> void:
 		d2 = to.length_squared()
 		_out_of_view = out_of_view(to, vl_fwd, vl_cos)
 	var lod: Dictionary = _anim["lod"]
+	if t283_opt and t283_lod and lod.has("t283"):
+		lod = lod["t283"]
 	var half_m: float = float(lod["half_m"]) * anim_lod_scale
 	var full_m: float = float(lod["full_m"]) * anim_lod_scale
 	if smooth_motion or _smooth_off != Vector3.ZERO:
@@ -716,9 +733,49 @@ func _process(delta: float) -> void:
 	if _out_of_view:
 		out_frames += 1
 	var div: int = anim_div(d2, full_m, half_m, _out_of_view)
+	_anim_div = div
+	lod_frames[0 if div == 1 else (3 if _out_of_view else (1 if div == 2 else 2))] += 1
+	_skel_mode_sync()
 	if _anim_skip % div != 0:
 		return
 	_animate(delta * float(div))
+
+
+## T-283: how many frames went at each animation rate (all zombies, a run): full, half, a quarter by distance, a
+## quarter out of view. perf_marks prints them.
+static var lod_frames: PackedInt64Array = [0, 0, 0, 0]
+var _anim_div: int = 1   # the rate of the last frame (the foot rays of the next tick go by it)
+
+
+## T-283 (`t283_skel`): the skeleton's modifier pass runs when the animation steps (`_animate` calls
+## Skeleton3D.advance with the step's time) instead of in every frame. In a frame the animation skips, nothing in
+## the skeleton changes, so the IK, the springs, the look-at and the 14 bone attachments (the hitboxes with them)
+## stay as they were drawn in the last step: the pose on screen and the pose the hitboxes hold are the same, as
+## before. A ragdoll writes the bones itself every tick: the skeleton runs every frame then, as before.
+func _skel_mode_sync() -> void:
+	if _skel == null:
+		return
+	var want: Skeleton3D.ModifierCallbackModeProcess = Skeleton3D.MODIFIER_CALLBACK_MODE_PROCESS_MANUAL if (t283_opt and t283_skel and _ragdoll == null and _tree != null) else Skeleton3D.MODIFIER_CALLBACK_MODE_PROCESS_IDLE
+	if _skel.modifier_callback_mode_process != want:
+		_skel.modifier_callback_mode_process = want
+
+
+## T-283 (`t283_rays`): does the coming frame (or one before the next tick) step this body's animation? The foot rays
+## are read only by the skeleton's pass in such a frame now; a body at full rate always is.
+func _anim_steps_before_next_tick() -> bool:
+	if _anim_div <= 1 or not (t283_opt and t283_rays and t283_skel):
+		return true
+	return anim_steps_within(_anim_skip, _anim_div, maxi(1, ceili(Engine.get_frames_per_second() / float(Engine.physics_ticks_per_second))))
+
+
+## Pure: with the frame counter at `anim_skip` (the coming frame adds one) and one animation step every `div`-th frame,
+## does a step come within the next `horizon` frames (the frames before the next physics tick)?
+static func anim_steps_within(anim_skip: int, div: int, horizon: int) -> bool:
+	if div <= 1:
+		return true
+	var r: int = (anim_skip + 1) % div
+	var frames_to_step: int = 1 if r == 0 else div - r + 1
+	return frames_to_step <= horizon
 
 
 func _update_to_window(delta: float) -> void:
@@ -3789,6 +3846,8 @@ func _animate(dt: float) -> void:
 			_tree.set("parameters/SM/Attack/TimeSeek/seek_request", recorded_hit)
 			_tree.set("parameters/SM/Attack/TimeScale/scale", 1.0)
 	_tree.advance(dt)
+	if _skel.modifier_callback_mode_process == Skeleton3D.MODIFIER_CALLBACK_MODE_PROCESS_MANUAL:
+		_skel.advance(dt)   # T-283: the modifier pass of this step, with its time (see _skel_mode_sync)
 	var turn_time: float = _playback.get_current_play_position() if _playback.get_current_node() == &"Turn" else 0.0
 	_pivot.rotation.y = _turn_motion.advance(rotation.y, turn_time, dt, can_turn and _tree_state == "Turn")
 	if state == State.DEAD and _tree_state == "Death" and ZombieClips.visual_clip(_death_clip).begins_with("mco_"):
@@ -3872,7 +3931,10 @@ func _update_senses(delta: float) -> void:
 	# over a quarter of a second once it is in view again)
 	var ik_on: bool = d <= float(fi["range_m"]) and not _out_of_view and is_on_floor() and state in _IK_STATES and not is_crawler
 	_modifier.active = d <= float(fi["off_m"]) or _modifier.springs_active()
-	if ik_on:
+	if ik_on and not _anim_steps_before_next_tick():
+		# T-283: no animation step before the next tick reads them; the last hits stand, the weight eases as before
+		_modifier.ik_weight = move_toward(_modifier.ik_weight, 1.0, delta * 4.0)
+	elif ik_on:
 		foot_ray_ticks += 1
 		var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
 		for i: int in 2:

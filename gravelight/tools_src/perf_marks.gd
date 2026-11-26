@@ -67,6 +67,10 @@ extends Node
 ## counted) and reports the frame, the scripts and the two gaps for each side apart: an A/B from one map load whose
 ## two sides share the machine's load second by second. Names: `t281` (Zombie.t281_opt, this task's changes) and the
 ## diagnostic `z_no_zcollide`, `z_no_avoid`, `z_no_dead_areas`.
+## T-283 (phase 2): `--flip=t283` (Zombie.t283_opt, all of phase 2's zombie changes), `t283_skel`, `t283_rays`,
+## `t283_lod` (one part each), `--ab=t283_off` (the build without them); the diagnostic `z_no_areas` (every hitbox
+## area of the horde out of the physics space: what the 13 live ones cost). The report gains the frames at each
+## animation rate (`[t283] animation rate`).
 
 const MAP: String = "res://gravelight/maps/map00_crossroads/map00.tscn"
 const SPIKE_MS: float = 40.0
@@ -227,6 +231,8 @@ func _ready() -> void:
 			seed(int(a.substr(7)))
 	if "t281_off" in _ab:   # T-281: the horde-size optimisations off (the before, same build)
 		(load("res://gravelight/enemies/zombie.gd") as GDScript).set("t281_opt", false)
+	if "t283_off" in _ab:   # T-283: phase 2's zombie changes off (the before, same build)
+		(load("res://gravelight/enemies/zombie.gd") as GDScript).set("t283_opt", false)
 	if "--ab=t237_off" in OS.get_cmdline_user_args():   # T-237: the "before" side (the optimisations off, same build)
 		BotProf.opt = false
 		StreamWarm.enabled = false
@@ -343,7 +349,7 @@ func _process(delta: float) -> void:
 					_kill_step(delta)
 				if _flip != "" and _t > 9.0:
 					_flip_step()
-				if _census_done and ("z_no_zcollide" in _ab or "z_no_avoid" in _ab or "z_no_dead_areas" in _ab):
+				if _census_done and ("z_no_zcollide" in _ab or "z_no_avoid" in _ab or "z_no_dead_areas" in _ab or "z_no_areas" in _ab):
 					_ab_zombies()
 				if _t > 6.0 and (_kill_rate > 0.0 or _mix != ""):
 					_refill_t -= delta
@@ -1349,6 +1355,11 @@ func _report_t281() -> void:
 				if m != null:
 					mats[m.get_instance_id()] = true
 	var zsc: GDScript = load("res://gravelight/enemies/zombie.gd") as GDScript
+	if zsc.get("lod_frames") != null:
+		var lf: PackedInt64Array = zsc.get("lod_frames")
+		var lt: float = maxf(1.0, float(lf[0] + lf[1] + lf[2] + lf[3]))
+		print("[t283] animation rate (zombie-frames, whole run): full %d (%.0f %%), half %d (%.0f %%), a quarter by distance %d (%.0f %%), a quarter out of view %d (%.0f %%) (t283_opt %s)" % [
+			lf[0], 100.0 * lf[0] / lt, lf[1], 100.0 * lf[1] / lt, lf[2], 100.0 * lf[2] / lt, lf[3], 100.0 * lf[3] / lt, str(zsc.get("t283_opt"))])
 	if zsc.get("halt_skips") != null:
 		print("[t281] work counted (whole run): halted slides skipped at rest %d, feet whose two rays were kept %d (t281_opt %s)" % [int(zsc.get("halt_skips")), int(zsc.get("foot_ray_reuses")), str(zsc.get("t281_opt"))])
 	var rgs: GDScript = load("res://gravelight/enemies/zombie_ragdoll.gd") as GDScript
@@ -1374,6 +1385,12 @@ func _ab_zombies() -> void:
 			var ag: NavigationAgent3D = z.get("_agent") as NavigationAgent3D
 			if ag != null and ag.avoidance_enabled:
 				ag.avoidance_enabled = false
+		if "z_no_areas" in _ab:
+			if not _z_areas.has(z):
+				_z_areas[z] = z.find_children("*", "Area3D", true, false)
+			for c: Node in _z_areas[z]:
+				if (c as Area3D).process_mode != Node.PROCESS_MODE_DISABLED:
+					(c as Area3D).process_mode = Node.PROCESS_MODE_DISABLED
 		if "z_no_dead_areas" in _ab:
 			if not _z_areas.has(z):
 				_z_areas[z] = z.find_children("*", "Area3D", true, false)
@@ -1397,6 +1414,26 @@ func _flip_apply() -> void:
 	match _flip:
 		"t281":
 			Zombie.t281_opt = _flip_on
+		"t283":
+			Zombie.t283_opt = _flip_on
+		"t283_skel":
+			Zombie.t283_skel = _flip_on
+		"t283_rays":
+			Zombie.t283_rays = _flip_on
+		"t283_lod":
+			Zombie.t283_lod = _flip_on
+		"z_no_areas":
+			if _flip_on:
+				if not _ab.has(_flip):
+					_ab.append(_flip)
+			else:
+				if _ab.has(_flip):
+					_ab.remove_at(_ab.find(_flip))
+				for z: Node in _z_areas.keys():   # back as built: the zombie's own layers decide (the dead boxes stay out)
+					if is_instance_valid(z):
+						for c: Node in _z_areas[z]:
+							var ar: Area3D = c as Area3D
+							ar.process_mode = Node.PROCESS_MODE_DISABLED if (ar.collision_layer == 0 and Zombie.t281_opt) else Node.PROCESS_MODE_INHERIT
 		"z_no_zcollide", "z_no_avoid", "z_no_dead_areas":
 			if _flip_on:
 				if not _ab.has(_flip):
@@ -1426,7 +1463,12 @@ func _flip_add(key: String, us: int) -> void:
 func _report_flip() -> void:
 	if _flip == "":
 		return
-	print("[flip] %s: %s; ms" % [_flip, "on = as built (Zombie.t281_opt true), off = the T-281 changes off" if _flip == "t281" else "on = the diagnostic applied, off = as built"])
+	var what: String = "on = the diagnostic applied, off = as built"
+	if _flip == "t281":
+		what = "on = as built (Zombie.t281_opt true), off = the T-281 changes off"
+	elif _flip.begins_with("t283"):
+		what = "on = as built (Zombie.%s true), off = that T-283 part off" % ("t283_opt" if _flip == "t283" else _flip)
+	print("[flip] %s: %s; ms" % [_flip, what])
 	print("[flip]   columns: mean / p50 / p95 / p99 / 1%% worst (the mean of the slowest hundredth) / max, then the samples")
 	for key: String in ["frame", "scripts per physics tick", "scripts per process frame", "zombie.gd phys", "zombie.gd proc", "bot_brain.gd phys", "after physics scripts", "after process scripts"]:
 		var parts: PackedStringArray = []
