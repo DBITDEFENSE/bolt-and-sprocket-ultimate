@@ -202,7 +202,7 @@ func _shot(sh: Dictionary) -> void:
 	if not bool(sh.get("keep", false)) and _map.director != null:
 		RoundManager.stop()
 		_map.director.kill_all(true)
-	if mode == "eye" and _p.camera != null:
+	if (mode == "eye" or mode == "keep") and _p.camera != null:
 		_p.camera.make_current()   # (a horde_cam in pre spawns ahead of this eye)
 	if mode == "free" and not sh.has("anchor") and not sh.has("follow"):
 		_cam.fov = float(sh.get("fov", 55.0))
@@ -642,6 +642,8 @@ func _ops(ops: Variant) -> void:
 				print("[trailer] zip lines: %s" % ", ".join(names))
 				if zl != null:
 					zl.call("ride", _p)
+					await _frames(3)
+					print("[trailer] zip %s: riding %s" % [str(zl.name), str(zl.call("is_riding", _p))])
 				else:
 					print("[trailer] zip: no zip line %s" % op[1])
 			"bots_to":
