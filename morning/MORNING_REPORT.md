@@ -34,10 +34,16 @@ smoke tests pass on every map with the new physics engine.
   breathing up close, a death gurgle, and horde moments (fog thickens, lamps flicker, a swell of voices).
 - No change to speed, damage or AI. Off switch: `CZ_T284_OFF=1`.
 
-## Still running
-- **Trailers (T-285):** a Higgsfield teaser (slow dread, budget 550 of 964 credits) and a gameplay trailer, to
-  `build/trailers/`.
-- **Letzte Fahrt quest check (T-286):** its smoke test times out on master; finding out whether players are affected.
-- **U-boat plating (T-287):** the hull paint shows vertical stripes; a proper plated-steel look.
+## 7. Also done (2026-11-26)
+- **Trailers (T-285):** `build/trailers/teaser_1080p.mp4` (67 s, slow dread, mostly Higgsfield footage made in the game's
+  places) and `gameplay_1080p.mp4` (86 s, all real gameplay). 443 credits spent, 521 left. Not watched with sound yet.
+- **Launcher 1.2.0 (T-289):** the "game doesn't start" was most likely its window opening behind other programs; the
+  launcher now waits for it, logs every start, explains an early exit (safe mode / repair), never starts it twice, and
+  plays the trailers in its news. **Install it by hand:** `build\launcher\ClaudeZombiesLauncher-Setup-1.2.0.exe`.
+- **Grenade throw (T-288):** pin, draw back, cook pose with a tremor, release, follow-through; same timing as before.
+- **U-boat plating (T-287):** riveted, seamed, rust-streaked steel instead of stripes.
+- **Bots on Totenhafen (T-286):** bot squads could not buy the signal tower door since Nov 15 (players were fine); fixed.
+- **Jolt physics back (T-291):** it had been rolled back because players could not climb stairs under it; fixed for
+  both engines (stairs are smoother than before on either), Jolt back on.
 
-Details: `docs/DECISIONS.md` T-278 to T-284. Your list: `morning/NEEDS_DEVIN.md`.
+Nothing is running. Details: `docs/DECISIONS.md` T-278 to T-291. Your list: `morning/NEEDS_DEVIN.md`.
