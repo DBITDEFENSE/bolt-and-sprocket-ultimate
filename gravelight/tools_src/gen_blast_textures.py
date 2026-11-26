@@ -67,20 +67,20 @@ def puff(rng, n=128):
     u = (x + 0.5) / n * 2 - 1
     v = (y + 0.5) / n * 2 - 1
     dens = np.zeros((n, n))
-    lobes = [(0.0, 0.04, 0.6)]
-    for _ in range(7):
+    lobes = [(0.0, 0.02, 0.6)]
+    for _ in range(9):
         a = rng.uniform(0, 2 * np.pi)
-        r = rng.uniform(0.2, 0.45)
-        lobes.append((np.cos(a) * r, np.sin(a) * r * 0.9 - 0.04, rng.uniform(0.3, 0.46)))
+        r = rng.uniform(0.2, 0.5)
+        lobes.append((np.cos(a) * r, np.sin(a) * r * 0.9 - 0.03, rng.uniform(0.28, 0.45)))
     for cx, cy, rad in lobes:
-        d = np.sqrt((u - cx) ** 2 + (v - cy) ** 2) / rad
-        dens = np.maximum(dens, np.clip(1 - d * d, 0, 1) ** 0.7)
+        d2 = ((u - cx) ** 2 + (v - cy) ** 2) / (rad * rad)
+        dens = dens + np.exp(-d2 * 1.6) * 0.5            # soft round lobes that add up into billows
     big = fbm(rng, n, 4, 5)
     fine = fbm(rng, n, 16, 3)
-    dens = dens * (0.55 + 0.9 * big) + (fine - 0.5) * 0.3
+    dens = dens * (0.35 + 1.3 * big) * (0.9 + 0.2 * fine)
     r = np.sqrt(u * u + v * v)
-    dens *= smoothstep(1.0, 0.62, r)          # nothing reaches the cell's edge
-    alpha = smoothstep(0.05, 0.95, dens) ** 1.2
+    dens *= smoothstep(1.0, 0.5, r)           # nothing reaches the cell's edge
+    alpha = 1.0 - np.exp(-dens * 2.6)         # thin at the fringe, dense in the billows
     # lit from above-left: a normal from the slope of the blurred density
     h = blur(alpha, 10)
     gy, gx = np.gradient(h)
@@ -89,7 +89,7 @@ def puff(rng, n=128):
     lx, ly, lz = -0.45, -0.75, 0.5
     ll = np.sqrt(lx * lx + ly * ly + lz * lz)
     lit = np.clip((nx * lx + ny * ly + nz * lz) / (ln * ll), 0, 1)
-    lit = (0.3 + 0.7 * lit) * (0.7 + 0.45 * (big - 0.5) + 0.3 * (fine - 0.5))
+    lit = (0.3 + 0.7 * lit) * (0.72 + 0.5 * (big - 0.5) + 0.1 * (fine - 0.5))
     heat = np.clip(alpha ** 1.6 * (0.55 + 0.9 * (fbm(rng, n, 8, 4) - 0.35)), 0, 1)
     heat *= smoothstep(0.95, 0.3, r)
     return np.stack([lit, heat, fine, alpha], -1)

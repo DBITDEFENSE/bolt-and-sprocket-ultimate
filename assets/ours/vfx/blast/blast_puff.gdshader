@@ -32,10 +32,10 @@ void fragment() {
 	vec4 t = texture(puff_tex, UV);
 	float hot = heat * (1.0 - smoothstep(burn * 0.35, burn, v_age));          // 1 while fire -> 0 as smoke
 	float h = clamp(t.g * (0.6 + 0.6 * hot) - (1.0 - hot) * 0.5, 0.0, 1.0) * hot;
-	vec3 fire = mix(vec3(0.85, 0.22, 0.03), vec3(1.0, 0.72, 0.32), smoothstep(0.25, 0.85, h));
-	fire = mix(fire, vec3(1.0, 0.93, 0.78), smoothstep(0.8, 1.0, h * hot));
+	vec3 fire = mix(vec3(0.75, 0.16, 0.02), vec3(1.0, 0.55, 0.16), smoothstep(0.2, 0.75, h));
+	fire = mix(fire, vec3(1.0, 0.82, 0.5), smoothstep(0.85, 1.0, h * hot));
 	vec3 smoke = tint.rgb * (0.45 + 0.75 * t.r);
-	ALBEDO = mix(smoke, vec3(0.04, 0.025, 0.015), hot * 0.7);                // a burning puff is charred under its glow
-	EMISSION = fire * h * (2.5 + 9.0 * hot);
+	ALBEDO = mix(smoke, vec3(0.05, 0.03, 0.02), hot * 0.6);                  // a burning puff is charred under its glow
+	EMISSION = fire * h * (1.2 + 4.5 * hot);
 	ALPHA = clamp(t.a * v_alpha * tint.a * (1.0 + 0.3 * hot), 0.0, 1.0);
 }

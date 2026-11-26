@@ -10,7 +10,7 @@ cd "$(dirname "$0")/.." || exit 2
 TAG="${1:-after}"; [ $# -ge 1 ] && shift
 OUT="docs/captures/t280/$TAG"
 mkdir -p "$OUT"
-to_wsl() { printf '%s' "$1" | sed -e 's#^/\([A-Za-z]\)/#/mnt/\1/#' -e 's#^\([A-Za-z]\):#/mnt/\1#' -e 's#\#/#g'; }
+to_wsl() { printf '%s' "$1" | sed -e 's#^/\([A-Za-z]\)/#/mnt/\1/#' -e 's#^\([A-Za-z]\):#/mnt/\1#' -e 's#\\#/#g'; }
 WDIR="$(to_wsl "$(pwd)")"
 BIN="${WSL_GODOT:-}"
 if [ -z "$BIN" ]; then

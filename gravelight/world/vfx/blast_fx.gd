@@ -35,11 +35,13 @@ const GROUND_PARTS: PackedStringArray = ["Spray", "Skirt", "Debris"]
 ## Surface (Effects.surface_of) -> the dirt kind thrown up (Effects.dirt_burst's kinds).
 const DIRT_OF: Dictionary = {"snow": "snow", "earth": "earth", "hay": "earth", "mud": "earth", "grass": "earth",
 	"cloth": "earth", "wood": "stone", "stone": "stone", "metal": "stone", "plaster": "stone", "glass": "stone"}
+## The smoke's colour (TNT smoke: a dark grey-brown, light enough for the moon and the lamps to show it).
+const SMOKE: Color = Color(0.21, 0.195, 0.18, 1.0)
 ## The puff emitters' heat (the shader's instance uniform; fixed per emitter).
 const HEAT: Dictionary = {"Fire": 1.0, "Smoke": 0.35, "Spray": 0.0, "Skirt": 0.0}
 ## Dirt kind -> [thrown dirt colour, dust colour].
 const DUST: Dictionary = {
-	"snow": [Color(0.86, 0.89, 0.94), Color(0.82, 0.85, 0.9, 0.55)],
+	"snow": [Color(0.62, 0.62, 0.62), Color(0.78, 0.8, 0.84, 0.6)],   # the snow thrown up is dirtied by the earth under it
 	"earth": [Color(0.2, 0.15, 0.1), Color(0.42, 0.36, 0.29, 0.6)],
 	"stone": [Color(0.4, 0.38, 0.35), Color(0.55, 0.53, 0.5, 0.55)],
 }
@@ -142,7 +144,7 @@ func setup(c: Dictionary, dirt_meshes: Dictionary) -> void:
 					p.draw_pass_1 = puff_mesh
 			# every instance uniform this emitter will ever take, set now (the first set of a key allocates)
 			if p.draw_pass_1 == puff_mesh:   # heat never changes per emitter; tint and burn are set per blast when they differ
-				p.set_instance_shader_parameter(&"tint", Color(0.11, 0.1, 0.09, 1.0) if nm == "Fire" else Color(0.13, 0.12, 0.11, 1.0))
+				p.set_instance_shader_parameter(&"tint", Color(0.16, 0.145, 0.13, 1.0) if nm == "Fire" else SMOKE)
 				p.set_instance_shader_parameter(&"heat", float(HEAT.get(nm, 0.0)))
 				p.set_instance_shader_parameter(&"burn", 0.06 if nm == "Smoke" else 0.2)
 			p.hide()
@@ -250,13 +252,13 @@ static func _base(spread: float, vmin: float, vmax: float, gravity: Vector3) -> 
 ## The fireball: puffs flung out in every direction that stop short (heavy damping), swell, rise a little (hot air)
 ## and turn from fire to dark smoke (the puff shader, by age).
 static func _pm_fire() -> ParticleProcessMaterial:
-	var m: ParticleProcessMaterial = _base(180.0, 2.5, 7.5, Vector3(0, 1.6, 0))
-	m.emission_sphere_radius = 0.45
-	m.damping_min = 5.0
-	m.damping_max = 9.0
-	m.scale_min = 1.3
-	m.scale_max = 2.4
-	m.scale_curve = _curve([Vector2(0.0, 0.35), Vector2(0.12, 1.0), Vector2(1.0, 1.5)])
+	var m: ParticleProcessMaterial = _base(180.0, 1.5, 6.0, Vector3(0, 1.8, 0))
+	m.emission_sphere_radius = 0.7
+	m.damping_min = 3.5
+	m.damping_max = 6.0
+	m.scale_min = 1.6
+	m.scale_max = 3.0
+	m.scale_curve = _curve([Vector2(0.0, 0.45), Vector2(0.1, 1.0), Vector2(1.0, 1.7)])
 	m.angle_min = -180.0
 	m.angle_max = 180.0
 	m.angular_velocity_min = -25.0
@@ -270,30 +272,30 @@ static func _pm_fire() -> ParticleProcessMaterial:
 ## The column: dark smoke pushed up out of the fireball over its first half second, rising on its own heat, swelling
 ## and drifting downwind (the shared gravity's sideways part) as it thins out over a few seconds.
 static func _pm_smoke() -> ParticleProcessMaterial:
-	var m: ParticleProcessMaterial = _base(24.0, 1.5, 4.2, Vector3(0.35, 0.75, 0.16))
-	m.emission_sphere_radius = 0.7
-	m.damping_min = 0.7
-	m.damping_max = 1.4
-	m.scale_min = 1.7
-	m.scale_max = 3.0
-	m.scale_curve = _curve([Vector2(0.0, 0.4), Vector2(0.25, 1.0), Vector2(1.0, 1.9)])
+	var m: ParticleProcessMaterial = _base(18.0, 2.0, 6.0, Vector3(0.3, 0.7, 0.12))
+	m.emission_sphere_radius = 0.9
+	m.damping_min = 0.9
+	m.damping_max = 1.6
+	m.scale_min = 2.0
+	m.scale_max = 3.6
+	m.scale_curve = _curve([Vector2(0.0, 0.45), Vector2(0.2, 1.0), Vector2(1.0, 2.2)])
 	m.angle_min = -180.0
 	m.angle_max = 180.0
 	m.angular_velocity_min = -12.0
 	m.angular_velocity_max = 12.0
 	m.anim_offset_max = 1.0
 	m.lifetime_randomness = 0.3
-	m.color_ramp = _ramp([[0.0, Color(1, 1, 1, 0.0)], [0.08, Color(1, 1, 1, 0.8)], [0.55, Color(1, 1, 1, 0.5)], [1.0, Color(1, 1, 1, 0.0)]])
+	m.color_ramp = _ramp([[0.0, Color(1, 1, 1, 0.0)], [0.06, Color(1, 1, 1, 0.9)], [0.5, Color(1, 1, 1, 0.72)], [0.85, Color(1, 1, 1, 0.35)], [1.0, Color(1, 1, 1, 0.0)]])
 	return m
 
 
 ## The plume: the ground under the blast thrown straight up in a narrow cone, falling back as it spreads.
 static func _pm_spray() -> ParticleProcessMaterial:
-	var m: ParticleProcessMaterial = _base(26.0, 6.0, 13.0, Vector3(0, -9.8, 0))
+	var m: ParticleProcessMaterial = _base(22.0, 6.0, 15.0, Vector3(0, -9.8, 0))
 	m.damping_min = 0.4
 	m.damping_max = 1.2
-	m.scale_min = 0.7
-	m.scale_max = 1.5
+	m.scale_min = 0.9
+	m.scale_max = 1.9
 	m.scale_curve = _curve([Vector2(0.0, 0.5), Vector2(0.4, 1.1), Vector2(1.0, 1.6)])
 	m.angle_min = -180.0
 	m.angle_max = 180.0
@@ -329,8 +331,8 @@ static func _pm_skirt() -> ParticleProcessMaterial:
 ## Chunks: clods, stones or snow lumps (the dirt meshes) flung out in arcs, tumbling, gone as they come down.
 static func _pm_debris() -> ParticleProcessMaterial:
 	var m: ParticleProcessMaterial = _base(58.0, 5.0, 14.0, Vector3(0, -14.0, 0))
-	m.scale_min = 2.2
-	m.scale_max = 6.0
+	m.scale_min = 1.2
+	m.scale_max = 3.4
 	m.scale_curve = _curve([Vector2(0.0, 1.0), Vector2(0.8, 1.0), Vector2(1.0, 0.0)])
 	m.particle_flag_rotate_y = true
 	m.angle_min = -180.0
@@ -460,13 +462,13 @@ func blast(pos: Vector3, radius: float, kind: String, quality: Dictionary, parti
 				"Fire":
 					p.set_instance_shader_parameter(&"burn", burn)
 				"Smoke":
-					p.set_instance_shader_parameter(&"tint", Color(0.13, 0.12, 0.11, 1.0).lerp(cols[1] as Color, 0.25 if ground else 0.0))
+					p.set_instance_shader_parameter(&"tint", SMOKE.lerp(cols[1] as Color, 0.2 if ground else 0.0))
 				"Spray":
 					p.set_instance_shader_parameter(&"tint", cols[0] as Color)
 				"Skirt":
 					p.set_instance_shader_parameter(&"tint", cols[1] as Color)
 				"Debris":
-					var mesh: Mesh = _dirt_mesh.get(dirt, _dirt_mesh.get("earth"))
+					var mesh: Mesh = _dirt_mesh.get("stone" if dirt == "stone" else "earth")   # under snow lies earth
 					if p.draw_pass_1 != mesh:
 						p.draw_pass_1 = mesh
 		if GROUND_PARTS.has(nm):
