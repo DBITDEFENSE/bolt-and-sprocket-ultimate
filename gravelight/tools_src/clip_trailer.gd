@@ -17,7 +17,7 @@ extends Node
 ##   hud: "off" (no HUD, viewmodel kept), "none" (no HUD, no viewmodel), "on" (the HUD without its debug lines)
 ##   events: [[t, op], ...] during the shot.
 ## Ops (own): clear | horde:x,y,z:n | stand:x,y,z:yaw[:n] (still figures) | blast:x,y,z:r[:kind] | launch:t |
-##   player:x,y,z[:yaw] | fire_on | fire_off | aim:x,y,z | tank_in | tank_drive:steer,throttle | tank_fire |
+##   player:x,y,z[:yaw] | fire_on | fire_off | aim:x,y,z | tank_in | tank_out | tank_drive:steer,throttle | tank_fire |
 ##   tank_dist:m | horse_mount | horse:steer,throttle,sprint | zip:<name> | bots_to:x,y,z | god:true/false |
 ##   lamp:x,y,z:energy:range (a warm omni) ; anything else goes to CaptureDo (power, open, tear, callv, boss, ...).
 
@@ -609,6 +609,15 @@ func _ops(ops: Variant) -> void:
 					print("[trailer] tank: seated %s" % str(tk.seat == ShermanTank.Seat.SEATED))
 				else:
 					print("[trailer] tank_in: no ShermanEvent")
+			"tank_out":
+				# T-290: the Sherman lets the player go (a driver is carried: while in it the horse, a ladder and a zip
+				# line all refuse them, and a "player:" move is undone by the hatch every physics frame)
+				var evo: ShermanEvent = _map.get_node_or_null("ShermanEvent") as ShermanEvent
+				if evo != null and evo.tank != null and is_instance_valid(evo.tank):
+					evo.tank.input_override = null
+					evo.tank.put_out()
+					for i6: int in 4:
+						await get_tree().physics_frame
 			"tank_drive":
 				var ev2: ShermanEvent = _map.get_node_or_null("ShermanEvent") as ShermanEvent
 				if ev2 != null and ev2.tank != null:
@@ -622,6 +631,8 @@ func _ops(ops: Variant) -> void:
 			"horse_mount":
 				var h: Node = CaptureDo.find(_map, "YardHorse")
 				if h != null and h.has_method("ride"):
+					if _p.carry != null and _p.carry != h:
+						print("[trailer] horse_mount: the player is still carried by %s (add tank_out)" % str(_p.carry))
 					h.call("ride", _p)   # the capture hook: mounts (the climb takes a few seconds), then trots on
 					await _skip(3.0)
 					print("[trailer] horse: rider %s, at %s" % [str(h.get("rider")), str((h as Node3D).global_position)])
