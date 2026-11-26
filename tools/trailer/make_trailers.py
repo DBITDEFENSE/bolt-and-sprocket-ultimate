@@ -53,7 +53,7 @@ def make_cards():
     # gameplay
     for key, txt in [("g_hold", "HOLD THE INN"), ("g_arsenal", "BRING EVERYTHING"), ("g_steel", "TAKE THE STEEL"),
                      ("g_launch", "WATCH THE SKY"), ("g_ride", "RIDE"), ("g_squad", "NEVER ALONE"),
-                     ("g_fronts", "FOUR FRONTS. ONE NIGHT THAT NEVER ENDS.")]:
+                     ("g_fronts", "FOUR FRONTS.|ONE NIGHT THAT NEVER ENDS.")]:
         c[key] = os.path.join(CARDS, key + ".png")
         cards.text_card(c[key], txt, 92 if len(txt) < 20 else 64, bg=(0, 0, 0, 0), y=0.80, spacing=14, face="stencil")
     c["g_title"] = os.path.join(CARDS, "g_title.png")
@@ -167,6 +167,10 @@ def build_gameplay():
     for s in seg:
         if "card" in s and s["card"] is None:
             s["card"] = os.path.join(CARDS, "black.png")
+        if "src" in s and not os.path.exists(s["src"]):
+            print("gameplay: missing %s (black stands in)" % s["src"])
+            s["card"] = os.path.join(CARDS, "black.png")
+            s["missing"] = s.pop("src")
     cues, dur = gameplay_edl.cues(seg)
     wav = os.path.join(B, "gameplay_score.wav")
     TA.write_wav(wav, TA.gameplay(cues, dur, gameplay_edl.BPM))

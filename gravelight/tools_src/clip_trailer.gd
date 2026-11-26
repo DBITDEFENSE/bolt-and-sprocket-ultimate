@@ -202,6 +202,8 @@ func _shot(sh: Dictionary) -> void:
 	if not bool(sh.get("keep", false)) and _map.director != null:
 		RoundManager.stop()
 		_map.director.kill_all(true)
+	if mode == "eye" and _p.camera != null:
+		_p.camera.make_current()   # (a horde_cam in pre spawns ahead of this eye)
 	if mode == "free" and not sh.has("anchor") and not sh.has("follow"):
 		_cam.fov = float(sh.get("fov", 55.0))
 		_place_free(sh, 0.0)
@@ -619,9 +621,10 @@ func _ops(ops: Variant) -> void:
 					ev3.tank.fire_wanted = true
 			"horse_mount":
 				var h: Node = CaptureDo.find(_map, "YardHorse")
-				if h != null and h.has_method("on_use"):
-					h.call("on_use", _p)
-					await _frames(30)
+				if h != null and h.has_method("ride"):
+					h.call("ride", _p)   # the capture hook: mounts (the climb takes a few seconds), then trots on
+					await _skip(3.0)
+					print("[trailer] horse: rider %s, at %s" % [str(h.get("rider")), str((h as Node3D).global_position)])
 				else:
 					print("[trailer] horse_mount: no YardHorse")
 			"horse":
