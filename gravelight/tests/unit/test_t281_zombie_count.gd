@@ -170,6 +170,7 @@ func test_a_stopped_rig_is_kept_and_starts_again_on_another_skeleton() -> void:
 	if not ZombieRagdoll.enabled():
 		pending("ragdolls disabled")
 		return
+	ZombieRagdoll._prune()   # (rigs an earlier test freed: casting a freed object errors)
 	for e: Array in ZombieRagdoll._live:
 		ZombieRagdoll.freeze(e[0] as PhysicalBoneSimulator3D)
 	ZombieRagdoll.clear_parked()
