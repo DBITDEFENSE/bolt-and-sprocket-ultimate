@@ -550,8 +550,8 @@
       "res": "1k",
       "orm_res": "1k",
       "height": false,
-      "key": "m2_hull",
-      "note": "Totenhafen: U-1047 and the cutter hull plating, the curtain (T-145)",
+      "key": "m2_curtain",
+      "note": "Totenhafen: the curtain, the blast doors, U-1047's pressure hull inside (T-145; the outer hulls moved to our own plating in T-287)",
       "tile_m": 2.0
     },
     {

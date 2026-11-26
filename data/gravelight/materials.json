@@ -1,5 +1,5 @@
 {
-  "_doc": "The CC0 material library (UPDATE_05 section 1, T-088; docs/ART_BIBLE.md section 3). MaterialLibrary.get_mat(key) builds one shared ShaderMaterial (assets/materials/shaders/surface_pbr.gdshader) per key from `library` and caches it. set = assets/third_party/<set>/textures/<id>_{albedo,normal,orm[,height]}.png; tile_m = metres one tile covers (uv_scale = 1 / tile_m, per axis when `tile_xyz` is given); tint multiplies the albedo; rough = [min, max] clamp on the ORM's roughness; grime / wetness / frost are the shared wear parameters (0..1); frost_height = world y the frost starts above (-1000 = everywhere); triplanar false = the mesh's own UVs (props). `generator` maps the procedural Mats keys (gravelight/world/materials.gd, what gen_map0N.gd and Props call) to library keys: Mats.get_mat() hands out the library material for a key in `enabled` while use_library is true, so the environment builder switches Map 0 over one key at a time by adding to `enabled` and re-running gen_map00. Note for consumers that cast Mats.get_mat() to StandardMaterial3D (landscape.gd reads the snow's albedo_texture): a library material is a ShaderMaterial; read MaterialLibrary.texture(key, 'albedo') instead. UPDATE 19 (T-252): macro_var / macro_scale (a slow world-space brightness drift, on every triplanar surface; default 0.18 over 7 m), detile (0..1: a second, 2.7x larger sample blended in patches and with distance, for unstructured ground and render; never on coursed stone, brick or boards) and sparkle (snow glints a light sets off) are surface_pbr's variation uniforms; MaterialLibrary.build writes them and LookMaterials.apply_library (MapRoot._ready) gives them to a scene baked before they existed (by the material's lib_<key> name, else `by_texture`). `live`: true on a key whose set or look changed after the scenes were baked: its whole entry, textures included, is written to the baked material at load, so the map needs no regeneration. A tint may exceed 1 (asphalt_snow is a grey photograph).",
+  "_doc": "The CC0 material library (UPDATE_05 section 1, T-088; docs/ART_BIBLE.md section 3). MaterialLibrary.get_mat(key) builds one shared ShaderMaterial (assets/materials/shaders/surface_pbr.gdshader) per key from `library` and caches it. set = assets/third_party/<set>/textures/<id>_{albedo,normal,orm[,height]}.png (a set starting with res:// is that folder: our own textures under assets/ours/textures/, T-287); tile_m = metres one tile covers (uv_scale = 1 / tile_m, per axis when `tile_xyz` is given); tint multiplies the albedo; rough = [min, max] clamp on the ORM's roughness; grime / wetness / frost are the shared wear parameters (0..1); frost_height = world y the frost starts above (-1000 = everywhere); triplanar false = the mesh's own UVs (props). `generator` maps the procedural Mats keys (gravelight/world/materials.gd, what gen_map0N.gd and Props call) to library keys: Mats.get_mat() hands out the library material for a key in `enabled` while use_library is true, so the environment builder switches Map 0 over one key at a time by adding to `enabled` and re-running gen_map00. Note for consumers that cast Mats.get_mat() to StandardMaterial3D (landscape.gd reads the snow's albedo_texture): a library material is a ShaderMaterial; read MaterialLibrary.texture(key, 'albedo') instead. UPDATE 19 (T-252): macro_var / macro_scale (a slow world-space brightness drift, on every triplanar surface; default 0.18 over 7 m), detile (0..1: a second, 2.7x larger sample blended in patches and with distance, for unstructured ground and render; never on coursed stone, brick or boards) and sparkle (snow glints a light sets off) are surface_pbr's variation uniforms; MaterialLibrary.build writes them and LookMaterials.apply_library (MapRoot._ready) gives them to a scene baked before they existed (by the material's lib_<key> name, else `by_texture`). `live`: true on a key whose set or look changed after the scenes were baked: its whole entry, textures included, is written to the baked material at load, so the map needs no regeneration. A tint may exceed 1 (asphalt_snow is a grey photograph).",
   "shader": "res://assets/materials/shaders/surface_pbr.gdshader",
   "defaults": {
     "tint": [
@@ -702,38 +702,121 @@
       "note": "Totenhafen: tread plate: the boat's decks, the switch dais, the crane bay (T-145)"
     },
     "m2_hull": {
-      "set": "polyhaven/rusty-painted-metal",
-      "id": "rusty_painted_metal",
-      "tile_m": 2.2,
-      "tint": [
-        0.2,
-        0.21,
-        0.23
+      "set": "res://assets/ours/textures/steel_plating",
+      "id": "steel_plating",
+      "tile_m": 2.9,
+      "tile_xyz": [
+        2.9,
+        2.5,
+        2.9
       ],
-      "rough": [
-        0.35,
-        0.85
-      ],
-      "grime": 0.35,
-      "wetness": 0.2,
-      "note": "Totenhafen: U-1047's grey-black plating with rust weeping down it, the cutter's topsides (T-145)"
-    },
-    "m2_hull_red": {
-      "set": "polyhaven/rusty-painted-metal",
-      "id": "rusty_painted_metal",
-      "tile_m": 2.2,
       "tint": [
-        0.62,
-        0.36,
-        0.3
+        1.0,
+        1.0,
+        1.0
       ],
       "rough": [
         0.4,
-        0.9
+        0.95
+      ],
+      "grime": 0.35,
+      "wetness": 0.2,
+      "live": true,
+      "note": "Totenhafen: painted steel plates with horizontal seams, rivets and rust runs (triplanar): the conning towers, the casing, planes, rudders, guard rails, the patrol boat's topsides. T-287: was rusty_painted_metal, a corrugated container wall whose ribs read as vertical stripes"
+    },
+    "m2_hull_red": {
+      "set": "res://assets/ours/textures/red_lead_plating",
+      "id": "red_lead_plating",
+      "tile_m": 2.9,
+      "tile_xyz": [
+        2.9,
+        2.5,
+        2.9
+      ],
+      "tint": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "rough": [
+        0.4,
+        0.95
       ],
       "grime": 0.4,
       "wetness": 0.3,
-      "note": "Totenhafen: the red-lead antifouling below the boot-top (T-145)"
+      "albedo_saturation": 0.75,
+      "live": true,
+      "note": "Totenhafen: the red-lead antifouling below the boot-top (triplanar: the patrol boat, the U-boats' end caps; T-145, T-287)"
+    },
+    "m2_hull_plate": {
+      "set": "res://assets/ours/textures/uboat_plating",
+      "id": "uboat_plating",
+      "tile_m": 5.8,
+      "tile_xyz": [
+        5.8,
+        5.0,
+        1.0
+      ],
+      "triplanar": false,
+      "tint": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "rough": [
+        0.36,
+        0.95
+      ],
+      "grime": 0.35,
+      "wetness": 0.2,
+      "note": "T-287: U-1047's topsides, UV-mapped by DetailMap02.type_vii (u = metres along the hull, v = girth from the deck edge normalised so the boot-top is at 5.0): four strakes, staggered butts, rivet rows, rust from the seams and the free-flooding slots, salt and scum over the boot-top"
+    },
+    "m2_hull_wreck_plate": {
+      "set": "res://assets/ours/textures/uboat_plating_wreck",
+      "id": "uboat_plating_wreck",
+      "tile_m": 5.8,
+      "tile_xyz": [
+        5.8,
+        5.0,
+        1.0
+      ],
+      "triplanar": false,
+      "tint": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "rough": [
+        0.4,
+        1.0
+      ],
+      "grime": 0.45,
+      "wetness": 0.3,
+      "note": "T-287: the dead U-boat's topsides (the same layout as m2_hull_plate), the paint mostly gone"
+    },
+    "m2_hull_red_plate": {
+      "set": "res://assets/ours/textures/red_lead_plating",
+      "id": "red_lead_plating",
+      "tile_m": 2.9,
+      "tile_xyz": [
+        2.9,
+        2.5,
+        1.0
+      ],
+      "triplanar": false,
+      "tint": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "rough": [
+        0.4,
+        0.95
+      ],
+      "grime": 0.4,
+      "wetness": 0.3,
+      "albedo_saturation": 0.75,
+      "note": "T-287: the U-boats' bottoms below the boot-top, UV-mapped (u = metres along the hull, v = metres of girth below the boot-top)"
     },
     "m2_curtain": {
       "set": "polyhaven/rusty-painted-metal",
@@ -1152,6 +1235,9 @@
       "m2_tread",
       "m2_hull",
       "m2_hull_red",
+      "m2_hull_plate",
+      "m2_hull_wreck_plate",
+      "m2_hull_red_plate",
       "m2_curtain",
       "m2_corrugated",
       "m2_tarred",
@@ -1217,6 +1303,9 @@
       "m2_tread": "m2_tread",
       "m2_hull": "m2_hull",
       "m2_hull_red": "m2_hull_red",
+      "m2_hull_plate": "m2_hull_plate",
+      "m2_hull_wreck_plate": "m2_hull_wreck_plate",
+      "m2_hull_red_plate": "m2_hull_red_plate",
       "m2_curtain": "m2_curtain",
       "m2_corrugated": "m2_corrugated",
       "m2_tarred": "m2_tarred",
