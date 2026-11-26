@@ -17778,6 +17778,456 @@
           ]
         }
       ]
+    },
+    "t282": {
+      "_doc": "T-282: the submarines (U-1047 in the pen, the dead U-boat in the sea) from all round, low, high, bow-on, stern-on, from the deck and the walkways, plus the patrol boat and the cutter (the other strip() hulls). Free camera (mode 'maps', one load), the power on. Shot through tools/wsl_godot.sh only; copied to docs/captures/t282/<label>/.",
+      "mode": "maps",
+      "keep_map": true,
+      "settle_s": 7.0,
+      "cams": [
+        {
+          "name": "u1047_bow_on",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            7.0,
+            2.4,
+            33.6
+          ],
+          "yaw": -180.0,
+          "pitch": -15.3,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "U-1047 bow-on from the north apron, low"
+        },
+        {
+          "name": "u1047_bow_high",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            1.0,
+            5.6,
+            34.0
+          ],
+          "yaw": -153.4,
+          "pitch": -24.4,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "the bow from the north catwalk, high"
+        },
+        {
+          "name": "u1047_stbd_low",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            12.5,
+            0.9,
+            47.0
+          ],
+          "yaw": 153.4,
+          "pitch": -11.0,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "the starboard side from pier 2, low along the hull"
+        },
+        {
+          "name": "u1047_stbd_beam",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            17.0,
+            1.7,
+            62.0
+          ],
+          "yaw": 78.7,
+          "pitch": -9.5,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "starboard beam from pier 2, standing"
+        },
+        {
+          "name": "u1047_port_low",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            1.8,
+            0.7,
+            50.0
+          ],
+          "yaw": -156.6,
+          "pitch": -9.5,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "the port side from pier 1, low along the hull"
+        },
+        {
+          "name": "u1047_port_high",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            -4.0,
+            9.0,
+            48.0
+          ],
+          "yaw": -137.5,
+          "pitch": -28.9,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "the port side from high over pier 1"
+        },
+        {
+          "name": "u1047_stern_quarter",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            14.0,
+            8.0,
+            74.0
+          ],
+          "yaw": 153.4,
+          "pitch": -28.5,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "the stern quarter from high over pier 2"
+        },
+        {
+          "name": "u1047_stern_on",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            9.0,
+            2.0,
+            103.0
+          ],
+          "yaw": 10.3,
+          "pitch": -15.0,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "stern-on from the pen mouth, over the water"
+        },
+        {
+          "name": "u1047_tower_down",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            9.5,
+            10.0,
+            49.0
+          ],
+          "yaw": 149.0,
+          "pitch": -40.6,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "down into the bridge from under the roof"
+        },
+        {
+          "name": "u1047_tower_signal",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            33.0,
+            8.6,
+            36.5
+          ],
+          "yaw": 124.3,
+          "pitch": -8.8,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "the tower and deck from the signal tower's floor"
+        },
+        {
+          "name": "u1047_deck_fwd",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            7.0,
+            2.6,
+            44.0
+          ],
+          "yaw": 174.3,
+          "pitch": 2.1,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "on deck forward of the tower, looking aft at it"
+        },
+        {
+          "name": "u1047_deck_aft",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            8.6,
+            2.6,
+            62.0
+          ],
+          "yaw": 18.6,
+          "pitch": 2.7,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "on deck aft of the tower, looking forward"
+        },
+        {
+          "name": "u1047_waterline",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            11.2,
+            -1.2,
+            72.0
+          ],
+          "yaw": 10.5,
+          "pitch": -3.7,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "low over the water between the hull and pier 2"
+        },
+        {
+          "name": "dead_from_landing",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            22.0,
+            2.6,
+            -2.6
+          ],
+          "yaw": -35.1,
+          "pitch": -3.5,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "the dead U-boat from the quay's landing stage, as a player sees it"
+        },
+        {
+          "name": "dead_bow_on",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            25.0,
+            3.4,
+            -43.6
+          ],
+          "yaw": -33.9,
+          "pitch": -21.6,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "the sunk bow from the breakwater's west end"
+        },
+        {
+          "name": "dead_breakwater_w",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            38.0,
+            3.4,
+            -43.2
+          ],
+          "yaw": -42.6,
+          "pitch": -18.3,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "the tower and the forward hull from the breakwater, close"
+        },
+        {
+          "name": "dead_breakwater_e",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            68.0,
+            3.4,
+            -43.2
+          ],
+          "yaw": 48.7,
+          "pitch": -22.1,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "the after hull from the breakwater, looking back west"
+        },
+        {
+          "name": "dead_stern_on",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            84.0,
+            3.4,
+            -43.4
+          ],
+          "yaw": 69.6,
+          "pitch": -10.6,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "stern-on: the raised stern, screws and rudder, from the breakwater"
+        },
+        {
+          "name": "dead_tower_above",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            43.0,
+            9.0,
+            -47.0
+          ],
+          "yaw": -28.7,
+          "pitch": -57.0,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "down into the tilted bridge from above"
+        },
+        {
+          "name": "dead_seaward_low",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            50.0,
+            0.2,
+            -78.0
+          ],
+          "yaw": -169.1,
+          "pitch": -4.7,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "from seaward (north), low over the water"
+        },
+        {
+          "name": "dead_seaward_high",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            40.0,
+            14.0,
+            -82.0
+          ],
+          "yaw": -152.7,
+          "pitch": -24.6,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "from seaward, high"
+        },
+        {
+          "name": "patrol_boat_quay",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            8.0,
+            2.0,
+            -2.0
+          ],
+          "yaw": -24.0,
+          "pitch": -5.8,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "T-273's patrol boat from the quay"
+        },
+        {
+          "name": "patrol_boat_stern",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            40.0,
+            2.0,
+            -28.0
+          ],
+          "yaw": 138.8,
+          "pitch": -10.7,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "the patrol boat's transom"
+        },
+        {
+          "name": "patrol_boat_bow",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            -10.0,
+            2.0,
+            -26.0
+          ],
+          "yaw": -123.7,
+          "pitch": -10.5,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "the patrol boat's stem"
+        },
+        {
+          "name": "cutter_quay",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            18.0,
+            1.7,
+            13.0
+          ],
+          "yaw": -45.0,
+          "pitch": -1.0,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "the beached cutter from the quay"
+        },
+        {
+          "name": "cutter_above",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            24.0,
+            7.5,
+            13.0
+          ],
+          "yaw": -14.0,
+          "pitch": -33.7,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "into the cutter over its gunwale (the planking's inside)"
+        }
+      ]
     }
   }
 }

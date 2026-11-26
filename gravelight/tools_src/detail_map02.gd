@@ -47,25 +47,54 @@ static var _drip_mat: ShaderMaterial = null
 # ================================================================== lofting
 
 ## A strip surface through `lines` (one PackedVector3Array per section, all the same length, sections in order):
-## quads between consecutive sections. Triangles are wound so their face normal points away from `axis_c(p)` (the
-## hull's centre line at that point, so the surface faces outward); normals are then smoothed. Returns an ArrayMesh.
+## quads between consecutive sections, normals then smoothed. Returns an ArrayMesh.
+## T-282: every quad is wound the same way from the order the strip is built in, so neighbours always agree; the
+## strip as a whole is then turned once so its front faces away from `axis_c(p)` (the hull's centre line at that
+## point), by an area-weighted vote over all its triangles. A per-triangle guess flipped single faces where the hint
+## is poor (at the keel, on the shoulder), and the old test had Godot's rule backwards (the front face is the one
+## whose normal is (c - a) x (b - a), clockwise seen from the front): every hull was drawn inside out, so from
+## outside you saw through the near side to the inner face of the far one, and into whatever stood inside.
+## A strip with walls facing both ways (the tower's outer and inner skin) is built as one strip in one order: the
+## bigger outward area wins the vote and the inner skin faces in.
 static func strip(lines: Array, axis_c: Callable, flat: bool = false) -> ArrayMesh:
-	var st: SurfaceTool = SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	if not flat:
-		st.set_smooth_group(0)
+	var tris: PackedVector3Array = []
+	var vote: float = 0.0
 	for s: int in lines.size() - 1:
 		var a: PackedVector3Array = lines[s]
 		var b: PackedVector3Array = lines[s + 1]
 		for i: int in a.size() - 1:
-			_tri(st, a[i], a[i + 1], b[i + 1], axis_c)
-			_tri(st, a[i], b[i + 1], b[i], axis_c)
+			for t: Array in [[a[i], a[i + 1], b[i + 1]], [a[i], b[i + 1], b[i]]]:
+				var p0: Vector3 = t[0]
+				var p1: Vector3 = t[1]
+				var p2: Vector3 = t[2]
+				var n: Vector3 = front_normal(p0, p1, p2)
+				if n.length_squared() < 1e-10:
+					continue
+				var c: Vector3 = (p0 + p1 + p2) / 3.0
+				vote += n.dot((c - (axis_c.call(c) as Vector3)).normalized())
+				tris.append_array([p0, p1, p2])
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	if not flat:
+		st.set_smooth_group(0)
+	for k: int in range(0, tris.size(), 3):
+		st.add_vertex(tris[k])
+		st.add_vertex(tris[k + 1] if vote >= 0.0 else tris[k + 2])
+		st.add_vertex(tris[k + 2] if vote >= 0.0 else tris[k + 1])
 	st.generate_normals()
 	return st.commit()
 
 
+## The normal of the face Godot draws for the triangle (p0, p1, p2) (its front: clockwise seen from that side), not
+## normalized (its length is twice the area).
+static func front_normal(p0: Vector3, p1: Vector3, p2: Vector3) -> Vector3:
+	return (p2 - p0).cross(p1 - p0)
+
+
+## One triangle turned so its front faces away from `axis_c` (for small flat pieces where the hint is unambiguous,
+## like a transom; a curved surface goes through strip()).
 static func _tri(st: SurfaceTool, p0: Vector3, p1: Vector3, p2: Vector3, axis_c: Callable) -> void:
-	var n: Vector3 = (p1 - p0).cross(p2 - p0)
+	var n: Vector3 = front_normal(p0, p1, p2)
 	if n.length_squared() < 1e-10:
 		return
 	var c: Vector3 = (p0 + p1 + p2) / 3.0
@@ -80,6 +109,17 @@ static func _tri(st: SurfaceTool, p0: Vector3, p1: Vector3, p2: Vector3, axis_c:
 		st.add_vertex(p2)
 
 
+## The cap across a symmetric section: `side` runs down one side of the section (x >= 0, top to bottom), its mirror
+## in x is the other side; quads pair each point with its mirror, so a y-monotone section closes with trapezoids
+## whatever its shape (a fan from a fixed centre spilled past a section whose keel rose above it, and left the top
+## edge open). The front faces `out`.
+static func section_cap(side: PackedVector3Array, out: Vector3, flat: bool = true) -> ArrayMesh:
+	var lines: Array = []
+	for p: Vector3 in side:
+		lines.append(PackedVector3Array([Vector3(-p.x, p.y, p.z), p]))
+	return strip(lines, func(p: Vector3) -> Vector3: return p - out, flat)
+
+
 ## A mesh instance for a lofted surface under `parent` with the material key (library or procedural, via Mats).
 static func surface(parent: Node3D, n: String, mesh: ArrayMesh, key: String, shadow: bool = true) -> MeshInstance3D:
 	var mi: MeshInstance3D = MeshInstance3D.new()
@@ -89,6 +129,14 @@ static func surface(parent: Node3D, n: String, mesh: ArrayMesh, key: String, sha
 	if not shadow:
 		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	parent.add_child(mi)
+	return mi
+
+
+## T-282: marks a surface that only adds faces over a shape already there (the inside of the cutter's planks, the
+## tower's lip, inner skin, floor and base), so gen_map02's fitted colliders (T-180, built from the art) leave it out
+## and stay as they were. A generation-time mark: gen_map02 clears it before saving.
+static func no_fit(mi: MeshInstance3D) -> MeshInstance3D:
+	mi.set_meta("t282_no_fit", true)
 	return mi
 
 
@@ -161,25 +209,16 @@ static func type_vii(g: Node3D, length: float, boot: float, k_hull: String = "m2
 	surface(g, "HullBottom", strip(lo, axis), k_red)
 	var deck_up: Callable = func(p: Vector3) -> Vector3: return p - Vector3.UP
 	surface(g, "DeckCasing", strip(deck, deck_up, true), k_hull)
-	# bow and stern ends: a fan over the end section (the casing's bluff bow, the stern tip)
+	# bow and stern ends: the end section closed from the deck edge to the keel (the casing's bluff bow, the stern
+	# tip). T-282: was a fan from a fixed point (0, -2.4) that missed the deck edge's span (a triangular hole under
+	# the casing at each end) and hung below the stern's keel (-2.0)
+	# (the topsides in the hull's colour, below the boot-top in red lead, like the sides)
 	for end: int in [0, secs]:
-		var st: SurfaceTool = SurfaceTool.new()
-		st.begin(Mesh.PRIMITIVE_TRIANGLES)
-		var ring: PackedVector3Array = []
-		ring.append_array(up_r[end])
 		var lo_end: PackedVector3Array = lo[end]
-		for p: Vector3 in lo_end:
-			ring.append(p)
-		var ul: PackedVector3Array = up_l[end]
-		for i4: int in range(ul.size() - 1, -1, -1):
-			ring.append(ul[i4])
-		var c: Vector3 = Vector3(0, -2.4, ring[0].z)
-		var outdir: Vector3 = Vector3(0, 0, -1) if end == 0 else Vector3(0, 0, 1)
-		var cf: Callable = func(p: Vector3) -> Vector3: return p - outdir
-		for i5: int in ring.size() - 1:
-			_tri(st, c, ring[i5], ring[i5 + 1], cf)
-		st.generate_normals()
-		surface(g, "HullEnd", st.commit(), k_hull)
+		var outd: Vector3 = Vector3(0, 0, -1) if end == 0 else Vector3(0, 0, 1)
+		var nm: String = "HullEnd_Bow" if end == 0 else "HullEnd_Stern"
+		surface(g, nm, section_cap(up_r[end], outd), k_hull)
+		surface(g, nm + "_Red", section_cap(lo_end.slice(0, m - split), outd), k_red)   # the starboard half of the bottom
 	# the boot-top line and a rubbing strake at the tanks
 	var bt: Array = []
 	for s2: int in secs + 1:
@@ -197,8 +236,11 @@ static func type_vii(g: Node3D, length: float, boot: float, k_hull: String = "m2
 		var z2: float = 4.0 + k * 1.45
 		if z2 > length * 0.8:
 			break
+		# T-282: on the plating where the shoulder is at the slot's height (they stood at x 3.02, inside the bulging
+		# shoulder: only the inside-out hull let them show)
+		var hx: float = _shoulder_x(vii_half((z2 + 0.35) / length, m, _hold(z2 + 0.35, hold_to)), -0.435 + 0.02) + 0.015
 		for sx: float in [-1.0, 1.0]:
-			Props.block(g, Vector3(sx * 3.02 - 0.012, -0.55, z2), Vector3(sx * 3.02 + 0.012, -0.32, z2 + 0.7), "black_paint", false)
+			Props.block(g, Vector3(sx * hx - 0.012, -0.55, z2), Vector3(sx * hx + 0.012, -0.32, z2 + 0.7), "black_paint", false)
 	# bow planes (folded up against the casing) and the stern: planes, rudder, twin screws on their shafts
 	for sx2: float in [-1.0, 1.0]:
 		Props.obox(g, Vector3(sx2 * 1.9, -3.0, 3.0), Vector3(1.4, 0.08, 1.2), k_hull, Vector3(0, 0, sx2 * 30.0))
@@ -229,6 +271,27 @@ static func type_vii(g: Node3D, length: float, boot: float, k_hull: String = "m2
 			Props.block(g, Vector3(sx4 - 0.05, 0.1, zc - 0.32), Vector3(sx4 + 0.05, 0.16, zc + 0.32), k_fit)
 
 
+## A flat convex ring (n + 1 points, the last on the first, n even, mirror pairs i and n - i at the same x) filled
+## with trapezoids between its mirror pairs, its front facing `out`. Shares the ring's points, so it closes the wall
+## it sits on.
+static func _ring_disc(ring: PackedVector3Array, n: int, out: Vector3) -> ArrayMesh:
+	var lines: Array = []
+	for i: int in n / 2 + 1:
+		lines.append(PackedVector3Array([ring[i], ring[n - i]]))
+	return strip(lines, func(p: Vector3) -> Vector3: return p - out, true)
+
+
+## The half-section's x on the shoulder (its first points, deck edge down to the widest) at height y (section space,
+## deck at 0), interpolated between the points; the widest point's x below them.
+static func _shoulder_x(half: PackedVector3Array, y: float) -> float:
+	for i: int in range(1, 5):
+		var a: Vector3 = half[i - 1]
+		var b: Vector3 = half[i]
+		if y <= a.y and y >= b.y:
+			return lerpf(a.x, b.x, (a.y - y) / maxf(a.y - b.y, 1e-6))
+	return half[4].x
+
+
 ## How much the hull must hold the interior box at local z (1 up to `hold_to`, easing out over the next 5 m).
 static func _hold(z: float, hold_to: float) -> float:
 	if hold_to <= 0.0:
@@ -241,26 +304,37 @@ static func _hold(z: float, hold_to: float) -> float:
 ## the bridge railing, the spray deflector and the hull number. `c` is the collider footprint's centre on the deck
 ## (boat group space), half sizes `hx`, `hz`; tower stands `h` metres high.
 static func vii_tower(g: Node3D, c: Vector3, hx: float, hz: float, h: float, number: String, k_hull: String = "m2_hull") -> void:
-	var rings: Array = []
+	# T-282: a closed solid, a cup: the outer skin up to the flared lip, the lip across the top of the wall, the inner
+	# skin down to the bridge floor, the floor, and the base on the deck. It was the outer skin alone, open at the
+	# top, so from the bridge's height (the signal tower, the catwalks) you looked through the far wall from inside;
+	# and the floor was a rectangle whose corners stood out through the rounded front and the narrower aft end
 	var n: int = 14
-	for lvl: int in 4:
-		var y: float = [0.0, h * 0.55, h * 0.92, h][lvl]
-		var flare: float = [0.0, 0.0, 0.0, 0.14][lvl]
+	var wall: float = 0.1
+	var floor_y: float = h - 0.5
+	var ring_at: Callable = func(y: float, grow: float) -> PackedVector3Array:
 		var ring: PackedVector3Array = []
 		for i: int in n + 1:
 			var a: float = TAU * float(i) / float(n)
 			var sx: float = cos(a)
 			var sz: float = sin(a)
 			# a stadium: rounded at the front (-z), squarer aft
-			var rx: float = hx + 0.12 + flare
-			var rz: float = hz + 0.12 + flare
+			var rx: float = hx + 0.12 + grow
+			var rz: float = hz + 0.12 + grow
 			var px: float = c.x + sx * rx
-			var pz: float = c.z + (sz * rz if sz < 0.0 else sz * rz * 0.85 + 0.0)
+			var pz: float = c.z + (sz * rz if sz < 0.0 else sz * rz * 0.85)
 			ring.append(Vector3(px, c.y + y, pz))
-		rings.append(ring)
-	surface(g, "TowerFairing", strip(rings, func(p: Vector3) -> Vector3: return Vector3(c.x, p.y, c.z)), k_hull)
-	# bridge floor and the lip
-	Props.block(g, c + Vector3(-hx, h - 0.6, -hz), c + Vector3(hx, h - 0.5, hz), "steel_grate", false)
+		ring[n] = ring[0]   # the seam closes exactly
+		return ring
+	var rings: Array = [ring_at.call(0.0, 0.0), ring_at.call(h * 0.55, 0.0), ring_at.call(h * 0.92, 0.0), ring_at.call(h, 0.14),
+		ring_at.call(h, -wall), ring_at.call(floor_y, -wall)]
+	# the outer skin (the shape the CT collider is fitted to, T-180) faces out; the lip and the inner skin, one strip
+	# from the outer top edge in and down, face in (toward the bridge) and up (the lip)
+	surface(g, "TowerFairing", strip(rings.slice(0, 4), func(p: Vector3) -> Vector3: return Vector3(c.x, p.y, c.z)), k_hull)
+	var inward: Callable = func(p: Vector3) -> Vector3: return Vector3(2.0 * p.x - c.x, p.y, 2.0 * p.z - c.z)
+	no_fit(surface(g, "TowerFairingLip", strip(rings.slice(3, 6), inward), k_hull))
+	# the bridge floor (grating, up) inside the inner skin and the base on the deck (down: never seen, it closes the solid)
+	no_fit(surface(g, "TowerFairingFloor", _ring_disc(rings[5], n, Vector3.UP), "steel_grate", false))
+	no_fit(surface(g, "TowerFairingBase", _ring_disc(rings[0], n, Vector3.DOWN), k_hull, false))
 	Props.railing(g, c + Vector3(-hx - 0.1, h, hz + 0.1), c + Vector3(hx + 0.1, h, hz + 0.1), 0.85, "iron", 0.8)
 	# the wintergarten: a railed platform aft at bridge height with the 2 cm flak on a pedestal
 	var wg: Vector3 = c + Vector3(0, h - 0.55, hz + 1.3)
@@ -320,14 +394,17 @@ static func cutter(g: Node3D, length: float, beam: float, depth: float, k_planks
 				var b2: Vector3 = half_at.call(u, minf(t1, 1.0))
 				var lap: float = 0.03   # the lower edge of each strake stands proud: the clinker step
 				lines.append(PackedVector3Array([Vector3(a.x, a.y, a.z * side), Vector3(b2.x, b2.y, (b2.z + lap * signf(b2.z + 0.001)) * side)]))
-			surface(g, "Strake", strip(lines, func(p: Vector3) -> Vector3: return Vector3(p.x, p.y, 0.0)), k_planks)
+			surface(g, "Strake%s%d" % ["S" if side > 0.0 else "P", k], strip(lines, func(p: Vector3) -> Vector3: return Vector3(p.x, p.y, 0.0)), k_planks)
+			# T-282: the planking's inside, seen over the gunwale from above (one-sided planks vanished from there)
+			no_fit(surface(g, "StrakeIn%s%d" % ["S" if side > 0.0 else "P", k], strip(lines, func(p: Vector3) -> Vector3: return Vector3(p.x, p.y, 2.0 * p.z)), k_planks, false))
 		# rubbing strake along the sheer
 		var rs: Array = []
 		for s2: int in secs + 1:
 			var u2: float = float(s2) / float(secs)
 			var p: Vector3 = half_at.call(u2, 0.0)
 			rs.append(PackedVector3Array([Vector3(p.x, p.y + 0.04, (p.z + 0.06) * side), Vector3(p.x, p.y - 0.14, (p.z + 0.06) * side)]))
-		surface(g, "Rubbing", strip(rs, func(p: Vector3) -> Vector3: return Vector3(p.x, p.y, 0.0), true), k_trim)
+		surface(g, "Rubbing" + ("S" if side > 0.0 else "P"), strip(rs, func(p: Vector3) -> Vector3: return Vector3(p.x, p.y, 0.0), true), k_trim)
+		no_fit(surface(g, "RubbingIn" + ("S" if side > 0.0 else "P"), strip(rs, func(p: Vector3) -> Vector3: return Vector3(p.x, p.y, 2.0 * p.z), true), k_trim, false))
 	# keel, stem and sternpost
 	Props.block(g, Vector3(0.1, 0.0, -0.08), Vector3(length - 0.1, 0.2, 0.08), k_trim)
 	Props.obox(g, Vector3(0.12, depth * 0.55, 0), Vector3(0.14, depth * 1.15, 0.14), k_trim, Vector3(0, 0, 18))
@@ -1177,26 +1254,21 @@ static func patrol_boat(parent: Node3D, pos: Vector3, yaw: float, length: float 
 			var xi3: float = maxf(0.02, e3.x - bw)
 			ld.append(PackedVector3Array([Vector3(-xi3, float(part[2]), e3.z), Vector3(xi3, float(part[2]), e3.z)]))
 		decks.append([strip(ld, upward, true), Transform3D.IDENTITY])
-	# the transom: a fan over the stern section, both sides, from the sheer to the boot-top
-	var st: SurfaceTool = SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var ring: Array = []
+	# the transom and the stem: each end section closed across, the topsides in grey and below the boot-top in red.
+	# T-282: the transom was a fan down to the boot-top only (the stern section below it stood open) and the stem's
+	# 8 cm between the two sides was never closed
+	for end: Array in [[1.0, Vector3.BACK], [0.0, Vector3.FORWARD]]:
+		var ue: float = float(end[0])
+		var she: float = sheer.call(ue)
+		var twe: float = (she + 0.35) / (she + draft)
+		var r_top: PackedVector3Array = []
+		var r_red: PackedVector3Array = []
+		for k2: int in 6:
+			r_top.append(side_at.call(ue, twe * float(k2) / 5.0))
+			r_red.append(side_at.call(ue, lerpf(twe, 1.0, float(k2) / 5.0)))
+		tops.append([section_cap(r_top, end[1] as Vector3), Transform3D.IDENTITY])
+		reds.append([section_cap(r_red, end[1] as Vector3), Transform3D.IDENTITY])
 	var shs: float = sheer.call(1.0)
-	var tws: float = (shs + 0.35) / (shs + draft)
-	for k2: int in 9:
-		ring.append(side_at.call(1.0, tws * float(k2) / 8.0))
-	var aft: Callable = func(p: Vector3) -> Vector3: return p - Vector3.BACK
-	var cz: float = (ring[0] as Vector3).z
-	var cmid: Vector3 = Vector3(0.0, lerpf(shs, -0.35, 0.5), cz)
-	for k3: int in 8:
-		var p0: Vector3 = ring[k3]
-		var p1: Vector3 = ring[k3 + 1]
-		_tri(st, cmid, p0, p1, aft)
-		_tri(st, cmid, Vector3(-p0.x, p0.y, p0.z), Vector3(-p1.x, p1.y, p1.z), aft)
-	_tri(st, cmid, ring[0], Vector3(-(ring[0] as Vector3).x, (ring[0] as Vector3).y, cz), aft)
-	_tri(st, cmid, ring[8], Vector3(-(ring[8] as Vector3).x, (ring[8] as Vector3).y, cz), aft)
-	st.generate_normals()
-	tops.append([st.commit(), Transform3D.IDENTITY])
 	surface(g, "HullTopsides", merged(tops, "m2_hull"), "m2_hull")
 	surface(g, "HullBottom", merged(reds, "m2_hull_red"), "m2_hull_red", false)
 	surface(g, "HullBulwarks", merged(greys, "grey_paint"), "grey_paint")
