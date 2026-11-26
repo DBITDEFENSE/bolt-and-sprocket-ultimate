@@ -19,6 +19,7 @@ const SCENES: Dictionary = {
 	"shell_day": [4.5, "", 12.0, Vector3(-10.0, 3.0, -10.5), 2.0, 60.0],
 	"bomb_day": [7.0, "bomb", 12.0, Vector3(-14.0, 3.5, -14.5), 5.0, 72.0],
 	"near_day": [6.0, "grenade", 12.0, Vector3(-3.6, 1.7, -4.0), 1.0, 70.0],
+	"pop_night": [0.6, "", 0.0, Vector3(-2.6, 1.6, -2.8), 0.8, 60.0],
 }
 
 var _out: String = ""
