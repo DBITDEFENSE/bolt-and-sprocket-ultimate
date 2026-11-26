@@ -43,8 +43,17 @@ static func detonate(ctx: Node3D, pos: Vector3, cfg: Dictionary, by_player: int,
 			p.take_hit(float(cfg.get("self_damage_near", 100)), null)
 		elif pd <= radius:
 			p.take_hit(float(cfg.get("self_damage_far", 50)), null)
-	Effects.explosion(pos, radius)
+	var look: String = fx_kind(cfg, weapon_id)   # T-280: the blast's look (presentation only)
+	Effects.explosion(pos, radius, look)
 	AudioDirector.play_3d(str(cfg.get("sound", "grenade_explode")), pos, float(cfg.get("sound_db", 4.0)), 0.08)
 	if Net.session != null and not Net.applying:
-		Net.session.local_explosion(pos, radius, str(cfg.get("sound", "grenade_explode")), float(cfg.get("sound_db", 4.0)))
+		Net.session.local_explosion(pos, radius, str(cfg.get("sound", "grenade_explode")), float(cfg.get("sound_db", 4.0)), look)
 	GLBus.explosion.emit(pos, radius)
+
+
+## T-280: the look of a blast (Effects.explosion's kind): the cfg's "fx" when it names one, a hand grenade's for the
+## frag, else "" (Effects picks it from the radius: a shell, a bomb, a small pop).
+static func fx_kind(cfg: Dictionary, weapon_id: StringName) -> String:
+	if cfg.has("fx"):
+		return str(cfg["fx"])
+	return "grenade" if weapon_id == &"frag" else ""

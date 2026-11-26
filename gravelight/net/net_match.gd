@@ -677,10 +677,10 @@ func sfx_all(key: String, pos: Vector3, db: float = 0.0) -> void:
 
 
 ## Effects made on this peer by its own player (a grenade going off) shown to everyone else.
-func local_explosion(pos: Vector3, radius: float, sound: String, db: float) -> void:
+func local_explosion(pos: Vector3, radius: float, sound: String, db: float, kind: String = "") -> void:
 	if not Net.is_online():
 		return
-	var args: Array = [pos, radius, sound, db]
+	var args: Array = [pos, radius, sound, db, kind]   # T-280: the blast's look rides along (old peers read four)
 	if Net.is_host():
 		Net._rpc_fx_of.rpc(&"explosion", args)
 	else:
@@ -694,7 +694,7 @@ func on_fx_of(kind: StringName, args: Array) -> void:
 func _show_fx(kind: StringName, args: Array) -> void:
 	if kind == &"explosion" and args.size() >= 4:
 		var pos: Vector3 = args[0]
-		Effects.explosion(pos, float(args[1]))
+		Effects.explosion(pos, float(args[1]), str(args[4]) if args.size() >= 5 else "")
 		AudioDirector.play_3d(str(args[2]), pos, float(args[3]), 0.08)
 
 
