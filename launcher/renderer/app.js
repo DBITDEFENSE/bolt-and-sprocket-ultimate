@@ -3,7 +3,7 @@
 // Renderer: draws the launcher and talks to the main process through window.launcher (preload.js).
 const $ = (id) => document.getElementById(id);
 const api = window.launcher;
-const S = { config: {}, settings: {}, status: {}, feed: null, progress: null, notes: { incoming: [], recent: [] }, hero: [], heroIdx: 0, demo: null };
+const S = { config: {}, settings: {}, status: {}, feed: null, progress: null, notes: { incoming: [], recent: [] }, hero: [], heroIdx: 0, demo: null, game: null };
 
 // ---------- helpers ----------
 function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
@@ -110,7 +110,8 @@ function renderNews() {
     const b = el('button', 'news-item');
     const th = el('div', 'thumb'); setBg(th, n.image);
     const pics = Feed.gallery(n).length;
-    if (pics > 1) th.append(el('span', 'pics', `${pics} pictures`));
+    if (Feed.video(n)) th.append(el('span', 'play-badge'));
+    else if (pics > 1) th.append(el('span', 'pics', `${pics} pictures`));
     const right = el('div');
     const m = el('div', 'm'); m.append(el('b', null, n.tag || 'NEWS'), el('span', null, fmtDate(n.date)));
     right.append(m, el('div', 't', n.title));
@@ -122,6 +123,50 @@ function renderNews() {
   const links = $('links');
   links.replaceChildren(...((S.feed && S.feed.links) || []).map((l) => { const b = el('button', null, l.label); b.onclick = () => api.openExternal(l.url); return b; }));
   renderUpcoming();
+  renderTrailerButton();
+}
+// ---------- trailers (feed.json items with "type": "video") ----------
+function trailerUrl(n) { const v = Feed.video(n); return v ? Feed.videoCandidates(v.src, !!S.status.installed)[0] || null : null; }
+function renderTrailerButton() {
+  const list = Feed.trailers(S.feed, (S.status.channel || {}).id);
+  const b = $('trailerBtn');
+  b.hidden = !list.length;
+  if (!list.length) return;
+  const n = list.find((x) => trailerUrl(x)) || list[0];
+  const v = Feed.video(n);
+  const url = trailerUrl(n);
+  $('trailerBtnText').textContent = url ? v.label + (v.duration ? `  ·  ${v.duration}` : '') : 'Trailer: after install';
+  b.disabled = !url;
+  b.title = url ? n.title : 'The trailer comes with the game files: it plays once the game is installed.';
+  b.onclick = () => openPlayer(n);
+}
+function openPlayer(n) {
+  const url = trailerUrl(n);
+  if (!url) return;
+  const bgv = $('bgVideo'); if (!bgv.paused) bgv.pause();
+  const v = $('playerVideo');
+  v.src = url; v.muted = false; v.currentTime = 0;
+  const p = v.play(); if (p && p.catch) p.catch(() => {});
+  $('playerTitle').textContent = n.title;
+  $('player').hidden = false;
+}
+function closePlayer() {
+  const v = $('playerVideo'); v.pause(); v.removeAttribute('src'); v.load();
+  const bgv = $('bgVideo'); if (bgv.getAttribute('src') && $('bgVideo').classList.contains('show')) { const p = bgv.play(); if (p && p.catch) p.catch(() => {}); }
+}
+/** The hero background plays the slide's trailer muted (when it can play); other slides stop it. */
+function heroVideo(n) {
+  const bgv = $('bgVideo');
+  const url = n && trailerUrl(n);
+  if (!url || !$('player').hidden) {
+    bgv.classList.remove('show'); bgv.pause();
+    if (!url && bgv.getAttribute('src')) { bgv.removeAttribute('src'); bgv.load(); }
+    return;
+  }
+  if (bgv.getAttribute('src') !== url) { bgv.src = url; }
+  bgv.muted = true;
+  const p = bgv.play();
+  if (p && p.then) p.then(() => bgv.classList.add('show')).catch(() => bgv.classList.remove('show'));
 }
 // ---------- upcoming (feed.json "upcoming": proposals, no dates) ----------
 function renderUpcoming() {
@@ -157,6 +202,17 @@ function showHero(i, user) {
   $('heroTitle').textContent = n.title;
   $('heroSummary').textContent = n.summary || '';
   $('heroMore').onclick = () => openArticle(n);
+  const vid = Feed.video(n);
+  const vurl = vid && trailerUrl(n);
+  $('heroWatch').hidden = !vid;
+  if (vid) {
+    $('heroWatchText').textContent = vurl ? vid.label : 'Trailer: after install';
+    $('heroWatch').title = vid.duration ? `${n.title} (${vid.duration})` : n.title;
+    $('heroWatch').disabled = !vurl;
+    $('heroWatch').onclick = () => openPlayer(n);
+  }
+  heroVideo(n);
+  $('trailerBtn').classList.toggle('dup', !!vid); // the slide has its own button
   [...$('heroDots').children].forEach((d, k) => d.classList.toggle('on', k === S.heroIdx));
   // the item's pictures as a strip (fixed-size boxes; hidden when the item has one picture or none)
   const strip = $('heroStrip');
@@ -179,8 +235,8 @@ function showHero(i, user) {
   if (user) heroT0 += 4000; // linger a little after a click
 }
 function heroTick(now) {
-  if (S.hero.length > 1 && !document.hidden && $('article').hidden) {
-    const t = (now - heroT0) / HERO_MS;
+  if (S.hero.length > 1 && !document.hidden && $('article').hidden && $('player').hidden) {
+    const t = (now - heroT0) / (Feed.video(S.hero[S.heroIdx]) ? HERO_MS * 2.5 : HERO_MS);
     $('heroTimer').style.height = `${Math.max(0, Math.min(1, t)) * 100}%`;
     if (t >= 1) showHero(S.heroIdx + 1, false);
   }
@@ -215,6 +271,14 @@ function openArticle(n, picIdx) {
   $('articleTitle').textContent = n.title;
   const body = $('articleText'); body.replaceChildren();
   for (const p of String(n.body || n.summary || '').split(/\n{2,}/)) body.append(el('p', null, p));
+  const vid = Feed.video(n);
+  if (vid) {
+    const url = trailerUrl(n);
+    const b = el('button', 'ghost watch', url ? vid.label : 'The trailer plays once the game is installed');
+    b.disabled = !url;
+    b.onclick = () => { $('article').hidden = true; openPlayer(n); };
+    body.append(b);
+  }
   $('article').hidden = false;
   $('article').querySelector('.article-body').scrollTop = 0;
   $('article').querySelector('.modal-x').focus();
@@ -269,11 +333,21 @@ function renderNotes() {
 }
 
 // ---------- status, progress, the big button ----------
+function readyToPlay(st) {
+  return st.installed && st.onChannel && !st.updateAvailable && !st.needsImport && !st.needsFiles && st.engineReady;
+}
 function primaryAction() {
   const st = S.status;
-  if (st.busy || S.progress) {
-    const words = { check: 'CHECKING', install: 'INSTALLING', update: 'UPDATING', repair: 'REPAIRING' };
+  // T-289: the update check that runs when the launcher opens no longer blocks PLAY (it only reads from GitHub)
+  const working = (st.busy && st.busy !== 'check') || (S.progress && !st.busy);
+  if (working || (st.busy === 'check' && !readyToPlay(st))) {
+    const words = { check: 'CHECKING', install: 'INSTALLING', update: 'UPDATING', repair: 'REPAIRING', prepare: 'PREPARING' };
     return { text: words[st.busy] || 'WORKING', sub: st.busy === 'check' ? 'one moment' : 'keep the launcher open', cls: 'busy', disabled: true };
+  }
+  if (S.game) {
+    if (S.game.state === 'launching') return { text: 'STARTING', sub: 'one moment', cls: 'busy', disabled: true };
+    if (S.game.state === 'starting') return { text: 'STARTING', sub: S.game.safe ? 'safe mode · the window is opening' : 'the window is opening', cls: 'busy', disabled: true };
+    return { text: 'RUNNING', sub: 'close the game to update', cls: 'busy', disabled: true };
   }
   if (!st.installed) return { text: 'INSTALL', sub: `about ${S.config.installSizeGB || 5} GB`, cls: 'violet', run: startInstall };
   if (!st.onChannel) return { text: 'UPDATE', sub: `switch to ${st.channel.name}`, cls: 'violet', run: () => runOp('update') };
@@ -281,7 +355,7 @@ function primaryAction() {
     const n = S.notes.incoming.length;
     return { text: 'UPDATE', sub: n ? `${n} new change${n === 1 ? '' : 's'}` : 'new version', cls: 'violet', run: () => runOp('update') };
   }
-  if (st.needsImport || !st.engineReady) return { text: 'PREPARE', sub: 'finish setup', cls: 'violet', run: () => runOp('repair') };
+  if (st.needsFiles || st.needsImport || !st.engineReady) return { text: 'PREPARE', sub: st.needsFiles ? 'finish the download' : 'prepare the assets', cls: 'violet', run: () => runOp('prepare') };
   return { text: 'PLAY', sub: '', cls: '', run: play };
 }
 function renderButton() {
@@ -310,6 +384,8 @@ function renderProgress() {
     if (st.lastError) { bar.classList.add('err'); $('progLabel').textContent = 'Stopped'; $('progDetail').textContent = st.lastError; }
     else if (!st.installed) { bar.classList.add('idle'); $('progLabel').textContent = 'Ready to install'; $('progDetail').textContent = 'Git, the engine and the game are set up for you.'; }
     else if (st.updateAvailable || !st.onChannel) { bar.classList.add('idle'); $('progLabel').textContent = 'Update available'; $('progDetail').textContent = 'Press UPDATE to download the newest build.'; }
+    else if (st.needsFiles || st.needsImport || !st.engineReady) { bar.classList.add('idle'); $('progLabel').textContent = 'Setup not finished'; $('progDetail').textContent = st.needsFiles ? 'Some game files did not finish downloading. Press PREPARE.' : 'The assets for this version are not prepared yet. Press PREPARE (a progress bar, a minute or two).'; }
+    else if (S.game) { bar.classList.add('full'); $('barFill').style.width = '100%'; $('progLabel').textContent = S.game.state === 'running' ? 'The game is running' : 'Starting the game'; $('progDetail').textContent = S.game.state === 'running' ? 'Close it to update or repair.' : 'Waiting for the game window.'; }
     else { bar.classList.add('full'); $('barFill').style.width = '100%'; $('progLabel').textContent = 'Ready to play'; $('progDetail').textContent = 'You have the newest build.'; }
     $('progPct').textContent = ''; $('progSpeed').textContent = '';
     if (!bar.classList.contains('full')) $('barFill').style.width = '0';
@@ -333,6 +409,7 @@ function renderSettings() {
   $('setFull').checked = !!s.fullscreen;
   $('setAfter').value = s.afterLaunch || 'minimize';
   $('setArgs').value = s.extraArgs || '';
+  $('setSafe').checked = !!s.safeMode;
   $('setAuto').checked = s.autoCheck !== false;
   const inst = !!S.status.installed;
   for (const id of ['actRepair', 'actFolder', 'actGameLogs', 'actUninstall']) $(id).disabled = !inst || !!S.status.busy;
@@ -344,8 +421,10 @@ function renderAll() { renderChannels(); renderBuild(); renderProgress(); render
 async function runOp(name) {
   const r = await api[name]();
   if (r.ok) {
-    toast(name === 'install' ? 'Installed' : name === 'repair' ? 'Repaired' : 'Up to date', name === 'install' ? 'Welcome to Silesia. Press PLAY.' : 'The newest build is ready.', 'ok');
-  } else if (!r.cancelled) toast('Could not finish', r.error, 'err');
+    const title = { install: 'Installed', repair: 'Repaired', prepare: 'Ready' }[name] || 'Up to date';
+    toast(title, name === 'install' ? 'Welcome to Silesia. Press PLAY.' : name === 'prepare' ? 'Press PLAY.' : 'The newest build is ready.', 'ok');
+  } else if (r.code === 'running') showProblem({ code: 'running', message: r.error, pids: r.pids });
+  else if (!r.cancelled) toast('Could not finish', r.error, 'err');
   else toast('Cancelled', 'Press the button again to resume where it stopped.');
   await refreshStatus(); refreshNotes();
 }
@@ -354,13 +433,72 @@ async function startInstall() {
   await runOp('install');
   refreshFeed();
 }
-async function play() {
-  const b = $('playBtn'); b.disabled = true; $('playText').textContent = 'STARTING';
-  const r = await call('play');
-  setTimeout(() => renderButton(), 3000);
-  if (r) toast('Launching', 'The game is starting. Good hunting.', 'ok');
+// ---------- play (T-289) ----------
+async function play(opts) {
+  if (S.game) return;
+  S.game = { state: 'launching' }; renderButton();
+  const r = await api.play(opts || {});
+  if (!r.ok) { S.game = null; renderAll(); showProblem({ code: r.code, message: r.error, action: r.action, pids: r.pids }); return; }
+  if (S.game && S.game.state === 'launching') S.game = { state: 'starting', pid: r.value.pid, safe: r.value.safeMode };
+  renderAll();
+  toast('Launching', r.value.safeMode ? 'Starting in safe mode. The window opens in a moment.' : 'The game window opens in a moment. Good hunting.', 'ok');
 }
-async function refreshStatus() { const r = await api.status(); if (r.ok) S.status = r.value; renderAll(); }
+function errDialog(title, msg, lines, note, actions) {
+  $('gameErrTitle').textContent = title;
+  $('gameErrMsg').textContent = msg;
+  $('gameErrLines').hidden = !(lines && lines.length);
+  $('gameErrLines').textContent = (lines || []).join('\n');
+  $('gameErrNote').textContent = note || '';
+  const box = $('gameErrActions'); box.replaceChildren();
+  for (const a of actions) {
+    const b = el('button', 'ghost' + (a.primary ? ' primary' : ''), a.label);
+    b.onclick = () => { $('gameErr').hidden = true; if (a.run) a.run(); };
+    box.append(b);
+  }
+  $('gameErr').hidden = false;
+  const first = box.querySelector('.primary') || box.firstChild; if (first) first.focus();
+}
+const closeAction = { label: 'Close' };
+/** PLAY (or an update) was refused: say why, offer the fix. */
+function showProblem(p) {
+  if (p.code === 'busy') return toast('One moment', p.message, 'err');
+  if (p.code === 'running') {
+    return errDialog('The game is already running', p.message, null, 'If you cannot find its window, end it and start again.', [
+      { label: 'End it and start again', run: async () => { await api.gameAction('end', p.pids); setTimeout(() => { refreshStatus(); play(); }, 1500); } },
+      { label: 'Switch to it', primary: true, run: async () => { const r = await api.gameAction('focus', p.pids); if (!r.ok || !r.value) toast('Not found', 'Look for the game on the taskbar.'); } },
+      closeAction,
+    ]);
+  }
+  if (p.action === 'prepare') return errDialog('Setup not finished', p.message, null, '', [{ label: 'Prepare now', primary: true, run: () => runOp('prepare') }, closeAction]);
+  if (p.code === 'spawn') {
+    return errDialog('The game did not start', p.message, null, 'The start log: Settings > Show the start log.', [
+      { label: 'Repair files', primary: true, run: () => { go('home'); runOp('repair'); } },
+      { label: 'Open launcher logs', run: () => api.openFolder('logs') }, closeAction,
+    ]);
+  }
+  toast('Could not start the game', p.message, 'err');
+}
+/** The game ended within seconds of PLAY: the reason, the last lines of its log, and what to try. */
+function gameFailed(p) {
+  const code = p.code == null ? '' : (p.code >>> 0) >= 0xC0000000 ? '0x' + (p.code >>> 0).toString(16).toUpperCase() : String(p.code);
+  const msg = `The game ${p.reason || 'closed'} ${p.seconds} s after starting${code ? ` (exit code ${code})` : ''}.`;
+  const actions = [];
+  if (p.offerSafe) actions.push({ label: 'Start in safe mode', primary: true, run: () => play({ safe: true }) });
+  actions.push({ label: 'Repair files', primary: !p.offerSafe, run: () => { go('home'); runOp('repair'); } });
+  actions.push({ label: 'Open the game log', run: () => api.openFolder('gameLogs') });
+  actions.push(closeAction);
+  const note = p.offerSafe
+    ? 'Safe mode starts it without the separate render thread (slower, steadier). If that works, keep it on in Settings > Launch > Safe mode. Repair re-downloads and re-checks every file.'
+    : 'Repair re-downloads and re-checks every file and prepares the assets again.';
+  errDialog('The game closed right after starting', msg, p.lines, note, actions);
+}
+async function refreshStatus() { const r = await api.status(); if (r.ok) { S.status = r.value; syncGame(); } renderAll(); }
+/** The main process knows whether the game it started still runs (status.game). */
+function syncGame() {
+  const g = S.status.game;
+  if (g && !S.game) S.game = { state: g.windowSeen ? 'running' : 'starting', pid: g.pid };
+  else if (!g && S.game && S.game.state !== 'launching') S.game = null;
+}
 async function refreshFeed() { const r = await api.feed(); if (r.ok && r.value) { S.feed = r.value; renderNews(); } }
 async function checkUpdates(quiet) {
   if (S.demo) return;
@@ -389,10 +527,11 @@ function wire() {
   document.querySelectorAll('.tab').forEach((t) => t.onclick = () => go(t.dataset.view));
   document.querySelectorAll('[data-goto]').forEach((t) => t.onclick = () => go(t.dataset.goto));
   document.querySelectorAll('[data-win]').forEach((b) => b.onclick = () => api.win(b.dataset.win));
-  document.querySelectorAll('[data-close]').forEach((b) => b.onclick = () => { b.closest('.modal').hidden = true; });
-  document.querySelectorAll('.modal').forEach((m) => m.addEventListener('mousedown', (e) => { if (e.target === m) m.hidden = true; }));
+  const hideModal = (m) => { if (m.hidden) return; m.hidden = true; if (m.id === 'player') closePlayer(); };
+  document.querySelectorAll('[data-close]').forEach((b) => b.onclick = () => hideModal(b.closest('.modal')));
+  document.querySelectorAll('.modal').forEach((m) => m.addEventListener('mousedown', (e) => { if (e.target === m) hideModal(m); }));
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') document.querySelectorAll('.modal').forEach((m) => { m.hidden = true; });
+    if (e.key === 'Escape') document.querySelectorAll('.modal').forEach(hideModal);
     if (!$('article').hidden && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) showArticlePic(ART.idx + (e.key === 'ArrowLeft' ? -1 : 1));
   });
   $('articlePrev').onclick = () => showArticlePic(ART.idx - 1);
@@ -412,6 +551,8 @@ function wire() {
   $('setAfter').onchange = (e) => save({ afterLaunch: e.target.value });
   $('setArgs').onchange = (e) => save({ extraArgs: e.target.value.trim() });
   $('setAuto').onchange = (e) => save({ autoCheck: e.target.checked });
+  $('setSafe').onchange = (e) => save({ safeMode: e.target.checked });
+  $('actPlayLog').onclick = () => api.openFolder('playLog');
   $('actRepair').onclick = () => { go('home'); runOp('repair'); };
   $('actFolder').onclick = () => api.openFolder('game');
   $('actGameLogs').onclick = () => api.openFolder('gameLogs');
@@ -420,7 +561,15 @@ function wire() {
   $('actUninstall').onclick = async () => { const r = await call('uninstall'); if (r) { toast('Uninstalled', 'The game files are gone.', 'ok'); S.notes = { incoming: [], recent: [] }; await refreshStatus(); renderNotes(); } };
 
   api.on('progress', (p) => { S.progress = p; renderProgress(); renderButton(); });
-  api.on('state', (st) => { if (st && st.channel) { S.status = st; renderAll(); } });
+  api.on('state', (st) => { if (st && st.channel) { S.status = st; syncGame(); renderAll(); } });
+  api.on('game', (g) => {
+    if (!g) return;
+    if (g.state === 'starting') S.game = { state: 'starting', pid: g.pid, safe: g.safeMode };
+    else if (g.state === 'running') S.game = { ...(S.game || {}), state: 'running', pid: g.pid };
+    else if (g.state === 'failed') { S.game = null; gameFailed(g); }
+    else if (g.state === 'exited') S.game = null;
+    renderAll();
+  });
 }
 function showWelcomeIfOpen() { if (!$('welcome').hidden) showWelcome(); }
 function go(view) {
@@ -487,6 +636,24 @@ function applyDemo(kind) {
   }
   if (kind.startsWith('hero:')) { const i = S.hero.findIndex((x) => x.id === kind.slice(5)); if (i >= 0) showHero(i, true); }
   if (kind === 'fresh') showWelcome();
+  // T-289 states: the start failed / already running / a trailer slide (trailer:play opens the player)
+  if (kind === 'gamefail') {
+    gameFailed({ reason: 'crashed (access violation)', seconds: 3.4, code: 3221225477, offerSafe: true, lines: [
+      'Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org',
+      'Vulkan 1.4.357 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 5090',
+      'ERROR: finalize can only be called from the render thread.',
+      '   at: finalize (servers/rendering/rendering_server_default.cpp:261)'] });
+  }
+  if (kind === 'running') showProblem({ code: 'running', message: 'The game is already running (started earlier). Switch to it, or end it and start again.', pids: [1] });
+  if (kind.startsWith('trailer')) {
+    const item = { id: 'demo-trailer', type: 'video', date: new Date().toISOString().slice(0, 10), tag: 'TRAILER', hero: true,
+      title: 'The first trailer', summary: 'A minute of Silesia in winter: the Inn, the mine, the harbour, and what keeps count of the dead.',
+      image: 'repo:launcher/assets/news/u19_snow.jpg', video: { src: 'repo:launcher/media/teaser_720p.mp4', label: 'Watch the teaser', duration: '1:07' } };
+    S.feed = { ...(S.feed || {}), news: [item, ...((S.feed && S.feed.news) || [])] };
+    S.status = { ...S.status, installed: true, onChannel: true, engineReady: true, needsImport: false, updateAvailable: false, busy: null, head: 'a83f7441c0ffee', channel: ch };
+    renderAll(); renderNews(); showHero(0, true);
+    if (kind === 'trailer:play') openPlayer(item);
+  }
 }
 
 // ---------- boot ----------
@@ -496,6 +663,7 @@ function applyDemo(kind) {
   if (!r.ok) { toast('Launcher error', r.error, 'err'); return; }
   const b = r.value;
   Object.assign(S, { config: b.config, settings: b.settings, status: b.status, feed: b.feed, version: b.version, demo: b.demo });
+  syncGame();
   $('tagline').textContent = b.config.tagline || '';
   $('subtitle').textContent = b.config.subtitle || '';
   renderAll(); renderNews(); requestAnimationFrame(heroTick);

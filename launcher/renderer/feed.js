@@ -76,5 +76,41 @@
     return { title: str(u.title) || 'Upcoming', note: str(u.note) || 'Proposed, not promised.', items };
   }
 
-  return { DEFAULT_IMAGE, MAX_GALLERY, safePath, candidates, gallery, visibleNews, upcoming };
+  // ---------- trailers (launcher 1.2.0 and newer) ----------
+  function safeVideoPath(p) {
+    return typeof p === 'string' && /^[\w\-./]+$/.test(p) && !p.split('/').includes('..') && !p.startsWith('/') && /\.(mp4|webm)$/i.test(p);
+  }
+
+  /**
+   * A news item's trailer, or null. Written in feed.json as  "type": "video", "video": { "src", "label", "duration" }
+   * (or "video": "<src>"); the item's `image` is the poster (shown until it plays, and where it cannot play).
+   *   repo:launcher/media/<file>.mp4   in the game repo (Git LFS); plays once the game is installed (game://media/)
+   *   media/<file>.mp4                 bundled with the launcher (launcher/assets/media), for short clips only
+   */
+  function video(item) {
+    if (!item || typeof item !== 'object') return null;
+    const v = item.video;
+    const o = v && typeof v === 'object' ? v : {};
+    const src = typeof v === 'string' ? v : o.src;
+    if (typeof src !== 'string') return null;
+    const ok = (src.startsWith('media/') && safeVideoPath(src)) || (src.startsWith('repo:launcher/media/') && safeVideoPath(src.slice(5)));
+    if (!ok) return null;
+    const str = (x) => (typeof x === 'string' ? x.trim() : '');
+    return { src, poster: typeof item.image === 'string' ? item.image : null, label: str(o.label) || 'Watch trailer', duration: str(o.duration) };
+  }
+
+  /** The URLs a trailer can play from, best first; empty when it cannot play yet (a repo trailer before install). */
+  function videoCandidates(src, installed) {
+    if (typeof src !== 'string') return [];
+    if (src.startsWith('media/') && safeVideoPath(src)) return ['../assets/' + src];
+    if (src.startsWith('repo:launcher/media/') && safeVideoPath(src.slice(5)) && installed) {
+      return ['game://media/' + src.slice(5).split('/').map(encodeURIComponent).join('/')];
+    }
+    return [];
+  }
+
+  /** The channel's news items that carry a trailer, newest first. */
+  function trailers(feed, channelId) { return visibleNews(feed, channelId).filter((n) => video(n)); }
+
+  return { DEFAULT_IMAGE, MAX_GALLERY, safePath, candidates, gallery, visibleNews, upcoming, video, videoCandidates, trailers, safeVideoPath };
 });

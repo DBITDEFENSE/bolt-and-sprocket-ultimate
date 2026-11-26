@@ -7,9 +7,10 @@ class Cancelled extends Error {
 }
 
 /**
- * run(cmd, args, { cwd, env, onLine, onStdout, input, tracker })
- * Resolves { code, stdout, stderr }. Rejects only on spawn failure or cancel; a non-zero exit is returned, not thrown,
- * unless opts.check is true.
+ * run(cmd, args, { cwd, env, onLine, onStdout, input, tracker, idleTimeoutMs })
+ * Resolves { code, stdout, stderr, timedOut }. Rejects only on spawn failure or cancel; a non-zero exit is returned, not
+ * thrown, unless opts.check is true. idleTimeoutMs: kill the process (tree) when it prints nothing for that long and
+ * resolve with timedOut: true (a hung headless import must not leave the launcher on "Preparing" forever).
  */
 function run(cmd, args, opts = {}) {
   return new Promise((resolve, reject) => {
@@ -25,7 +26,13 @@ function run(cmd, args, opts = {}) {
     if (opts.tracker) opts.tracker.add(child);
     let stdout = '';
     let stderr = '';
+    let timedOut = false;
+    let lastOutput = Date.now();
+    const idle = opts.idleTimeoutMs ? setInterval(() => {
+      if (Date.now() - lastOutput > opts.idleTimeoutMs && !timedOut) { timedOut = true; killTree(child); }
+    }, Math.min(1000, Math.max(50, opts.idleTimeoutMs / 4))) : null;
     const feed = (buf, which) => {
+      lastOutput = Date.now();
       const s = buf.toString('utf8');
       if (which === 'out') stdout += s; else stderr += s;
       if (stdout.length > 4e6) stdout = stdout.slice(-2e6);
@@ -42,15 +49,16 @@ function run(cmd, args, opts = {}) {
     };
     child.stdout.on('data', (b) => feed(b, 'out'));
     child.stderr.on('data', (b) => feed(b, 'err'));
-    child.on('error', (e) => { if (opts.tracker) opts.tracker.remove(child); reject(e); });
+    child.on('error', (e) => { if (idle) clearInterval(idle); if (opts.tracker) opts.tracker.remove(child); reject(e); });
     child.on('close', (code) => {
+      if (idle) clearInterval(idle);
       if (opts.tracker) opts.tracker.remove(child);
       if (opts.onLine) {
         if (feed._o && feed._o.trim()) opts.onLine(feed._o, 'out');
         if (feed._e && feed._e.trim()) opts.onLine(feed._e, 'err');
       }
       if (opts.tracker && opts.tracker.cancelled) { reject(new Cancelled()); return; }
-      const res = { code, stdout, stderr };
+      const res = { code, stdout, stderr, timedOut };
       if (opts.check && code !== 0) {
         const err = new Error(`${cmd.split(/[\\/]/).pop()} ${args.slice(0, 3).join(' ')} failed (exit ${code}): ${lastLines(stderr || stdout)}`);
         err.result = res;
@@ -88,4 +96,4 @@ function killTree(child) {
   }
 }
 
-module.exports = { run, Tracker, Cancelled, lastLines };
+module.exports = { run, Tracker, Cancelled, lastLines, killTree };

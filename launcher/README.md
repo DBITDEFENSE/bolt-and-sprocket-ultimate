@@ -20,13 +20,24 @@ What INSTALL does, in order:
 | Engine | Godot 4.7.2 win64 from the official GitHub release, checked against its `SHA512-SUMS.txt` | `%LOCALAPPDATA%\ClaudeZombies\launcher\godot\4.7.2` |
 | Prepare | `godot --headless --import` builds the `.godot` import cache (not in git). Slow the first time, quick after updates | game folder |
 
-PLAY runs `godot --path <game> res://gravelight/ui/main_menu.tscn` (the same as Play.bat) and writes
-`<game>\logs\game_last.log`.
+PLAY runs `godot --path <game> --render-thread separate res://gravelight/ui/main_menu.tscn` (the same as Play.bat)
+and writes `<game>\logs\game_last.log` (the previous four starts are kept as `game_<time>.log`). Since launcher 1.2.0
+(T-289):
+- The engine's own output and its exit code go to `logs\launcher_play.log` in the launcher's folder (rotates at 2 MB).
+- The launcher stays in front until the game window is up, then minimizes (or closes, once the game has run 20 s).
+- If the game ends within 20 s, the launcher comes back with the reason, the last lines of the game log and the fixes:
+  **Start in safe mode** (without the separate render thread), **Repair files**, **Open the game log**.
+- PLAY waits while an update, repair or setup runs, and says so when the game is already running (**Switch to it** /
+  **End it and start again**). The update check when the launcher opens no longer blocks PLAY.
+- A version whose LFS files or asset import did not finish shows **PREPARE** (downloads the missing files and runs the
+  headless import with a progress bar) instead of starting a game that would import silently or fail.
 
 UPDATE fetches the channel's branch, checks it out, pulls only the new LFS files and re-imports. **Repair** resets
-the tracked files, pulls every LFS file again and re-imports. **Settings** has the install folder, channel, graphics
-API (Vulkan / D3D12 / OpenGL for older GPUs), fullscreen, extra arguments, what the launcher does when the game starts,
-"Switch GitHub account" and Uninstall.
+the tracked files, pulls every LFS file again and re-imports. UPDATE, Repair and PREPARE refuse to run while the game
+is open. **Settings** has the install folder, channel, graphics API (Vulkan / D3D12 / OpenGL for older GPUs),
+fullscreen, **Safe mode** (leaves out `--render-thread separate`), extra arguments (engine options; anything after
+`--` goes to the game after the scene), what the launcher does when the game starts, "Show the start log",
+"Switch GitHub account" and Uninstall. The channel and the install folder cannot change while files are being written.
 
 ## For the owner: posting news
 News, the hero carousel and the channel list come from **`launcher/feed.json` on the branch of the channel the
@@ -48,6 +59,21 @@ launcher shows it on its next start. No launcher rebuild.
   `{ "title", "note", "items": [{ "id", "area", "title", "summary" }] }`. Proposals, not promises: no dates. The tab
   hides itself when the list is empty. `channels` works on an item as it does on news.
 - A launcher older than 1.1.0 ignores `images` and `upcoming` and shows the rest.
+- **Trailers** (launcher 1.2.0 and newer): a news item with `"type": "video"` and
+  `"video": { "src": "repo:launcher/media/<file>.mp4", "label": "Watch the teaser", "duration": "1:07" }`. Its `image`
+  is the poster. The video files live in **`launcher/media/`** (Git LFS: `.gitattributes` sends `launcher/media/**/*.mp4`
+  and `*.webm` there), 720p H.264 + AAC, under 80 MB each (`tests/check.js` checks). They reach players with the game
+  files, so a trailer plays once the game is installed (before that the poster shows and the button reads "Trailer:
+  after install"). On the carousel a trailer slide plays muted behind the text and stays up 20 s; **Watch trailer**
+  (on the slide, in the article, and under the tagline for the newest trailer) opens a player with sound and controls.
+  `media/<file>` instead of `repo:` plays a clip bundled in the launcher (`launcher/assets/media`, short clips only).
+  Example:
+  ```json
+  { "id": "trailer-teaser", "type": "video", "date": "2026-11-27", "tag": "TRAILER", "hero": true,
+    "title": "The first trailer", "summary": "...", "image": "repo:launcher/assets/news/trailer_teaser.jpg",
+    "video": { "src": "repo:launcher/media/teaser_720p.mp4", "label": "Watch the teaser", "duration": "1:07" } }
+  ```
+  Older launchers show a video item as an ordinary news item with its poster.
 - Optional overrides: `channels` (id, name, branch, description), `godot.version`, `mainScene`, `exclude` (repo
   folders players never download).
 - Patch notes need nothing: they are the branch's first-parent commit subjects.
@@ -65,6 +91,9 @@ npm run shots -- <out dir>      # screenshots of every state, no window shown
 npm run shots -- <out dir> upcoming article:u19:2 hero:u18   # chosen states: an article at a picture, a carousel slide
                                 # CZ_CAPTURE_SIZE=1080x660 for another window size, CZ_CAPTURE_DELAY=4000 to wait longer
 node tests/live.js <dir> [channel]   # real end-to-end install from GitHub into <dir> (downloads ~2 GB), then a headless boot
+node tests/play_headless.js <dir> [game dir] [engine exe]   # the real PLAY code (spawn, start log, exit watch) with the
+                                # real engine, headless (--quit-after 300; CZ_SAFE=1 for safe mode); default: the launcher's install
+npm run shots -- <out dir> gamefail running trailer trailer:play   # the T-289 states (capture runs are muted)
 npm run dist                    # dist/ClaudeZombiesLauncher-Setup-<v>.exe and -portable.exe
 ```
 - `main.js` window + IPC, `preload.js` the renderer's fixed API, `src/manager.js` everything that touches the machine
@@ -75,10 +104,13 @@ npm run dist                    # dist/ClaudeZombiesLauncher-Setup-<v>.exe and -
 - Safety: the launcher only installs into an empty folder and only resets/deletes a folder holding its
   `.launcher-managed` marker, so pointing it at a developer checkout cannot destroy work.
 - Settings live in `%LOCALAPPDATA%\ClaudeZombies\launcher\settings.json`, logs in `...\launcher\logs\`
-  (`launcher.log`, `import_last.log`). `CZ_LAUNCHER_DATA` overrides the folder (tests use it).
+  (`launcher.log`, `import_last.log`, `launcher_play.log`). `CZ_LAUNCHER_DATA` overrides the folder (tests use it).
+- The launcher does not update itself: a fixed launcher reaches players as a new Setup / portable exe (`npm run dist`).
+  Only `feed.json` (news, channels) changes without a rebuild.
 
 ## Known limits
-- The exe is not code-signed, so Windows SmartScreen warns on first run ("More info" > "Run anyway").
+- The exe is not code-signed, so Windows SmartScreen warns on first run ("More info" > "Run anyway"). An antivirus
+  that blocks or quarantines the engine now shows as "Windows refused to start the game engine" with Repair.
 - Players get the whole repository, the purchased mocap pack included (personal project, private repo).
 - Disk: 3.6 GB after the first import (measured 2026-11-12: game files, the LFS cache in `.git\lfs`, the import
   cache). The launcher asks for 5 GB free. A full install took 5.6 minutes on the owner's PC and connection.

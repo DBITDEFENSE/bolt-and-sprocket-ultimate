@@ -307,3 +307,29 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
 
 @media (max-width: 1180px) { #view-home { grid-template-columns: 1fr 320px; } .hero h1 { font-size: 32px; } }
 @media (prefers-reduced-motion: reduce) { .bg-img, .grain, .play::before, .bar i::after { animation: none; } }
+
+/* ---------- T-289: trailers ---------- */
+.bg-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.2s ease; filter: saturate(0.85); pointer-events: none; }
+.bg-video.show { opacity: 1; }
+.trailer-btn { display: inline-flex; align-items: center; gap: 9px; margin-top: 14px; padding: 8px 16px 7px 12px; border: 1px solid rgba(245, 166, 35, 0.55); border-radius: 18px;
+  background: rgba(245, 166, 35, 0.1); color: var(--amber-2); font-family: 'Stencil'; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; transition: 0.18s; }
+.trailer-btn svg, .watch svg { width: 10px; height: 12px; fill: currentColor; }
+.trailer-btn:hover:not(:disabled) { background: rgba(245, 166, 35, 0.22); box-shadow: 0 0 18px rgba(245, 166, 35, 0.35); color: #fff; }
+.ghost.watch { display: inline-flex; align-items: center; gap: 8px; margin-left: 8px; margin-right: auto; border-color: rgba(245, 166, 35, 0.5); color: var(--amber-2); }
+.ghost.watch:hover:not(:disabled) { border-color: var(--amber); background: rgba(245, 166, 35, 0.16); box-shadow: 0 0 16px rgba(245, 166, 35, 0.25); }
+.news-item .play-badge { position: absolute; left: 50%; top: 50%; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; background: rgba(8, 7, 12, 0.78);
+  box-shadow: 0 0 0 1px rgba(245, 166, 35, 0.7); }
+.news-item .play-badge::after { content: ''; position: absolute; left: 9px; top: 7px; border-style: solid; border-width: 5px 0 5px 8px; border-color: transparent transparent transparent var(--amber-2); }
+.player-card { width: min(1100px, 92vw); padding: 0; overflow: hidden; background: #000; }
+.player-card video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #000; }
+.player-title { padding: 10px 16px 12px; font-family: 'Stencil'; letter-spacing: 0.12em; color: var(--ink-2); background: #100c19; }
+
+/* ---------- T-289: the game did not start ---------- */
+.err-card { width: min(720px, 92vw); padding: 26px 28px 22px; }
+.err-card h1 { margin: 0 40px 0 0; font-family: 'Stencil'; font-size: 26px; letter-spacing: 0.03em; color: var(--amber-2); }
+.err-lines { max-height: 220px; overflow: auto; margin: 0 0 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: #07060b;
+  font: 12px/1.45 Consolas, 'Cascadia Mono', monospace; color: var(--ink-2); white-space: pre-wrap; word-break: break-word; user-select: text; }
+.err-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }
+.err-actions .primary { border-color: var(--amber); color: var(--amber-2); background: rgba(245, 166, 35, 0.12); }
+.hero-actions .ghost { white-space: nowrap; }
+.trailer-btn.dup { visibility: hidden; }
