@@ -13,7 +13,12 @@ for scene in gravelight/tools_src/smoke_*.tscn tools_src/smoke_*.tscn; do
 	name=$(basename "$scene" .tscn)
 	case "$name" in *"$FILTER"*) ;; *) continue ;; esac
 	start=$(date +%s)
-	timeout 1200 "$GODOT" --headless --audio-driver Dummy --path "$PROJ" "res://$scene" > "$LOGS/$name.log" 2>&1
+	# T-286: smoke_letzte_fahrt plays up to 55 game minutes at x2 on its own clock, which ends it with a RESULT line;
+	# with three bots and a horde the game runs at about half speed headless (43.5 game min took 2,700 s on the
+	# owner's PC), so the 1,200 s wall killed every run of it mid-egg (exit 124, no RESULT) since UPDATE 10: 3,900 s
+	wall=1200
+	case "$name" in smoke_letzte_fahrt) wall=3900 ;; esac
+	timeout "$wall" "$GODOT" --headless --audio-driver Dummy --path "$PROJ" "res://$scene" > "$LOGS/$name.log" 2>&1
 	code=$?
 	secs=$(( $(date +%s) - start ))
 	errs=$(grep -c "SCRIPT ERROR" "$LOGS/$name.log")

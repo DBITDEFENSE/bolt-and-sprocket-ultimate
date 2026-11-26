@@ -1376,7 +1376,7 @@ func _reachable_now(p: Vector3) -> bool:
 ## such point exists. Cached per door for a few seconds.
 func door_approach(door: BuyDoor, front: Vector3) -> Vector3:
 	var sf: Vector3 = snap(front)
-	if _reachable(sf):
+	if door_stand_ok(door, sf):
 		return front
 	var key: int = door.get_instance_id() + 7
 	var c: Variant = _stand_cache.get(key)
@@ -1394,7 +1394,7 @@ func door_approach(door: BuyDoor, front: Vector3) -> Vector3:
 			var p: Vector3 = a.lerp(b, float(k) / float(steps))
 			if p.distance_to(door.global_position) > 7.0:
 				break
-			if _reachable(p):
+			if door_stand_ok(door, p):
 				out = p
 				found = true
 				break
@@ -1403,6 +1403,38 @@ func door_approach(door: BuyDoor, front: Vector3) -> Vector3:
 		i -= 1
 	_stand_cache[key] = [squad.time(), out]
 	return out
+
+
+## T-286: whether `p` is a spot to buy `door` from. As _reachable, except that the door's own zone does not count
+## against a spot on this bot's side of the door: a zone's box can reach out past its door (Totenhafen's G_SIGNAL box
+## takes in the top of the signal tower's ramp, outside door_signal, from x 29), and T-251's shut-zone rule
+## (shut_door_of) then called every spot within 7 m of the door unreachable, so door_approach fell back to the
+## unreachable front, the walk failed ("couldn't open signal door") and the bots never reached the rotor machine
+## (s2_cipher). A spot on the room's side of the door still counts as behind it (T-251's case: the Old Cellar
+## reached through the hatch's link).
+func door_stand_ok(door: BuyDoor, p: Vector3) -> bool:
+	if door == null or not is_instance_valid(door):
+		return _reachable(p)
+	var dest: Vector3 = snap(p)
+	if dest.distance_to(p) > 2.0:
+		return false
+	var zone: StringName = ZoneVolume.zone_at(get_tree(), dest + Vector3.UP * 0.3)
+	var own: bool = zone != &"" and (door.opens_zone == zone or door.also_opens.has(String(zone)))
+	if not own or GameState.is_zone_open(zone) or shut_door_of(dest) == null:
+		return _reachable(p)
+	# the room's side of the door, when the zone's box tells the two sides apart (on Totenhafen both sides of
+	# door_signal are in G_SIGNAL's box: there the path check alone decides, as before T-251)
+	var n: Vector3 = door.global_basis.z
+	n.y = 0.0
+	n = n.normalized()
+	var o: Vector3 = door.global_position + Vector3.UP * 0.3
+	var in_pos: bool = ZoneVolume.zone_at(get_tree(), o + n * 1.1) == zone
+	var in_neg: bool = ZoneVolume.zone_at(get_tree(), o - n * 1.1) == zone
+	if in_pos != in_neg and (n.dot(dest - door.global_position) > 0.0) == in_pos:
+		return false   # the room's side of the door: behind it
+	# the open zones' navmesh, never through a shut door (open_path)
+	var path: PackedVector3Array = open_path(player.global_position, dest)
+	return not path.is_empty() and path[path.size() - 1].distance_to(dest) < 1.5
 
 
 ## T-153: a stand point found below the object (the dy fallbacks) must not be on the storey underneath it: a floor
