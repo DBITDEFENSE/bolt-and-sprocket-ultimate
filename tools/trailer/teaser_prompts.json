@@ -1,0 +1,23 @@
+{
+ "_doc": "T-285: the teaser's Higgsfield prompts. Each source shot (build/trailers/src/teaser_m0/<shot>.mp4, recorded by clip_trailer.gd) is re-rendered by Seedance 2.5 in video_edit mode at 480p with the source as the video reference (camera, move, timing and layout kept). prompt = wrapper + shot + rules. make_prompts() in make_trailers.py builds the final strings; the T-277 wrapper is reused word for word.",
+ "model": "seedance_2_5",
+ "mode": "video_edit",
+ "resolution": "480p",
+ "wrapper": "Re-render this video as hyperrealistic live-action film footage. Keep exactly the same camera position, camera move, framing and timing, the same layout of every building, object and person, the same people in the same places doing the same actions; only replace the simple game graphics with real-world faces, cloth, materials, weather and light. The scene: ",
+ "rules": " A slow-burning horror film, photographic realism, 35mm film look, cold moonlit blue-grey night with warm amber lamp light, deep shadows, subtle grain. Rural Central Europe in winter in the early 1940s: only period objects, wood, stone, iron and wool; no modern objects, no cars, no asphalt, no painted road markings, no electric street lights. No text, letters, numbers, signs, flags, insignia, emblems, symbols or logos anywhere in frame. No blood or gore. Every person is fictional.",
+ "shots": {
+  "t01_crossroads": "Night at a lonely snowy crossroads in the countryside. A rough split-rail fence, a dark fir forest, wooden telegraph poles with sagging wires and a few crows sitting on the wire, light snow falling, a pale searchlight beam far off in the cloudy sky. A frozen unpaved dirt road with ruts. Nobody in sight. Cold, still, ominous.",
+  "t02_inn_front": "A lonely old two-storey timber-framed country inn seen across a snowy unpaved yard at night, a few small windows glowing warm amber, a stone chimney, a wooden fence, snow falling, dark fir forest behind. Empty and silent; something is wrong.",
+  "t03_taproom": "The empty taproom of an old country inn at night: worn wooden tables and chairs, a long wooden bar counter, low beams; an oil lamp hanging from a ceiling beam swings slowly on its chain, its warm light sliding across the walls. Nobody there. Dust hangs in the air.",
+  "t04_radio": "Close on an old wooden 1940s valve radio set on a shelf in a dark inn; its round dial glows faint amber and flickers with static. The dial face is plain, with no numbers or markings. Dark wood, dust, shadow.",
+  "t05_window_torn": "Inside a dark inn at night, looking at a window whose wooden boards have been torn away, splintered planks hanging, snow drifting in; outside in the snow, far off in the dark, a gaunt motionless figure in ragged clothes stands facing the window, its face in shadow.",
+  "t06_gate_open": "A heavy wooden farmyard gate standing wide open at night, deep snow, beyond it an empty dark lane and black woods; one oil lamp on a post, snow falling, nobody there.",
+  "t07_breath": "Close-up of a weary man's face in the freezing night, a worn plain wool greatcoat with the collar up, his breath steaming in the cold air, eyes watchful, listening; faint warm lamp light from one side, darkness behind him.",
+  "t08_searchlight": "From a snowy farmyard at night, looking up at a tall old wooden watchtower; the searchlight on top slowly sweeps its beam across the falling snow and the low clouds.",
+  "t09_treeline": "A forest track at night running into dark fir woods, deep snow; at the far end, at the treeline, a gaunt human silhouette stands motionless, watching. Cold mist, falling snow, faint moonlight.",
+  "t10_eye": "Extreme close-up of a gaunt undead face in the dark: grey cold skin, sunken cheeks, its eyes catching the light with a faint burning ember glow; snowflakes drift past. Unsettling and still.",
+  "t11_horde_field": "A camera low at snow level at night: a crowd of gaunt undead figures in ragged civilian and work clothes shambling through deep snow across an open field straight toward the camera, dark forest behind them, snow falling.",
+  "t12_boards": "Inside a dark inn at night, looking at a boarded window: grey dead hands push through the gaps between the wooden planks, clawing and tearing at the boards; dark shapes of figures crowd outside in the moonlight.",
+  "t13_lunge": "Point of view at night in deep snow: gaunt undead figures in ragged clothes run straight at the camera out of the darkness, the nearest one lunging into the lens."
+ }
+}

@@ -1,0 +1,1217 @@
+{
+ "note": "T-285 trailer shots for gravelight/tools_src/clip_trailer.gd. Yaw 0 = north (-Z), positive turns west. Coordinates are Map 0's unless the run names another map.",
+ "runs": {
+  "teaser_m0": {
+   "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+   "bots": 0,
+   "round": 3,
+   "player_park": [
+    15.0,
+    0.2,
+    9.0
+   ],
+   "open_zones": [
+    "YARD",
+    "GROUNDS",
+    "STABLE"
+   ],
+   "pre": [
+    "power",
+    "open:Door_Gate",
+    "open:Door_Rocket",
+    "open:Door_Yard"
+   ],
+   "shots": [
+    {
+     "name": "t01_crossroads",
+     "secs": 6,
+     "hour": 0,
+     "cam": "free",
+     "from": [
+      -4.0,
+      1.75,
+      -2.0
+     ],
+     "to": [
+      -3.0,
+      1.72,
+      -3.0
+     ],
+     "yaw": -45,
+     "pitch": 6,
+     "fov": 55,
+     "shake": 0.4
+    },
+    {
+     "name": "t02_inn_front",
+     "secs": 6,
+     "hour": 0,
+     "cam": "free",
+     "from": [
+      20.0,
+      1.7,
+      -14.5
+     ],
+     "to": [
+      20.0,
+      1.7,
+      -13.0
+     ],
+     "yaw": 180,
+     "pitch": 4,
+     "fov": 55,
+     "shake": 0.4
+    },
+    {
+     "name": "t03_taproom",
+     "secs": 6,
+     "hour": 0,
+     "cam": "free",
+     "from": [
+      10.0,
+      1.6,
+      13.5
+     ],
+     "to": [
+      10.6,
+      1.6,
+      13.0
+     ],
+     "yaw": 66,
+     "yaw_to": 40,
+     "pitch": -2,
+     "fov": 60,
+     "ease": "smooth",
+     "shake": 0.3
+    },
+    {
+     "name": "t04_radio",
+     "secs": 5,
+     "hour": 0,
+     "cam": "free",
+     "from": [
+      7.7,
+      1.62,
+      5.4
+     ],
+     "to": [
+      7.35,
+      1.62,
+      5.4
+     ],
+     "yaw": 95,
+     "pitch": 16,
+     "fov": 42,
+     "shake": 0.3
+    },
+    {
+     "name": "t05_window_torn",
+     "secs": 5,
+     "hour": 0,
+     "cam": "free",
+     "pre": [
+      "tear:W_TAP_W:3",
+      "stand:-4.5,0,6.5:-90"
+     ],
+     "from": [
+      2.9,
+      1.6,
+      6.0
+     ],
+     "to": [
+      2.3,
+      1.6,
+      6.0
+     ],
+     "yaw": 90,
+     "pitch": 0,
+     "fov": 55,
+     "shake": 0.3
+    },
+    {
+     "name": "t06_gate_open",
+     "secs": 5,
+     "hour": 0,
+     "cam": "free",
+     "from": [
+      18.0,
+      1.6,
+      41.0
+     ],
+     "to": [
+      18.0,
+      1.6,
+      42.0
+     ],
+     "yaw": 180,
+     "pitch": 14,
+     "fov": 55,
+     "shake": 0.4
+    },
+    {
+     "name": "t08_searchlight",
+     "secs": 5,
+     "hour": 0,
+     "cam": "free",
+     "from": [
+      13.5,
+      1.6,
+      38.5
+     ],
+     "to": [
+      13.2,
+      1.6,
+      38.2
+     ],
+     "yaw": 128.7,
+     "yaw_to": 124,
+     "pitch": 22,
+     "fov": 60,
+     "shake": 0.3
+    },
+    {
+     "name": "t09_treeline",
+     "secs": 6,
+     "hour": 0,
+     "cam": "free",
+     "pre": [
+      "stand:67,0,40.5:90"
+     ],
+     "from": [
+      50.0,
+      1.6,
+      40.0
+     ],
+     "to": [
+      52.0,
+      1.6,
+      40.0
+     ],
+     "yaw": -90,
+     "pitch": 1,
+     "fov": 42,
+     "shake": 0.35
+    },
+    {
+     "name": "t10_eye",
+     "secs": 5,
+     "hour": 0,
+     "cam": "free",
+     "pre": [
+      "stand:12,0,-8:0"
+     ],
+     "from": [
+      12.0,
+      1.45,
+      -9.3
+     ],
+     "to": [
+      12.0,
+      1.42,
+      -8.75
+     ],
+     "look": [
+      12.0,
+      1.42,
+      -8.0
+     ],
+     "fov": 35,
+     "shake": 0.25
+    },
+    {
+     "name": "t11_horde_field",
+     "secs": 6,
+     "hour": 0,
+     "cam": "free",
+     "pre": [
+      "round:4",
+      "horde:12,0,-28:10"
+     ],
+     "pre_s": 5,
+     "from": [
+      14.2,
+      0.6,
+      -14.0
+     ],
+     "to": [
+      14.2,
+      0.6,
+      -15.0
+     ],
+     "yaw": 0,
+     "pitch": 4,
+     "fov": 50,
+     "shake": 0.5,
+     "player": [
+      13.0,
+      0.2,
+      -7.0
+     ]
+    },
+    {
+     "name": "t12_boards",
+     "secs": 5,
+     "hour": 0,
+     "cam": "free",
+     "player": [
+      2.5,
+      0.2,
+      8.0
+     ],
+     "pre": [
+      "round:6",
+      "tear:W_TAP_W:1",
+      "horde:-4,0,6:5"
+     ],
+     "pre_s": 9,
+     "from": [
+      3.0,
+      1.5,
+      7.6
+     ],
+     "to": [
+      2.6,
+      1.45,
+      7.3
+     ],
+     "look": [
+      0.2,
+      1.3,
+      6.0
+     ],
+     "fov": 55,
+     "shake": 0.6
+    },
+    {
+     "name": "t13_lunge",
+     "secs": 4,
+     "hour": 0,
+     "cam": "eye",
+     "hud": "none",
+     "from": [
+      12.0,
+      0.2,
+      -10.0
+     ],
+     "yaw": 0,
+     "pitch": 0,
+     "pre": [
+      "round:15",
+      "horde:12,0,-23:3"
+     ],
+     "pre_s": 3.5
+    }
+   ]
+  },
+  "game_m0": {
+   "map": "res://gravelight/maps/map00_crossroads/map00.tscn",
+   "bots": 3,
+   "round": 5,
+   "weapon": "thompson",
+   "player_park": [
+    15.0,
+    0.2,
+    9.0
+   ],
+   "open_zones": [
+    "YARD",
+    "GROUNDS",
+    "STABLE"
+   ],
+   "pre": [
+    "power",
+    "open:Door_Gate",
+    "open:Door_Rocket",
+    "open:Door_Yard"
+   ],
+   "shots": [
+    {
+     "name": "g01_window_fight",
+     "secs": 6,
+     "hour": 0,
+     "cam": "eye",
+     "hud": "on",
+     "from": [
+      21.0,
+      0.2,
+      8.0
+     ],
+     "yaw": -90,
+     "pitch": -2,
+     "aim": "zombie",
+     "aim_rate": 0.18,
+     "pre": [
+      "bots_to:19,0.2,9.5",
+      "round:9",
+      "horde:31,0,8:9"
+     ],
+     "pre_s": 5.5,
+     "events": [
+      [
+       0.25,
+       "fire_on"
+      ],
+      [
+       1.7,
+       "fire_off"
+      ],
+      [
+       2.0,
+       "fire_on"
+      ],
+      [
+       3.5,
+       "fire_off"
+      ],
+      [
+       3.8,
+       "fire_on"
+      ],
+      [
+       5.6,
+       "fire_off"
+      ]
+     ]
+    },
+    {
+     "name": "g02_window_out",
+     "secs": 5,
+     "hour": 0,
+     "cam": "free",
+     "player": [
+      21.0,
+      0.2,
+      8.0
+     ],
+     "pre": [
+      "bots_to:19.5,0.2,9.0",
+      "round:9",
+      "horde:33,0,9:7"
+     ],
+     "pre_s": 7,
+     "from": [
+      29.5,
+      1.5,
+      12.5
+     ],
+     "to": [
+      28.5,
+      1.4,
+      11.6
+     ],
+     "look": [
+      24.0,
+      1.3,
+      8.0
+     ],
+     "fov": 55,
+     "shake": 0.6
+    },
+    {
+     "name": "g03_grenade",
+     "secs": 5,
+     "hour": 0,
+     "cam": "free",
+     "pre": [
+      "round:6",
+      "horde:12,0,-22:7"
+     ],
+     "pre_s": 4,
+     "from": [
+      2.0,
+      1.8,
+      -8.0
+     ],
+     "to": [
+      3.0,
+      1.8,
+      -8.6
+     ],
+     "look": [
+      12.0,
+      0.9,
+      -15.0
+     ],
+     "fov": 55,
+     "shake": 0.4,
+     "events": [
+      [
+       1.8,
+       "blast_horde:6:grenade"
+      ]
+     ]
+    },
+    {
+     "name": "g04_shell_slowmo",
+     "secs": 5,
+     "hour": 0,
+     "cam": "free",
+     "pre": [
+      "round:6",
+      "horde:12,0,-20:6"
+     ],
+     "pre_s": 4.5,
+     "from": [
+      22.0,
+      1.2,
+      -12.0
+     ],
+     "to": [
+      21.5,
+      1.1,
+      -12.4
+     ],
+     "look": [
+      12.0,
+      1.0,
+      -16.0
+     ],
+     "fov": 50,
+     "shake": 0.3,
+     "events": [
+      [
+       0.6,
+       "timescale:0.35"
+      ],
+      [
+       0.8,
+       "blast_horde:4.5:shell"
+      ],
+      [
+       4.7,
+       "timescale:1"
+      ]
+     ]
+    },
+    {
+     "name": "g05_bomb_wide",
+     "secs": 4.5,
+     "hour": 0,
+     "cam": "free",
+     "pre": [
+      "round:6",
+      "horde:14,0,-24:8"
+     ],
+     "pre_s": 4,
+     "from": [
+      -6.0,
+      4.0,
+      -2.0
+     ],
+     "to": [
+      -5.0,
+      3.8,
+      -2.6
+     ],
+     "look": [
+      14.0,
+      1.5,
+      -20.0
+     ],
+     "fov": 55,
+     "shake": 0.4,
+     "events": [
+      [
+       1.4,
+       "blast_horde:7:bomb"
+      ]
+     ]
+    },
+    {
+     "name": "g06_tank_drive",
+     "secs": 6,
+     "hour": 16,
+     "cam": "tank",
+     "hud": "off",
+     "pre": [
+      "tank_in"
+     ],
+     "pre_s": 0.5,
+     "tank_yaw": 25,
+     "tank_yaw_to": -12,
+     "tank_pitch": -10,
+     "tank_pitch_to": -7,
+     "tank_dist": 8,
+     "tank_dist_to": 11,
+     "events": [
+      [
+       0,
+       "tank_drive:0,1"
+      ]
+     ]
+    },
+    {
+     "name": "g07_tank_fire",
+     "secs": 5,
+     "hour": 16,
+     "cam": "tank",
+     "hud": "off",
+     "pre": [
+      "tank_drive:0,0",
+      "round:7",
+      "horde_rel:tank:0,0,-24:7"
+     ],
+     "pre_s": 3,
+     "tank_yaw": 0,
+     "tank_pitch": -3,
+     "tank_dist": 9,
+     "events": [
+      [
+       1.4,
+       "tank_fire"
+      ]
+     ]
+    },
+    {
+     "name": "g08_tank_follow",
+     "secs": 5,
+     "hour": 16,
+     "cam": "free",
+     "keep_player": true,
+     "follow": "tank",
+     "off": [
+      -7.0,
+      2.2,
+      4.0
+     ],
+     "off_to": [
+      -6.0,
+      2.0,
+      -2.0
+     ],
+     "look_off": [
+      0,
+      1.5,
+      -3
+     ],
+     "fov": 50,
+     "pre": [
+      "tank_drive:0.12,1"
+     ],
+     "pre_s": 0.8,
+     "events": [
+      [
+       4.9,
+       "tank_drive:0,0"
+      ]
+     ]
+    },
+    {
+     "name": "g09_v2_ignite",
+     "secs": 7,
+     "hour": 0,
+     "cam": "free",
+     "player": [
+      60.0,
+      0.2,
+      30.0
+     ],
+     "pre": [
+      "launch:29.6"
+     ],
+     "pre_s": 0.05,
+     "from": [
+      124.0,
+      1.6,
+      60.0
+     ],
+     "to": [
+      123.0,
+      1.6,
+      59.0
+     ],
+     "look": [
+      108.0,
+      7.0,
+      40.0
+     ],
+     "look_to": [
+      108.0,
+      9.0,
+      40.0
+     ],
+     "fov": 45,
+     "shake": 0.4
+    },
+    {
+     "name": "g10_v2_climb",
+     "secs": 6,
+     "hour": 0,
+     "cam": "free",
+     "player": [
+      60.0,
+      0.2,
+      30.0
+     ],
+     "pre": [
+      "launch:33.6"
+     ],
+     "pre_s": 0.05,
+     "from": [
+      98.0,
+      1.0,
+      50.0
+     ],
+     "to": [
+      98.5,
+      1.0,
+      50.0
+     ],
+     "look_follow": "rocket",
+     "look_off": [
+      0,
+      6,
+      0
+     ],
+     "follow_rate": 0.25,
+     "fov": 55,
+     "shake": 0.6
+    },
+    {
+     "name": "g11_rocketman",
+     "secs": 4,
+     "hour": 0,
+     "cam": "free",
+     "from": [
+      117.6,
+      1.62,
+      26.2
+     ],
+     "to": [
+      116.6,
+      1.62,
+      26.2
+     ],
+     "yaw": -90,
+     "pitch": -8,
+     "fov": 55,
+     "shake": 0.3
+    },
+    {
+     "name": "g12_horse_follow",
+     "secs": 5,
+     "hour": 0,
+     "cam": "free",
+     "keep_player": true,
+     "follow": "horse",
+     "off": [
+      -4.5,
+      1.5,
+      1.5
+     ],
+     "off_to": [
+      -4.5,
+      1.5,
+      -1.0
+     ],
+     "look_off": [
+      0,
+      1.4,
+      -2.5
+     ],
+     "fov": 50,
+     "pre": [
+      "callv:YardHorse:stand_at:9,46.5,-90:0.5",
+      "horse_mount",
+      "horse:0,1,1"
+     ],
+     "pre_s": 1.6,
+     "follow_rate": 0.3
+    },
+    {
+     "name": "g13_horse_rider",
+     "secs": 4,
+     "hour": 0,
+     "cam": "keep",
+     "hud": "off",
+     "pre": [
+      "callv:YardHorse:stand_at:9,46.5,-90:0.5",
+      "horse_mount",
+      "horse:0.1,1,1"
+     ],
+     "pre_s": 1.6
+    },
+    {
+     "name": "g14_zip",
+     "secs": 5,
+     "hour": 0,
+     "cam": "keep",
+     "hud": "off",
+     "pre": [
+      "player:4,12.1,46.6:-90",
+      "zip:YardZip"
+     ],
+     "pre_s": 0.4
+    },
+    {
+     "name": "g15_squad",
+     "secs": 6,
+     "hour": 0,
+     "cam": "free",
+     "player": [
+      16.0,
+      0.2,
+      38.0
+     ],
+     "player_yaw": 180,
+     "pre": [
+      "bots_to:16,0.2,38.8",
+      "round:8",
+      "horde:18,0,52:10"
+     ],
+     "pre_s": 5,
+     "from": [
+      14.5,
+      0.8,
+      34.0
+     ],
+     "to": [
+      15.2,
+      0.8,
+      34.8
+     ],
+     "look": [
+      17.0,
+      1.3,
+      46.0
+     ],
+     "fov": 55,
+     "shake": 0.6
+    },
+    {
+     "name": "g16_totenross",
+     "secs": 4,
+     "hour": 0,
+     "cam": "free",
+     "pre": [
+      "callv:HorseRound_20:pose:14,0,43,180,rear:3"
+     ],
+     "pre_s": 0.5,
+     "from": [
+      14.3,
+      0.45,
+      49.8
+     ],
+     "to": [
+      14.2,
+      0.5,
+      48.6
+     ],
+     "look": [
+      14.0,
+      2.0,
+      43.0
+     ],
+     "fov": 50,
+     "shake": 0.3
+    },
+    {
+     "name": "g17_cousins",
+     "secs": 4,
+     "hour": 0,
+     "cam": "free",
+     "pre": [
+      "boss:hammer:13.0,0,5.0::0.7",
+      "boss:reach:10.6,0,6.6::0.5",
+      "boss:alix:15.4,0,4.6::2.0"
+     ],
+     "pre_s": 0.5,
+     "from": [
+      16.5,
+      1.62,
+      11.5
+     ],
+     "to": [
+      16.2,
+      1.62,
+      10.8
+     ],
+     "yaw": 28,
+     "pitch": -2,
+     "fov": 60,
+     "shake": 0.3
+    }
+   ]
+  },
+  "game_m1": {
+   "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
+   "bots": 3,
+   "round": 6,
+   "weapon": "mg42",
+   "player_park": [
+    10.0,
+    0.2,
+    20.5
+   ],
+   "pre": [
+    "power"
+   ],
+   "shots": [
+    {
+     "name": "k01_yard_horde",
+     "secs": 5,
+     "hour": 0,
+     "cam": "free",
+     "pre": [
+      "round:8",
+      "horde_cam:16:10"
+     ],
+     "pre_s": 4,
+     "from": [
+      38.5,
+      1.62,
+      28.5
+     ],
+     "to": [
+      37.5,
+      1.62,
+      27.6
+     ],
+     "yaw": 50,
+     "yaw_to": 44,
+     "pitch": 4,
+     "fov": 60,
+     "shake": 0.4
+    },
+    {
+     "name": "k02_tank_gate",
+     "secs": 5,
+     "hour": 0,
+     "cam": "free",
+     "pre": [
+      "call:ShermanEvent:begin_arrival:15"
+     ],
+     "pre_s": 0.2,
+     "from": [
+      24.2,
+      1.62,
+      9.0
+     ],
+     "to": [
+      24.0,
+      1.5,
+      9.6
+     ],
+     "yaw": 25,
+     "yaw_to": 30,
+     "pitch": 5,
+     "fov": 60,
+     "shake": 0.4
+    },
+    {
+     "name": "k03_zip",
+     "secs": 5,
+     "hour": 0,
+     "cam": "keep",
+     "hud": "off",
+     "pre": [
+      "player:16.4,6.1,11.6:-135",
+      "zip:any"
+     ],
+     "pre_s": 0.4
+    },
+    {
+     "name": "k04_eye_mg",
+     "secs": 5,
+     "hour": 0,
+     "cam": "eye",
+     "hud": "on",
+     "from": [
+      20.0,
+      0.2,
+      30.5
+     ],
+     "yaw": 0,
+     "pitch": 4,
+     "aim": "zombie",
+     "aim_rate": 0.15,
+     "pre": [
+      "round:8",
+      "horde_cam:15:8"
+     ],
+     "pre_s": 4,
+     "events": [
+      [
+       0.3,
+       "fire_on"
+      ],
+      [
+       2.4,
+       "fire_off"
+      ],
+      [
+       2.7,
+       "fire_on"
+      ],
+      [
+       4.8,
+       "fire_off"
+      ]
+     ]
+    }
+   ]
+  },
+  "game_m2": {
+   "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+   "bots": 3,
+   "round": 6,
+   "weapon": "stg44",
+   "player_park": [
+    18.5,
+    0.2,
+    5.0
+   ],
+   "pre": [
+    "power"
+   ],
+   "shots": [
+    {
+     "name": "u01_pen_sweep",
+     "secs": 5,
+     "hour": 0,
+     "cam": "free",
+     "from": [
+      17.0,
+      1.7,
+      62.0
+     ],
+     "to": [
+      15.5,
+      2.6,
+      58.5
+     ],
+     "yaw": 78.7,
+     "yaw_to": 72,
+     "pitch": -9.5,
+     "fov": 62,
+     "shake": 0.3
+    },
+    {
+     "name": "u02_tower_down",
+     "secs": 4,
+     "hour": 0,
+     "cam": "free",
+     "from": [
+      9.5,
+      10.0,
+      49.0
+     ],
+     "to": [
+      9.0,
+      10.3,
+      48.0
+     ],
+     "yaw": 149,
+     "yaw_to": 152,
+     "pitch": -40,
+     "fov": 62,
+     "shake": 0.3
+    },
+    {
+     "name": "u03_bow",
+     "secs": 4,
+     "hour": 0,
+     "cam": "free",
+     "from": [
+      7.0,
+      2.4,
+      33.6
+     ],
+     "to": [
+      7.0,
+      2.6,
+      34.8
+     ],
+     "yaw": -180,
+     "pitch": -15,
+     "fov": 62,
+     "shake": 0.3
+    },
+    {
+     "name": "u04_quay_horde",
+     "secs": 5,
+     "hour": 0,
+     "cam": "free",
+     "player": [
+      10.0,
+      0.2,
+      5.0
+     ],
+     "pre": [
+      "round:8",
+      "horde_cam:14:8"
+     ],
+     "pre_s": 4,
+     "from": [
+      18.5,
+      1.5,
+      5.0
+     ],
+     "to": [
+      18.0,
+      1.4,
+      5.0
+     ],
+     "yaw": -90,
+     "pitch": -4,
+     "fov": 58,
+     "shake": 0.5
+    }
+   ]
+  },
+  "game_m4b": {
+   "map": "res://gravelight/maps/map04_fernflug/map04b.tscn",
+   "bots": 0,
+   "round": 5,
+   "settle_s": 10,
+   "pre": [
+    "power",
+    "call:FlightSky:calm:0.1",
+    "call:KranichSunset:golden_now:2"
+   ],
+   "shots": [
+    {
+     "name": "f01_wing_sun",
+     "secs": 5,
+     "cam": "free",
+     "from": [
+      -75.0,
+      5.0,
+      21.0
+     ],
+     "to": [
+      -76.5,
+      5.2,
+      20.0
+     ],
+     "yaw": 25,
+     "yaw_to": 34,
+     "pitch": 3,
+     "fov": 60,
+     "shake": 0.3
+    },
+    {
+     "name": "f02_bomber_sun",
+     "secs": 4,
+     "cam": "free",
+     "from": [
+      -54.6,
+      -36.8,
+      -94.0
+     ],
+     "to": [
+      -54.0,
+      -36.6,
+      -93.0
+     ],
+     "yaw": 12,
+     "pitch": 3,
+     "fov": 55,
+     "shake": 0.2
+    },
+    {
+     "name": "f03_bay_drop",
+     "secs": 5,
+     "cam": "free",
+     "pre": [
+      "call:FlightController:start_bomb_run:3.7"
+     ],
+     "pre_s": 0.1,
+     "from": [
+      0.0,
+      1.62,
+      23.0
+     ],
+     "to": [
+      0.0,
+      1.62,
+      21.5
+     ],
+     "yaw": 0,
+     "pitch": -8,
+     "fov": 62,
+     "shake": 0.4
+    },
+    {
+     "name": "f04_casing",
+     "secs": 4,
+     "cam": "free",
+     "pre": [
+      "callv:KranichSunset:drop_fx:1:1.2"
+     ],
+     "pre_s": 0.1,
+     "from": [
+      2.0,
+      -12.4,
+      4.0
+     ],
+     "to": [
+      2.0,
+      -13.0,
+      4.0
+     ],
+     "yaw": 33,
+     "pitch": -33,
+     "fov": 60
+    }
+   ]
+  },
+  "game_m4d": {
+   "map": "res://gravelight/maps/map04_fernflug/map04d.tscn",
+   "bots": 0,
+   "round": 5,
+   "settle_s": 10,
+   "pre": [
+    "power"
+   ],
+   "shots": [
+    {
+     "name": "f05_earth",
+     "secs": 4,
+     "cam": "free",
+     "pre": [
+      "call:EarthSky:capture_violet:2"
+     ],
+     "pre_s": 0.2,
+     "from": [
+      0.0,
+      1.62,
+      92.0
+     ],
+     "to": [
+      0.0,
+      1.62,
+      91.0
+     ],
+     "yaw": 176.5,
+     "pitch": 40,
+     "pitch_to": 34,
+     "fov": 60
+    },
+    {
+     "name": "f06_meteors",
+     "secs": 5,
+     "cam": "free",
+     "pre": [
+      "call:MeteorShower:_start:4"
+     ],
+     "pre_s": 0.2,
+     "from": [
+      0.0,
+      1.62,
+      63.0
+     ],
+     "to": [
+      0.0,
+      1.62,
+      61.5
+     ],
+     "yaw": 180,
+     "pitch": 3,
+     "fov": 60,
+     "shake": 0.3
+    }
+   ]
+  }
+ }
+}
