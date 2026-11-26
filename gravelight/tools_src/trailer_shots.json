@@ -327,7 +327,7 @@
    "shots": [
     {
      "name": "g01_window_fight",
-     "secs": 6,
+     "secs": 5,
      "hour": 0,
      "cam": "eye",
      "hud": "on",
@@ -352,30 +352,30 @@
        "fire_on"
       ],
       [
-       1.7,
+       1.6,
        "fire_off"
       ],
       [
-       2.0,
+       1.9,
        "fire_on"
+      ],
+      [
+       3.2,
+       "fire_off"
       ],
       [
        3.5,
-       "fire_off"
-      ],
-      [
-       3.8,
        "fire_on"
       ],
       [
-       5.6,
+       4.9,
        "fire_off"
       ]
      ]
     },
     {
      "name": "g02_window_out",
-     "secs": 5,
+     "secs": 4,
      "hour": 0,
      "cam": "free",
      "player": [
@@ -390,14 +390,14 @@
      ],
      "pre_s": 7,
      "from": [
-      29.5,
-      1.5,
-      12.5
+      31.0,
+      2.4,
+      9.5
      ],
      "to": [
-      28.5,
-      1.4,
-      11.6
+      30.0,
+      2.2,
+      9.0
      ],
      "look": [
       24.0,
@@ -409,30 +409,30 @@
     },
     {
      "name": "g03_grenade",
-     "secs": 5,
+     "secs": 4.5,
      "hour": 0,
      "cam": "free",
      "pre": [
       "round:6",
-      "horde:12,0,-22:7"
+      "horde:12,0,-21:8"
      ],
-     "pre_s": 4,
+     "pre_s": 3.5,
      "from": [
-      2.0,
-      1.8,
-      -8.0
+      6.5,
+      1.7,
+      -10.5
      ],
      "to": [
-      3.0,
-      1.8,
-      -8.6
+      7.2,
+      1.7,
+      -10.9
      ],
      "look": [
       12.0,
       0.9,
-      -15.0
+      -17.5
      ],
-     "fov": 55,
+     "fov": 50,
      "shake": 0.4,
      "events": [
       [
@@ -443,7 +443,7 @@
     },
     {
      "name": "g04_shell_slowmo",
-     "secs": 5,
+     "secs": 4.5,
      "hour": 0,
      "cam": "free",
      "pre": [
@@ -476,16 +476,12 @@
       [
        0.8,
        "blast_horde:4.5:shell"
-      ],
-      [
-       4.7,
-       "timescale:1"
       ]
      ]
     },
     {
      "name": "g05_bomb_wide",
-     "secs": 4.5,
+     "secs": 4,
      "hour": 0,
      "cam": "free",
      "pre": [
@@ -519,7 +515,7 @@
     },
     {
      "name": "g06_tank_drive",
-     "secs": 6,
+     "secs": 5,
      "hour": 16,
      "cam": "tank",
      "hud": "off",
@@ -542,7 +538,7 @@
     },
     {
      "name": "g07_tank_fire",
-     "secs": 5,
+     "secs": 4,
      "hour": 16,
      "cam": "tank",
      "hud": "off",
@@ -564,7 +560,7 @@
     },
     {
      "name": "g08_tank_follow",
-     "secs": 5,
+     "secs": 4,
      "hour": 16,
      "cam": "free",
      "keep_player": true,
@@ -589,16 +585,11 @@
       "tank_drive:0.12,1"
      ],
      "pre_s": 0.8,
-     "events": [
-      [
-       4.9,
-       "tank_drive:0,0"
-      ]
-     ]
+     "events": []
     },
     {
      "name": "g09_v2_ignite",
-     "secs": 7,
+     "secs": 6.5,
      "hour": 0,
      "cam": "free",
      "player": [
@@ -635,7 +626,7 @@
     },
     {
      "name": "g10_v2_climb",
-     "secs": 6,
+     "secs": 5,
      "hour": 0,
      "cam": "free",
      "player": [
@@ -669,7 +660,7 @@
     },
     {
      "name": "g11_rocketman",
-     "secs": 4,
+     "secs": 3,
      "hour": 0,
      "cam": "free",
      "from": [
@@ -689,7 +680,7 @@
     },
     {
      "name": "g12_horse_follow",
-     "secs": 5,
+     "secs": 4,
      "hour": 0,
      "cam": "free",
      "keep_player": true,
@@ -720,7 +711,7 @@
     },
     {
      "name": "g13_horse_rider",
-     "secs": 4,
+     "secs": 3.5,
      "hour": 0,
      "cam": "keep",
      "hud": "off",
@@ -733,7 +724,7 @@
     },
     {
      "name": "g14_zip",
-     "secs": 5,
+     "secs": 4,
      "hour": 0,
      "cam": "keep",
      "hud": "off",
@@ -745,7 +736,7 @@
     },
     {
      "name": "g15_squad",
-     "secs": 6,
+     "secs": 5,
      "hour": 0,
      "cam": "free",
      "player": [
@@ -780,7 +771,7 @@
     },
     {
      "name": "g16_totenross",
-     "secs": 4,
+     "secs": 3.5,
      "hour": 0,
      "cam": "free",
      "pre": [
@@ -807,7 +798,7 @@
     },
     {
      "name": "g17_cousins",
-     "secs": 4,
+     "secs": 3.5,
      "hour": 0,
      "cam": "free",
      "pre": [
@@ -831,7 +822,8 @@
      "fov": 60,
      "shake": 0.3
     }
-   ]
+   ],
+   "gfx_scale": 1.0
   },
   "game_m1": {
    "map": "res://gravelight/maps/map01_kaltenbrunn/map01.tscn",
@@ -849,7 +841,7 @@
    "shots": [
     {
      "name": "k01_yard_horde",
-     "secs": 5,
+     "secs": 4,
      "hour": 0,
      "cam": "free",
      "pre": [
@@ -875,7 +867,7 @@
     },
     {
      "name": "k02_tank_gate",
-     "secs": 5,
+     "secs": 4,
      "hour": 0,
      "cam": "free",
      "pre": [
@@ -900,7 +892,7 @@
     },
     {
      "name": "k03_zip",
-     "secs": 5,
+     "secs": 4,
      "hour": 0,
      "cam": "keep",
      "hud": "off",
@@ -912,7 +904,7 @@
     },
     {
      "name": "k04_eye_mg",
-     "secs": 5,
+     "secs": 4.5,
      "hour": 0,
      "cam": "eye",
      "hud": "on",
@@ -944,12 +936,13 @@
        "fire_on"
       ],
       [
-       4.8,
+       4.4,
        "fire_off"
       ]
      ]
     }
-   ]
+   ],
+   "gfx_scale": 1.0
   },
   "game_m2": {
    "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
@@ -967,7 +960,7 @@
    "shots": [
     {
      "name": "u01_pen_sweep",
-     "secs": 5,
+     "secs": 4,
      "hour": 0,
      "cam": "free",
      "from": [
@@ -988,7 +981,7 @@
     },
     {
      "name": "u02_tower_down",
-     "secs": 4,
+     "secs": 3.5,
      "hour": 0,
      "cam": "free",
      "from": [
@@ -1009,7 +1002,7 @@
     },
     {
      "name": "u03_bow",
-     "secs": 4,
+     "secs": 3.5,
      "hour": 0,
      "cam": "free",
      "from": [
@@ -1029,7 +1022,7 @@
     },
     {
      "name": "u04_quay_horde",
-     "secs": 5,
+     "secs": 4,
      "hour": 0,
      "cam": "free",
      "player": [
@@ -1057,7 +1050,8 @@
      "fov": 58,
      "shake": 0.5
     }
-   ]
+   ],
+   "gfx_scale": 1.0
   },
   "game_m4b": {
    "map": "res://gravelight/maps/map04_fernflug/map04b.tscn",
@@ -1072,7 +1066,7 @@
    "shots": [
     {
      "name": "f01_wing_sun",
-     "secs": 5,
+     "secs": 4,
      "cam": "free",
      "from": [
       -75.0,
@@ -1092,7 +1086,7 @@
     },
     {
      "name": "f02_bomber_sun",
-     "secs": 4,
+     "secs": 3.5,
      "cam": "free",
      "from": [
       -54.6,
@@ -1111,7 +1105,7 @@
     },
     {
      "name": "f03_bay_drop",
-     "secs": 5,
+     "secs": 4.5,
      "cam": "free",
      "pre": [
       "call:FlightController:start_bomb_run:3.7"
@@ -1134,7 +1128,7 @@
     },
     {
      "name": "f04_casing",
-     "secs": 4,
+     "secs": 3.5,
      "cam": "free",
      "pre": [
       "callv:KranichSunset:drop_fx:1:1.2"
@@ -1154,7 +1148,8 @@
      "pitch": -33,
      "fov": 60
     }
-   ]
+   ],
+   "gfx_scale": 1.0
   },
   "game_m4d": {
    "map": "res://gravelight/maps/map04_fernflug/map04d.tscn",
@@ -1167,7 +1162,7 @@
    "shots": [
     {
      "name": "f05_earth",
-     "secs": 4,
+     "secs": 3.5,
      "cam": "free",
      "pre": [
       "call:EarthSky:capture_violet:2"
@@ -1190,7 +1185,7 @@
     },
     {
      "name": "f06_meteors",
-     "secs": 5,
+     "secs": 4,
      "cam": "free",
      "pre": [
       "call:MeteorShower:_start:4"
@@ -1211,7 +1206,8 @@
      "fov": 60,
      "shake": 0.3
     }
-   ]
+   ],
+   "gfx_scale": 1.0
   }
  }
 }

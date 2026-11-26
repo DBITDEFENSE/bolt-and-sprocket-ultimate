@@ -40,6 +40,7 @@ var _fails: PackedStringArray = []
 var _frames_total: int = 0
 var _huds: Array = []
 var _stride: int = 1
+var _mag0: int = 0
 var _follow_pos: Vector3 = Vector3.INF
 var _look_s: Vector3 = Vector3.INF
 
@@ -244,6 +245,12 @@ func _shot(sh: Dictionary) -> void:
 				_place_free(sh, k)
 			"eye":
 				_place_eye(sh, k)
+				var wi: WeaponInstance = _p.weapons.current() if _p.weapons != null else null
+				if wi != null:
+					if i == 0:
+						_mag0 = wi.mag
+					elif wi.mag < 6 and _mag0 > 6:
+						wi.mag = _mag0   # never an empty click mid-shot
 			"tank":
 				_place_tank(sh, k)
 		_hide_debug()
@@ -452,8 +459,10 @@ func _hud(how: String) -> void:
 			continue
 		if how == "on":
 			cl.visible = cl is Hud or str(cl.name).begins_with("Crosshair") or cl.visible
+			cl.offset = Vector2.ZERO
 		else:
 			cl.visible = false
+			cl.offset = Vector2(100000, 0)   # layers that set their own visible every frame (the squad roster) go off-screen
 	var subs: Node = GLVO.get("_subtitles") as Node
 	if subs is CanvasLayer:
 		(subs as CanvasLayer).visible = false

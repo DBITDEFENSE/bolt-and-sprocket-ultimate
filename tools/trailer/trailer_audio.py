@@ -205,13 +205,13 @@ def teaser(cues, dur: float):
     for (t, kind, arg) in cues:
         if kind == "wind":
             length = float(arg)
-            put(mix, A.nrm(wind(r, length)), t, 0.32, -0.2)
-            put(mix, A.nrm(wind(r, length)), t, 0.26, 0.3)
+            put(mix, A.nrm(wind(r, length)), t, 0.2, -0.2)
+            put(mix, A.nrm(wind(r, length)), t, 0.16, 0.3)
         elif kind == "drone":
             length = float(arg)
             d = drone(r, length)
             d *= env_curve(len(d), [(0, 0.0), (0.15, 0.6), (0.85, 1.0), (1, 0.9)])
-            put(music, d, t, 0.42)
+            put(music, d, t, 0.3)
         elif kind == "cluster":
             length = float(arg)
             c = cluster(r, length, a=length * 0.7)

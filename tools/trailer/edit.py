@@ -20,7 +20,7 @@ W, H = 1920, 1080
 
 GRADES = {
     # the teaser: cold, crushed, a little desaturated, fine grain, a vignette (Higgsfield clips come in at 480p)
-    "teaser": "eq=contrast=1.08:saturation=0.82:gamma=0.94,colorbalance=bs=0.05:ms=0.02:hs=-0.02,"
+    "teaser": "eq=contrast=1.06:saturation=0.85:gamma=1.04,colorbalance=bs=0.05:bm=0.02:bh=-0.02,"
               "unsharp=5:5:0.6:5:5:0,noise=alls=7:allf=t,vignette=PI/4.6",
     # gameplay: the game's own picture with a light lift and punch
     "game": "eq=contrast=1.06:saturation=1.05:gamma=1.04,unsharp=5:5:0.5:5:5:0,vignette=PI/5.5",
