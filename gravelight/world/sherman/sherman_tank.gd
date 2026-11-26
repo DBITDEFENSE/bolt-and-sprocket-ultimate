@@ -732,7 +732,7 @@ func _choose_targets(dir: ZombieDirector) -> void:
 		if ok:
 			seen_now += 1
 		_dead.append({"pos": pos, "z": z, "ok": ok, "lay": lay, "under": under, "fire": FireZombie.is_fire(z), "boss": is_boss(z),
-			"on_hull": z.prey is ShermanAttackPoint, "hp": z.hp / maxf(1.0, z.max_hp)})
+			"on_hull": is_instance_valid(z.prey) and z.prey is ShermanAttackPoint, "hp": z.hp / maxf(1.0, z.max_hp)})
 	var players: Array = _player_points()
 	var i: int = ShermanRules.pick_mg(_dead, players, xf, coax(), acfg, cur)
 	_mg_target = (_dead[i] as Dictionary)["z"] if i >= 0 else null

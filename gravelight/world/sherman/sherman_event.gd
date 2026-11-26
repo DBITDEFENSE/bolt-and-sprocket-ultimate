@@ -535,7 +535,7 @@ func _tick_assault(delta: float) -> void:
 	var a: Dictionary = cfg.get("assault", {})
 	# the dead that are gone (killed, burst, recycled into the queue) leave the wave
 	for z: Zombie in attackers.duplicate():
-		if not is_instance_valid(z) or not z.is_active() or z.state == Zombie.State.DEAD or not (z.prey is ShermanAttackPoint):
+		if not is_instance_valid(z) or not z.is_active() or z.state == Zombie.State.DEAD or not is_instance_valid(z.prey) or not (z.prey is ShermanAttackPoint):
 			attackers.erase(z)
 	if tank == null or not is_instance_valid(tank) or tank.is_wreck():
 		return

@@ -290,12 +290,14 @@ func _lured_on(s: InnSurvivor) -> Array[Zombie]:
 	if dir == null:
 		return out
 	for z: Zombie in dir.active_zombies():
-		if z.prey == s:
+		if is_instance_valid(z.prey) and z.prey == s:
 			out.append(z)
 	return out
 
 
-## Zombies upstairs that are chasing someone go for a survivor close by instead (Zombie.prey).
+## Zombies upstairs that are chasing someone go for a survivor close by instead (Zombie.prey). T-286: a zombie's
+## prey can be a node freed since (a relief squad's soldier who left or fell, a patron gone): it counts as no prey
+## here (Zombie._update_prey clears it on its own next tick), never read with `is` (a freed-instance error each 0.4 s).
 func _lure() -> void:
 	var dir: ZombieDirector = director()
 	if dir == null:
@@ -304,10 +306,10 @@ func _lure() -> void:
 	var counts: Dictionary = {}
 	var zs: Array[Zombie] = dir.active_zombies()
 	for z: Zombie in zs:
-		if z.prey is InnSurvivor:
+		if is_instance_valid(z.prey) and z.prey is InnSurvivor:
 			counts[z.prey] = int(counts.get(z.prey, 0)) + 1
 	for z2: Zombie in zs:
-		if z2.prey != null or z2.state != Zombie.State.CHASE:
+		if is_instance_valid(z2.prey) or z2.state != Zombie.State.CHASE:
 			continue
 		var best: InnSurvivor = null
 		var best_d: float = INF
