@@ -625,7 +625,7 @@ function applyDemo(kind) {
   if (kind === 'play' || kind === 'update' || kind === 'download') S.status = { ...S.status, installed: true, onChannel: true, engineReady: true, needsImport: false, updateAvailable: kind === 'update', busy: kind === 'download' ? 'update' : null, head: 'a83f7441c0ffee', updated: new Date().toISOString(), lastError: null, channel: ch };
   if (kind === 'download') S.progress = { step: 'lfs', label: 'Downloading game assets', pct: 63.4, detail: '5,041 / 7,952 files · 942.7 MB', speed: 14.2 * 1048576, eta: 214 };
   if (kind === 'notes') { S.status = { ...S.status, installed: true, onChannel: true, engineReady: true, head: 'a83f7441c0ffee', channel: ch, updateAvailable: true }; S.notes.incoming = subjects.slice(0, 3).map((s, i) => fake(i, s)); }
-  renderAll(); renderNotes();
+  renderAll(); renderNotes(); renderNews(); // the news too: trailer buttons depend on "installed"
   if (kind === 'notes') go('notes');
   if (kind === 'settings') go('settings');
   if (kind === 'upcoming') go('upcoming');

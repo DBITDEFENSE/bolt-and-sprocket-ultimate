@@ -184,7 +184,7 @@ const m = new GameManager({ dataDir: path.join(tmp, 'data'), config, getSettings
     assert.deepStrictEqual(Feed.visibleNews({ news: 'x' }, 'stable'), []);
     // the real feed leads with today's work on the stable channel
     const real = Feed.visibleNews(JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'feed.json'), 'utf8')), 'stable');
-    assert.deepStrictEqual(real.slice(0, 5).map((n) => n.id), ['gore-1', 'u19-fixes', 'movement-perf', 'u19', 'u18']);
+    assert.deepStrictEqual(real.slice(0, 5).map((n) => n.id), ['trailer-teaser', 'trailer-gameplay', 'gore-1', 'u19-fixes', 'movement-perf']);
     assert.ok(real.filter((n) => n.hero).length >= 3, 'a carousel of three or more');
   });
   await t('renderer: the page loads feed.js before app.js and its picture policy allows only bundled and game:// pictures', () => {

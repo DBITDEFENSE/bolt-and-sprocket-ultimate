@@ -16,3 +16,5 @@ u19_crate_column.jpg     docs/captures/u19_box_crucible/after/map00_crate_well_i
 u19_crucible.jpg         docs/captures/u19_box_crucible/after/map00_crucible_forge_front.jpg
 u18_type100.jpg          docs/captures/u18_guns/type100_blender_front34.png             centre 16:9
 u18_air_raid.jpg         docs/captures/u18_sherman/inn/inn_raid.png                      560,180 to 1698,820
+trailer_teaser.jpg       build/trailers/teaser_720p.mp4 (T-285), frame at 45.5 s           scaled to 960x540
+trailer_gameplay.jpg     build/trailers/gameplay_720p.mp4 (T-285), frame at 11.0 s         scaled to 960x540
