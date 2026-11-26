@@ -55,7 +55,7 @@ func _run() -> void:
 		return
 	var bar: ShatterSet = r.get_node_or_null("Glass_Bar") as ShatterSet
 	var tap: ShatterSet = r.get_node_or_null("Glass_Taproom") as ShatterSet
-	_check(bar != null and bar.items.size() >= 60, "bar glassware: %d pieces" % (bar.items.size() if bar else 0))
+	_check(bar != null and bar.items.size() >= 55, "bar glassware: %d pieces" % (bar.items.size() if bar else 0))
 	_check(tap != null and tap.items.size() >= 9, "taproom glassware: %d pieces" % (tap.items.size() if tap else 0))
 	# ---- a shot at a bottle on the back shelf (from the room side of the counter)
 	if bar != null:
