@@ -6,7 +6,6 @@
 - [ ] **Play.bat check:** start a match from Play.bat, quit, and see in Task Manager whether a Godot process stays. If none stays, the launcher and the Windows build get the renderer on its own thread (about 3.8 ms back each frame).
 - [ ] **Play it:** the tank's new third-person view (wheel zooms, Shift = gunner's sight), the new explosions, the rocket site's details, the solid U-boats, and a big horde (Jolt physics is switched off again for now: players could not climb stairs under it; it comes back once that is fixed).
 - [ ] **Scarier zombies (T-284):** listen to the 29 new sounds (scream, breathing, horde swell) in a round; pick any of the gameplay proposals: screams alert nearby zombies, a real first-sight lunge, faster amber-eyed zombies in the dark, window grabs, new mocap recordings (a purchase). Off switch: `CZ_T284_OFF=1`.
-- [ ] The U-boat hull's paint now shows strong vertical stripes (the texture, now lit from outside): keep or ask for a new plating texture.
 
 ## 2026-11-24: photoreal cutscenes, the tower's ladders, the V2 site. All merged; these want your eyes or a decision.
 - [ ] **Watch the three history cutscenes** (start a new campaign, or the Archive). They are Higgsfield footage made from the in-engine scenes. Say if any shot should go back to the 3D version.
