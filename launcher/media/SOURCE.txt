@@ -1,0 +1,6 @@
+Launcher trailers (T-289), played by the launcher from the installed game (Git LFS).
+Our own work for this project, made in T-285: docs/trailers/t285_trailers.md has the pipeline, the shot lists,
+the rule check and the credits. Masters (1080p) stay in build/trailers/ (not in git).
+
+teaser_720p.mp4     build/trailers/teaser_720p.mp4     66.8 s, 1280x720 H.264 High + AAC 192 kbit/s
+gameplay_720p.mp4   build/trailers/gameplay_720p.mp4   86.0 s, 1280x720 H.264 High + AAC 192 kbit/s

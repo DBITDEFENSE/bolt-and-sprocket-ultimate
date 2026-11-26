@@ -2,6 +2,38 @@
   "_comment": "The launcher reads this file from the branch of the channel the player is on (origin/<branch>:launcher/feed.json), so news goes live with a push, no launcher rebuild. Images: 'art/<file>' = bundled with the launcher (launcher/assets/art); 'repo:<path>' = a file in the game repo (shown once installed); 'repo:launcher/assets/news/<file>' = both (a launcher built after the picture shows it at once, an older one after UPDATE). 'images' adds a gallery to the article ({src, caption} or a plain path). Items with 'channels' only show on those channels. 'hero': true puts it in the big carousel. 'upcoming' is the Upcoming tab: proposals, no dates. How to add things: launcher/README.md.",
   "news": [
     {
+      "id": "trailer-teaser",
+      "type": "video",
+      "date": "2026-11-26",
+      "tag": "TRAILER",
+      "title": "Teaser: The Fence Will Not Hold",
+      "summary": "A minute in Silesia, winter 1944: the crossroads, the inn, the radio on the shelf, the open gate, and something at the treeline that has learned your name.",
+      "body": "The first teaser. Sixty-seven seconds at night: crows on the wire at the crossroads, the inn with its lamps lit, a lantern swinging in the taproom, the radio on the high shelf, the gate left open, a figure outside the torn window. Then the watchtower's searchlight finds the field, and the field is full.\n\nThe teaser is cinematic footage made in the game's own places and events rather than a capture of play; the gameplay trailer next to it is the game itself.\n\nPress Watch trailer for sound. It comes with the game files, so it plays once the game is installed.",
+      "image": "repo:launcher/assets/news/trailer_teaser.jpg",
+      "hero": true,
+      "video": {
+        "src": "repo:launcher/media/teaser_720p.mp4",
+        "label": "Watch the teaser",
+        "duration": "1:07"
+      }
+    },
+    {
+      "id": "trailer-gameplay",
+      "type": "video",
+      "date": "2026-11-26",
+      "tag": "TRAILER",
+      "title": "Gameplay trailer",
+      "summary": "Hold the inn, never alone, bring everything: a minute and a half of the game as it plays, from the taproom window to the tank, the rocket, the horse and the Moon.",
+      "body": "Captured in the game, with the real HUD where you see it. The taproom window at round one, the squad in the yard, the machine gun at Kaltenbrunn, a grenade into a pack, the tank driven through the gate, the rocket from ignition to climb, the horse at a gallop, both zip lines, the U-boat pier, the bomber's wing in the golden hour, the Earth over the Moon, das Totenross rearing and the Cousins in the taproom.\n\nFour maps, solo or with friends, round after round. Every round is a signature.\n\nPress Watch trailer for sound. It comes with the game files, so it plays once the game is installed.",
+      "image": "repo:launcher/assets/news/trailer_gameplay.jpg",
+      "hero": true,
+      "video": {
+        "src": "repo:launcher/media/gameplay_720p.mp4",
+        "label": "Watch the gameplay trailer",
+        "duration": "1:26"
+      }
+    },
+    {
       "id": "gore-1",
       "date": "2026-11-15",
       "tag": "BLOOD",
