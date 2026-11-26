@@ -1,0 +1,9 @@
+Title: GRAVELIGHT zombie terror voice layers (T-284): first-sight scream, low growl, close breathing, wet mouth sounds, joint cracks, death gurgle, horde swell
+Author: GRAVELIGHT project (in-house, synthesized by Claude Code for Devin Blair)
+Source: this repository (gravelight/tools_src/gen_audio_terror.py, gen_audio.py's DSP core; no recordings, no samples)
+License: Ours (original work, in-house)
+Credit line: none needed
+Format: WAV (mono, generated)
+Downloaded: n/a (made 2026-11-25)
+Files used: zombie_scream_01..04.wav, zombie_growl_low_01..05.wav, zombie_breath_close_01..05.wav, zombie_wet_01..05.wav, zombie_twitch_01..04.wav, zombie_gurgle_01..04.wav, horde_swell_01..02.wav
+Game use: Zombie and ZombieTerror (data/gravelight/zombie_terror.json; data/gravelight/audio.json keys zombie_scream, zombie_growl_low, zombie_breath_close, zombie_wet, zombie_twitch, zombie_gurgle, horde_swell)

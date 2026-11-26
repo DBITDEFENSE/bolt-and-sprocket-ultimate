@@ -1,5 +1,11 @@
 # NEEDS DEVIN
 
+## 2026-11-25
+- [ ] **Say yes or no to one rendered benchmark on your PC** (off-screen, sound off, a few minutes; 24 and 48 zombies, the T-281/T-283 fixes on and off). It is the only real proof of 60 FPS on the 5090. The command is at the end of `docs/perf/t281_zombie_count_2026-11.md`.
+- [ ] **Play.bat check:** start a match from Play.bat, quit, and see in Task Manager whether a Godot process stays. If none stays, the launcher and the Windows build get the renderer on its own thread (about 3.8 ms back each frame).
+- [ ] **Play it:** the tank's new third-person view (wheel zooms, Shift = gunner's sight), the new explosions, the rocket site's details, the solid U-boats, and a big horde with Jolt physics on (if anything moves oddly: `physics/3d/physics_engine="GodotPhysics3D"` in an `override.cfg` next to project.godot switches back).
+- [ ] The U-boat hull's paint now shows strong vertical stripes (the texture, now lit from outside): keep or ask for a new plating texture.
+
 ## 2026-11-24: photoreal cutscenes, the tower's ladders, the V2 site. All merged; these want your eyes or a decision.
 - [ ] **Watch the three history cutscenes** (start a new campaign, or the Archive). They are Higgsfield footage made from the in-engine scenes. Say if any shot should go back to the 3D version.
 - [ ] **Decide: Fourth Day shot 12** (the young soldiers' faces) has small period cap stars the AI added twice despite the no-insignia rule. Keep it, or delete `assets/user_supplied/cutscenes/fourth_day/shot_12.mp4`, run `python -I tools/cinema/archive_reel.py build --scene fourth_day --prune` (deletes the built shot_12 reel too) and the in-engine shot plays there instead.
