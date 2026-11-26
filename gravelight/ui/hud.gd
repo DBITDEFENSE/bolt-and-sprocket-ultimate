@@ -446,6 +446,29 @@ func _on_scrip_changed(p: int, total: int, delta: int) -> void:
 	_scrip_label.text = "ǂ %d" % total
 	if delta == 0:
 		return
+	if Zombie.t283_opt and Zombie.t283_death:
+		# T-283 item 7: a grenade that kills twenty pays twenty times in one frame; one "+N" pop a frame carries the
+		# frame's sum (gains and costs apart) instead of twenty labels, each a node and a tween (0.1 ms a kill). The
+		# Scrip itself and the total on screen change at once, as before.
+		var k: int = 0 if delta > 0 else 1
+		if _pop_acc[0] == 0 and _pop_acc[1] == 0:
+			_flush_pops.call_deferred()
+		_pop_acc[k] += delta
+		return
+	_scrip_pop(delta)
+
+
+var _pop_acc: PackedInt64Array = [0, 0]   # T-283: this frame's Scrip gains and costs, not yet popped
+
+
+func _flush_pops() -> void:
+	for k: int in 2:
+		if _pop_acc[k] != 0 and is_inside_tree():
+			_scrip_pop(int(_pop_acc[k]))
+		_pop_acc[k] = 0
+
+
+func _scrip_pop(delta: int) -> void:
 	var pop: Label = _label(_scrip_anchor, ("+%d" % delta) if delta > 0 else str(delta), MenuKit.size("hud_pop"),
 		SCRIP_COL if delta > 0 else INK.lightened(0.3), MenuKit.font("mono_bold"))
 	pop.position = Vector2(-160 - randf_range(0, 60), -10)

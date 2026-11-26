@@ -51,6 +51,12 @@ static var t283_opt: bool = OS.get_environment("CZ_T283_OFF") == ""
 static var t283_skel: bool = true
 static var t283_rays: bool = true
 static var t283_lod: bool = true
+##   t283_death (item 7): a pack killed in one frame (a grenade) does its deaths' cosmetic work over the next frames:
+##     the head pop, the blast's loose limb and the death groan go into a queue drained FX_PER_FRAME a frame from the
+##     next frame on, and at most RAGDOLLS_PER_TICK ragdolls start in one physics tick (the others play their death
+##     clip one more tick). The kill itself (the pay, the kill signals, the round's count, the hitboxes and body
+##     leaving play, every random roll that decides an outcome) stays in the frame of the hit, exactly as before.
+static var t283_death: bool = true
 
 var enemy_id: StringName = &"ganger"
 var state: State = State.INACTIVE
@@ -231,6 +237,7 @@ static func kind_config(kind: StringName) -> Dictionary:
 
 
 func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
+	_life += 1   # T-283: a death effect queued for this body's last life is dropped
 	_contact_lock.reset()
 	_foot_ray_from = [Vector3.INF, Vector3.INF]
 	_toe_ray_from = [Vector3.INF, Vector3.INF]
@@ -588,7 +595,9 @@ func _physics_process(delta: float) -> void:
 				_getup_window = false
 				_enter(State.TO_WINDOW if to_window else State.CHASE)
 		State.DEAD:
+			var pt: int = BotProf.t()
 			_update_dead(delta)
+			BotProf.add(&"z.dead.tick", pt)
 	if state != State.DEAD and global_position.y < -30.0:
 		recycle()
 	_update_burn(delta)
@@ -715,6 +724,11 @@ func _process(delta: float) -> void:
 	# out of the local camera's view (T-265).
 	if state == State.INACTIVE:
 		return
+	if not _fx_q.is_empty() and _fx_frame != Engine.get_process_frames():
+		_fx_frame = Engine.get_process_frames()
+		var pt: int = BotProf.t()
+		drain_death_fx()
+		BotProf.add(&"z.fx.drain", pt)
 	_anim_skip += 1
 	active_frames += 1
 	var d2: float = global_position.distance_squared_to(target.global_position) if target != null else 0.0
@@ -737,6 +751,11 @@ func _process(delta: float) -> void:
 	lod_frames[0 if div == 1 else (3 if _out_of_view else (1 if div == 2 else 2))] += 1
 	_skel_mode_sync()
 	if _anim_skip % div != 0:
+		return
+	if state == State.DEAD:
+		var pt: int = BotProf.t()
+		_animate(delta * float(div))
+		BotProf.add(&"z.dead.anim", pt)
 		return
 	_animate(delta * float(div))
 
@@ -1707,7 +1726,7 @@ func _update_dead(delta: float) -> void:
 				director.call("on_zombie_returned", self)
 		return
 	var rd: Dictionary = _anim["ragdoll"]
-	if not _ragdoll_started and _state_t >= ZombieClips.death_key_pose_time(_death_clip):
+	if not _ragdoll_started and _state_t >= ZombieClips.death_key_pose_time(_death_clip) and _ragdoll_slot():
 		_ragdoll_started = true
 		_begin_ragdoll()
 	if _ragdoll != null:
@@ -2300,16 +2319,22 @@ func take_damage(amount: float, limb: StringName, weapon_id: StringName, by_play
 	if GameState.has_flag(&"deaths_door") and kind != &"world":
 		amount = hp + 1.0
 	hp -= amount
+	var pt: int = BotProf.t()   # (T-283: the damage path's sections, for the measuring tools; off: one bool read)
 	GLBus.enemy_damaged.emit(enemy_id, limb, amount, by_player)
 	damaged.emit(amount, limb, by_player, kind)
+	BotProf.add(&"z.hit.signals", pt)
+	pt = BotProf.t()
 	if kind != &"fire" and kind != &"world":
 		_wound(limb, side)
+	BotProf.add(&"z.hit.wound", pt)
 	if kind == &"bullet":
 		AudioDirector.play_3d("impact_flesh", global_position + Vector3.UP * 1.2, 0.0, 0.0)
 	if kind == &"melee" and _grab_t > 0.0:
 		_grab_t = 0.0   # a knife to the grabbing zombie breaks the grab
 	if hp <= 0.0:
+		pt = BotProf.t()
 		_die(limb, weapon_id, by_player, kind)
+		BotProf.add(&"z.die", pt)
 		return true
 	if by_player > 0 and kind != &"fire":
 		Economy.award(by_player, int(GLData.table("economy")["hit_nonlethal"]))
@@ -2456,6 +2481,7 @@ func _die(limb: StringName, weapon_id: StringName, by_player: int, kind: StringN
 	_safe_vel = Vector3.ZERO
 	velocity = Vector3.ZERO
 	_grab_t = 0.0
+	var pt: int = BotProf.t()
 	if by_player > 0:
 		var econ: Dictionary = GLData.table("economy")
 		var value: int = Economy.kill_value(limb, kind == &"melee", econ)
@@ -2469,11 +2495,25 @@ func _die(limb: StringName, weapon_id: StringName, by_player: int, kind: StringN
 		Economy.award(by_player, value)
 		if _marke_hit:
 			_pay_marke_bonus(by_player)   # T-137: a kill from a Marke hit, right after the normal reward
-	AudioDirector.play_3d("zombie_death", global_position + Vector3.UP * 1.2, -1.0)
+	BotProf.add(&"z.die.pay", pt)
+	pt = BotProf.t()
+	var defer: bool = t283_opt and t283_death and not puppet
+	if defer:
+		_queue_death_fx(&"groan", [global_position + Vector3.UP * 1.2])
+	else:
+		AudioDirector.play_3d("zombie_death", global_position + Vector3.UP * 1.2, -1.0)
 	_death_burst()
+	BotProf.add(&"z.die.sound", pt)
+	pt = BotProf.t()
 	GLBus.enemy_killed.emit(enemy_id, limb, weapon_id, by_player)
+	BotProf.add(&"z.die.bus_killed", pt)
+	pt = BotProf.t()
 	GLBus.enemy_killed_at.emit(enemy_id, global_position, by_player)
+	BotProf.add(&"z.die.bus_killed_at", pt)
+	pt = BotProf.t()
 	RoundManager.on_zombie_died()
+	BotProf.add(&"z.die.round", pt)
+	pt = BotProf.t()
 	_death_kind = _pick_death(limb, kind)
 	_death_side = -1.0 if randf() < 0.5 else 1.0
 	_death_explosive = kind == &"explosive"
@@ -2484,11 +2524,21 @@ func _die(limb: StringName, weapon_id: StringName, by_player: int, kind: StringN
 		pop = true
 	_mark_death_sink()
 	_start_death()
+	BotProf.add(&"z.die.start", pt)
+	pt = BotProf.t()
 	if pop:
-		_pop_head()
+		if defer and not _head_popped:
+			_head_popped = true   # (decided now: the co-op event below and every later check see it)
+			_queue_death_fx(&"pop", [])
+		else:
+			_pop_head()
 	if kind == &"explosive" and ZombieGore.severs_allowed() and randf() < 0.5:
 		var loose: String = _pick(["LeftLowerLeg", "RightLowerLeg", "LeftLowerArm", "RightLowerArm"])
-		ZombieGore.sever(self, loose, _away_from_target() * 4.0 + Vector3.UP * 4.0)
+		if defer:
+			_queue_death_fx(&"sever", [loose, _away_from_target() * 4.0 + Vector3.UP * 4.0])
+		else:
+			ZombieGore.sever(self, loose, _away_from_target() * 4.0 + Vector3.UP * 4.0)
+	BotProf.add(&"z.die.gore", pt)
 	if Net.replicating():
 		Net.session.zombie_died(self, limb, kind, _death_kind, _death_side, _head_popped)
 
@@ -2526,8 +2576,10 @@ func _start_death() -> void:
 	_death_velocity.clear()
 	var rd: Array = _anim["ragdoll"].get("corpse_seconds", [8.0, 12.0])
 	_corpse_seconds = randf_range(float(rd[0]), float(rd[1]))
+	var pt: int = BotProf.t()
 	if not _death_sink and enemy_id != &"glasshide":
 		Effects.gore.death(self, 1.3 if _death_explosive else 1.0)   # the pool under the body (gore rework)
+	BotProf.add(&"z.die.pool", pt)
 	if has_rig():
 		_look.active = false
 		_modifier.ik_weight = 0.0
@@ -2562,7 +2614,9 @@ func _begin_ragdoll() -> void:
 	var launch: Vector3 = Vector3.ZERO
 	if _death_explosive:
 		launch = _away_from_target() * float(_anim["ragdoll"].get("explosive_launch", 5.0)) + Vector3.UP * 3.0
+	var pt: int = BotProf.t()
 	_ragdoll = ZombieRagdoll.start(_skel, launch, _death_velocity)
+	BotProf.add(&"z.ragdoll.start", pt)
 	# the tree stays active (deactivating an AnimationTree resets the rendered skin to rest); it simply is not
 	# advanced any more while the ragdoll writes the bones (_animate)
 
@@ -3281,6 +3335,72 @@ func _pop_head() -> void:
 	if _head_popped:
 		return
 	_head_popped = true
+	_pop_head_fx()
+
+
+## T-283 item 7: the deaths' cosmetic work queue. Each entry is [zombie, its life, kind, args, the frame it was queued
+## in]; a frame drains up to FX_PER_FRAME entries queued in an earlier frame (the first active zombie to run its
+## _process drains it). An entry whose body has been put back in the pool since (its life changed) is dropped.
+const FX_PER_FRAME: int = 4
+const RAGDOLLS_PER_TICK: int = 3
+static var _fx_q: Array = []
+static var _fx_frame: int = -1
+static var _rag_tick: int = -1
+static var _rag_n: int = 0
+static var fx_deferred: int = 0   # entries queued (perf tools, tests)
+static var ragdolls_waited: int = 0   # ticks a ragdoll waited for its slot
+var _life: int = 0
+
+
+func _queue_death_fx(kind: StringName, args: Array) -> void:
+	fx_deferred += 1
+	_fx_q.append([self, _life, kind, args, Engine.get_process_frames()])
+
+
+static func drain_death_fx(budget: int = FX_PER_FRAME) -> int:
+	var f: int = Engine.get_process_frames()
+	var done: int = 0
+	while not _fx_q.is_empty() and done < budget:
+		var e: Array = _fx_q[0]
+		if int(e[4]) >= f:
+			break   # queued this frame: from the next one on
+		_fx_q.pop_front()
+		var z: Zombie = e[0] as Zombie if is_instance_valid(e[0]) else null
+		if z == null or z._life != int(e[1]) or z.state != State.DEAD:
+			continue
+		done += 1
+		var args: Array = e[3]
+		match e[2]:
+			&"groan":
+				AudioDirector.play_3d("zombie_death", args[0], -1.0)
+			&"pop":
+				z._pop_head_fx()
+			&"sever":
+				ZombieGore.sever(z, str(args[0]), args[1])
+	return done
+
+
+static func pending_death_fx() -> int:
+	return _fx_q.size()
+
+
+## May a ragdoll start in this physics tick? (RAGDOLLS_PER_TICK a tick with t283_death; always without.)
+func _ragdoll_slot() -> bool:
+	if not (t283_opt and t283_death):
+		return true
+	var tick: int = Engine.get_physics_frames()
+	if tick != _rag_tick:
+		_rag_tick = tick
+		_rag_n = 0
+	if _rag_n >= RAGDOLLS_PER_TICK:
+		ragdolls_waited += 1
+		return false
+	_rag_n += 1
+	return true
+
+
+## The head pop's presentation: the gib sound, the severed head, the neck's burst and spurt.
+func _pop_head_fx() -> void:
 	AudioDirector.play_3d("zombie_gib", global_position + Vector3.UP * 1.7)
 	var away: Vector3 = _away_from_target()
 	ZombieGore.sever(self, "Head", Vector3(away.x * 3.0, 4.5, away.z * 3.0))

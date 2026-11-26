@@ -349,6 +349,8 @@ func _process(delta: float) -> void:
 					_kill_step(delta)
 				if _flip != "" and _t > 9.0:
 					_flip_step()
+				if _t > 9.0 and floori(_t / 5.0) != floori((_t - delta) / 5.0):
+					_print_states()   # T-283: where the horde is (a physics engine's behaviour shows here first)
 				if _census_done and ("z_no_zcollide" in _ab or "z_no_avoid" in _ab or "z_no_dead_areas" in _ab or "z_no_areas" in _ab):
 					_ab_zombies()
 				if _t > 6.0 and (_kill_rate > 0.0 or _mix != ""):
@@ -1287,6 +1289,32 @@ func _spawn_horde(n: int) -> void:
 		z2.activate(spec, sp, dir.call("_any_player") as Player)
 		if k % 6 == 5 and not fire_cfg.is_empty():
 			FireZombie.make(z2, fire_cfg, null, true)
+
+
+## T-283: the horde's states, how many stand inside the players' building (within 12 m of the player, a floor
+## above them: on Map 0 the inn's walls), out of the camera's view and the mean distance to the camera.
+func _print_states() -> void:
+	var counts: Dictionary = {}
+	var outv: int = 0
+	var dsum: float = 0.0
+	var zs: Array = _map.director.active_zombies()
+	var near: int = 0
+	var lp: Player = _map.player
+	for z: Zombie in zs:
+		var k: String = Zombie.State.keys()[z.state]
+		counts[k] = int(counts.get(k, 0)) + 1
+		if bool(z.get("_out_of_view")):
+			outv += 1
+		dsum += z.global_position.distance_to(lp.global_position) if lp != null else 0.0
+		if lp != null and z.global_position.distance_to(lp.global_position) < 4.0:
+			near += 1
+	var cam: Camera3D = get_viewport().get_camera_3d()
+	var zp: PackedStringArray = []
+	for zi: int in mini(4, zs.size()):
+		zp.append(str((zs[zi] as Zombie).global_position.snappedf(0.1)))
+	print("[t283] first bodies at: %s" % ", ".join(zp))
+	print("[t283] states at %.0f s: %s | out of view %d, within 4 m of the player %d, mean distance to the player %.1f m | vl_pos %s | camera %s at %s, player at %s on floor %s" % [_t, str(counts), outv, near, dsum / maxf(1.0, float(zs.size())), str(Zombie.vl_pos.snappedf(0.1)),
+		str(cam.get_path()) if cam != null else "-", str(cam.global_position.snappedf(0.1)) if cam != null else "-", str(lp.global_position.snappedf(0.1)) if lp != null else "-", str(lp.is_on_floor()) if lp != null else "-"])
 
 
 ## `--kills=K`: K kills a second, spread over the second, each with another damage kind and hit part.

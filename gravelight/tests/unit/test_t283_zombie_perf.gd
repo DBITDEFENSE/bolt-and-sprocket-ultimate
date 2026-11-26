@@ -15,7 +15,7 @@ var _saved: Array = []
 
 
 func before_each() -> void:
-	_saved = [Zombie.t283_opt, Zombie.t283_skel, Zombie.t283_rays, Zombie.t283_lod, Zombie.view_lod, RoundManager.current_round]
+	_saved = [Zombie.t283_opt, Zombie.t283_skel, Zombie.t283_rays, Zombie.t283_lod, Zombie.view_lod, RoundManager.current_round, Zombie.t283_death, GLSettings.values.get("gore", "full")]
 	Zombie.t283_opt = true
 	Zombie.t283_skel = true
 	Zombie.t283_rays = true
@@ -43,6 +43,9 @@ func after_each() -> void:
 	Zombie.t283_lod = _saved[3]
 	Zombie.view_lod = _saved[4]
 	RoundManager.current_round = _saved[5]
+	Zombie.t283_death = _saved[6]
+	GLSettings.values["gore"] = _saved[7]
+	Zombie._fx_q.clear()
 	ZombieRagdoll.clear_parked()
 
 
@@ -56,6 +59,7 @@ func _zombie(rng_seed: int) -> Zombie:
 	z.activate({"enemy_id": "ganger", "tier": "walk", "health": 400.0, "variant": "villager"}, _spawn, null)
 	z.set_process(false)
 	z.set_physics_process(false)
+	z._marke_layers(false)   # (whether a body carries a Marke depends on the round and earlier tests: none here)
 	z.global_position = Vector3.ZERO
 	z.rotation = Vector3(0, PI, 0)
 	z.state = Zombie.State.CHASE
@@ -265,3 +269,96 @@ func test_the_distance_lod_is_the_owners_12_and_30_metres_and_the_old_one_switch
 		assert_eq(int(z.get("_anim_div")), int(case[2]), "%.0f m, switched off" % case[0])
 		z.queue_free()
 		await get_tree().process_frame
+
+
+# ------------------------------------------------------------------ item 7: a pack killed in one frame
+
+## A zombie at the origin killed by a head hit from player 1 (a head kill pops the head): returns the zombie.
+func _kill_one(at: Vector3, rng_seed: int) -> Zombie:
+	var z: Zombie = _zombie(rng_seed)
+	z.global_position = at
+	z.take_damage(z.hp + 1.0, &"head", &"frag", 1, &"explosive")
+	return z
+
+
+func test_a_kill_pays_and_counts_in_its_frame_and_only_the_gore_follows() -> void:
+	GLSettings.values["gore"] = "low"   # severs without the blood spray (no Effects singletons needed)
+	var results: Dictionary = {}
+	var kills: Array = [0]
+	var count: Callable = func(_e: StringName, _l: StringName, _w: StringName, _b: int) -> void: kills[0] += 1
+	GLBus.enemy_killed.connect(count)
+	for on: bool in [false, true]:
+		Zombie.t283_death = on
+		Economy.reset([1])
+		var killed0: int = kills[0]
+		var z: Zombie = _kill_one(Vector3(2.0 if on else -2.0, 0, 0), 21)
+		var pay: int = Economy.get_scrip(1)
+		assert_gt(pay, 0, "paid in the frame of the hit")
+		assert_eq(z.state, Zombie.State.DEAD, "dead in the frame of the hit")
+		assert_true(bool(z.get("_head_popped")), "the head pop is decided in the frame of the hit (the co-op event carries it)")
+		assert_eq(z.collision_layer, 0, "the body leaves play in the frame of the hit")
+		for hb: Hitbox in z.get("_hitboxes"):
+			assert_eq(hb.collision_layer, 0, "no hitbox can be hit again")
+		if on:
+			assert_false(z.is_severed("Head"), "switched on: the head comes off in a later frame")
+			assert_gt(Zombie.pending_death_fx(), 0, "queued")
+			for i: int in 4:
+				await get_tree().process_frame
+			Zombie.drain_death_fx(100)   # (the queue drains from an active zombie's _process; this one is driven by hand)
+			assert_true(z.is_severed("Head"), "and it does come off")
+		else:
+			assert_true(z.is_severed("Head"), "switched off: in the frame of the hit, as before")
+		results[on] = {"pay": pay, "kills": kills[0] - killed0}
+		assert_eq(kills[0] - killed0, 1, "the kill signal in the frame of the hit")
+		z.queue_free()
+	assert_eq(results[true]["pay"], results[false]["pay"], "the same pay")
+	assert_eq(results[true]["kills"], results[false]["kills"], "the same count of kills")
+	GLBus.enemy_killed.disconnect(count)
+
+
+func test_the_death_queue_drains_a_few_a_frame_from_the_next_frame_and_drops_a_body_back_in_the_pool() -> void:
+	GLSettings.values["gore"] = "low"
+	Zombie.t283_death = true
+	Zombie.drain_death_fx(1000)   # (an empty queue to start from)
+	await get_tree().process_frame
+	Zombie.drain_death_fx(1000)
+	var zs: Array[Zombie] = []
+	for i: int in 6:
+		zs.append(_kill_one(Vector3(i * 1.5, 0, 3), 30 + i))
+	var queued: int = Zombie.pending_death_fx()
+	assert_gt(queued, 6, "a groan and a head pop each")
+	assert_eq(Zombie.drain_death_fx(), 0, "nothing in the frame of the deaths")
+	await get_tree().process_frame
+	assert_eq(Zombie.drain_death_fx(), Zombie.FX_PER_FRAME, "the next frame: FX_PER_FRAME")
+	# a body put back in the pool before its turn: its entries are dropped, not played on its next life
+	zs[5].deactivate()
+	zs[5].activate({"enemy_id": "ganger", "tier": "walk", "health": 400.0, "variant": "villager"}, _spawn, null)
+	zs[5].set_process(false)
+	await get_tree().process_frame
+	while Zombie.pending_death_fx() > 0:
+		Zombie.drain_death_fx()
+		await get_tree().process_frame
+	assert_false(zs[5].is_severed("Head"), "the new life keeps its head")
+	assert_true(zs[0].is_severed("Head"))
+	for z: Zombie in zs:
+		z.queue_free()
+
+
+func test_at_most_ragdolls_per_tick_start_in_one_physics_tick() -> void:
+	Zombie.t283_death = true
+	await get_tree().physics_frame
+	var zs: Array[Zombie] = []
+	for i: int in 5:
+		zs.append(_zombie(40 + i))
+	var got: int = 0
+	for z: Zombie in zs:
+		if z._ragdoll_slot():
+			got += 1
+	assert_eq(got, Zombie.RAGDOLLS_PER_TICK, "the rest wait a tick")
+	await get_tree().physics_frame
+	assert_true(zs[4]._ragdoll_slot(), "the next tick has slots again")
+	Zombie.t283_death = false
+	for i2: int in 6:
+		assert_true(zs[0]._ragdoll_slot(), "switched off: no limit, as before")
+	for z2: Zombie in zs:
+		z2.queue_free()

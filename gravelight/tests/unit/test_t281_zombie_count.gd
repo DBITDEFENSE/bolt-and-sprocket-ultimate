@@ -171,7 +171,7 @@ func test_a_stopped_rig_is_kept_and_starts_again_on_another_skeleton() -> void:
 		pending("ragdolls disabled")
 		return
 	for e: Array in ZombieRagdoll._live:
-		ZombieRagdoll.freeze(e[0] as PhysicalBoneSimulator3D)
+		if is_instance_valid(e[0]): ZombieRagdoll.freeze(e[0] as PhysicalBoneSimulator3D)   # (a rig an earlier test file freed stays listed)
 	ZombieRagdoll.clear_parked()
 	var a: PhysicalBoneSimulator3D = ZombieRagdoll.start(_skel(0.0), Vector3(0, 3, 0))
 	assert_not_null(a)
@@ -203,7 +203,7 @@ func test_switched_off_a_stopped_rig_is_freed_as_before() -> void:
 		pending("ragdolls disabled")
 		return
 	for e: Array in ZombieRagdoll._live:
-		ZombieRagdoll.freeze(e[0] as PhysicalBoneSimulator3D)
+		if is_instance_valid(e[0]): ZombieRagdoll.freeze(e[0] as PhysicalBoneSimulator3D)   # (a rig an earlier test file freed stays listed)
 	ZombieRagdoll.clear_parked()
 	Zombie.t281_opt = false
 	var a: PhysicalBoneSimulator3D = ZombieRagdoll.start(_skel(0.0))
@@ -220,7 +220,7 @@ func test_at_most_park_max_rigs_are_kept() -> void:
 	var sims: Array = []
 	for i: int in ZombieRagdoll.PARK_MAX + 2:
 		for e: Array in ZombieRagdoll._live:
-			ZombieRagdoll.freeze(e[0] as PhysicalBoneSimulator3D)
+			if is_instance_valid(e[0]): ZombieRagdoll.freeze(e[0] as PhysicalBoneSimulator3D)   # (a rig an earlier test file freed stays listed)
 		ZombieRagdoll._live.clear()
 		var s: PhysicalBoneSimulator3D = ZombieRagdoll.start(_skel(i * 2.0))
 		if s != null:
