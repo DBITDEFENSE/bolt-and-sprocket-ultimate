@@ -28,6 +28,9 @@ const PF_RELOAD: int = 8
 const PF_FLOOR: int = 16
 const PF_DOWNED: int = 32
 const PF_SPECTATE: int = 64
+## T-288: cooking a grenade (the remote body holds the arm drawn back). The flags byte's last spare bit; an older peer
+## ignores it (it only tests the bits above). Players only: a Soldier's NF_REVIVE uses 128 in its own flags.
+const PF_COOK: int = 128
 const ZF_CRAWL: int = 1
 const ZF_BURN: int = 2
 const ZF_ENRAGED: int = 4
@@ -391,6 +394,8 @@ static func local_flags(p: Player) -> int:
 		f |= PF_DOWNED
 	if p.spectating:
 		f |= PF_SPECTATE
+	if p.weapons != null and p.weapons.is_cooking() and not p.downed:
+		f |= PF_COOK
 	return f
 
 
