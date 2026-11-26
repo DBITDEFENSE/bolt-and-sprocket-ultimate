@@ -1,32 +1,43 @@
-# Morning report: 2026-11-24 (cutscenes, the tower's ladders, the V2 site, the map detail pass)
+# Morning report: 2026-11-25/26 (tank view, explosions, rocket site, U-boats, frame rate, scarier zombies)
 
-**Everything is on master and pushed.** Nothing was shown on your screen: pictures came from software renders under
-WSL, everything else ran headless. Full unit suite on the final master: 2,649 tests, 2,648 passing, 1 risky (the known one); check_scripts 1,029 scripts, 0 failed.
+**Seven jobs merged and pushed to master.** Nothing was shown on your screen: pictures came from software renders under
+WSL, everything else ran headless. Last full unit run on master: 2,703 tests, 2,702 passing, 1 risky (the known one);
+smoke tests pass on every map with the new physics engine.
 
-## 1. The cutscenes are photoreal (T-277)
-- The three history cutscenes (Lazarus Saturday, Fourth Day, Staub) now play as real-looking film in the campaign.
-- How: each of the 49 shots was recorded in-engine, then Higgsfield (Seedance 2.5, video edit) re-rendered it as
-  live-action footage, keeping the same camera, timing and layout. Colour, with a light film grain.
-- Every shot was checked against its recording. 10 were redone (lettering kept from the game, modern lane
-  markings on a 1930 road, mannequin-like soldiers). Cost: about 1,580 credits; about 940 left.
-- The 3D versions are still there (`engine:` in the Archive). Pictures: `.smoke_logs/reel_wire/` (not committed).
-- The loading screen clips now play through (up to 20 s) instead of cutting at 3 s.
+## 1. Tank: World of Tanks view (T-278)
+- Climb into the Sherman: the camera sits behind and above it and orbits with the mouse; the turret follows where you
+  look at its own speed (it lags, like WoT), a marker shows where the gun really points, a ring shows the reload.
+- Wheel: zoom 5-16 m; wheel all the way in or Shift: the gunner's sight (x4). Tab cycles three distances.
 
-## 2. The watchtower's ladders (T-275)
-- The lower ladder now comes up through an opening in the landing's rail; the upper one moved inside the tower and
-  goes through a hatch in the top floor with a guard rail. Zombies climb the same way.
-- Before/after pictures: `docs/captures/t275/`.
+## 2. Explosions (T-280)
+- Every blast in the game: a flash, a fireball rolling into dark smoke, a drifting column, dirt or snow thrown up,
+  debris, sparks, a dust ring, a scorch, screen shake, and a crack + boom + distant rumble. Small pops stay small.
+- About 0.1 ms a blast; built once at load.
 
-## 3. The V2 site and Rocket Man (T-276)
-- Map 0 is bigger: a gate in the east fence ("The Forest Track", 1500) leads through the woods to a V2 firing site.
-- The rocket launches on round 6 and every 5th round after: siren, countdown, a blast that kills zombies near the
-  table, lift-off. Stand back: up to 45 damage within 7 m.
-- **Rocket Man** (2500, in the firing dugout): your explosives hit 1.3x harder and wider, never hurt you, and a
-  close blast throws you (rocket jump, about 1 m up). Upgrades add stagger, then fire, then more damage.
-- Also there: an STG-44 wall-buy (1200) and an ammo box. Pictures: `docs/captures/t276/`.
+## 3. Rocket site, second pass (T-279)
+- Camo nets, sandbag walls, detailed fuel and launch trailers, wire with warning plates, a phone line, a slit trench,
+  a guard post, cables, clutter, tyre tracks. Paths and the launch are unchanged.
 
-## 4. Maps 1-6 brought up to Map 0 (T-271..T-274)
-- Kaltenbrunn, Totenhafen and the Fernflug acts got Map 0's kind of detail: new props, ladders and zip lines,
-  round events (the tank through the gate, a dive bomber on the boat), perk deals, survivors and openings.
+## 4. U-boats no longer see-through (T-282)
+- The hulls were drawn inside out. Both U-boats, their towers, the patrol boat and the cutter are solid now.
 
-Details and what is not verified: `docs/DECISIONS.md` T-271 to T-277. Your list: `morning/NEEDS_DEVIN.md`.
+## 5. Lag with many zombies (T-281, T-283)
+- Cause: each zombie's own engine work (animation, skeleton, 18 hit areas, movement, physics), growing with the count;
+  the crowd at the inn windows made physics grow faster than that.
+- Fixed: the Jolt physics engine (about 20 % faster frames, worst frames halved), skeletons update only when the
+  animation moves, far zombies animate at a lower rate (full within 12 m), a grenade into a pack no longer spikes
+  (the kill frame 32-42 ms -> about 20 ms).
+- Kaltenbrunn hits the target; Map 0 with 48 zombies is close. **Real 60 FPS on your PC is not measured** (see list).
+
+## 6. Scarier zombies (T-284)
+- Glowing violet eyes (some amber), rot and wet skin, a head snap and scream when one first spots you, twitches,
+  breathing up close, a death gurgle, and horde moments (fog thickens, lamps flicker, a swell of voices).
+- No change to speed, damage or AI. Off switch: `CZ_T284_OFF=1`.
+
+## Still running
+- **Trailers (T-285):** a Higgsfield teaser (slow dread, budget 550 of 964 credits) and a gameplay trailer, to
+  `build/trailers/`.
+- **Letzte Fahrt quest check (T-286):** its smoke test times out on master; finding out whether players are affected.
+- **U-boat plating (T-287):** the hull paint shows vertical stripes; a proper plated-steel look.
+
+Details: `docs/DECISIONS.md` T-278 to T-284. Your list: `morning/NEEDS_DEVIN.md`.
