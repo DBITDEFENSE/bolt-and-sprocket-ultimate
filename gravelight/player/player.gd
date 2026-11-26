@@ -903,6 +903,17 @@ func step_up_spot(want: Vector3, max_h: float, min_facing: float) -> Vector3:
 		into = flat
 		edge = clampf((c.get_position() - global_position).dot(flat), 0.0, _capsule.radius)
 		break
+	if into == Vector3.ZERO and t291_steps and is_on_wall():
+		# T-291: Jolt can report the riser a stair nose is pressed against only as the wall normal (met in its
+		# recovery, not in the slide's motion), with no slide collision for it: walk into that instead. On a sphere
+		# the contact sits the normal's flat part times the radius out from the middle.
+		var wn: Vector3 = get_wall_normal()
+		var wf: Vector3 = Vector3(-wn.x, 0.0, -wn.z)
+		if wn.y < cos_floor - 0.01 and wn.y >= -0.01 and wf.length_squared() > 0.0001:
+			var kc: KinematicCollision3D = KinematicCollision3D.new()
+			if wf.normalized().dot(want) >= min_facing and test_move(global_transform, wf.normalized() * 0.05, kc) and _step_surface(kc.get_collider()):
+				into = wf.normalized()
+				edge = clampf(_capsule.radius * wf.length() / wn.length(), 0.0, _capsule.radius)
 	if into == Vector3.ZERO:
 		return Vector3.INF
 	var t: Transform3D = global_transform
@@ -926,20 +937,43 @@ func step_up_spot(want: Vector3, max_h: float, min_facing: float) -> Vector3:
 		# the contact turns flatter the nearer the middle comes to the nose: move on by just enough that it reads as
 		# floor with STEP_NOSE_MARGIN to spare and set down again, on either engine. A slope stays steep and is
 		# refused; a nose that was already floor keeps the first spot if the second try finds nothing better.
-		var more: float = _nose_advance(down.get_normal(), into, cos_floor)
-		var t2: Transform3D = t
-		t2.origin += into * more
-		var down2: KinematicCollision3D = KinematicCollision3D.new()
-		if more > 0.0 and not test_move(t, into * more) and test_move(t2, Vector3.DOWN * max_h, down2) \
-				and down2.get_normal().y >= cos_floor and _step_surface(down2.get_collider()):
-			t = t2
-			down = down2
+		var over: Array = _over_nose(t, down, into, cos_floor, max_h)
+		if not over.is_empty():
+			t = over[0]
+			down = over[1]
 		elif down.get_normal().y < cos_floor:
 			return Vector3.INF
 	var land: Vector3 = t.origin + down.get_travel()
 	if land.y - global_position.y < -0.02:
 		return Vector3.INF                          # (level is fine: a seam between two floor pieces that snagged the capsule)
 	return land
+
+
+## T-291: the capsule set down at `t` + down's travel rests on a stair nose ahead (`down`); moved on by
+## _nose_advance until that nose reads as floor. Two ways: at the raised height along `into` and set down again (the
+## plain case), or, when the step above blocks that, rolled over the nose along its tangent from where it rests
+## (steep stairs; Jolt's rounded box edges). Returns [raised transform, its down collision] or [] when neither holds.
+func _over_nose(t: Transform3D, down: KinematicCollision3D, into: Vector3, cos_floor: float, max_h: float) -> Array:
+	var n: Vector3 = down.get_normal()
+	var more: float = _nose_advance(n, into, cos_floor)
+	if more <= 0.0:
+		return []
+	var t2: Transform3D = t
+	t2.origin += into * more
+	var down2: KinematicCollision3D = KinematicCollision3D.new()
+	if not test_move(t, into * more) and test_move(t2, Vector3.DOWN * max_h, down2) 			and down2.get_normal().y >= cos_floor and _step_surface(down2.get_collider()):
+		return [t2, down2]
+	var rest: Transform3D = t
+	rest.origin += down.get_travel()
+	var along: Vector3 = (into - n * into.dot(n)).normalized()
+	var d: Vector3 = along * (more / maxf(0.2, along.dot(into)))
+	if test_move(rest, d):
+		return []
+	rest.origin += d
+	var down3: KinematicCollision3D = KinematicCollision3D.new()
+	if test_move(rest, Vector3.DOWN * 0.1, down3) and down3.get_normal().y >= cos_floor and _step_surface(down3.get_collider()):
+		return [rest, down3]
+	return []
 
 
 ## How much farther along `into` the capsule must go for an edge met ahead of its middle, under its round bottom,
