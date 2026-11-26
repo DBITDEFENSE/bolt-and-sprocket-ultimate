@@ -7,6 +7,15 @@ extends RefCounted
 ## evict_after_seconds, else the new death keeps its clip). Explosive deaths launch every bone.
 
 static var _live: Array = []   # [PhysicalBoneSimulator3D, start msec]
+## T-281: rigs handed back by stop() are kept, out of the tree, for the next death (Zombie.t281_opt): a death took
+## 23 new nodes (11 physical bones, their shapes and the simulator) built on the spot, 0.4-1 ms each and several in one
+## frame when a grenade lands in a pack. A kept rig goes onto the next skeleton with its bodies' speeds zeroed and
+## its collision mask back, and starts from that skeleton's pose like a new one (PhysicalBone3D takes the bone's
+## pose when its simulation starts). At most PARK_MAX are kept; the rest are freed as before.
+const PARK_MAX: int = 8
+static var _parked: Array = []
+static var built: int = 0    # rigs built new (perf_marks counts them)
+static var reused: int = 0   # rigs taken from the kept ones
 ## Below this global bone scale a bone counts as severed (ZombieGore collapses chains to 0.001).
 const SEVERED_SCALE: float = 0.01
 
@@ -53,7 +62,22 @@ static func start(skel: Skeleton3D, impulse: Vector3 = Vector3.ZERO, recorded_ve
 			return null
 		var oldest: Array = _live.pop_front()
 		freeze(oldest[0] as PhysicalBoneSimulator3D)
-	var sim: PhysicalBoneSimulator3D = PhysicalBoneSimulator3D.new()
+	var sim: PhysicalBoneSimulator3D = _unpark(skel, c)
+	var kept: bool = sim != null
+	if kept:
+		reused += 1
+		skel.add_child(sim)
+		sim.physical_bones_start_simulation()
+		sim.active = false
+		for child: Node in sim.get_children():
+			var kb: PhysicalBone3D = child as PhysicalBone3D
+			if kb != null:
+				kb.linear_velocity = Vector3.ZERO
+				kb.angular_velocity = Vector3.ZERO
+		_launch(sim, impulse, recorded_velocity)
+		return sim
+	built += 1
+	sim = PhysicalBoneSimulator3D.new()
 	sim.name = "Ragdoll"
 	var joint: Dictionary = c.get("joint", {})
 	var bones: Dictionary = c.get("bones", {})
@@ -108,6 +132,12 @@ static func start(skel: Skeleton3D, impulse: Vector3 = Vector3.ZERO, recorded_ve
 	# the simulator's own modifier pass is switched off: it writes the rest pose over the skeleton once the
 	# AnimationTree is inactive; sync() copies the bodies into the bones instead (Zombie._update_dead)
 	sim.active = false
+	_launch(sim, impulse, recorded_velocity)
+	return sim
+
+
+## The recorded fall's speeds on the bones, then the blast on the trunk; the rig joins the live list.
+static func _launch(sim: PhysicalBoneSimulator3D, impulse: Vector3, recorded_velocity: Dictionary) -> void:
 	for child: Node in sim.get_children():
 		var physical: PhysicalBone3D = child as PhysicalBone3D
 		if physical == null or not recorded_velocity.has(String(physical.bone_name)): continue
@@ -124,7 +154,32 @@ static func start(skel: Skeleton3D, impulse: Vector3 = Vector3.ZERO, recorded_ve
 			if pb2 != null:
 				pb2.apply_central_impulse(impulse * pb2.mass)
 	_live.append([sim, Time.get_ticks_msec()])
-	return sim
+
+
+## A kept rig that fits `skel` (every bone of the config the skeleton has, and no other), or null.
+static func _unpark(skel: Skeleton3D, c: Dictionary) -> PhysicalBoneSimulator3D:
+	if not Zombie.t281_opt:
+		return null
+	var want: int = 0
+	for bone: String in (c.get("bones", {}) as Dictionary).keys():
+		if skel.find_bone(bone) >= 0:
+			want += 1
+	while not _parked.is_empty():
+		var sim: Variant = _parked.pop_back()
+		if not is_instance_valid(sim):
+			continue
+		var s2: PhysicalBoneSimulator3D = sim as PhysicalBoneSimulator3D
+		var ok: bool = s2.get_child_count() == want
+		for child: Node in s2.get_children():
+			var pb: PhysicalBone3D = child as PhysicalBone3D
+			if pb == null or skel.find_bone(String(pb.bone_name)) < 0:
+				ok = false
+				break
+			pb.collision_mask = 1
+		if ok:
+			return s2
+		s2.free()
+	return null
 
 
 ## Writes the simulated bodies back into the skeleton (bone global pose = body transform less its offset). The
@@ -175,7 +230,18 @@ static func stop(sim: PhysicalBoneSimulator3D) -> void:
 	sim.active = false
 	if sim.get_parent() != null:
 		sim.get_parent().remove_child(sim)
+	if Zombie.t281_opt and _parked.size() < PARK_MAX and not sim.is_queued_for_deletion():
+		_parked.append(sim)
+		return
 	sim.queue_free()
+
+
+## Frees the kept rigs (a map unloading; the tests).
+static func clear_parked() -> void:
+	for sim: Variant in _parked:
+		if is_instance_valid(sim):
+			(sim as Node).free()
+	_parked.clear()
 
 
 ## Simulations older than settle_freeze_seconds freeze (their pose is final; cheaper than a sleeping rig).

@@ -80,6 +80,11 @@ func _ready() -> void:
 			add_child(homage)
 
 
+## T-281: the ragdoll rigs kept for the next death are freed with the map.
+func _exit_tree() -> void:
+	ZombieRagdoll.clear_parked()
+
+
 ## Called by the map: zone -> nav layer bit, always-on bits, and the adjacency graph.
 func configure_navigation(bits: Dictionary, always: Array, adj: Dictionary) -> void:
 	zone_bits = bits

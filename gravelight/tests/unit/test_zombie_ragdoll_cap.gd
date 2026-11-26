@@ -19,6 +19,7 @@ func before_each() -> void:
 func after_each() -> void:
 	for sim: PhysicalBoneSimulator3D in _sims:
 		ZombieRagdoll.stop(sim)
+	ZombieRagdoll.clear_parked()   # T-281: stop() keeps rigs for the next death; none outlive the test
 	await get_tree().process_frame
 	await get_tree().process_frame
 

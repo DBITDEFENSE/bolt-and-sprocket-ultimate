@@ -32,6 +32,10 @@ const GRAVITY: float = 18.0   # the 1 g fallback; live: GameState.g_zombie() (wo
 
 ## Shared per-physics-frame repath budget, reset by the director.
 static var repath_budget: int = 6
+## T-281 (docs/perf/t281_zombie_count_2026-11.md): the horde-size optimisations on (the default). Off, every one of
+## them does what it did before, for the before / after from one build (perf_marks --flip=t281, --ab=t281_off; any
+## other scene, a smoke: the environment variable CZ_T281_OFF=1).
+static var t281_opt: bool = OS.get_environment("CZ_T281_OFF") == ""
 
 var enemy_id: StringName = &"ganger"
 var state: State = State.INACTIVE
@@ -213,6 +217,8 @@ static func kind_config(kind: StringName) -> Dictionary:
 
 func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
 	_contact_lock.reset()
+	_foot_ray_from = [Vector3.INF, Vector3.INF]
+	_toe_ray_from = [Vector3.INF, Vector3.INF]
 	var tiers: Dictionary = GLData.table("enemies")["tiers"]
 	var jitter: float = float(GLData.table("enemies")["speed_jitter"])
 	net_died = false
@@ -401,9 +407,20 @@ func marke_hitbox() -> Hitbox:
 func _marke_layers(on: bool) -> void:
 	for site: StringName in _marke_hb.keys():
 		var live: bool = on and site == marke_site and not _marke_lost
-		(_marke_hb[site] as Hitbox).collision_layer = Hitbox.LAYER_HITBOX if live else 0
+		_weak_box_live(_marke_hb[site] as Hitbox, live)
 	for ws: StringName in _wound_hb.keys():   # T-192
-		(_wound_hb[ws] as Hitbox).collision_layer = Hitbox.LAYER_HITBOX if on and ws == marke_site else 0
+		_weak_box_live(_wound_hb[ws] as Hitbox, on and ws == marke_site)
+
+
+## T-281: a weak-point box (the Marke's two sites, the four wound sites) that is not this body's live one has no
+## collision layer, so no ray or area can ever find it; it also leaves the physics space (process off: the
+## CollisionObject's default disable mode removes it), where it was moved with its bone every animation step for
+## nothing. Five of a zombie's eighteen boxes. `t281_opt` false: it stays in the space, as before.
+func _weak_box_live(hb: Hitbox, live: bool) -> void:
+	hb.collision_layer = Hitbox.LAYER_HITBOX if live else 0
+	var mode: Node.ProcessMode = Node.PROCESS_MODE_DISABLED if (t281_opt and not live) else Node.PROCESS_MODE_INHERIT
+	if hb.process_mode != mode:
+		hb.process_mode = mode
 
 
 ## The marked hand is gone with the arm: no weak point left, the glint goes with the piece.
@@ -2006,7 +2023,37 @@ func _halt(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, 0.0, 30.0 * delta)
 	velocity.z = move_toward(velocity.z, 0.0, 30.0 * delta)
 	_apply_gravity(delta)
+	if _at_rest():
+		halt_skips += 1
+		return
+	_rest_tick = REST_REFRESH_TICKS
 	move_and_slide()
+	_rest_from = global_position if get_position_delta().length_squared() < 1.0e-10 else Vector3.INF
+
+
+## T-281: a halted body at rest needs no move_and_slide. A zombie that stands (queued at a window, tearing the
+## boards, staggered, getting up, waiting at a ladder) asked the physics engine every tick to slide it nowhere: the
+## floor snap pressed it into the ground it already stood on and it came back where it was (0.03-0.05 ms a call, a
+## quarter of the horde at the windows in a full round). It is skipped while nothing could move the body: no
+## velocity left on the flat, on the floor (the gravity step found it and the step off another zombie's head did not
+## fire), not on a moving floor, not moved by anyone since its last real slide, and that slide itself moved it by
+## nothing. Every REST_REFRESH_TICKS-th tick slides for real all the same, so the floor contact and the slide's
+## collisions stay fresh. `t281_opt` false: every tick slides, as before.
+const REST_REFRESH_TICKS: int = 10
+var _rest_from: Vector3 = Vector3.INF   # where the last real slide left the body when it moved it by nothing
+var _rest_tick: int = 0
+static var halt_skips: int = 0          # skipped slides (perf_marks counts them)
+
+
+func _at_rest() -> bool:
+	if not t281_opt or _rest_from != global_position:
+		return false
+	if velocity.x != 0.0 or velocity.z != 0.0 or velocity.y > 0.0 or not is_on_floor():
+		return false
+	if get_platform_velocity() != Vector3.ZERO:
+		return false
+	_rest_tick -= 1
+	return _rest_tick > 0
 
 
 func _apply_gravity(delta: float) -> void:
@@ -2614,6 +2661,7 @@ func _build_body() -> void:
 		mhb.position = ms[1]
 		mhb.collision_layer = 0
 		at.add_child(mhb)
+		_weak_box_live(mhb, false)
 		_marke_hb[site] = mhb
 		var gl: MeshInstance3D = MeshInstance3D.new()
 		gl.name = "MarkeGlint"
@@ -2636,6 +2684,7 @@ func _build_body() -> void:
 		whb.position = wsd[1]
 		whb.collision_layer = 0
 		wat.add_child(whb)
+		_weak_box_live(whb, false)
 		_wound_hb[ws] = whb
 		var wm: MeshInstance3D = MeshInstance3D.new()
 		wm.name = "Wound"
@@ -3678,6 +3727,10 @@ func _lock_feet(clip: String, time: float, dt: float, cfg: Dictionary) -> void:
 
 
 const _TURN_STATES: Array = [State.CHASE, State.TO_WINDOW]
+## T-281: the per-frame state tests' lists, built once (an inline list is a new array at every call)
+const _MOVING_STATES: Array = [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW]
+const _IK_STATES: Array = [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW, State.TEAR, State.ATTACK, State.STAGGER]
+const _LOOK_STATES: Array = [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW, State.TEAR, State.ATTACK]
 const _TURN_TREE_STATES: Array = ["Locomotion", "Turn"]
 
 
@@ -3691,9 +3744,10 @@ func _animate(dt: float) -> void:
 	if state == State.INACTIVE or _tree == null or _ragdoll != null:
 		return   # a ragdolling corpse: the physics bodies drive the bones (ZombieRagdoll.sync)
 	anim_steps += 1
-	ZombieBody.update_cracks(RoundManager.current_round, float(GLData.table("enemies").get("visual", {}).get("crack_energy", 2.6)))
+	if RoundManager.current_round != ZombieBody._crack_round:   # (T-281: the table is read only when the round changed)
+		ZombieBody.update_cracks(RoundManager.current_round, float(GLData.table("enemies").get("visual", {}).get("crack_energy", 2.6)))
 	var spd: float = Vector2(velocity.x, velocity.z).length()
-	var moving_state: bool = state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW]
+	var moving_state: bool = state in _MOVING_STATES
 	var can_turn: bool = _can_recorded_turn()
 	if not can_turn: _turn_motion.cancel()
 	if _turn_motion.active:
@@ -3714,15 +3768,15 @@ func _animate(dt: float) -> void:
 		var want_turn: float = turn_norm * (lean / 0.18 if spd > below else 1.0)
 		if spd <= below and ZombieClips.recorded_turns_enabled(): want_turn = 0.0
 		_loco_turn = move_toward(_loco_turn, want_turn if absf(turn_norm) > 0.15 else 0.0, dt * 5.0)
-		_tree.set("parameters/SM/Locomotion/Anim/blend_position", Vector2(_loco_x, _loco_turn))
+		_tree.set(&"parameters/SM/Locomotion/Anim/blend_position", Vector2(_loco_x, _loco_turn))
 		# the clip's root motion is in rig space: the height scale on the pivot stretches every stride by that much
 		var scale: float = maxf(spd, 0.15) / maxf(0.1, _loco_speed * _pivot.scale.y) if _loco_x > 0.01 else 1.0
-		_tree.set("parameters/SM/Locomotion/TimeScale/scale", scale)
+		_tree.set(&"parameters/SM/Locomotion/TimeScale/scale", scale)
 	elif _tree_state == "Crawl":
 		var cx: float = clampf(spd / float(_cfg["crawler_speed"]), 0.0, 1.0)
-		_tree.set("parameters/SM/Crawl/Anim/blend_position", cx)
+		_tree.set(&"parameters/SM/Crawl/Anim/blend_position", cx)
 		var cs: float = maxf(spd, 0.1) / (float(_anim["gait"]["crawl"]["speed"]) * _pivot.scale.y) if cx > 0.05 else 1.0
-		_tree.set("parameters/SM/Crawl/TimeScale/scale", cs)
+		_tree.set(&"parameters/SM/Crawl/TimeScale/scale", cs)
 	_turn_rate = move_toward(_turn_rate, 0.0, dt * 8.0)
 	if _flinch > 0.0:
 		_flinch = maxf(0.0, _flinch - dt)
@@ -3735,7 +3789,7 @@ func _animate(dt: float) -> void:
 			_tree.set("parameters/SM/Attack/TimeSeek/seek_request", recorded_hit)
 			_tree.set("parameters/SM/Attack/TimeScale/scale", 1.0)
 	_tree.advance(dt)
-	var turn_time: float = _playback.get_current_play_position() if String(_playback.get_current_node()) == "Turn" else 0.0
+	var turn_time: float = _playback.get_current_play_position() if _playback.get_current_node() == &"Turn" else 0.0
 	_pivot.rotation.y = _turn_motion.advance(rotation.y, turn_time, dt, can_turn and _tree_state == "Turn")
 	if state == State.DEAD and _tree_state == "Death" and ZombieClips.visual_clip(_death_clip).begins_with("mco_"):
 		# The corpse presentation follows the recorded fall before physics takes over. The pooled
@@ -3765,7 +3819,7 @@ func _animate(dt: float) -> void:
 		_modifier.lock_on = false
 	# Use the evaluated state's clock, including seeks, idle blends and resumes after
 	# attacks. A separate integrated clock drifts away from the feet on those paths.
-	if _tree_state == "Locomotion" and String(_playback.get_current_node()) == "Locomotion" and _loco_x > 0.5:
+	if _tree_state == "Locomotion" and _playback.get_current_node() == &"Locomotion" and _loco_x > 0.5:
 		var phase: float = fposmod(_playback.get_current_play_position() / _cycle_len, 1.0)
 		if _step_phase_valid:
 			for event: Dictionary in ZombieClips.footstep_events(_loco_clip):
@@ -3797,6 +3851,17 @@ func _animate(dt: float) -> void:
 
 
 ## Foot IK rays, look-at target and the per-distance modifier gates (physics step).
+## T-281: the foot rays' last start points and hits per foot (world space), and how near a new start point must be
+## to the last one to meet the same ground (5 mm; the toe's point 1 cm). The ground under a foot that moved less is
+## the same ground: the map's colliders do not move under a zombie's feet. Reset with each spawn.
+const FOOT_RAY_SAME_M2: float = 0.005 * 0.005
+var _foot_ray_from: Array[Vector3] = [Vector3.INF, Vector3.INF]
+var _toe_ray_from: Array[Vector3] = [Vector3.INF, Vector3.INF]
+var _foot_hit: Array[Vector3] = [Vector3.INF, Vector3.INF]
+var _toe_hit: Array[Vector3] = [Vector3.INF, Vector3.INF]
+static var foot_ray_reuses: int = 0   # feet whose rays were kept (perf_marks counts them)
+
+
 func _update_senses(delta: float) -> void:
 	if state == State.INACTIVE or state == State.DEAD or not has_rig():
 		return
@@ -3805,7 +3870,7 @@ func _update_senses(delta: float) -> void:
 	var la: Dictionary = _anim["look_at"]
 	# (T-265: no foot rays for a body the camera does not see: four rays a tick each, and the weight eases back in
 	# over a quarter of a second once it is in view again)
-	var ik_on: bool = d <= float(fi["range_m"]) and not _out_of_view and is_on_floor() and state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW, State.TEAR, State.ATTACK, State.STAGGER] and not is_crawler
+	var ik_on: bool = d <= float(fi["range_m"]) and not _out_of_view and is_on_floor() and state in _IK_STATES and not is_crawler
 	_modifier.active = d <= float(fi["off_m"]) or _modifier.springs_active()
 	if ik_on:
 		foot_ray_ticks += 1
@@ -3819,18 +3884,27 @@ func _update_senses(delta: float) -> void:
 			var foot_g: Vector3 = _skel.to_global(_skel.get_bone_global_pose(fidx).origin)
 			var from: Vector3 = Vector3(foot_g.x, global_position.y + float(fi["ray_up"]), foot_g.z)
 			var to: Vector3 = Vector3(foot_g.x, global_position.y - float(fi["ray_down"]), foot_g.z)
-			var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, to, LAYER_WORLD, [get_rid()])
-			var hit: Dictionary = space.intersect_ray(q)
-			_modifier.foot_ground_y[i] = (_skel.to_local(hit["position"] as Vector3).y) if not hit.is_empty() else NAN
-			# the ground under the toe too: the foot is tilted by the rise between the two (ZombieBodyModifier)
 			var toe_g: Vector3 = _skel.to_global(_skel.get_bone_global_pose(fidx) * Vector3(0, -0.06, -0.15))
-			var tq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(Vector3(toe_g.x, from.y, toe_g.z), Vector3(toe_g.x, to.y, toe_g.z), LAYER_WORLD, [get_rid()])
-			var toe_hit: Dictionary = space.intersect_ray(tq)
-			_modifier.toe_ground_y[i] = (_skel.to_local(toe_hit["position"] as Vector3).y) if not toe_hit.is_empty() else NAN
+			# T-281: a foot that has not moved since its last rays (a body standing at a window, tearing, waiting)
+			# meets the same ground: the two hits are kept and only taken into the skeleton's frame again
+			if t281_opt and _foot_ray_from[i].distance_squared_to(from) < FOOT_RAY_SAME_M2 and _toe_ray_from[i].distance_squared_to(toe_g) < FOOT_RAY_SAME_M2 * 4.0:
+				foot_ray_reuses += 1
+			else:
+				var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(from, to, LAYER_WORLD, [get_rid()])
+				var hit: Dictionary = space.intersect_ray(q)
+				_foot_hit[i] = (hit["position"] as Vector3) if not hit.is_empty() else Vector3.INF
+				# the ground under the toe too: the foot is tilted by the rise between the two (ZombieBodyModifier)
+				var tq: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(Vector3(toe_g.x, from.y, toe_g.z), Vector3(toe_g.x, to.y, toe_g.z), LAYER_WORLD, [get_rid()])
+				var toe_hit: Dictionary = space.intersect_ray(tq)
+				_toe_hit[i] = (toe_hit["position"] as Vector3) if not toe_hit.is_empty() else Vector3.INF
+				_foot_ray_from[i] = from
+				_toe_ray_from[i] = toe_g
+			_modifier.foot_ground_y[i] = _skel.to_local(_foot_hit[i]).y if _foot_hit[i] != Vector3.INF else NAN
+			_modifier.toe_ground_y[i] = _skel.to_local(_toe_hit[i]).y if _toe_hit[i] != Vector3.INF else NAN
 		_modifier.ik_weight = move_toward(_modifier.ik_weight, 1.0, delta * 4.0)
 	else:
 		_modifier.ik_weight = move_toward(_modifier.ik_weight, 0.0, delta * 4.0)
-	var look_on: bool = target != null and d <= float(la["range_m"]) and (state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW, State.TEAR, State.ATTACK] or _emerge_head_out()) and not is_severed("Head")
+	var look_on: bool = target != null and d <= float(la["range_m"]) and (state in _LOOK_STATES or _emerge_head_out()) and not is_severed("Head")
 	if look_on:
 		_look_target.global_position = target.global_position + Vector3.UP * 1.6
 	_look.active = look_on
