@@ -37,6 +37,7 @@ var special_handler: Node = null
 var _boss_pending: float = -1.0    # seconds until a scheduled Foreman bursts out
 var _screamer_at: float = -1.0     # fraction of the round spawned at which a Screamer appears
 var _special_fx: bool = false
+var terror: ZombieTerror = null
 var _env: Environment = null
 var _env_base: Dictionary = {}
 var _lights: Array = []            # [OmniLight3D, base energy, uses_base_energy_prop]
@@ -69,6 +70,10 @@ func _ready() -> void:
 	GLBus.special_round_warning.connect(_on_special_warning)
 	GLBus.enemy_killed_at.connect(_on_enemy_killed_at)
 	GLBus.zone_opened.connect(func(_z: StringName) -> void: recompute_nav_mask())
+	terror = ZombieTerror.new()   # T-284: the horde-level scare (presentation only, every peer its own)
+	terror.name = "ZombieTerror"
+	terror.director = self
+	add_child(terror)
 	if not puppet_mode and CousinsRound.applies(GameState.map_id, HomageBoss.cfg()):
 		cousins = CousinsRound.new()
 		cousins.director = self
@@ -573,6 +578,8 @@ func _find_env() -> Environment:
 func _set_special_fx(on: bool) -> void:
 	if on == _special_fx:
 		return
+	if on and terror != null:
+		terror.release_fog()   # T-284: the special round's fog starts from the map's own, not a horde moment's
 	_special_fx = on
 	var mult: float = float(GLData.table("rounds")["special_round"].get("fog_mult", 3.0))
 	if on:

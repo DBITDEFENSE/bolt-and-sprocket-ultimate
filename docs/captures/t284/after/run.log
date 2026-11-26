@@ -1,0 +1,61 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+libspeechd.so.2: cannot open shared object file: No such file or directory
+Vulkan 1.4.318 - Forward+ - Using Device #0: Unknown - llvmpipe (LLVM 20.1.2, 256 bits)
+
+Unicode parsing error, some characters were replaced with � (U+FFFD): Unexpected NUL character
+Unicode parsing error, some characters were replaced with � (U+FFFD): Unexpected NUL character
+Unicode parsing error, some characters were replaced with � (U+FFFD): Unexpected NUL character
+Movie Maker mode enabled, recording movie in 1920×1080 @ 30 FPS...
+[GLSettings] Linux 24.04 | 16 threads | llvmpipe (LLVM 20.1.2, 256 bits) (type 4, 1.4.318) | vulkan forward_plus | render thread safe | window (1280, 720), screen (1280, 720) x1.00 -nan Hz | preset low, 3D limit 0
+[landscape] forest: 666 mesh pines, 3621 impostor cards
+[landscape] undergrowth: 319 bushes, 164 rocks
+[landscape] built in 1297 ms (1154 static meshes batched)
+WARNING: environment_set_ssr_roughness_quality has been deprecated and no longer does anything.
+     at: environment_set_ssr_roughness_quality (servers/rendering/renderer_rd/forward_clustered/render_forward_clustered.cpp:4010)
+     GDScript backtrace (most recent call first):
+         [0] apply_visuals (res://gravelight/autoload/settings.gd:726)
+         [1] activate (res://gravelight/autoload/settings.gd:808)
+         [2] _ready (res://gravelight/maps/map_root.gd:68)
+[LookMaterials] map00_crossroads: 577 materials, 239 fixed, 172 exempt, 155 skipped, 180.8 ms
+[jakub] caged (round 0)
+[PerkLayout] seed 807201483: blastproof_bock@yard_east (YARD), hawkeye_brandy@stable (STABLE), ironhide_stout@yard_west (YARD), ledger_lager@attic (UPSTAIRS), magpie_mead@old_vault_south (OLD_CELLAR), marathon_malt@old_vault_north (OLD_CELLAR), overclock_cordial@lager (LAGERKELLER), packmule_porter@bay (CELLAR), rocket_man@launch_bunker (STELLUNG), second_wind@vault_east (CELLAR), skyhook_sekt@guest_hall (UPSTAIRS), trigger_tonic@carters_road (GROUNDS), twin_barrel@behind_stable (GROUNDS)
+[ShadowProxies] map00_crossroads: { "batches": 753, "proxies": 186, "kept": 5 }
+[DetailRange] map00_crossroads: 56 cut-offs x1.00 (gfx_lod low)
+[PropShadows] map00_crossroads: { "meshes": 181, "surfaces": 899 }
+[OcclusionWalls] map00_crossroads: wanted true, { "occluders": 74, "triangles": 3096 }
+[LightRange] map00_crossroads: 202 lamps fade with distance (gfx_lod low)
+[vo_rooms] dry -> room_wood (map map00_crossroads, zone TAPROOM)
+[bounds] map00_crossroads: kill -10.7, ceiling 23.1, rect [P: (-59.5, -54.5), S: (207.25, 144.0)], longest fall 3.7 s
+[zlook] faces_off  draw calls 558
+[zlook] faces_on  draw calls 555
+[zlook] taproom_off  draw calls 1419
+[zlook] taproom_on  draw calls 1414
+[vo_rooms] room_wood -> outdoor (map map00_crossroads, zone GROUNDS)
+[zlook] sight_00  draw calls 504
+[zlook] sight_01  draw calls 496
+[zlook] sight_02  draw calls 498
+[zlook] sight_03  draw calls 499
+[zlook] sight_04  draw calls 499
+[zlook] sight_05  draw calls 499
+[zlook] sight_06  draw calls 499
+[zlook] sight_07  draw calls 499
+[zlook] horde_off  draw calls 439
+[zlook] horde_on  draw calls 435
+[zlook] horde: in a horde moment true, near 16, moments 4
+[zlook] 14 pictures in /mnt/c/Users/Devin/PROJECTS/bolt-and-sprocket-ultimate/.wt/locker/docs/captures/t284/after
+ERROR: BUG, indexing did not unpair geometries from light.
+   at: instance_set_scenario (servers/rendering/renderer_scene_cull.cpp:844)
+[GLSettings] exit: 442 scripts' static caches emptied (264 variables, 22 nodes freed)
+ERROR: BUG, indexing did not unpair geometries from light.
+   at: instance_set_base (servers/rendering/renderer_scene_cull.cpp:616)
+--------------------------------------------------------------------------------
+Done recording movie at path: /mnt/c/Users/Devin/PROJECTS/bolt-and-sprocket-ultimate/.wt/locker/docs/captures/t284/after/run.avi
+306 frames at 30 FPS (movie length: 00:00:10:06), recorded in 00:07:22 (2% of real-time speed).
+CPU render time: 8.13 seconds (average: 26.56 ms/frame)
+GPU render time: 474.12 seconds (average: 1549.43 ms/frame)
+Encoding time: 24.10 seconds (average: 78.75 ms/frame)
+--------------------------------------------------------------------------------
+WARNING: 62 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 25 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

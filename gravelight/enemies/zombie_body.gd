@@ -506,6 +506,13 @@ instance uniform float inst_dissolve : instance_index(5) = 0.0;
 instance uniform vec4 inst_wear : instance_index(10) = vec4(0.0);
 instance uniform vec4 inst_skin : instance_index(11) = vec4(1.0, 1.0, 1.0, 0.0);
 instance uniform vec4 inst_mottle : instance_index(12) = vec4(0.0);
+// T-284 (ZombieTerror.look_vec): x eye glow, y wet sheen, z rot, w 0 violet / 1 amber eyes; all 0 = the T-269 look
+instance uniform vec4 inst_terror : instance_index(13) = vec4(0.0);
+uniform vec3 eye_centre = vec3(0.0345, 1.7213, -0.0757);
+uniform float eye_radius = 0.0175;
+uniform vec3 eye_violet = vec3(0.54, 0.21, 1.0);
+uniform vec3 eye_amber = vec3(1.0, 0.45, 0.07);
+uniform vec3 rot_color = vec3(0.023, 0.033, 0.009);
 uniform vec3 stain_color = vec3(0.07, 0.004, 0.003);
 uniform vec3 dead_vein_color = vec3(0.02, 0.03, 0.07);
 uniform vec3 socket_color = vec3(0.023, 0.005, 0.007);
@@ -545,12 +552,21 @@ void fragment() {
 	base = mix(base, stain_color * mix(0.7, 1.3, n), bloody * 0.9);
 	float dirt = inst_dirt * (1.0 - smoothstep(0.0, 1.3, v_h)) * (0.4 + 0.6 * n);
 	base = mix(base, base * vec3(0.5, 0.42, 0.38), dirt);
+	// T-284: rot. Sores where the ridged noise and the cells agree: the skin goes green-black and wet there.
+	float sore = smoothstep(0.55, 0.8, ridge * 0.7 + (1.0 - smoothstep(0.0, 0.2, cell)) * 0.45 + n * 0.25) * inst_terror.z;
+	base = mix(base, rot_color * (0.6 + 0.8 * n), sore * 0.85);
+	// the eyes: a small disc round each socket's centre in the rig's rest space (both builds and sexes share it)
+	vec3 ec = vec3(abs(v_pos.x), v_pos.y, v_pos.z);
+	float eye_d = length(ec - vec3(abs(eye_centre.x), eye_centre.y, eye_centre.z));
+	float eye = (1.0 - smoothstep(eye_radius * 0.45, eye_radius, eye_d)) * step(0.001, inst_terror.x);
+	base = mix(base, vec3(0.02, 0.012, 0.01), eye * 0.85);
 	float up = clamp(v_nrm.y, 0.0, 1.0);
 	float frost = inst_frost * smoothstep(0.35, 0.9, n * 0.55 + up * 0.55);
 	base = mix(base, vec3(0.86, 0.9, 0.96), frost);
 	base = mix(base, vec3(0.03, 0.02, 0.02), clamp(inst_char * smoothstep(0.15, 0.75, n + inst_char * 0.4), 0.0, 1.0));
 	ALBEDO = base;
-	ROUGHNESS = mix(roughness, 0.2, max(inst_fuel, frost * 0.6)) * mix(1.0, orm.g / max(roughness, 0.05), use_maps) * mix(1.0, 0.5, bloody);
+	float wet = clamp(inst_terror.y * (bloody + mouth_hands * 0.6 + sore * 0.8) + eye, 0.0, 1.0);
+	ROUGHNESS = mix(roughness, 0.2, max(inst_fuel, frost * 0.6)) * mix(1.0, orm.g / max(roughness, 0.05), use_maps) * mix(1.0, 0.5, bloody) * mix(1.0, 0.22, wet);
 	METALLIC = metallic;
 	if (use_maps > 0.5) {
 		NORMAL_MAP = texture(normal_tex, UV).rgb;
@@ -570,6 +586,12 @@ void fragment() {
 	vec3 em = crack_color * cr * crack_energy * gl_round_k + crack_edge * cr_edge * crack_energy * 0.35 * gl_round_k
 		+ vein_color * vein * vein_energy * pulse * (0.35 + 0.65 * gl_round_k);
 	em *= (1.0 - frost * 0.7) * (1.0 - clamp(inst_char, 0.0, 1.0) * 0.5);
+	// T-284: the eyes burn in the dark: a hot core and a softer ring, breathing with the map's hum
+	float eye_core = 1.0 - smoothstep(0.0, eye_radius * 0.55, eye_d);
+	// (a faint halo round the socket too, so the bloom carries the eyes across a lit room at 7-10 m)
+	float eye_halo = (1.0 - smoothstep(eye_radius, eye_radius * 2.4, eye_d)) * step(0.001, inst_terror.x);
+	vec3 eye_col = mix(eye_violet, eye_amber, inst_terror.w);
+	em += eye_col * (eye_halo * 0.18 + eye * 1.0 + eye_core * 2.6) * inst_terror.x * (0.8 + 0.35 * gl_hum) * (1.0 - clamp(inst_char, 0.0, 1.0));
 	if (inst_dissolve > 0.0) {
 		if (n < inst_dissolve) { discard; }
 		em += vec3(0.55, 0.25, 1.0) * smoothstep(inst_dissolve + 0.08, inst_dissolve, n) * 4.0;
@@ -818,6 +840,7 @@ static func skin_material(look: String = "base") -> ShaderMaterial:
 		m.set_shader_parameter("use_maps", 1.0)
 	if look != "living":
 		_look_uniforms(m)
+		ZombieTerror.apply_material(m)   # T-284: the eye centres and colours (inst_terror 0 leaves the look as it was)
 	_mats[key] = m
 	return m
 

@@ -233,6 +233,8 @@ func _ready() -> void:
 		(load("res://gravelight/enemies/zombie.gd") as GDScript).set("t281_opt", false)
 	if "t283_off" in _ab:   # T-283: phase 2's zombie changes off (the before, same build)
 		(load("res://gravelight/enemies/zombie.gd") as GDScript).set("t283_opt", false)
+	if "t284_off" in _ab:   # T-284: the scare off (the before, same build)
+		(load("res://gravelight/enemies/zombie.gd") as GDScript).set("t284_terror", false)
 	if "--ab=t237_off" in OS.get_cmdline_user_args():   # T-237: the "before" side (the optimisations off, same build)
 		BotProf.opt = false
 		StreamWarm.enabled = false
@@ -1391,6 +1393,9 @@ func _report_t281() -> void:
 		var lt: float = maxf(1.0, float(lf[0] + lf[1] + lf[2] + lf[3]))
 		print("[t283] animation rate (zombie-frames, whole run): full %d (%.0f %%), half %d (%.0f %%), a quarter by distance %d (%.0f %%), a quarter out of view %d (%.0f %%) (t283_opt %s)" % [
 			lf[0], 100.0 * lf[0] / lt, lf[1], 100.0 * lf[1] / lt, lf[2], 100.0 * lf[2] / lt, lf[3], 100.0 * lf[3] / lt, str(zsc.get("t283_opt"))])
+	if ClassDB.class_exists("Node") and ResourceLoader.exists("res://gravelight/enemies/zombie_terror.gd"):
+		var zt: GDScript = load("res://gravelight/enemies/zombie_terror.gd") as GDScript
+		print("[t284] counted (whole run): first sights %d, screams %d, twitches %d, close breaths %d, horde moments %d" % [int(zt.get("first_sights")), int(zt.get("screams")), int(zt.get("twitches")), int(zt.get("breaths")), int(zt.get("horde_moments"))])
 	if zsc.get("halt_skips") != null:
 		print("[t281] work counted (whole run): halted slides skipped at rest %d, feet whose two rays were kept %d (t281_opt %s)" % [int(zsc.get("halt_skips")), int(zsc.get("foot_ray_reuses")), str(zsc.get("t281_opt"))])
 	var rgs: GDScript = load("res://gravelight/enemies/zombie_ragdoll.gd") as GDScript
@@ -1453,6 +1458,8 @@ func _flip_apply() -> void:
 			Zombie.t283_rays = _flip_on
 		"t283_lod":
 			Zombie.t283_lod = _flip_on
+		"t284":
+			Zombie.t284_terror = _flip_on
 		"z_no_areas":
 			if _flip_on:
 				if not _ab.has(_flip):
@@ -1497,6 +1504,8 @@ func _report_flip() -> void:
 	var what: String = "on = the diagnostic applied, off = as built"
 	if _flip == "t281":
 		what = "on = as built (Zombie.t281_opt true), off = the T-281 changes off"
+	elif _flip == "t284":
+		what = "on = as built (Zombie.t284_terror true), off = the T-284 scare off"
 	elif _flip.begins_with("t283"):
 		what = "on = as built (Zombie.%s true), off = that T-283 part off" % ("t283_opt" if _flip == "t283" else _flip)
 	print("[flip] %s: %s; ms" % [_flip, what])

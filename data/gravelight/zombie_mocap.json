@@ -10,6 +10,7 @@
   "locomotion": {"shamble":["mco_chase"], "walk":["mco_chase"], "jog":["mco_fast_chase"], "run":["mco_fast_chase"], "sprint":["mco_fast_chase"]},
   "idle": ["mco_idle", "mco_idle_2"],
   "visual_aliases": {"swipe_l":"mco_swipe_l", "swipe_r":"mco_swipe_r", "death_sit":"mco_death_back", "death_back":"mco_death_hit_back"},
+  "terror_aliases": {"window_wait":"mco_reach"},
   "death_key_pose_seconds": {"mco_death_back":1.0, "mco_death_hit_back":0.4},
   "death_motion": {"inherit_velocity":true, "max_linear_mps":4.0, "max_angular_rps":12.0},
   "contact_lock": {"enabled":true, "max_correction_m":0.18, "release_seconds":0.08, "retain_locomotion_blend":0.5},
