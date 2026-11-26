@@ -57,7 +57,9 @@ common/max_physics_steps_per_frame=4
 ; T-283 (docs/perf/t281_zombie_count_2026-11.md, "Phase 2"): Jolt instead of Godot Physics. Map 0 at 24 / 48 zombies:
 ; the game thread's frame -20 % / -19 %, the 1 % worst nearly halved; full GUT suite and the movement / physics smokes
 ; pass. Back to Godot Physics: 3d/physics_engine="GodotPhysics3D" (or the same line in an override.cfg beside this file).
-3d/physics_engine="Jolt Physics"
+; 2026-11-26: back to Godot Physics until the player's step-up works under Jolt (smoke_move_feel: the player could not
+; climb a 0.18 m staircase under Jolt; passes under Godot Physics). The rest of T-283 stays.
+3d/physics_engine="GodotPhysics3D"
 
 [rendering]
 

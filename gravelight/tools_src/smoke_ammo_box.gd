@@ -6,7 +6,7 @@ extends Node
 ## Usage: godot --headless --audio-driver Dummy --path . res://gravelight/tools_src/smoke_ammo_box.tscn
 
 const MAPS: Array = [
-	["map00", "res://gravelight/maps/map00_crossroads/map00.tscn", 4],   # + the Old Cellar's (T-051), + the Grounds' (T-080)
+	["map00", "res://gravelight/maps/map00_crossroads/map00.tscn", 5],   # + the Old Cellar's (T-051), + the Grounds' (T-080), + the V2 site's (T-276)
 	["map01", "res://gravelight/maps/map01_kaltenbrunn/map01.tscn", 5],   # T-123: + the spawn yard's box
 	["map02", "res://gravelight/maps/map02_totenhafen/map02.tscn", 4],
 ]
