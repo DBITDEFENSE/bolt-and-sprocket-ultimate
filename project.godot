@@ -54,6 +54,10 @@ window/stretch/mode="canvas_items"
 [physics]
 
 common/max_physics_steps_per_frame=4
+; T-283 (docs/perf/t281_zombie_count_2026-11.md, "Phase 2"): Jolt instead of Godot Physics. Map 0 at 24 / 48 zombies:
+; the game thread's frame -20 % / -19 %, the 1 % worst nearly halved; full GUT suite and the movement / physics smokes
+; pass. Back to Godot Physics: 3d/physics_engine="GodotPhysics3D" (or the same line in an override.cfg beside this file).
+3d/physics_engine="Jolt Physics"
 
 [rendering]
 
