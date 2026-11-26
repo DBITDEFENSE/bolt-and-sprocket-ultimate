@@ -147,6 +147,7 @@ func setup(c: Dictionary, dirt_meshes: Dictionary) -> void:
 				p.set_instance_shader_parameter(&"tint", Color(0.16, 0.145, 0.13, 1.0) if nm == "Fire" else SMOKE)
 				p.set_instance_shader_parameter(&"heat", float(HEAT.get(nm, 0.0)))
 				p.set_instance_shader_parameter(&"burn", 0.06 if nm == "Smoke" else 0.2)
+				p.set_instance_shader_parameter(&"size_k", 1.0)
 			p.hide()
 			root.add_child(p)
 			ems[nm] = p
@@ -439,7 +440,7 @@ func blast(pos: Vector3, radius: float, kind: String, quality: Dictionary, parti
 	var cols: Array = DUST.get(dirt, DUST["earth"])
 	var parts: Dictionary = row.get("parts", {})
 	var burn: float = float(row.get("burn", 0.18))
-	var look: String = "%s|%s|%.3f" % [dirt, ground, burn]
+	var look: String = "%s|%s|%.3f|%.3f" % [dirt, ground, burn, s]
 	var relook: bool = _look[i] != look
 	_look[i] = look
 	for nm: String in EMITTERS:
@@ -458,6 +459,8 @@ func blast(pos: Vector3, radius: float, kind: String, quality: Dictionary, parti
 		if p.speed_scale != speed:
 			p.speed_scale = speed
 		if relook:
+			if HEAT.has(nm):
+				p.set_instance_shader_parameter(&"size_k", s)   # the puffs grow with the blast (the node scale only spreads them)
 			match nm:
 				"Fire":
 					p.set_instance_shader_parameter(&"burn", burn)

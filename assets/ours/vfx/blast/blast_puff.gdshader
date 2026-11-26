@@ -1,7 +1,8 @@
 // T-280: one puff of an explosion (the fireball, the smoke column, the thrown dirt, the dust skirt). Drawn on the
 // particles of a GPUParticles3D; every blast shares this one material, and each emitter says through instance
 // uniforms what its puffs are: `tint` (the smoke's or the ground's colour), `heat` (0 = dust that never glows,
-// 1 = a fireball) and `burn` (the share of a puff's life it spends as fire before it is smoke). The texture is a
+// 1 = a fireball), `burn` (the share of a puff's life it spends as fire before it is smoke) and `size_k` (the
+// blast's scale: the emitter's node scale spreads the particles but does not size them). The texture is a
 // 2 x 2 atlas (gen_blast_textures.py): R the light from above, G heat, B fine noise, A density.
 shader_type spatial;
 render_mode blend_mix, depth_draw_never, cull_disabled, specular_disabled, diffuse_lambert_wrap, shadows_disabled;
@@ -10,11 +11,13 @@ uniform sampler2D puff_tex : hint_default_white, filter_linear_mipmap, repeat_di
 instance uniform vec4 tint : source_color = vec4(0.13, 0.12, 0.11, 1.0);
 instance uniform float heat = 0.0;
 instance uniform float burn = 0.2;
+instance uniform float size_k = 1.0;   // the blast's visual scale (a particle's size does not follow its emitter's scale)
 
 varying float v_age;
 varying float v_alpha;
 
 void vertex() {
+	VERTEX.xy *= size_k;
 	// a camera-facing quad that keeps the particle's scale and spins by its angle (BILLBOARD_PARTICLES)
 	mat4 mat_world = mat4(normalize(INV_VIEW_MATRIX[0]), normalize(INV_VIEW_MATRIX[1]), normalize(INV_VIEW_MATRIX[2]), MODEL_MATRIX[3]);
 	float a = INSTANCE_CUSTOM.x;
