@@ -1269,8 +1269,10 @@ func _spawn_horde(n: int) -> void:
 		pool.append(z)
 		free.append(z)
 	if _mix == "":
+		var before: int = _map.director.active_zombies().size()
 		dir.debug_spawn(n)
 		_spawned += n
+		print("[t283] spawned %d of %d asked (free bodies left %d)" % [_map.director.active_zombies().size() - before, n, free.size()])
 		return
 	var fire_cfg: Dictionary = (GLData.load_json("res://data/gravelight/sherman.json") as Dictionary).get("fire_zombie", {})
 	for i: int in n:
@@ -1313,6 +1315,7 @@ func _print_states() -> void:
 	for zi: int in mini(4, zs.size()):
 		zp.append(str((zs[zi] as Zombie).global_position.snappedf(0.1)))
 	print("[t283] first bodies at: %s" % ", ".join(zp))
+	print("[t283] bodies put back so far: %s" % str(Zombie.recycled_why))
 	print("[t283] states at %.0f s: %s | out of view %d, within 4 m of the player %d, mean distance to the player %.1f m | vl_pos %s | camera %s at %s, player at %s on floor %s" % [_t, str(counts), outv, near, dsum / maxf(1.0, float(zs.size())), str(Zombie.vl_pos.snappedf(0.1)),
 		str(cam.get_path()) if cam != null else "-", str(cam.global_position.snappedf(0.1)) if cam != null else "-", str(lp.global_position.snappedf(0.1)) if lp != null else "-", str(lp.is_on_floor()) if lp != null else "-"])
 

@@ -599,7 +599,7 @@ func _physics_process(delta: float) -> void:
 			_update_dead(delta)
 			BotProf.add(&"z.dead.tick", pt)
 	if state != State.DEAD and global_position.y < -30.0:
-		recycle()
+		_recycle_for(&"fell")
 	_update_burn(delta)
 	if _frost_t > 0.0:
 		_frost_t -= delta
@@ -839,7 +839,7 @@ func _update_to_window(delta: float) -> void:
 			_win_progress_t += delta
 			if _win_progress_t > wnp:
 				_win_progress_t = 0.0
-				recycle()
+				_recycle_for(&"window_no_progress")
 
 
 var _win_progress_window: Node = null
@@ -1119,7 +1119,7 @@ func _ladder_wait_tick(delta: float) -> bool:
 	if not can_climb_ladders():
 		if _ladder_wait_t >= LADDER_REFUSE_S:
 			_ladder_wait = null
-			recycle()
+			_recycle_for(&"ladder_refused")
 			return true
 		return false   # it keeps its chase (and its attack, if the target comes within reach) meanwhile
 	if _ladder_wait_t >= LADDER_WAIT_MAX_S or _flat_dist(_ladder_wait_from) > 3.5:
@@ -1334,7 +1334,7 @@ func _update_chase(delta: float) -> void:
 	_nav_move(target.global_position, spd, delta, interval)
 	# Wedged well above the walkable floor (pushed out of an overlap into a ceiling, etc.): recycle it now.
 	if _wedged(delta):
-		recycle()
+		_recycle_for(&"wedged")
 		return
 	# Stuck check: barely moved for a long time while far from the player -> recycle into the queue.
 	_stuck_t += delta
@@ -1342,7 +1342,7 @@ func _update_chase(delta: float) -> void:
 		# ...or stuck anywhere it isn't within reach of its target: snagged on a stair corner, a stall, or with a
 		# closed door / wall in between (T-026). A recycled zombie re-enters through a window.
 		if global_position.distance_to(_stuck_origin) < 1.0 and (dist > float(_cfg["attack_range"]) + 1.0 or not _clear_to(target)) and not is_crawler:
-			recycle()
+			_recycle_for(&"stuck")
 			return
 		_stuck_t = 0.0
 		_stuck_origin = global_position
@@ -1360,7 +1360,7 @@ func _update_chase(delta: float) -> void:
 			_progress_t += delta
 			if _progress_t > np and dist > float(_cfg.get("no_progress_min_m", 8.0)):
 				_progress_t = 0.0
-				recycle()
+				_recycle_for(&"no_progress")
 
 
 var _progress_target: Player = null
@@ -1426,7 +1426,7 @@ func _update_hop(delta: float, dist: float) -> bool:
 			_react_len = float(hop_cfg().get("land_stagger_seconds", 0.35))
 		elif global_position.y < kill_plane_y:
 			hopping = false
-			recycle()
+			_recycle_for(&"hop_fell")
 		return true
 	if _hop_tele > 0.0:
 		_hop_tele -= delta
@@ -2628,6 +2628,16 @@ func _end_ragdoll() -> void:
 
 
 ## Removes this zombie without a kill (stuck or unreachable) and puts it back in the round queue.
+## T-283: why bodies were put back, counted for the measuring tools (perf_marks prints them).
+static var recycled_why: Dictionary = {}
+
+
+func _recycle_for(why: StringName) -> void:
+	if not puppet and is_active():
+		recycled_why[why] = int(recycled_why.get(why, 0)) + 1
+	recycle()
+
+
 func recycle() -> void:
 	if puppet or not is_active():
 		return
