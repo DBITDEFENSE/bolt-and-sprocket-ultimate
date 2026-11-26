@@ -33,8 +33,9 @@ const GRAVITY: float = 18.0   # the 1 g fallback; live: GameState.g_zombie() (wo
 ## Shared per-physics-frame repath budget, reset by the director.
 static var repath_budget: int = 6
 ## T-281 (docs/perf/t281_zombie_count_2026-11.md): the horde-size optimisations on (the default). Off, every one of
-## them does what it did before, for the before / after from one build (perf_marks --flip=t281, --ab=t281_off).
-static var t281_opt: bool = true
+## them does what it did before, for the before / after from one build (perf_marks --flip=t281, --ab=t281_off; any
+## other scene, a smoke: the environment variable CZ_T281_OFF=1).
+static var t281_opt: bool = OS.get_environment("CZ_T281_OFF") == ""
 
 var enemy_id: StringName = &"ganger"
 var state: State = State.INACTIVE
