@@ -588,8 +588,10 @@ void fragment() {
 	em *= (1.0 - frost * 0.7) * (1.0 - clamp(inst_char, 0.0, 1.0) * 0.5);
 	// T-284: the eyes burn in the dark: a hot core and a softer ring, breathing with the map's hum
 	float eye_core = 1.0 - smoothstep(0.0, eye_radius * 0.55, eye_d);
+	// (a faint halo round the socket too, so the bloom carries the eyes across a lit room at 7-10 m)
+	float eye_halo = (1.0 - smoothstep(eye_radius, eye_radius * 2.4, eye_d)) * step(0.001, inst_terror.x);
 	vec3 eye_col = mix(eye_violet, eye_amber, inst_terror.w);
-	em += eye_col * (eye * 0.6 + eye_core * 1.6) * inst_terror.x * (0.8 + 0.35 * gl_hum) * (1.0 - clamp(inst_char, 0.0, 1.0));
+	em += eye_col * (eye_halo * 0.18 + eye * 1.0 + eye_core * 2.6) * inst_terror.x * (0.8 + 0.35 * gl_hum) * (1.0 - clamp(inst_char, 0.0, 1.0));
 	if (inst_dissolve > 0.0) {
 		if (n < inst_dissolve) { discard; }
 		em += vec3(0.55, 0.25, 1.0) * smoothstep(inst_dissolve + 0.08, inst_dissolve, n) * 4.0;
