@@ -115,6 +115,11 @@ static func visual_clip(legacy: String) -> String:
 	library()
 	if not mocap_enabled(): return legacy
 	var candidate: String = str(_mocap.config.get("visual_aliases", {}).get(legacy, legacy))
+	if Zombie.t284_terror:
+		# T-284: recorded takes promoted for the scare (zombie_mocap.json terror_aliases), e.g. the barricade queue reaching
+		var t: String = str(_mocap.config.get("terror_aliases", {}).get(legacy, ""))
+		if t != "" and _mocap.animations.has(t):
+			return t
 	return candidate if _mocap.animations.has(candidate) else legacy
 
 

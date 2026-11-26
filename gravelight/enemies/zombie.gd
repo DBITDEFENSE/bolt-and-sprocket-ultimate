@@ -57,6 +57,13 @@ static var t283_lod: bool = true
 ##     clip one more tick). The kill itself (the pay, the kill signals, the round's count, the hitboxes and body
 ##     leaving play, every random roll that decides an outcome) stays in the frame of the hit, exactly as before.
 static var t283_death: bool = true
+## T-284 (the owner: "MAKE THE ZOMBIES MORE TERRIFYING"; data/gravelight/zombie_terror.json, ZombieTerror): presentation
+## only, on by default; off (CZ_T284_OFF=1, perf_marks --flip=t284 / --ab=t284_off) every body looks, moves and sounds as
+## before. Burning eyes, rot and a wet sheen on the skin (per-instance shader values, no CPU per frame); a first-sight
+## head snap, arm jerk and scream; twitches; a growl layer under the groans, wet mouth sounds; a gurgle and blood from the
+## mouth on a near death. Per-frame work only for bodies animated at the full rate (T-283's LOD: near and in view), and
+## its random numbers from ZombieTerror.rng, never the game's global generator.
+static var t284_terror: bool = OS.get_environment("CZ_T284_OFF") == ""
 
 var enemy_id: StringName = &"ganger"
 var state: State = State.INACTIVE
@@ -238,6 +245,7 @@ static func kind_config(kind: StringName) -> Dictionary:
 
 func activate(spec: Dictionary, spawn: ZombieSpawn, at_target: Player) -> void:
 	_life += 1   # T-283: a death effect queued for this body's last life is dropped
+	_terror_reset()
 	_contact_lock.reset()
 	_foot_ray_from = [Vector3.INF, Vector3.INF]
 	_toe_ray_from = [Vector3.INF, Vector3.INF]
@@ -2532,6 +2540,12 @@ func _die(limb: StringName, weapon_id: StringName, by_player: int, kind: StringN
 			_queue_death_fx(&"pop", [])
 		else:
 			_pop_head()
+	if t284_terror and ZombieTerror.enabled() and has_rig() and not _death_sink and global_position.distance_squared_to(vl_pos) < pow(float(ZombieTerror.sec("death").get("near_m", 15.0)), 2.0):
+		# T-284: a gurgle and blood from the mouth, a frame or more after the kill (the death queue), near bodies only
+		if defer:
+			_queue_death_fx(&"gurgle", [])
+		else:
+			_terror_death_fx()
 	if kind == &"explosive" and ZombieGore.severs_allowed() and randf() < 0.5:
 		var loose: String = _pick(["LeftLowerLeg", "RightLowerLeg", "LeftLowerArm", "RightLowerArm"])
 		if defer:
@@ -3098,6 +3112,9 @@ func _apply_look() -> void:
 		params = ZombieWardrobe.neutral_params()
 	for key: String in params.keys():
 		_set_inst(key, params[key])
+	# T-284: the eyes, the rot, the wet (from the look seed: every co-op peer sees the same; a living person never has it)
+	var tid: int = net_id if net_id >= 0 else int(get_instance_id() % 1000003)
+	_set_inst("inst_terror", ZombieTerror.look_vec(ZombieWardrobe.look_seed(tid, max_hp)) if (t284_terror and ZombieTerror.enabled()) else Vector4.ZERO)
 	# a gear piece made for this activation has none of the values _set_inst found unchanged
 	for g: MeshInstance3D in _gear:
 		if g.visible:
@@ -3341,6 +3358,82 @@ func _set_crawl_pose(crawl: bool) -> void:
 
 # ---------------------------------------------------------------- gore (presentation only)
 
+# ---------------------------------------------------------------- T-284: the scare (presentation only)
+
+var _terror_seen: bool = false   # this life's first sight has been played
+var _twitch_t: float = 0.0
+var _wet_t: float = 0.0
+var _snap_t: float = 0.0         # while > 0 the look-at turns at the snap speed
+
+
+func _terror_reset() -> void:
+	_terror_seen = false
+	_twitch_t = ZombieTerror.rng.randf_range(1.0, 4.0)
+	_wet_t = ZombieTerror.rng.randf_range(1.0, 5.0)
+	if _snap_t > 0.0 and _look != null:
+		_look.duration = float(_anim["look_at"].get("smooth_s", 0.2))
+	_snap_t = 0.0
+
+
+## Every full-rate animation step (near and in view): the first sight, the look-at snap's end, twitches.
+func _terror_tick(dt: float) -> void:
+	if not has_rig() or state == State.DEAD or state == State.INACTIVE or _ragdoll != null or not ZombieTerror.enabled():
+		return
+	if _snap_t > 0.0:
+		_snap_t -= dt
+		if _snap_t <= 0.0:
+			_look.duration = float(_anim["look_at"].get("smooth_s", 0.2))
+	if not _terror_seen and target != null and state in [State.CHASE, State.TO_WINDOW, State.WAIT_WINDOW, State.ATTACK]:
+		var fs: Dictionary = ZombieTerror.sec("first_sight")
+		if global_position.distance_squared_to(vl_pos) < pow(float(fs.get("max_m", 20.0)), 2.0):
+			_terror_seen = true
+			_first_sight(fs)
+			return
+	_twitch_t -= dt
+	if _twitch_t <= 0.0:
+		var tw: Dictionary = ZombieTerror.sec("twitch")
+		_twitch_t = ZombieTerror.range_f(tw.get("every_s", [2.2, 5.5]))
+		_twitch(tw)
+
+
+## The first time this life sees its prey near the camera: the head snaps toward it (the look-at at the snap speed and
+## the head spring kicked toward that side), the arms jerk up (the arm springs: a lunge that goes nowhere), a scream.
+func _first_sight(fs: Dictionary) -> void:
+	ZombieTerror.first_sights += 1
+	var to: Vector3 = global_basis.inverse() * ((target.global_position if target != null else vl_pos) - global_position)
+	var side: float = 1.0 if to.x < 0.0 else -1.0
+	var hk: Array = fs.get("head_kick", [-1.4, 2.6, 0.7])
+	_modifier.kick(2, Vector3(float(hk[0]), float(hk[1]) * side, float(hk[2]) * side))
+	var ak: Array = fs.get("arm_kick", [2.4, 0.0, 1.3])
+	_modifier.kick(0, Vector3(float(ak[0]), float(ak[1]), -float(ak[2])))
+	_modifier.kick(1, Vector3(float(ak[0]), float(ak[1]), float(ak[2])))
+	if _look != null and not is_severed("Head"):
+		_look.duration = float(fs.get("look_snap_s", 0.06))
+		_snap_t = float(fs.get("look_snap_hold_s", 0.55))
+	if ZombieTerror.scream_ok():
+		AudioDirector.play_3d("zombie_scream", global_position + Vector3.UP * 1.6, float(fs.get("scream_db", -1.0)), 0.06)
+
+
+## An involuntary jerk: the head or one arm (the hit springs, additive on the recorded motion), now and then a joint crack.
+func _twitch(tw: Dictionary) -> void:
+	ZombieTerror.twitches += 1
+	var r: RandomNumberGenerator = ZombieTerror.rng
+	var pick: int = r.randi() % 3
+	var amp: float = float(tw.get("head", 1.3)) if pick == 2 else float(tw.get("arm", 1.6))
+	_modifier.kick(pick, Vector3(r.randf_range(-amp, amp), r.randf_range(-amp, amp), r.randf_range(-amp, amp) * 0.6))
+	if r.randf() < float(tw.get("crack_chance", 0.35)) and global_position.distance_squared_to(vl_pos) < pow(float(tw.get("crack_m", 6.0)), 2.0) and ZombieTerror.crack_ok():
+		AudioDirector.play_3d("zombie_twitch", global_position + Vector3.UP * (1.6 if pick == 2 else 1.3), -6.0, 0.08)
+
+
+## A near death's extra: a wet gurgle and a gout of blood from the mouth.
+func _terror_death_fx() -> void:
+	AudioDirector.play_3d("zombie_gurgle", global_position + Vector3.UP * 1.5, float(ZombieTerror.sec("death").get("gurgle_db", -5.0)), 0.06)
+	if ZombieGore.blood_allowed() and not is_severed("Head"):
+		var at: Node3D = bone_attachment("Head")
+		if at != null:
+			Effects.blood(at.global_position + at.global_basis * Vector3(0, 0.03, -0.11), -global_basis.z + Vector3.UP * 0.4)
+
+
 func _pop_head() -> void:
 	if _head_popped:
 		return
@@ -3387,6 +3480,8 @@ static func drain_death_fx(budget: int = FX_PER_FRAME) -> int:
 				z._pop_head_fx()
 			&"sever":
 				ZombieGore.sever(z, str(args[0]), args[1])
+			&"gurgle":
+				z._terror_death_fx()
 	return done
 
 
@@ -4030,6 +4125,8 @@ func _animate(dt: float) -> void:
 		_body_dist = 0.0
 		_rm_time = 0.0
 	_rm_pos_last = here
+	if t284_terror and _anim_div == 1:
+		_terror_tick(dt)
 	_rm_time += dt
 	if _rm_time >= 0.5:
 		_rm_speed = _rm_dist / _rm_time
@@ -4119,6 +4216,18 @@ func _update_audio(delta: float) -> void:
 		if enemy_id == &"bellringer":
 			snd = "bellringer_wheeze"
 		AudioDirector.play_3d(snd, global_position + Vector3.UP * 1.6, -6.0, 0.0)
+		if t284_terror and _anim_div == 1 and enemy_id != &"bellringer" and ZombieTerror.enabled():
+			# T-284: a low growl under the groan, for the bodies near enough to be seen at the full rate
+			var vo: Dictionary = ZombieTerror.sec("voice")
+			if global_position.distance_squared_to(vl_pos) < pow(float(vo.get("growl_m", 12.0)), 2.0):
+				AudioDirector.play_3d("zombie_growl_low", global_position + Vector3.UP * 1.5, float(vo.get("growl_db", -7.0)), 0.04)
+	if t284_terror and _anim_div == 1 and state != State.DEAD:
+		_wet_t -= delta
+		if _wet_t <= 0.0 and ZombieTerror.enabled():
+			var vw: Dictionary = ZombieTerror.sec("voice")
+			_wet_t = ZombieTerror.range_f(vw.get("wet_every_s", [3.0, 7.0]))
+			if global_position.distance_squared_to(vl_pos) < pow(float(vw.get("wet_m", 6.0)), 2.0):
+				AudioDirector.play_3d("zombie_wet", global_position + Vector3.UP * 1.6, float(vw.get("wet_db", -6.0)), 0.06)
 	# Glasshide grinding / Bellringer lantern-chain jingle.
 	_ring_t -= delta
 	if _ring_t <= 0.0 and (enemy_id == &"glasshide" or enemy_id == &"bellringer"):

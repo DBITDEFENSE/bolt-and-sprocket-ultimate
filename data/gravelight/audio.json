@@ -6457,6 +6457,125 @@
       "max_voices": 3,
       "bus": "SFX",
       "attenuation": "loud"
+    },
+    "horde_swell": {
+      "files": [
+        "res://gravelight/audio/sfx/terror/horde_swell_01.wav",
+        "res://gravelight/audio/sfx/terror/horde_swell_02.wav"
+      ],
+      "volume_db": 0.0,
+      "max_voices": 1,
+      "bus": "SFX",
+      "pitch": [
+        0.96,
+        1.04
+      ],
+      "vol_jitter_db": 1.0
+    },
+    "zombie_breath_close": {
+      "files": [
+        "res://gravelight/audio/sfx/terror/zombie_breath_close_01.wav",
+        "res://gravelight/audio/sfx/terror/zombie_breath_close_02.wav",
+        "res://gravelight/audio/sfx/terror/zombie_breath_close_03.wav",
+        "res://gravelight/audio/sfx/terror/zombie_breath_close_04.wav",
+        "res://gravelight/audio/sfx/terror/zombie_breath_close_05.wav"
+      ],
+      "volume_db": 0.0,
+      "max_voices": 2,
+      "bus": "SFX",
+      "attenuation": "quiet",
+      "pitch": [
+        0.92,
+        1.08
+      ],
+      "vol_jitter_db": 2.0
+    },
+    "zombie_growl_low": {
+      "files": [
+        "res://gravelight/audio/sfx/terror/zombie_growl_low_01.wav",
+        "res://gravelight/audio/sfx/terror/zombie_growl_low_02.wav",
+        "res://gravelight/audio/sfx/terror/zombie_growl_low_03.wav",
+        "res://gravelight/audio/sfx/terror/zombie_growl_low_04.wav",
+        "res://gravelight/audio/sfx/terror/zombie_growl_low_05.wav"
+      ],
+      "volume_db": -2.0,
+      "max_voices": 4,
+      "bus": "SFX",
+      "attenuation": "zombie",
+      "pitch": [
+        0.93,
+        1.07
+      ],
+      "vol_jitter_db": 2.0
+    },
+    "zombie_gurgle": {
+      "files": [
+        "res://gravelight/audio/sfx/terror/zombie_gurgle_01.wav",
+        "res://gravelight/audio/sfx/terror/zombie_gurgle_02.wav",
+        "res://gravelight/audio/sfx/terror/zombie_gurgle_03.wav",
+        "res://gravelight/audio/sfx/terror/zombie_gurgle_04.wav"
+      ],
+      "volume_db": 0.0,
+      "max_voices": 3,
+      "bus": "SFX",
+      "attenuation": "zombie",
+      "pitch": [
+        0.93,
+        1.07
+      ],
+      "vol_jitter_db": 2.0
+    },
+    "zombie_scream": {
+      "files": [
+        "res://gravelight/audio/sfx/terror/zombie_scream_01.wav",
+        "res://gravelight/audio/sfx/terror/zombie_scream_02.wav",
+        "res://gravelight/audio/sfx/terror/zombie_scream_03.wav",
+        "res://gravelight/audio/sfx/terror/zombie_scream_04.wav"
+      ],
+      "volume_db": 0.0,
+      "max_voices": 2,
+      "bus": "SFX",
+      "attenuation": "world",
+      "pitch": [
+        0.94,
+        1.06
+      ],
+      "vol_jitter_db": 1.5
+    },
+    "zombie_twitch": {
+      "files": [
+        "res://gravelight/audio/sfx/terror/zombie_twitch_01.wav",
+        "res://gravelight/audio/sfx/terror/zombie_twitch_02.wav",
+        "res://gravelight/audio/sfx/terror/zombie_twitch_03.wav",
+        "res://gravelight/audio/sfx/terror/zombie_twitch_04.wav"
+      ],
+      "volume_db": 0.0,
+      "max_voices": 2,
+      "bus": "SFX",
+      "attenuation": "quiet",
+      "pitch": [
+        0.92,
+        1.08
+      ],
+      "vol_jitter_db": 2.0
+    },
+    "zombie_wet": {
+      "files": [
+        "res://gravelight/audio/sfx/terror/zombie_wet_01.wav",
+        "res://gravelight/audio/sfx/terror/zombie_wet_02.wav",
+        "res://gravelight/audio/sfx/terror/zombie_wet_03.wav",
+        "res://gravelight/audio/sfx/terror/zombie_wet_04.wav",
+        "res://gravelight/audio/sfx/terror/zombie_wet_05.wav"
+      ],
+      "volume_db": 0.0,
+      "max_voices": 3,
+      "bus": "SFX",
+      "attenuation": "quiet",
+      "pitch": [
+        0.92,
+        1.08
+      ],
+      "vol_jitter_db": 2.0
     }
   }
 }
