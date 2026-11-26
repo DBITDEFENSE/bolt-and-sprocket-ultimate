@@ -36,7 +36,7 @@ const GROUND_PARTS: PackedStringArray = ["Spray", "Skirt", "Debris"]
 const DIRT_OF: Dictionary = {"snow": "snow", "earth": "earth", "hay": "earth", "mud": "earth", "grass": "earth",
 	"cloth": "earth", "wood": "stone", "stone": "stone", "metal": "stone", "plaster": "stone", "glass": "stone"}
 ## The smoke's colour (TNT smoke: a dark grey-brown, light enough for the moon and the lamps to show it).
-const SMOKE: Color = Color(0.21, 0.195, 0.18, 1.0)
+const SMOKE: Color = Color(0.24, 0.22, 0.2, 1.0)
 ## The puff emitters' heat (the shader's instance uniform; fixed per emitter).
 const HEAT: Dictionary = {"Fire": 1.0, "Smoke": 0.35, "Spray": 0.0, "Skirt": 0.0}
 ## Dirt kind -> [thrown dirt colour, dust colour].
@@ -272,10 +272,10 @@ static func _pm_fire() -> ParticleProcessMaterial:
 ## The column: dark smoke pushed up out of the fireball over its first half second, rising on its own heat, swelling
 ## and drifting downwind (the shared gravity's sideways part) as it thins out over a few seconds.
 static func _pm_smoke() -> ParticleProcessMaterial:
-	var m: ParticleProcessMaterial = _base(18.0, 2.0, 6.0, Vector3(0.3, 0.7, 0.12))
+	var m: ParticleProcessMaterial = _base(18.0, 2.5, 5.0, Vector3(0.3, 0.7, 0.12))
 	m.emission_sphere_radius = 0.9
-	m.damping_min = 0.9
-	m.damping_max = 1.6
+	m.damping_min = 1.2
+	m.damping_max = 2.0
 	m.scale_min = 2.0
 	m.scale_max = 3.6
 	m.scale_curve = _curve([Vector2(0.0, 0.45), Vector2(0.2, 1.0), Vector2(1.0, 2.2)])
@@ -368,7 +368,7 @@ static func _pm_embers() -> ParticleProcessMaterial:
 	m.scale_max = 1.3
 	m.turbulence_enabled = false
 	m.lifetime_randomness = 0.5
-	m.color_ramp = _ramp([[0.0, Color(2.6, 1.4, 0.5, 1.0)], [0.5, Color(1.8, 0.6, 0.12, 0.9)], [1.0, Color(0.6, 0.1, 0.0, 0.0)]])
+	m.color_ramp = _ramp([[0.0, Color(1.7, 0.7, 0.18, 1.0)], [0.5, Color(1.2, 0.32, 0.05, 0.9)], [1.0, Color(0.5, 0.06, 0.0, 0.0)]])
 	return m
 
 

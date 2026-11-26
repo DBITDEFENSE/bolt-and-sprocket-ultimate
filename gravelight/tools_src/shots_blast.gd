@@ -14,10 +14,10 @@ const TIMES: Array = [0.03, 0.08, 0.16, 0.3, 0.55, 0.9, 1.5, 2.5, 4.0, 6.0]
 const SCENES: Dictionary = {
 	"grenade_night": [6.0, "grenade", 0.0, Vector3(-8.0, 2.6, -8.5), 1.4, 58.0],
 	"shell_night": [4.5, "", 0.0, Vector3(-10.0, 3.0, -10.5), 2.0, 60.0],
-	"bomb_night": [7.0, "bomb", 0.0, Vector3(-21.0, 6.0, -22.0), 4.5, 62.0],
+	"bomb_night": [7.0, "bomb", 0.0, Vector3(-14.0, 3.5, -14.5), 5.0, 72.0],
 	"grenade_day": [6.0, "grenade", 12.0, Vector3(-8.0, 2.6, -8.5), 1.4, 58.0],
 	"shell_day": [4.5, "", 12.0, Vector3(-10.0, 3.0, -10.5), 2.0, 60.0],
-	"bomb_day": [7.0, "bomb", 12.0, Vector3(-21.0, 6.0, -22.0), 4.5, 62.0],
+	"bomb_day": [7.0, "bomb", 12.0, Vector3(-14.0, 3.5, -14.5), 5.0, 72.0],
 	"near_day": [6.0, "grenade", 12.0, Vector3(-3.6, 1.7, -4.0), 1.0, 70.0],
 }
 
