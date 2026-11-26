@@ -236,8 +236,11 @@ static func type_vii(g: Node3D, length: float, boot: float, k_hull: String = "m2
 		var z2: float = 4.0 + k * 1.45
 		if z2 > length * 0.8:
 			break
+		# T-282: on the plating where the shoulder is at the slot's height (they stood at x 3.02, inside the bulging
+		# shoulder: only the inside-out hull let them show)
+		var hx: float = _shoulder_x(vii_half((z2 + 0.35) / length, m, _hold(z2 + 0.35, hold_to)), -0.435 + 0.02) + 0.015
 		for sx: float in [-1.0, 1.0]:
-			Props.block(g, Vector3(sx * 3.02 - 0.012, -0.55, z2), Vector3(sx * 3.02 + 0.012, -0.32, z2 + 0.7), "black_paint", false)
+			Props.block(g, Vector3(sx * hx - 0.012, -0.55, z2), Vector3(sx * hx + 0.012, -0.32, z2 + 0.7), "black_paint", false)
 	# bow planes (folded up against the casing) and the stern: planes, rudder, twin screws on their shafts
 	for sx2: float in [-1.0, 1.0]:
 		Props.obox(g, Vector3(sx2 * 1.9, -3.0, 3.0), Vector3(1.4, 0.08, 1.2), k_hull, Vector3(0, 0, sx2 * 30.0))
@@ -276,6 +279,17 @@ static func _ring_disc(ring: PackedVector3Array, n: int, out: Vector3) -> ArrayM
 	for i: int in n / 2 + 1:
 		lines.append(PackedVector3Array([ring[i], ring[n - i]]))
 	return strip(lines, func(p: Vector3) -> Vector3: return p - out, true)
+
+
+## The half-section's x on the shoulder (its first points, deck edge down to the widest) at height y (section space,
+## deck at 0), interpolated between the points; the widest point's x below them.
+static func _shoulder_x(half: PackedVector3Array, y: float) -> float:
+	for i: int in range(1, 5):
+		var a: Vector3 = half[i - 1]
+		var b: Vector3 = half[i]
+		if y <= a.y and y >= b.y:
+			return lerpf(a.x, b.x, (a.y - y) / maxf(a.y - b.y, 1e-6))
+	return half[4].x
 
 
 ## How much the hull must hold the interior box at local z (1 up to `hold_to`, easing out over the next 5 m).

@@ -18007,66 +18007,117 @@
           "note": "low over the water between the hull and pier 2"
         },
         {
-          "name": "dead_from_quay",
+          "name": "dead_from_landing",
           "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
           "pos": [
-            44.0,
-            2.2,
-            -2.0
+            22.0,
+            2.6,
+            -2.6
           ],
-          "yaw": -12.7,
-          "pitch": -4.8,
+          "yaw": -35.1,
+          "pitch": -3.5,
           "fov": 62.0,
           "do": [
             "power"
           ],
           "settle_s": 3.0,
-          "note": "the dead U-boat from the quay's edge, as a player sees it"
+          "note": "the dead U-boat from the quay's landing stage, as a player sees it"
         },
         {
           "name": "dead_bow_on",
           "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
           "pos": [
-            12.0,
-            1.0,
-            -63.0
+            25.0,
+            3.4,
+            -43.6
           ],
-          "yaw": -105.3,
-          "pitch": -9.9,
+          "yaw": -33.9,
+          "pitch": -21.6,
           "fov": 62.0,
           "do": [
             "power"
           ],
           "settle_s": 3.0,
-          "note": "bow-on from the west, low"
+          "note": "the sunk bow from the breakwater's west end"
+        },
+        {
+          "name": "dead_breakwater_w",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            38.0,
+            3.4,
+            -43.2
+          ],
+          "yaw": -42.6,
+          "pitch": -18.3,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "the tower and the forward hull from the breakwater, close"
+        },
+        {
+          "name": "dead_breakwater_e",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            68.0,
+            3.4,
+            -43.2
+          ],
+          "yaw": 48.7,
+          "pitch": -22.1,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "the after hull from the breakwater, looking back west"
         },
         {
           "name": "dead_stern_on",
           "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
           "pos": [
-            100.0,
-            3.0,
-            -38.0
+            84.0,
+            3.4,
+            -43.4
           ],
-          "yaw": 71.2,
-          "pitch": -3.7,
+          "yaw": 69.6,
+          "pitch": -10.6,
           "fov": 62.0,
           "do": [
             "power"
           ],
           "settle_s": 3.0,
-          "note": "stern-on from the east, the screws out of the water"
+          "note": "stern-on: the raised stern, screws and rudder, from the breakwater"
+        },
+        {
+          "name": "dead_tower_above",
+          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
+          "pos": [
+            43.0,
+            9.0,
+            -47.0
+          ],
+          "yaw": -28.7,
+          "pitch": -57.0,
+          "fov": 62.0,
+          "do": [
+            "power"
+          ],
+          "settle_s": 3.0,
+          "note": "down into the tilted bridge from above"
         },
         {
           "name": "dead_seaward_low",
           "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
           "pos": [
-            54.0,
-            -0.8,
-            -82.0
+            50.0,
+            0.2,
+            -78.0
           ],
-          "yaw": -176.3,
-          "pitch": -2.2,
+          "yaw": -169.1,
+          "pitch": -4.7,
           "fov": 62.0,
           "do": [
             "power"
@@ -18075,89 +18126,21 @@
           "note": "from seaward (north), low over the water"
         },
         {
-          "name": "dead_landward_low",
+          "name": "dead_seaward_high",
           "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
           "pos": [
-            58.0,
-            -1.0,
-            -28.0
-          ],
-          "yaw": 5.0,
-          "pitch": -2.5,
-          "fov": 62.0,
-          "do": [
-            "power"
-          ],
-          "settle_s": 3.0,
-          "note": "from landward (south), low over the water"
-        },
-        {
-          "name": "dead_high",
-          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
-          "pos": [
-            56.0,
-            26.0,
-            -36.0
-          ],
-          "yaw": -0.0,
-          "pitch": -61.1,
-          "fov": 62.0,
-          "do": [
-            "power"
-          ],
-          "settle_s": 3.0,
-          "note": "from high over the sea"
-        },
-        {
-          "name": "dead_high_north",
-          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
-          "pos": [
-            38.0,
+            40.0,
             14.0,
-            -86.0
+            -82.0
           ],
-          "yaw": -153.4,
-          "pitch": -21.7,
+          "yaw": -152.7,
+          "pitch": -24.6,
           "fov": 62.0,
           "do": [
             "power"
           ],
           "settle_s": 3.0,
-          "note": "high from the north-west"
-        },
-        {
-          "name": "dead_tower_close",
-          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
-          "pos": [
-            44.0,
-            3.0,
-            -41.0
-          ],
-          "yaw": -9.5,
-          "pitch": -16.1,
-          "fov": 62.0,
-          "do": [
-            "power"
-          ],
-          "settle_s": 3.0,
-          "note": "the tower close up"
-        },
-        {
-          "name": "dead_belly",
-          "map": "res://gravelight/maps/map02_totenhafen/map02.tscn",
-          "pos": [
-            70.0,
-            -1.5,
-            -62.0
-          ],
-          "yaw": 135.0,
-          "pitch": -6.1,
-          "fov": 62.0,
-          "do": [
-            "power"
-          ],
-          "settle_s": 3.0,
-          "note": "the up-tilted hull's bottom from the north-east"
+          "note": "from seaward, high"
         },
         {
           "name": "patrol_boat_quay",
