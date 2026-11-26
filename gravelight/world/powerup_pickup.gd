@@ -41,7 +41,7 @@ func _ready() -> void:
 	collision_layer = LAYER_PICKUP
 	collision_mask = MASK_PLAYER
 	monitoring = not Net.is_client()   # co-op: the host decides who touched it
-	monitorable = false
+	set_deferred(&"monitorable", false)   # (set in a physics callback when a kill spawns it: deferred, or the engine refuses)
 	var cs: CollisionShape3D = CollisionShape3D.new()
 	var sph: SphereShape3D = SphereShape3D.new()
 	sph.radius = float(cfg.get("pickup_radius", 1.1))
