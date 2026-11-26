@@ -218,6 +218,290 @@ const m = new GameManager({ dataDir: path.join(tmp, 'data'), config, getSettings
     assert.ok(!fs.existsSync(path.join(dst, 'assets', 'user_supplied', 'mocap_online')), 'came back after checkout');
     settings.installDir = path.join(tmp, 'game');
   });
+  // ---------- T-289: starting the game ----------
+  // A fake install the play checks accept, a fake engine exe, and a spawn that never starts a real process.
+  const { EventEmitter } = require('events');
+  const { run: runProc } = require('../src/proc');
+  const fakeGame = () => {
+    const root = fs.mkdtempSync(path.join(tmp, 'play-'));
+    const game = path.join(root, 'My Games', 'Claude Zombies'); // spaces on purpose
+    fs.mkdirSync(path.join(game, '.git'), { recursive: true });
+    fs.mkdirSync(path.join(game, '.godot', 'imported'), { recursive: true });
+    fs.writeFileSync(path.join(game, '.godot', 'global_script_class_cache.cfg'), '');
+    fs.writeFileSync(path.join(game, MARKER), JSON.stringify({ managedBy: 'launcher', branch: 'master', sha: 'abc', lfsSha: 'abc', importedSha: 'abc' }));
+    const st = { installDir: game, channel: 'stable', extraArgs: '', renderingDriver: 'auto', fullscreen: false, safeMode: false };
+    const ev = [];
+    const calls = [];
+    let behave = (child) => setImmediate(() => child.emit('spawn'));
+    const pm = new GameManager({
+      dataDir: path.join(root, 'data'), config, getSettings: () => st, emit: (e, p) => ev.push([e, p]),
+      platform: 'win32', earlyExitMs: 400, findGame: async () => pm._running || [],
+      spawn: (exe, args, opts) => {
+        calls.push({ exe, args, opts });
+        const child = new EventEmitter();
+        child.pid = 4242 + calls.length; child.unref = () => {};
+        behave(child, opts);
+        return child;
+      },
+    });
+    pm.headSha = async () => (pm._noGit ? null : 'abc');
+    pm.git = 'git';
+    fs.mkdirSync(path.dirname(pm.godotExe()), { recursive: true });
+    fs.writeFileSync(pm.godotExe(), 'not really an exe');
+    return { pm, st, ev, calls, game, setBehave: (f) => { behave = f; } };
+  };
+  const waitFor = async (fn, ms = 3000) => { const t0 = Date.now(); while (!fn()) { if (Date.now() - t0 > ms) throw new Error('timed out waiting'); await new Promise((r) => setTimeout(r, 20)); } };
+
+  await t('play args: the separate render thread by default on Windows, not in safe mode, not off Windows', () => {
+    const { pm, st } = fakeGame();
+    let a = pm.playArgs().args;
+    const i = a.indexOf('--render-thread');
+    assert.ok(i > 0 && a[i + 1] === 'separate', a.join(' '));
+    assert.ok(i < a.indexOf(config.mainScene), 'engine options before the scene');
+    assert.strictEqual(a[a.length - 1], config.mainScene);
+    assert.ok(pm.playArgs().renderThread);
+    assert.ok(!pm.playArgs({ safe: true }).args.includes('--render-thread'), 'one-shot safe start');
+    st.safeMode = true;
+    assert.ok(!pm.playArgs().args.includes('--render-thread'), 'Settings > Safe mode');
+    assert.strictEqual(pm.playArgs().renderThread, false);
+    st.safeMode = false;
+    pm.platform = 'linux';
+    assert.ok(!pm.playArgs().args.includes('--render-thread'), 'Windows only');
+    pm.platform = 'win32';
+    a = pm.playArgs().args;
+    assert.strictEqual(a[a.indexOf('--path') + 1], st.installDir, 'a path with spaces stays one argument');
+  });
+  await t('play args: extra arguments keep quoted values whole, user args after "--" follow the scene, no doubled render thread', () => {
+    const { pm, st } = fakeGame();
+    st.extraArgs = '--resolution 1920x1080 --log-file "C:\\Temp\\my log.txt" -- --frame-log';
+    let a = pm.playArgs().args;
+    assert.ok(a.includes('C:\\Temp\\my log.txt'), 'quoted value split: ' + JSON.stringify(a));
+    assert.deepStrictEqual(a.slice(-3), [config.mainScene, '--', '--frame-log']);
+    st.extraArgs = '--render-thread safe';
+    a = pm.playArgs().args;
+    assert.strictEqual(a.filter((x) => x === '--render-thread').length, 1, 'the player\'s own choice wins');
+    assert.strictEqual(pm.playArgs().renderThread, false);
+    assert.ok(!pm.playArgs({ safe: true }).args.includes('--render-thread'), 'safe mode drops a typed render thread too');
+    st.extraArgs = '--render-thread=separate';
+    assert.ok(!pm.playArgs({ safe: true }).args.some((x) => x.startsWith('--render-thread')));
+    st.renderingDriver = 'opengl3'; st.fullscreen = true; st.extraArgs = '';
+    a = pm.playArgs().args;
+    assert.strictEqual(a[a.indexOf('--rendering-driver') + 1], 'opengl3');
+    assert.ok(a.includes('--fullscreen'));
+  });
+  await t('play: spawns detached with the window shown, output into launcher_play.log, never through a shell', async () => {
+    const { pm, calls, ev } = fakeGame();
+    const r = await pm.play();
+    assert.strictEqual(r.pid, 4243);
+    const c = calls[0];
+    assert.strictEqual(c.exe, pm.godotExe());
+    assert.strictEqual(c.opts.detached, true, 'the game outlives the launcher');
+    assert.strictEqual(c.opts.windowsHide, false, 'windowsHide would start the game window hidden');
+    assert.ok(!c.opts.shell, 'no shell: spaces and quotes cannot split arguments');
+    assert.strictEqual(c.opts.cwd, pm.gameDir);
+    assert.strictEqual(c.opts.stdio[0], 'ignore');
+    assert.strictEqual(typeof c.opts.stdio[1], 'number', 'stdout goes to a file handle (survives the launcher closing)');
+    assert.ok(ev.some((e) => e[0] === 'game' && e[1].state === 'starting'));
+    const log = fs.readFileSync(pm.playLogPath(), 'utf8');
+    assert.match(log, /PLAY/); assert.match(log, /--render-thread/);
+    assert.deepStrictEqual((await pm.status()).game.pid, 4243);
+    await assert.rejects(pm.play(), (e) => e.code === 'running', 'a second PLAY while the first game runs is refused');
+  });
+  await t('play: an exit within seconds reports failed with the exit reason, the log lines and the safe-mode offer', async () => {
+    const { pm, ev, setBehave } = fakeGame();
+    setBehave((child, opts) => setImmediate(() => {
+      child.emit('spawn');
+      fs.writeSync(opts.stdio[1], 'Godot Engine v4.7.2\nERROR: Condition "!rd" is true.\n');
+      fs.writeFileSync(path.join(pm.gameLogDir(), 'game_last.log'), 'Godot Engine v4.7.2\nVulkan 1.4 - Forward+\nERROR: finalize can only be called from the render thread.\n');
+      setTimeout(() => child.emit('exit', 3221225477, null), 30);
+    }));
+    await pm.play();
+    await waitFor(() => ev.some((e) => e[0] === 'game' && e[1].state === 'failed'));
+    const f = ev.find((e) => e[0] === 'game' && e[1].state === 'failed')[1];
+    assert.match(f.reason, /crashed \(access violation\)/);
+    assert.ok(f.offerSafe, 'started with the render thread: offer safe mode');
+    assert.ok(f.lines.some((l) => /finalize can only be called/.test(l)), 'the game log tail: ' + JSON.stringify(f.lines));
+    assert.ok(f.output.some((l) => /Condition "!rd"/.test(l)), 'the captured stdout: ' + JSON.stringify(f.output));
+    assert.match(fs.readFileSync(pm.playLogPath(), 'utf8'), /===== exit 3221225477 \(crashed \(access violation\)\) after/);
+    assert.strictEqual((await pm.status()).game, null);
+    // the same in safe mode does not offer safe mode again
+    ev.length = 0;
+    await pm.play({ safe: true });
+    await waitFor(() => ev.some((e) => e[0] === 'game' && e[1].state === 'failed'));
+    assert.strictEqual(ev.find((e) => e[0] === 'game' && e[1].state === 'failed')[1].offerSafe, false);
+  });
+  await t('play: a game that keeps running past the start window, then quits, is a normal exit (no error)', async () => {
+    const { pm, ev, setBehave } = fakeGame();
+    setBehave((child) => setImmediate(() => { child.emit('spawn'); setTimeout(() => child.emit('exit', 0, null), 600); }));
+    const r = await pm.play();
+    assert.strictEqual(await pm.survivesStart(r.pid), true);
+    await waitFor(() => ev.some((e) => e[0] === 'game' && e[1].state === 'exited'));
+    assert.ok(!ev.some((e) => e[0] === 'game' && e[1].state === 'failed'));
+  });
+  await t('play: a spawn error (missing exe, antivirus) becomes a clear message, not a crash of the launcher', async () => {
+    const { pm, setBehave } = fakeGame();
+    for (const [code, re] of [['ENOENT', /not found/], ['EPERM', /antivirus/], ['UNKNOWN', /Smart App Control|antivirus/]]) {
+      setBehave((child) => setImmediate(() => { const e = new Error('spawn ' + code); e.code = code; child.emit('error', e); }));
+      await assert.rejects(pm.play(), (e) => e.code === 'spawn' && re.test(e.message), code);
+    }
+    assert.match(fs.readFileSync(pm.playLogPath(), 'utf8'), /could not start: UNKNOWN/);
+    assert.strictEqual(pm.game, null);
+  });
+  await t('play: refused while an update / import runs, allowed during the quiet update check', async () => {
+    const { pm, calls } = fakeGame();
+    for (const op of ['update', 'install', 'repair', 'prepare']) {
+      pm.busy = op;
+      await assert.rejects(pm.play(), (e) => e.code === 'busy', op);
+    }
+    pm.busy = 'check';
+    await pm.play();
+    assert.strictEqual(calls.length, 1);
+    pm.busy = null;
+  });
+  await t('play: a half-finished update (LFS files or the import missing) asks for PREPARE instead of starting', async () => {
+    const { pm, game, calls } = fakeGame();
+    const write = (o) => fs.writeFileSync(path.join(game, MARKER), JSON.stringify({ managedBy: 'launcher', branch: 'master', sha: 'abc', ...o }));
+    write({ lfsSha: null, importedSha: null });
+    await assert.rejects(pm.play(), (e) => e.code === 'files' && e.action === 'prepare');
+    write({ lfsSha: 'abc', importedSha: 'old' });
+    await assert.rejects(pm.play(), (e) => e.code === 'import' && e.action === 'prepare');
+    write({ importedSha: 'abc' }); // an install from before T-289 (no lfsSha): the import implies the files
+    await pm.play();
+    pm.game.exited = true; pm.game = null;
+    fs.rmSync(path.join(game, '.godot', 'imported'), { recursive: true });
+    await assert.rejects(pm.play(), (e) => e.code === 'import', 'no import cache: the first start would import');
+    fs.rmSync(pm.godotExe());
+    await assert.rejects(pm.play(), (e) => e.code === 'engine');
+    assert.strictEqual(calls.length, 1);
+    pm.git = 'git'; // status() reads HEAD only with git found
+    const s = await pm.status();
+    assert.ok(s.needsImport);
+  });
+  await t('play: without git to read the version, PLAY is not blocked (only a missing import cache blocks it)', async () => {
+    const { pm, game, calls } = fakeGame();
+    fs.writeFileSync(path.join(game, MARKER), JSON.stringify({ managedBy: 'launcher', branch: 'master', sha: 'abc' }));
+    pm._noGit = true;
+    await pm.play();
+    assert.strictEqual(calls.length, 1);
+    pm.game.exited = true; pm.game = null;
+    fs.rmSync(path.join(game, '.godot', 'imported'), { recursive: true });
+    await assert.rejects(pm.play(), (e) => e.code === 'import');
+  });
+  await t('play: a game already running from an earlier launcher session is found; update and repair wait for it', async () => {
+    const { pm } = fakeGame();
+    pm._running = [777];
+    await assert.rejects(pm.play(), (e) => e.code === 'running' && e.pids[0] === 777);
+    await assert.rejects(pm.assertGameClosed(), (e) => e.code === 'running');
+    pm._running = [];
+    await pm.assertGameClosed();
+  });
+  await t('channel or folder changes are refused while files are written (not during the quiet check)', () => {
+    const { pm } = fakeGame();
+    const cur = { channel: 'stable', installDir: 'x' };
+    pm.busy = 'update';
+    assert.throws(() => pm.assertSettingsChange({ channel: 'preview' }, cur), /before changing the channel/);
+    assert.throws(() => pm.assertSettingsChange({ installDir: 'y' }, cur), /install folder/);
+    pm.assertSettingsChange({ fullscreen: true }, cur);
+    pm.assertSettingsChange({ channel: 'stable' }, cur);
+    pm.busy = 'check';
+    pm.assertSettingsChange({ channel: 'preview' }, cur);
+    pm.busy = null;
+  });
+  await t('logs: launcher_play.log rotates past its size; the previous games\' logs are kept, five in all', () => {
+    const { rotateFile, rotateGameLogs } = require('../src/manager');
+    const d = fs.mkdtempSync(path.join(tmp, 'logs-'));
+    const f = path.join(d, 'launcher_play.log');
+    fs.writeFileSync(f, 'x'.repeat(50));
+    assert.strictEqual(rotateFile(f, 100, 3), false);
+    for (let i = 0; i < 5; i++) { fs.writeFileSync(f, String(i).repeat(200)); assert.ok(rotateFile(f, 100, 3)); }
+    assert.deepStrictEqual(fs.readdirSync(d).sort(), ['launcher_play.log.1', 'launcher_play.log.2', 'launcher_play.log.3']);
+    assert.match(fs.readFileSync(f + '.1', 'utf8'), /^4/);
+    const g = path.join(d, 'game');
+    fs.mkdirSync(g);
+    for (let i = 0; i < 8; i++) {
+      fs.writeFileSync(path.join(g, 'game_last.log'), 'run ' + i);
+      const t0 = new Date(Date.UTC(2026, 10, 26, 7, i));
+      fs.utimesSync(path.join(g, 'game_last.log'), t0, t0);
+      rotateGameLogs(g, 5);
+    }
+    const kept = fs.readdirSync(g).sort();
+    assert.strictEqual(kept.length, 4, 'four older ones (+ the new game_last.log written next): ' + kept);
+    assert.strictEqual(fs.readFileSync(path.join(g, kept[kept.length - 1]), 'utf8'), 'run 7');
+  });
+  await t('exit codes in words', () => {
+    const { exitWords } = require('../src/manager');
+    assert.match(exitWords(3221225477), /access violation/);
+    assert.match(exitWords(-1073741819), /access violation/, 'the same code as a signed number');
+    assert.match(exitWords(0xC0000135), /DLL/);
+    assert.match(exitWords(0xC0001234), /crashed \(0xC0001234\)/);
+    assert.match(exitWords(2), /exit code 2/);
+  });
+  await t('import: a crash or a stall is a failure (the state stays "not imported"); exit 0 marks the version ready', async () => {
+    const { pm, game } = fakeGame();
+    const setRun = (res) => { pm.runProc = async () => res; };
+    fs.writeFileSync(path.join(game, MARKER), JSON.stringify({ managedBy: 'launcher', sha: 'abc', lfsSha: 'abc', importedSha: 'old' }));
+    setRun({ code: 3221225477, stdout: '', stderr: '' });
+    await assert.rejects(pm.importAssets(false), /crashed while preparing/);
+    assert.strictEqual(pm.readState().importedSha, null);
+    setRun({ code: 1, stdout: '', stderr: '', timedOut: true });
+    await assert.rejects(pm.importAssets(false), /stopped responding/);
+    setRun({ code: 0, stdout: '', stderr: '' });
+    await pm.importAssets(false);
+    assert.strictEqual(pm.readState().importedSha, 'abc');
+  });
+  await t('proc: a child that prints nothing for idleTimeoutMs is ended and reported timedOut', async () => {
+    const t0 = Date.now();
+    const r = await runProc(process.execPath, ['-e', 'setTimeout(() => {}, 20000)'], { idleTimeoutMs: 400 });
+    assert.ok(r.timedOut, JSON.stringify(r));
+    assert.ok(Date.now() - t0 < 10000, 'ended quickly');
+    const ok = await runProc(process.execPath, ['-e', 'console.log("hi")'], { idleTimeoutMs: 5000 });
+    assert.ok(!ok.timedOut);
+  });
+
+  // ---------- T-289 part 2: trailers ----------
+  await t('feed: a video item resolves to the installed game (repo:launcher/media) or the launcher bundle (media/)', () => {
+    const v = Feed.video({ type: 'video', image: 'repo:launcher/assets/news/u19_snow.jpg', video: { src: 'repo:launcher/media/teaser_720p.mp4', label: 'Watch the teaser', duration: '1:07' } });
+    assert.deepStrictEqual(v, { src: 'repo:launcher/media/teaser_720p.mp4', poster: 'repo:launcher/assets/news/u19_snow.jpg', label: 'Watch the teaser', duration: '1:07' });
+    assert.deepStrictEqual(Feed.videoCandidates(v.src, true), ['game://media/launcher/media/teaser_720p.mp4']);
+    assert.deepStrictEqual(Feed.videoCandidates(v.src, false), [], 'not installed: the poster and "after install"');
+    assert.deepStrictEqual(Feed.videoCandidates('media/clip.webm', false), ['../assets/media/clip.webm']);
+    assert.strictEqual(Feed.video({ video: 'repo:launcher/media/a.mp4' }).label, 'Watch trailer');
+    for (const bad of [undefined, null, {}, { video: 5 }, { video: 'repo:docs/x.mp4' }, { video: 'repo:launcher/media/../../x.mp4' }, { video: 'https://example.com/t.mp4' },
+      { video: 'repo:launcher/media/a.mkv' }, { video: { src: 'media/a b.mp4' } }, { video: 'file:///c:/t.mp4' }])
+      assert.strictEqual(Feed.video(bad), null, JSON.stringify(bad));
+    const feed = { news: [{ id: 'a', date: '2026-11-20', title: 'A', video: 'repo:launcher/media/a.mp4' }, { id: 'b', date: '2026-11-25', title: 'B' }, { id: 'c', date: '2026-11-26', title: 'C', video: 'media/c.mp4', channels: ['preview'] }] };
+    assert.deepStrictEqual(Feed.trailers(feed, 'stable').map((n) => n.id), ['a']);
+    assert.deepStrictEqual(Feed.trailers(feed, 'preview').map((n) => n.id), ['c', 'a']);
+  });
+  await t('feed: every trailer in feed.json exists, sits in launcher/media under Git LFS, and is H.264-sized (<= 80 MB)', () => {
+    const feed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'feed.json'), 'utf8'));
+    const repo = path.join(__dirname, '..', '..');
+    const attrs = fs.readFileSync(path.join(repo, '.gitattributes'), 'utf8');
+    assert.match(attrs, /^launcher\/media\/\*\*\/\*\.mp4 filter=lfs/m, '.gitattributes sends launcher/media videos to LFS');
+    for (const n of feed.news) {
+      const v = Feed.video(n);
+      if (!v) { assert.ok(!n.video && n.type !== 'video', 'a video item that does not parse: ' + n.id); continue; }
+      assert.ok(n.image, 'a trailer needs its poster image: ' + n.id);
+      if (v.src.startsWith('repo:')) {
+        const file = path.join(repo, v.src.slice(5));
+        assert.ok(fs.existsSync(file), 'trailer missing: ' + v.src);
+        const head = fs.readFileSync(file).subarray(0, 200).toString('latin1');
+        if (!head.startsWith('version https://git-lfs')) assert.ok(fs.statSync(file).size <= 80 * 1048576, 'a 720p trailer, not the 1080p master: ' + v.src);
+      }
+    }
+  });
+  await t('renderer: trailer elements exist and the page may play media from the bundle and game:// only', () => {
+    const html = fs.readFileSync(path.join(__dirname, '..', 'renderer', 'index.html'), 'utf8');
+    assert.match(html, /media-src 'self' game:;/);
+    for (const id of ['bgVideo', 'trailerBtn', 'heroWatch', 'player', 'playerVideo', 'gameErr', 'gameErrLines', 'gameErrActions', 'setSafe'])
+      assert.ok(html.includes(`id="${id}"`), 'missing #' + id);
+    assert.match(html, /id="bgVideo"[^>]*muted/, 'the carousel preview is muted');
+    const main = fs.readFileSync(path.join(__dirname, '..', 'main.js'), 'utf8');
+    assert.match(main, /stream: true/, 'game:// streams (video needs it)');
+    assert.match(main, /launcher', 'media'/, 'videos only from launcher/media');
+    const pre = fs.readFileSync(path.join(__dirname, '..', 'preload.js'), 'utf8');
+    for (const c of ["'prepare'", "'gameAction'", "'game'"]) assert.ok(pre.includes(c), 'preload lacks ' + c);
+  });
   await t('status before install', async () => {
     const s = await m.status();
     assert.strictEqual(s.installed, false);

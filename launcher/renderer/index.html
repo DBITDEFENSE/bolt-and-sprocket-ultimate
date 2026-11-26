@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' game: data:; font-src 'self'; style-src 'self'; script-src 'self'; connect-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' game: data:; media-src 'self' game:; font-src 'self'; style-src 'self'; script-src 'self'; connect-src 'none'">
   <title>CLAUDE ZOMBIES</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -11,6 +11,7 @@
   <div id="bg" aria-hidden="true">
     <div class="bg-img" id="bgA"></div>
     <div class="bg-img" id="bgB"></div>
+    <video class="bg-video" id="bgVideo" muted loop playsinline preload="none" disablepictureinpicture></video>
     <canvas id="snow"></canvas>
     <div class="bg-shade"></div>
     <div class="grain"></div>
@@ -47,6 +48,7 @@
           <img class="wordmark" src="../assets/art/claude_zombies.png" alt="Claude Zombies">
           <div class="subtitle" id="subtitle">TERMS &amp; CONDITIONS</div>
           <div class="tagline" id="tagline"></div>
+          <button class="trailer-btn" id="trailerBtn" hidden><svg viewBox="0 0 10 12" aria-hidden="true"><path d="M1 1l8 5-8 5z"/></svg><span id="trailerBtnText">Watch trailer</span></button>
         </div>
         <article class="hero" id="hero">
           <div class="hero-meta"><span class="tag" id="heroTag"></span><span class="date" id="heroDate"></span></div>
@@ -55,6 +57,7 @@
           <div class="hero-strip" id="heroStrip" aria-label="Pictures"></div>
           <div class="hero-actions">
             <button class="ghost" id="heroMore">Read more</button>
+            <button class="ghost watch" id="heroWatch" hidden><svg viewBox="0 0 10 12" aria-hidden="true"><path d="M1 1l8 5-8 5z"/></svg><span id="heroWatchText">Watch trailer</span></button>
             <div class="hero-nav">
               <button class="arrow" id="heroPrev" title="Previous"><svg viewBox="0 0 8 12"><path d="M6.5 1L1.5 6l5 5"/></svg></button>
               <div class="dots" id="heroDots"></div>
@@ -139,6 +142,7 @@
                 <option value="keep">Keep the launcher open</option>
               </select>
             </label>
+            <label class="check"><input type="checkbox" id="setSafe"><span>Safe mode: the renderer on the main thread (slower; for a game that closes at start)</span></label>
             <label class="field">
               <span>Extra launch arguments</span>
               <input id="setArgs" placeholder="for example --windowed --resolution 1920x1080" spellcheck="false">
@@ -151,6 +155,7 @@
               <button class="ghost" id="actFolder">Open game folder</button>
               <button class="ghost" id="actGameLogs">Open game logs</button>
               <button class="ghost" id="actLogs">Open launcher logs</button>
+              <button class="ghost" id="actPlayLog">Show the start log</button>
               <button class="ghost" id="actSignOut">Switch GitHub account</button>
               <button class="ghost danger" id="actUninstall">Uninstall game</button>
             </div>
@@ -210,6 +215,27 @@
         <button class="ghost" data-close>Later</button>
         <button class="play small" id="welcomeInstall"><span>INSTALL</span></button>
       </div>
+    </div>
+  </div>
+
+  <!-- the game did not start (T-289): why, the last log lines, what to do -->
+  <div class="modal" id="gameErr" hidden>
+    <div class="modal-card err-card" role="alertdialog" aria-labelledby="gameErrTitle">
+      <h1 id="gameErrTitle">The game did not start</h1>
+      <p class="lede" id="gameErrMsg"></p>
+      <pre class="err-lines" id="gameErrLines" hidden></pre>
+      <p class="fineprint" id="gameErrNote"></p>
+      <div class="err-actions" id="gameErrActions"></div>
+      <button class="modal-x" data-close aria-label="Close">&times;</button>
+    </div>
+  </div>
+
+  <!-- trailer player: sound on, controls -->
+  <div class="modal" id="player" hidden>
+    <div class="modal-card player-card">
+      <video id="playerVideo" controls playsinline preload="auto"></video>
+      <div class="player-title" id="playerTitle"></div>
+      <button class="modal-x" data-close aria-label="Close">&times;</button>
     </div>
   </div>
 
